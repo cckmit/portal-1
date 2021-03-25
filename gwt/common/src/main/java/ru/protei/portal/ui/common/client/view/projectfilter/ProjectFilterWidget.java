@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.project.client.widget.filter;
+package ru.protei.portal.ui.common.client.view.projectfilter;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
@@ -8,7 +8,7 @@ import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.view.filterwidget.AbstractFilterShortView;
 import ru.protei.portal.ui.common.client.widget.filterwidget.FilterWidget;
 import ru.protei.portal.ui.common.client.widget.selector.project.filter.ProjectFilterSelector;
-import ru.protei.portal.ui.project.client.widget.filter.paramview.ProjectFilterParamWidget;
+import ru.protei.portal.ui.common.client.view.projectfilter.paramview.ProjectFilterParamWidget;
 
 public class ProjectFilterWidget extends FilterWidget<CaseFilterDto<ProjectQuery>, ProjectQuery, AbstractFilterShortView> {
     @Inject

@@ -31,6 +31,9 @@ import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
+import ru.protei.portal.ui.common.client.view.projectfilter.ProjectFilterWidget;
+import ru.protei.portal.ui.common.client.view.projectfilter.ProjectFilterWidgetModel;
+import ru.protei.portal.ui.common.client.view.projectfilter.paramview.ProjectFilterParamWidget;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
@@ -63,7 +66,6 @@ public abstract class ReportEditActivity implements Activity,
         view.setActivity(this);
         issueFilterWidget.getIssueFilterParams().setModel(this);
         issueFilterWidget.clearFooterStyle();
-        projectFilterView.clearFooterStyle();
         contractFilterView.clearFooterStyle();
         view.fillReportScheduledTypes(asList(En_ReportScheduledType.values()));
     }
@@ -76,7 +78,7 @@ public abstract class ReportEditActivity implements Activity,
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
         issueFilterWidget.resetFilter(null);
-        projectFilterView.resetFilter();
+        projectFilterWidget.resetFilter();
         contractFilterView.resetFilter();
         updateCompanyModels(event.profile);
     }
@@ -233,7 +235,7 @@ public abstract class ReportEditActivity implements Activity,
     }
 
     private void fillFilter(ProjectQuery query) {
-        regionController.getSelectorsParams(query, new RequestCallback<SelectorsParams>() {
+        filterController.getSelectorsParams(query, new RequestCallback<SelectorsParams>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR));
@@ -241,37 +243,7 @@ public abstract class ReportEditActivity implements Activity,
 
             @Override
             public void onSuccess(SelectorsParams selectorsParams) {
-                if (query.getCaseIds() != null) {
-                    projectFilterView.searchPattern().setValue(makeSearchStringFromCaseNumber(query.getCaseIds()));
-                } else {
-                    projectFilterView.searchPattern().setValue(query.getSearchString());
-                }
-
-                if (isNotEmpty(query.getStateIds())) {
-                    projectFilterView.states().setValue(toSet(query.getStateIds(), (Function<Long, CaseState>) CaseState::new));
-                }
-
-                Set<EntityOption> regions = collectRegions(selectorsParams.getRegions(), query.getRegionIds());
-                projectFilterView.regions().setValue(regions);
-
-                Set<PersonShortView> headManagers = collectPersons(selectorsParams.getPersonShortViews(), query.getHeadManagerIds());
-                projectFilterView.headManagers().setValue(headManagers);
-
-                Set<PersonShortView> caseMembers = collectPersons(selectorsParams.getPersonShortViews(), query.getCaseMemberIds());
-                projectFilterView.caseMembers().setValue(caseMembers);
-
-                Set<ProductDirectionInfo> directions = collectDirections(selectorsParams.getProductDirectionInfos(), query.getDirectionIds());
-                projectFilterView.direction().setValue(directions);
-
-                projectFilterView.sortField().setValue(query.getSortField());
-                projectFilterView.sortDir().setValue(query.getSortDir() == En_SortDir.ASC);
-                projectFilterView.onlyMineProjects().setValue(query.getMemberId() != null);
-                projectFilterView.commentCreationRange().setValue(fromDateRange(query.getCommentCreationRange()));
-                projectFilterView.initiatorCompanies().setValue(
-                        stream(query.getInitiatorCompanyIds()).map(EntityOption::new).collect(Collectors.toSet()));
-
-                Set<EntityOption> initiatorsCompanies = collectCompanies(selectorsParams.getCompanyEntityOptions(), query.getInitiatorCompanyIds());
-                projectFilterView.initiatorCompanies().setValue(initiatorsCompanies);
+                projectFilterWidget.fillFilterFields(query, selectorsParams);
             }
         });
     }
@@ -421,10 +393,10 @@ public abstract class ReportEditActivity implements Activity,
     private void showFilterForReportType(En_ReportType reportType) {
         switch (reportType) {
             case PROJECT: {
-                projectFilterView.resetFilter();
+                projectFilterWidget.resetFilter();
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
                 view.getFilterContainer().clear();
-                view.getFilterContainer().add(projectFilterView.asWidget());
+                view.getFilterContainer().add(projectFilterWidget.asWidget());
                 view.scheduledTypeContainerVisibility().setVisible(false);
                 view.additionalParamsVisibility().setVisible(false);
                 view.additionalParams().setValue(null);
@@ -658,7 +630,7 @@ public abstract class ReportEditActivity implements Activity,
     }
 
     private void validateProjectCommentCreation(boolean isTypeValid, boolean isRangeValid) {
-        projectFilterView.setCommentCreationRangeValid(isTypeValid, isRangeValid);
+        projectFilterWidget.setCommentCreationRangeValid(isTypeValid, isRangeValid);
     }
 
     private void applyIssueFilterVisibilityByPrivileges() {
@@ -681,28 +653,7 @@ public abstract class ReportEditActivity implements Activity,
     }
 
     private ProjectQuery getProjectQuery() {
-        ProjectQuery query = new ProjectQuery();
-
-        String searchString = projectFilterView.searchPattern().getValue();
-        query.setCaseIds(searchCaseNumber(searchString, false));
-        if (query.getCaseIds() == null) {
-            query.setSearchString(isBlank(searchString) ? null : searchString);
-        }
-
-        query.setStateIds(toSet(projectFilterView.states().getValue(), CaseState::getId));
-        query.setRegionIds(toSet(projectFilterView.regions().getValue(), EntityOption::getId));
-        query.setHeadManagerIds(toSet(projectFilterView.headManagers().getValue(), PersonShortView::getId));
-        query.setCaseMemberIds(toSet(projectFilterView.caseMembers().getValue(), PersonShortView::getId));
-        query.setDirectionIds(toSet(projectFilterView.direction().getValue(), ProductDirectionInfo::getId));
-        query.setSortField(projectFilterView.sortField().getValue());
-        query.setSortDir(projectFilterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
-        if(projectFilterView.onlyMineProjects().getValue() != null && projectFilterView.onlyMineProjects().getValue()) {
-            query.setMemberId(policyService.getProfile().getId());
-        }
-        query.setInitiatorCompanyIds(projectFilterView.initiatorCompanies().getValue().stream()
-                .map(entityOption -> entityOption.getId()).collect(Collectors.toSet()));
-        query.setCommentCreationRange(toDateRange(projectFilterView.commentCreationRange().getValue()));
-        return query;
+        return projectFilterWidget.getQuery();
     }
     
     private ContractQuery getContractQuery() {
@@ -754,7 +705,7 @@ public abstract class ReportEditActivity implements Activity,
     @Inject
     IssueFilterWidget issueFilterWidget;
     @Inject
-    AbstractProjectFilterView projectFilterView;
+    ProjectFilterParamWidget projectFilterWidget;
     @Inject
     AbstractContractFilterView contractFilterView;
 
@@ -766,8 +717,6 @@ public abstract class ReportEditActivity implements Activity,
     SubcontractorCompanyModel subcontractorCompanyModel;
     @Inject
     IssueFilterControllerAsync filterController;
-    @Inject
-    RegionControllerAsync regionController;
     @Inject
     ContractControllerAsync contractController;
 

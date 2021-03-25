@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.project.client.widget.filter;
+package ru.protei.portal.ui.common.client.view.projectfilter;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dto.CaseFilterDto;

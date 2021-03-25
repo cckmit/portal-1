@@ -26,8 +26,7 @@ import ru.protei.portal.ui.project.client.view.widget.team.AbstractTeamSelector;
 import ru.protei.portal.ui.project.client.view.widget.team.TeamSelector;
 import ru.protei.portal.ui.project.client.view.widget.team.item.AbstractTeamSelectorItem;
 import ru.protei.portal.ui.project.client.view.widget.team.item.TeamSelectorItem;
-import ru.protei.portal.ui.project.client.widget.filter.ProjectFilterWidget;
-import ru.protei.portal.ui.project.client.widget.filter.paramview.ProjectFilterParamWidget;
+import ru.protei.portal.ui.common.client.view.projectfilter.paramview.ProjectFilterParamWidget;
 
 
 /**

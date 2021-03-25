@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.HasFilterEntityIds;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.filterwidget.AbstractFilterShortView;
 import ru.protei.portal.core.model.view.filterwidget.DtoFilterQuery;
@@ -61,14 +62,14 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     }
 
     @Override
-    public SelectorsParams getSelectorsParams( CaseQuery caseQuery ) throws RequestFailedException {
-        log.info("getSelectorsParams, caseQuery: {}", caseQuery );
+    public SelectorsParams getSelectorsParams( HasFilterEntityIds filterEntityIds ) throws RequestFailedException {
+        log.info("getSelectorsParams, caseQuery: {}", filterEntityIds );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Result<SelectorsParams> response = issueFilterService.getSelectorsParams( token, caseQuery );
+        Result<SelectorsParams> response = issueFilterService.getSelectorsParams( token, filterEntityIds );
 
-        log.info("getSelectorsParams, id: {}, response: {} ", caseQuery, response.isError() ? "error" : response.getData());
+        log.info("getSelectorsParams, id: {}, response: {} ", filterEntityIds, response.isError() ? "error" : response.getData());
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );

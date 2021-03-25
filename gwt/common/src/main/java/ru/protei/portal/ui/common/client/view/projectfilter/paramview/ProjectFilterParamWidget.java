@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.project.client.widget.filter.paramview;
+package ru.protei.portal.ui.common.client.view.projectfilter.paramview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -14,14 +14,12 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.filterwidget.FilterParamView;
@@ -146,6 +144,10 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
 
     public HasVisibility onlyMineProjectsVisibility() {
         return onlyMineProjects;
+    }
+
+    public void setCommentCreationRangeValid(boolean isTypeValid, boolean isRangeValid) {
+        commentCreationRange.setValid(isTypeValid, isRangeValid);
     }
 
     @Override

@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.HasFilterEntityIds;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.filterwidget.AbstractFilterShortView;
 import ru.protei.portal.core.model.view.filterwidget.DtoFilterQuery;
@@ -26,7 +27,7 @@ public interface IssueFilterController extends RemoteService {
 
     <T extends DtoFilterQuery> CaseFilterDto<T> getIssueFilter(Long id ) throws RequestFailedException;
 
-    SelectorsParams getSelectorsParams( CaseQuery caseQuery ) throws RequestFailedException;
+    SelectorsParams getSelectorsParams( HasFilterEntityIds filterEntityIds ) throws RequestFailedException;
 
     <T extends DtoFilterQuery> CaseFilterDto<T> saveIssueFilter( CaseFilterDto<T> filter ) throws RequestFailedException;
 
