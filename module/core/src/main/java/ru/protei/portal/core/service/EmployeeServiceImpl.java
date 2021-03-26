@@ -907,7 +907,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                 employeeIds,
                 Arrays.asList(En_AbsenceReason.values()).stream()
                         .filter(En_AbsenceReason::isActual)
-                        .map(En_AbsenceReason::getId)
                         .collect(Collectors.toSet()));
     }
 

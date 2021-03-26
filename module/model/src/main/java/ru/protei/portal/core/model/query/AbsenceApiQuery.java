@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.helper.StringUtils;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -19,8 +21,14 @@ import java.util.List;
 )
 public class AbsenceApiQuery implements Serializable {
 
+    @JsonProperty("company_code")
+    private String companyCode;
+
     @JsonProperty("worker_ext_ids")
     private List<String> workerExtIds;
+
+    @JsonProperty("reasons")
+    private Set<En_AbsenceReason> reasons;
 
     @JsonProperty("from")
     private Date from;
@@ -28,17 +36,15 @@ public class AbsenceApiQuery implements Serializable {
     @JsonProperty("to")
     private Date to;
 
-    @JsonProperty("company_code")
-    private String companyCode;
-
     public AbsenceApiQuery() {
     }
 
-    public AbsenceApiQuery(List<String> workerExtIds, Date from, Date to, String companyCode) {
-        this.workerExtIds = workerExtIds;
-        this.from = from;
-        this.to = to;
-        this.companyCode = companyCode;
+    public Set<En_AbsenceReason> getReasons() {
+        return reasons;
+    }
+
+    public void setReasons(Set<En_AbsenceReason> reasons) {
+        this.reasons = reasons;
     }
 
     public boolean isValid() {

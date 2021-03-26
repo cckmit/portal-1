@@ -283,6 +283,7 @@ public class AbsenceServiceImpl implements AbsenceService {
 
         AbsenceQuery query = new AbsenceQuery();
         query.setDateRange(new DateRange(En_DateIntervalType.FIXED, apiQuery.getFrom(), apiQuery.getTo()));
+        query.setReasons(apiQuery.getReasons());
 
         boolean searchBySeparateWorkers = CollectionUtils.isNotEmpty(apiQuery.getWorkerExtIds());
         List<WorkerEntry> workerEntries = null;
