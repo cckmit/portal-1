@@ -351,6 +351,7 @@ public abstract class ReportEditActivity implements Activity,
         report.setWithTags(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.TAGS));
         report.setWithLinkedIssues(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.LINKED_ISSUES));
         report.setHumanReadable(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.HUMAN_READABLE));
+        report.setWithDeadlineAndWorkTrigger(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.DEADLINE_AND_WORK_TRIGGER));
         return report;
     }
 

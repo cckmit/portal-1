@@ -191,6 +191,8 @@ public class ExcelReportWriter implements
         values.add(HelperFunc.isNotEmpty(issue.getStateName()) ? issue.getStateName() : "");
         if (withTags) values.add(String.join(",", toList(emptyIfNull(object.getCaseTags()), CaseTag::getName)));
         if (withLinkedIssues) values.add(getCaseNumbersAsString(object.getCaseLinks(), lang));
+        if (isNotRestricted && withDeadlineAndWorkTrigger) values.add(issue.getDeadline() != null ? new Date(issue.getDeadline()) : "");
+        if (isNotRestricted && withDeadlineAndWorkTrigger) values.add(issue.getWorkTrigger() != null ? lang.get("ir_" + issue.getWorkTrigger().name().toLowerCase()) : "");
         values.add(created != null ? created : "");
         values.add(opened != null ? opened : "");
         values.add(workaround != null ? workaround : "");
@@ -286,14 +288,14 @@ public class ExcelReportWriter implements
                 .add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, isNotRestricted).add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, withDescription)
                 .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
                 .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, withTags).addIf(ExcelFormat.STANDARD, withLinkedIssues)
+                .addIf(ExcelFormat.FULL_DATE, isNotRestricted && withDeadlineAndWorkTrigger)
+                .addIf(ExcelFormat.STANDARD, isNotRestricted && withDeadlineAndWorkTrigger)
                 .add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME)
                 .add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME)
                 .addIf(ExcelFormat.DATE_TIME, withImportanceHistory).addIf(ExcelFormat.DATE_TIME, withImportanceHistory)
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.STANDARD, isNotRestricted && isHumanReadable)
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.STANDARD, isNotRestricted && isHumanReadable)
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted)
-                .addIf(ExcelFormat.DATE_TIME, isNotRestricted && withDeadlineAndWorkTrigger)
-                .addIf(ExcelFormat.STANDARD, isNotRestricted && withDeadlineAndWorkTrigger)
                 .build();
 
         return formatList.toArray(new String[]{});
@@ -304,14 +306,14 @@ public class ExcelReportWriter implements
                 .add(3650).addIf(3430, isNotRestricted).add(8570).addIf(9000, withDescription)
                 .add(4590).add(4200).add(4200).add(4200)
                 .add(6000).add(3350).add(4600).addIf(4600, withTags).addIf(6000, withLinkedIssues)
+                .addIf(5800, isNotRestricted && withDeadlineAndWorkTrigger)
+                .addIf(5800, isNotRestricted && withDeadlineAndWorkTrigger)
                 .add(4200).add(5800).add(5800)
                 .add(5800).add(5800).add(5800)
                 .addIf(5800, withImportanceHistory).addIf(5800, withImportanceHistory)
                 .addIf(12000, isNotRestricted).addIf(12000, isNotRestricted && isHumanReadable)
                 .addIf(12000, isNotRestricted).addIf(12000, isNotRestricted && isHumanReadable)
                 .addIf(5800, isNotRestricted).addIf(12000, isNotRestricted)
-                .addIf(5800, isNotRestricted && withDeadlineAndWorkTrigger)
-                .addIf(5800, isNotRestricted && withDeadlineAndWorkTrigger)
                 .build();
 
         return toPrimitiveIntegerArray(columnsWidthList);
@@ -322,14 +324,14 @@ public class ExcelReportWriter implements
                 .add("ir_caseno").addIf("ir_private", isNotRestricted).add("ir_name").addIf("ir_description", withDescription)
                 .add("ir_company").add("ir_initiator").add("ir_manager").add("ir_manager_company")
                 .add("ir_product").add("ir_importance").add("ir_state").addIf("ir_tags", withTags).addIf("ir_links", withLinkedIssues)
+                .addIf("ir_deadline", isNotRestricted && withDeadlineAndWorkTrigger)
+                .addIf("ir_work_trigger", isNotRestricted && withDeadlineAndWorkTrigger)
                 .add("ir_date_created").add("ir_date_opened").add("ir_date_workaround")
                 .add("ir_date_customer_test").add("ir_date_done").add("ir_date_verify")
                 .addIf("ir_date_important", withImportanceHistory).addIf("ir_date_critical", withImportanceHistory)
                 .addIf("ir_time_solution_first", isNotRestricted).addIf("ir_time_solution_first_with_days", isNotRestricted && isHumanReadable)
                 .addIf("ir_time_solution_full", isNotRestricted).addIf("ir_time_solution_full_with_days", isNotRestricted && isHumanReadable)
                 .addIf("ir_time_elapsed", isNotRestricted).addIf("ir_time_elapsed_selected_range", isNotRestricted)
-                .addIf("ir_deadline", isNotRestricted && withDeadlineAndWorkTrigger)
-                .addIf("ir_work_trigger", isNotRestricted && withDeadlineAndWorkTrigger)
                 .build();
 
         return columnsList.toArray(new String[]{});
