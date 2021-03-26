@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.WorkerEntryDAO;
 import ru.protei.portal.core.model.ent.WorkerEntry;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 
@@ -51,6 +52,20 @@ public class WorkerEntryDAO_Impl extends PortalBaseJdbcDAO<WorkerEntry> implemen
     @Override
     public WorkerEntry getByPersonId(Long personId) {
         return getByCondition("worker_entry.personId = ?", personId);
+    }
+
+    @Override
+    public List<WorkerEntry> partialGetByPersonIds(List<Long> personIds, Long companyId) {
+        return partialGetListByCondition("worker_entry.personId in " + HelperFunc.makeInArg(personIds) + "and worker_entry.companyId=?",
+                Collections.singletonList(companyId),
+                "personId", "worker_extId");
+    }
+
+    @Override
+    public List<WorkerEntry> partialGetByExternalIds(List<String> extIds, Long companyId) {
+        return partialGetListByCondition("worker_entry.worker_extId in " + HelperFunc.makeInArg(extIds) + "and worker_entry.companyId=?",
+                Collections.singletonList(companyId),
+                "personId", "worker_extId");
     }
 
     @Override

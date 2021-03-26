@@ -10,6 +10,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
+import ru.protei.portal.core.model.api.ApiAbsence;
 import ru.protei.portal.core.model.api.ApiContract;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
@@ -79,6 +80,8 @@ public class PortalApiController {
     private CompanyService companyService;
     @Autowired
     private SiteFolderService siteFolderService;
+    @Autowired
+    private AbsenceService absenceService;
     @Autowired
     PortalConfig config;
 
@@ -594,6 +597,20 @@ public class PortalApiController {
         return siteFolderService.removePlatform(authToken, platformId)
                 .ifOk(result -> log.info("deletePlatform(): OK"))
                 .ifError(result -> log.warn("deletePlatform(): Can't delete platform with id={}. {}", platformId, result));
+    }
+
+    @PostMapping(value = "/absence/1c/get")
+    public Result<List<ApiAbsence>> getAbsence1cGet(HttpServletRequest request, HttpServletResponse response, @RequestBody AbsenceApiQuery apiQuery) {
+        log.info("API | getAbsence1cGet(): apiQuery={}", apiQuery);
+
+        if (apiQuery == null || !apiQuery.isValid()) {
+            return Result.error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> absenceService.getAbsencesByApiQuery(authToken, apiQuery))
+                .ifOk(id -> log.info("getAbsence1cGet(): OK"))
+                .ifError(result -> log.warn("getAbsence1cGet(): Can't get absences by apiQuery={}. {}", apiQuery, result));
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {

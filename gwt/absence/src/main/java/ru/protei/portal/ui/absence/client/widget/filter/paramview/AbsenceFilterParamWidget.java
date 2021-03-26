@@ -72,7 +72,7 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
                 CollectionUtils.isEmpty(employees.getValue()) ? new HashSet<>() :
                         employees.getValue().stream().map(PersonShortView::getId).collect(Collectors.toSet()),
                 CollectionUtils.isEmpty(reasons.getValue()) ? new HashSet<>() :
-                        reasons.getValue().stream().map(En_AbsenceReason::getId).collect(Collectors.toSet()),
+                        reasons.getValue(),
                 sortField.getValue(),
                 sortDir.getValue() ? En_SortDir.ASC : En_SortDir.DESC);
     }
@@ -81,7 +81,7 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
     public void fillFilterFields(AbsenceQuery query, SelectorsParams selectorsParams) {
         dateRange.setValue(DateIntervalWithType.fromDateRange(query.getDateRange()));
         employees.setValue(applyPersons(selectorsParams, query.getEmployeeIds()));
-        reasons.setValue(applyReason(query.getReasonIds()));
+        reasons.setValue(query.getReasons());
         sortField.setValue(query.getSortField());
         sortDir.setValue(query.getSortDir() == En_SortDir.ASC);
         if (validate()) {
@@ -143,14 +143,6 @@ public class AbsenceFilterParamWidget extends Composite implements AbstractAbsen
                         emptyIfNull(personIds).stream().anyMatch(ids -> ids.equals(personShortView.getId())))
                 .collect(Collectors.toSet());
     }
-
-    private Set<En_AbsenceReason> applyReason(Set<Integer> reasonIds) {
-        return emptyIfNull(reasonIds).stream()
-                .map(id -> Arrays.stream(En_AbsenceReason.values()).filter(en_absenceReason -> en_absenceReason.getId() == id).findAny().orElse(null))
-                .collect(Collectors.toSet());
-    }
-
-
 
     private void fillDateRanges (TypedSelectorRangePicker rangePicker) {
         rangePicker.fillSelector(En_DateIntervalType.reportTypes());
