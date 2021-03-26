@@ -19,10 +19,10 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
-import ru.protei.portal.ui.common.client.view.projectfilter.ProjectFilterWidget;
+import ru.protei.portal.ui.common.client.widget.project.filter.ProjectFilterWidget;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.common.client.view.projectfilter.ProjectFilterWidgetModel;
+import ru.protei.portal.ui.common.client.widget.project.filter.ProjectFilterWidgetModel;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;

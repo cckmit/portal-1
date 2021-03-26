@@ -23,14 +23,13 @@ import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContrac
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterActivity;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.CaseFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
-import ru.protei.portal.ui.common.client.view.projectfilter.paramview.ProjectFilterParamWidget;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
+import ru.protei.portal.ui.common.client.widget.project.filter.paramview.ProjectFilterParamWidget;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
@@ -51,7 +50,7 @@ import static ru.protei.portal.ui.report.client.util.AccessUtil.availableReportT
 import static ru.protei.portal.ui.report.client.util.AccessUtil.canEdit;
 
 public abstract class ReportEditActivity implements Activity,
-        AbstractReportCreateEditActivity, AbstractIssueFilterModel, AbstractProjectFilterActivity {
+        AbstractReportCreateEditActivity, AbstractIssueFilterModel {
 
     @PostConstruct
     public void onInit() {
@@ -415,11 +414,6 @@ public abstract class ReportEditActivity implements Activity,
             case CONTRACT: return false;
         }
         return false;
-    }
-
-    @Override
-    public void onProjectFilterChanged()  {
-        ; // ничего не делаем, мы используем фильтр при создании отчета
     }
 
     @Override

@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.view.projectfilter.paramview;
+package ru.protei.portal.ui.common.client.widget.project.filter.paramview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;

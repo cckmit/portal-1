@@ -1,8 +1,6 @@
 package ru.protei.portal.ui.project.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
-import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
-import ru.protei.portal.ui.common.client.view.projectfilter.ProjectFilterView;
 import ru.protei.portal.ui.project.client.activity.edit.AbstractProjectEditView;
 import ru.protei.portal.ui.project.client.activity.edit.ProjectEditActivity;
 import ru.protei.portal.ui.project.client.activity.list.AbstractProjectDocumentsListView;
@@ -37,7 +35,6 @@ public class ProjectClientModule extends AbstractGinModule {
 
         bind( ProjectTableActivity.class ).asEagerSingleton();
         bind( AbstractProjectTableView.class ).to(ProjectTableView.class );
-        bind( AbstractProjectFilterView.class ).to(ProjectFilterView.class );
 
         bind( ProjectPreviewActivity.class ).asEagerSingleton();
         bind( AbstractProjectPreviewView.class ).to( ProjectPreviewView.class );
