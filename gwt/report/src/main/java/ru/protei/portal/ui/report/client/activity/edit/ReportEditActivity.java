@@ -192,6 +192,9 @@ public abstract class ReportEditActivity implements Activity,
         if (report.isHumanReadable()) {
             additionalParams.add(En_ReportAdditionalParamType.HUMAN_READABLE);
         }
+        if (report.isWithDeadlineAndWorkTrigger()) {
+            additionalParams.add(En_ReportAdditionalParamType.DEADLINE_AND_WORK_TRIGGER);
+        }
 
         BaseQuery query = reportDto.getQuery();
         switch (report.getReportType()) {
