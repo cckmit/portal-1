@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.struct.ListBuilder;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.ReportWriter;
+import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
 import ru.protei.portal.core.utils.JXLSHelper;
 
@@ -35,6 +36,7 @@ public class ExcelReportWriter implements
 
     private final JXLSHelper.ReportBook<CaseObjectReportRequest> book;
     private final Lang.LocalizedLang lang;
+    private final EnumLangUtil enumLangUtil;
     private final boolean isNotRestricted;
     private final String locale;
     private final boolean withDescription;
@@ -46,6 +48,7 @@ public class ExcelReportWriter implements
     private final String[] formats;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang,
+                             EnumLangUtil enumLangUtil,
                              boolean isRestricted,
                              boolean withDescription,
                              boolean withTags,
@@ -56,6 +59,7 @@ public class ExcelReportWriter implements
 
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
+        this.enumLangUtil = enumLangUtil;
         this.isNotRestricted = !isRestricted;
         this.locale = localizedLang.getLanguageTag();
         this.withDescription = withDescription;
@@ -192,7 +196,7 @@ public class ExcelReportWriter implements
         if (withTags) values.add(String.join(",", toList(emptyIfNull(object.getCaseTags()), CaseTag::getName)));
         if (withLinkedIssues) values.add(getCaseNumbersAsString(object.getCaseLinks(), lang));
         if (isNotRestricted && withDeadlineAndWorkTrigger) values.add(issue.getDeadline() != null ? new Date(issue.getDeadline()) : "");
-        if (isNotRestricted && withDeadlineAndWorkTrigger) values.add(issue.getWorkTrigger() != null ? lang.get("ir_" + issue.getWorkTrigger().name().toLowerCase()) : "");
+        if (isNotRestricted && withDeadlineAndWorkTrigger) values.add(issue.getWorkTrigger() != null ? enumLangUtil.workTriggerLang(issue.getWorkTrigger(), lang.getLanguageTag()) : "");
         values.add(created != null ? created : "");
         values.add(opened != null ? opened : "");
         values.add(workaround != null ? workaround : "");
