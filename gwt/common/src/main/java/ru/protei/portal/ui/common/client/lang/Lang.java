@@ -3311,4 +3311,6 @@ public interface Lang extends Messages, ContactItemLang {
     String commentEdit();
 
     String commentRemove();
+
+    String issueReportDeadlineWorkTrigger();
 }
