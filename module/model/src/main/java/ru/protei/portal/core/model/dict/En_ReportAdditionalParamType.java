@@ -6,4 +6,5 @@ public enum En_ReportAdditionalParamType {
     TAGS,
     LINKED_ISSUES,
     HUMAN_READABLE,
+    DEADLINE_AND_WORK_TRIGGER
 }

@@ -74,6 +74,9 @@ public class Report implements Serializable {
     @JdbcColumn(name = "human_readable")
     private boolean isHumanReadable;
 
+    @JdbcColumn(name = "with_deadline_and_work_trigger")
+    private boolean withDeadlineAndWorkTrigger;
+
     public Long getId() {
         return id;
     }
@@ -224,6 +227,14 @@ public class Report implements Serializable {
 
     public void setHumanReadable(boolean humanReadable) {
         isHumanReadable = humanReadable;
+    }
+
+    public boolean isWithDeadlineAndWorkTrigger() {
+        return withDeadlineAndWorkTrigger;
+    }
+
+    public void setWithDeadlineAndWorkTrigger(boolean withDeadlineAndWorkTrigger) {
+        this.withDeadlineAndWorkTrigger = withDeadlineAndWorkTrigger;
     }
 
     @Override
