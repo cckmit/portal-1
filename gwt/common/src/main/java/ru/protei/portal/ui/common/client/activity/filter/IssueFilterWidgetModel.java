@@ -30,7 +30,7 @@ public abstract class IssueFilterWidgetModel implements Activity, AbstractIssueF
             return;
         }
 
-        filterService.saveCaseFilter(filledUserFilter, new FluentCallback<CaseFilterDto<CaseQuery>>()
+        filterService.saveIssueFilter(filledUserFilter, new FluentCallback<CaseFilterDto<CaseQuery>>()
                 .withError((throwable, defaultErrorHandler, status) -> {
                     fireEvent(new NotifyEvents.Show(lang.errSaveIssueFilter(), NotifyEvents.NotifyType.ERROR));
                     defaultErrorHandler.accept(throwable);

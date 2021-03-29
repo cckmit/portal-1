@@ -16,7 +16,7 @@ public abstract class ProjectFilterWidgetModel extends FilterWidgetModel<CaseFil
                               Consumer<Throwable> onError,
                               Consumer<CaseFilterDto<ProjectQuery>> onSuccess) {
 
-        issueFilterService.saveCaseFilter(filter, new FluentCallback<CaseFilterDto<ProjectQuery>>()
+        issueFilterService.saveProjectFilter(filter, new FluentCallback<CaseFilterDto<ProjectQuery>>()
                 .withError(onError)
                 .withSuccess(onSuccess.andThen( caseFilterDto -> fireEvent(new ProjectFilterEvents.Changed()) ))
         );

@@ -65,6 +65,8 @@ public class En_PersonRoleTypeLang {
                 return lang.personBusinessAnalyticsArchitecture();
             case PROJECT_DOCUMENTATION:
                 return lang.personProjectDocumentation();
+            case PRODUCT_MANAGER:
+                return lang.personProductManager();
             case DEVELOPMENT:
                 return lang.personDevelopment();
             case PRESALE_HEAD_MANAGER:

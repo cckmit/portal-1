@@ -129,7 +129,7 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
     }
 
     private void createNewFilter(CaseFilterDto<CaseQuery> caseFilterDto) {
-        filterController.saveCaseFilter(caseFilterDto, new FluentCallback<CaseFilterDto<CaseQuery>>()
+        filterController.saveIssueFilter(caseFilterDto, new FluentCallback<CaseFilterDto<CaseQuery>>()
                 .withSuccess(result -> {
                     view.updateFilterSelector();
                     view.filter().setValue(result.getCaseFilter().toShortView(), true);

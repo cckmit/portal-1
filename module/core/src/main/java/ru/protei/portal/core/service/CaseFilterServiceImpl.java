@@ -22,11 +22,8 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.HasFilterQueryIds;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.PlanOption;
-import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.core.model.view.filterwidget.AbstractFilterShortView;
+import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 
@@ -69,7 +66,7 @@ public class CaseFilterServiceImpl implements CaseFilterService {
     LocationDAO locationDAO;
 
     @Override
-    public Result< List<AbstractFilterShortView> > getCaseFilterShortViewList(Long loginId, En_CaseFilterType filterType ) {
+    public Result<List<FilterShortView>> getCaseFilterShortViewList(Long loginId, En_CaseFilterType filterType ) {
 
         log.debug( "getIssueFilterShortViewList(): accountId={}, filterType={} ", loginId, filterType );
 
@@ -78,13 +75,13 @@ public class CaseFilterServiceImpl implements CaseFilterService {
         if ( list == null )
             return error(En_ResultStatus.GET_DATA_ERROR );
 
-        List< AbstractFilterShortView > result = list.stream().map( CaseFilter::toShortView ).collect( Collectors.toList() );
+        List< FilterShortView > result = list.stream().map( CaseFilter::toShortView ).collect( Collectors.toList() );
 
         return ok(result);
     }
 
     @Override
-    public <T extends HasFilterQueryIds> Result<CaseFilterDto<T>> getCaseFilterDto(AuthToken token, Long id) {
+    public Result<CaseFilterDto<HasFilterQueryIds>> getCaseFilterDto(AuthToken token, Long id) {
         log.debug( "getIssueFilter(): id={} ", id );
 
         CaseFilter filter = caseFilterDAO.get( id );
@@ -93,15 +90,14 @@ public class CaseFilterServiceImpl implements CaseFilterService {
             return error( En_ResultStatus.NOT_FOUND );
         }
 
-        T query;
+        Result<? extends HasFilterQueryIds> readValueResult
+                = readValue(filter.getParams(), filter.getType().getQueryClass());
 
-        try {
-            query = (T) objectMapper.readValue(filter.getParams(), filter.getType().getQueryClass());
-        } catch (IOException e) {
-            log.warn("getCaseFilter: cannot read filter params: caseFilter={}", filter);
-            e.printStackTrace();
-            return error(En_ResultStatus.INTERNAL_ERROR);
+        if (readValueResult.isError()) {
+            return error(readValueResult.getStatus());
         }
+
+        HasFilterQueryIds query = readValueResult.getData();
 
         Result<SelectorsParams> selectorsParams = getSelectorsParams(token, query);
 
@@ -186,48 +182,28 @@ public class CaseFilterServiceImpl implements CaseFilterService {
 
     @Override
     @Transactional
-    public <T extends HasFilterQueryIds> Result<CaseFilterDto<T>> saveCaseFilter(AuthToken token, CaseFilterDto<T> caseFilterDto) {
-        log.debug("saveIssueFilter(): filter={} ", caseFilterDto);
+    public Result<CaseFilterDto<ProjectQuery>> saveProjectFilter(AuthToken token, CaseFilterDto<ProjectQuery> caseFilterDto) {
+        log.debug("saveProjectFilter(): caseFilterDto={} ", caseFilterDto);
 
         if (isNotValid(caseFilterDto)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        CaseFilter caseFilter = caseFilterDto.getCaseFilter();
+        return saveCaseFilter(token, caseFilterDto);
+    }
 
-        if (caseFilter.getLoginId() == null) {
-            caseFilter.setLoginId(token.getUserLoginId());
+    @Override
+    @Transactional
+    public Result<CaseFilterDto<CaseQuery>> saveIssueFilter(AuthToken token, CaseFilterDto<CaseQuery> caseFilterDto) {
+        log.debug("saveIssueFilter(): caseFilterDto={} ", caseFilterDto);
+
+        if (isNotValid(caseFilterDto)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (CaseQuery.class.equals(caseFilter.getType().getQueryClass())) {
-            caseFilterDto.setQuery((T) applyFilterByScope(token, (CaseQuery) caseFilterDto.getQuery()));
-        }
+        caseFilterDto.setQuery(applyCaseQueryByScope(token, caseFilterDto.getQuery()));
 
-        T query = caseFilterDto.getQuery();
-
-        String params;
-
-        try {
-            params = objectMapper.writeValueAsString(query);
-        } catch (JsonProcessingException e) {
-            log.warn("saveIssueFilter(): cannot write filter params: caseFilter={}", caseFilter);
-            e.printStackTrace();
-            return error(En_ResultStatus.INTERNAL_ERROR);
-        }
-
-        caseFilter.setParams(params);
-        caseFilter.setName(caseFilter.getName().trim());
-
-        if (!isUniqueFilter(caseFilter.getName(), caseFilter.getLoginId(), caseFilter.getType(), caseFilter.getId())) {
-            return error(En_ResultStatus.ALREADY_EXIST);
-        }
-
-        if (caseFilterDAO.saveOrUpdate(caseFilter)) {
-            caseFilterDto.setCaseFilter(caseFilter);
-            return ok(caseFilterDto);
-        }
-
-        return error(En_ResultStatus.INTERNAL_ERROR);
+        return saveCaseFilter(token, caseFilterDto);
     }
 
     @Override
@@ -246,6 +222,65 @@ public class CaseFilterServiceImpl implements CaseFilterService {
         return ok(id);
     }
 
+    private <T extends HasFilterQueryIds> Result<CaseFilterDto<T>> saveCaseFilter(AuthToken token, CaseFilterDto<T> caseFilterDto) {
+        CaseFilter caseFilter = caseFilterDto.getCaseFilter();
+        Class<? extends HasFilterQueryIds> queryClass = caseFilter.getType().getQueryClass();
+
+        if (caseFilter.getLoginId() == null) {
+            caseFilter.setLoginId(token.getUserLoginId());
+        }
+
+        T query = caseFilterDto.getQuery();
+
+        Result<String> writeValueResult = writeValueAsString(query);
+
+        if (writeValueResult.isError()) {
+            return error(writeValueResult.getStatus());
+        }
+
+        String params = writeValueResult.getData();
+
+//        Проверка перед сохранением, что параметры по указанному типу CaseFilter успешно десериализуются
+        Result<? extends HasFilterQueryIds> deserializationResult = readValue(params, queryClass);
+        if (deserializationResult.isError()) {
+            return error(deserializationResult.getStatus());
+        }
+
+        caseFilter.setParams(params);
+        caseFilter.setName(caseFilter.getName().trim());
+
+        if (!isUniqueFilter(caseFilter.getName(), caseFilter.getLoginId(), caseFilter.getType(), caseFilter.getId())) {
+            return error(En_ResultStatus.ALREADY_EXIST);
+        }
+
+        if (caseFilterDAO.saveOrUpdate(caseFilter)) {
+            caseFilterDto.setCaseFilter(caseFilter);
+            return ok(caseFilterDto);
+        }
+
+        return error(En_ResultStatus.INTERNAL_ERROR);
+    }
+
+    private <T> Result<T> readValue(String params, Class<T> clazz) {
+        try {
+            return ok(objectMapper.readValue(params, clazz));
+        } catch (IOException e) {
+            log.warn("readValue(): cannot deserialize params. params={}, class={}", params, clazz);
+            e.printStackTrace();
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+    }
+
+    private Result<String> writeValueAsString(Object object) {
+        try {
+            return ok(objectMapper.writeValueAsString(object));
+        } catch (JsonProcessingException e) {
+            log.warn("writeValueAsString(): cannot serialize object. object={}", object);
+            e.printStackTrace();
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+    }
+
     private boolean isNotValid( CaseFilterDto<?> caseFilterDto ) {
         return caseFilterDto == null ||
                 caseFilterDto.getCaseFilter() == null ||
@@ -254,7 +289,7 @@ public class CaseFilterServiceImpl implements CaseFilterService {
                 caseFilterDto.getQuery() == null;
     }
 
-    private CaseQuery applyFilterByScope(AuthToken token, CaseQuery caseQuery) {
+    private CaseQuery applyCaseQueryByScope(AuthToken token, CaseQuery caseQuery) {
         Set<UserRole> roles = token.getRoles();
         if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
             return caseQuery;

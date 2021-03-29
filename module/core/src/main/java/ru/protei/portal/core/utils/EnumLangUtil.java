@@ -76,6 +76,8 @@ public class EnumLangUtil {
                 return localizedLang.get("personBusinessAnalyticsArchitecture");
             case PROJECT_DOCUMENTATION:
                 return localizedLang.get("personProjectDocumentation");
+            case PRODUCT_MANAGER:
+                return localizedLang.get("personProductManager");
             case DEVELOPMENT:
                 return localizedLang.get("personDevelopment");
             case PRESALE_HEAD_MANAGER:
