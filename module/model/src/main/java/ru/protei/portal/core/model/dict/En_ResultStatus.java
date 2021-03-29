@@ -341,6 +341,11 @@ public enum En_ResultStatus {
     /**
      * Родительская задача не может быть интеграционной
      */
-    NOT_ALLOWED_INTEGRATION_ISSUE
+    NOT_ALLOWED_INTEGRATION_ISSUE,
+
+    /**
+     * Данные превышают размерность, заданную в MySQL
+     */
+    MYSQL_DATA_TRUNCATION
     ;
 }
