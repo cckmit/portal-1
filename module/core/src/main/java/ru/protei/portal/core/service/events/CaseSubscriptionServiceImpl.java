@@ -58,6 +58,9 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     @Autowired
     PersonFavoriteIssuesDAO personFavoriteIssuesDAO;
 
+    @Autowired
+    PersonDAO personDAO;
+
     private Set<NotificationEntry> employeeRegistrationEventSubscribers = new HashSet<>();
 
     @PostConstruct
@@ -102,32 +105,16 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     }
 
     @Override
-    public Set<NotificationEntry> subscribers(Set<String> loginSet, Long companyId) {
-        if (CollectionUtils.isEmpty(loginSet)) {
-            return new HashSet<>();
-        }
-
-        UserLoginShortViewQuery query = new UserLoginShortViewQuery();
-        query.setAdminState(En_AdminState.UNLOCKED);
-        query.setLoginSet(loginSet);
-        query.setCompanyIds(Collections.singleton(companyId));
-
-        return subscribers(CollectionUtils.toList(userLoginShortViewDAO.getSearchResult(query).getResults(), UserLoginShortView::getPersonId));
-    }
-
-    @Override
     public Set<NotificationEntry> subscribers(List<Long> personIds) {
-        return stream(personIds)
-                .map(Person::new)
+        List<Person> persons = personDAO.partialGetListByKeys(personIds, "id","locale");
+        jdbcManyRelationsHelper.fill(persons, Person.Fields.CONTACT_ITEMS);
+        return stream(persons)
+                .filter(Objects::nonNull)
                 .map(person -> {
-                    jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
-                    return person;
+                    PlainContactInfoFacade contact = new PlainContactInfoFacade(person.getContactInfo());
+                    return NotificationEntry.email(contact.getEmail(), person.getLocale());
                 })
-                .map(Person::getContactInfo)
-                .map(PlainContactInfoFacade::new)
-                .map(PlainContactInfoFacade::getEmail)
-                .filter(StringUtils::isNotEmpty)
-                .map(email -> new NotificationEntry(email, En_ContactItemType.EMAIL, "ru"))
+                .filter(entry -> StringUtils.isNotEmpty(entry.getAddress()))
                 .collect(Collectors.toSet());
     }
 

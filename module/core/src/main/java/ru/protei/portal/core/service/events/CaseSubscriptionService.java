@@ -16,7 +16,5 @@ public interface CaseSubscriptionService {
 
     Set<NotificationEntry> subscribers(AssembledEmployeeRegistrationEvent event);
 
-    Set<NotificationEntry> subscribers(Set<String> loginSet, Long companyId);
-
     Set<NotificationEntry> subscribers(List<Long> personIds);
 }

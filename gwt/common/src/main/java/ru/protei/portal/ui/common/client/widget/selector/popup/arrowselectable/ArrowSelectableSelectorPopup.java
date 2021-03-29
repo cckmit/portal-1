@@ -102,7 +102,7 @@ public class ArrowSelectableSelectorPopup extends SelectorPopupWithSearch {
                     .map(widget -> childContainer.getWidgetIndex(currentWidget) + 1)
                     .filter(index -> index < childContainer.getWidgetCount())
                     .map(childContainer::getWidget)
-                    .orElse(null);
+                    .orElse(childContainer.getWidget(0));
         }
 
         if (childContainer.getWidgetCount() == 0) {

@@ -67,6 +67,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         initiator.setAsyncModel( initiatorModel );
         manager.setAsyncModel( managerModel );
         state.setStateModel( stateModel );
+        importance.setAsyncModel( importanceModel );
         notifiers.setItemRenderer( PersonShortView::getName );
         initView();
 

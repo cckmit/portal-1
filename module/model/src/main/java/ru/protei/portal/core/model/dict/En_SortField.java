@@ -158,7 +158,7 @@ public enum En_SortField {
     /**
      * last active IP-address date
      */
-    check_date("last_check_date"),
+    active_date("last_active_date"),
 
     /**
      * state order

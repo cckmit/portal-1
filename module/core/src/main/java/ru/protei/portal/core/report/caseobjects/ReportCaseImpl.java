@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
 import ru.protei.portal.core.report.ReportWriter;
+import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.TimeFormatter;
 
 import java.io.IOException;
@@ -61,8 +62,9 @@ public class ReportCaseImpl implements ReportCase {
         final int limit = config.data().reportConfig().getChunkSize();
         int offset = 0;
         try (ReportWriter<CaseObjectReportRequest> writer =
-                    new ExcelReportWriter(localizedLang, report.isRestricted(), report.isWithDescription(),
-                            report.isWithTags(), report.isWithLinkedIssues(), report.isHumanReadable(), Boolean.TRUE.equals(query.isCheckImportanceHistory()))) {
+                    new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), report.isRestricted(), report.isWithDescription(),
+                            report.isWithTags(), report.isWithLinkedIssues(), report.isHumanReadable(),
+                            Boolean.TRUE.equals(query.isCheckImportanceHistory()), report.isWithDeadlineAndWorkTrigger())) {
 
             int sheetNumber = writer.createSheet();
 

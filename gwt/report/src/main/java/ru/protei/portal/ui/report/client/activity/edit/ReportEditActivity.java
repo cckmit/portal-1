@@ -192,6 +192,9 @@ public abstract class ReportEditActivity implements Activity,
         if (report.isHumanReadable()) {
             additionalParams.add(En_ReportAdditionalParamType.HUMAN_READABLE);
         }
+        if (report.isWithDeadlineAndWorkTrigger()) {
+            additionalParams.add(En_ReportAdditionalParamType.DEADLINE_AND_WORK_TRIGGER);
+        }
 
         BaseQuery query = reportDto.getQuery();
         switch (report.getReportType()) {
@@ -348,6 +351,7 @@ public abstract class ReportEditActivity implements Activity,
         report.setWithTags(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.TAGS));
         report.setWithLinkedIssues(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.LINKED_ISSUES));
         report.setHumanReadable(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.HUMAN_READABLE));
+        report.setWithDeadlineAndWorkTrigger(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.DEADLINE_AND_WORK_TRIGGER));
         return report;
     }
 

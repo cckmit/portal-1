@@ -17,6 +17,8 @@ public interface WorkerEntryDAO extends PortalBaseDAO<WorkerEntry> {
     boolean checkExistsByPosName(String name, Long companyId);
     WorkerEntry getByExternalId(String extId, Long companyId);
     WorkerEntry getByPersonId(Long personId);
+    List<WorkerEntry> partialGetByPersonIds(List<Long> personIds, Long companyId);
+    List<WorkerEntry> partialGetByExternalIds(List<String> extIds, Long companyId);
     List< WorkerEntry > getWorkers(WorkerEntryQuery query);
     List< WorkerEntry > getWorkersByDepartment(Long depId);
     Long getDepIdForWorker(Long workerId);
