@@ -76,6 +76,7 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
     public void showNear(Element relative) {
         addPagingHandler();
         show(relative);
+        dropdown.getElement().setScrollTop(0);
         focusPopup();
     }
 
@@ -83,6 +84,7 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
     public void showNear(Element relative, PopperComposite.Placement placement) {
         addPagingHandler();
         show(relative, placement);
+        dropdown.getElement().setScrollTop(0);
         focusPopup();
     }
 
@@ -90,6 +92,7 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
     public void showNear(Element relative, PopperComposite.Placement placement, int skidding, int distance) {
         addPagingHandler();
         show(relative, placement, skidding, distance);
+        dropdown.getElement().setScrollTop(0);
         focusPopup();
     }
 
