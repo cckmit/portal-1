@@ -511,6 +511,24 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     @Test
+    @Transactional
+    public void getCaseHistoryByCaseNumber() throws Exception {
+        CaseObject caseObject = makeCaseObject( person );
+        makeCaseComment( person,caseObject.getId(), "testGetCaseHistoryByCaseNumber. text comment. private" );
+
+        HistoryQuery query = new HistoryQuery();
+        query.setCaseNumber(caseObject.getCaseNumber());
+        int caseHistoryByCaseNumberCount = historyDAO.listByQuery(query).size();
+
+        ResultActions accept = createPostResultAction("/api/case/history/get", query);
+
+        accept
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", hasSize(caseHistoryByCaseNumberCount)));
+    }
+
+    @Test
     public void setYoutrackIdToEmptyCrmNumber() throws Exception {
         final String YOUTRACK_ID = "TEST-1";
         String numbers = "";
