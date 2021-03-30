@@ -310,11 +310,6 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public CaseCommentNightWorkDAO getCaseCommentNightWorkDAO() {
-        return new CaseCommentNightWorkDAO_Impl();
-    }
-
-    @Bean
     public ContractDAO getContractDAO() {
         return new ContractDAO_Impl();
     }

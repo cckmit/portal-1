@@ -8,7 +8,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
-import ru.protei.portal.core.model.dao.CaseCommentNightWorkDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -25,7 +24,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import static ru.protei.portal.core.model.util.CrmConstants.NightWork.HOUR_OFFSET;
 import static ru.protei.portal.core.model.util.CrmConstants.Time.MINUTE;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -40,11 +38,6 @@ public class ReportCaseCommentNightWorkTest extends BaseServiceTest {
         Person person1 = makePerson(home);
         CaseObject caseObject1 = makeCaseObject(person1);
 
-        /**
-         Днем считается с 21:00 - 21:00, что прописано в
-         @JdbcEntity(selectSql
-         ru.protei.portal.core.model.ent.CaseCommentNightWork
-         */
         CaseComment comment11 = createNewComment(new GregorianCalendar(2021, Calendar.MARCH, 23, 20, 59, 0).getTime(),
                 person1, caseObject1.getId(), "before period");
         comment11.setTimeElapsed(1000 * MINUTE);
@@ -68,7 +61,7 @@ public class ReportCaseCommentNightWorkTest extends BaseServiceTest {
 
         CaseComment comment21 = createNewComment(new GregorianCalendar(2021, Calendar.MARCH, 24, 20, 59, 0).getTime(),
                 person2, caseObject2.getId(), "before end period");
-        comment21.setTimeElapsed(21 * MINUTE);
+        comment21.setTimeElapsed(201 * MINUTE);
         comment21.setTimeElapsedType(En_TimeElapsedType.NIGHT_WORK);
         caseCommentDAO.persist(comment21);
 
@@ -80,12 +73,14 @@ public class ReportCaseCommentNightWorkTest extends BaseServiceTest {
 
         CaseQuery query = new CaseQuery();
         query.setCreatedRange(new DateRange(En_DateIntervalType.FIXED,
-                new GregorianCalendar(2021, Calendar.MARCH, 23, 24+HOUR_OFFSET, 0, 0).getTime(),
-                new GregorianCalendar(2021, Calendar.MARCH, 24, 24+HOUR_OFFSET, 0, 0).getTime())
+                new GregorianCalendar(2021, Calendar.MARCH, 24, 0, 0, 0).getTime(),
+                new GregorianCalendar(2021, Calendar.MARCH, 25, 0, 0, 0).getTime())
         );
         query.setSortDir(En_SortDir.ASC);
         query.setSortField(En_SortField.day);
-        List<CaseCommentNightWork> list = caseCommentNightWorkDAO.getListByQuery(query);
+        query.setOffset(0);
+        query.setLimit(20);
+        List<CaseCommentNightWork> list = caseObjectDAO.getCaseCommentNightWork(query);
 
         Date day = new GregorianCalendar(2021, Calendar.MARCH, 24).getTime();
 
@@ -93,14 +88,14 @@ public class ReportCaseCommentNightWorkTest extends BaseServiceTest {
 
         Assert.assertEquals("Expect first item day", day, list.get(0).getDay());
         Assert.assertEquals("Expect first item issue number", caseObject1.getCaseNumber(), list.get(0).getCaseNumber());
-        Assert.assertEquals("Expect first item issue nightWork TimeElapsed Count", 2, list.get(0).getNightWorkTimeElapsedCount().intValue());
-        Assert.assertEquals("Expect first item issue nightWork TimeElapsed Sum", (1+11)*MINUTE, list.get(0).getNightWorkTimeElapsedSum().intValue());
+        Assert.assertEquals("Expect first item issue nightWork TimeElapsed Count", 2, list.get(0).getTimeElapsedCount().intValue());
+        Assert.assertEquals("Expect first item issue nightWork TimeElapsed Sum", (1+11)*MINUTE, list.get(0).getTimeElapsedSum().intValue());
         Assert.assertEquals("Expect first item issue last comment id", comment13.getId(), list.get(0).getLastCommentId());
 
         Assert.assertEquals("Expect second item day", day, list.get(1).getDay());
         Assert.assertEquals("Expect second item issue number", caseObject2.getCaseNumber(), list.get(1).getCaseNumber());
-        Assert.assertEquals("Expect second item issue nightWork TimeElapsed Count", 1, list.get(1).getNightWorkTimeElapsedCount().intValue());
-        Assert.assertEquals("Expect second item issue nightWork TimeElapsed Sum", 21*MINUTE, list.get(1).getNightWorkTimeElapsedSum().intValue());
+        Assert.assertEquals("Expect second item issue nightWork TimeElapsed Count", 1, list.get(1).getTimeElapsedCount().intValue());
+        Assert.assertEquals("Expect second item issue nightWork TimeElapsed Sum", 201*MINUTE, list.get(1).getTimeElapsedSum().intValue());
         Assert.assertEquals("Expect second item issue last comment id", comment21.getId(), list.get(1).getLastCommentId());
 
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -114,9 +109,6 @@ public class ReportCaseCommentNightWorkTest extends BaseServiceTest {
         Assert.assertTrue("Report failed", result);
         Assert.assertTrue("Expected not empty report data", buffer.size() > 0);
     }
-
-    @Autowired
-    CaseCommentNightWorkDAO caseCommentNightWorkDAO;
 
     @Autowired
     ReportNightWork reportService;

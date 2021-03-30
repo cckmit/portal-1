@@ -96,8 +96,8 @@ public class ExcelReportWriter implements
     public Object[] getColumnValues(CaseCommentNightWork object) {
         List<Object> columnValues = new ListBuilder<>()
                 .add(object.getDay())
-                .add(toExcelTimeFormat(object.getNightWorkTimeElapsedSum()))
-                .add(object.getNightWorkTimeElapsedCount())
+                .add(toExcelTimeFormat(object.getTimeElapsedSum()))
+                .add(object.getTimeElapsedCount())
                 .add(HelperFunc.isNotEmpty(object.getAuthorDisplayName()) ? transliterate(object.getAuthorDisplayName(), locale) : "")
                 .add("CRM-" + object.getCaseNumber())
                 .add(HelperFunc.isNotEmpty(object.getCaseCompanyName()) ? transliterate(object.getCaseCompanyName(), locale) : "")

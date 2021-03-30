@@ -236,5 +236,6 @@ public class CrmConstants {
 
     public interface NightWork {
         Integer HOUR_OFFSET = -3;
+        Integer START_NIGHT = 24 + HOUR_OFFSET;
     }
 }

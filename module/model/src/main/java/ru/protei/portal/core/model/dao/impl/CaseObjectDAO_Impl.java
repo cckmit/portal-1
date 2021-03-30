@@ -6,23 +6,32 @@ import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.ent.CaseCommentNightWork;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.sqlcondition.Query;
+import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
+import java.sql.ResultSet;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static java.lang.Boolean.TRUE;
 import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isFilterByTagNames;
 import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
+import static ru.protei.portal.core.model.ent.CaseCommentNightWork.Columns.*;
 import static ru.protei.portal.core.model.ent.CaseObject.Columns.EXT_APP;
+import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.StringUtils.length;
 import static ru.protei.portal.core.model.helper.StringUtils.trim;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
@@ -183,6 +192,69 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         return query.isSearchStringAtComments()
                 && length(trim( query.getSearchString() )) >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS;
     }
+
+    @Override
+    public List<CaseCommentNightWork> getCaseCommentNightWork(CaseQuery query) {
+        Interval interval = makeInterval(query.getCreatedRange());
+
+        // Берем для уменьшения выборки по day в having - период создания комментарий пошире
+        Date caseCommentCreatedFrom = new Date(interval.getFrom().getTime());
+        caseCommentCreatedFrom.setDate(caseCommentCreatedFrom.getDate() - 1);
+
+        Date caseCommentCreatedTo = new Date(interval.getTo().getTime());
+        caseCommentCreatedTo.setDate(caseCommentCreatedTo.getDate() + 1);
+
+        Query sqlQuery = SqlQueryBuilder.query()
+                .where( "co.product_id" ).in( query.getProductIds() )
+                .and( "co.initiator_company" ).in( query.getCompanyIds() )
+                .and( "co.manager" ).in( query.getManagerIds() )
+                .and( "cc.created" ).ge( caseCommentCreatedFrom )
+                .and( "cc.created" ).lt( caseCommentCreatedTo )
+                .and( "cc.author_id" ).in( query.getCommentAuthorIds() )
+                .asQuery();
+
+        return jdbcTemplate.query( "" +
+                        "select (CASE WHEN HOUR(cc.CREATED) < " + CrmConstants.NightWork.START_NIGHT + " " +
+                        "                THEN date(cc.CREATED) " +
+                        "            ELSE ADDDATE(date(cc.CREATED), 1) " +
+                        "    END) " + DAY + ", " +
+                        "       sum(cc.time_elapsed) " + TIME_ELAPSED_SUM + ", " +
+                        "       count(cc.time_elapsed) " + TIME_ELAPSED_COUNT + ", " +
+                        "       p.displayname " + AUTHOR_DISPLAY_NAME + ", " +
+                        "       co.CASENO " + CASE_NUMBER + ", " +
+                        "       c.cname " + CASE_COMPANY_NAME + ", " +
+                        "       cust.displayname " + INITIATOR_DISPLAY_NAME +", " +
+                        "       co.product_id, du.UNIT_NAME " + PRODUCT_NAME + ", " +
+                        "       max(cc.ID) " + LAST_COMMENT_ID + " " +
+                        "FROM case_object co " +
+                        "         join case_comment cc on cc.CASE_ID = co.ID " +
+                        "         join person p on cc.AUTHOR_ID = p.id " +
+                        "         left join person cust on co.INITIATOR = cust.id " +
+                        "         join company c on co.initiator_company = c.id " +
+                        "         left join dev_unit du on co.product_id = du.ID " +
+                        "WHERE cc.time_elapsed_type = " + En_TimeElapsedType.NIGHT_WORK.getId() + " and cc.time_elapsed is not null " +
+                        "AND " + sqlQuery.buildSql() + " " +
+                        "GROUP BY day, co.id, author_id " +
+                        "HAVING day >= '" + nightWorkFormat.format(interval.getFrom()) + "' AND day < '" + nightWorkFormat.format(interval.getTo()) + "' " +
+                        "ORDER BY " + query.getSortField().getFieldName() + " " + query.getSortDir().name() + " " +
+                        "LIMIT " + query.getLimit() + " " +
+                        "OFFSET " + query.getOffset() + ";", sqlQuery.args(),
+                (ResultSet rs, int rowNum) -> {
+                    CaseCommentNightWork comment = new CaseCommentNightWork();
+                    comment.setDay(new Date( rs.getTimestamp(DAY).getTime()));
+                    comment.setTimeElapsedSum(rs.getLong(TIME_ELAPSED_SUM));
+                    comment.setTimeElapsedCount(rs.getLong(TIME_ELAPSED_COUNT));
+                    comment.setAuthorDisplayName(rs.getString(AUTHOR_DISPLAY_NAME));
+                    comment.setCaseNumber(rs.getLong(CASE_NUMBER));
+                    comment.setCaseCompanyName(rs.getString(CASE_COMPANY_NAME));
+                    comment.setInitiatorDisplayName(rs.getString(INITIATOR_DISPLAY_NAME));
+                    comment.setProductName(rs.getString(PRODUCT_NAME));
+                    comment.setLastCommentId(rs.getLong(LAST_COMMENT_ID));
+                    return comment;
+                });
+    }
+
+    private final static DateFormat nightWorkFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     private JdbcQueryParameters buildJdbcQueryParameters(CaseQuery query) {
 

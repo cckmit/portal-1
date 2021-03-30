@@ -1,92 +1,100 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.PermType;
-
 import java.io.Serializable;
 import java.util.Date;
 
-@JdbcEntity(selectSql = "" +
-        "(CASE " +
-        "            WHEN HOUR(cc.CREATED) < 21 " +
-        "                THEN date(cc.CREATED) " +
-        "            ELSE ADDDATE(date(cc.CREATED), 1) " +
-        "    END) day, sum(cc.time_elapsed) nightWorkTimeElapsedSum, count(cc.time_elapsed) nightWorkTimeElapsedCount, " +
-        "       p.displayname author_display_name, co.CASENO case_no, c.cname case_company_name, " +
-        "       cust.displayname initiator_display_name, du.UNIT_NAME product_name, max(cc.ID) last_comment_id " +
-        "FROM case_object co " +
-        "         join case_comment cc on cc.CASE_ID = co.ID " +
-        "         join person p on cc.AUTHOR_ID = p.id " +
-        "         left join person cust on co.INITIATOR = cust.id " +
-        "         join company c on co.initiator_company = c.id " +
-        "         left join dev_unit du on co.product_id = du.ID"
-)
 public class CaseCommentNightWork implements Serializable {
-    @JdbcColumn(name = "day", permType = PermType.READ_ONLY)
+
     private Date day;
 
-    @JdbcColumn(name = "nightWorkTimeElapsedSum", permType = PermType.READ_ONLY)
-    private Long nightWorkTimeElapsedSum;
+    private Long timeElapsedSum;
 
-    @JdbcColumn(name = "nightWorkTimeElapsedCount", permType = PermType.READ_ONLY)
-    private Long nightWorkTimeElapsedCount;
+    private Long timeElapsedCount;
 
-    @JdbcColumn(name = "author_display_name", permType = PermType.READ_ONLY)
     private String authorDisplayName;
 
-    @JdbcColumn(name = "case_no", permType = PermType.READ_ONLY)
     private Long caseNumber;
 
-    @JdbcColumn(name = "case_company_name", permType = PermType.READ_ONLY)
     private String caseCompanyName;
 
-    @JdbcColumn(name = "initiator_display_name", permType = PermType.READ_ONLY)
     private String initiatorDisplayName;
 
-    @JdbcColumn(name = "product_name", permType = PermType.READ_ONLY)
     private String productName;
 
-    @JdbcColumn(name = "last_comment_id", permType = PermType.READ_ONLY)
     private Long lastCommentId;
 
-    // not db column
     private CaseComment lastCaseComment;
 
     public Date getDay() {
         return day;
     }
 
-    public Long getNightWorkTimeElapsedSum() {
-        return nightWorkTimeElapsedSum;
+    public void setDay(Date day) {
+        this.day = day;
     }
 
-    public Long getNightWorkTimeElapsedCount() {
-        return nightWorkTimeElapsedCount;
+    public Long getTimeElapsedSum() {
+        return timeElapsedSum;
+    }
+
+    public void setTimeElapsedSum(Long timeElapsedSum) {
+        this.timeElapsedSum = timeElapsedSum;
+    }
+
+    public Long getTimeElapsedCount() {
+        return timeElapsedCount;
+    }
+
+    public void setTimeElapsedCount(Long timeElapsedCount) {
+        this.timeElapsedCount = timeElapsedCount;
     }
 
     public String getAuthorDisplayName() {
         return authorDisplayName;
     }
 
+    public void setAuthorDisplayName(String authorDisplayName) {
+        this.authorDisplayName = authorDisplayName;
+    }
+
     public Long getCaseNumber() {
         return caseNumber;
+    }
+
+    public void setCaseNumber(Long caseNumber) {
+        this.caseNumber = caseNumber;
     }
 
     public String getCaseCompanyName() {
         return caseCompanyName;
     }
 
+    public void setCaseCompanyName(String caseCompanyName) {
+        this.caseCompanyName = caseCompanyName;
+    }
+
     public String getInitiatorDisplayName() {
         return initiatorDisplayName;
+    }
+
+    public void setInitiatorDisplayName(String initiatorDisplayName) {
+        this.initiatorDisplayName = initiatorDisplayName;
     }
 
     public String getProductName() {
         return productName;
     }
 
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
     public Long getLastCommentId() {
         return lastCommentId;
+    }
+
+    public void setLastCommentId(Long lastCommentId) {
+        this.lastCommentId = lastCommentId;
     }
 
     public CaseComment getLastCaseComment() {
@@ -101,14 +109,27 @@ public class CaseCommentNightWork implements Serializable {
     public String toString() {
         return "CaseCommentNightWork{" +
                 "day=" + day +
-                ", nightWorkTimeElapsedSum=" + nightWorkTimeElapsedSum +
-                ", nightWorkTimeElapsedCount=" + nightWorkTimeElapsedCount +
+                ", timeElapsedSum=" + timeElapsedSum +
+                ", timeElapsedCount=" + timeElapsedCount +
                 ", authorDisplayName='" + authorDisplayName + '\'' +
                 ", caseNumber=" + caseNumber +
                 ", caseCompanyName='" + caseCompanyName + '\'' +
                 ", initiatorDisplayName='" + initiatorDisplayName + '\'' +
                 ", productName='" + productName + '\'' +
                 ", lastCommentId=" + lastCommentId +
+                ", lastCaseComment=" + lastCaseComment +
                 '}';
+    }
+
+    public interface Columns {
+        String DAY = "day";
+        String TIME_ELAPSED_SUM = "timeElapsedSum";
+        String TIME_ELAPSED_COUNT = "timeElapsedCount";
+        String AUTHOR_DISPLAY_NAME = "authorDisplayName";
+        String CASE_NUMBER = "caseNumber";
+        String CASE_COMPANY_NAME = "caseCompanyName";
+        String INITIATOR_DISPLAY_NAME = "initiatorDisplayName";
+        String PRODUCT_NAME = "productName";
+        String LAST_COMMENT_ID = "lastCommentId";
     }
 }

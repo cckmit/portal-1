@@ -284,11 +284,6 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
-    public CaseCommentNightWorkDAO getCaseCommentNightWorkDAO() {
-        return mock(CaseCommentNightWorkDAO.class);
-    }
-
-    @Bean
     public ContractDAO getContractDAO() {
         return  mock(ContractDAO.class);
     }
