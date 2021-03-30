@@ -14,6 +14,8 @@
     <g:HTMLPanel styleName="card-body m-t-5 filter-content">
         <div class="row">
             <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>
+        </div>
+        <div class="row">
             <div class="form-group col-md-4 resize-md-12">
                 <label><ui:text from="{lang.productDirection}"/></label>
                 <productdirection:ProductDirectionMultiSelector ui:field="direction" />
@@ -26,6 +28,8 @@
                 <label><ui:text from="{lang.regions}"/></label>
                 <region:RegionMultiSelector ui:field="regions" />
             </div>
+        </div>
+        <div class="row">
             <div class="form-group col-md-4 resize-md-12">
                 <label><ui:text from="{lang.projectHeadManager}"/></label>
                 <employee:EmployeeMultiSelector ui:field="headManagers" />
@@ -38,7 +42,9 @@
                 <label><ui:text from="{lang.projectCustomerCompany}"/></label>
                 <company:CompanyMultiSelector ui:field="initiatorCompanies" />
             </div>
+        </div>
 
+        <div class="row">
             <range:TypedSelectorRangePicker ui:field="commentCreationRange" formatValue="dd.MM.yyyy HH:mm"
                                             header="{lang.projectCommentCreationDate}"
                                             addStyleNames="form-group col-md-4 resize-md-12"/>
@@ -50,6 +56,9 @@
                     <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
                 </div>
             </div>
+        </div>
+
+        <div class="row">
             <g:HTMLPanel styleName="form-group col-md-12" ui:field="onlyMineProjectsContainer">
                 <g:CheckBox ui:field="onlyMineProjects" styleName="checkbox" text="{lang.projectOnlyMine}"/>
             </g:HTMLPanel>

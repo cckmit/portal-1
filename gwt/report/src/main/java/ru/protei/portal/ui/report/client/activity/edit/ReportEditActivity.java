@@ -29,10 +29,14 @@ import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.CaseFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
+import ru.protei.portal.ui.common.client.widget.project.filter.ProjectFilterWidget;
+import ru.protei.portal.ui.common.client.widget.project.filter.ProjectFilterWidgetModel;
 import ru.protei.portal.ui.common.client.widget.project.filter.paramview.ProjectFilterParamWidget;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.project.ProjectModel;
+import ru.protei.portal.ui.common.client.widget.selector.project.filter.ProjectFilterModel;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -57,6 +61,10 @@ public abstract class ReportEditActivity implements Activity,
         view.setActivity(this);
         issueFilterWidget.getIssueFilterParams().setModel(this);
         issueFilterWidget.clearFooterStyle();
+
+        projectFilterWidget.onInit(projectFilterModel);
+        projectFilterWidget.clearFooterStyles();
+
         contractFilterView.clearFooterStyle();
         view.fillReportScheduledTypes(asList(En_ReportScheduledType.values()));
     }
@@ -234,7 +242,7 @@ public abstract class ReportEditActivity implements Activity,
 
             @Override
             public void onSuccess(SelectorsParams selectorsParams) {
-                projectFilterWidget.fillFilterFields(query, selectorsParams);
+                projectFilterWidget.getFilterParamView().fillFilterFields(query, selectorsParams);
             }
         });
     }
@@ -601,7 +609,7 @@ public abstract class ReportEditActivity implements Activity,
     }
 
     private void validateProjectCommentCreation(boolean isTypeValid, boolean isRangeValid) {
-        projectFilterWidget.setCommentCreationRangeValid(isTypeValid, isRangeValid);
+        projectFilterWidget.getFilterParamView().setCommentCreationRangeValid(isTypeValid, isRangeValid);
     }
 
     private void applyIssueFilterVisibilityByPrivileges() {
@@ -624,7 +632,7 @@ public abstract class ReportEditActivity implements Activity,
     }
 
     private ProjectQuery getProjectQuery() {
-        return projectFilterWidget.getQuery();
+        return projectFilterWidget.getFilterParamView().getQuery();
     }
     
     private ContractQuery getContractQuery() {
@@ -676,7 +684,9 @@ public abstract class ReportEditActivity implements Activity,
     @Inject
     IssueFilterWidget issueFilterWidget;
     @Inject
-    ProjectFilterParamWidget projectFilterWidget;
+    ProjectFilterWidget projectFilterWidget;
+    @Inject
+    ProjectFilterWidgetModel projectFilterModel;
     @Inject
     AbstractContractFilterView contractFilterView;
 

@@ -5,7 +5,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="card card-default no-border card-fixed filter-widget" ui:field="root">
+    <g:HTMLPanel ui:field="root">
 
         <div class="filter-header">
             <label ui:field="labelFilters"><ui:text from="{lang.filters}"/></label>

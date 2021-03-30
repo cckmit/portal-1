@@ -6,8 +6,8 @@ import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.view.FilterShortView;
-import ru.protei.portal.ui.common.client.widget.project.filter.paramview.ProjectFilterParamWidget;
 import ru.protei.portal.ui.common.client.widget.filterwidget.FilterWidget;
+import ru.protei.portal.ui.common.client.widget.project.filter.paramview.ProjectFilterParamWidget;
 import ru.protei.portal.ui.common.client.widget.selector.project.filter.ProjectFilterSelector;
 
 public class ProjectFilterWidget extends FilterWidget<CaseFilterDto<ProjectQuery>, ProjectQuery, FilterShortView> {

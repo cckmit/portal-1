@@ -44,17 +44,14 @@ public abstract class ProjectTableActivity
         view.setActivity( this );
         view.setAnimation( animation );
 
-        filterWidget.onInit(filterWidgetModel);
-        filterWidget.setOnFilterChangeCallback(this::loadTable);
-
         pagerView.setActivity( this );
     }
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
         En_ProjectAccessType accessType = getAccessType(policyService, En_Privilege.PROJECT_VIEW);
-        filterWidget.resetFilter();
-        filterWidget.getFilterParamView().onlyMineProjectsVisibility().setVisible(accessType == En_ProjectAccessType.ALL_PROJECTS);
+        view.getFilterWidget().resetFilter();
+        view.getFilterWidget().getFilterParamView().onlyMineProjectsVisibility().setVisible(accessType == En_ProjectAccessType.ALL_PROJECTS);
     }
 
     @Event(Type.FILL_CONTENT)
@@ -68,9 +65,6 @@ public abstract class ProjectTableActivity
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
-
-        view.getFilterContainer().clear();
-        view.getFilterContainer().add( filterWidget.asWidget() );
 
         En_ProjectAccessType createAccessType = getAccessType(policyService, En_Privilege.PROJECT_CREATE);
         fireEvent( createAccessType != En_ProjectAccessType.NONE ?
@@ -104,6 +98,11 @@ public abstract class ProjectTableActivity
         regionService.getProject(event.id, new FluentCallback<Project>()
                 .withSuccess(view::updateRow)
         );
+    }
+
+    @Override
+    public void onFilterChanged() {
+        loadTable();
     }
 
     @Override
@@ -202,7 +201,7 @@ public abstract class ProjectTableActivity
     }
 
     private ProjectQuery getQuery() {
-        return filterWidget.getFilterParamView().getQuery();
+        return view.getFilterWidget().getFilterParamView().getQuery();
     }
 
     private Runnable removeAction(Long projectId) {
@@ -225,10 +224,6 @@ public abstract class ProjectTableActivity
     Lang lang;
     @Inject
     AbstractProjectTableView view;
-    @Inject
-    ProjectFilterWidget filterWidget;
-    @Inject
-    ProjectFilterWidgetModel filterWidgetModel;
     @Inject
     AbstractPagerView pagerView;
     @Inject

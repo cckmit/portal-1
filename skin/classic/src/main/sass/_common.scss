@@ -5347,3 +5347,13 @@ table {
     font-weight: bold;
   }
 }
+
+.report-filter-container {
+  .filter-header {
+    display: none;
+  }
+
+  .user-filter {
+    padding: 0 15px;
+  }
+}

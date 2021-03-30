@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.HasFilterQueryIds;
@@ -224,7 +225,6 @@ public class CaseFilterServiceImpl implements CaseFilterService {
 
     private <T extends HasFilterQueryIds> Result<CaseFilterDto<T>> saveCaseFilter(AuthToken token, CaseFilterDto<T> caseFilterDto) {
         CaseFilter caseFilter = caseFilterDto.getCaseFilter();
-        Class<? extends HasFilterQueryIds> queryClass = caseFilter.getType().getQueryClass();
 
         if (caseFilter.getLoginId() == null) {
             caseFilter.setLoginId(token.getUserLoginId());
@@ -239,12 +239,6 @@ public class CaseFilterServiceImpl implements CaseFilterService {
         }
 
         String params = writeValueResult.getData();
-
-//        Проверка перед сохранением, что параметры по указанному типу CaseFilter успешно десериализуются
-        Result<? extends HasFilterQueryIds> deserializationResult = readValue(params, queryClass);
-        if (deserializationResult.isError()) {
-            return error(deserializationResult.getStatus());
-        }
 
         caseFilter.setParams(params);
         caseFilter.setName(caseFilter.getName().trim());
@@ -281,12 +275,42 @@ public class CaseFilterServiceImpl implements CaseFilterService {
         }
     }
 
-    private boolean isNotValid( CaseFilterDto<?> caseFilterDto ) {
-        return caseFilterDto == null ||
-                caseFilterDto.getCaseFilter() == null ||
-                caseFilterDto.getCaseFilter().getType() == null ||
-                HelperFunc.isEmpty(caseFilterDto.getCaseFilter().getName()) ||
-                caseFilterDto.getQuery() == null;
+    private boolean isNotValid(CaseFilterDto<?> caseFilterDto) {
+        return !isValid(caseFilterDto);
+    }
+
+    private boolean isValid(CaseFilterDto<?> caseFilterDto ) {
+        if (caseFilterDto == null) {
+            return false;
+        }
+
+        if (caseFilterDto.getCaseFilter() == null) {
+            return false;
+        }
+
+        CaseFilter caseFilter = caseFilterDto.getCaseFilter();
+
+        if (caseFilter == null) {
+            return false;
+        }
+
+        if (caseFilter.getType() == null) {
+            return false;
+        }
+
+        if (StringUtils.isBlank(caseFilter.getName())) {
+            return false;
+        }
+
+        if (caseFilterDto.getQuery() == null) {
+            return false;
+        }
+
+        if (!caseFilter.getType().getQueryClass().equals(caseFilterDto.getQuery().getClass())) {
+            return false;
+        }
+
+        return true;
     }
 
     private CaseQuery applyCaseQueryByScope(AuthToken token, CaseQuery caseQuery) {
