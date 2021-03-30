@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.query.HistoryQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
@@ -117,6 +118,16 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         applyFilterByScope(token, caseType, query);
 
         return ok(caseCommentShortViewDAO.getSearchResult(query));
+    }
+
+    @Override
+    public Result<List<History>> getCaseHistoryList(AuthToken token, En_CaseType caseType, HistoryQuery query) {
+        En_ResultStatus checkAccessStatus = checkAccessForCaseObjectByNumber(token, caseType, query.getCaseNumber());
+        if (checkAccessStatus != null) {
+            return error(checkAccessStatus);
+        }
+
+        return historyService.listHistories(token, query);
     }
 
     @Override

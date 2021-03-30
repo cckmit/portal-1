@@ -473,6 +473,26 @@ public class PortalApiController {
         return caseCommentService.getCaseCommentShortViewList(authTokenAPIResult.getData(), En_CaseType.CRM_SUPPORT, makeCaseCommentQuery(query)).map( SearchResult::getResults );
     }
 
+    @PostMapping(value = "/case/history/get")
+    public Result<List<History>> getCaseHistory(
+            @RequestBody HistoryQuery query,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+
+        log.info("API | getCaseHistory(): query={}", query);
+
+        Result<AuthToken> authTokenAPIResult = authenticate(request, response, authService, sidGen, log);
+
+        if (authTokenAPIResult.isError()) {
+            return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
+        }
+
+        if (query.getCaseNumber() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, "Required case number");
+        }
+        return caseCommentService.getCaseHistoryList(authTokenAPIResult.getData(), En_CaseType.CRM_SUPPORT, query );
+    }
+
     @PostMapping(value = "/employees")
     public Result<List<PersonInfo>> getEmployees(HttpServletRequest request, HttpServletResponse response, @RequestBody EmployeeApiQuery query) {
         log.info("API | getEmployees(): query={}", query);
