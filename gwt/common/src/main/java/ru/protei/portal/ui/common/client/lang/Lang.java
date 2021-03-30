@@ -3315,32 +3315,4 @@ public interface Lang extends Messages, ContactItemLang {
     String issueReportDeadlineWorkTrigger();
 
     String errMySqlDataTruncation();
-
-    String regionState();
-
-    String regionStateUnknown();
-
-    String regionStateMarketing();
-
-    String regionStatePresale();
-
-    String regionStateProjecting();
-
-    String regionStateDevelopment();
-
-    String regionStateDeployment();
-
-    String regionStateTesting();
-
-    String regionStateSupport();
-
-    String regionStateFinished();
-
-    String regionStateCanceled();
-
-    String regionStatePaused();
-
-    String contractTypeHardwareSoftwareService();
-
-    String contractManager();
 }
