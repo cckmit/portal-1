@@ -212,7 +212,7 @@ public class HistoryDAO_Impl extends PortalBaseJdbcDAO<History> implements Histo
             }
 
             if (query.getCaseNumber() != null) {
-                condition.append(" and history.case_object_id in (select case_object.ID from case_object where case_object.CASENO = ?");
+                condition.append(" and history.case_object_id in (select case_object.ID from case_object where case_object.CASENO = ?)");
                 args.add(query.getCaseNumber());
             }
 
