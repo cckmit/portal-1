@@ -284,10 +284,6 @@ public class CaseFilterServiceImpl implements CaseFilterService {
             return false;
         }
 
-        if (caseFilterDto.getCaseFilter() == null) {
-            return false;
-        }
-
         CaseFilter caseFilter = caseFilterDto.getCaseFilter();
 
         if (caseFilter == null) {

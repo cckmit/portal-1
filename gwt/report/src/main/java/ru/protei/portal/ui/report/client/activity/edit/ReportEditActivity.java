@@ -541,8 +541,13 @@ public abstract class ReportEditActivity implements Activity,
         if (query == null) {
             return false;
         }
-        boolean dateRangeValid = validateProjectCommentCreationRange(query.getCommentCreationRange(), false);
 
+        if (!query.isParamsPresent()) {
+            fireEvent(new NotifyEvents.Show(lang.reportCaseObjectIsAnySelectedParamNotPresentError(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        boolean dateRangeValid = validateProjectCommentCreationRange(query.getCommentCreationRange(), false);
         if (!dateRangeValid) {
             fireEvent(new NotifyEvents.Show(lang.reportNotValidPeriod(), NotifyEvents.NotifyType.ERROR));
             return false;
