@@ -668,7 +668,7 @@ public class PortalApiController {
         HistoryQuery query = new HistoryQuery();
         query.setLimit(apiQuery.getLimit());
         query.setOffset(apiQuery.getOffset());
-        query.setSortField(En_SortField.date);
+        query.setSortField(En_SortField.id);
         query.setSortDir(En_SortDir.DESC);
         query.setCaseNumber(apiQuery.getCaseNumber());
         return query;

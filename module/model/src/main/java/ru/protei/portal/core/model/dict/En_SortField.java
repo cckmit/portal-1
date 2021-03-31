@@ -235,11 +235,6 @@ public enum En_SortField {
      * Сортировка по плану
      */
     by_plan("order_number"),
-
-    /**
-     * date
-     */
-    date ("date"),
     ;
 
     private String fieldName;
