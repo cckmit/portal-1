@@ -83,6 +83,8 @@ public class PortalApiController {
     @Autowired
     private AbsenceService absenceService;
     @Autowired
+    private HistoryService historyService;
+    @Autowired
     PortalConfig config;
 
 
@@ -473,7 +475,7 @@ public class PortalApiController {
         return caseCommentService.getCaseCommentShortViewList(authTokenAPIResult.getData(), En_CaseType.CRM_SUPPORT, makeCaseCommentQuery(query)).map( SearchResult::getResults );
     }
 
-    @PostMapping(value = "/case/history/get")
+    @PostMapping(value = "/case/histories")
     public Result<List<History>> getCaseHistory(
             @RequestBody HistoryQuery query,
             HttpServletRequest request,
@@ -490,7 +492,7 @@ public class PortalApiController {
         if (query.getCaseNumber() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS, "Required case number");
         }
-        return caseCommentService.getCaseHistoryList(authTokenAPIResult.getData(), En_CaseType.CRM_SUPPORT, query );
+        return historyService.getCaseHistoryList(authTokenAPIResult.getData(), En_CaseType.CRM_SUPPORT, query );
     }
 
     @PostMapping(value = "/employees")

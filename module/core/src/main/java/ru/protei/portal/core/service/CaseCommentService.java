@@ -131,8 +131,6 @@ public interface CaseCommentService {
 
     Result<CommentsAndHistories> getCommentsAndHistories(AuthToken token, En_CaseType caseType, long caseObjectId);
 
-    Result<List<History>> getCaseHistoryList(AuthToken token, En_CaseType caseType, HistoryQuery query);
-
     interface ReplacementMapper<T> {
         /**
          * Заменяет в объекте одну строку на другую

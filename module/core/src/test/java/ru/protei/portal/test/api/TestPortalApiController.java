@@ -56,6 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.util.CrmConstants.State.CREATED;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -514,13 +515,13 @@ public class TestPortalApiController extends BaseServiceTest {
     @Transactional
     public void getCaseHistoryByCaseNumber() throws Exception {
         CaseObject caseObject = makeCaseObject( person );
-        makeCaseComment( person,caseObject.getId(), "testGetCaseHistoryByCaseNumber. text comment. private" );
+        createNewStateHistory( person, caseObject.getId(), CREATED, new Date());
 
         HistoryQuery query = new HistoryQuery();
         query.setCaseNumber(caseObject.getCaseNumber());
         int caseHistoryByCaseNumberCount = historyDAO.listByQuery(query).size();
 
-        ResultActions accept = createPostResultAction("/api/case/history/get", query);
+        ResultActions accept = createPostResultAction("/api/case/histories", query);
 
         accept
                 .andExpect(status().isOk())

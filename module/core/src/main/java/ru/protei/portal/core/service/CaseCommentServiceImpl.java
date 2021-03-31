@@ -121,16 +121,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
-    public Result<List<History>> getCaseHistoryList(AuthToken token, En_CaseType caseType, HistoryQuery query) {
-        En_ResultStatus checkAccessStatus = checkAccessForCaseObjectByNumber(token, caseType, query.getCaseNumber());
-        if (checkAccessStatus != null) {
-            return error(checkAccessStatus);
-        }
-
-        return historyService.listHistories(token, query);
-    }
-
-    @Override
     @Transactional
     public Result<CaseComment> addCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment) {
 

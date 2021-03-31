@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -19,4 +20,5 @@ public interface HistoryService {
                                En_HistoryType type, Long oldId, String oldValue, Long newId, String newValue);
 
     Result<List<History>> getHistoryListWithEmployeeRegistrationHistory(AuthToken token, Long caseId);
+    Result<List<History>> getCaseHistoryList(AuthToken token, En_CaseType caseType, HistoryQuery query);
 }
