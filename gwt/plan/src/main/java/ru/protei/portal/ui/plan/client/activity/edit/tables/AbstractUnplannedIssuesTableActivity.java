@@ -1,6 +1,6 @@
 package ru.protei.portal.ui.plan.client.activity.edit.tables;
 
-import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 
 public interface AbstractUnplannedIssuesTableActivity {
@@ -8,7 +8,7 @@ public interface AbstractUnplannedIssuesTableActivity {
 
     void onItemActionAssign(CaseShortView value);
 
-    void onFilterChanged(CaseFilterShortView filter);
+    void onFilterChanged(FilterShortView filter);
 
     void onIssueNumberChanged();
 }

@@ -84,6 +84,7 @@
   <include file="2021-02-06-add-delivery_number-to-contract-table.xml" relativeToChangelogFile="true"/>
   <include file="2021-02-09-create-employee_registration_history-table.xml" relativeToChangelogFile="true"/>
   <include file="2021-03-02-add-unique-constraint-to-company-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-03-25-add-new-project-roles.xml" relativeToChangelogFile="true"/>
   <include file="2021-03-26-add-with-deadline_and_work_trigger-column-to-report-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

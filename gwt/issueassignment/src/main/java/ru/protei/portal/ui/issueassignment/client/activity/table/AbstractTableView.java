@@ -2,11 +2,10 @@ package ru.protei.portal.ui.issueassignment.client.activity.table;
 
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 public interface AbstractTableView extends IsWidget {
 
@@ -26,5 +25,5 @@ public interface AbstractTableView extends IsWidget {
 
     void updateFilterSelector();
 
-    HasValue<CaseFilterShortView> filter();
+    HasValue<FilterShortView> filter();
 }

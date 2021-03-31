@@ -11,7 +11,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.activity.dashboardblocks.edit.AbstractDashboardTableEditActivity;
 import ru.protei.portal.app.portal.client.activity.dashboardblocks.edit.AbstractDashboardTableEditView;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 
 public class DashboardTableEditView extends Composite implements AbstractDashboardTableEditView {
@@ -37,7 +37,7 @@ public class DashboardTableEditView extends Composite implements AbstractDashboa
     }
 
     @Override
-    public HasValue<CaseFilterShortView> filter() {
+    public HasValue<FilterShortView> filter() {
         return filter;
     }
 
@@ -57,7 +57,7 @@ public class DashboardTableEditView extends Composite implements AbstractDashboa
     }
 
     @UiHandler("filter")
-    public void onFilterChanged(ValueChangeEvent<CaseFilterShortView> event) {
+    public void onFilterChanged(ValueChangeEvent<FilterShortView> event) {
         if (activity != null) {
             activity.onFilterChanged(event.getValue());
         }

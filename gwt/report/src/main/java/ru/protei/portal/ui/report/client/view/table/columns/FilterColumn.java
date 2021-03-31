@@ -192,35 +192,28 @@ public class FilterColumn extends StaticColumn<ReportDto> {
         }
 
         // project directions
-        if (isNotEmpty(projectQuery.getDirections())) {
-            element.appendChild(makeArraySelectedElement(lang.productDirection(), projectQuery.getDirections()));
+        if (isNotEmpty(projectQuery.getDirectionIds())) {
+            element.appendChild(makeArraySelectedElement(lang.productDirection(), projectQuery.getDirectionIds()));
         }
 
         // states
-        if (isNotEmpty(projectQuery.getStates())) {
-            Element managerElement = DOM.createElement("p");
-            managerElement.setInnerText(lang.issueState() + ": " +
-                    projectQuery.getStates()
-                            .stream()
-                            .map(state -> projectStateLang.getStateName(state))
-                            .collect(Collectors.joining(", "))
-            );
-            element.appendChild(managerElement);
+        if (isNotEmpty(projectQuery.getStateIds())) {
+            element.appendChild(makeArraySelectedElement(lang.issueState(), projectQuery.getStateIds()));
         }
 
         // project region
-        if (isNotEmpty(projectQuery.getRegions())) {
-            element.appendChild(makeArraySelectedElement(lang.projectRegion(), projectQuery.getRegions()));
+        if (isNotEmpty(projectQuery.getRegionIds())) {
+            element.appendChild(makeArraySelectedElement(lang.projectRegion(), projectQuery.getRegionIds()));
         }
 
         // project head manager
-        if (isNotEmpty(projectQuery.getHeadManagers())) {
-            element.appendChild(makeArraySelectedElement(lang.projectHeadManager(), projectQuery.getHeadManagers()));
+        if (isNotEmpty(projectQuery.getHeadManagerIds())) {
+            element.appendChild(makeArraySelectedElement(lang.projectHeadManager(), projectQuery.getHeadManagerIds()));
         }
 
         // project team
-        if (isNotEmpty(projectQuery.getCaseMembers())) {
-            element.appendChild(makeArraySelectedElement(lang.projectTeam(), projectQuery.getCaseMembers()));
+        if (isNotEmpty(projectQuery.getCaseMemberIds())) {
+            element.appendChild(makeArraySelectedElement(lang.projectTeam(), projectQuery.getCaseMemberIds()));
         }
 
         // companies

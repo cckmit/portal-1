@@ -24,6 +24,8 @@ public class SelectorsParams implements Serializable {
 
     private List<ProductDirectionInfo> productDirectionInfos;
 
+    private List<EntityOption> regions;
+
     public List<CaseTag> getCaseTags() {
         return caseTags;
     }
@@ -78,5 +80,13 @@ public class SelectorsParams implements Serializable {
 
     public void setProductDirectionInfos(List<ProductDirectionInfo> productDirectionInfos) {
         this.productDirectionInfos = productDirectionInfos;
+    }
+
+    public List<EntityOption> getRegions() {
+        return regions;
+    }
+
+    public void setRegions(List<EntityOption> regions) {
+        this.regions = regions;
     }
 }

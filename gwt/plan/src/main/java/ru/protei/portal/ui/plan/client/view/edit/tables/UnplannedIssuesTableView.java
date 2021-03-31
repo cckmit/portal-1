@@ -1,13 +1,11 @@
 package ru.protei.portal.ui.plan.client.view.edit.tables;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
@@ -16,8 +14,8 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.ui.common.client.columns.ActionIconClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -64,7 +62,7 @@ public class UnplannedIssuesTableView extends Composite implements AbstractUnpla
     }
 
     @Override
-    public HasValue<CaseFilterShortView> filter() {
+    public HasValue<FilterShortView> filter() {
         return filter;
     }
 
@@ -87,7 +85,7 @@ public class UnplannedIssuesTableView extends Composite implements AbstractUnpla
     }
 
     @UiHandler("filter")
-    public void onFilterChanged(ValueChangeEvent<CaseFilterShortView> event) {
+    public void onFilterChanged(ValueChangeEvent<FilterShortView> event) {
         if (activity != null) {
             activity.onFilterChanged(event.getValue());
         }

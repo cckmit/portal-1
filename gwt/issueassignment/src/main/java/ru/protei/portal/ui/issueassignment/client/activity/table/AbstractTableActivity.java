@@ -1,8 +1,8 @@
 package ru.protei.portal.ui.issueassignment.client.activity.table;
 
 import com.google.gwt.user.client.ui.UIObject;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 
 public interface AbstractTableActivity {
 
@@ -10,5 +10,5 @@ public interface AbstractTableActivity {
 
     void onItemActionAssign(CaseShortView value, UIObject relative);
 
-    void onFilterChanged(CaseFilterShortView filter);
+    void onFilterChanged(FilterShortView filter);
 }

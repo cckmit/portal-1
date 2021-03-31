@@ -81,8 +81,6 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     DevUnitDAO devUnitDAO;
     @Autowired
-    AuthService authService;
-    @Autowired
     ContractDAO contractDAO;
     @Autowired
     PersonDAO personDAO;
@@ -108,8 +106,6 @@ public class ProjectServiceImpl implements ProjectService {
     HistoryDAO historyDAO;
     @Autowired
     CaseStateDAO caseStateDAO;
-    @Autowired
-    CompanyService companyService;
 
     @EventListener
     @Async(BACKGROUND_TASKS)
@@ -203,21 +199,6 @@ public class ProjectServiceImpl implements ProjectService {
     public Result< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
         List< Location > regions = locationDAO.listByQuery( makeLocationQuery(query, true ));
         return ok(regions.stream().map(Location::toRegionInfo).collect(toList()));
-    }
-
-    @Override
-    public Result< Map< String, List<Project> > > listProjectsByRegions(AuthToken token, ProjectQuery query ) {
-
-        Map< String, List<Project> > regionToProjectMap = new HashMap<>();
-
-        List< Project > projects = projectDAO.listByQuery( query );
-        projects.forEach( ( project ) -> {
-            iterateAllLocations( project, ( location ) -> {
-                applyCaseToProjectInfo( project, location, regionToProjectMap );
-            } );
-        } );
-
-        return ok(regionToProjectMap );
     }
 
     @Override
@@ -520,24 +501,6 @@ public class ProjectServiceImpl implements ProjectService {
 
         log.info("notifyExpiringProjectTechnicalSupportValidity(): done");
         return ok(true);
-    }
-
-    @Override
-    public Result<SelectorsParams> getSelectorsParams(AuthToken token, ProjectQuery query) {
-        log.debug( "getSelectorsParams(): projectQuery={} ", query );
-        SelectorsParams selectorsParams = new SelectorsParams();
-
-        List<Long> companyIds = collectCompanyIds(query);
-        if (!isEmpty(companyIds)) {
-            Result<List<EntityOption>> result = companyService.companyOptionListByIds( token, filterToList(companyIds, Objects::nonNull ));
-            if (result.isOk()) {
-                selectorsParams.setCompanyEntityOptions(result.getData());
-            } else {
-                return error(result.getStatus(), "Error at getCompanyIds" );
-            }
-        }
-
-        return ok(selectorsParams);
     }
 
     private List<Long> collectCompanyIds(ProjectQuery projectQuery) {

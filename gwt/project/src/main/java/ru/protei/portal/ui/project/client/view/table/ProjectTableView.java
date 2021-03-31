@@ -22,6 +22,8 @@ import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.ProjectStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.project.filter.ProjectFilterWidget;
+import ru.protei.portal.ui.common.client.widget.project.filter.ProjectFilterWidgetModel;
 import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableActivity;
 import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableView;
 
@@ -38,7 +40,8 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 public class ProjectTableView extends Composite implements AbstractProjectTableView {
 
     @Inject
-    public void onInit(EditClickColumn<Project> editClickColumn, RemoveClickColumn<Project> removeClickColumn) {
+    public void onInit(ProjectFilterWidgetModel projectFilterWidgetModel, EditClickColumn<Project> editClickColumn, RemoveClickColumn<Project> removeClickColumn) {
+        this.filterWidget.onInit(projectFilterWidgetModel);
         initWidget( ourUiBinder.createAndBindUi( this ) );
         this.editClickColumn = editClickColumn;
         this.removeClickColumn = removeClickColumn;
@@ -48,6 +51,8 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     @Override
     public void setActivity( AbstractProjectTableActivity activity ) {
         this.activity = activity;
+
+        filterWidget.setOnFilterChangeCallback(activity::onFilterChanged);
 
         editClickColumn.setEditHandler( activity );
         removeClickColumn.setRemoveHandler( activity );
@@ -71,9 +76,6 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     public HasWidgets getPreviewContainer () { return previewContainer; }
 
     @Override
-    public HasWidgets getFilterContainer () { return filterContainer; }
-
-    @Override
     public void clearSelection() {
         columnProvider.removeSelection();
     }
@@ -81,6 +83,11 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     @Override
     public HasWidgets getPagerContainer() {
         return pagerContainer;
+    }
+
+    @Override
+    public ProjectFilterWidget getFilterWidget() {
+        return filterWidget;
     }
 
     @Override
@@ -207,6 +214,9 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
     HTMLPanel previewContainer;
     @UiField
     HTMLPanel filterContainer;
+    @Inject
+    @UiField(provided = true)
+    ProjectFilterWidget filterWidget;
     @UiField
     HTMLPanel pagerContainer;
 
