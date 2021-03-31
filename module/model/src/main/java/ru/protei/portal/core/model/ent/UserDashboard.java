@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dto.CaseFilterDto;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -17,9 +19,6 @@ public class UserDashboard implements Serializable {
     @JdbcColumn(name = "case_filter_id")
     private Long caseFilterId;
 
-    @JdbcJoinedObject(localColumn = "case_filter_id", remoteColumn = "id")
-    private CaseFilter caseFilter;
-
     @JdbcColumn(name = "name")
     private String name;
 
@@ -28,6 +27,8 @@ public class UserDashboard implements Serializable {
 
     @JdbcColumn(name = "order_number")
     private Integer orderNumber;
+
+    private CaseFilterDto<CaseQuery> caseFilterDto;
 
     public UserDashboard() {}
 
@@ -53,19 +54,31 @@ public class UserDashboard implements Serializable {
 
     public void setCaseFilterId(Long caseFilterId) {
         this.caseFilterId = caseFilterId;
-        if (caseFilter != null && !Objects.equals(caseFilter.getId(), caseFilterId)) {
-            this.caseFilter = new CaseFilter();
-            this.caseFilter.setId(caseFilterId);
+        if (caseFilterDto != null &&
+                caseFilterDto.getCaseFilter() != null &&
+                !Objects.equals(caseFilterDto.getCaseFilter().getId(), caseFilterId)) {
+
+            CaseFilter caseFilter = new CaseFilter();
+            caseFilter.setId(caseFilterId);
+
+            this.caseFilterDto.setCaseFilter(caseFilter);
         }
     }
 
     public CaseFilter getCaseFilter() {
-        return caseFilter;
+        return caseFilterDto == null ? null : caseFilterDto.getCaseFilter();
     }
 
     public void setCaseFilter(CaseFilter caseFilter) {
-        this.caseFilter = caseFilter;
+        if (this.caseFilterDto != null) {
+            this.caseFilterDto.setCaseFilter(caseFilter);
+        }
+
         this.caseFilterId = caseFilter == null ? null : caseFilter.getId();
+    }
+
+    public CaseQuery getCaseQuery() {
+        return caseFilterDto == null ? null : caseFilterDto.getQuery();
     }
 
     public String getName() {
@@ -92,16 +105,24 @@ public class UserDashboard implements Serializable {
         this.orderNumber = orderNumber;
     }
 
+    public CaseFilterDto<CaseQuery> getCaseFilterDto() {
+        return caseFilterDto;
+    }
+
+    public void setCaseFilterDto(CaseFilterDto<CaseQuery> caseFilterDto) {
+        this.caseFilterDto = caseFilterDto;
+    }
+
     @Override
     public String toString() {
         return "UserDashboard{" +
                 "id=" + id +
                 ", loginId=" + loginId +
                 ", caseFilterId=" + caseFilterId +
-                ", caseFilter=" + caseFilter +
                 ", name='" + name + '\'' +
                 ", isCollapsed=" + isCollapsed +
-                ", order=" + orderNumber +
+                ", orderNumber=" + orderNumber +
+                ", caseFilterDto=" + caseFilterDto +
                 '}';
     }
 }

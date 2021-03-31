@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.core.service.PersonCaseFilterService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.PersonCaseFilterController;
@@ -19,13 +19,13 @@ import java.util.List;
 @Service( "PersonCaseFilterController" )
 public class PersonCaseFilterControllerImpl implements PersonCaseFilterController {
     @Override
-    public List<CaseFilterShortView> getCaseFilterByPersonId(Long personId) throws RequestFailedException {
+    public List<FilterShortView> getCaseFilterByPersonId(Long personId) throws RequestFailedException {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         log.info( "getCaseFilterByPersonId(): personId={}", personId);
 
-        Result< List< CaseFilterShortView > > response = personCaseFilterService.getCaseFilterByPersonId( token, personId );
+        Result< List< FilterShortView > > response = personCaseFilterService.getCaseFilterByPersonId( token, personId );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );

@@ -1344,6 +1344,20 @@ public interface Lang extends Messages, ContactItemLang {
 
     String personCustomerIntegration();
 
+    String personPresaleManager();
+
+    String personBusinessAnalyticsArchitecture();
+
+    String personProjectDocumentation();
+
+    String personProductManager();
+
+    String personDevelopment();
+
+    String personPresaleHeadManager();
+
+    String personDeployHeadManager();
+
     String equipmentGetNextModification();
 
     String formNextMod();

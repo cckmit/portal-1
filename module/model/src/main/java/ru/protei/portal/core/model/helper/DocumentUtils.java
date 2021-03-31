@@ -44,8 +44,8 @@ public class DocumentUtils {
 
     static public boolean needToCheckInventoryNumber(ProjectInfo project,
                                                       boolean isApproved, DocumentType documentType) {
-        return isApproved &&
-                project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE
+        return isApproved && project != null
+                && project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE
                 && documentType != null
                 && documentType.getDocumentCategory() != En_DocumentCategory.ABROAD;
     }

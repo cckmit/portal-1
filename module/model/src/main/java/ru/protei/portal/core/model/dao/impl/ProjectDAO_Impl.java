@@ -19,9 +19,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -73,7 +71,7 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                 .withOffset(query.getOffset());
 
         String joins = "";
-        if (isNotEmpty(query.getDirections())) {
+        if (isNotEmpty(query.getDirectionIds())) {
             joins += LEFT_OUTER_JOIN_PROJECT_TO_PRODUCT;
         }
         if (query.getCommentCreationRange() != null) {
@@ -114,17 +112,14 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                         .append(makeInArg(query.getCaseIds(), false));
             }
 
-            if ( isNotEmpty(query.getStates()) ) {
-                String inArg = HelperFunc.makeInArg(query.getStates(), state -> String.valueOf(state.getId()));
-                condition.append(" and CO.state in ").append(inArg);
+            if ( isNotEmpty(query.getStateIds()) ) {
+                condition.append(" and CO.state in ").append(HelperFunc.makeInArg(query.getStateIds(), false));
             }
 
-            if ( isNotEmpty(query.getRegions()) ) {
-                List<Long> regionIds = query.getRegions().stream()
-                        .map(region -> region == null ? null : region.getId())
-                        .collect(toList());
+            if ( isNotEmpty(query.getRegionIds()) ) {
+                Set<Long> regionIds = new HashSet<>(query.getRegionIds());
 
-                if (regionIds.remove(null)) {
+                if (regionIds.remove(CrmConstants.Region.UNDEFINED)) {
                     condition.append(" and (CO.id not in (SELECT CASE_ID FROM case_location)");
                     if (!regionIds.isEmpty()) {
                         condition.append(" or CO.id in (SELECT CASE_ID FROM case_location WHERE LOCATION_ID IN ")
@@ -139,10 +134,8 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                 }
             }
 
-            if ( isNotEmpty(query.getHeadManagers()) ) {
-                List<Long> headManagerIds = query.getHeadManagers().stream()
-                        .map(headManager -> headManager == null ? null : headManager.getId())
-                        .collect(toList());
+            if ( isNotEmpty(query.getHeadManagerIds()) ) {
+                Set<Long> headManagerIds = new HashSet<>(query.getHeadManagerIds());
 
                 if (headManagerIds.remove(null)) {
                     condition.append(" and (CO.id not in (SELECT CASE_ID FROM case_member WHERE MEMBER_ROLE_ID = ?)");
@@ -162,10 +155,8 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                 }
             }
 
-            if ( isNotEmpty(query.getCaseMembers()) ) {
-                List<Long> caseMemberIds = query.getCaseMembers().stream()
-                        .map(member -> member == null ? null : member.getId())
-                        .collect(toList());
+            if ( isNotEmpty(query.getCaseMemberIds()) ) {
+                Set<Long> caseMemberIds = new HashSet<>(query.getCaseMemberIds());
 
                 if (caseMemberIds.remove(null)) {
                     condition.append(" and (CO.id not in (SELECT CASE_ID FROM case_member)");
@@ -182,12 +173,10 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
                 }
             }
 
-            if ( isNotEmpty(query.getDirections()) ) {
-                List<Long> productDirectionIds = query.getDirections().stream()
-                        .map(directionInfo -> directionInfo == null ? null : directionInfo.id)
-                        .collect(toList());
+            if ( isNotEmpty(query.getDirectionIds()) ) {
+                Set<Long> productDirectionIds = new HashSet<>(query.getDirectionIds());
 
-                if (productDirectionIds.remove(null)) {
+                if (productDirectionIds.remove(CrmConstants.Product.UNDEFINED)) {
                     condition.append(" and (ptp.product_id is null");
                     if (!productDirectionIds.isEmpty()) {
                         condition.append(" or ptp.product_id in ")
@@ -211,7 +200,8 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
             }
 
             if (isNotEmpty(query.getProductIds())) {
-                if (!query.getProductIds().remove(CrmConstants.Product.UNDEFINED) || !query.getProductIds().isEmpty()) {
+                Set<Long> productIds = new HashSet<>(query.getProductIds());
+                if (!productIds.remove(CrmConstants.Product.UNDEFINED) || !query.getProductIds().isEmpty()) {
                     condition.append(" and project.id in")
                             .append(" (select project_id from project_to_product where product_id in " + makeInArg(query.getProductIds(), false) + ")");
                 }

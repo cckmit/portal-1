@@ -14,8 +14,8 @@ import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.ActionIconClickColumn;
@@ -27,7 +27,6 @@ import ru.protei.portal.ui.issueassignment.client.activity.table.AbstractTableVi
 import ru.protei.portal.ui.issueassignment.client.view.table.columns.IssueColumn;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 public class TableView extends Composite implements AbstractTableView {
 
@@ -81,7 +80,7 @@ public class TableView extends Composite implements AbstractTableView {
     }
 
     @Override
-    public HasValue<CaseFilterShortView> filter() {
+    public HasValue<FilterShortView> filter() {
         return filter;
     }
 
@@ -108,7 +107,7 @@ public class TableView extends Composite implements AbstractTableView {
     }
 
     @UiHandler("filter")
-    public void onFilterChanged(ValueChangeEvent<CaseFilterShortView> event) {
+    public void onFilterChanged(ValueChangeEvent<FilterShortView> event) {
         if (activity != null) {
             activity.onFilterChanged(event.getValue());
         }

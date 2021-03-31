@@ -42,6 +42,10 @@ public class CrmConstants {
         Long UNDEFINED = -1L;
     }
 
+    public interface Region {
+        Long UNDEFINED = -1L;
+    }
+
     public interface EmployeeRegistration {
         int ADDITIONAL_SOFT_MAX_LENGTH = 512;
         int RESOURCE_COMMENT_MAX_LENGTH = 512;

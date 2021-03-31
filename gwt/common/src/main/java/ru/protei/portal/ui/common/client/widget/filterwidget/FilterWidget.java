@@ -48,6 +48,10 @@ public abstract class FilterWidget<F extends Filter<FSV, Q>, Q extends FilterQue
         filterName.setValue("");
     }
 
+    public void clearFooterStyles() {
+        footer.removeClassName("card-footer");
+    }
+
     abstract protected FilterParamView<Q> getFilterParamView();
 
     @UiHandler( "resetBtn" )
