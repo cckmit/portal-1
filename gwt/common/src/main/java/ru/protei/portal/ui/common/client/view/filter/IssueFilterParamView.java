@@ -378,7 +378,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setCompanyIds(getCompaniesIdList(companies.getValue()));
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
-                query.setCreatedRange(toDateRange(dateCreatedRange.getValue(), CrmConstants.NightWork.HOUR_OFFSET));
+                query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
                 break;
         }
         return query;

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -37,8 +36,6 @@ public class ReportNightWorkImpl implements ReportNightWork {
     PortalConfig config;
     @Autowired
     CaseCommentDAO caseCommentDAO;
-    @Autowired
-    CaseObjectDAO caseObjectDAO;
     @Autowired
     ReportDAO reportDAO;
 
@@ -74,7 +71,7 @@ public class ReportNightWorkImpl implements ReportNightWork {
                 }
                 caseQuery.setOffset( offset );
                 caseQuery.setLimit( limit );
-                List<CaseCommentNightWork> comments = caseObjectDAO.getCaseCommentNightWork( caseQuery );
+                List<CaseCommentNightWork> comments = caseCommentDAO.getCaseCommentNightWork( caseQuery );
                 fillLastCaseComment(comments);
                 writer.write( sheetNumber, comments );
                 if (size( comments ) < limit) break;

@@ -73,7 +73,7 @@ public class ExcelReportWriter implements
     @Override
     public int[] getColumnsWidth() {
         List<Integer> columnsWidthList = new ListBuilder<Integer>()
-                .add(3650).add(3430).add(3430)
+                .add(3650).add(3430)
                 .add(6600).add(3430).add(6600).add(6600)
                 .add(4600).add(4600).add(10000)
                 .build();
@@ -84,7 +84,7 @@ public class ExcelReportWriter implements
     @Override
     public String[] getColumnNames() {
         List<String> columnNames = new ListBuilder<String>()
-                .add("ir_date").add("ir_night_work_time_elapsed_sum").add("ir_night_work_time_elapsed_count")
+                .add("ir_date").add("ir_night_work_time_elapsed_sum")
                 .add("ir_manager").add("ir_caseno").add("ir_customer").add("ir_initiator")
                 .add("ir_product").add("ir_last_comment_date").add("ir_last_comment_text")
                 .build();
@@ -97,7 +97,6 @@ public class ExcelReportWriter implements
         List<Object> columnValues = new ListBuilder<>()
                 .add(object.getDay())
                 .add(toExcelTimeFormat(object.getTimeElapsedSum()))
-                .add(object.getTimeElapsedCount())
                 .add(HelperFunc.isNotEmpty(object.getAuthorDisplayName()) ? transliterate(object.getAuthorDisplayName(), locale) : "")
                 .add("CRM-" + object.getCaseNumber())
                 .add(HelperFunc.isNotEmpty(object.getCaseCompanyName()) ? transliterate(object.getCaseCompanyName(), locale) : "")
@@ -112,7 +111,7 @@ public class ExcelReportWriter implements
 
     private String[] getFormats() {
         List<String> columnsWidthList = new ListBuilder<String>()
-                .add(ExcelFormat.FULL_DATE).add(ExcelFormat.INFINITE_HOURS_MINUTES).add(ExcelFormat.STANDARD)
+                .add(ExcelFormat.FULL_DATE).add(ExcelFormat.INFINITE_HOURS_MINUTES)
                 .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
                 .add(ExcelFormat.STANDARD).add(ExcelFormat.FULL_DATE_TIME).add(ExcelFormat.STANDARD)
                 .build();

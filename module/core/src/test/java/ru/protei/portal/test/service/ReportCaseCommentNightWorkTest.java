@@ -80,7 +80,7 @@ public class ReportCaseCommentNightWorkTest extends BaseServiceTest {
         query.setSortField(En_SortField.day);
         query.setOffset(0);
         query.setLimit(20);
-        List<CaseCommentNightWork> list = caseObjectDAO.getCaseCommentNightWork(query);
+        List<CaseCommentNightWork> list = caseCommentDAO.getCaseCommentNightWork(query);
 
         Date day = new GregorianCalendar(2021, Calendar.MARCH, 24).getTime();
 

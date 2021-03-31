@@ -12,7 +12,6 @@ public class DateRange implements Serializable {
     private En_DateIntervalType intervalType;
     private Date from;
     private Date to;
-    private Integer hourOffset;
 
     public DateRange() { }
 
@@ -20,11 +19,6 @@ public class DateRange implements Serializable {
         this.intervalType = intervalType;
         this.from = from;
         this.to = to;
-    }
-
-    public DateRange(En_DateIntervalType intervalType, Integer hourOffset) {
-        this.intervalType = intervalType;
-        this.hourOffset = hourOffset;
     }
 
     public En_DateIntervalType getIntervalType() { return intervalType; }
@@ -41,21 +35,12 @@ public class DateRange implements Serializable {
 
     public void setTo(Date to) { this.to = to; }
 
-    public Integer getHourOffset() {
-        return hourOffset;
-    }
-
-    public void setHourOffset(Integer hourOffset) {
-        this.hourOffset = hourOffset;
-    }
-
     @Override
     public String toString() {
         return "DateRange{" +
                 "intervalType=" + intervalType +
                 ", from=" + from +
                 ", to=" + to +
-                ", hourOffset=" + hourOffset +
                 '}';
     }
 
