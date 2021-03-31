@@ -477,7 +477,7 @@ public class PortalApiController {
 
     @PostMapping(value = "/case/histories")
     public Result<List<History>> getCaseHistory(
-            @RequestBody HistoryQuery query,
+            @RequestBody HistoryApiQuery query,
             HttpServletRequest request,
             HttpServletResponse response) {
 
@@ -492,7 +492,7 @@ public class PortalApiController {
         if (query.getCaseNumber() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS, "Required case number");
         }
-        return historyService.getCaseHistoryList(authTokenAPIResult.getData(), En_CaseType.CRM_SUPPORT, query );
+        return historyService.getCaseHistoryList(authTokenAPIResult.getData(), En_CaseType.CRM_SUPPORT, makeHistoryQuery(query) );
     }
 
     @PostMapping(value = "/employees")
@@ -659,6 +659,16 @@ public class PortalApiController {
         query.setLimit(apiQuery.getLimit());
         query.setOffset(apiQuery.getOffset());
         query.setSortField(En_SortField.creation_date);
+        query.setSortDir(En_SortDir.DESC);
+        query.setCaseNumber(apiQuery.getCaseNumber());
+        return query;
+    }
+
+    private HistoryQuery makeHistoryQuery(HistoryApiQuery apiQuery) {
+        HistoryQuery query = new HistoryQuery();
+        query.setLimit(apiQuery.getLimit());
+        query.setOffset(apiQuery.getOffset());
+        query.setSortField(En_SortField.date);
         query.setSortDir(En_SortDir.DESC);
         query.setCaseNumber(apiQuery.getCaseNumber());
         return query;
