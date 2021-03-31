@@ -374,6 +374,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 break;
             case PROJECT:
                 break;
+            case NIGHT_WORK:
+                query.setCompanyIds(getCompaniesIdList(companies.getValue()));
+                query.setProductIds(getProductsIdList(products.getValue()));
+                query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
+                query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
+                break;
         }
         return query;
     }
@@ -534,14 +540,14 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         initiators.setVisible((!isCustomer || !isSubcontractor) && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         managerCompanies.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         managers.setVisible((!isCustomer || isSubcontractor) && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        commentAuthors.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
+        commentAuthors.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED) || filterType.equals(En_CaseFilterType.NIGHT_WORK));
         timeElapsedTypes.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
         tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME));
         searchPrivateContainer.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         plan.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         workTriggers.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         overdueDeadlinesContainer.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        if (filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED)) {
+        if (filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED) || filterType.equals(En_CaseFilterType.NIGHT_WORK)) {
             importanceContainer.addClassName(HIDE);
             stateContainer.addClassName(HIDE);
         } else {

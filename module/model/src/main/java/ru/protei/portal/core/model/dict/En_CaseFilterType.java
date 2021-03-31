@@ -26,7 +26,13 @@ public enum En_CaseFilterType {
     /**
      * Фильтр проектам
      */
-    PROJECT(ProjectQuery.class);
+    PROJECT(ProjectQuery.class),
+
+
+    /**
+     * Фильтр ночным работам
+     */
+    NIGHT_WORK(CaseQuery.class);
 
     En_CaseFilterType(Class<? extends HasFilterQueryIds> queryClass) {
         this.queryClass = queryClass;

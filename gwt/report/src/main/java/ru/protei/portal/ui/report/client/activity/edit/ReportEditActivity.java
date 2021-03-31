@@ -202,7 +202,8 @@ public abstract class ReportEditActivity implements Activity,
         switch (report.getReportType()) {
             case CASE_OBJECTS:
             case CASE_TIME_ELAPSED:
-            case CASE_RESOLUTION_TIME: {
+            case CASE_RESOLUTION_TIME:
+            case NIGHT_WORK: {
                 CaseQuery caseQuery = (CaseQuery)query;
                 if (caseQuery.isCheckImportanceHistory()) {
                     additionalParams.add(En_ReportAdditionalParamType.IMPORTANCE_HISTORY);
@@ -345,7 +346,8 @@ public abstract class ReportEditActivity implements Activity,
         switch (report.getReportType()) {
             case CASE_OBJECTS:
             case CASE_TIME_ELAPSED:
-            case CASE_RESOLUTION_TIME: {
+            case CASE_RESOLUTION_TIME:
+            case NIGHT_WORK: {
                 CaseQuery query = getIssueQuery();
                 if (!validateCaseQuery(report.getReportType(), query)) {
                     return null;
@@ -402,7 +404,8 @@ public abstract class ReportEditActivity implements Activity,
             }
             case CASE_OBJECTS:
             case CASE_TIME_ELAPSED:
-            case CASE_RESOLUTION_TIME: {
+            case CASE_RESOLUTION_TIME:
+            case NIGHT_WORK: {
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
                 view.scheduledTypeContainerVisibility().setVisible(isScheduledEnabled(reportType));
                 view.additionalParamsVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
@@ -419,13 +422,13 @@ public abstract class ReportEditActivity implements Activity,
 
     private boolean isScheduledEnabled(En_ReportType reportType) {
         switch (reportType) {
-            case CASE_OBJECTS: return true;
-            case CASE_TIME_ELAPSED: return true;
-            case CASE_RESOLUTION_TIME: return false;
-            case PROJECT: return false;
-            case CONTRACT: return false;
+            case CASE_OBJECTS:
+            case CASE_TIME_ELAPSED:
+            case NIGHT_WORK:
+                return true;
+            default:
+                return false;
         }
-        return false;
     }
 
     @Override
@@ -469,7 +472,8 @@ public abstract class ReportEditActivity implements Activity,
 
         switch (reportType) {
             case CASE_RESOLUTION_TIME:
-            case CASE_TIME_ELAPSED :
+            case CASE_TIME_ELAPSED:
+            case NIGHT_WORK:
                 boolean dateRangeValid = validateCreatedRange(query.getCreatedRange(), rangeTypeMandatory);
 
                 if (!dateRangeValid) {

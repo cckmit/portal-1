@@ -32,6 +32,7 @@ import ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.report.contract.ReportContract;
 import ru.protei.portal.core.report.dutylog.ReportDutyLog;
+import ru.protei.portal.core.report.nightwork.ReportNightWork;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.TimeFormatter;
@@ -79,6 +80,8 @@ public class ReportControlServiceImpl implements ReportControlService {
     ReportProject reportProject;
     @Autowired
     ReportCaseTimeElapsed reportCaseTimeElapsed;
+    @Autowired
+    ReportNightWork reportNightWork;
     @Autowired
     EventPublisherService publisherService;
     @Autowired
@@ -249,6 +252,13 @@ public class ReportControlServiceImpl implements ReportControlService {
                         report,
                         getQuery(report, ContractQuery.class),
                         new SimpleDateFormat("dd.MM.yyyy"),
+                        this::isCancel
+                );
+            case NIGHT_WORK:
+                return reportNightWork.writeReport(
+                        buffer,
+                        report,
+                        getQuery(report, CaseQuery.class),
                         this::isCancel
                 );
         }
