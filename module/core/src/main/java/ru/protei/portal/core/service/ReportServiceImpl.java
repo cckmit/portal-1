@@ -55,6 +55,7 @@ public class ReportServiceImpl implements ReportService {
         put(En_ReportType.CASE_RESOLUTION_TIME, new Pair<>(En_Privilege.ISSUE_REPORT, listOf(En_Scope.SYSTEM)));
         put(En_ReportType.PROJECT, new Pair<>(En_Privilege.ISSUE_REPORT, listOf(En_Scope.SYSTEM)));
         put(En_ReportType.CONTRACT, new Pair<>(En_Privilege.CONTRACT_REPORT, listOf(En_Scope.SYSTEM)));
+        put(En_ReportType.NIGHT_WORK, new Pair<>(En_Privilege.ISSUE_REPORT, listOf(En_Scope.SYSTEM)));
     }};
 
     @Autowired
@@ -129,7 +130,7 @@ public class ReportServiceImpl implements ReportService {
 
         report.setStatus(En_ReportStatus.CREATED);
         report.setModified(now);
-        report.setQuery(serializeQuery(query, report.getReportType()));
+        report.setQuery(serializeQuery(query));
 
         reportDAO.saveOrUpdate(report);
 
@@ -393,7 +394,8 @@ public class ReportServiceImpl implements ReportService {
             switch (report.getReportType()) {
                 case CASE_OBJECTS:
                 case CASE_TIME_ELAPSED:
-                case CASE_RESOLUTION_TIME: return ok(new ReportCaseQuery(
+                case CASE_RESOLUTION_TIME:
+                case NIGHT_WORK: return ok(new ReportCaseQuery(
                         report,
                         objectMapper.readValue(report.getQuery(), CaseQuery.class)
                 ));
@@ -444,6 +446,7 @@ public class ReportServiceImpl implements ReportService {
         switch (reportType) {
             case CASE_OBJECTS: langKey = "report_case_objects_at"; break;
             case CASE_TIME_ELAPSED: langKey = "report_case_time_elapsed_at"; break;
+            case NIGHT_WORK: langKey = "report_night_work_at"; break;
             case PROJECT: langKey = "report_project_at"; break;
             case CONTRACT: langKey = "report_contract_at"; break;
         }
@@ -451,7 +454,7 @@ public class ReportServiceImpl implements ReportService {
         return localizedLang.get(langKey) + " " + dateFormat.format(new Date());
     }
 
-    private String serializeQuery(BaseQuery query, En_ReportType reportType) {
+    private String serializeQuery(BaseQuery query) {
         try {
             return objectMapper.writeValueAsString(query);
         } catch (JsonProcessingException e) {
@@ -464,7 +467,8 @@ public class ReportServiceImpl implements ReportService {
         switch (reportType) {
             case CASE_OBJECTS:
             case CASE_TIME_ELAPSED:
-            case CASE_RESOLUTION_TIME: {
+            case CASE_RESOLUTION_TIME:
+            case NIGHT_WORK: {
                 if (!hasGrantAccess(token, reportType)) {
                     report.setReportType(En_ReportType.CASE_OBJECTS);
                     CaseQuery caseQuery = (CaseQuery) query;
