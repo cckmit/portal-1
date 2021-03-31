@@ -83,6 +83,8 @@ public class PortalApiController {
     @Autowired
     private AbsenceService absenceService;
     @Autowired
+    private HistoryService historyService;
+    @Autowired
     PortalConfig config;
 
 
@@ -473,6 +475,26 @@ public class PortalApiController {
         return caseCommentService.getCaseCommentShortViewList(authTokenAPIResult.getData(), En_CaseType.CRM_SUPPORT, makeCaseCommentQuery(query)).map( SearchResult::getResults );
     }
 
+    @PostMapping(value = "/case/histories")
+    public Result<List<History>> getCaseHistory(
+            @RequestBody HistoryApiQuery query,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+
+        log.info("API | getCaseHistory(): query={}", query);
+
+        Result<AuthToken> authTokenAPIResult = authenticate(request, response, authService, sidGen, log);
+
+        if (authTokenAPIResult.isError()) {
+            return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
+        }
+
+        if (query.getCaseNumber() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, "Required case number");
+        }
+        return historyService.getCaseHistoryList(authTokenAPIResult.getData(), En_CaseType.CRM_SUPPORT, makeHistoryQuery(query) );
+    }
+
     @PostMapping(value = "/employees")
     public Result<List<PersonInfo>> getEmployees(HttpServletRequest request, HttpServletResponse response, @RequestBody EmployeeApiQuery query) {
         log.info("API | getEmployees(): query={}", query);
@@ -637,6 +659,16 @@ public class PortalApiController {
         query.setLimit(apiQuery.getLimit());
         query.setOffset(apiQuery.getOffset());
         query.setSortField(En_SortField.creation_date);
+        query.setSortDir(En_SortDir.DESC);
+        query.setCaseNumber(apiQuery.getCaseNumber());
+        return query;
+    }
+
+    private HistoryQuery makeHistoryQuery(HistoryApiQuery apiQuery) {
+        HistoryQuery query = new HistoryQuery();
+        query.setLimit(apiQuery.getLimit());
+        query.setOffset(apiQuery.getOffset());
+        query.setSortField(En_SortField.id);
         query.setSortDir(En_SortDir.DESC);
         query.setCaseNumber(apiQuery.getCaseNumber());
         return query;
