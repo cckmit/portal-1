@@ -332,10 +332,16 @@ public class AbsenceServiceImpl implements AbsenceService {
         PersonAbsence personAbsence = new PersonAbsence();
         personAbsence.setCreated(new Date());
         personAbsence.setCreatorId(token.getPersonId());
-        personAbsence.setPersonId(isWorkerIdSet(apiInfo) ?
-                getPersonIdByWorkerId(apiInfo.getWorkerId(), apiInfo.getCompanyCode()) :
-                apiInfo.getPersonId()
-        );
+        if (isWorkerIdSet(apiInfo)) {
+            Long personIdByWorkerId = getPersonIdByWorkerId(apiInfo.getWorkerId(), apiInfo.getCompanyCode());
+            if (personIdByWorkerId == null) {
+                return error(En_ResultStatus.NOT_FOUND);
+            } else {
+                personAbsence.setPersonId(personIdByWorkerId);
+            }
+        } else {
+            personAbsence.setPersonId(apiInfo.getPersonId());
+        }
         personAbsence.setReason(apiInfo.getReason());
         personAbsence.setFromTime(apiInfo.getFromTime());
         personAbsence.setTillTime(apiInfo.getTillTime());
@@ -379,7 +385,8 @@ public class AbsenceServiceImpl implements AbsenceService {
         if (groupCompany == null || groupCompany.getCompanyId() == null) {
             return null;
         }
-        return workerEntryDAO.getByExternalId(workerId, groupCompany.getCompanyId()).getPersonId();
+        WorkerEntry workerEntry = workerEntryDAO.getByExternalId(workerId, groupCompany.getCompanyId());
+        return workerEntry == null ? null : workerEntry.getPersonId();
     }
 
     private boolean validateFields(PersonAbsence absence) {

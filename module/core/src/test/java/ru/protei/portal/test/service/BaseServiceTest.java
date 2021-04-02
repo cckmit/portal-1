@@ -414,4 +414,12 @@ public class BaseServiceTest {
     protected ObjectMapper objectMapper;
     @Autowired
     protected CompanyImportanceItemDAO companyImportanceItemDAO;
+    @Autowired
+    protected WorkerEntryDAO workerEntryDAO;
+    @Autowired
+    protected CompanyDepartmentDAO companyDepartmentDAO;
+    @Autowired
+    protected WorkerPositionDAO workerPositionDAO;
+    @Autowired
+    protected CompanyGroupHomeDAO companyGroupHomeDAO;
 }
