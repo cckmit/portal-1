@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.api.ApiAbsence;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dto.PersonAbsenceApiInfo;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.query.AbsenceApiQuery;
@@ -47,4 +48,8 @@ public interface AbsenceService {
 
     @Privileged(En_Privilege.ABSENCE_VIEW)
     Result<List<ApiAbsence>> getAbsencesByApiQuery(AuthToken authToken, AbsenceApiQuery query);
+
+    @Privileged(En_Privilege.ABSENCE_CREATE)
+    @Auditable(En_AuditType.ABSENCE_CREATE)
+    Result<Long> createAbsencesByApiQuery(AuthToken token, PersonAbsenceApiInfo absence);
 }
