@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_DocumentFormat;
 import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dto.DocumentApiInfo;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.query.DocumentQuery;
@@ -63,4 +64,9 @@ public interface DocumentService {
     Result<En_DocumentFormat> getDocumentFile(AuthToken token, Long documentId, Long projectId, En_DocumentFormat format, OutputStream outputStream);
 
     Result<String> getDocumentName(Long documentId);
+
+    @Privileged(requireAny = {En_Privilege.DOCUMENT_CREATE, En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT})
+    @Auditable(En_AuditType.DOCUMENT_CREATE)
+    Result<Document> createDocumentByApi(AuthToken token, DocumentApiInfo documentApiInfo);
+
 }

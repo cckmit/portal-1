@@ -18,15 +18,11 @@ import ru.protei.portal.core.model.dao.ContactItemDAO;
 import ru.protei.portal.core.model.dao.DocumentDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.ProjectDAO;
-import ru.protei.portal.core.model.dict.En_DocumentFormat;
-import ru.protei.portal.core.model.dict.En_DocumentState;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.DocumentApiInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Document;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.DocumentUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -50,7 +46,7 @@ import static com.mysql.jdbc.StringUtils.isEmptyOrWhitespaceOnly;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class DocumentServiceImpl implements DocumentService {
 
@@ -524,6 +520,33 @@ public class DocumentServiceImpl implements DocumentService {
         DocumentQuery query = new DocumentQuery();
         query.setProjectIds(new LinkedList<>(Collections.singletonList(projectId)));
         return getDocuments(token, query);
+    }
+
+    @Override
+    public Result<Document> createDocumentByApi(AuthToken token, DocumentApiInfo documentApiInfo) {
+        Document document = new Document();
+
+        document.setName(documentApiInfo.getName());
+        document.setAnnotation(documentApiInfo.getAnnotation());
+        document.setDecimalNumber(documentApiInfo.getDecimalNumber());
+        document.setType(documentApiInfo.getTypeId() != null ? new DocumentType(documentApiInfo.getTypeId()) : null);
+        document.setMembers(stream(documentApiInfo.getMemberIds()).map(PersonShortView::new).collect(Collectors.toList()));
+        document.setInventoryNumber(documentApiInfo.getInventoryNumber());
+        document.setKeywords(documentApiInfo.getKeywords());
+        document.setProjectId(documentApiInfo.getProjectId());
+        document.setEquipment(documentApiInfo.getEquipmentId() != null ? new Equipment(documentApiInfo.getEquipmentId()) : null);
+        document.setApprovedBy(documentApiInfo.getApprovedById() != null ? new PersonShortView(documentApiInfo.getApprovedById()) : null);
+        document.setApprovalDate(documentApiInfo.getApprovalDate());
+
+        // default value
+        document.setCreated(new Date());
+        document.setExecutionType(documentApiInfo.getExecutionType() != null ? documentApiInfo.getExecutionType() : En_DocumentExecutionType.ELECTRONIC);
+        document.setVersion(documentApiInfo.getVersion() != null ? documentApiInfo.getVersion() : "");
+        document.setContractor(new PersonShortView(documentApiInfo.getContractorId() != null ? documentApiInfo.getContractorId() : token.getPersonId()));
+        document.setRegistrar(new PersonShortView(documentApiInfo.getRegistrarId() != null ? documentApiInfo.getRegistrarId() : token.getPersonId()));
+        document.setApproved(documentApiInfo.getApproved() != null ? documentApiInfo.getApproved() : false);
+
+        return createDocument(token, document, null, null, null, token.getPersonDisplayShortName());
     }
 
     private List<Long> fetchNewMemberIds(Document oldDocument, Document newDocument) {

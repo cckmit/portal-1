@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.api.ApiContract;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
+import ru.protei.portal.core.model.dto.DocumentApiInfo;
 import ru.protei.portal.core.model.dto.PersonInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -84,6 +85,8 @@ public class PortalApiController {
     private AbsenceService absenceService;
     @Autowired
     private HistoryService historyService;
+    @Autowired
+    private DocumentService documentService;
     @Autowired
     PortalConfig config;
 
@@ -633,6 +636,24 @@ public class PortalApiController {
                 .flatMap(authToken -> absenceService.getAbsencesByApiQuery(authToken, apiQuery))
                 .ifOk(id -> log.info("getAbsence1cGet(): OK"))
                 .ifError(result -> log.warn("getAbsence1cGet(): Can't get absences by apiQuery={}. {}", apiQuery, result));
+    }
+
+    @PostMapping(value = "/doc/create")
+    public Result<Document> createDocument(HttpServletRequest request, HttpServletResponse response,
+                                          @RequestBody DocumentApiInfo documentApiInfo) {
+        log.info("API | createDocument(): documentApiInfo={}", documentApiInfo);
+
+        Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
+
+        if (authenticate.isError()) {
+            return error(authenticate.getStatus(), authenticate.getMessage());
+        }
+
+        AuthToken authToken = authenticate.getData();
+
+        return documentService.createDocumentByApi(authToken, documentApiInfo)
+                .ifOk(caseTagId -> log.info("createDocument(): OK"))
+                .ifError(result -> log.warn("createDocument(): Can't create tag={}. {}", documentApiInfo, result));
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
