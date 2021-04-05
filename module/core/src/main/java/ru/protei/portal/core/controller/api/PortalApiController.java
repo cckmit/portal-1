@@ -643,17 +643,20 @@ public class PortalApiController {
                                           @RequestBody DocumentApiInfo documentApiInfo) {
         log.info("API | createDocument(): documentApiInfo={}", documentApiInfo);
 
-        Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
-
-        if (authenticate.isError()) {
-            return error(authenticate.getStatus(), authenticate.getMessage());
-        }
-
-        AuthToken authToken = authenticate.getData();
-
-        return documentService.createDocumentByApi(authToken, documentApiInfo)
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(token -> documentService.createDocumentByApi(token, documentApiInfo))
                 .ifOk(caseTagId -> log.info("createDocument(): OK"))
-                .ifError(result -> log.warn("createDocument(): Can't create tag={}. {}", documentApiInfo, result));
+                .ifError(result -> log.warn("createDocument(): Can't create document={}. {}", documentApiInfo, result));
+    }
+
+    @PostMapping(value = "/doc/remove/{documentId:[0-9]+}")
+    public Result<Long> removeDocument(HttpServletRequest request, HttpServletResponse response, @PathVariable("documentId") Long documentId) {
+        log.info("API | removeDocument(): id={}", documentId);
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> documentService.removeDocumentByApi(authToken, documentId))
+                .ifOk(id -> log.info("removeDocument(): OK"))
+                .ifError(result -> log.warn("removeDocument(): Can't remove document={}. {}", documentId, result));
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {

@@ -549,6 +549,12 @@ public class DocumentServiceImpl implements DocumentService {
         return createDocument(token, document, null, null, null, token.getPersonDisplayShortName());
     }
 
+    @Override
+    public Result<Long> removeDocumentByApi(AuthToken token, Long documentId) {
+        Document document = documentDAO.partialGet(documentId, "project_id");
+        return removeDocument(token, documentId, document.getProjectId(), token.getPersonDisplayShortName());
+    }
+
     private List<Long> fetchNewMemberIds(Document oldDocument, Document newDocument) {
         List<Long> oldMembers = toList( oldDocument.getMembers(), PersonShortView::getId );
         List<Long> newMembers = toList( newDocument.getMembers(), PersonShortView::getId );

@@ -69,4 +69,7 @@ public interface DocumentService {
     @Auditable(En_AuditType.DOCUMENT_CREATE)
     Result<Document> createDocumentByApi(AuthToken token, DocumentApiInfo documentApiInfo);
 
+    @Privileged(requireAny = {En_Privilege.DOCUMENT_REMOVE, En_Privilege.EQUIPMENT_REMOVE})
+    @Auditable(En_AuditType.DOCUMENT_REMOVE)
+    Result<Long> removeDocumentByApi( AuthToken token, Long documentId);
 }
