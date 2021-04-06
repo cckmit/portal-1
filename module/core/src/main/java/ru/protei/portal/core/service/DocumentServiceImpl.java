@@ -524,27 +524,30 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public Result<Document> createDocumentByApi(AuthToken token, DocumentApiInfo documentApiInfo) {
+        if (!isValid(documentApiInfo)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
         Document document = new Document();
 
         document.setName(documentApiInfo.getName());
-        document.setAnnotation(documentApiInfo.getAnnotation());
         document.setDecimalNumber(documentApiInfo.getDecimalNumber());
-        document.setType(documentApiInfo.getTypeId() != null ? new DocumentType(documentApiInfo.getTypeId()) : null);
-        document.setMembers(stream(documentApiInfo.getMemberIds()).map(PersonShortView::new).collect(Collectors.toList()));
         document.setInventoryNumber(documentApiInfo.getInventoryNumber());
-        document.setKeywords(documentApiInfo.getKeywords());
+        document.setState(En_DocumentState.ACTIVE);
+        document.setType(documentApiInfo.getTypeId() != null ? new DocumentType(documentApiInfo.getTypeId()) : null);
+        document.setAnnotation(documentApiInfo.getAnnotation());
+        document.setRegistrar(documentApiInfo.getRegistrarId() != null ? new PersonShortView(documentApiInfo.getRegistrarId()) : null);
+        document.setContractor(documentApiInfo.getContractorId() != null ? new PersonShortView(documentApiInfo.getContractorId()) : null);
         document.setProjectId(documentApiInfo.getProjectId());
         document.setEquipment(documentApiInfo.getEquipmentId() != null ? new Equipment(documentApiInfo.getEquipmentId()) : null);
-        document.setApprovedBy(documentApiInfo.getApprovedById() != null ? new PersonShortView(documentApiInfo.getApprovedById()) : null);
-        document.setApprovalDate(documentApiInfo.getApprovalDate());
-
-        // default value
+        document.setVersion(documentApiInfo.getVersion());
         document.setCreated(new Date());
-        document.setExecutionType(documentApiInfo.getExecutionType() != null ? documentApiInfo.getExecutionType() : En_DocumentExecutionType.ELECTRONIC);
-        document.setVersion(documentApiInfo.getVersion() != null ? documentApiInfo.getVersion() : "");
-        document.setContractor(new PersonShortView(documentApiInfo.getContractorId() != null ? documentApiInfo.getContractorId() : token.getPersonId()));
-        document.setRegistrar(new PersonShortView(documentApiInfo.getRegistrarId() != null ? documentApiInfo.getRegistrarId() : token.getPersonId()));
         document.setApproved(documentApiInfo.getApproved() != null ? documentApiInfo.getApproved() : false);
+        document.setApprovedBy(documentApiInfo.getApprovedById() != null ? new PersonShortView(documentApiInfo.getApprovedById()) : null);
+        document.setKeywords(documentApiInfo.getKeywords());
+        document.setApprovalDate(documentApiInfo.getApprovalDate());
+        document.setExecutionType(documentApiInfo.getExecutionType());
+        document.setMembers(stream(documentApiInfo.getMemberIds()).map(PersonShortView::new).collect(Collectors.toList()));
 
         return createDocument(token, document, null, null, null, token.getPersonDisplayShortName());
     }
@@ -553,6 +556,18 @@ public class DocumentServiceImpl implements DocumentService {
     public Result<Long> removeDocumentByApi(AuthToken token, Long documentId) {
         Document document = documentDAO.partialGet(documentId, "project_id");
         return removeDocument(token, documentId, document.getProjectId(), token.getPersonDisplayShortName());
+    }
+
+    private boolean isValid(DocumentApiInfo documentApiInfo) {
+        return documentApiInfo != null &&
+                documentApiInfo.getName() != null &&
+                documentApiInfo.getProjectId() != null &&
+                documentApiInfo.getExecutionType() != null &&
+                documentApiInfo.getContractorId() != null &&
+                documentApiInfo.getRegistrarId() != null &&
+                (documentApiInfo.getApproved() == null || !documentApiInfo.getApproved() ||
+                        (documentApiInfo.getApprovedById() != null && documentApiInfo.getApprovalDate() != null)
+                );
     }
 
     private List<Long> fetchNewMemberIds(Document oldDocument, Document newDocument) {
