@@ -9,7 +9,7 @@ import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.Abstrac
 import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardTableView;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.UserDashboard;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -162,12 +162,12 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             if (dashboard.getCaseFilter() == null || dashboard.getCaseFilter().getParams() == null) {
                 continue;
             }
-            CaseFilter filter = dashboard.getCaseFilter();
+            CaseQuery caseQuery = dashboard.getCaseQuery();
             String name = dashboard.getName();
-            AbstractDashboardTableView table = createIssueTable(dashboard, i, name, filter);
+            AbstractDashboardTableView table = createIssueTable(dashboard, i, name, dashboard.getCaseFilterDto());
             dragAndDropElementsHandler.addDraggableElement(dashboard.getId(), table);
             view.addTableToContainer(table.asWidget());
-            loadTable(table, new CaseQuery(filter.getParams()));
+            loadTable(table, new CaseQuery(caseQuery));
         }
     }
 
@@ -181,7 +181,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         );
     }
 
-    private AbstractDashboardTableView createIssueTable(UserDashboard dashboard, int order, String name, CaseFilter filter) {
+    private AbstractDashboardTableView createIssueTable(UserDashboard dashboard, int order, String name, CaseFilterDto<CaseQuery> caseFilterDto) {
         AbstractDashboardTableView table = tableProvider.get();
         table.setEnsureDebugId(DebugIds.DASHBOARD.TABLE + order);
         table.setName(name);
@@ -196,7 +196,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             }
             @Override
             public void onOpenClicked() {
-                fireEvent(new IssueEvents.Show(filter, false));
+                fireEvent(new IssueEvents.Show(caseFilterDto, false));
             }
             @Override
             public void onEditClicked() {
@@ -213,7 +213,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             }
             @Override
             public void onReloadClicked() {
-                loadTable(table, filter.getParams());
+                loadTable(table, caseFilterDto.getQuery());
             }
         });
         return table;

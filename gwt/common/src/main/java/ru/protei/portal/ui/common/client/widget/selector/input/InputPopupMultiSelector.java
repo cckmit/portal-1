@@ -16,10 +16,12 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
+import ru.protei.portal.ui.common.client.selector.SelectorPopup;
 import ru.protei.portal.ui.common.client.selector.pageable.AbstractPageableSelector;
 import ru.protei.portal.ui.common.client.selector.pageable.MultiValuePageableSelector;
 import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectItemView;
+import ru.protei.portal.ui.common.client.widget.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.ArrayList;
@@ -38,11 +40,16 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
 
     public InputPopupMultiSelector() {
         initWidget( bsUiBinder.createAndBindUi( this ) );
-        setSearchAutoFocus( true );
+
+        SelectorPopup popup = new ArrowSelectableSelectorPopup();
+        setPopup(popup);
+        setSearchEnabled(true);
+        setAutoCloseable(false);
+
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
         setEmptyListText( lang.emptySelectorList() );
         setEmptySearchText( lang.searchNoMatchesFound() );
-        root.add(getPopup());
+        root.add(popup);
     }
 
     public void setHeader( String label ) {
@@ -125,7 +132,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         }
 
         if (!getPopup().isVisible()) {
-            getPopup().getChildContainer().clear();
+            getPopup().getContainer().clear();
             getSelector().fillFromBegin( this );
             getPopup().showNear( select2.getElement() );
         }
@@ -150,7 +157,6 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     protected void onSelectionChanged() {
         Set<T> value = getValue();
         showValue( value );
-        getPopup().showNear( select2.getElement() );
         validateSelector(isValidable);
 
         ValueChangeEvent.fire( this, value );

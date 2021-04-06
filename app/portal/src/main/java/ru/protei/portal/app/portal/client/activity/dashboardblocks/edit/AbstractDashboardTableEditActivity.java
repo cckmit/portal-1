@@ -1,10 +1,10 @@
 package ru.protei.portal.app.portal.client.activity.dashboardblocks.edit;
 
-import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 
 public interface AbstractDashboardTableEditActivity {
 
-    void onFilterChanged(CaseFilterShortView filterShortView);
+    void onFilterChanged(FilterShortView filterShortView);
 
     void onCreateFilterNewIssuesClicked();
 

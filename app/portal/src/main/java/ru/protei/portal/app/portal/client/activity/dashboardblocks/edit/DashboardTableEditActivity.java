@@ -4,27 +4,33 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_CaseFilterType;
+import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.UserDashboard;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.DashboardEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
+import ru.protei.portal.ui.common.client.service.CaseFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.UserLoginControllerAsync;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -80,7 +86,7 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
     }
 
     @Override
-    public void onFilterChanged(CaseFilterShortView filterShortView) {
+    public void onFilterChanged(FilterShortView filterShortView) {
         String currentDashboardName = view.name().getValue();
         String oldFilterName = lastFilterName == null ? "" : lastFilterName;
         String newFilterName = filterShortView == null ? "" : filterShortView.getName();
@@ -94,39 +100,39 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
 
     @Override
     public void onCreateFilterNewIssuesClicked() {
-        CaseFilter filter = makeFilterNewIssues();
-        createNewFilter(filter);
+        CaseFilterDto<CaseQuery> caseFilterDto = makeFilterNewIssues();
+        createNewFilter(caseFilterDto);
     }
 
     @Override
     public void onCreateFilterActiveIssues() {
-        CaseFilter filter = makeFilterActiveIssues();
-        createNewFilter(filter);
+        CaseFilterDto<CaseQuery> caseFilterDto = makeFilterActiveIssues();
+        createNewFilter(caseFilterDto);
     }
 
-    private void autoHideExistingFiltersFromCreation(List<CaseFilterShortView> filters) {
+    private void autoHideExistingFiltersFromCreation(List<FilterShortView> filters) {
         List<String> filterNames = CollectionUtils.stream(filters)
-                .map(CaseFilterShortView::getName)
+                .map(FilterShortView::getName)
                 .collect(Collectors.toList());
-        boolean shouldHideNewIssues = filterNames.contains(makeFilterNewIssues().getName());
-        boolean shouldHideActiveIssues = filterNames.contains(makeFilterActiveIssues().getName());
+        boolean shouldHideNewIssues = filterNames.contains(makeFilterNewIssues().getCaseFilter().getName());
+        boolean shouldHideActiveIssues = filterNames.contains(makeFilterActiveIssues().getCaseFilter().getName());
         boolean shouldHideCreation = shouldHideNewIssues && shouldHideActiveIssues;
         view.filterCreateNewIssues().setVisible(!shouldHideNewIssues);
         view.filterCreateActiveIssues().setVisible(!shouldHideActiveIssues);
         view.filterCreateContainer().setVisible(!shouldHideCreation);
     }
 
-    private void loadFilters(Consumer<List<CaseFilterShortView>> onLoaded) {
-        filterController.getIssueFilterShortViewList(En_CaseFilterType.CASE_OBJECTS, new FluentCallback<List<CaseFilterShortView>>()
+    private void loadFilters(Consumer<List<FilterShortView>> onLoaded) {
+        filterController.getCaseFilterShortViewList(En_CaseFilterType.CASE_OBJECTS, new FluentCallback<List<FilterShortView>>()
                 .withError(throwable -> {})
                 .withSuccess(onLoaded));
     }
 
-    private void createNewFilter(CaseFilter filter) {
-        filterController.saveIssueFilter(filter, new FluentCallback<CaseFilter>()
-                .withSuccess(f -> {
+    private void createNewFilter(CaseFilterDto<CaseQuery> caseFilterDto) {
+        filterController.saveIssueFilter(caseFilterDto, new FluentCallback<CaseFilterDto<CaseQuery>>()
+                .withSuccess(result -> {
                     view.updateFilterSelector();
-                    view.filter().setValue(f.toShortView(), true);
+                    view.filter().setValue(result.getCaseFilter().toShortView(), true);
                     loadFilters(this::autoHideExistingFiltersFromCreation);
                 }));
     }
@@ -145,20 +151,18 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
         return true;
     }
 
-    private CaseFilter makeFilterNewIssues() {
+    private CaseFilterDto<CaseQuery> makeFilterNewIssues() {
         CaseFilter filter = new CaseFilter();
         filter.setName(lang.dashboardTableFilterCreationNewIssues());
         filter.setType(En_CaseFilterType.CASE_OBJECTS);
-        filter.setParams(generateQueryNewIssues());
-        return filter;
+        return new CaseFilterDto<>(filter, generateQueryNewIssues());
     }
 
-    private CaseFilter makeFilterActiveIssues() {
+    private CaseFilterDto<CaseQuery> makeFilterActiveIssues() {
         CaseFilter filter = new CaseFilter();
         filter.setName(lang.dashboardTableFilterCreationActiveIssues());
         filter.setType(En_CaseFilterType.CASE_OBJECTS);
-        filter.setParams(generateQueryActiveIssues());
-        return filter;
+        return new CaseFilterDto<>(filter, generateQueryActiveIssues());
     }
 
     private CaseQuery generateQueryNewIssues() {
@@ -194,7 +198,7 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
     @Inject
     UserLoginControllerAsync userLoginController;
     @Inject
-    IssueFilterControllerAsync filterController;
+    CaseFilterControllerAsync filterController;
     @Inject
     PolicyService policyService;
 

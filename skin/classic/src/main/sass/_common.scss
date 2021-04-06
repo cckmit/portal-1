@@ -125,7 +125,7 @@ $bg_master_lightest: #fafafa;
 }
 
 .dropdown-menu ul > li > a,
-.dropdown-menu ul > li > .user-login-item {
+.dropdown-menu ul > li.user-login-item {
   display: block;
   padding: 3px 9px;
   clear: both;
@@ -135,7 +135,7 @@ $bg_master_lightest: #fafafa;
 }
 
 .dropdown-menu ul > li > a > img,
-.dropdown-menu ul > li > .user-login-item > img {
+.dropdown-menu ul > li.user-login-item > img {
   margin-right: 12px;
   float: left;
   margin-top: 2px;
@@ -144,7 +144,7 @@ $bg_master_lightest: #fafafa;
 
 .not-active,
 .dropdown-menu ul > li > a.not-active,
-.dropdown-menu ul > li > .user-login-item.not-active {
+.dropdown-menu ul > li.user-login-item.not-active {
   color: #b6b6b6;
 }
 
@@ -185,8 +185,8 @@ i.ban {
 
 .dropdown-menu ul > li > a:focus,
 .dropdown-menu ul > li > a:hover,
-.dropdown-menu ul > li > .user-login-item:focus,
-.dropdown-menu ul > li > .user-login-item:hover {
+.dropdown-menu ul > li.user-login-item:focus,
+.dropdown-menu ul > li.user-login-item:hover {
   color: #262626;
   text-decoration: none;
   background-color: $bg_light_gray;
@@ -195,8 +195,8 @@ i.ban {
 
 .dropdown-menu ul > li > a.not-active:focus,
 .dropdown-menu ul > li > a.not-active:hover
-.dropdown-menu ul > li > user-login-item.not-active:focus,
-.dropdown-menu ul > li > user-login-item.not-active:hover{
+.dropdown-menu ul > li.user-login-item.not-active:focus,
+.dropdown-menu ul > li.user-login-item.not-active:hover{
   color: #A2A2A2;
 
   i.ban {
@@ -1131,7 +1131,7 @@ label.bordered:after {
 
 /**** Collapsable filter ****/
 
-.filter-collapsable, .absence-filter, .room-reservation-filter {
+.filter-collapsable, .filter-widget, .room-reservation-filter {
 
   .filter-header {
     border-bottom: 2px solid #ddd;
@@ -1291,33 +1291,6 @@ td.info {
 .filter {
   margin-bottom: 10px;
 }
-
-/**** IMPORTANCE LEVEL ****/
-.critical {
-  color: #ef5350 !important;
-}
-
-.important {
-  color: #ffa726 !important;
-}
-
-.medium {
-  color: #c9d600 !important;
-}
-
-.basic {
-  color: $info_color !important;
-}
-
-.cosmetic {
-  color: #607D8B !important;
-}
-
-.emergency {
-  color: #ee1414 !important;
-}
-
-/****************/
 
 /**** COMPANY CATEGORY  ****/
 
@@ -1776,132 +1749,6 @@ a {
   }
 }
 
-/**** Importance level icons ****/
-.importance-btn {
-  padding: 5px 10px 5px 5px !important;
-}
-
-.importance-item:not(.selector-val) {
-  padding-top: 4px !important;
-  padding-bottom: 4px !important;
-  > span {
-    position: relative;
-    line-height: 18px;
-    &:after {
-      content: "";
-      display: block;
-      clear: both;
-    }
-  }
-  &:after {
-    content: "";
-    display: block;
-    clear: both;
-  }
-}
-
-.importance-level {
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  border-radius: 2px;
-  background-color: #e6e6e6;
-
-  &:before {
-    content: "?";
-    display: block;
-    width: 18px;
-    height: 18px;
-    text-align: center;
-    line-height: 22px;
-    font-size: 10px;
-    font-weight: bold;
-    text-decoration: none;
-    font-style: normal;
-    position: relative;
-    bottom: 1px;
-    color: #333333;
-  }
-
-  &.cosmetic {
-    &:before {
-      content: "C";
-      color: #333333;
-    }
-  }
-
-  &.basic {
-    &:before {
-      content: "B";
-      color: #333333;
-    }
-  }
-
-  &.important {
-    &:before {
-      content: "I";
-      color: #333333;
-    }
-  }
-
-  &.critical {
-    &:before {
-      content: "C";
-      color: #ffffff;
-    }
-  }
-
-  &.medium {
-    &:before {
-      content: "M";
-      color: #333333;
-    }
-  }
-
-  &.emergency {
-    &:before {
-      content: "E";
-      color: #ffffff;
-    }
-  }
-
-  &.high {
-    &:before {
-      content: "H";
-      color: #333333;
-    }
-  }
-
-  &.low {
-    &:before {
-      content: "L";
-      color: #333333;
-    }
-  }
-
-  &.center {
-    display: block;
-    margin: 0 auto;
-  }
-
-  &.selector {
-    position: relative;
-    float: left;
-    margin: 0 6px 0 0;
-  }
-
-  &.lg {
-    width: 22px;
-    height: 22px;
-    &:before {
-      width: 22px;
-      height: 22px;
-      line-height: 22px;
-      font-size: 12px;
-    }
-  }
-}
-
 .privacy-level {
   font-size: 13px;
 }
@@ -1910,46 +1757,6 @@ a {
   .btn {
     padding: .375rem .75rem;
   }
-}
-
-.case-importance-cometic {
-  color: #7b7b7b;
-  font-weight: bold;
-}
-
-.case-importance-basic {
-  color: #7cc71d;
-  font-weight: bold;
-}
-
-.case-importance-important {
-  color: #eaba0c;
-  font-weight: bold;
-}
-
-.case-importance-critical {
-  color: #e30000;
-  font-weight: bold;
-}
-
-.case-importance-medium {
-  color: #c9d600;
-  font-weight: bold;
-}
-
-.case-importance-emergency {
-  color: #960000;
-  font-weight: bold;
-}
-
-.case-importance-high {
-  color: #e9b90c;
-  font-weight: bold;
-}
-
-.case-importance-low {
-  color: #686868;
-  font-weight: bold;
 }
 
 /**** SITE FOLDER ****/
@@ -2765,7 +2572,7 @@ div.select2-container {
   }
 }
 
-.issue-filter, .absence-filter, .room-reservation-filter {
+.issue-filter, .filter-widget, .room-reservation-filter {
   padding-top: 0px !important;
 
   .user-filter {
@@ -4808,17 +4615,18 @@ table {
   }
 }
 
-.case-history-tag-icon, .case-history-importance-icon {
+.case-importance {
   display: inline-block;
   border-radius: 2px;
   width: 18px;
-  height: 19px;
+  height: 18px;
   text-align: center;
-  line-height: 22px;
   font-size: 10px;
   font-weight: bold;
   position: relative;
-  bottom: 1px;
+  font-style: normal;
+  vertical-align: text-bottom;
+  line-height: 19px !important;
 }
 
 .fired {
@@ -4911,7 +4719,7 @@ table {
   }
 }
 
-.absence-filter {
+.filter-widget {
   .filter-content {
     border: none;
     padding-top: 0 !important;
@@ -5156,7 +4964,7 @@ table {
   }
 }
 
-.arrow-selectable {
+.user-login-selector {
   li {
     height: 40px;
 
@@ -5308,6 +5116,19 @@ table {
   font-size: inherit;
 }
 
+.focusable:focus {
+  outline: none;
+  background-color: $bg_light_gray;
+}
+
+div.form-group-default.form-group-default-selectFx:focus {
+  outline: none;
+}
+
+.focus-outline-none:focus {
+  outline: none;
+}
+
 .privacy-selector {
   .selector-popup {
     width: auto !important;
@@ -5345,5 +5166,15 @@ table {
   td.markdown_table_section {
     padding: 35px 0 10px 0;
     font-weight: bold;
+  }
+}
+
+.report-filter-container {
+  .filter-header {
+    display: none;
+  }
+
+  .user-filter {
+    padding: 0 15px;
   }
 }

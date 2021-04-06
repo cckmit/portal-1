@@ -16,7 +16,6 @@ public class EquipmentFormSelector extends FormPopupSingleSelector<EquipmentShor
     public void init(EquipmentModel model, Lang lang) {
         this.model = model;
         setAsyncModel(model);
-        setSearchAutoFocus(true);
         setItemRenderer( value -> {
             StringBuilder sb = new StringBuilder();
             if ( value == null ) {

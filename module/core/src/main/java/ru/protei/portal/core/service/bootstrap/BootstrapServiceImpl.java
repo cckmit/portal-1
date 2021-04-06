@@ -378,13 +378,22 @@ public class BootstrapServiceImpl implements BootstrapService {
             UserLogin userLogin = userLoginDAO.get(filter.getLoginId());
 
             if (userLogin.getCompanyId() != CrmConstants.Company.HOME_COMPANY_ID) {
-                boolean isManagerCompanyIdsNeedToUpdate = isNotEmpty(filter.getParams().getManagerCompanyIds());
-                boolean isManagerIdsNeedToUpdate = isNotEmpty(filter.getParams().getManagerIds());
+                CaseQuery caseQuery;
+                try {
+                    caseQuery = objectMapper.readValue(filter.getParams(), CaseQuery.class);
+                } catch (IOException e) {
+                    log.debug("updateIssueFiltersManager(): cannot read filter params. params={}", filter.getParams());
+                    e.printStackTrace();
+                    return;
+                }
+
+                boolean isManagerCompanyIdsNeedToUpdate = isNotEmpty(caseQuery.getManagerCompanyIds());
+                boolean isManagerIdsNeedToUpdate = isNotEmpty(caseQuery.getManagerIds());
                 if (isManagerCompanyIdsNeedToUpdate) {
-                    filter.getParams().getManagerCompanyIds().remove(userLogin.getCompanyId());
+                    caseQuery.getManagerCompanyIds().remove(userLogin.getCompanyId());
                 }
                 if (isManagerIdsNeedToUpdate) {
-                    filter.getParams().getManagerIds().clear();
+                    caseQuery.getManagerIds().clear();
                 }
                 if (isManagerCompanyIdsNeedToUpdate || isManagerIdsNeedToUpdate) {
                     caseFilterDAO.partialMerge(filter, "params");
@@ -695,16 +704,25 @@ public class BootstrapServiceImpl implements BootstrapService {
     }
 
     private void updateManagerFiltersWithoutManagerCompany() {
-        List<CaseFilter> allFilters = caseFilterDAO.getAll();
+
+        List<CaseFilter> allFilters = caseFilterDAO.getListByFilterTypes(En_CaseFilterType.getTypesByClass(CaseQuery.class));
 
         for (CaseFilter nextFilter : emptyIfNull(allFilters)) {
-            CaseQuery params = nextFilter.getParams();
+            CaseQuery query;
 
-            if (CollectionUtils.isEmpty(params.getManagerIds()) || isNotEmpty(params.getManagerCompanyIds())) {
+            try {
+                query = objectMapper.readValue(nextFilter.getParams(), CaseQuery.class);
+            } catch (IOException e) {
+                log.info("updateManagerFiltersWithoutManagerCompany: cannot read filter params. params={}", nextFilter.getParams());
+                e.printStackTrace();
+                return;
+            }
+
+            if (CollectionUtils.isEmpty(query.getManagerIds()) || isNotEmpty(query.getManagerCompanyIds())) {
                 continue;
             }
 
-            params.setManagerCompanyIds(Collections.singletonList(CrmConstants.Company.HOME_COMPANY_ID));
+            query.setManagerCompanyIds(Collections.singletonList(CrmConstants.Company.HOME_COMPANY_ID));
             caseFilterDAO.partialMerge(nextFilter, "params");
         }
     }
@@ -734,20 +752,28 @@ public class BootstrapServiceImpl implements BootstrapService {
     private void updateIssueFiltersDateRanges() {
         log.info("updateIssueFiltersDateRanges started");
 
-        List<CaseFilter> allFilters = caseFilterDAO.getAll();
+        List<CaseFilter> allFilters = caseFilterDAO.getListByFilterTypes(En_CaseFilterType.getTypesByClass(CaseQuery.class));
 
         for (CaseFilter filter : emptyIfNull(allFilters)) {
-            CaseQuery params = filter.getParams();
+            CaseQuery query;
 
-            boolean isCreatedRangeNeedToUpdate = checkDateRangeExists(params.getCreatedRange(), params.getCreatedFrom(), params.getCreatedTo());
-            boolean isModifiedRangeNeedToUpdate = checkDateRangeExists(params.getModifiedRange(), params.getModifiedFrom(), params.getModifiedTo());
+            try {
+                query = objectMapper.readValue(filter.getParams(), CaseQuery.class);
+            } catch (IOException e) {
+                log.warn("updateIssueFiltersDateRanges: cannot read filter params. params={}", filter.getParams());
+                e.printStackTrace();
+                return;
+            }
+
+            boolean isCreatedRangeNeedToUpdate = checkDateRangeExists(query.getCreatedRange(), query.getCreatedFrom(), query.getCreatedTo());
+            boolean isModifiedRangeNeedToUpdate = checkDateRangeExists(query.getModifiedRange(), query.getModifiedFrom(), query.getModifiedTo());
 
             if(isCreatedRangeNeedToUpdate) {
-                params.setCreatedRange(createDateRange(params.getCreatedFrom(), params.getCreatedTo()));
+                query.setCreatedRange(createDateRange(query.getCreatedFrom(), query.getCreatedTo()));
             }
 
             if(isModifiedRangeNeedToUpdate) {
-                params.setModifiedRange(createDateRange(params.getCreatedFrom(), params.getCreatedTo()));
+                query.setModifiedRange(createDateRange(query.getCreatedFrom(), query.getCreatedTo()));
             }
 
             if (isCreatedRangeNeedToUpdate || isModifiedRangeNeedToUpdate) {

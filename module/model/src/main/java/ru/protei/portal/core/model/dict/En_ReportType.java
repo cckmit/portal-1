@@ -1,7 +1,5 @@
 package ru.protei.portal.core.model.dict;
 
-import java.util.Objects;
-
 /**
  * Типы отчетов
  */
@@ -32,12 +30,22 @@ public enum En_ReportType {
      */
     CONTRACT,
 
+    /**
+     * Отчет по ночным работам
+     */
+    NIGHT_WORK,
     ;
 
     public static boolean isTimeLimitMandatory(En_ReportType type) {
         if (type == null)
             return false;
-        return Objects.equals(type, En_ReportType.CASE_TIME_ELAPSED)
-                || Objects.equals(type, En_ReportType.CASE_RESOLUTION_TIME);
+        switch (type) {
+            case CASE_TIME_ELAPSED:
+            case CASE_RESOLUTION_TIME:
+            case NIGHT_WORK:
+                return true;
+            default:
+                return false;
+        }
     }
 }

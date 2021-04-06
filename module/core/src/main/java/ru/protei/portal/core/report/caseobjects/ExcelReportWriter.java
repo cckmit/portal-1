@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.struct.ListBuilder;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.ReportWriter;
+import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
 import ru.protei.portal.core.utils.JXLSHelper;
 
@@ -35,6 +36,7 @@ public class ExcelReportWriter implements
 
     private final JXLSHelper.ReportBook<CaseObjectReportRequest> book;
     private final Lang.LocalizedLang lang;
+    private final EnumLangUtil enumLangUtil;
     private final boolean isNotRestricted;
     private final String locale;
     private final boolean withDescription;
@@ -42,18 +44,22 @@ public class ExcelReportWriter implements
     private final boolean withLinkedIssues;
     private final boolean isHumanReadable;
     private final boolean withImportanceHistory;
+    private final boolean withDeadlineAndWorkTrigger;
     private final String[] formats;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang,
+                             EnumLangUtil enumLangUtil,
                              boolean isRestricted,
                              boolean withDescription,
                              boolean withTags,
                              boolean withLinkedIssues,
                              boolean isHumanReadable,
-                             boolean withImportanceHistory) {
+                             boolean withImportanceHistory,
+                             boolean withDeadlineAndWorkTrigger) {
 
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
+        this.enumLangUtil = enumLangUtil;
         this.isNotRestricted = !isRestricted;
         this.locale = localizedLang.getLanguageTag();
         this.withDescription = withDescription;
@@ -61,13 +67,15 @@ public class ExcelReportWriter implements
         this.withLinkedIssues = withLinkedIssues;
         this.isHumanReadable = isHumanReadable;
         this.withImportanceHistory = withImportanceHistory;
+        this.withDeadlineAndWorkTrigger = withDeadlineAndWorkTrigger;
         this.formats = getFormats(
                 isNotRestricted,
                 withDescription,
                 withTags,
                 withLinkedIssues,
                 isHumanReadable,
-                withImportanceHistory
+                withImportanceHistory,
+                withDeadlineAndWorkTrigger
         );
     }
 
@@ -104,7 +112,8 @@ public class ExcelReportWriter implements
                 withTags,
                 withLinkedIssues,
                 isHumanReadable,
-                withImportanceHistory
+                withImportanceHistory,
+                withDeadlineAndWorkTrigger
         );
     }
 
@@ -116,7 +125,8 @@ public class ExcelReportWriter implements
                 withTags,
                 withLinkedIssues,
                 isHumanReadable,
-                withImportanceHistory
+                withImportanceHistory,
+                withDeadlineAndWorkTrigger
         );
     }
 
@@ -185,6 +195,8 @@ public class ExcelReportWriter implements
         values.add(HelperFunc.isNotEmpty(issue.getStateName()) ? issue.getStateName() : "");
         if (withTags) values.add(String.join(",", toList(emptyIfNull(object.getCaseTags()), CaseTag::getName)));
         if (withLinkedIssues) values.add(getCaseNumbersAsString(object.getCaseLinks(), lang));
+        if (isNotRestricted && withDeadlineAndWorkTrigger) values.add(issue.getDeadline() != null ? new Date(issue.getDeadline()) : "");
+        if (isNotRestricted && withDeadlineAndWorkTrigger) values.add(issue.getWorkTrigger() != null ? enumLangUtil.workTriggerLang(issue.getWorkTrigger(), lang.getLanguageTag()) : "");
         values.add(created != null ? created : "");
         values.add(opened != null ? opened : "");
         values.add(workaround != null ? workaround : "");
@@ -275,11 +287,13 @@ public class ExcelReportWriter implements
                 .collect(Collectors.joining(","));
     }
 
-    private String[] getFormats(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable, boolean withImportanceHistory) {
+    private String[] getFormats(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable, boolean withImportanceHistory, boolean withDeadlineAndWorkTrigger) {
         List<String> formatList = new ListBuilder<String>()
                 .add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, isNotRestricted).add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, withDescription)
                 .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
                 .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, withTags).addIf(ExcelFormat.STANDARD, withLinkedIssues)
+                .addIf(ExcelFormat.FULL_DATE, isNotRestricted && withDeadlineAndWorkTrigger)
+                .addIf(ExcelFormat.STANDARD, isNotRestricted && withDeadlineAndWorkTrigger)
                 .add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME)
                 .add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME).add(ExcelFormat.DATE_TIME)
                 .addIf(ExcelFormat.DATE_TIME, withImportanceHistory).addIf(ExcelFormat.DATE_TIME, withImportanceHistory)
@@ -291,11 +305,13 @@ public class ExcelReportWriter implements
         return formatList.toArray(new String[]{});
     }
 
-    private int[] getColumnsWidth(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable, boolean withImportanceHistory) {
+    private int[] getColumnsWidth(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable, boolean withImportanceHistory, boolean withDeadlineAndWorkTrigger) {
         List<Integer> columnsWidthList = new ListBuilder<Integer>()
                 .add(3650).addIf(3430, isNotRestricted).add(8570).addIf(9000, withDescription)
                 .add(4590).add(4200).add(4200).add(4200)
                 .add(6000).add(3350).add(4600).addIf(4600, withTags).addIf(6000, withLinkedIssues)
+                .addIf(5800, isNotRestricted && withDeadlineAndWorkTrigger)
+                .addIf(5800, isNotRestricted && withDeadlineAndWorkTrigger)
                 .add(4200).add(5800).add(5800)
                 .add(5800).add(5800).add(5800)
                 .addIf(5800, withImportanceHistory).addIf(5800, withImportanceHistory)
@@ -307,11 +323,13 @@ public class ExcelReportWriter implements
         return toPrimitiveIntegerArray(columnsWidthList);
     }
 
-    private String[] getColumns(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable, boolean withImportanceHistory) {
+    private String[] getColumns(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable, boolean withImportanceHistory, boolean withDeadlineAndWorkTrigger) {
         List<String> columnsList = new ListBuilder<String>()
                 .add("ir_caseno").addIf("ir_private", isNotRestricted).add("ir_name").addIf("ir_description", withDescription)
                 .add("ir_company").add("ir_initiator").add("ir_manager").add("ir_manager_company")
                 .add("ir_product").add("ir_importance").add("ir_state").addIf("ir_tags", withTags).addIf("ir_links", withLinkedIssues)
+                .addIf("ir_deadline", isNotRestricted && withDeadlineAndWorkTrigger)
+                .addIf("ir_work_trigger", isNotRestricted && withDeadlineAndWorkTrigger)
                 .add("ir_date_created").add("ir_date_opened").add("ir_date_workaround")
                 .add("ir_date_customer_test").add("ir_date_done").add("ir_date_verify")
                 .addIf("ir_date_important", withImportanceHistory).addIf("ir_date_critical", withImportanceHistory)

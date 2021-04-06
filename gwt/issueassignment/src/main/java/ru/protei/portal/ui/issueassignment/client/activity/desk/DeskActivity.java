@@ -183,7 +183,6 @@ public abstract class DeskActivity implements Activity, AbstractDeskActivity {
         popup.setRelative(relative);
         popup.addValueChangeHandler(event -> {
             onChanged.accept(popup.getValue());
-            popup.hidePopup();
         });
         popup.clearPopup();
         popup.fill();

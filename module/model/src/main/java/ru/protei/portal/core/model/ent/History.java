@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
@@ -53,6 +54,7 @@ public class History implements Serializable {
 
     private String newColor;
 
+    @JsonIgnore
     private EmployeeRegistrationHistory employeeRegistrationHistory;
 
     public History() {
@@ -187,6 +189,7 @@ public class History implements Serializable {
         this.newColor = newColor;
     }
 
+    @JsonIgnore
     public EmployeeRegistrationHistory getEmployeeRegistrationHistory() {
         return employeeRegistrationHistory;
     }
@@ -195,6 +198,7 @@ public class History implements Serializable {
         this.employeeRegistrationHistory = employeeRegistrationHistory;
     }
 
+    @JsonIgnore
     public String getLinkName() {
         if (employeeRegistrationHistory == null) {
             return null;
@@ -203,6 +207,7 @@ public class History implements Serializable {
         return employeeRegistrationHistory.getRemoteId();
     }
 
+    @JsonIgnore
     public En_CaseLink getLinkType() {
         if (employeeRegistrationHistory == null) {
             return null;

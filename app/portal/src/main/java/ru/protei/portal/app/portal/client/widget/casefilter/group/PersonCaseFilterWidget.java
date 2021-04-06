@@ -9,7 +9,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.app.portal.client.widget.casefilter.item.PersonCaseFilterCallbacks;
 import ru.protei.portal.app.portal.client.widget.casefilter.item.PersonCaseFilterItem;
@@ -35,7 +35,7 @@ abstract public class PersonCaseFilterWidget extends Composite implements Activi
         makeItemAndFillValue(null);
 
         this.personId = personId;
-        controller.getCaseFilterByPersonId(personId, new FluentCallback<List<CaseFilterShortView>>()
+        controller.getCaseFilterByPersonId(personId, new FluentCallback<List<FilterShortView>>()
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                 })
@@ -49,7 +49,7 @@ abstract public class PersonCaseFilterWidget extends Composite implements Activi
         );
     }
 
-    private void makeItemAndFillValue(CaseFilterShortView value) {
+    private void makeItemAndFillValue(FilterShortView value) {
         PersonCaseFilterItem personCaseFilterItem = itemProvider.get();
         personCaseFilterItem.setValue(value);
         personCaseFilterItem.setCallback(new PersonCaseFilterCallbacks() {
@@ -90,13 +90,13 @@ abstract public class PersonCaseFilterWidget extends Composite implements Activi
     }
 
     private void updateFilterSelectors() {
-        controller.getCaseFilterByPersonId(personId, new FluentCallback<List<CaseFilterShortView>>()
+        controller.getCaseFilterByPersonId(personId, new FluentCallback<List<FilterShortView>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(list -> updateFilterSelectors(list))
         );
     }
 
-    private void updateFilterSelectors(List<CaseFilterShortView> filters) {
+    private void updateFilterSelectors(List<FilterShortView> filters) {
         if (CollectionUtils.isEmpty(filters)) {
             itemContainer.forEach(item -> ((PersonCaseFilterItem)item).setSelectorFilter(null));
         } else {

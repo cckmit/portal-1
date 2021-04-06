@@ -15,4 +15,6 @@ public interface AbstractProjectTableActivity
         InfiniteLoadHandler<Project>, InfiniteTableWidget.PagerListener
 {
     void onEditClicked( Project value );
+
+    void onFilterChanged();
 }

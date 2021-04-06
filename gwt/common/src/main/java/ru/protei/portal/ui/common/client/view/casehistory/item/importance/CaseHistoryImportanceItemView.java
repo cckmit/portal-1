@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
 import static ru.protei.portal.ui.common.client.util.ColorUtils.makeContrastColor;
+import static ru.protei.portal.core.model.helper.StringUtils.firstUppercaseChar;
 
 public class CaseHistoryImportanceItemView extends Composite {
     public CaseHistoryImportanceItemView() {
@@ -16,7 +17,7 @@ public class CaseHistoryImportanceItemView extends Composite {
 
     public void setName(String name) {
         this.name.setInnerText(name);
-        icon.setInnerText(name.substring(0, 1).toUpperCase());
+        icon.setInnerText(firstUppercaseChar(name));
     }
 
     public void setColor(String color) {

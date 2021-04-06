@@ -1,34 +1,32 @@
 package ru.protei.portal.core.model.query;
 
-import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.dto.ProductDirectionInfo;
-import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.dict.En_CustomerType;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.Interval;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.*;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 /**
  * Запрос по проектам
  */
-public class ProjectQuery extends BaseQuery {
-
-    private En_CaseType type = En_CaseType.PROJECT;
-
+public class ProjectQuery extends BaseQuery implements HasFilterQueryIds {
     private List<Long> caseIds;
 
-    private Set<CaseState> states;
+    private Set<Long> stateIds;
 
-    private Set<EntityOption> regions;
+    private Set<Long> headManagerIds;
 
-    private Set<PersonShortView> headManagers;
+    private Set<Long> caseMemberIds;
 
-    private Set<PersonShortView> caseMembers;
+    private Set<Long> directionIds;
 
-    private Set<ProductDirectionInfo> directions;
+    private Set<Long> regionIds;
 
     private Set<Long> districtIds;
 
@@ -65,18 +63,6 @@ public class ProjectQuery extends BaseQuery {
         super(searchString, sortField, sortDir);
     }
 
-    public ProjectQuery( Set<CaseState> state, String searchString, En_SortField sortField, En_SortDir sortDir ) {
-        super(searchString, sortField, sortDir);
-        this.states = state;
-    }
-
-    public ProjectQuery(Date createdFrom, Date createdTo, Set<Long> productIds, String searchString, En_SortField sortField, En_SortDir sortDir) {
-        super(searchString, sortField, sortDir);
-        this.createdFrom = createdFrom;
-        this.createdTo = createdTo;
-        this.productIds = productIds;
-    }
-
     public List<Long> getCaseIds() {
         return caseIds;
     }
@@ -86,20 +72,16 @@ public class ProjectQuery extends BaseQuery {
         this.caseIds.add(caseId);
     }
 
-    public En_CaseType getType() {
-        return type;
-    }
-
     public void setCaseIds(List<Long> caseIds) {
         this.caseIds = caseIds;
     }
 
-    public Set<CaseState> getStates() {
-        return states;
+    public Set<Long> getStateIds() {
+        return stateIds;
     }
 
-    public void setStates(Set<CaseState> state) {
-        this.states = state;
+    public void setStateIds(Set<Long> state) {
+        this.stateIds = state;
     }
 
     public Set<Long> getDistrictIds() {
@@ -110,12 +92,12 @@ public class ProjectQuery extends BaseQuery {
         this.districtIds = districtIds;
     }
 
-    public Set<ProductDirectionInfo> getDirections() {
-        return directions;
+    public Set<Long> getDirectionIds() {
+        return directionIds;
     }
 
-    public void setDirections(Set<ProductDirectionInfo> directions) {
-        this.directions = directions;
+    public void setDirectionIds(Set<Long> directionIds) {
+        this.directionIds = directionIds;
     }
 
     public Long getMemberId() {
@@ -158,28 +140,28 @@ public class ProjectQuery extends BaseQuery {
         this.createdTo = createdTo;
     }
 
-    public Set<EntityOption> getRegions() {
-        return regions;
+    public Set<Long> getRegionIds() {
+        return regionIds;
     }
 
-    public void setRegions(Set<EntityOption> regions) {
-        this.regions = regions;
+    public void setRegionIds(Set<Long> regionIds) {
+        this.regionIds = regionIds;
     }
 
-    public Set<PersonShortView> getHeadManagers() {
-        return headManagers;
+    public Set<Long> getHeadManagerIds() {
+        return headManagerIds;
     }
 
-    public void setHeadManagers(Set<PersonShortView> headManagers) {
-        this.headManagers = headManagers;
+    public void setHeadManagerIds(Set<Long> headManagerIds) {
+        this.headManagerIds = headManagerIds;
     }
 
-    public Set<PersonShortView> getCaseMembers() {
-        return caseMembers;
+    public Set<Long> getCaseMemberIds() {
+        return caseMemberIds;
     }
 
-    public void setCaseMembers(Set<PersonShortView> caseMembers) {
-        this.caseMembers = caseMembers;
+    public void setCaseMemberIds(Set<Long> caseMemberIds) {
+        this.caseMemberIds = caseMemberIds;
     }
 
     public Set<Long> getInitiatorCompanyIds() {
@@ -196,10 +178,6 @@ public class ProjectQuery extends BaseQuery {
 
     public void setCommentCreationRange(DateRange commentCreationRange) {
         this.commentCreationRange = commentCreationRange;
-    }
-
-    public void setType(En_CaseType type) {
-        this.type = type;
     }
 
     public Long getPauseDateGreaterThan() {
@@ -243,14 +221,61 @@ public class ProjectQuery extends BaseQuery {
     }
 
     @Override
+    public List<Long> getAllCompanyIds() {
+        List<Long> allCompanyIds = new ArrayList<>();
+        allCompanyIds.addAll(emptyIfNull(initiatorCompanyIds));
+        allCompanyIds.addAll(emptyIfNull(subcontractorIds));
+
+        return allCompanyIds;
+    }
+
+    @Override
+    public List<Long> getAllPersonIds() {
+        List<Long> allPersonIds = new ArrayList<>();
+        allPersonIds.addAll(emptyIfNull(caseMemberIds));
+        allPersonIds.addAll(emptyIfNull(headManagerIds));
+
+        if (memberId != null) {
+            allPersonIds.add(memberId);
+        }
+
+        return allPersonIds;
+    }
+
+    @Override
+    public List<Long> getAllProductIds() {
+        return new ArrayList<>(emptyIfNull(productIds));
+    }
+
+    @Override
+    public List<Long> getAllDirectionIds() {
+        return new ArrayList<>(emptyIfNull(directionIds));
+    }
+
+    @Override
+    public List<Long> getAllTagIds() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<Long> getAllRegionIds() {
+        return new ArrayList<>(emptyIfNull(regionIds));
+    }
+
+    @Override
+    public Long getPlanId() {
+        return null;
+    }
+
+    @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
                 CollectionUtils.isNotEmpty(caseIds) ||
-                CollectionUtils.isNotEmpty(states) ||
-                CollectionUtils.isNotEmpty(regions) ||
-                CollectionUtils.isNotEmpty(headManagers) ||
-                CollectionUtils.isNotEmpty(caseMembers) ||
-                CollectionUtils.isNotEmpty(directions) ||
+                CollectionUtils.isNotEmpty(stateIds) ||
+                CollectionUtils.isNotEmpty(regionIds) ||
+                CollectionUtils.isNotEmpty(headManagerIds) ||
+                CollectionUtils.isNotEmpty(caseMemberIds) ||
+                CollectionUtils.isNotEmpty(directionIds) ||
                 CollectionUtils.isNotEmpty(productIds) ||
                 CollectionUtils.isNotEmpty(initiatorCompanyIds) ||
                 CollectionUtils.isNotEmpty(subcontractorIds) ||
@@ -267,13 +292,12 @@ public class ProjectQuery extends BaseQuery {
     @Override
     public String toString() {
         return "ProjectQuery{" +
-                "type=" + type +
                 ", caseIds=" + caseIds +
-                ", states=" + states +
-                ", regions=" + regions +
-                ", headManagers=" + headManagers +
-                ", caseMembers=" + caseMembers +
-                ", directions=" + directions +
+                ", stateIds=" + stateIds +
+                ", regionIds=" + regionIds +
+                ", headManagerIds=" + headManagerIds +
+                ", caseMemberIds=" + caseMemberIds +
+                ", directionIds=" + directionIds +
                 ", districtIds=" + districtIds +
                 ", memberId=" + memberId +
                 ", productIds=" + productIds +
@@ -296,11 +320,11 @@ public class ProjectQuery extends BaseQuery {
         if (!(o instanceof ProjectQuery)) return false;
         ProjectQuery that = (ProjectQuery) o;
         return Objects.equals(caseIds, that.caseIds) &&
-                Objects.equals(states, that.states) &&
-                Objects.equals(regions, that.regions) &&
-                Objects.equals(headManagers, that.headManagers) &&
-                Objects.equals(caseMembers, that.caseMembers) &&
-                Objects.equals(directions, that.directions) &&
+                Objects.equals(stateIds, that.stateIds) &&
+                Objects.equals(regionIds, that.regionIds) &&
+                Objects.equals(headManagerIds, that.headManagerIds) &&
+                Objects.equals(caseMemberIds, that.caseMemberIds) &&
+                Objects.equals(directionIds, that.directionIds) &&
                 Objects.equals(districtIds, that.districtIds) &&
                 Objects.equals(memberId, that.memberId) &&
                 Objects.equals(productIds, that.productIds) &&
@@ -318,7 +342,7 @@ public class ProjectQuery extends BaseQuery {
 
     @Override
     public int hashCode() {
-        return Objects.hash(caseIds, states, regions, headManagers, caseMembers, directions,
+        return Objects.hash(caseIds, stateIds, regionIds, headManagerIds, caseMemberIds, directionIds,
                 districtIds, memberId, productIds, customerType, createdFrom, createdTo,
                 initiatorCompanyIds, commentCreationRange, pauseDateGreaterThan, deleted,
                 subcontractorIds, technicalSupportExpiresInDays, isActive);

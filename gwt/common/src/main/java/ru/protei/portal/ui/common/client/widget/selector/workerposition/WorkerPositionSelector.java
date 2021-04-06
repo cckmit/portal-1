@@ -61,10 +61,7 @@ public class WorkerPositionSelector extends ButtonPopupSingleSelector<EntityOpti
             super.onShowPopupClicked(event);
             checkNoElements();
         } else {
-            ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem item = new ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem();
-            item.setName(lang.initiatorSelectACompany());
-            item.getElement().addClassName(UiConstants.Styles.TEXT_CENTER);
-            getPopup().getChildContainer().add(item);
+            getPopup().setNoElements(true, lang.initiatorSelectACompany());
             getPopup().showNear( button.getElement() );
         }
     }

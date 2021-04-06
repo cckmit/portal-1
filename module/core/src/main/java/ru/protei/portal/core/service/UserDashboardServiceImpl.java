@@ -1,27 +1,43 @@
 package ru.protei.portal.core.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dao.CaseFilterDAO;
 import ru.protei.portal.core.model.dao.UserDashboardDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.UserDashboard;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.CaseQuery;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.io.IOException;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class UserDashboardServiceImpl implements UserDashboardService {
+    private static Logger log = LoggerFactory.getLogger( UserDashboardServiceImpl.class );
+
     @Autowired
     UserDashboardDAO userDashboardDAO;
+
+    @Autowired
+    CaseFilterDAO caseFilterDAO;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Override
     @Transactional
@@ -123,8 +139,11 @@ public class UserDashboardServiceImpl implements UserDashboardService {
         }
 
         Long loginId = token.getUserLoginId();
-        List<UserDashboard> dashboardList = stream(userDashboardDAO.findByLoginId(loginId)).sorted(Comparator.comparingLong(UserDashboard::getOrderNumber)).collect(toList());
-        return ok(dashboardList);
+        List<UserDashboard> dashboardList = stream(userDashboardDAO.findByLoginId(loginId))
+                .sorted(Comparator.comparingLong(UserDashboard::getOrderNumber))
+                .collect(toList());
+
+        return fillDashboardsWithCaseFilterDto(dashboardList);
     }
 
     @Override
@@ -150,6 +169,31 @@ public class UserDashboardServiceImpl implements UserDashboardService {
         userDashboardDAO.mergeBatch(Arrays.asList(srcDashboard, dstDashboard));
 
         return getUserDashboards(token);
+    }
+
+    private Result<List<UserDashboard>> fillDashboardsWithCaseFilterDto(List<UserDashboard> userDashboards) {
+        if (userDashboards.isEmpty()) {
+            return ok(userDashboards);
+        }
+
+        Map<Long, CaseFilter> idToCaseFilter = caseFilterDAO
+                .getListByKeys(CollectionUtils.toList(userDashboards, UserDashboard::getCaseFilterId))
+                .stream()
+                .collect(Collectors.toMap(CaseFilter::getId, Function.identity()));
+
+        for (UserDashboard userDashboard : userDashboards) {
+            try {
+                CaseFilter caseFilter = idToCaseFilter.get(userDashboard.getCaseFilterId());
+                CaseQuery caseQuery = objectMapper.readValue(caseFilter.getParams(), CaseQuery.class);
+                userDashboard.setCaseFilterDto(new CaseFilterDto<>(caseFilter, caseQuery));
+            } catch (IOException e) {
+                log.warn("fillDashboardsWithCaseFilterDto(): cannot read filter params. caseFilter={}", userDashboard.getCaseFilter());
+                e.printStackTrace();
+                return error(En_ResultStatus.GET_DATA_ERROR);
+            }
+        }
+
+        return ok(userDashboards);
     }
 
     private List<UserDashboard> updateOrders(List<UserDashboard> userDashboards) {

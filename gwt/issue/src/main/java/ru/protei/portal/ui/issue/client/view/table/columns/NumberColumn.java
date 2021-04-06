@@ -6,8 +6,10 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
-import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.Lang;
+
+import static ru.protei.portal.ui.common.client.util.ColorUtils.makeContrastColor;
+import static ru.protei.portal.core.model.helper.StringUtils.firstUppercaseChar;
 
 /**
  * Колонка "Номер"
@@ -37,8 +39,10 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
 
         if ( value.getImportanceCode() != null ) {
             com.google.gwt.dom.client.Element i = DOM.createElement( "i" );
-            i.addClassName(ImportanceStyleProvider.getImportanceIcon(value.getImportanceCode()) + " center");
+            i.addClassName("case-importance");
+            i.setInnerText(firstUppercaseChar(value.getImportanceCode()));
             i.getStyle().setBackgroundColor(value.getImportanceColor());
+            i.getStyle().setColor(makeContrastColor(value.getImportanceColor()));
             divElement.appendChild( i );
         }
 

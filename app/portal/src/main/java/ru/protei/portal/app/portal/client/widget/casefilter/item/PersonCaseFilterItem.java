@@ -11,7 +11,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
@@ -25,7 +25,7 @@ import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
  */
 public class PersonCaseFilterItem
         extends Composite
-        implements TakesValue<CaseFilterShortView>, HasEnabled
+        implements TakesValue<FilterShortView>, HasEnabled
 {
     @Inject
     public void onInit() {
@@ -35,12 +35,12 @@ public class PersonCaseFilterItem
     }
 
     @Override
-    public CaseFilterShortView getValue() {
+    public FilterShortView getValue() {
         return filter.getValue();
     }
 
     @Override
-    public void setValue( CaseFilterShortView value ) {
+    public void setValue( FilterShortView value ) {
         if (value == null) {
             oldFilterId = null;
         } else {
@@ -59,12 +59,12 @@ public class PersonCaseFilterItem
         filter.setEnabled(b);
     }
 
-    public void setSelectorFilter(Selector.SelectorFilter<CaseFilterShortView> selectorFilter) {
+    public void setSelectorFilter(Selector.SelectorFilter<FilterShortView> selectorFilter) {
         filter.setFilter(selectorFilter);
     }
 
     @UiHandler( "filter" )
-    public void onFilterChanged( ValueChangeEvent<CaseFilterShortView> event) {
+    public void onFilterChanged( ValueChangeEvent<FilterShortView> event) {
         Long newFilterId = filter.getValue() == null ? null : filter.getValue().getId();
 
         if (oldFilterId == null && newFilterId == null) {

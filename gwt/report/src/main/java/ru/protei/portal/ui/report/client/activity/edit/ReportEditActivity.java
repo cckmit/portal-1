@@ -23,15 +23,14 @@ import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContrac
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterActivity;
-import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
-import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
-import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
+import ru.protei.portal.ui.common.client.widget.project.filter.ProjectFilterWidget;
+import ru.protei.portal.ui.common.client.widget.project.filter.ProjectFilterWidgetModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
@@ -46,23 +45,23 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
-import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.makeSearchStringFromCaseNumber;
-import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.fromDateRange;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
 import static ru.protei.portal.ui.report.client.util.AccessUtil.availableReportTypes;
 import static ru.protei.portal.ui.report.client.util.AccessUtil.canEdit;
 
 public abstract class ReportEditActivity implements Activity,
-        AbstractReportCreateEditActivity, AbstractIssueFilterModel, AbstractProjectFilterActivity {
+        AbstractReportCreateEditActivity, AbstractIssueFilterModel {
 
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
         issueFilterWidget.getIssueFilterParams().setModel(this);
         issueFilterWidget.clearFooterStyle();
-        projectFilterView.clearFooterStyle();
+
+        projectFilterWidget.onInit(projectFilterModel);
+        projectFilterWidget.clearFooterStyles();
+
         contractFilterView.clearFooterStyle();
         view.fillReportScheduledTypes(asList(En_ReportScheduledType.values()));
     }
@@ -75,7 +74,7 @@ public abstract class ReportEditActivity implements Activity,
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
         issueFilterWidget.resetFilter(null);
-        projectFilterView.resetFilter();
+        projectFilterWidget.resetFilter();
         contractFilterView.resetFilter();
         updateCompanyModels(event.profile);
     }
@@ -192,12 +191,16 @@ public abstract class ReportEditActivity implements Activity,
         if (report.isHumanReadable()) {
             additionalParams.add(En_ReportAdditionalParamType.HUMAN_READABLE);
         }
+        if (report.isWithDeadlineAndWorkTrigger()) {
+            additionalParams.add(En_ReportAdditionalParamType.DEADLINE_AND_WORK_TRIGGER);
+        }
 
         BaseQuery query = reportDto.getQuery();
         switch (report.getReportType()) {
             case CASE_OBJECTS:
             case CASE_TIME_ELAPSED:
-            case CASE_RESOLUTION_TIME: {
+            case CASE_RESOLUTION_TIME:
+            case NIGHT_WORK: {
                 CaseQuery caseQuery = (CaseQuery)query;
                 if (caseQuery.isCheckImportanceHistory()) {
                     additionalParams.add(En_ReportAdditionalParamType.IMPORTANCE_HISTORY);
@@ -232,24 +235,7 @@ public abstract class ReportEditActivity implements Activity,
     }
 
     private void fillFilter(ProjectQuery query) {
-        if (query.getCaseIds() != null) {
-            projectFilterView.searchPattern().setValue(makeSearchStringFromCaseNumber(query.getCaseIds()));
-        } else {
-            projectFilterView.searchPattern().setValue(query.getSearchString());
-        }
-        projectFilterView.states().setValue(query.getStates());
-        projectFilterView.regions().setValue(query.getRegions());
-        projectFilterView.headManagers().setValue(query.getHeadManagers());
-        projectFilterView.caseMembers().setValue(query.getCaseMembers());
-        projectFilterView.direction().setValue(query.getDirections());
-        projectFilterView.sortField().setValue(query.getSortField());
-        projectFilterView.sortDir().setValue(query.getSortDir() == En_SortDir.ASC);
-        projectFilterView.onlyMineProjects().setValue(query.getMemberId() != null);
-        projectFilterView.commentCreationRange().setValue(fromDateRange(query.getCommentCreationRange()));
-        projectFilterView.initiatorCompanies().setValue(
-                stream(query.getInitiatorCompanyIds()).map(EntityOption::new).collect(Collectors.toSet()));
-
-        regionController.getSelectorsParams(query, new RequestCallback<SelectorsParams>() {
+        filterController.getSelectorsParams(query, new RequestCallback<SelectorsParams>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR));
@@ -257,8 +243,7 @@ public abstract class ReportEditActivity implements Activity,
 
             @Override
             public void onSuccess(SelectorsParams selectorsParams) {
-                Set<EntityOption> initiatorsCompanies = applyCompanies(selectorsParams.getCompanyEntityOptions(), query.getInitiatorCompanyIds());
-                projectFilterView.initiatorCompanies().setValue(initiatorsCompanies);
+                projectFilterWidget.getFilterParamView().fillFilterFields(query, selectorsParams);
             }
         });
     }
@@ -302,13 +287,13 @@ public abstract class ReportEditActivity implements Activity,
 
             @Override
             public void onSuccess(SelectorsParams selectorsParams) {
-                Set<Contractor> contractors = applyContractors(selectorsParams.getContractors(), query.getContractorIds());
+                Set<Contractor> contractors = collectContractors(selectorsParams.getContractors(), query.getContractorIds());
                 contractFilterView.contractors().setValue(contractors);
-                Set<PersonShortView> curators = applyPersons(selectorsParams.getPersonShortViews(), query.getCuratorIds());
+                Set<PersonShortView> curators = collectPersons(selectorsParams.getPersonShortViews(), query.getCuratorIds());
                 contractFilterView.curators().setValue(curators);
-                Set<EntityOption> organisations = applyCompanies(selectorsParams.getCompanyEntityOptions(), query.getOrganizationIds());
+                Set<EntityOption> organisations = collectCompanies(selectorsParams.getCompanyEntityOptions(), query.getOrganizationIds());
                 contractFilterView.organizations().setValue(organisations);
-                Set<PersonShortView> managers = applyPersons(selectorsParams.getPersonShortViews(), query.getManagerIds());
+                Set<PersonShortView> managers = collectPersons(selectorsParams.getPersonShortViews(), query.getManagerIds());
                 contractFilterView.managers().setValue(managers);
                 if (query.getDirectionId() != null) {
                     contractFilterView.direction().setValue(selectorsParams.getProductDirectionInfos().get(0));
@@ -317,27 +302,26 @@ public abstract class ReportEditActivity implements Activity,
         });
     }
 
-    private Set<EntityOption> applyCompanies(Collection<EntityOption> companies, Collection<Long> companyIds) {
+    private Set<EntityOption> collectCompanies(Collection<EntityOption> companies, Collection<Long> companyIds) {
         return stream(companies)
                 .filter(company ->
                         stream(companyIds).anyMatch(ids -> ids.equals(company.getId())))
                 .collect(Collectors.toSet());
     }
 
-    private Set<PersonShortView> applyPersons(List<PersonShortView> personShortViews, List<Long> personIds) {
+    private Set<PersonShortView> collectPersons(List<PersonShortView> personShortViews, Collection<Long> personIds) {
         return stream(personShortViews)
                 .filter(personShortView ->
                         stream(personIds).anyMatch(ids -> ids.equals(personShortView.getId())))
                 .collect(Collectors.toSet());
     }
 
-    private Set<Contractor> applyContractors(Collection<Contractor> contractors, Collection<Long> ids) {
+    private Set<Contractor> collectContractors(Collection<Contractor> contractors, Collection<Long> ids) {
         return stream(contractors)
                 .filter(contractor ->
                         stream(ids).anyMatch(id -> id.equals(contractor.getId())))
                 .collect(Collectors.toSet());
     }
-
 
     private Report makeReport(Report report) {
         report.setReportType(view.reportType().getValue());
@@ -348,6 +332,7 @@ public abstract class ReportEditActivity implements Activity,
         report.setWithTags(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.TAGS));
         report.setWithLinkedIssues(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.LINKED_ISSUES));
         report.setHumanReadable(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.HUMAN_READABLE));
+        report.setWithDeadlineAndWorkTrigger(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.DEADLINE_AND_WORK_TRIGGER));
         return report;
     }
 
@@ -358,7 +343,8 @@ public abstract class ReportEditActivity implements Activity,
         switch (report.getReportType()) {
             case CASE_OBJECTS:
             case CASE_TIME_ELAPSED:
-            case CASE_RESOLUTION_TIME: {
+            case CASE_RESOLUTION_TIME:
+            case NIGHT_WORK: {
                 CaseQuery query = getIssueQuery();
                 if (!validateCaseQuery(report.getReportType(), query)) {
                     return null;
@@ -394,10 +380,10 @@ public abstract class ReportEditActivity implements Activity,
     private void showFilterForReportType(En_ReportType reportType) {
         switch (reportType) {
             case PROJECT: {
-                projectFilterView.resetFilter();
+                projectFilterWidget.resetFilter();
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
                 view.getFilterContainer().clear();
-                view.getFilterContainer().add(projectFilterView.asWidget());
+                view.getFilterContainer().add(projectFilterWidget.asWidget());
                 view.scheduledTypeContainerVisibility().setVisible(false);
                 view.additionalParamsVisibility().setVisible(false);
                 view.additionalParams().setValue(null);
@@ -415,7 +401,8 @@ public abstract class ReportEditActivity implements Activity,
             }
             case CASE_OBJECTS:
             case CASE_TIME_ELAPSED:
-            case CASE_RESOLUTION_TIME: {
+            case CASE_RESOLUTION_TIME:
+            case NIGHT_WORK: {
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
                 view.scheduledTypeContainerVisibility().setVisible(isScheduledEnabled(reportType));
                 view.additionalParamsVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
@@ -432,18 +419,13 @@ public abstract class ReportEditActivity implements Activity,
 
     private boolean isScheduledEnabled(En_ReportType reportType) {
         switch (reportType) {
-            case CASE_OBJECTS: return true;
-            case CASE_TIME_ELAPSED: return true;
-            case CASE_RESOLUTION_TIME: return false;
-            case PROJECT: return false;
-            case CONTRACT: return false;
+            case CASE_OBJECTS:
+            case CASE_TIME_ELAPSED:
+            case NIGHT_WORK:
+                return true;
+            default:
+                return false;
         }
-        return false;
-    }
-
-    @Override
-    public void onProjectFilterChanged()  {
-        ; // ничего не делаем, мы используем фильтр при создании отчета
     }
 
     @Override
@@ -487,7 +469,8 @@ public abstract class ReportEditActivity implements Activity,
 
         switch (reportType) {
             case CASE_RESOLUTION_TIME:
-            case CASE_TIME_ELAPSED :
+            case CASE_TIME_ELAPSED:
+            case NIGHT_WORK:
                 boolean dateRangeValid = validateCreatedRange(query.getCreatedRange(), rangeTypeMandatory);
 
                 if (!dateRangeValid) {
@@ -563,8 +546,13 @@ public abstract class ReportEditActivity implements Activity,
         if (query == null) {
             return false;
         }
-        boolean dateRangeValid = validateProjectCommentCreationRange(query.getCommentCreationRange(), false);
 
+        if (!query.isParamsPresent()) {
+            fireEvent(new NotifyEvents.Show(lang.reportCaseObjectIsAnySelectedParamNotPresentError(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        boolean dateRangeValid = validateProjectCommentCreationRange(query.getCommentCreationRange(), false);
         if (!dateRangeValid) {
             fireEvent(new NotifyEvents.Show(lang.reportNotValidPeriod(), NotifyEvents.NotifyType.ERROR));
             return false;
@@ -631,7 +619,7 @@ public abstract class ReportEditActivity implements Activity,
     }
 
     private void validateProjectCommentCreation(boolean isTypeValid, boolean isRangeValid) {
-        projectFilterView.setCommentCreationRangeValid(isTypeValid, isRangeValid);
+        projectFilterWidget.getFilterParamView().setCommentCreationRangeValid(isTypeValid, isRangeValid);
     }
 
     private void applyIssueFilterVisibilityByPrivileges() {
@@ -654,28 +642,7 @@ public abstract class ReportEditActivity implements Activity,
     }
 
     private ProjectQuery getProjectQuery() {
-        ProjectQuery query = new ProjectQuery();
-
-        String searchString = projectFilterView.searchPattern().getValue();
-        query.setCaseIds(searchCaseNumber(searchString, false));
-        if (query.getCaseIds() == null) {
-            query.setSearchString(isBlank(searchString) ? null : searchString);
-        }
-
-        query.setStates(projectFilterView.states().getValue());
-        query.setRegions(projectFilterView.regions().getValue());
-        query.setHeadManagers(projectFilterView.headManagers().getValue());
-        query.setCaseMembers(projectFilterView.caseMembers().getValue());
-        query.setDirections(projectFilterView.direction().getValue());
-        query.setSortField(projectFilterView.sortField().getValue());
-        query.setSortDir(projectFilterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
-        if(projectFilterView.onlyMineProjects().getValue() != null && projectFilterView.onlyMineProjects().getValue()) {
-            query.setMemberId(policyService.getProfile().getId());
-        }
-        query.setInitiatorCompanyIds(projectFilterView.initiatorCompanies().getValue().stream()
-                .map(entityOption -> entityOption.getId()).collect(Collectors.toSet()));
-        query.setCommentCreationRange(toDateRange(projectFilterView.commentCreationRange().getValue()));
-        return query;
+        return projectFilterWidget.getFilterParamView().getQuery();
     }
     
     private ContractQuery getContractQuery() {
@@ -727,7 +694,9 @@ public abstract class ReportEditActivity implements Activity,
     @Inject
     IssueFilterWidget issueFilterWidget;
     @Inject
-    AbstractProjectFilterView projectFilterView;
+    ProjectFilterWidget projectFilterWidget;
+    @Inject
+    ProjectFilterWidgetModel projectFilterModel;
     @Inject
     AbstractContractFilterView contractFilterView;
 
@@ -738,9 +707,7 @@ public abstract class ReportEditActivity implements Activity,
     @Inject
     SubcontractorCompanyModel subcontractorCompanyModel;
     @Inject
-    IssueFilterControllerAsync filterController;
-    @Inject
-    RegionControllerAsync regionController;
+    CaseFilterControllerAsync filterController;
     @Inject
     ContractControllerAsync contractController;
 

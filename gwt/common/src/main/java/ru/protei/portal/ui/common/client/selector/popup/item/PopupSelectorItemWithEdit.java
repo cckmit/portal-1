@@ -14,15 +14,34 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.InlineLabel;
 import org.apache.poi.hssf.record.HideObjRecord;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.selector.AbstractSelectorItem;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+import static ru.protei.portal.ui.common.client.selector.util.SelectorItemKeyboardKey.isSelectorItemKeyboardKey;
 
-public class PopupSelectorItemWithEdit<T> extends Composite implements HasValue<T>, HasAddHandlers, HasEditHandlers, HasClickHandlers, SelectorItem<T> {
+public class PopupSelectorItemWithEdit<T> extends Composite implements HasValue<T>, HasEditHandlers, SelectorItem<T> {
+    public PopupSelectorItemWithEdit() {
+        initWidget(ourUiBinder.createAndBindUi(this));
 
-public PopupSelectorItemWithEdit() {
-    initWidget(ourUiBinder.createAndBindUi(this));
-}
+        addDomHandler(event -> {
+            event.preventDefault();
+            if (selectorItemHandler != null) {
+                selectorItemHandler.onMouseClickEvent(this, event);
+            }
+        }, ClickEvent.getType());
+
+        addDomHandler(event -> {
+            if (!isSelectorItemKeyboardKey(event.getNativeKeyCode())) {
+                return;
+            }
+
+            event.preventDefault();
+            if (selectorItemHandler != null) {
+                selectorItemHandler.onKeyboardButtonDown(this, event);
+            }
+        }, KeyDownEvent.getType());
+    }
 
     @Override
     public void setValue(T value) {
@@ -49,23 +68,8 @@ public PopupSelectorItemWithEdit() {
     }
 
     @Override
-    public HandlerRegistration addAddHandler(AddHandler handler) {
-        return addHandler(handler, AddEvent.getType());
-    }
-
-    @Override
     public HandlerRegistration addEditHandler(EditHandler handler) {
         return addHandler(handler, EditEvent.getType());
-    }
-
-    @Override
-    public HandlerRegistration addClickHandler(ClickHandler handler) {
-        return addHandler(handler, ClickEvent.getType());
-    }
-
-    @Override
-    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
-        this.selectorItemHandler = selectorItemHandler;
     }
 
     @Override
@@ -76,6 +80,11 @@ public PopupSelectorItemWithEdit() {
     @Override
     public HandlerRegistration addKeyUpHandler(KeyUpHandler handler) {
         return addHandler( handler, KeyUpEvent.getType() );
+    }
+
+    @Override
+    public void addSelectorHandler(SelectorItemHandler<T> selectorItemHandler) {
+        this.selectorItemHandler = selectorItemHandler;
     }
 
     public void setEditable(boolean isEditable) {
@@ -90,17 +99,9 @@ public PopupSelectorItemWithEdit() {
        this.id = id;
     }
 
-    @UiHandler({"text"})
-    public void rootClick(ClickEvent event) {
-        event.preventDefault();
-
-        if(selectorItemHandler!=null) {
-            selectorItemHandler.onSelectorItemClicked(this);
-        }
-    }
-
     @UiHandler("editIcon")
     public void editClick(ClickEvent event) {
+        event.stopPropagation();
         EditEvent.fire(this, id, text.getText());
     }
 
@@ -112,8 +113,9 @@ public PopupSelectorItemWithEdit() {
     InlineLabel editIcon;
 
     private T value = null;
-    private SelectorItemHandler<T> selectorItemHandler;
     private Long id;
+
+    private SelectorItemHandler<T> selectorItemHandler;
 
     interface PopupSelectorItemWithBinder extends UiBinder<HTMLPanel, PopupSelectorItemWithEdit> {}
     private static PopupSelectorItemWithBinder ourUiBinder = GWT.create(PopupSelectorItemWithBinder.class);

@@ -38,13 +38,6 @@ public interface ProjectService {
     @Privileged(En_Privilege.REGION_VIEW)
     Result<List<RegionInfo>> listRegions(AuthToken token, ProjectQuery query);
 
-    /**
-     * Возвращает список проектов сгруппированных по регионам
-     * @param query    параметры запроса
-     */
-    @Privileged({ En_Privilege.PROJECT_VIEW })
-    Result<Map<String, List<Project>>> listProjectsByRegions(AuthToken token, ProjectQuery query);
-
     @Privileged(En_Privilege.PROJECT_VIEW)
     Result<SearchResult<Project>> projects(AuthToken token, ProjectQuery query);
 
@@ -100,6 +93,4 @@ public interface ProjectService {
     Result<PersonShortView> getProjectLeader(AuthToken authToken, Long projectId);
 
     Result<Boolean> notifyExpiringProjectTechnicalSupportValidity(LocalDate now);
-
-    Result<SelectorsParams> getSelectorsParams(AuthToken token, ProjectQuery query);
 }

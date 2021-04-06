@@ -184,7 +184,6 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
         selector.setRelative(relative);
         selector.addValueChangeHandler(event -> {
             onChanged.accept(selector.getValue());
-            selector.hidePopup();
         });
         selector.clearPopup();
         selector.fill();

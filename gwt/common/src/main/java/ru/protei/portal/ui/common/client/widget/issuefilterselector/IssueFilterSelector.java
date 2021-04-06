@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
@@ -14,7 +14,7 @@ import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
-public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > implements SelectorWithModel< CaseFilterShortView > {
+public class IssueFilterSelector extends ButtonSelector<FilterShortView> implements SelectorWithModel< FilterShortView > {
 
     @Inject
     public void init( IssueFilterModel model ) {
@@ -25,17 +25,17 @@ public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > i
     }
 
     @Override
-    public void setValue(CaseFilterShortView value) {
+    public void setValue(FilterShortView value) {
         setValue(value, false);
     }
 
     @Override
-    public void setValue(CaseFilterShortView value, boolean fireEvents) {
+    public void setValue(FilterShortView value, boolean fireEvents) {
         fillMissingName(value);
         super.setValue(value, fireEvents);
     }
 
-    public void changeValueName( CaseFilterShortView value ){
+    public void changeValueName( FilterShortView value ){
         if (value == null){
             return;
         }
@@ -43,7 +43,7 @@ public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > i
         refreshValue();
     }
 
-    public void addDisplayOption( CaseFilterShortView value ){
+    public void addDisplayOption( FilterShortView value ){
         if (itemToDisplayOptionModel == null){
             return;
         }
@@ -62,7 +62,7 @@ public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > i
         this.defaultValue = value;
     }
 
-    public void fillOptions( List< CaseFilterShortView > filters ) {
+    public void fillOptions( List< FilterShortView > filters ) {
         clearOptions();
 
         if ( defaultValue != null ) {
@@ -76,7 +76,7 @@ public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > i
         filters.forEach( this::addOption );
     }
 
-    private void fillMissingName(CaseFilterShortView value) {
+    private void fillMissingName(FilterShortView value) {
         if (value == null) {
             return;
         }
@@ -90,7 +90,7 @@ public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > i
                 .filter(Objects::nonNull)
                 .filter(filter -> Objects.equals(filter.getId(), value.getId()))
                 .distinct()
-                .map(CaseFilterShortView::getName)
+                .map(FilterShortView::getName)
                 .findFirst()
                 .orElse(null);
         if (isEmpty(name)) {

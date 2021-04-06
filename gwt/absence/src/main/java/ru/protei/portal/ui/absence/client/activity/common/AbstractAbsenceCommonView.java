@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 public interface AbstractAbsenceCommonView extends IsWidget {
+    void setActivity(AbstractAbsenceCommonActivity activity);
     HasValue<PersonShortView> employee();
     HasValue<En_AbsenceReason> reason();
     HasValue<String> comment();

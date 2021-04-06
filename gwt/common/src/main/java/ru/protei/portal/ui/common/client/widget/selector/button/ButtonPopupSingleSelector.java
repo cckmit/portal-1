@@ -9,7 +9,10 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -31,9 +34,9 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
 
     public ButtonPopupSingleSelector() {
         initWidget( bsUiBinder.createAndBindUi( this ) );
+
         setEmptyListText( lang.emptySelectorList() );
         setEmptySearchText( lang.searchNoMatchesFound() );
-        setSearchAutoFocus( true );
         setPageSize( CrmConstants.DEFAULT_SELECTOR_PAGE_SIZE );
         root.add(getPopup());
     }
@@ -88,7 +91,7 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         if (getPopup().isVisible()) {
             button.getElement().blur();
         } else {
-            getPopup().getChildContainer().clear();
+            getPopup().getContainer().clear();
             getSelector().fillFromBegin(this);
             checkNoElements();
             getPopup().showNear(button.getElement());
@@ -145,7 +148,6 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
     protected void onSelectionChanged() {
         T value = selector.getValue();
         showValue(value);
-        getPopup().hide();
         ValueChangeEvent.fire(this, value);
 
         if (isValidable) {
@@ -158,6 +160,7 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         this.button.setValue(selector.makeElementName(value));
     }
 
+    @Override
     protected SelectorItem<T> makeSelectorItem( T element, String elementHtml ) {
         PopupSelectorItem<T> item = new PopupSelectorItem<>();
         item.setName(elementHtml);
@@ -187,7 +190,7 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
 
     protected String defaultValue = null;
 
-    interface BlockSelectorUiBinder extends UiBinder<HTMLPanel, ButtonPopupSingleSelector> {
+    interface BlockSelectorUiBinder extends UiBinder<HTMLPanel, ButtonPopupSingleSelector<?>> {
     }
 
     private static BlockSelectorUiBinder bsUiBinder = GWT.create(BlockSelectorUiBinder.class);

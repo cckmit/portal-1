@@ -8,12 +8,12 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
@@ -21,7 +21,7 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.PlanEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
-import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
+import ru.protei.portal.ui.common.client.service.CaseFilterControllerAsync;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -59,7 +59,7 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
     }
 
     @Override
-    public void onFilterChanged(CaseFilterShortView filter) {
+    public void onFilterChanged(FilterShortView filter) {
         if(StringUtils.isNotEmpty(view.issueNumber().getValue())){
             return;
         }
@@ -71,13 +71,13 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
         }
         Long filterId = filter.getId();
         saveTableFilterId(filterId);
-        issueFilterController.getIssueFilter(filterId, new FluentCallback<CaseFilter>()
+        issueFilterController.getCaseFilter(filterId, new FluentCallback<CaseFilterDto<CaseQuery>>()
                 .withError(throwable -> {
                     defaultErrorHandler.accept(throwable);
                     view.filter().setValue(null, true);
                 })
-                .withSuccess(caseFilter -> {
-                    CaseQuery query = caseFilter.getParams();
+                .withSuccess(caseFilterDto -> {
+                    CaseQuery query = caseFilterDto.getQuery();
                     loadTable(query);
                 }));
     }
@@ -120,10 +120,10 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
     }
 
     private void initFilter() {
-        CaseFilterShortView filter = null;
+        FilterShortView filter = null;
         Long filterId = getTableFilterId();
         if (filterId != null) {
-            filter = new CaseFilterShortView(filterId, null);
+            filter = new FilterShortView(filterId, null);
         }
         view.filter().setValue(filter, true);
         view.updateFilterSelector();
@@ -155,7 +155,7 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
     @Inject
     IssueControllerAsync issueController;
     @Inject
-    IssueFilterControllerAsync issueFilterController;
+    CaseFilterControllerAsync issueFilterController;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
     @Inject

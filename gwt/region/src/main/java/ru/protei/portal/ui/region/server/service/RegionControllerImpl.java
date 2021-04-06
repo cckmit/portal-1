@@ -9,7 +9,6 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.DistrictQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.DistrictInfo;
@@ -27,7 +26,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Реализация сервиса управления регионами
@@ -38,7 +36,7 @@ public class RegionControllerImpl implements RegionController {
     @Override
     public List< RegionInfo > getRegionList( ProjectQuery query ) throws RequestFailedException {
         log.info( "getRegionList(): search={} | showDeprecated={} | sortField={} | order={}",
-                query.getSearchString(), query.getStates(), query.getSortField(), query.getSortDir() );
+                query.getSearchString(), query.getStateIds(), query.getSortField(), query.getSortDir() );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
@@ -71,20 +69,6 @@ public class RegionControllerImpl implements RegionController {
             throw new RequestFailedException( result.getStatus() );
 
         return result.getData();
-    }
-
-    @Override
-    public Map< String, List<Project> > getProjectsByRegions(ProjectQuery query ) throws RequestFailedException {
-        log.info( "getProjectsByRegions(): search={} | states={} | sortField={} | order={}",
-                query.getSearchString(), query.getStates(), query.getSortField(), query.getSortDir() );
-
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-
-        Result< Map< String, List<Project> > > response = projectService.listProjectsByRegions( token, query );
-        if ( response.isError() )
-            throw new RequestFailedException( response.getStatus() );
-
-        return response.getData();
     }
 
     @Override
@@ -188,22 +172,6 @@ public class RegionControllerImpl implements RegionController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(projectService.getProjectLeader(token, projectId));
-    }
-
-    @Override
-    public SelectorsParams getSelectorsParams(ProjectQuery query) throws RequestFailedException {
-        log.info("getSelectorsParams, projectQuery: {}", query);
-
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-
-        Result<SelectorsParams> response = projectService.getSelectorsParams( token, query );
-
-        log.info("getSelectorsParams, id: {}, response: {} ", query, response.isError() ? "error" : response.getData());
-
-        if ( response.isError() ) {
-            throw new RequestFailedException( response.getStatus() );
-        }
-        return response.getData();
     }
 
     @Autowired

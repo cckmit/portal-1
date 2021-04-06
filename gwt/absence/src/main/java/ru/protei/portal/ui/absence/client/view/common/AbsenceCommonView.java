@@ -3,13 +3,16 @@ package ru.protei.portal.ui.absence.client.view.common;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.absence.client.activity.common.AbstractAbsenceCommonActivity;
 import ru.protei.portal.ui.absence.client.activity.common.AbstractAbsenceCommonView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
@@ -24,6 +27,11 @@ public class AbsenceCommonView extends Composite implements AbstractAbsenceCommo
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
+    }
+
+    @Override
+    public void setActivity(AbstractAbsenceCommonActivity activity) {
+        this.activity = activity;
     }
 
     @Override
@@ -76,6 +84,11 @@ public class AbsenceCommonView extends Composite implements AbstractAbsenceCommo
         return dateContainer;
     }
 
+    @UiHandler("reason")
+    public void onReasonChanged(ValueChangeEvent<En_AbsenceReason> event) {
+        activity.onReasonChanged(event.getValue());
+    }
+
     protected void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -117,6 +130,8 @@ public class AbsenceCommonView extends Composite implements AbstractAbsenceCommo
     @Inject
     @UiField
     Lang lang;
+
+    protected AbstractAbsenceCommonActivity activity;
 
     private static AbsenceCommonViewUiBinder ourUiBinder = GWT.create(AbsenceCommonViewUiBinder.class);
     interface AbsenceCommonViewUiBinder extends UiBinder<HTMLPanel, AbsenceCommonView> {}

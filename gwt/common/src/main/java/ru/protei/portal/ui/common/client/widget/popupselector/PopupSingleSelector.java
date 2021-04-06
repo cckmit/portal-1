@@ -16,7 +16,6 @@ import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.composite.popper.PopperComposite;
 
 public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements HasValue<T> {
-
     @Override
     public T getValue() {
         return selector.getValue();
@@ -71,13 +70,13 @@ public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements 
     }
 
     public void showPopup() {
-        getPopup().showNear(relative);
         RootPanel.get().add(getPopup());
+        getPopup().showNear(relative);
     }
 
     public void showPopup(PopperComposite.Placement placement, int skidding, int distance) {
-        getPopup().showNear(relative, placement, skidding, distance);
         RootPanel.get().add(getPopup());
+        getPopup().showNear(relative, placement, skidding, distance);
     }
 
     public void hidePopup() {
@@ -86,12 +85,11 @@ public class PopupSingleSelector<T> extends AbstractPopupSelector<T> implements 
     }
 
     public void clearPopup() {
-        getPopup().getChildContainer().clear();
+        getPopup().getContainer().clear();
     }
 
     @Override
     protected void onSelectionChanged() {
-        getPopup().showNear(relative);
         ValueChangeEvent.fire(this, getValue());
     }
 

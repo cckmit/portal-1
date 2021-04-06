@@ -35,7 +35,7 @@
                 </div>
             </div>
             <div class="container-fluid padding-15 bg-white">
-                <div class="card card-transparent no-margin">
+                <div class="card card-transparent no-margin report-filter-container">
                     <g:HTMLPanel ui:field="filterContainer"/>
                 </div>
             </div>

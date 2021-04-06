@@ -9,39 +9,32 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ProjectAccessType;
-import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dto.Project;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterActivity;
-import ru.protei.portal.ui.common.client.activity.projectfilter.AbstractProjectFilterView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.client.widget.project.filter.ProjectFilterWidget;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.client.widget.project.filter.ProjectFilterWidgetModel;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
-import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
-import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 import static ru.protei.portal.ui.project.client.util.AccessUtil.getAccessType;
 
 /**
  * Активность таблицы проектов
  */
 public abstract class ProjectTableActivity
-        implements AbstractProjectTableActivity, AbstractProjectFilterActivity,
-            AbstractPagerActivity, Activity
+        implements AbstractProjectTableActivity, AbstractPagerActivity, Activity
 {
 
     @PostConstruct
@@ -51,17 +44,14 @@ public abstract class ProjectTableActivity
         view.setActivity( this );
         view.setAnimation( animation );
 
-        filterView.setActivity( this );
-        view.getFilterContainer().add( filterView.asWidget() );
-
         pagerView.setActivity( this );
     }
 
     @Event
-    public void onAuthSuccess (AuthEvents.Success event) {
+    public void onAuthSuccess(AuthEvents.Success event) {
         En_ProjectAccessType accessType = getAccessType(policyService, En_Privilege.PROJECT_VIEW);
-        filterView.resetFilter();
-        filterView.onlyMineProjectsVisibility().setVisible(accessType == En_ProjectAccessType.ALL_PROJECTS);
+        view.getFilterWidget().resetFilter();
+        view.getFilterWidget().getFilterParamView().onlyMineProjectsVisibility().setVisible(accessType == En_ProjectAccessType.ALL_PROJECTS);
     }
 
     @Event(Type.FILL_CONTENT)
@@ -111,6 +101,11 @@ public abstract class ProjectTableActivity
     }
 
     @Override
+    public void onFilterChanged() {
+        loadTable();
+    }
+
+    @Override
     public void onItemClicked( Project value ) {
         persistScroll();
         showPreview( value );
@@ -134,14 +129,6 @@ public abstract class ProjectTableActivity
         }
 
         fireEvent(new ConfirmDialogEvents.Show(lang.projectRemoveConfirmMessage(value.getName()), removeAction(value.getId())));
-    }
-
-    @Override
-    public void onProjectFilterChanged() {
-       boolean isValid = filterView.isCommentCreationRangeTypeValid() && filterView.isCommentCreationRangeValid();
-       if (isValid) {
-           loadTable();
-       }
     }
 
     @Override
@@ -214,30 +201,7 @@ public abstract class ProjectTableActivity
     }
 
     private ProjectQuery getQuery() {
-        ProjectQuery query = new ProjectQuery();
-
-        String searchString = filterView.searchPattern().getValue();
-        query.setCaseIds(searchCaseNumber(searchString, false));
-        if (query.getCaseIds() == null) {
-            query.setSearchString(isBlank(searchString) ? null : searchString);
-        }
-
-        query.setStates(filterView.states().getValue());
-        query.setRegions(filterView.regions().getValue());
-        query.setHeadManagers(filterView.headManagers().getValue());
-        query.setCaseMembers(filterView.caseMembers().getValue());
-        query.setDirections(filterView.direction().getValue());
-        query.setSortField(filterView.sortField().getValue());
-        query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
-        if(filterView.onlyMineProjects().getValue() != null && filterView.onlyMineProjects().getValue()) {
-            query.setMemberId(policyService.getProfile().getId());
-        }
-        if (CollectionUtils.isNotEmpty(filterView.initiatorCompanies().getValue())) {
-            query.setInitiatorCompanyIds(filterView.initiatorCompanies().getValue().stream()
-                    .map(entityOption -> entityOption.getId()).collect(Collectors.toSet()));
-        }
-        query.setCommentCreationRange(toDateRange(filterView.commentCreationRange().getValue()));
-        return query;
+        return view.getFilterWidget().getFilterParamView().getQuery();
     }
 
     private Runnable removeAction(Long projectId) {
@@ -261,13 +225,9 @@ public abstract class ProjectTableActivity
     @Inject
     AbstractProjectTableView view;
     @Inject
-    AbstractProjectFilterView filterView;
-    @Inject
     AbstractPagerView pagerView;
     @Inject
     RegionControllerAsync regionService;
-    @Inject
-    CaseStateControllerAsync caseStateService;
     @Inject
     TableAnimation animation;
     @Inject

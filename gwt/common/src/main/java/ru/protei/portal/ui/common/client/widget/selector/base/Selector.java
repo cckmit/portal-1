@@ -1,27 +1,24 @@
 package ru.protei.portal.ui.common.client.widget.selector.base;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.event.HasSelectorChangeValHandlers;
 import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValEvent;
 import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValHandler;
+import ru.protei.portal.ui.common.client.widget.selector.event.SelectorItemSelectHandler;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
-import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
+import ru.protei.portal.ui.common.client.widget.selector.popup.arrowselectable.ArrowSelectableSelectorPopup;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
@@ -30,18 +27,17 @@ import java.util.List;
 import java.util.Map;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
+import static ru.protei.portal.ui.common.client.selector.util.SelectorItemKeyboardKey.isSelectorItemKeyboardKey;
 
 /**
  * Базовая логика селектора
  */
 public abstract class Selector<T>
         extends Composite
-        implements HasValue<T>,
-        ClickHandler, ValueChangeHandler<String>,
+        implements HasValue<T>, ValueChangeHandler<String>,
         HasSelectorChangeValHandlers,
         HasAddHandlers,
-        SelectorWithModel<T>
-{
+        SelectorWithModel<T>, SelectorItemSelectHandler {
 
     public interface SelectorFilter<T> {
 
@@ -135,7 +131,7 @@ public abstract class Selector<T>
         }
 
         DisplayOption option = displayOptionCreator.makeDisplayOption( value );
-        SelectorItem itemView = buildItemView(option.getName(), option.getStyle(), itemHandler);
+        SelectorItem itemView = buildItemView(option.getName(), option.getStyle());
         if ( option.getImageSrc() != null ) {
             itemView.setImage(option.getImageSrc());
         }
@@ -154,11 +150,12 @@ public abstract class Selector<T>
             itemToDisplayOptionModel.put(value, option);
         }
 
-        popup.getChildContainer().add(itemView.asWidget());
+        popup.getContainer().add(itemView);
     }
 
     public void clearOptions() {
-        popup.getChildContainer().clear();
+        popup.getContainer().clear();
+        popup.setNoElements(false, null);
 
         itemToViewModel.clear();
         itemToDisplayOptionModel.clear();
@@ -169,9 +166,9 @@ public abstract class Selector<T>
     }
 
     @Override
-    public void onClick(ClickEvent event) {
-        T value = itemViewToModel.get(event.getSource());
-        if (value == null && !itemViewToModel.containsKey(event.getSource())) {
+    public void onSelectorItemSelect(SelectorItem item) {
+        T value = itemViewToModel.get(item);
+        if (value == null && !itemViewToModel.containsKey(item)) {
             return;
         }
 
@@ -179,7 +176,6 @@ public abstract class Selector<T>
         selectedOption = value;
         fillSelectorView(option);
 
-        popup.hide();
         ValueChangeEvent.fire(this, value);
     }
 
@@ -208,10 +204,10 @@ public abstract class Selector<T>
         boolean isEmptyResult = true;
         boolean exactMatch = false;
 
-        popup.getChildContainer().clear();
+        popup.getContainer().clear();
 
         if (searchText.isEmpty() && nullItemView != null && !isHideNullValue) {
-            popup.getChildContainer().add(nullItemView);
+            popup.getContainer().add(nullItemView);
         }
 
         for (Map.Entry<T, DisplayOption> entry : itemToDisplayOptionModel.entrySet()) {
@@ -223,7 +219,7 @@ public abstract class Selector<T>
             if (searchText.isEmpty() || entryText.contains(searchText)) {
                 SelectorItem itemView = itemToViewModel.get(entry.getKey());
                 if (itemView != null) {
-                    popup.getChildContainer().add(itemView);
+                    popup.getContainer().add(itemView);
                 }
                 if (entryText.equals(searchText))
                     exactMatch = true;
@@ -273,7 +269,7 @@ public abstract class Selector<T>
     }
 
     protected void showPopup(IsWidget relative) {
-        popup.show(relative);
+        popup.showNear(relative.asWidget().getElement());
         showPopup();
     }
 
@@ -285,14 +281,10 @@ public abstract class Selector<T>
     }
 
     private void showPopup() {
-        popup.setSearchVisible(searchEnabled);
-        popup.setSearchAutoFocus(searchAutoFocusEnabled);
+        popup.setSearchHandler(searchEnabled ? this::onSearchChanged : null);
+
         popup.setAddButton(addButtonVisible, addButtonText);
 
-        if (popupValueChangeHandlerRegistration != null) {
-            popupValueChangeHandlerRegistration.removeHandler();
-        }
-        popupValueChangeHandlerRegistration = popup.addValueChangeHandler(this);
         popup.clearSearchField();
         onSearchChanged("");
 
@@ -306,66 +298,31 @@ public abstract class Selector<T>
     }
 
     protected void selectFirstElement() {
-        HTMLPanel panel = (HTMLPanel) popup.getChildContainer();
-        SelectorItem firstItem = (SelectorItem) panel.getWidget(0);
-        firstItem.setFocus(true);
+        popup.focusPopup();
     }
 
-    private SelectorItem buildItemView(String name, String styleName, KeyUpHandler itemHandler) {
+    private SelectorItem buildItemView(String name, String styleName) {
         SelectorItem itemView = itemFactory.get();
         itemView.setName(name);
         itemView.setStyle(styleName);
-        itemView.addClickHandler(this);
-        itemView.addKeyUpHandler(itemHandler);
+        itemView.addItemSelectedHandler(() -> {
+            onSelectorItemSelect(itemView);
+            popup.hide();
+        });
         return itemView;
     }
 
     private void addEmptyListGhostOption(String name) {
-        SelectorItem itemView = itemFactory.get();
-        itemView.setName(name);
-        itemView.addStyleName( UiConstants.Styles.SEARCH_NO_RESULT );
-        popup.getChildContainer().add(itemView.asWidget());
+        popup.setNoElements(true, name);
     }
 
-    private void onArrowUp(SelectorItem item) {
-        HTMLPanel panel = (HTMLPanel) popup.getChildContainer();
-        int selectedItemIndex = panel.getWidgetIndex(item);
-        if (selectedItemIndex == 0) {
-            return;
-        }
-        SelectorItem previousSelectorItem = (SelectorItem) panel.getWidget(--selectedItemIndex);
-        previousSelectorItem.setFocus(true);
-    }
-
-    private void onArrowDown(SelectorItem item) {
-        HTMLPanel panel = (HTMLPanel) popup.getChildContainer();
-        int selectedItemIndex = panel.getWidgetIndex(item);
-        if (selectedItemIndex == panel.getWidgetCount() - 1) {
-            return;
-        }
-        SelectorItem nextSelectorItem = (SelectorItem) panel.getWidget(++selectedItemIndex);
-        nextSelectorItem.setFocus(true);
-    }
-
-
-    @Inject
-    protected SelectorPopup popup;
     @Inject
     Lang lang;
 
     @Inject
     Provider<SelectorItem> itemFactory;
     protected DisplayOption nullItemOption;
-
-    KeyUpHandler itemHandler = keyUpEvent -> {
-        if (keyUpEvent.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
-            onArrowDown((SelectorItem) keyUpEvent.getSource());
-        }
-
-        if (keyUpEvent.getNativeKeyCode() == KeyCodes.KEY_UP) {
-            onArrowUp((SelectorItem) keyUpEvent.getSource());
-        }
-    };
+    protected ArrowSelectableSelectorPopup popup = new ArrowSelectableSelectorPopup();
 
     protected boolean hasNullValue = true;
     private boolean isHideNullValue = false;
@@ -377,7 +334,6 @@ public abstract class Selector<T>
     private T selectedOption = null;
     private SelectorItem nullItemView;
     protected DisplayOptionCreator<T> displayOptionCreator;
-    private HandlerRegistration popupValueChangeHandlerRegistration;
 
     private SelectorModel<T> selectorModel;
 

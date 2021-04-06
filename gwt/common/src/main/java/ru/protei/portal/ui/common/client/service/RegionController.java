@@ -29,8 +29,6 @@ public interface RegionController extends RemoteService {
 
     List<DistrictInfo> getDistrictList() throws RequestFailedException;
 
-    Map<String, List<Project>> getProjectsByRegions(ProjectQuery query) throws RequestFailedException;
-
     Project getProject(Long id) throws RequestFailedException;
 
     UiResult<Project> saveProject(Project project) throws RequestFailedException;
@@ -46,6 +44,4 @@ public interface RegionController extends RemoteService {
     ProjectInfo getProjectInfo(Long id) throws RequestFailedException;
 
     PersonShortView getProjectLeader(Long projectId) throws RequestFailedException;
-
-    SelectorsParams getSelectorsParams(ProjectQuery query) throws RequestFailedException;
 }

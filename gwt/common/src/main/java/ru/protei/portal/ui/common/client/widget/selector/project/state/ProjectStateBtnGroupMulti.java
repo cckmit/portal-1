@@ -33,9 +33,10 @@ public class ProjectStateBtnGroupMulti extends ToggleBtnGroupMulti<CaseState> im
                     getStateIcon( state ) + " fa-lg",
                     "btn btn-default",
                     getStateName( state ),
+                    null,
                     state,
-                    state.getColor(),
-                    null
+                    null,
+                    state.getColor()
             );
         }
     }

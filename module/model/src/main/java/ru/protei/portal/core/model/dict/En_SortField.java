@@ -158,7 +158,7 @@ public enum En_SortField {
     /**
      * last active IP-address date
      */
-    check_date("last_check_date"),
+    active_date("last_active_date"),
 
     /**
      * state order
@@ -235,6 +235,11 @@ public enum En_SortField {
      * Сортировка по плану
      */
     by_plan("order_number"),
+
+    /**
+     * Сортировка по дням
+     */
+    day("day"),
     ;
 
     private String fieldName;
