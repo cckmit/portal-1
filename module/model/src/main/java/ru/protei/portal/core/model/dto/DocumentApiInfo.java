@@ -74,6 +74,12 @@ public class DocumentApiInfo implements Serializable {
 
     private List<Long> memberIds;
 
+    private String workDocFileBase64;
+
+    private String archivePdfFileBase64;
+
+    private String approvalSheetPdfBase64;
+
     public String getName() {
         return name;
     }
@@ -208,5 +214,29 @@ public class DocumentApiInfo implements Serializable {
 
     public void setMemberIds(List<Long> memberIds) {
         this.memberIds = memberIds;
+    }
+
+    public String getWorkDocFileBase64() {
+        return workDocFileBase64;
+    }
+
+    public void setWorkDocFileBase64(String workDocFileBase64) {
+        this.workDocFileBase64 = workDocFileBase64;
+    }
+
+    public String getArchivePdfFileBase64() {
+        return archivePdfFileBase64;
+    }
+
+    public void setArchivePdfFileBase64(String archivePdfFileBase64) {
+        this.archivePdfFileBase64 = archivePdfFileBase64;
+    }
+
+    public String getApprovalSheetPdfBase64() {
+        return approvalSheetPdfBase64;
+    }
+
+    public void setApprovalSheetPdfBase64(String approvalSheetPdfBase64) {
+        this.approvalSheetPdfBase64 = approvalSheetPdfBase64;
     }
 }
