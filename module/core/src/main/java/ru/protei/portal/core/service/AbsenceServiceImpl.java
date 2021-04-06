@@ -12,7 +12,6 @@ import ru.protei.portal.core.model.api.ApiAbsence;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.dto.PersonAbsenceApiInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -324,60 +323,32 @@ public class AbsenceServiceImpl implements AbsenceService {
     }
 
     @Override
-    public Result<Long> createAbsencesByApiQuery(AuthToken token, PersonAbsenceApiInfo apiInfo) {
-        if (apiInfo == null || !apiInfo.isValid()) {
+    public Result<Long> createAbsencesByApi(AuthToken token, ApiAbsence apiAbsence) {
+        if (apiAbsence == null || !apiAbsence.isValid()) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         PersonAbsence personAbsence = new PersonAbsence();
         personAbsence.setCreated(new Date());
         personAbsence.setCreatorId(token.getPersonId());
-        if (isWorkerIdSet(apiInfo)) {
-            Long personIdByWorkerId = getPersonIdByWorkerId(apiInfo.getWorkerId(), apiInfo.getCompanyCode());
+        if (isWorkerIdSet(apiAbsence)) {
+            Long personIdByWorkerId = getPersonIdByWorkerId(apiAbsence.getWorkerExtId(), apiAbsence.getCompanyCode());
             if (personIdByWorkerId == null) {
                 return error(En_ResultStatus.NOT_FOUND);
             } else {
                 personAbsence.setPersonId(personIdByWorkerId);
             }
         } else {
-            personAbsence.setPersonId(apiInfo.getPersonId());
+            personAbsence.setPersonId(apiAbsence.getPersonId());
         }
-        personAbsence.setReason(apiInfo.getReason());
-        personAbsence.setFromTime(apiInfo.getFromTime());
-        personAbsence.setTillTime(apiInfo.getTillTime());
-        personAbsence.setUserComment(apiInfo.getUserComment());
-
-        if (!validateFields(personAbsence)) {
-            return error( En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        if (hasAbsenceIntersections(personAbsence.getPersonId(), personAbsence.getFromTime(), personAbsence.getTillTime(), personAbsence.getId())) {
-            return error(En_ResultStatus.ABSENCE_HAS_INTERSECTIONS);
-        }
-
-        Long absenceId = personAbsenceDAO.persist(personAbsence);
-
-        if (absenceId == null) {
-            return error(En_ResultStatus.NOT_CREATED);
-        }
-
-        Person initiator = personDAO.get(token.getPersonId());
-        jdbcManyRelationsHelper.fill(initiator, Person.Fields.CONTACT_ITEMS);
-        PersonAbsence newState = personAbsenceDAO.get(absenceId);
-
-        return ok(absenceId)
-                .publishEvent(new AbsenceNotificationEvent(
-                        this,
-                        EventAction.CREATED,
-                        initiator,
-                        null,
-                        newState,
-                        null,
-                        getAbsenceNotifiers(newState)));
+        personAbsence.setReason(apiAbsence.getReason());
+        personAbsence.setFromTime(apiAbsence.getFromTime());
+        personAbsence.setTillTime(apiAbsence.getTillTime());
+        return createAbsence(token, personAbsence);
     }
 
-    private boolean isWorkerIdSet(PersonAbsenceApiInfo personAbsenceApiInfo) {
-        return StringUtils.isNotEmpty(personAbsenceApiInfo.getCompanyCode()) && personAbsenceApiInfo.getWorkerId() != null;
+    private boolean isWorkerIdSet(ApiAbsence apiAbsence) {
+        return StringUtils.isNotEmpty(apiAbsence.getCompanyCode()) && apiAbsence.getWorkerExtId() != null;
     }
 
     private Long getPersonIdByWorkerId(String workerId, String companyCode) {

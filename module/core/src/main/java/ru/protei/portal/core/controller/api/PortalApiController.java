@@ -15,7 +15,6 @@ import ru.protei.portal.core.model.api.ApiContract;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
-import ru.protei.portal.core.model.dto.PersonAbsenceApiInfo;
 import ru.protei.portal.core.model.dto.PersonInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -637,17 +636,17 @@ public class PortalApiController {
     }
 
     @PostMapping(value = "/absence/1c/create")
-    public Result<Long> createAbsence1c(HttpServletRequest request, HttpServletResponse response, @RequestBody PersonAbsenceApiInfo personAbsenceApiInfo) {
-        log.info("API | createAbsence1c(): personAbsenceApiInfo={}", personAbsenceApiInfo);
+    public Result<Long> createAbsence1c(HttpServletRequest request, HttpServletResponse response, @RequestBody ApiAbsence apiAbsence) {
+        log.info("API | createAbsence1c(): apiAbsence={}", apiAbsence);
 
-        if (personAbsenceApiInfo == null || !personAbsenceApiInfo.isValid()) {
+        if (apiAbsence == null || !apiAbsence.isValid()) {
             return Result.error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         return authenticate(request, response, authService, sidGen, log)
-                .flatMap(authToken -> absenceService.createAbsencesByApiQuery(authToken, personAbsenceApiInfo))
+                .flatMap(authToken -> absenceService.createAbsencesByApi(authToken, apiAbsence))
                 .ifOk(id -> log.info("createAbsence1c(): OK"))
-                .ifError(result -> log.warn("createAbsence1c(): Can't create absences by personAbsenceApiInfo={}. {}", personAbsenceApiInfo, result));
+                .ifError(result -> log.warn("createAbsence1c(): Can't create absences by apiAbsence={}. {}", apiAbsence, result));
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {

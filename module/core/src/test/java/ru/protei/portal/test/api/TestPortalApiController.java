@@ -20,10 +20,10 @@ import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.controller.api.PortalApiController;
+import ru.protei.portal.core.model.api.ApiAbsence;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
-import ru.protei.portal.core.model.dto.PersonAbsenceApiInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.*;
@@ -1341,19 +1341,17 @@ public class TestPortalApiController extends BaseServiceTest {
     @Test
     @Transactional
     public void createAbsenceByPersonId() throws Exception {
-        PersonAbsenceApiInfo apiInfo = new PersonAbsenceApiInfo();
-        apiInfo.setPersonId(person.getId());
-        apiInfo.setReason(En_AbsenceReason.REMOTE_WORK);
+        ApiAbsence apiAbsence = new ApiAbsence();
+        apiAbsence.setPersonId(person.getId());
+        apiAbsence.setReason(En_AbsenceReason.REMOTE_WORK);
 
         Date now = new Date();
         Date tomorrow = new Date();
         tomorrow.setDate(now.getDate() + 1);
-        apiInfo.setFromTime(now);
-        apiInfo.setTillTime(tomorrow);
+        apiAbsence.setFromTime(now);
+        apiAbsence.setTillTime(tomorrow);
 
-        apiInfo.setUserComment("Test: createAbsenceByPersonId");
-
-        createPostResultAction("/api/absence/1c/create", apiInfo)
+        createPostResultAction("/api/absence/1c/create", apiAbsence)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
     }
@@ -1386,8 +1384,8 @@ public class TestPortalApiController extends BaseServiceTest {
         workerEntry.setPositionId(workerPosition.getId());
         workerEntryDAO.persist(workerEntry);
 
-        PersonAbsenceApiInfo apiInfo = new PersonAbsenceApiInfo();
-        apiInfo.setWorkerId("0000000001");
+        ApiAbsence apiInfo = new ApiAbsence();
+        apiInfo.setWorkerExtId("0000000001");
         apiInfo.setCompanyCode(company.getCname());
         apiInfo.setReason(En_AbsenceReason.REMOTE_WORK);
 
@@ -1397,8 +1395,6 @@ public class TestPortalApiController extends BaseServiceTest {
         apiInfo.setFromTime(now);
         apiInfo.setTillTime(tomorrow);
 
-        apiInfo.setUserComment("Test: createAbsenceByWorkerId");
-
         createPostResultAction("/api/absence/1c/create", apiInfo)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
@@ -1407,11 +1403,9 @@ public class TestPortalApiController extends BaseServiceTest {
     @Test
     @Transactional
     public void createAbsenceByPersonIdAndPeriodIsNull() throws Exception {
-        PersonAbsenceApiInfo apiInfo = new PersonAbsenceApiInfo();
+        ApiAbsence apiInfo = new ApiAbsence();
         apiInfo.setPersonId(person.getId());
         apiInfo.setReason(En_AbsenceReason.REMOTE_WORK);
-
-        apiInfo.setUserComment("Test: createAbsenceByPersonId");
 
         createPostResultAction("/api/absence/1c/create", apiInfo)
                 .andExpect(status().isOk())
@@ -1421,7 +1415,7 @@ public class TestPortalApiController extends BaseServiceTest {
     @Test
     @Transactional
     public void createAbsenceByPersonIdAndIncorrectPeriod() throws Exception {
-        PersonAbsenceApiInfo apiInfo = new PersonAbsenceApiInfo();
+        ApiAbsence apiInfo = new ApiAbsence();
         apiInfo.setPersonId(person.getId());
         apiInfo.setReason(En_AbsenceReason.REMOTE_WORK);
 
@@ -1432,8 +1426,6 @@ public class TestPortalApiController extends BaseServiceTest {
         apiInfo.setFromTime(tomorrow);
         apiInfo.setTillTime(now);
 
-        apiInfo.setUserComment("Test: createAbsenceByPersonId");
-
         createPostResultAction("/api/absence/1c/create", apiInfo)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
@@ -1442,7 +1434,7 @@ public class TestPortalApiController extends BaseServiceTest {
     @Test
     @Transactional
     public void createAbsenceByPersonIdAndIntersectPeriod() throws Exception {
-        PersonAbsenceApiInfo apiInfo = new PersonAbsenceApiInfo();
+        ApiAbsence apiInfo = new ApiAbsence();
         apiInfo.setPersonId(person.getId());
         apiInfo.setReason(En_AbsenceReason.REMOTE_WORK);
 
@@ -1452,8 +1444,6 @@ public class TestPortalApiController extends BaseServiceTest {
 
         apiInfo.setFromTime(now);
         apiInfo.setTillTime(tomorrow);
-
-        apiInfo.setUserComment("Test: createAbsenceByPersonId");
 
         createPostResultAction("/api/absence/1c/create", apiInfo)
                 .andExpect(status().isOk())
