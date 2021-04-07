@@ -47,4 +47,8 @@ public interface AbsenceService {
 
     @Privileged(En_Privilege.ABSENCE_VIEW)
     Result<List<ApiAbsence>> getAbsencesByApiQuery(AuthToken authToken, AbsenceApiQuery query);
+
+    @Privileged(En_Privilege.ABSENCE_CREATE)
+    @Auditable(En_AuditType.ABSENCE_CREATE)
+    Result<Long> createAbsenceByApi(AuthToken token, ApiAbsence absence);
 }

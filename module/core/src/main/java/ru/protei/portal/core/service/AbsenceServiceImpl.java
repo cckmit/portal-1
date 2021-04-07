@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.AbsenceApiQuery;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.struct.DateRange;
@@ -319,6 +320,42 @@ public class AbsenceServiceImpl implements AbsenceService {
                 .collect(Collectors.toList());
 
         return Result.ok(apiAbsences);
+    }
+
+    @Override
+    public Result<Long> createAbsenceByApi(AuthToken token, ApiAbsence apiAbsence) {
+        if (apiAbsence == null || !apiAbsence.isValid()) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        PersonAbsence personAbsence = new PersonAbsence();
+        if (isWorkerIdSet(apiAbsence)) {
+            Long personIdByWorkerId = getPersonIdByWorkerId(apiAbsence.getWorkerExtId(), apiAbsence.getCompanyCode());
+            if (personIdByWorkerId == null) {
+                return error(En_ResultStatus.NOT_FOUND);
+            } else {
+                personAbsence.setPersonId(personIdByWorkerId);
+            }
+        } else {
+            personAbsence.setPersonId(apiAbsence.getPersonId());
+        }
+        personAbsence.setReason(apiAbsence.getReason());
+        personAbsence.setFromTime(apiAbsence.getFromTime());
+        personAbsence.setTillTime(apiAbsence.getTillTime());
+        return createAbsence(token, personAbsence);
+    }
+
+    private boolean isWorkerIdSet(ApiAbsence apiAbsence) {
+        return StringUtils.isNotEmpty(apiAbsence.getCompanyCode()) && apiAbsence.getWorkerExtId() != null;
+    }
+
+    private Long getPersonIdByWorkerId(String workerId, String companyCode) {
+        CompanyHomeGroupItem groupCompany = companyGroupHomeDAO.getByExternalCode(companyCode.trim());
+        if (groupCompany == null || groupCompany.getCompanyId() == null) {
+            return null;
+        }
+        WorkerEntry workerEntry = workerEntryDAO.getByExternalId(workerId, groupCompany.getCompanyId());
+        return workerEntry == null ? null : workerEntry.getPersonId();
     }
 
     private boolean validateFields(PersonAbsence absence) {

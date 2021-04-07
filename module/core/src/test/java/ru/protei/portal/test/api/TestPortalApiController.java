@@ -20,17 +20,16 @@ import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.controller.api.PortalApiController;
+import ru.protei.portal.core.model.api.ApiAbsence;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
@@ -55,7 +54,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.util.CrmConstants.State.CREATED;
 
 
@@ -1336,6 +1336,122 @@ public class TestPortalApiController extends BaseServiceTest {
 
         createPostResultAction("/api/platforms/delete/incorrect_id", null)
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Transactional
+    public void createAbsenceByPersonId() throws Exception {
+        ApiAbsence apiAbsence = new ApiAbsence();
+        apiAbsence.setPersonId(person.getId());
+        apiAbsence.setReason(En_AbsenceReason.REMOTE_WORK);
+
+        Date now = new Date();
+        Date tomorrow = new Date();
+        tomorrow.setDate(now.getDate() + 1);
+        apiAbsence.setFromTime(now);
+        apiAbsence.setTillTime(tomorrow);
+
+        createPostResultAction("/api/absence/1c/create", apiAbsence)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
+    }
+
+    @Test
+    @Transactional
+    public void createAbsenceByWorkerId() throws Exception {
+        CompanyHomeGroupItem companyGroupHome = new CompanyHomeGroupItem();
+        companyGroupHome.setCompanyId(company.getId());
+        companyGroupHome.setExternalCode(company.getCname());
+        companyGroupHomeDAO.persist(companyGroupHome);
+
+        CompanyDepartment companyDepartment = new CompanyDepartment();
+        companyDepartment.setCompanyId(company.getId());
+        companyDepartment.setCreated(new Date());
+        companyDepartment.setName("Dep");
+        companyDepartmentDAO.persist(companyDepartment);
+
+        WorkerPosition workerPosition = new WorkerPosition();
+        workerPosition.setCompanyId(company.getId());
+        workerPosition.setName("QA");
+        workerPositionDAO.persist(workerPosition);
+
+        WorkerEntry workerEntry = new WorkerEntry();
+        workerEntry.setCreated(new Date());
+        workerEntry.setPersonId(person.getId());
+        workerEntry.setExternalId("0000000001");
+        workerEntry.setCompanyId(company.getId());
+        workerEntry.setDepartmentId(companyDepartment.getId());
+        workerEntry.setPositionId(workerPosition.getId());
+        workerEntryDAO.persist(workerEntry);
+
+        ApiAbsence apiInfo = new ApiAbsence();
+        apiInfo.setWorkerExtId("0000000001");
+        apiInfo.setCompanyCode(company.getCname());
+        apiInfo.setReason(En_AbsenceReason.REMOTE_WORK);
+
+        Date now = new Date();
+        Date tomorrow = new Date();
+        tomorrow.setDate(now.getDate() + 1);
+        apiInfo.setFromTime(now);
+        apiInfo.setTillTime(tomorrow);
+
+        createPostResultAction("/api/absence/1c/create", apiInfo)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
+    }
+
+    @Test
+    @Transactional
+    public void createAbsenceByPersonIdAndPeriodIsNull() throws Exception {
+        ApiAbsence apiInfo = new ApiAbsence();
+        apiInfo.setPersonId(person.getId());
+        apiInfo.setReason(En_AbsenceReason.REMOTE_WORK);
+
+        createPostResultAction("/api/absence/1c/create", apiInfo)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
+    }
+
+    @Test
+    @Transactional
+    public void createAbsenceByPersonIdAndIncorrectPeriod() throws Exception {
+        ApiAbsence apiInfo = new ApiAbsence();
+        apiInfo.setPersonId(person.getId());
+        apiInfo.setReason(En_AbsenceReason.REMOTE_WORK);
+
+        Date now = new Date();
+        Date tomorrow = new Date();
+        tomorrow.setDate(now.getDate() + 1);
+
+        apiInfo.setFromTime(tomorrow);
+        apiInfo.setTillTime(now);
+
+        createPostResultAction("/api/absence/1c/create", apiInfo)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
+    }
+
+    @Test
+    @Transactional
+    public void createAbsenceByPersonIdAndIntersectPeriod() throws Exception {
+        ApiAbsence apiInfo = new ApiAbsence();
+        apiInfo.setPersonId(person.getId());
+        apiInfo.setReason(En_AbsenceReason.REMOTE_WORK);
+
+        Date now = new Date();
+        Date tomorrow = new Date();
+        tomorrow.setDate(now.getDate() + 1);
+
+        apiInfo.setFromTime(now);
+        apiInfo.setTillTime(tomorrow);
+
+        createPostResultAction("/api/absence/1c/create", apiInfo)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
+
+        createPostResultAction("/api/absence/1c/create", apiInfo)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.ABSENCE_HAS_INTERSECTIONS.toString())));
     }
 
     private String getPlatformId (String strResult) {
