@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.sitefolder.client.activity.server.table;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
@@ -83,6 +84,14 @@ public abstract class ServerTableActivity implements
         }
     }
 
+    @Event
+    public void onExport(SiteFolderServerEvents.Export event) {
+        platformId = event.platformId;
+        if (platformId != null) {
+            Window.open(GWT.getModuleBaseURL() +
+                "download/siteFolderServers?platformId=" + event.platformId, "_blank", "");
+        }
+    }
 
     @Event
     public void onCreateClicked(ActionBarEvents.Clicked event) {

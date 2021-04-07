@@ -67,6 +67,13 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
     }
 
     @Override
+    public void onExportServersClicked() {
+        if (platformId != null) {
+            fireEvent(new SiteFolderServerEvents.Export(platformId));
+        }
+    }
+
+    @Override
     public void onFullScreenClicked() {
         if (platformId != null) {
             fireEvent(new SiteFolderPlatformEvents.ShowFullScreen(platformId));
