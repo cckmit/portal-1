@@ -3331,4 +3331,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueReportDeadlineWorkTrigger();
 
     String errMySqlDataTruncation();
+
+    String commentCancelMessage();
 }

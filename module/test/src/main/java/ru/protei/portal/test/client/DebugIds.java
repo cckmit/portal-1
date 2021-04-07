@@ -406,6 +406,7 @@ public class DebugIds {
             String TEXT_INPUT = "issue-preview-comment-list-text-input";
             String PRIVACY_BUTTON = "issue-preview-comment-list-privacy-button";
             String SEND_BUTTON = "issue-preview-comment-list-send-button";
+            String CANCEL_BUTTON = "issue-preview-comment-list-cancel-button";
             String FILES_UPLOAD = "issue-preview-comment-list-files-upload";
             String TIME_ELAPSED = "issue-preview-comment-list-time-elapsed";
             String TIME_ELAPSED_TYPE = "issue-preview-comment-list-time-elapsed-type";
