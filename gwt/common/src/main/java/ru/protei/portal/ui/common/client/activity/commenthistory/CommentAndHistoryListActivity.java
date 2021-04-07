@@ -281,6 +281,12 @@ public abstract class CommentAndHistoryListActivity
         fireEvent(new IssueEvents.ShowIssueCommentHelp());
     }
 
+    @Override
+    public void onCancelClicked() {
+        storage.remove(makeStorageKey(this.caseId));
+        clearCommentFields();
+    }
+
     private void removeAttachment(Long id, Runnable successAction) {
         attachmentService.removeAttachmentEverywhere(caseType, id, new FluentCallback<Long>()
                 .withError(getRemoveErrorHandler(this, lang))
@@ -486,6 +492,16 @@ public abstract class CommentAndHistoryListActivity
         return comment;
     }
 
+    private void clearCommentFields() {
+        comment = null;
+        view.message().setValue(null, true);
+        view.attachmentContainer().clear();
+        view.clearTimeElapsed();
+        tempAttachments.clear();
+        view.getPrivacyVisibility().setVisible(isPrivateVisible);
+        view.privacyType().setValue(En_CaseCommentPrivacyType.PUBLIC);
+    }
+
     private void onCommentSent(boolean isEdit, CaseComment caseComment) {
 
         storage.remove(makeStorageKey(caseComment.getCaseId()));
@@ -501,13 +517,7 @@ public abstract class CommentAndHistoryListActivity
             view.restyleFirstVisibleItemContainer();
         }
 
-        comment = null;
-        view.message().setValue(null, true);
-        view.attachmentContainer().clear();
-        view.clearTimeElapsed();
-        tempAttachments.clear();
-        view.getPrivacyVisibility().setVisible(isPrivateVisible);
-        view.privacyType().setValue(En_CaseCommentPrivacyType.PUBLIC);
+        clearCommentFields();
     }
 
     private boolean isCommentVisible() {

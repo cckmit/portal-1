@@ -19,4 +19,6 @@ public interface AbstractCommentAndHistoryListActivity extends Activity {
     void onDisplayPreviewChanged( Boolean isDisplayPreview );
 
     void onAddingCommentHelpLinkClicked();
+
+    void onCancelClicked();
 }
