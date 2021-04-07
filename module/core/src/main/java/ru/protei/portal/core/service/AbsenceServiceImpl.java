@@ -323,14 +323,12 @@ public class AbsenceServiceImpl implements AbsenceService {
     }
 
     @Override
-    public Result<Long> createAbsencesByApi(AuthToken token, ApiAbsence apiAbsence) {
+    public Result<Long> createAbsenceByApi(AuthToken token, ApiAbsence apiAbsence) {
         if (apiAbsence == null || !apiAbsence.isValid()) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         PersonAbsence personAbsence = new PersonAbsence();
-        personAbsence.setCreated(new Date());
-        personAbsence.setCreatorId(token.getPersonId());
         if (isWorkerIdSet(apiAbsence)) {
             Long personIdByWorkerId = getPersonIdByWorkerId(apiAbsence.getWorkerExtId(), apiAbsence.getCompanyCode());
             if (personIdByWorkerId == null) {

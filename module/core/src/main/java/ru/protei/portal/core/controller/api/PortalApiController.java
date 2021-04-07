@@ -644,7 +644,7 @@ public class PortalApiController {
         }
 
         return authenticate(request, response, authService, sidGen, log)
-                .flatMap(authToken -> absenceService.createAbsencesByApi(authToken, apiAbsence))
+                .flatMap(authToken -> absenceService.createAbsenceByApi(authToken, apiAbsence))
                 .ifOk(id -> log.info("createAbsence1c(): OK"))
                 .ifError(result -> log.warn("createAbsence1c(): Can't create absences by apiAbsence={}. {}", apiAbsence, result));
     }

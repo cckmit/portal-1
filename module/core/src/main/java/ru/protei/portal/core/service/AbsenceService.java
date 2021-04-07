@@ -50,5 +50,5 @@ public interface AbsenceService {
 
     @Privileged(En_Privilege.ABSENCE_CREATE)
     @Auditable(En_AuditType.ABSENCE_CREATE)
-    Result<Long> createAbsencesByApi(AuthToken token, ApiAbsence absence);
+    Result<Long> createAbsenceByApi(AuthToken token, ApiAbsence absence);
 }
