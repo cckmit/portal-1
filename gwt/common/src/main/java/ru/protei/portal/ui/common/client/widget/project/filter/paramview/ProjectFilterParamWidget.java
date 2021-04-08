@@ -19,12 +19,14 @@ import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.filterwidget.FilterParamView;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.state.ProjectStateBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionMultiSelector;
@@ -65,6 +67,7 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
         caseMembers.setValue(new HashSet<>());
         onlyMineProjects.setValue( false );
         initiatorCompanies.setValue( null );
+        products.setValue(new HashSet<>());
         commentCreationRange.setValue(null);
         if (isAttached()) {
             onFilterChanged();
@@ -92,6 +95,7 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
             query.setMemberId(policyService.getProfile().getId());
         }
         query.setInitiatorCompanyIds(initiatorCompanies.getValue().stream().map(EntityOption::getId).collect(Collectors.toSet()));
+        query.setProductIds(products.getValue().stream().map(ProductShortView::getId).collect(Collectors.toSet()));
         query.setCommentCreationRange(toDateRange(commentCreationRange.getValue()));
         return query;
     }
@@ -136,6 +140,9 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
 
         Set<EntityOption> initiatorsCompanies = collectCompanies(selectorsParams.getCompanyEntityOptions(), query.getInitiatorCompanyIds());
         initiatorCompanies.setValue(initiatorsCompanies);
+
+        Set<ProductShortView> products = collectProducts(selectorsParams.getProductShortViews(), query.getProductIds());
+        this.products.setValue(products);
 
         if (validate()) {
             onFilterChanged();
@@ -210,6 +217,11 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
         onFilterChanged();
     }
 
+    @UiHandler( "products" )
+    public void onProductsSelected( ValueChangeEvent<Set<ProductShortView>> event ) {
+        onFilterChanged();
+    }
+
     @UiHandler("commentCreationRange")
     public void onDateRangeChanged(ValueChangeEvent<DateIntervalWithType> event) {
         if (validate()) {
@@ -259,6 +271,13 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
         return stream(companies)
                 .filter(company ->
                         stream(companyIds).anyMatch(ids -> ids.equals(company.getId())))
+                .collect(Collectors.toSet());
+    }
+
+    private Set<ProductShortView> collectProducts(Collection<ProductShortView> products, Collection<Long> productIds) {
+        return stream(products)
+                .filter(product ->
+                        stream(productIds).anyMatch(ids -> ids.equals(product.getId())))
                 .collect(Collectors.toSet());
     }
 
@@ -321,6 +340,10 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
     @Inject
     @UiField( provided = true )
     CompanyMultiSelector initiatorCompanies;
+
+    @Inject
+    @UiField( provided = true )
+    ProductMultiSelector products;
 
     @Inject
     @UiField(provided = true)

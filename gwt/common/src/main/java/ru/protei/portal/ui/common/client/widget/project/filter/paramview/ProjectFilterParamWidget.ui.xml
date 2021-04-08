@@ -7,6 +7,7 @@
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
+             xmlns:product='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
              xmlns:range='urn:import:ru.protei.portal.ui.common.client.widget.typedrangepicker'
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -41,6 +42,10 @@
             <div class="form-group col-md-4 resize-md-12">
                 <label><ui:text from="{lang.projectCustomerCompany}"/></label>
                 <company:CompanyMultiSelector ui:field="initiatorCompanies" />
+            </div>
+            <div class="form-group col-md-4 resize-md-12">
+                <label><ui:text from="{lang.projectProduct}"/></label>
+                <product:ProductMultiSelector ui:field="products" />
             </div>
         </div>
 

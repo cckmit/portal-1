@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.selector.pageable.SelectorItemRenderer;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCache;
 import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHandler;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 
 public abstract class ProductModel implements Activity,
-        AsyncSelectorModel<ProductShortView> {
+        AsyncSelectorModel<ProductShortView>, SelectorItemRenderer<ProductShortView> {
 
     public ProductModel() {
         query = makeQuery();
@@ -49,6 +50,11 @@ public abstract class ProductModel implements Activity,
     @Override
     public ProductShortView get( int elementIndex, LoadingHandler loadingHandler ) {
         return cache.get( elementIndex, loadingHandler );
+    }
+
+    @Override
+    public String getElementName(ProductShortView view) {
+        return view == null ? "" : view.getName();
     }
 
     public void setUnitState( En_DevUnitState devUnitState ) {
