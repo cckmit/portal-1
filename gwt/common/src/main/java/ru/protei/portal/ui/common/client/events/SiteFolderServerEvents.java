@@ -26,15 +26,6 @@ public class SiteFolderServerEvents {
         }
     }
 
-    public static class Export {
-        @Name("platform")
-        public Long platformId;
-
-        public Export (Long platformId) {
-            this.platformId = platformId;
-        }
-    }
-
     @Url(value = "sfserver")
     public static class Edit {
         @Name("server")

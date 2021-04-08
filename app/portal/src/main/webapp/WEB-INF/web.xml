@@ -27,10 +27,6 @@
         <servlet-class>ru.protei.portal.ui.report.server.servlet.ReportDownloadServlet</servlet-class>
     </servlet>
 
-    <servlet>
-        <servlet-name>siteFolderServersDownloadServlet</servlet-name>
-        <servlet-class>ru.protei.portal.ui.sitefolder.server.servlet.SiteFolderServersDownloadServlet</servlet-class>    </servlet>
-
     <!-- Сервлет для работы шины сообщений между клиентом и сервером -->
 <!--
     <servlet>
@@ -57,11 +53,6 @@
     <servlet-mapping>
         <servlet-name>reportDownloadServlet</servlet-name>
         <url-pattern>/Portal/download/report</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>siteFolderServersDownloadServlet</servlet-name>
-        <url-pattern>/Portal/download/siteFolderServers</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

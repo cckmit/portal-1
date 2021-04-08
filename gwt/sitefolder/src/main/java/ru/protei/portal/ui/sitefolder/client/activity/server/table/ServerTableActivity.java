@@ -85,15 +85,6 @@ public abstract class ServerTableActivity implements
     }
 
     @Event
-    public void onExport(SiteFolderServerEvents.Export event) {
-        platformId = event.platformId;
-        if (platformId != null) {
-            Window.open(GWT.getModuleBaseURL() +
-                "download/siteFolderServers?platformId=" + event.platformId, "_blank", "");
-        }
-    }
-
-    @Event
     public void onCreateClicked(ActionBarEvents.Clicked event) {
         if (!UiConstants.ActionBarIdentity.SITE_FOLDER_SERVER.equals(event.identity)) {
             return;
