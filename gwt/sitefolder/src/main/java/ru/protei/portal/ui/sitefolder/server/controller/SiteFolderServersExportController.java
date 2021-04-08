@@ -129,6 +129,7 @@ public class SiteFolderServersExportController {
         font.setBold(isBold);
         CellStyle cellStyle = wb.createCellStyle();
         cellStyle.setFont(font);
+        cellStyle.setWrapText(true);
         return cellStyle;
     }
 
