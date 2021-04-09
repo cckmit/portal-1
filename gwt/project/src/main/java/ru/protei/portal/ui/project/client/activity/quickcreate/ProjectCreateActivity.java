@@ -76,7 +76,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
                     fireEvent(new ProjectEvents.ChangeModel());
                     fireEvent(new ProjectEvents.Set(new EntityOption(project.getData().getName(), project.getData().getId())));
                     initialView(new Project());
-                    fireEvent(new DocumentEvents.ProjectCreated(project.getData().getId()));
+                    fireEvent(new DocumentEvents.ProjectCreated());
                 }));
     }
 
