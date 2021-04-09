@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
@@ -75,7 +76,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
                     fireEvent(new ProjectEvents.ChangeModel());
                     fireEvent(new ProjectEvents.Set(new EntityOption(project.getData().getName(), project.getData().getId())));
                     initialView(new Project());
-                    fireEvent(new Back());
+                    fireEvent(new DocumentEvents.ProjectCreated(project.getData().getId()));
                 }));
     }
 

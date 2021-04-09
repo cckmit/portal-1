@@ -108,4 +108,12 @@ public class DocumentEvents {
         public Long projectId;
         public String projectName;
     }
+
+    public static class ProjectCreated {
+        public ProjectCreated(Long projectId) {
+            this.projectId = projectId;
+        }
+
+        public Long projectId;
+    }
 }
