@@ -483,7 +483,7 @@ public class Project extends AuditableObject {
                 ", creator=" + creator +
                 ", managerId=" + managerId +
                 ", managerName='" + managerName + '\'' +
-                ", platformsIds=" + platforms.stream().map(Platform::getId).collect(Collectors.toList()) +
+                ", platformsIds=" + stream(platforms).map(Platform::getId).collect(Collectors.toList()) +
                 ", technicalSupportValidity=" + technicalSupportValidity +
                 ", workCompletionDate=" + workCompletionDate +
                 ", purchaseDate=" + purchaseDate +
