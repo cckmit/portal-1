@@ -956,6 +956,7 @@ public class DebugIds {
 
         interface TAG {
             String NAME_LABEL = "dialog-details-tag-name-label";
+            String VERIFIABLE_ICON = "dialog-details-tag-verifiable-icon";;
             String COMPANY_LABEL = "dialog-details-tag-company-label";
             String COLOR_LABEL = "dialog-details-tag-color-label";
             String AUTHOR_LABEL = "dialog-details-author-label";

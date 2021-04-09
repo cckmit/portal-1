@@ -6,10 +6,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseObjectTagDAO;
 import ru.protei.portal.core.model.dao.CaseTagDAO;
-import ru.protei.portal.core.model.dict.En_HistoryAction;
-import ru.protei.portal.core.model.dict.En_HistoryType;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseObjectTag;
 import ru.protei.portal.core.model.ent.CaseTag;
@@ -186,6 +183,12 @@ public class CaseTagServiceImpl implements CaseTagService {
                 throw createHistoryException(En_ResultStatus.NOT_CREATED, En_HistoryAction.ADD, tag.getId());
             }
         });
+    }
+
+    @Override
+    public Result<Boolean> isTagNameExists(AuthToken token, CaseTag tag) {
+        return ok(caseTagDAO.isNameUniqueForTag(tag.getId(), tag.getCaseType(),
+                                                tag.getCompanyId(), tag.getName()));
     }
 
     private boolean isCaseTagValid(CaseTag caseTag) {

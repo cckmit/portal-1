@@ -1,18 +1,24 @@
 package ru.protei.portal.ui.common.client.view.casetag.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casetag.edit.AbstractCaseTagEditActivity;
 import ru.protei.portal.ui.common.client.activity.casetag.edit.AbstractCaseTagEditView;
+import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.colorpicker.ColorPicker;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 public class CaseTagEditView extends Composite implements AbstractCaseTagEditView {
 
@@ -24,11 +30,28 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
     }
 
     @Override
-    public void setActivity(AbstractCaseTagEditActivity activity) {}
+    public void setActivity(AbstractCaseTagEditActivity activity) {
+        this.activity = activity;
+    }
 
     @Override
     public HasValue<String> name() {
         return name;
+    }
+
+    @Override
+    public void setCaseTagNameStatus(NameStatus status) {
+        verifiableIcon.setClassName(status.getStyle());
+    }
+
+    @Override
+    public HasText caseTagNameErrorLabel() {
+        return tagNameErrorLabel;
+    }
+
+    @Override
+    public HasVisibility caseTagNameErrorLabelVisibility() {
+        return tagNameErrorLabel;
     }
 
     @Override
@@ -68,6 +91,7 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
 
     private void ensureDebugIds() {
         tagNameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.TAG.NAME_LABEL);
+        verifiableIcon.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.TAG.VERIFIABLE_ICON);
         tagColorLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.TAG.COLOR_LABEL);
         tagCompanyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DIALOG_DETAILS.TAG.COMPANY_LABEL);
         label.ensureDebugId(DebugIds.DIALOG_DETAILS.TAG.AUTHOR_LABEL);
@@ -75,12 +99,25 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
         company.ensureDebugId(DebugIds.DIALOG_DETAILS.TAG.COMPANY_SELECTOR);
     }
 
+    @UiHandler("name")
+    public void onChangeTagName(KeyUpEvent event) {
+        verifiableIcon.setClassName(NameStatus.UNDEFINED.getStyle());
+        timer.cancel();
+        timer.schedule(300);
+    }
+
     @Inject
     @UiField
     Lang lang;
 
     @UiField
-    TextBox name;
+    ValidableTextBox name;
+
+    @UiField
+    Label tagNameErrorLabel;
+
+    @UiField
+    Element verifiableIcon;
 
     @UiField
     HTMLPanel authorContainer;
@@ -104,6 +141,17 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
     @Inject
     @UiField(provided = true)
     CompanySelector company;
+
+    Timer timer = new Timer() {
+        @Override
+        public void run() {
+            if (activity != null) {
+                activity.onChangeCaseTagName();
+            }
+        }
+    };
+
+    AbstractCaseTagEditActivity activity;
 
     interface CaseTagEditViewUiBinder extends UiBinder<Widget, CaseTagEditView> {}
     private static CaseTagEditViewUiBinder ourUiBinder = GWT.create(CaseTagEditViewUiBinder.class);

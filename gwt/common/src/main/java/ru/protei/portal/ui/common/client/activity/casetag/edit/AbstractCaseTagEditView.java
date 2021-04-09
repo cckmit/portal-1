@@ -1,16 +1,20 @@
 package ru.protei.portal.ui.common.client.activity.casetag.edit;
 
-import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.HasVisibility;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.common.NameStatus;
 
 public interface AbstractCaseTagEditView extends IsWidget {
 
     void setActivity(AbstractCaseTagEditActivity activity);
 
     HasValue<String> name();
+
+    void setCaseTagNameStatus(NameStatus status);
+
+    HasText caseTagNameErrorLabel();
+
+    HasVisibility caseTagNameErrorLabelVisibility();
 
     HasValue<String> color();
 

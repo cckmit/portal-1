@@ -3210,6 +3210,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errAccessParametersLengthExceeded(int maxLength);
 
+    String errTagNameEmpty();
+
+    String errTagNameAlreadyExists();
+
     String errTagColorEmpty();
 
     String errTagColorIncorrectFormat();
