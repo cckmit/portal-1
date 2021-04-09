@@ -3214,6 +3214,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errTagNameAlreadyExists();
 
+    String errTagNameLengthExceeded(int maxLength);
+
     String errTagColorEmpty();
 
     String errTagColorIncorrectFormat();

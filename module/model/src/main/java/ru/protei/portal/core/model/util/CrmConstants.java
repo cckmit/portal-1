@@ -69,6 +69,7 @@ public class CrmConstants {
 
     public interface CaseTag {
         Long NOT_SPECIFIED = -1L;
+        int NAME_MAX_LENGTH = 64;
     }
 
     public interface Masks {

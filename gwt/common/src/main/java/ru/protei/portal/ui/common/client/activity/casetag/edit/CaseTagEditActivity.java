@@ -23,6 +23,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.core.model.util.CrmConstants.CaseTag.NAME_MAX_LENGTH;
 import static ru.protei.portal.ui.common.client.common.NameStatus.*;
 
 public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEditActivity, AbstractDialogDetailsActivity {
@@ -130,6 +131,11 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         String name = view.name().getValue();
         if (isBlank(name)) {
             setNameValidationStatus(ERROR, lang.errTagNameEmpty(), true);
+            return;
+        }
+
+        if (name.length() > NAME_MAX_LENGTH) {
+            setNameValidationStatus(ERROR, lang.errTagNameLengthExceeded(NAME_MAX_LENGTH), true);
             return;
         }
 

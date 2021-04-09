@@ -16,7 +16,7 @@
                     <div class="verifiable">
                         <i ui:field="verifiableIcon"/>
                     </div>
-                    <validablefield:ValidableTextBox  ui:field="name" styleName="form-control" maxLength="60"/>
+                    <validablefield:ValidableTextBox  ui:field="name" styleName="form-control"/>
 
                     <g:Label ui:field="tagNameErrorLabel" styleName="text-danger name-error" visible="false"/>
                 </div>
