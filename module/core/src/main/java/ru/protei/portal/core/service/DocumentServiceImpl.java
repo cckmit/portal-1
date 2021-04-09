@@ -572,6 +572,9 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public Result<Long> removeDocumentByApi(AuthToken token, Long documentId) {
         Document document = documentDAO.partialGet(documentId, "project_id");
+        if (document == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
         return removeDocument(token, documentId, document.getProjectId(), token.getPersonDisplayShortName());
     }
 

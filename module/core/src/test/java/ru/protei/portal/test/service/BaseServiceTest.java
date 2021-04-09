@@ -414,4 +414,8 @@ public class BaseServiceTest {
     protected ObjectMapper objectMapper;
     @Autowired
     protected CompanyImportanceItemDAO companyImportanceItemDAO;
+    @Autowired
+    protected DocumentTypeDAO documentTypeDAO;
+    @Autowired
+    protected DocumentDAO documentDAO;
 }
