@@ -108,4 +108,6 @@ public class DocumentEvents {
         public Long projectId;
         public String projectName;
     }
+
+    public static class ProjectCreated {}
 }

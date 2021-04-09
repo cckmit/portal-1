@@ -42,6 +42,16 @@ public abstract class DocumentCreateActivity implements Activity, AbstractDocume
     }
 
     @Event
+    public void onShowCreateWithCreatedProject(DocumentEvents.ProjectCreated event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_CREATE)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden());
+            return;
+        }
+
+        view.setWizardTab(lang.documentCreateHeader());
+    }
+
+    @Event
     public void onChangeButtonsEnabled(DocumentEvents.SetButtonsEnabled event) {
         view.setWizardButtonsEnabled(event.isEnabled);
     }

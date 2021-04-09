@@ -199,8 +199,10 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     private void fillView(Project project) {
         view.setNumber( isNew( project ) ? null : project.getId().intValue() );
         view.name().setValue( isNew( project ) ? "" : project.getName());
-        CaseState caseState = new CaseState( isNew( project ) ? UNKNOWN : project.getStateId() );
-        view.state().setValue( caseState );
+        long stateId = isNew(project) ? UNKNOWN : project.getStateId();
+        String stateName = isNew(project) ? "unknown" : project.getStateName();
+        CaseState state = new CaseState(stateId, stateName);
+        view.state().setValue( state );
         view.directions().setValue(isEmpty(project.getProductDirectionEntityOptionList())? null : toSet(project.getProductDirectionEntityOptionList(), option -> new ProductDirectionInfo(option)));
         view.productEnabled().setEnabled(isNotEmpty(project.getProductDirectionEntityOptionList()));
         view.team().setValue( project.getTeam() == null ? null : new HashSet<>( project.getTeam() ) );
