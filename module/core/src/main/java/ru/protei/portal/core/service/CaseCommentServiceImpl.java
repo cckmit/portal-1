@@ -778,6 +778,9 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     private En_ResultStatus checkAccessForCaseObjectByNumber(AuthToken token, En_CaseType caseType, Long caseNumber) {
+        if (caseNumber == null) {
+            return null;
+        }
         return checkAccessForCaseObject(token, caseType, caseObjectDAO.getCaseByNumber(caseType, caseNumber));
     }
 

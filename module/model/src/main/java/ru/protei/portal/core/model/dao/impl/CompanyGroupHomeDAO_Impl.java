@@ -20,11 +20,6 @@ public class CompanyGroupHomeDAO_Impl extends PortalBaseJdbcDAO<CompanyHomeGroup
         return getByCondition ("external_code=?", externalCode);
     }
 
-    public Long mainCompanyId() {
-        CompanyHomeGroupItem item = getByCondition("mainId is null");
-        return item == null ? null : item.getCompanyId();
-    }
-
     @Override
     public boolean isHomeCompany( Long companyId ) {
         return homeGroupCache().exists( entity -> entity.getCompanyId().equals( companyId ) );

@@ -90,6 +90,14 @@ public class PolicyServiceImpl implements PolicyService {
     }
 
     @Override
+    public boolean hasSystemScope(Set< UserRole > roles) {
+        if (roles == null) {
+            return false;
+        }
+        return roles.stream().map(UserRole::getScope).anyMatch(scope -> En_Scope.SYSTEM.equals(scope));
+    }
+
+    @Override
     public boolean hasScopeForPrivilege( Set< UserRole > roles, En_Privilege privilege, En_Scope scope ) {
         Map< En_Privilege, Set< En_Scope > > privilegeToScope = collectPrivilegeToScopeMap( roles );
         Set< En_Scope > privilegeScopes = privilegeToScope.get( privilege );

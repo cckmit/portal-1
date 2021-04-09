@@ -24,4 +24,6 @@ public interface PolicyService {
     boolean hasGrantAccessFor( Set< UserRole > roles, En_Privilege privilege );
 
     boolean hasScopeForPrivilege( Set<UserRole> roles, En_Privilege privilege, En_Scope scope );
+
+    boolean hasSystemScope(Set<UserRole> roles);
 }

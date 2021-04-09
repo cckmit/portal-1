@@ -9,6 +9,5 @@ public interface CompanyGroupHomeDAO extends PortalBaseDAO<CompanyHomeGroupItem>
 
     boolean checkIfHome (Long id);
     CompanyHomeGroupItem getByExternalCode(String externalCode);
-    Long mainCompanyId();
     boolean isHomeCompany(Long companyId);
 }

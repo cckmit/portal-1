@@ -469,8 +469,6 @@ public class DebugIds {
         String DESCRIPTION_INPUT = "project-description-input";
         String STATE_SELECTOR = "project-state-selector";
         String REGION_SELECTOR = "project-region-selector";
-        String DIRECTION_SELECTOR = "project-direction-selector";
-        String PRODUCT_SELECTOR = "project-product-selector";
         String CUSTOMER_TYPE_SELECTOR = "project-customer-type-selector";
         String COMPANY_SELECTOR = "project-company-selector";
         String LINKS_BUTTON = "project-links-button";
@@ -479,14 +477,29 @@ public class DebugIds {
         String PURCHASE_DATE = "project-purchase-date";
         String SLA_INPUT = "project-sla-input";
 
-        String SAVE_BUTTON = "project-save-button";
-        String CANCEL_BUTTON = "project-cancel-button";
-
+        String DIRECTION_SELECTOR = "project-direction-selector";
+        String DIRECTION_SELECTOR_ADD_BUTTON = "project-direction-selector-add-button";
+        String DIRECTION_SELECTOR_CLEAR_BUTTON = "project-direction-selector-clear-button";
+        String DIRECTION_SELECTOR_ITEM_CONTAINER = "project-direction-selector-item-container";
+        String DIRECTION_SELECTOR_LABEL = "project-direction-selector-label";
+        String PRODUCT_SELECTOR = "project-product-selector";
+        String PRODUCT_SELECTOR_ADD_BUTTON = "project-product-selector-add-button";
+        String PRODUCT_SELECTOR_CLEAR_BUTTON = "project-product-selector-clear-button";
+        String PRODUCT_SELECTOR_ITEM_CONTAINER = "project-product-selector-item-container";
+        String PRODUCT_SELECTOR_LABEL = "project-product-selector-label";
+        String SUBCONTRACTOR_SELECTOR = "project-subcontractor-selector";
         String SUBCONTRACTOR_SELECTOR_ADD_BUTTON = "project-subcontractor-selector-add-button";
         String SUBCONTRACTOR_SELECTOR_CLEAR_BUTTON = "project-subcontractor-selector-clear-button";
         String SUBCONTRACTOR_SELECTOR_ITEM_CONTAINER = "project-subcontractor-selector-item-container";
         String SUBCONTRACTOR_SELECTOR_LABEL = "project-subcontractor-selector-label";
+        String PLAN_SELECTOR = "project-plan-selector";
+        String PLAN_SELECTOR_ADD_BUTTON = "project-plan-selector-add-button";
+        String PLAN_SELECTOR_CLEAR_BUTTON = "project-plan-selector-clear-button";
+        String PLAN_SELECTOR_ITEM_CONTAINER = "project-plan-selector-item-container";
+        String PLAN_SELECTOR_LABEL = "project-plan-selector-label";
 
+        String SAVE_BUTTON = "project-save-button";
+        String CANCEL_BUTTON = "project-cancel-button";
     }
 
     public interface PROJECT_PREVIEW {

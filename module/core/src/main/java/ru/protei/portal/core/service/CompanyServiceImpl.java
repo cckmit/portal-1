@@ -71,7 +71,7 @@ public class CompanyServiceImpl implements CompanyService {
     ProjectDAO projectDAO;
 
     @Override
-    public Result<SearchResult<Company>> getCompanies( AuthToken token, CompanyQuery query) {
+    public Result<SearchResult<Company>> getCompanies(AuthToken token, CompanyQuery query) {
 
         applyFilterByScope(token, query);
 
@@ -82,8 +82,8 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<EntityOption>> companyOptionList( AuthToken token, CompanyQuery query) {
-        applyFilterByScope( token, query );
+    public Result<List<EntityOption>> companyOptionList(AuthToken token, CompanyQuery query) {
+        applyFilterByScope(token, query);
         List<Company> list = companyDAO.listByQuery(query);
         if (list == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
@@ -102,7 +102,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<EntityOption>> companyOptionListByIds(AuthToken token, List<Long> ids ) {
+    public Result<List<EntityOption>> companyOptionListByIds(AuthToken token, List<Long> ids) {
         List<Company> list = companyDAO.getListByKeys(ids);
 
         if (list == null)
@@ -513,10 +513,9 @@ public class CompanyServiceImpl implements CompanyService {
         return Objects.equals( En_CompanyCategory.HOME, o1.getCategory() ) ? -1 : Objects.equals( En_CompanyCategory.HOME, o2.getCategory() ) ? 1 : 0;
     }
 
-    private void applyFilterByScope( AuthToken token, CompanyQuery query ) {
-        Set< UserRole > roles = token.getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW ) ) {
-            query.setCompanyIds( acceptAllowedCompanies(query.getCompanyIds(), token.getCompanyAndChildIds() ) );
+    private void applyFilterByScope(AuthToken token, CompanyQuery query) {
+        if (!policyService.hasSystemScope(token.getRoles())) {
+            query.setCompanyIds(acceptAllowedCompanies(query.getCompanyIds(), token.getCompanyAndChildIds()));
         }
     }
 

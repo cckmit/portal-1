@@ -607,13 +607,8 @@ public class BootstrapServiceImpl implements BootstrapService {
     }
 
     private void updateCompanyCaseTags() {
-        Long companyId = companyGroupHomeDAO.mainCompanyId();
-        if (companyId == null) {
-            log.info( "Main company id not found. Aborting" );
-            return;
-        }
 
-        log.info("Start update tags where company id is null, set company id {} ", companyId);
+        log.info("Start update tags where company id is null, set company id {} ", CrmConstants.Company.HOME_COMPANY_ID);
 
         List<CaseTag> result = caseTagDAO.getListByCondition("case_tag.company_id is null");
         if (CollectionUtils.isEmpty(result)) {
@@ -621,7 +616,7 @@ public class BootstrapServiceImpl implements BootstrapService {
             return;
         }
         result.forEach(caseTag -> {
-            caseTag.setCompanyId(companyId);
+            caseTag.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
             caseTagDAO.merge(caseTag);
         });
         log.info("Correction company id in tags completed successfully");
@@ -975,7 +970,7 @@ public class BootstrapServiceImpl implements BootstrapService {
         final Person person = new Person();
         person.setCreated(now);
         person.setCreator("BootstrapService");
-        person.setCompanyId(companyGroupHomeDAO.mainCompanyId());
+        person.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
         person.setPosition("Не определена");
         person.setDepartment("не определено");
         person.setFirstName("Сотрудник");
