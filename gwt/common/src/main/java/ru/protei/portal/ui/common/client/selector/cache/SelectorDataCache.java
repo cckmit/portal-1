@@ -22,7 +22,9 @@ public class SelectorDataCache<T> implements DataCache.DataCacheHandler<T>, Infi
 
     @Override
     public void onDataCacheChanged() {
-        if (loadingHandler != null) loadingHandler.onLoadingComplete();
+        if (loadingHandler != null) {
+            loadingHandler.onLoadingComplete();
+        }
     }
 
     public void setSavedChunks( int savedChunks ) {
@@ -56,12 +58,10 @@ public class SelectorDataCache<T> implements DataCache.DataCacheHandler<T>, Infi
 
     public T get( int elementIndex, LoadingHandler loadingHandler ) {
         if (total <= elementIndex) return null;
-        T option = cache.get( elementIndex );
-        if (option == null) {
+        return cache.get(elementIndex, () -> {
             this.loadingHandler = loadingHandler;
             loadingHandler.onLoadingStart();
-        }
-        return option;
+        });
     }
 
     public void setTotal( int total ) {

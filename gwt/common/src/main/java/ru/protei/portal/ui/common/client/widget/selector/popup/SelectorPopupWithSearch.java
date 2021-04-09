@@ -151,6 +151,7 @@ public abstract class SelectorPopupWithSearch extends PopperComposite
 
     @UiHandler("addButton")
     public void onAddButtonClick( ClickEvent event) {
+        hide();
         AddEvent.fire(this);
     }
 

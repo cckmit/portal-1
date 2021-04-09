@@ -27,11 +27,9 @@ public interface AbstractPlatformEditView extends IsWidget {
 
     HasValue<String> comment();
 
-    HasWidgets listContainer();
+    HasWidgets serversContainer();
 
-    HasVisibility listContainerVisibility();
-
-    HasVisibility listContainerHeaderVisibility();
+    HasVisibility serversContainerVisibility();
 
     HasEnabled companyEnabled();
 
@@ -39,13 +37,11 @@ public interface AbstractPlatformEditView extends IsWidget {
 
     HasValidable companyValidator();
 
-    HasVisibility openButtonVisibility();
-
-    HasVisibility createButtonVisibility();
-
     HasWidgets contactsContainer();
 
     HasAttachments attachmentsContainer();
 
     HasValue<EntityOption> project();
+
+    String COMMENT_DISPLAY_PREVIEW = "platform_view_is_comment_preview_displayed";
 }

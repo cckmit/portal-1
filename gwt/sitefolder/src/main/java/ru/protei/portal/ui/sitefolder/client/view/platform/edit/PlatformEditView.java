@@ -13,10 +13,12 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
+import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
@@ -33,6 +35,10 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         manager.setItemRenderer( value -> value == null ? lang.selectManager() : value.getDisplayShortName() );
+        comment.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
+        comment.setDisplayPreviewHandler(isDisplay ->
+                localStorageService.set(COMMENT_DISPLAY_PREVIEW, String.valueOf(isDisplay)));
+
         ensureDebugIds();
     }
 
@@ -83,18 +89,13 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     }
 
     @Override
-    public HasWidgets listContainer() {
-        return listContainer;
+    public HasWidgets serversContainer() {
+        return serversContainer;
     }
 
     @Override
-    public HasVisibility listContainerVisibility() {
-        return listContainer;
-    }
-
-    @Override
-    public HasVisibility listContainerHeaderVisibility() {
-        return listContainerHeader;
+    public HasVisibility serversContainerVisibility() {
+        return serversContainer;
     }
 
     @Override
@@ -118,16 +119,6 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     }
 
     @Override
-    public HasVisibility openButtonVisibility() {
-        return openButton;
-    }
-
-    @Override
-    public HasVisibility createButtonVisibility() {
-        return createButton;
-    }
-
-    @Override
     public HasWidgets contactsContainer() {
         return contactsContainer;
     }
@@ -148,20 +139,6 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     public void cancelButtonClick(ClickEvent event) {
         if (activity != null) {
             activity.onCancelClicked();
-        }
-    }
-
-    @UiHandler("openButton")
-    public void openButtonClick(ClickEvent event) {
-        if (activity != null) {
-            activity.onOpenClicked();
-        }
-    }
-
-    @UiHandler("createButton")
-    public void createButtonClick(ClickEvent event) {
-        if (activity != null) {
-            activity.onCreateClicked();
         }
     }
 
@@ -202,9 +179,7 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
         tabWidget.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.TABS);
         tabWidget.setTabNameDebugId(lang.siteFolderServers(), DebugIds.SITE_FOLDER.PLATFORM.TAB_SERVERS);
         tabWidget.setTabNameDebugId(lang.siteFolderCompanyContacts(), DebugIds.SITE_FOLDER.PLATFORM.TAB_COMPANY_CONTACTS);
-        listContainer.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.SERVERS);
-        openButton.ensureDebugId(DebugIds.SITE_FOLDER.SERVER.OPEN_BUTTON);
-        createButton.ensureDebugId(DebugIds.SITE_FOLDER.SERVER.CREATE_BUTTON);
+        serversContainer.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.SERVERS);
 
         contactsContainer.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.CONTACTS);
 
@@ -223,21 +198,15 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     @UiField
     TextArea parameters;
     @UiField
-    TextArea comment;
-    @UiField
-    HTMLPanel listContainerHeader;
+    MarkdownAreaWithPreview comment;
     @UiField
     TabWidget tabWidget;
     @UiField
-    HTMLPanel listContainer;
+    HTMLPanel serversContainer;
     @UiField
     Button saveButton;
     @UiField
     Button cancelButton;
-    @UiField
-    Button createButton;
-    @UiField
-    Button openButton;
     @UiField
     HTMLPanel contactsContainer;
     @UiField
@@ -250,6 +219,8 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     ProjectButtonSelector project;
     @UiField
     Lang lang;
+    @Inject
+    LocalStorageService localStorageService;
     private AbstractPlatformEditActivity activity;
 
     interface SiteFolderEditViewUiBinder extends UiBinder<HTMLPanel, PlatformEditView> {}

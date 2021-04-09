@@ -2,27 +2,34 @@ package ru.protei.portal.ui.sitefolder.client.view.server.table;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.AnchorElement;
-import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Server;
+import ru.protei.portal.core.model.ent.ServerGroup;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
+import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.common.client.widget.table.GroupedTableWidget;
 import ru.protei.portal.ui.sitefolder.client.activity.server.table.AbstractServerTableActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.table.AbstractServerTableView;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Function;
 
 public class ServerTableView extends Composite implements AbstractServerTableView {
 
@@ -33,76 +40,63 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     }
 
     @Override
-    public void setActivity(AbstractServerTableActivity activity) {
-        copyClickColumn.setCopyHandler(activity);
-        editClickColumn.setEditHandler(activity);
-        removeClickColumn.setRemoveHandler(activity);
-        table.setLoadHandler(activity);
-        table.setPagerListener(activity);
-        columns.forEach(c -> {
-            c.setHandler(activity);
-            c.setColumnProvider(columnProvider);
-        });
-        appsColumn.setActionHandler(activity::onOpenAppsClicked);
+    public void addRecords(List<Server> servers) {
+        table.addRecords(servers);
     }
 
     @Override
-    public void setAnimation(TableAnimation animation) {
-        animation.setContainers(tableContainer, previewContainer, filterContainer);
-        columnProvider.setChangeSelectionIfSelectedPredicate(server -> animation.isPreviewShow());
+    public void setActivity(AbstractServerTableActivity activity) {
+        this.activity = activity;
+        copyClickColumn.setCopyHandler(activity);
+        editClickColumn.setEditHandler(activity);
+        removeClickColumn.setRemoveHandler(activity);
+        appsColumn.setActionHandler(activity::onOpenAppsClicked);
+        table.setGroupFunctions(activity);
+    }
+
+    @Override
+    public HasValue<String> nameOrIp() {
+        return nameOrIp;
+    }
+
+    @Override
+    public HasValue<En_SortField> sortField() {
+        return sortField;
+    }
+
+    @Override
+    public HasValue<Boolean> sortDir() {
+        return sortDir;
     }
 
     @Override
     public void clearRecords() {
-        table.clearCache();
         table.clearRows();
     }
 
     @Override
-    public void triggerTableLoad() {
-        table.setTotalRecords(table.getPageSize());
+    public HasVisibility createButtonVisibility() {
+        return createButton;
     }
 
-    @Override
-    public void setTotalRecords(int totalRecords) {
-        table.setTotalRecords(totalRecords);
+    @UiHandler("nameOrIp")
+    public void onNameOrIpChanged(InputEvent event) {
+        nameChangeTimer.schedule(200);
     }
 
-    @Override
-    public int getPageCount() {
-        return table.getPageCount();
+    @UiHandler("sortField")
+    public void onSortFieldChanged(ValueChangeEvent<En_SortField> event) {
+        activity.onFilterChanged();
     }
 
-    @Override
-    public void scrollTo(int page) {
-        table.scrollToPage(page);
+    @UiHandler("sortDir")
+    public void onSortDirChanged(ValueChangeEvent<Boolean> event) {
+        activity.onFilterChanged();
     }
 
-    @Override
-    public void updateRow(Server item) {
-        if (item != null) {
-            table.updateRow(item);
-        }
-    }
-
-    @Override
-    public HasWidgets getPreviewContainer() {
-        return previewContainer;
-    }
-
-    @Override
-    public HasWidgets getFilterContainer() {
-        return filterContainer;
-    }
-
-    @Override
-    public HasWidgets getPagerContainer() {
-        return pagerContainer;
-    }
-
-    @Override
-    public void clearSelection() {
-        columnProvider.removeSelection();
+    @UiHandler("createButton")
+    public void onCreateButtonClicked(ClickEvent event) {
+        activity.onCreateClicked();
     }
 
     private void initTable() {
@@ -111,7 +105,6 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
         removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_REMOVE) );
 
         columns.add(nameColumn);
-        columns.add(platformColumn);
         columns.add(ip);
         columns.add(appsColumn);
         columns.add(accessParams);
@@ -123,15 +116,20 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     }
 
     @UiField
-    InfiniteTableWidget<Server> table;
+    GroupedTableWidget<Server, ServerGroup> table;
+
     @UiField
-    HTMLPanel tableContainer;
+    CleanableSearchBox nameOrIp;
+
+    @Inject
+    @UiField( provided = true )
+    SortFieldSelector sortField;
+
     @UiField
-    HTMLPanel previewContainer;
+    ToggleButton sortDir;
+
     @UiField
-    HTMLPanel filterContainer;
-    @UiField
-    HTMLPanel pagerContainer;
+    Button createButton;
 
     @Inject
     @UiField
@@ -146,6 +144,16 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     private EditClickColumn<Server> editClickColumn;
     @Inject
     private RemoveClickColumn<Server> removeClickColumn;
+
+    private Timer nameChangeTimer = new Timer() {
+        @Override
+        public void run() {
+            activity.onFilterChanged();
+        }
+    };
+
+    private AbstractServerTableActivity activity;
+
     private ClickColumn<Server> nameColumn = new ClickColumn<Server>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
@@ -193,22 +201,6 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
             cell.appendChild(element);
         }
     };
-    private ClickColumn<Server> platformColumn = new ClickColumn<Server>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setClassName("server-platform");
-            columnHeader.setInnerText(lang.siteFolderPlatform());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, Server value) {
-            Element element = DOM.createDiv();
-
-            element.setInnerText(value.getPlatform() == null ? "?" : value.getPlatform().getName());
-
-            cell.appendChild(element);
-        }
-    };
     private ClickColumn<Server> appsColumn = new ClickColumn<Server>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
@@ -233,6 +225,6 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     private Collection<ClickColumn<Server>> columns = new LinkedList<>();
     private ClickColumnProvider<Server> columnProvider = new ClickColumnProvider<>();
 
-    interface SiteFolderServerTableViewUiBinder extends UiBinder<HTMLPanel, ServerTableView> {}
-    private static SiteFolderServerTableViewUiBinder ourUiBinder = GWT.create(SiteFolderServerTableViewUiBinder.class);
+    interface ServerTableViewUiBinder extends UiBinder<HTMLPanel, ServerTableView> {}
+    private static ServerTableViewUiBinder ourUiBinder = GWT.create(ServerTableViewUiBinder.class);
 }

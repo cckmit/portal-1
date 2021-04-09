@@ -78,6 +78,13 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     }
 
     @Override
+    public List<ServerGroup> getServerGroups(Long platformId, int limit, int offset) throws RequestFailedException {
+        log.info("getServerGroups(): platformId={}, limit={}, offset={}", platformId, limit, offset);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(siteFolderService.getServerGroups(token, platformId, limit, offset));
+    }
+
+    @Override
     public Platform getPlatform(long id) throws RequestFailedException {
 
         log.info("getPlatform(id={})", id);
@@ -175,6 +182,23 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     }
 
     @Override
+    public ServerGroup saveServerGroup(ServerGroup serverGroup) throws RequestFailedException {
+        log.info("saveServerGroup(): serverGroup={}", serverGroup);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result<ServerGroup> response;
+        if (serverGroup.getId() == null) {
+            response = siteFolderService.createServerGroup(token, serverGroup);
+        } else {
+            response = siteFolderService.updateServerGroup(token, serverGroup);
+        }
+        if (response.isError()) {
+            log.warn("saveServerGroup(): status={}", response.getStatus());
+            throw new RequestFailedException(response.getStatus());
+        }
+        return response.getData();
+    }
+
+    @Override
     public Long removePlatform(long id) throws RequestFailedException {
 
         log.info("removePlatform(id={})", id);
@@ -194,6 +218,18 @@ public class SiteFolderControllerImpl implements SiteFolderController {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         Result<Long> response = siteFolderService.removeServer(token, id);
         log.info("removeServer(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+        return response.getData();
+    }
+
+    @Override
+    public Long removeServerGroup(Long id) throws RequestFailedException {
+        log.info("removeServerGroup(id={})", id);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result<Long> response = siteFolderService.removeServerGroup(token, id);
+        log.info("removeServerGroup(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }

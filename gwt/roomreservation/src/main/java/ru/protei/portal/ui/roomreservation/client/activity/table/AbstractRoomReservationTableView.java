@@ -11,7 +11,6 @@ public interface AbstractRoomReservationTableView extends IsWidget {
     void setActivity(AbstractRoomReservationTableActivity activity);
     RoomReservationParamWidget getFilterWidget();
     void addRecords(List<RoomReservation> roomReservations);
-    void addSeparator(String label);
     void clearRecords();
     HasWidgets getPagerContainer();
 }

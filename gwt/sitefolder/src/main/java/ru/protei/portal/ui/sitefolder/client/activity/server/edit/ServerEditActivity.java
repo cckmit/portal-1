@@ -9,12 +9,16 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Server;
+import ru.protei.portal.core.model.ent.ServerGroup;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.sitefolder.client.events.ServerGroupEvents;
+import ru.protei.portal.ui.sitefolder.client.widget.selector.servergroup.ServerGroupModel;
 
 import java.util.function.Consumer;
 
@@ -25,6 +29,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+        view.setServerGroupModel(serverGroupModel);
     }
 
     @Event
@@ -50,7 +55,9 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
         serverIdOfAppsToBeCloned = null;
 
         fireEvent(new ActionBarEvents.Clear());
+
         if (event.serverId == null) {
+            serverGroupModel.setPlatformId(event.platform == null ? null : event.platform.getId());
 
             if (event.serverIdToBeCloned != null) {
                 requestServer(event.serverIdToBeCloned, server -> {
@@ -69,7 +76,10 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
             return;
         }
 
-        requestServer(event.serverId, this::fillView);
+        requestServer(event.serverId, server -> {
+            serverGroupModel.setPlatformId(server.getPlatformId());
+            fillView(server);
+        });
     }
 
     @Override
@@ -120,6 +130,42 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
         fireEvent(SiteFolderAppEvents.Edit.withServer(server));
     }
 
+    @Override
+    public void onCreateServerGroupClicked() {
+        PlatformOption platform = view.platform().getValue();
+
+        if (platform == null) {
+            return;
+        }
+
+        fireEvent(new ServerGroupEvents.Edit(
+                new ServerGroup(platform.getId()),
+                serverGroup -> onServerGroupSaved(view, serverGroup, serverGroupModel)
+        ));
+    }
+
+    @Override
+    public void onEditServerGroupClicked(ServerGroup serverGroup) {
+        ServerGroup value = view.serverGroup().getValue();
+
+        fireEvent(new ServerGroupEvents.Edit(
+                serverGroup,
+                savedServerGroup -> onServerGroupSaved(view, savedServerGroup, serverGroupModel),
+                removeServerGroupId -> onServerGroupRemoved(view, removeServerGroupId, serverGroupModel))
+        );
+    }
+
+    @Override
+    public void onPlatformChanged() {
+        view.serverGroup().setValue(null);
+
+        Long platformId = view.platform().getValue() == null ? null : view.platform().getValue().getId();
+
+        serverGroupModel.setPlatformId(platformId);
+
+        view.serverGroupEnabled().setEnabled(platformId != null);
+    }
+
     private EntityOption makeEntityOption(Server server) {
         return server == null ? null : new EntityOption(server.getName(), server.getId());
     }
@@ -145,6 +191,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
         view.openButtonVisibility().setVisible(!isNew);
         view.listContainerVisibility().setVisible(!isNew);
         view.listContainerHeaderVisibility().setVisible(!isNew);
+        view.serverGroup().setValue(createServerGroup(server));
         if (!isNew) {
             fireEvent(new SiteFolderAppEvents.ShowList(view.listContainer(), server.getId()));
         }
@@ -156,6 +203,11 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
         server.setIp(view.ip().getValue());
         server.setParams(view.parameters().getValue());
         server.setComment(view.comment().getValue());
+
+        ServerGroup serverGroup = view.serverGroup().getValue();
+
+        server.setServerGroupId(serverGroup == null ? null : serverGroup.getId());
+        server.setServerGroupName(serverGroup == null ? null : serverGroup.getName());
     }
 
     private boolean isValid() {
@@ -192,6 +244,44 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
         return server.getId() == null;
     }
 
+    private ServerGroup createServerGroup(Server server) {
+        if (server.getServerGroupId() == null) {
+            return null;
+        }
+
+        ServerGroup serverGroup = new ServerGroup();
+        serverGroup.setName(server.getServerGroupName());
+        serverGroup.setPlatformId(server.getPlatformId());
+        serverGroup.setId(server.getServerGroupId());
+
+        return serverGroup;
+    }
+
+    private void onServerGroupSaved(AbstractServerEditView view,
+                                    ServerGroup serverGroup,
+                                    ServerGroupModel serverGroupModel) {
+
+        ServerGroup currentServerGroup = view.serverGroup().getValue();
+        if (serverGroup.equals(currentServerGroup)) {
+            view.serverGroup().setValue(serverGroup);
+        }
+
+        serverGroupModel.clearCache();
+    }
+
+    private void onServerGroupRemoved(AbstractServerEditView view,
+                                      Long serverGroupId,
+                                      ServerGroupModel serverGroupModel) {
+
+        Long currentServerGroupId = view.serverGroup().getValue() == null ? null : view.serverGroup().getValue().getId();
+
+        if (serverGroupId.equals(currentServerGroupId)) {
+            view.serverGroup().setValue(null);
+        }
+
+        serverGroupModel.clearCache();
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -200,6 +290,8 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
     SiteFolderControllerAsync siteFolderController;
     @Inject
     PolicyService policyService;
+    @Inject
+    ServerGroupModel serverGroupModel;
 
     private Server server;
     private Long serverIdOfAppsToBeCloned;

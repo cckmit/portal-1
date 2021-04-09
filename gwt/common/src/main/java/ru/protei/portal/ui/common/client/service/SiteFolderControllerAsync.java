@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.Application;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.Server;
+import ru.protei.portal.core.model.ent.ServerGroup;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
@@ -18,6 +19,8 @@ public interface SiteFolderControllerAsync {
     void getPlatforms(PlatformQuery query, AsyncCallback<SearchResult<Platform>> async);
 
     void getServers(ServerQuery query, AsyncCallback<SearchResult<Server>> async);
+
+    void getServerGroups(Long platformId, int limit, int offset, AsyncCallback<List<ServerGroup>> async);
 
     void getApplications(ApplicationQuery query, AsyncCallback<SearchResult<Application>> async);
 
@@ -41,10 +44,14 @@ public interface SiteFolderControllerAsync {
 
     void saveApplication(Application application, AsyncCallback<Application> async);
 
+    void saveServerGroup(ServerGroup serverGroup, AsyncCallback<ServerGroup> async);
+
 
     void removePlatform(long id, AsyncCallback<Long> async);
 
     void removeServer(long id, AsyncCallback<Long> async);
 
     void removeApplication(long id, AsyncCallback<Long> async);
+
+    void removeServerGroup(Long id, AsyncCallback<Long> async);
 }

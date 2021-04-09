@@ -27,6 +27,11 @@
                         <b><ui:text from="{lang.siteFolderParams}: "/></b>
                         <span class="pre-formatted-info" ui:field="parameters"/>
                     </div>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.siteFolderServerGroup}: "/></b>
+                        <span class="pre-formatted-info" ui:field="serverGroup"/>
+                    </div>
                 </div>
             </div>
         </g:HTMLPanel>

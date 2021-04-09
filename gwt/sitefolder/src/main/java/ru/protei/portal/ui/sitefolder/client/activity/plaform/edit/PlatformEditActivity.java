@@ -9,7 +9,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -23,7 +23,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
-import ru.protei.portal.ui.common.client.util.AttachmentUtils;
+import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -129,15 +129,7 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
     }
 
     @Override
-    public void onOpenClicked() {
-        if (platform != null) {
-            fireEvent(new SiteFolderServerEvents.Show(platform.getId(), false));
-        }
-    }
-
-    @Override
     public void onCreateClicked() {
-
         if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
             return;
         }
@@ -181,6 +173,14 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
         projectRequest(view.project().getValue().getId(), this::fillProjectSpecificFieldsOnRefresh);
     }
 
+    @Override
+    public void renderMarkdownText(String text, Consumer<String> consumer) {
+        En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
+        textRenderController.render(text, textMarkup, new FluentCallback<String>()
+                .withError(throwable -> consumer.accept(text))
+                .withSuccess(consumer));
+    }
+
     private boolean isNew(Platform platform) {
         return platform.getId() == null;
     }
@@ -220,7 +220,6 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
     private void fillView(Platform platform) {
         this.platform = platform;
         boolean isNotNew = platform.getId() != null;
-        boolean isCreatePrivilegeGranted = policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE);
         if (platform.getProjectId() != null){
             projectRequest(platform.getProjectId(), this::fillProjectSpecificFieldsOnLoad);
         }
@@ -234,16 +233,13 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
         view.name().setValue(platform.getName());
         view.parameters().setValue(platform.getParams());
         view.comment().setValue(platform.getComment());
-        view.createButtonVisibility().setVisible(isCreatePrivilegeGranted);
-        view.openButtonVisibility().setVisible(isNotNew);
-        view.listContainerVisibility().setVisible(isNotNew);
-        view.listContainerHeaderVisibility().setVisible(isNotNew);
+        view.serversContainerVisibility().setVisible(isNotNew);
         view.setCaseNumber(platform.getId());
         view.attachmentsContainer().clear();
 
         if (isNotNew) {
             view.attachmentsContainer().add(platform.getAttachments());
-            fireEvent(new SiteFolderServerEvents.ShowList(view.listContainer(), platform.getId()));
+            fireEvent(new SiteFolderServerEvents.ShowTable(view.serversContainer(), platform));
         }
     }
 
@@ -325,6 +321,8 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
     AttachmentControllerAsync attachmentService;
     @Inject
     RegionControllerAsync regionService;
+    @Inject
+    TextRenderControllerAsync textRenderController;
 
     private Platform platform;
     private String previousCompanyName = EMPTY_NAME;

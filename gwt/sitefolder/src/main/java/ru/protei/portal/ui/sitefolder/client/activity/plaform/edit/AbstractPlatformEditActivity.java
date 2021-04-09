@@ -4,13 +4,15 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.view.EntityOption;
 
+import java.util.function.Consumer;
+
 public interface AbstractPlatformEditActivity extends Activity {
 
     void onSaveClicked();
     void onCancelClicked();
-    void onOpenClicked();
     void onCreateClicked();
     void onCompanySelected();
     void onRemoveAttachment(Attachment attachment);
     void refreshProjectSpecificFields();
+    void renderMarkdownText(String text, Consumer<String> consumer);
 }

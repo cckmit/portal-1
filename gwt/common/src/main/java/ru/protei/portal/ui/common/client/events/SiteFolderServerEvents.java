@@ -12,18 +12,28 @@ import ru.protei.portal.core.model.ent.Platform;
 public class SiteFolderServerEvents {
 
     @Url(value = "sfservers", primary = true)
-    public static class Show {
+    public static class ShowSummaryTable {
         @Name("platform")
         public Long platformId;
         @Omit
         public Boolean preScroll;
-        public Show() {
+        public ShowSummaryTable() {
             this(null, false);
         }
-        public Show (Long platformId, Boolean preScroll) {
+        public ShowSummaryTable(Long platformId, Boolean preScroll) {
             this.platformId = platformId;
             this.preScroll = preScroll;
         }
+    }
+
+    public static class ShowTable {
+        public ShowTable(HasWidgets parent, Platform platform) {
+            this.parent = parent;
+            this.platform = platform;
+        }
+
+        public HasWidgets parent;
+        public Platform platform;
     }
 
     @Url(value = "sfserver")

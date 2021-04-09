@@ -1,21 +1,40 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:table="urn:import:ru.brainworm.factory.widget.table.client">
+             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
+             xmlns:sortfield='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
+             xmlns:table="urn:import:ru.protei.portal.ui.common.client.widget.table">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="p-3">
+    <g:HTMLPanel ui:field="root" styleName="p-3 focusable">
         <div class="row">
-            <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container">
-                <div class="card card-default no-border">
-                    <div class="card-body no-padding">
-                        <table:InfiniteTableWidget ui:field="table" styleName="table table-hover server"/>
-                        <g:HTMLPanel ui:field="pagerContainer" styleName="pager-container" />
+            <div class="col-md-12 form-group p-l-0 p-r-0">
+                <div class="row align-items-end">
+                    <div class="col-md-10">
+                        <div class="row">
+                            <div class="col-md-4 col-sm-12">
+                                <label>
+                                    <ui:text from="{lang.siteFolderNameOrIp}"/>
+                                </label>
+                                <cleanablesearchbox:CleanableSearchBox ui:field="nameOrIp"/>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label><ui:text from="{lang.sortBy}"/></label>
+                                <div class="control-group">
+                                    <sortfield:SortFieldSelector ui:field="sortField" type="SITE_FOLDER_SERVER" hasNullValue="false"/>
+                                    <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <g:Button ui:field="createButton" styleName="btn btn-default float-right"
+                                  text="{lang.siteFolderServerCreate}"/>
                     </div>
                 </div>
-            </g:HTMLPanel>
-            <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-md-3"/>
-            <g:HTMLPanel ui:field="previewContainer" styleName="preview-container no-width"/>
+            </div>
+            <table:GroupedTableWidget ui:field="table" styleName="table table-hover server сol-md-12"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -86,5 +86,6 @@
   <include file="2021-03-02-add-unique-constraint-to-company-table.xml" relativeToChangelogFile="true"/>
   <include file="2021-03-25-add-new-project-roles.xml" relativeToChangelogFile="true"/>
   <include file="2021-03-26-add-with-deadline_and_work_trigger-column-to-report-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-04-09-create-server_group-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -68,6 +68,10 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
             case SITE_FOLDER:
                 addOption( En_SortField.name );
                 break;
+            case SITE_FOLDER_SERVER:
+                addOption(En_SortField.name);
+                addOption(En_SortField.server_ip);
+                break;
             case EMPLOYEE:
                 addOption( En_SortField.person_full_name );
                 addOption( En_SortField.birthday );

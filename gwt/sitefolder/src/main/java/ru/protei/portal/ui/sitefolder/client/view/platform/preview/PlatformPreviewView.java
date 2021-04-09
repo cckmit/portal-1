@@ -72,7 +72,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
 
     @Override
     public void setComment(String value) {
-        comment.setText(value);
+        comment.setInnerHTML(value);
     }
 
     @Override
@@ -133,7 +133,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         copyPreviewLink.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.COPY_PREVIEW_LINK_BUTTON);
         name.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.NAME);
         openServersButton.ensureDebugId(DebugIds.SITE_FOLDER.SERVER.OPEN_BUTTON);
-        comment.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.COMMENT);
+        comment.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.COMMENT);
         company.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.COMPANY);
         manager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.MANAGER);
         parameters.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.PARAMETERS);
@@ -147,8 +147,6 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         contactsContainer.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.CONTACTS);
     }
 
-    @UiField
-    HTMLPanel preview;
     @UiField
     Anchor copyPreviewLink;
     @UiField
@@ -164,7 +162,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @UiField
     SpanElement technicalSupportValidity;
     @UiField
-    Label comment;
+    SpanElement comment;
     @UiField
     TabWidget tabWidget;
     @UiField

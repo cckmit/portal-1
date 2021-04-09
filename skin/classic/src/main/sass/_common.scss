@@ -637,6 +637,11 @@ label.bordered:after {
   background-color: #ddd;
 }
 
+.table .separator-cell {
+  background-color: $bg_light_gray;
+  font-weight: bold;
+}
+
 .contacts {
   table {
     tbody {
@@ -4757,11 +4762,6 @@ table {
 /**** ROOM-RESERVATION ****/
 .room-reservations {
   table {
-    .separator-cell {
-      background-color: $bg_light_gray;
-      font-weight: bold;
-    }
-
     .time {
       width: 10%;
       > div {
@@ -5118,6 +5118,9 @@ table {
 
 .focusable:focus {
   outline: none;
+}
+
+li.focusable:focus {
   background-color: $bg_light_gray;
 }
 

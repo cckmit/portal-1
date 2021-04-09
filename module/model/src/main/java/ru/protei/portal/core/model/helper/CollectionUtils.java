@@ -428,4 +428,25 @@ public class CollectionUtils {
 
         return resultList;
     }
+
+    public static <T> List<T> nullsLast(List<T> list, Function<T, ?> mapperToPossibleNull) {
+        if (isEmpty(list) || mapperToPossibleNull == null) {
+            return list;
+        }
+
+        List<T> listWithNulls = new ArrayList<>();
+        List<T> result = new ArrayList<>();
+
+        for (T nextObject : list) {
+            if (mapperToPossibleNull.apply(nextObject) == null) {
+                listWithNulls.add(nextObject);
+            } else {
+                result.add(nextObject);
+            }
+        }
+
+        result.addAll(listWithNulls);
+
+        return result;
+    }
 }
