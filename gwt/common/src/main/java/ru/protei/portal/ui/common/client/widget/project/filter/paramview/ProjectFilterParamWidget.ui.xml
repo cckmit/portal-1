@@ -43,13 +43,13 @@
                 <label><ui:text from="{lang.projectCustomerCompany}"/></label>
                 <company:CompanyMultiSelector ui:field="initiatorCompanies" />
             </div>
+        </div>
+
+        <div class="row">
             <div class="form-group col-md-4 resize-md-12">
                 <label><ui:text from="{lang.projectProduct}"/></label>
                 <product:ProductMultiSelector ui:field="products" />
             </div>
-        </div>
-
-        <div class="row">
             <range:TypedSelectorRangePicker ui:field="commentCreationRange" formatValue="dd.MM.yyyy HH:mm"
                                             header="{lang.projectCommentCreationDate}"
                                             addStyleNames="form-group col-md-4 resize-md-12"/>

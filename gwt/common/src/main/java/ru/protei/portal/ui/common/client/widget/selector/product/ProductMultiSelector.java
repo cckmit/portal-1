@@ -13,7 +13,7 @@ public class ProductMultiSelector extends InputPopupMultiSelector<ProductShortVi
     @Inject
     public void init(ProductModel model, Lang lang) {
         setAsyncModel(model);
-        setItemRenderer(model);
+        setItemRenderer(ProductShortView::getName);
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
     }

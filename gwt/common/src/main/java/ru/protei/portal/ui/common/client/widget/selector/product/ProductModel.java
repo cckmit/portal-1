@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 
 public abstract class ProductModel implements Activity,
-        AsyncSelectorModel<ProductShortView>, SelectorItemRenderer<ProductShortView> {
+        AsyncSelectorModel<ProductShortView> {
 
     public ProductModel() {
         query = makeQuery();
@@ -50,11 +50,6 @@ public abstract class ProductModel implements Activity,
     @Override
     public ProductShortView get( int elementIndex, LoadingHandler loadingHandler ) {
         return cache.get( elementIndex, loadingHandler );
-    }
-
-    @Override
-    public String getElementName(ProductShortView view) {
-        return view == null ? "" : view.getName();
     }
 
     public void setUnitState( En_DevUnitState devUnitState ) {
