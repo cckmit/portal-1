@@ -1730,6 +1730,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String siteFolderPlatformName();
 
+    String siteFolderPlatformServersExport();
+
     String siteFolderServer();
 
     String siteFolderServers();

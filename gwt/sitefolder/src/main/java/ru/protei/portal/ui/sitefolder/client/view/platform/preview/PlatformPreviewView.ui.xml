@@ -15,8 +15,15 @@
                             <i class="far fa-clone"/>
                         </g:Anchor>
                         <g:Anchor ui:field="name" styleName="full-screen-link small" href="#"/>
-                        <g:Button styleName="btn btn-xs btn-info pull-right" ui:field="openServersButton"
-                                  text="{lang.siteFolderServers}"/>
+
+                        <div class="pull-right">
+                            <g:Button styleName="btn btn-xs btn-info " ui:field="openServersButton"
+                                      text="{lang.siteFolderServers}"/>
+
+                            <g:Button styleName="btn btn-xs btn-info"
+                                      ui:field="exportServersButton"
+                                      text="{lang.siteFolderPlatformServersExport}"/>
+                        </div>
                     </h4>
 
                     <g:Label styleName="small hint-text pre-formatted-info" ui:field="comment"/>

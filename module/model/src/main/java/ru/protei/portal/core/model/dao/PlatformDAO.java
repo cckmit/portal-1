@@ -15,4 +15,6 @@ public interface PlatformDAO extends PortalBaseDAO<Platform> {
     SqlCondition createSqlCondition(PlatformQuery query);
 
     List<Platform> getByProjectId (Long id);
+
+    String getName(Long id);
 }
