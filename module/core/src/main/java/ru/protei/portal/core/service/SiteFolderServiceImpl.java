@@ -162,6 +162,11 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
+    public Result<String> getPlatformName(AuthToken token, long id) {
+        return ok(platformDAO.getName(id));
+    }
+
+    @Override
     public Result<Server> getServer( AuthToken token, long id) {
 
         Server result = serverDAO.get(id);

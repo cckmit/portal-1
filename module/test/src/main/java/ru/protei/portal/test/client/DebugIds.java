@@ -998,6 +998,7 @@ public class DebugIds {
         }
         interface SERVER {
             String OPEN_BUTTON = "site-folder-server-open-button";
+            String EXPORT_BUTTON = "site-folder-server-export-button";
             String CREATE_BUTTON = "site-folder-server-create-button";
             String ITEM = "site-folder-server-list-item";
             String NAME = "site-folder-server-name";
