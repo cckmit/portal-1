@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.struct;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FilenameUtils;
+import ru.protei.portal.core.model.dict.En_DocumentFormat;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -10,14 +12,19 @@ import java.util.Arrays;
 public interface DocumentFile {
     boolean isPresent();
 
-    String getFileName();
+    En_DocumentFormat getFormat();
 
     byte[] getBytes();
 
     InputStream getInputStream();
 
+    default En_DocumentFormat getFormatByExtension(String fileExt)  {
+        En_DocumentFormat documentFormat = En_DocumentFormat.of(fileExt);
+        return documentFormat == null ? En_DocumentFormat.DOCX : documentFormat;
+    }
+
     class FileItemDocumentFile implements DocumentFile {
-        private FileItem fileItem;
+        private final FileItem fileItem;
 
         public FileItemDocumentFile(FileItem fileItem) {
             this.fileItem = fileItem;
@@ -29,8 +36,8 @@ public interface DocumentFile {
         }
 
         @Override
-        public String getFileName() {
-            return fileItem.getName();
+        public En_DocumentFormat getFormat() {
+            return getFormatByExtension(FilenameUtils.getExtension(fileItem.getName()));
         }
 
         @Override
@@ -49,12 +56,12 @@ public interface DocumentFile {
     }
 
     class PortalApiDocumentFile implements DocumentFile {
-        private byte[] content;
-        private String name;
+        private final byte[] content;
+        private final En_DocumentFormat format;
 
-        public PortalApiDocumentFile(byte[] content, String name) {
+        public PortalApiDocumentFile(byte[] content, En_DocumentFormat format) {
             this.content = content;
-            this.name = name;
+            this.format = format;
         }
 
         @Override
@@ -63,8 +70,8 @@ public interface DocumentFile {
         }
 
         @Override
-        public String getFileName() {
-            return name;
+        public En_DocumentFormat getFormat() {
+            return format;
         }
 
         @Override

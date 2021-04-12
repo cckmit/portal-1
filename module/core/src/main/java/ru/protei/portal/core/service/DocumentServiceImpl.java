@@ -198,9 +198,9 @@ public class DocumentServiceImpl implements DocumentService {
         boolean withDoc = docFile != null && docFile.isPresent();
         boolean withPdf = pdfFile != null && pdfFile.isPresent();
         boolean withApprovalSheet = approvalSheetFile != null && approvalSheetFile.isPresent();
-        En_DocumentFormat docFormat = withDoc ? predictDocFormat(docFile.getFileName()) : null;
-        En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
-        En_DocumentFormat ApprovalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
+        En_DocumentFormat docFormat = withDoc ? docFile.getFormat() : null;
+        En_DocumentFormat pdfFormat = withPdf ? pdfFile.getFormat() : null;
+        En_DocumentFormat ApprovalSheetFormat = withApprovalSheet ? approvalSheetFile.getFormat() : null;
 
         if (document.getProjectId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -562,12 +562,12 @@ public class DocumentServiceImpl implements DocumentService {
         byte[] pdfFile = documentApiInfo.getArchivePdfFileBase64() != null ? base64toByte(documentApiInfo.getArchivePdfFileBase64()) : null;
         byte[] approvalSheet = documentApiInfo.getApprovalSheetPdfBase64() != null ? base64toByte(documentApiInfo.getApprovalSheetPdfBase64()) : null;
 
-        String workDocFileExtension = documentApiInfo.getWorkDocFileExtension() != null ? documentApiInfo.getWorkDocFileExtension()  : En_DocumentFormat.DOCX.getFormat();
+        En_DocumentFormat workDocFileFormat = En_DocumentFormat.of(documentApiInfo.getWorkDocFileExtension());
 
         return createDocument(token, document,
-                new PortalApiDocumentFile(docFile,  "api_workDocFileBase64." + workDocFileExtension),
-                new PortalApiDocumentFile(pdfFile, "api_archivePdfFileBase64.pdf"),
-                new PortalApiDocumentFile(approvalSheet, "api_approvalSheetFileBase64.pdf"),
+                new PortalApiDocumentFile(docFile, workDocFileFormat != null ? workDocFileFormat : En_DocumentFormat.DOCX),
+                new PortalApiDocumentFile(pdfFile, En_DocumentFormat.PDF),
+                new PortalApiDocumentFile(approvalSheet, En_DocumentFormat.AS),
                 token.getPersonDisplayShortName());
     }
 
