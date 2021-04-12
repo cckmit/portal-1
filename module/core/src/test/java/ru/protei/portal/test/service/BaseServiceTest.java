@@ -422,4 +422,8 @@ public class BaseServiceTest {
     protected WorkerPositionDAO workerPositionDAO;
     @Autowired
     protected CompanyGroupHomeDAO companyGroupHomeDAO;
+    @Autowired
+    protected DocumentTypeDAO documentTypeDAO;
+    @Autowired
+    protected DocumentDAO documentDAO;
 }
