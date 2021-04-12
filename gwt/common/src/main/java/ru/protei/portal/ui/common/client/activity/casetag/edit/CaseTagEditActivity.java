@@ -55,7 +55,7 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         boolean isAllowedEdit = policyService.hasPrivilegeFor(privilegeByCaseType(caseType)) && (isCreationMode || isTagOwner);
 
         view.name().setValue(caseTag.getName());
-        view.color().setValue(caseTag.getColor());
+        view.colorPicker().setValue(!isCreationMode ? caseTag.getColor() : "");
         view.setAuthor(caseTag.getPersonName());
         view.authorVisibility().setVisible(caseTag.getId() != null);
 
@@ -99,7 +99,7 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         }
 
         caseTag.setName(view.name().getValue());
-        caseTag.setColor(view.color().getValue());
+        caseTag.setColor(view.colorPicker().getValue());
         caseTag.setCompanyId(view.company().getValue().getId());
 
         if (isNew( caseTag )) {
@@ -170,7 +170,7 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
             return tagNameErrorMsg;
         }
 
-        String color = view.color().getValue();
+        String color = view.colorPicker().getValue();
         if (isBlank(color)) {
             return lang.errTagColorEmpty();
         }

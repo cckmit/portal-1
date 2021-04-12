@@ -55,8 +55,8 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
     }
 
     @Override
-    public HasValue<String> color() {
-        return color;
+    public HasValue<String> colorPicker() {
+        return colorPicker;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
 
     @Override
     public HasEnabled colorEnabled() {
-        return color;
+        return colorPicker;
     }
 
     @Override
@@ -136,7 +136,7 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
 
     @Inject
     @UiField(provided = true)
-    ColorPicker color;
+    ColorPicker colorPicker;
 
     @Inject
     @UiField(provided = true)

@@ -16,7 +16,7 @@ public interface AbstractCaseTagEditView extends IsWidget {
 
     HasVisibility caseTagNameErrorLabelVisibility();
 
-    HasValue<String> color();
+    HasValue<String> colorPicker();
 
     HasValue<EntityOption> company();
 

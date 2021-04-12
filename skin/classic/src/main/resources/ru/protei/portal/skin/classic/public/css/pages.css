@@ -7858,7 +7858,9 @@ body.rtl .checkbox label::after {
     transition: background-color .2s ease
 }
 
-.form-group-default.required:after {
+.form-group-default.required:after,
+.tag-name-container:after,
+.tag-color-container:after {
     color: #f55753;
     content: "*";
     font-family: arial;
@@ -7866,6 +7868,19 @@ body.rtl .checkbox label::after {
     position: absolute;
     right: 12px;
     top: 6px
+}
+
+.tag-name-container:after,
+.tag-color-container:after {
+    right: 27px;
+    top: 2px;
+}
+
+.tag-color-container .verifiable .fas {
+    position: relative;
+    right: 44px;
+    top: 8px;
+    z-index: 1;
 }
 
 .form-group-default.disabled {

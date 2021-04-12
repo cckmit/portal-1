@@ -16,13 +16,18 @@
                     <div class="verifiable">
                         <i ui:field="verifiableIcon"/>
                     </div>
+
                     <validablefield:ValidableTextBox  ui:field="name" styleName="form-control"/>
 
                     <g:Label ui:field="tagNameErrorLabel" styleName="text-danger name-error" visible="false"/>
                 </div>
-                <div class="form-group col-md-6">
-                    <label ui:field="tagColorLabel"><ui:text from="{lang.tagColor}"/></label>
-                    <colorpicker:ColorPicker ui:field="color"/>
+
+                <div class="tag-color-container form-group col-md-6">
+                    <label ui:field="tagColorLabel">
+                        <ui:text from="{lang.tagColor}"/>
+                    </label>
+
+                    <colorpicker:ColorPicker ui:field="colorPicker"/>
                 </div>
             </div>
             <div class="row">
