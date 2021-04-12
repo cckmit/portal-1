@@ -76,6 +76,8 @@ public class DocumentApiInfo implements Serializable {
 
     private String workDocFileBase64;
 
+    private String workDocFileExtension;
+
     private String archivePdfFileBase64;
 
     private String approvalSheetPdfBase64;
@@ -222,6 +224,14 @@ public class DocumentApiInfo implements Serializable {
 
     public void setWorkDocFileBase64(String workDocFileBase64) {
         this.workDocFileBase64 = workDocFileBase64;
+    }
+
+    public String getWorkDocFileExtension() {
+        return workDocFileExtension;
+    }
+
+    public void setWorkDocFileExtension(String workDocFileExtension) {
+        this.workDocFileExtension = workDocFileExtension;
     }
 
     public String getArchivePdfFileBase64() {

@@ -1382,15 +1382,6 @@ public class TestPortalApiController extends BaseServiceTest {
         documentType.setDocumentCategory(En_DocumentCategory.TP);
         Long documentTypeId = documentTypeDAO.persist(documentType);
 
-        CaseObject caseObject = createNewCaseObject(person);
-        caseObject.setName("createDoc");
-        caseObject.setInitiatorCompanyId(company.getId());
-        caseObject.setType(En_CaseType.PROJECT);
-        Long projectId = caseObjectDAO.persist(caseObject);
-        Project project = new Project();
-        project.setId(projectId);
-        projectDAO.persist(project);
-
         DocumentApiInfo info = new DocumentApiInfo();
         info.setName("createDoc() : Test Doc Name");
 
@@ -1453,7 +1444,7 @@ public class TestPortalApiController extends BaseServiceTest {
         DocumentType documentType = new DocumentType();
         documentType.setName("documentType");
         documentType.setDocumentCategory(En_DocumentCategory.TP);
-        Long documentTypeId = documentTypeDAO.persist(documentType);
+        documentTypeDAO.persist(documentType);
 
         CaseObject caseObject = createNewCaseObject(person);
         caseObject.setName("createDoc");
@@ -1481,7 +1472,7 @@ public class TestPortalApiController extends BaseServiceTest {
         DocumentType documentType = new DocumentType();
         documentType.setName("documentType");
         documentType.setDocumentCategory(En_DocumentCategory.TP);
-        Long documentTypeId = documentTypeDAO.persist(documentType);
+        documentTypeDAO.persist(documentType);
 
         CaseObject caseObject = createNewCaseObject(person);
         caseObject.setName("createDoc");

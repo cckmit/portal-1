@@ -195,9 +195,9 @@ public class DocumentServiceImpl implements DocumentService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        boolean withDoc = docFile.isPresent();
-        boolean withPdf = pdfFile.isPresent();
-        boolean withApprovalSheet = approvalSheetFile.isPresent();
+        boolean withDoc = docFile != null && docFile.isPresent();
+        boolean withPdf = pdfFile != null && pdfFile.isPresent();
+        boolean withApprovalSheet = approvalSheetFile != null && approvalSheetFile.isPresent();
         En_DocumentFormat docFormat = withDoc ? predictDocFormat(docFile.getFileName()) : null;
         En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
         En_DocumentFormat ApprovalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
@@ -562,10 +562,12 @@ public class DocumentServiceImpl implements DocumentService {
         byte[] pdfFile = documentApiInfo.getArchivePdfFileBase64() != null ? base64toByte(documentApiInfo.getArchivePdfFileBase64()) : null;
         byte[] approvalSheet = documentApiInfo.getApprovalSheetPdfBase64() != null ? base64toByte(documentApiInfo.getApprovalSheetPdfBase64()) : null;
 
+        String workDocFileExtension = documentApiInfo.getWorkDocFileExtension() != null ? documentApiInfo.getWorkDocFileExtension()  : En_DocumentFormat.DOCX.getFormat();
+
         return createDocument(token, document,
-                new PortalApiDocumentFile(docFile,  "api_workDocFileBase64.doc"),
-                new PortalApiDocumentFile(pdfFile),
-                new PortalApiDocumentFile(approvalSheet),
+                new PortalApiDocumentFile(docFile,  "api_workDocFileBase64." + workDocFileExtension),
+                new PortalApiDocumentFile(pdfFile, "api_archivePdfFileBase64.pdf"),
+                new PortalApiDocumentFile(approvalSheet, "api_approvalSheetFileBase64.pdf"),
                 token.getPersonDisplayShortName());
     }
 

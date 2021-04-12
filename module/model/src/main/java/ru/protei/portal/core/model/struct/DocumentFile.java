@@ -57,10 +57,6 @@ public interface DocumentFile {
             this.name = name;
         }
 
-        public PortalApiDocumentFile(byte[] content) {
-            this(content, "");
-        }
-
         @Override
         public boolean isPresent() {
             return content != null;
