@@ -37,12 +37,12 @@ public interface DocumentFile {
 
         @Override
         public En_DocumentFormat getFormat() {
-            return getFormatByExtension(FilenameUtils.getExtension(fileItem.getName()));
+            return isPresent() ? getFormatByExtension(FilenameUtils.getExtension(fileItem.getName())) : null;
         }
 
         @Override
         public byte[] getBytes() {
-            return fileItem.get();
+            return isPresent() ? fileItem.get() : null;
         }
 
         @Override
