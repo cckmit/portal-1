@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.sitefolder.server.controller;
+package ru.protei.portal.ui.common.server.controller;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.service.SiteFolderService;
@@ -25,10 +24,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
-import static java.lang.String.format;
 import static org.springframework.util.FileCopyUtils.copy;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
-import static ru.protei.portal.core.model.util.CrmConstants.PlatformServerParameters.*;
 import static ru.protei.portal.util.EncodeUtils.encodeToRFC2231;
 
 @RestController
@@ -42,7 +39,7 @@ public class SiteFolderServersExportController {
             @PathVariable("platformId") Long platformId
     ) {
         try {
-            this.token = sessionService.getAuthToken(request);
+            AuthToken token = sessionService.getAuthToken(request);
             if (token == null) {
                 log.warn("exportSiteFolderServers(): auth token not found");
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -51,36 +48,31 @@ public class SiteFolderServersExportController {
 
             log.info("exportSiteFolderServers(): platformId={}", platformId);
 
-            Platform platform = getPlatform(platformId);
-            ByteArrayInputStream serversData = writeToExcelFile(getServers(platformId));
+            Result<String> platformResponse = siteFolderService.getPlatformName(token, platformId);
+            if (platformResponse.isError()) {
+                log.error("get(): failed to get platform name with status = {}", platformResponse.getStatus());
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return;
+            }
+
+            ServerQuery query = new ServerQuery();
+            query.setPlatformId(platformId);
+            Result<SearchResult<Server>> serversResponse = siteFolderService.getServersWithAppsNames(token, query);
+            if (serversResponse.isError()) {
+                log.error("get(): failed to get servers with status = {}", serversResponse.getStatus());
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return;
+            }
+
+            ByteArrayInputStream serversData = writeToExcelFile(serversResponse.getData().getResults());
 
             response.setContentType("application/vnd.ms-excel");
-            response.setHeader("Content-Disposition",  "attachment; filename*=utf-8''" + encodeToRFC2231(platform.getName() + ".xlsx"));
+            response.setHeader("Content-Disposition",  "attachment; filename*=utf-8''" + encodeToRFC2231(platformResponse.getData() + ".xlsx"));
             copy(serversData, response.getOutputStream());
         } catch (Exception e) {
             log.error(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-    }
-
-    private Platform getPlatform(Long platformId) {
-        Result<Platform> response = siteFolderService.getPlatform(token, platformId);
-        if (response.isError()) {
-            throw new InternalError(format("get(): failed to get platform with status = %s", response.getStatus()));
-        }
-
-        return response.getData();
-    }
-
-    private List<Server> getServers(Long platformId) {
-        ServerQuery query = new ServerQuery();
-        query.setPlatformId(platformId);
-        Result<SearchResult<Server>> response = siteFolderService.getServersWithAppsNames(token, query);
-        if (response.isError()) {
-            throw new InternalError(format("get(): failed to get servers with status = %s", response.getStatus()));
-        }
-
-        return response.getData().getResults();
     }
 
     private ByteArrayInputStream writeToExcelFile(List<Server> servers) {
@@ -133,14 +125,17 @@ public class SiteFolderServersExportController {
         return cellStyle;
     }
 
-    private AuthToken token;
-
     @Autowired
     SessionService sessionService;
     @Autowired
     SiteFolderService siteFolderService;
 
     private static final String SHEET_TITLE = "Список серверов площадки";
+    private static final String IP_ADDRESS = "IP-адрес";
+    private static final String SERVER_NAME = "Название сервера";
+    private static final String ACCESS_PARAMS = "Параметры доступа";
+    private static final String APPS_NAMES = "Названия приложений";
+    private static final String COMMENT = "Комментарий";
     private static final String[] COLUMNS_TITLES = new String[]{IP_ADDRESS, SERVER_NAME, ACCESS_PARAMS, APPS_NAMES, COMMENT};
     private static final Logger log = LoggerFactory.getLogger(SiteFolderServersExportController.class);
 }

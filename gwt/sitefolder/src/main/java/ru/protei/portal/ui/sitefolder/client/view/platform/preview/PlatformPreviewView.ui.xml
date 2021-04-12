@@ -19,7 +19,9 @@
                         <div class="btn-group form-group pull-right">
                             <g:Button styleName="btn btn-xs btn-info " ui:field="openServersButton"
                                       text="{lang.siteFolderServers}"/>
-                            <g:Button styleName="btn btn-xs btn-default" ui:field="exportServersButton"
+
+                            <g:Button styleName="btn btn-xs btn-info site-folder-servers-export-btn"
+                                      ui:field="exportServersButton"
                                       text="{lang.siteFolderPlatformServersExport}"/>
                         </div>
                     </h4>
