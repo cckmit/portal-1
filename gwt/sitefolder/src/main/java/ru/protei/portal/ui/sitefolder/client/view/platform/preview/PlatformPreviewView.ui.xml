@@ -16,11 +16,11 @@
                         </g:Anchor>
                         <g:Anchor ui:field="name" styleName="full-screen-link small" href="#"/>
 
-                        <div class="btn-group form-group pull-right">
+                        <div class="pull-right">
                             <g:Button styleName="btn btn-xs btn-info " ui:field="openServersButton"
                                       text="{lang.siteFolderServers}"/>
 
-                            <g:Button styleName="btn btn-xs btn-info site-folder-servers-export-btn"
+                            <g:Button styleName="btn btn-xs btn-info"
                                       ui:field="exportServersButton"
                                       text="{lang.siteFolderPlatformServersExport}"/>
                         </div>

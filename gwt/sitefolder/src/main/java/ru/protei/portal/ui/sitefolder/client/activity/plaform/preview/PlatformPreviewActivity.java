@@ -183,5 +183,5 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
     private Long platformId;
     private AppEvents.InitDetails initDetails;
 
-    private static final String EXPORT_SERVERS_PATH = GWT.getModuleBaseURL() + "springApi/download/siteFolderServers/";
+    private static final String EXPORT_SERVERS_PATH = GWT.getModuleBaseURL() + "springApi/server/download/";
 }

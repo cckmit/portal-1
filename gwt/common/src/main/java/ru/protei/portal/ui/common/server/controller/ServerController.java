@@ -20,8 +20,8 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import static org.springframework.util.FileCopyUtils.copy;
@@ -29,11 +29,11 @@ import static ru.protei.portal.core.model.helper.StringUtils.join;
 import static ru.protei.portal.util.EncodeUtils.encodeToRFC2231;
 
 @RestController
-public class SiteFolderServersExportController {
+public class ServerController {
 
-    @RequestMapping(value = "/download/siteFolderServers/{platformId:\\d+}", method = RequestMethod.GET)
+    @RequestMapping(value = "/server/download/{platformId:\\d+}", method = RequestMethod.GET)
     @ResponseBody
-    public void exportSiteFolderServers(
+    public void exportServers(
             HttpServletRequest request,
             HttpServletResponse response,
             @PathVariable("platformId") Long platformId
@@ -64,51 +64,48 @@ public class SiteFolderServersExportController {
                 return;
             }
 
-            ByteArrayInputStream serversData = writeToExcelFile(serversResponse.getData().getResults());
-
             response.setContentType("application/vnd.ms-excel");
-            response.setHeader("Content-Disposition",  "attachment; filename*=utf-8''" + encodeToRFC2231(platformResponse.getData() + ".xlsx"));
-            copy(serversData, response.getOutputStream());
+            response.setHeader("Content-Disposition", "attachment; filename*=utf-8''" + encodeToRFC2231(platformResponse.getData() + ".xlsx"));
+
+            write(response.getOutputStream(), serversResponse.getData().getResults());
+
+            response.flushBuffer();
+
         } catch (Exception e) {
             log.error(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
-    private ByteArrayInputStream writeToExcelFile(List<Server> servers) {
-        try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-            SXSSFWorkbook wb = new SXSSFWorkbook();
-            SXSSFSheet sheet = wb.createSheet(SHEET_TITLE);
-            sheet.setDefaultColumnWidth(30);
+    private void write(OutputStream outputStream, List<Server> servers) throws IOException {
 
-            Row row = sheet.createRow(0);
-            row.setRowStyle(createCellStyle(wb, true));
+        SXSSFWorkbook wb = new SXSSFWorkbook();
+        SXSSFSheet sheet = wb.createSheet(SHEET_TITLE);
+        sheet.setDefaultColumnWidth(30);
 
-            for (int i = 0; i < COLUMNS_TITLES.length; i++) {
-                createCell(row, i, COLUMNS_TITLES[i]);
-            }
+        Row row = sheet.createRow(0);
+        row.setRowStyle(createCellStyle(wb, true));
 
-            CellStyle contentStyle = createCellStyle(wb, false);
-
-            int rowNum = 0;
-            for (Server s: servers) {
-                row = sheet.createRow(++rowNum);
-                row.setRowStyle(contentStyle);
-                createCell(row, 0, s.getIp());
-                createCell(row, 1, s.getName());
-                createCell(row, 2, s.getParams());
-                createCell(row, 3, join(s.getAppNames(), ", "));
-                createCell(row, 4, s.getComment());
-            }
-
-            wb.write(output);
-            wb.dispose();
-            wb.close();
-            return new ByteArrayInputStream(output.toByteArray());
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new InternalError("get(): failed to export site folder servers");
+        for (int i = 0; i < COLUMNS_TITLES.length; i++) {
+            createCell(row, i, COLUMNS_TITLES[i]);
         }
+
+        CellStyle contentStyle = createCellStyle(wb, false);
+
+        int rowNum = 0;
+        for (Server s: servers) {
+            row = sheet.createRow(++rowNum);
+            row.setRowStyle(contentStyle);
+            createCell(row, 0, s.getIp());
+            createCell(row, 1, s.getName());
+            createCell(row, 2, s.getParams());
+            createCell(row, 3, join(s.getAppNames(), ", "));
+            createCell(row, 4, s.getComment());
+        }
+
+        wb.write(outputStream);
+        wb.dispose();
+        wb.close();
     }
 
     private void createCell(Row row, int i, String value) {
@@ -137,5 +134,5 @@ public class SiteFolderServersExportController {
     private static final String APPS_NAMES = "Названия приложений";
     private static final String COMMENT = "Комментарий";
     private static final String[] COLUMNS_TITLES = new String[]{IP_ADDRESS, SERVER_NAME, ACCESS_PARAMS, APPS_NAMES, COMMENT};
-    private static final Logger log = LoggerFactory.getLogger(SiteFolderServersExportController.class);
+    private static final Logger log = LoggerFactory.getLogger(ServerController.class);
 }
