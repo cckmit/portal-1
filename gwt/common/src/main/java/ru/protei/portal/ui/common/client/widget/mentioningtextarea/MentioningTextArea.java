@@ -19,7 +19,6 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements ArrowSe
                               UserLoginSelector userLoginSelector) {
 
         this.userLoginModel = userLoginModel;
-        this.userLoginSelector = userLoginSelector;
         this.changeTimer = initTimer(userLoginModel, userLoginSelector);
 
         SelectorPopup selectorPopup
@@ -29,8 +28,7 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements ArrowSe
 
         initUserLoginSelector(userLoginModel, userLoginSelector, selectorPopup);
 
-        addKeyDownHandler(event -> onKeyDown(event, selectorPopup));
-        addDomHandler(event -> onInput(changeTimer), InputEvent.getType());
+        addKeyDownHandler(event -> onKeyDown(event, selectorPopup, changeTimer));
         addClickHandler(event -> changeTimer.run());
     }
 
@@ -51,24 +49,26 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements ArrowSe
         this.isMentionEnabled = isMentionEnabled;
     }
 
-    private void onInput(Timer changeTimer) {
+    private void onKeyDown(KeyDownEvent event, SelectorPopup selectorPopup, Timer changeTimer) {
         if (!isMentionEnabled) {
+            return;
+        }
+
+        if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN && selectorPopup.isVisible()) {
+            event.preventDefault();
+            selectorPopup.focusFirst();
+
+            return;
+        }
+
+        if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE && selectorPopup.isVisible()) {
+            event.preventDefault();
+            selectorPopup.hide();
+
             return;
         }
 
         changeTimer.schedule(200);
-    }
-
-    private void onKeyDown(KeyDownEvent event, SelectorPopup selectorPopup) {
-
-        if (!isMentionEnabled) {
-            return;
-        }
-
-        if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
-            event.preventDefault();
-            selectorPopup.focusFirst();
-        }
     }
 
     private void initUserLoginSelector(final UserLoginModel userLoginModel,
@@ -151,7 +151,6 @@ public class MentioningTextArea extends DndAutoResizeTextArea implements ArrowSe
     }-*/;
 
     private final UserLoginModel userLoginModel;
-    private final UserLoginSelector userLoginSelector;
     private final Timer changeTimer;
     private boolean isMentionEnabled = true;
 
