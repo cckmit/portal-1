@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.sitefolder.client.activity.server.table;
 
 import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -44,6 +45,11 @@ public abstract class ServerTableActivity implements Activity, AbstractServerTab
         view.createButtonVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE));
 
         this.platform = event.platform;
+        backEvent = event.isPlatformPreview ?
+                () -> fireEvent(new SiteFolderPlatformEvents.Show(true)) :
+                () -> fireEvent(new Back());
+
+        this.onServersLoaded = event.onServersLoaded;
 
         event.parent.clear();
         event.parent.add(view.asWidget());
@@ -61,7 +67,7 @@ public abstract class ServerTableActivity implements Activity, AbstractServerTab
             return;
         }
 
-        fireEvent(SiteFolderServerEvents.Edit.withPlatform(platform));
+        fireEvent(SiteFolderServerEvents.Edit.withPlatform(platform).withBackEvent(backEvent));
     }
 
     @Override
@@ -74,7 +80,7 @@ public abstract class ServerTableActivity implements Activity, AbstractServerTab
             return;
         }
 
-        fireEvent(SiteFolderServerEvents.Edit.withClone(value.getId()));
+        fireEvent(SiteFolderServerEvents.Edit.withClone(value.getId()).withBackEvent(backEvent));
     }
 
     @Override
@@ -87,7 +93,7 @@ public abstract class ServerTableActivity implements Activity, AbstractServerTab
             return;
         }
 
-        fireEvent(new SiteFolderServerEvents.Edit(value.getId()));
+        fireEvent(new SiteFolderServerEvents.Edit(value.getId()).withBackEvent(backEvent));
     }
 
     @Override
@@ -135,6 +141,7 @@ public abstract class ServerTableActivity implements Activity, AbstractServerTab
         siteFolderController.getServers(serverQuery, new FluentCallback<SearchResult<Server>>()
                 .withSuccess(sr -> {
                     view.addRecords(nullsLast(sr.getResults(), Server::getServerGroupId));
+                    onServersLoaded.run();
                 }));
     }
 
@@ -194,4 +201,6 @@ public abstract class ServerTableActivity implements Activity, AbstractServerTab
     AbstractServerTableView view;
 
     private Platform platform;
+    private Runnable backEvent = () -> fireEvent(new Back());
+    private Runnable onServersLoaded;
 }

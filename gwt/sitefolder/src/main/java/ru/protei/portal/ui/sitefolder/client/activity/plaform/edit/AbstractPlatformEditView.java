@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.edit;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -27,7 +28,7 @@ public interface AbstractPlatformEditView extends IsWidget {
 
     HasValue<String> comment();
 
-    HasWidgets serversContainer();
+    Panel serversContainer();
 
     HasVisibility serversContainerVisibility();
 
@@ -44,4 +45,6 @@ public interface AbstractPlatformEditView extends IsWidget {
     HasValue<EntityOption> project();
 
     String COMMENT_DISPLAY_PREVIEW = "platform_view_is_comment_preview_displayed";
+
+    Element getRootElement();
 }

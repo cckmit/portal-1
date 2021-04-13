@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.edit;
 
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
@@ -70,7 +71,10 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
         }
 
         initDetails.parent.clear();
-        Window.scrollTo(0, 0);
+
+        scrollPosition = 0;
+        Window.scrollTo(0, scrollPosition);
+
         initDetails.parent.add(view.asWidget());
         previousCompanyName = EMPTY_NAME;
 
@@ -239,10 +243,20 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
 
         if (isNotNew) {
             view.attachmentsContainer().add(platform.getAttachments());
-            fireEvent(new SiteFolderServerEvents.ShowTable(view.serversContainer(), platform));
+            view.serversContainer().addDomHandler(event -> scrollPosition = getScrollPosition(), ClickEvent.getType());
+            fireEvent(new SiteFolderServerEvents.ShowTable(
+                    view.serversContainer(), platform, () -> setScrollTo(scrollPosition))
+            );
         }
     }
 
+    private int getScrollPosition() {
+        return Window.getScrollTop();
+    }
+
+    private void setScrollTo(int scrollPosition) {
+        Window.scrollTo(0, scrollPosition);
+    }
 
     private void fireShowCompanyContacts(Long companyId) {
         if ( companyId == null ) {
@@ -328,6 +342,7 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
     private String previousCompanyName = EMPTY_NAME;
     private AppEvents.InitDetails initDetails;
     private Runnable fireBackEvent = () -> fireEvent(new Back());
+    private int scrollPosition;
 
     private static final String EMPTY_NAME = "";
 }

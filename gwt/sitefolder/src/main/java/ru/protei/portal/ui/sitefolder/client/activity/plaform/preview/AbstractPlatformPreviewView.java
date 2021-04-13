@@ -1,8 +1,7 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.preview;
 
-import com.google.gwt.user.client.ui.HasVisibility;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 
 public interface AbstractPlatformPreviewView extends IsWidget {
@@ -27,9 +26,11 @@ public interface AbstractPlatformPreviewView extends IsWidget {
 
     HasWidgets contactsContainer();
 
-    HasWidgets serversContainer();
+    Panel serversContainer();
 
     HasAttachments attachmentsContainer();
 
     void isFullScreen(boolean isFullScreen);
+
+    Element getPreviewWrapperContainerElement();
 }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.CreateAuditObjectEvent;
 import ru.protei.portal.core.exception.InsufficientPrivilegesException;
@@ -103,6 +104,10 @@ public class ServiceLayerInterceptor {
             if (e instanceof DataIntegrityViolationException &&
                     e.getCause() instanceof MysqlDataTruncation) {
                 return error( En_ResultStatus.MYSQL_DATA_TRUNCATION);
+            }
+
+            if (e instanceof DuplicateKeyException) {
+                return error(En_ResultStatus.ALREADY_EXIST);
             }
 
             if (e instanceof SQLException) {

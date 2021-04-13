@@ -2,6 +2,7 @@ package ru.protei.portal.ui.sitefolder.client.view.platform.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -81,7 +82,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     }
 
     @Override
-    public HasWidgets serversContainer() {
+    public Panel serversContainer() {
         return serversContainer;
     }
 
@@ -93,6 +94,11 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @Override
     public void isFullScreen(boolean isFullScreen) {
         previewWrapperContainer.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
+    }
+
+    @Override
+    public Element getPreviewWrapperContainerElement() {
+        return previewWrapperContainer.getElement();
     }
 
     @UiHandler("openServersButton")

@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.Widget;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
@@ -27,13 +29,21 @@ public class SiteFolderServerEvents {
     }
 
     public static class ShowTable {
-        public ShowTable(HasWidgets parent, Platform platform) {
-            this.parent = parent;
-            this.platform = platform;
+        public ShowTable(Panel parent, Platform platform, Runnable onServersLoaded) {
+            this(parent, platform, onServersLoaded, false);
         }
 
-        public HasWidgets parent;
+        public ShowTable(Panel parent, Platform platform, Runnable onServersLoaded, boolean isPlatformPreview) {
+            this.parent = parent;
+            this.platform = platform;
+            this.isPlatformPreview = isPlatformPreview;
+            this.onServersLoaded = onServersLoaded;
+        }
+
+        public Panel parent;
         public Platform platform;
+        public boolean isPlatformPreview;
+        public Runnable onServersLoaded;
     }
 
     @Url(value = "sfserver")

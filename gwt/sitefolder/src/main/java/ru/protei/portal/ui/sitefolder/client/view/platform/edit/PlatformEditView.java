@@ -2,6 +2,7 @@ package ru.protei.portal.ui.sitefolder.client.view.platform.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -89,7 +90,7 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     }
 
     @Override
-    public HasWidgets serversContainer() {
+    public Panel serversContainer() {
         return serversContainer;
     }
 
@@ -126,6 +127,11 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     @Override
     public HasAttachments attachmentsContainer() {
         return attachmentContainer;
+    }
+
+    @Override
+    public Element getRootElement() {
+        return root.getElement();
     }
 
     @UiHandler("saveButton")
@@ -187,6 +193,9 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
         cancelButton.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.CANCEL_BUTTON);
     }
 
+
+    @UiField
+    HTMLPanel root;
     @UiField
     ValidableTextBox name;
     @Inject
