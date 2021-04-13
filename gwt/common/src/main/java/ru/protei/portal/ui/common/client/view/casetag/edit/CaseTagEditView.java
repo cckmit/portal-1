@@ -105,8 +105,7 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
     }
 
     @UiHandler("name")
-    public void onTagNameChanged(InputEvent event) {
-        verifiableIcon.setClassName(NameStatus.UNDEFINED.getStyle());
+    public void onChangeCaseTagName(InputEvent event) {
         timer.cancel();
         timer.schedule(300);
     }

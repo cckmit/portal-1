@@ -127,8 +127,6 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
 
     @Override
     public void onChangeCaseTagName() {
-        view.setCaseTagNameStatus(UNDEFINED);
-
         String name = view.name().getValue();
         String errMsg = validateName(name);
         if (errMsg != null) {
@@ -140,6 +138,8 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         caseTagDto.setName(name);
         caseTagDto.setCompanyId(view.company().getValue().getId());
         caseTagDto.setCaseType(caseTag.getCaseType());
+
+        view.setCaseTagNameStatus(UNDEFINED);
 
         caseTagController.isTagNameExists(caseTagDto, new RequestCallback<Boolean>() {
             @Override
