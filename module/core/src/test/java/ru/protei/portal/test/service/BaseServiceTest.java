@@ -146,6 +146,7 @@ public class BaseServiceTest {
         CaseTag caseTag = new CaseTag();
         caseTag.setCaseType(type);
         caseTag.setName(name);
+        caseTag.setColor(CrmConstants.CaseTag.DEFAULT_COLOR);
         caseTag.setCompanyId(companyId);
         return caseTag;
     }
