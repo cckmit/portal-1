@@ -1,8 +1,10 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.query.CaseTagQuery;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
 
@@ -19,4 +21,6 @@ public interface CaseTagControllerAsync {
     void attachTag(Long caseId, Long tagId, AsyncCallback<Void> async);
 
     void detachTag( Long caseId, Long tagId, AsyncCallback<Long> async);
+
+    void isTagNameExists(CaseTag caseTag, AsyncCallback<Boolean> booleanRequestCallback);
 }

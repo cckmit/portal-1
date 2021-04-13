@@ -63,6 +63,14 @@ public class CaseTagControllerImpl implements CaseTagController {
         return checkResultAndGetData(caseTagService.detachTag(authToken, caseId, tagId));
     }
 
+    @Override
+    public boolean isTagNameExists(CaseTag tag) throws RequestFailedException {
+        log.info("isCaseTagNameExists(): id={}, name={}, companyId={}, caseType={}",
+                  tag.getId(), tag.getName(), tag.getCompanyId(), tag.getCaseType());
+        AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(caseTagService.isTagNameExists(authToken, tag));
+    }
+
     @Autowired
     SessionService sessionService;
     @Autowired

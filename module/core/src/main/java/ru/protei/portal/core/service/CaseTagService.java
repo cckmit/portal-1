@@ -27,4 +27,6 @@ public interface CaseTagService {
     Result<Long> detachTag( AuthToken authToken, Long caseId, Long tagId);
 
     void addItemsToHistory(AuthToken authToken, Long caseId, List<CaseTag> tagIds);
+
+    Result<Boolean> isTagNameExists(AuthToken token, CaseTag tag);
 }

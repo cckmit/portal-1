@@ -3228,6 +3228,20 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errAccessParametersLengthExceeded(int maxLength);
 
+    String errTagNameEmpty();
+
+    String errTagNameAlreadyExists();
+
+    String errTagNameLengthExceeded(int maxLength);
+
+    String errTagNameValidationError();
+
+    String errTagColorEmpty();
+
+    String errTagColorIncorrectFormat();
+
+    String errTagTypeNotSpecified();
+
     String workTriggerNone();
 
     String workTriggerPSGO();
