@@ -1344,6 +1344,20 @@ public interface Lang extends Messages, ContactItemLang {
 
     String personCustomerIntegration();
 
+    String personPresaleManager();
+
+    String personBusinessAnalyticsArchitecture();
+
+    String personProjectDocumentation();
+
+    String personProductManager();
+
+    String personDevelopment();
+
+    String personPresaleHeadManager();
+
+    String personDeployHeadManager();
+
     String equipmentGetNextModification();
 
     String formNextMod();
@@ -1715,6 +1729,8 @@ public interface Lang extends Messages, ContactItemLang {
     String siteFolderPlatformSaved();
 
     String siteFolderPlatformName();
+
+    String siteFolderPlatformServersExport();
 
     String siteFolderServer();
 
@@ -2245,6 +2261,8 @@ public interface Lang extends Messages, ContactItemLang {
     String reportTypeProject();
 
     String reportTypeContract();
+
+    String reportNightWork();
 
     String reportScheduledType();
 
@@ -3325,4 +3343,10 @@ public interface Lang extends Messages, ContactItemLang {
     String commentEdit();
 
     String commentRemove();
+
+    String issueReportDeadlineWorkTrigger();
+
+    String errMySqlDataTruncation();
+
+    String commentCancelMessage();
 }

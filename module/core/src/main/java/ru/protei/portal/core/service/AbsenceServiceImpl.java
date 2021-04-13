@@ -8,22 +8,20 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AbsenceNotificationEvent;
 import ru.protei.portal.core.event.EventAction;
 import ru.protei.portal.core.exception.RollbackTransactionException;
-import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dao.PersonNotifierDAO;
+import ru.protei.portal.core.model.api.ApiAbsence;
+import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.PersonAbsence;
-import ru.protei.portal.core.model.ent.PersonNotifier;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.AbsenceApiQuery;
 import ru.protei.portal.core.model.query.AbsenceQuery;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,11 +38,13 @@ public class AbsenceServiceImpl implements AbsenceService {
     @Autowired
     PersonNotifierDAO personNotifierDAO;
     @Autowired
+    WorkerEntryDAO workerEntryDAO;
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     ReportControlService reportControlService;
-
-    private final static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+    @Autowired
+    CompanyGroupHomeDAO companyGroupHomeDAO;
 
     private static Logger log = LoggerFactory.getLogger(AbsenceServiceImpl.class);
 
@@ -261,6 +261,101 @@ public class AbsenceServiceImpl implements AbsenceService {
         reportControlService.processAbsenceReport(initiator, name, query);
 
         return ok();
+    }
+
+    /**
+     * Получение списка отсутствий по запросу от 1С.
+     * @param authToken токен авторизации
+     * @param apiQuery  фильтр по отсутствиям
+     * @return Список отсутствий, с предобработкой расписаний (после реализации PORTAL-1312).
+     * Так как метод используется для 1С – обогощаем список отсутствий внешними идентификаторами сотрудников в 1С (worker_entry#worker_extId).
+     */
+    @Override
+    public Result<List<ApiAbsence>> getAbsencesByApiQuery(AuthToken authToken, AbsenceApiQuery apiQuery) {
+        if (apiQuery == null || !apiQuery.isValid()) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CompanyHomeGroupItem groupCompany = companyGroupHomeDAO.getByExternalCode(apiQuery.getCompanyCode().trim());
+        if (groupCompany == null || groupCompany.getCompanyId() == null) {
+            return Result.error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        Long companyId = groupCompany.getCompanyId();
+
+        AbsenceQuery query = new AbsenceQuery();
+        query.setDateRange(new DateRange(En_DateIntervalType.FIXED, apiQuery.getFrom(), apiQuery.getTo()));
+        query.setReasons(apiQuery.getReasons());
+
+        boolean searchBySeparateWorkers = CollectionUtils.isNotEmpty(apiQuery.getWorkerExtIds());
+        List<WorkerEntry> workerEntries = null;
+        if (searchBySeparateWorkers) {
+            workerEntries = workerEntryDAO.partialGetByExternalIds(apiQuery.getWorkerExtIds(), companyId);
+            Set<Long> personIds = CollectionUtils.emptyIfNull(workerEntries).stream()
+                    .map(WorkerEntry::getPersonId)
+                    .collect(Collectors.toSet());
+            query.setEmployeeIds(personIds);
+        }
+
+        SearchResult<PersonAbsence> searchResult = personAbsenceDAO.getSearchResultByQuery(query);
+
+        List<PersonAbsence> absences = searchResult.getResults();
+        if (absences == null) return Result.ok();
+
+        if (!searchBySeparateWorkers) {
+            List<Long> personIds = absences.stream()
+                    .map(PersonAbsence::getPersonId)
+                    .collect(Collectors.toList());
+
+            workerEntries = workerEntryDAO.partialGetByPersonIds(personIds, companyId);
+        }
+
+        Map<Long, String> personIdToExtIdMap = CollectionUtils.emptyIfNull(workerEntries).stream()
+                    .collect(Collectors.toMap(
+                            WorkerEntry::getPersonId,
+                            WorkerEntry::getExternalId));
+
+        List<ApiAbsence> apiAbsences = absences.stream()
+                .map(absence -> new ApiAbsence(absence)
+                        .withWorkerId(personIdToExtIdMap.get(absence.getPersonId())))
+                .collect(Collectors.toList());
+
+        return Result.ok(apiAbsences);
+    }
+
+    @Override
+    public Result<Long> createAbsenceByApi(AuthToken token, ApiAbsence apiAbsence) {
+        if (apiAbsence == null || !apiAbsence.isValid()) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        PersonAbsence personAbsence = new PersonAbsence();
+        if (isWorkerIdSet(apiAbsence)) {
+            Long personIdByWorkerId = getPersonIdByWorkerId(apiAbsence.getWorkerExtId(), apiAbsence.getCompanyCode());
+            if (personIdByWorkerId == null) {
+                return error(En_ResultStatus.NOT_FOUND);
+            } else {
+                personAbsence.setPersonId(personIdByWorkerId);
+            }
+        } else {
+            personAbsence.setPersonId(apiAbsence.getPersonId());
+        }
+        personAbsence.setReason(apiAbsence.getReason());
+        personAbsence.setFromTime(apiAbsence.getFromTime());
+        personAbsence.setTillTime(apiAbsence.getTillTime());
+        return createAbsence(token, personAbsence);
+    }
+
+    private boolean isWorkerIdSet(ApiAbsence apiAbsence) {
+        return StringUtils.isNotEmpty(apiAbsence.getCompanyCode()) && apiAbsence.getWorkerExtId() != null;
+    }
+
+    private Long getPersonIdByWorkerId(String workerId, String companyCode) {
+        CompanyHomeGroupItem groupCompany = companyGroupHomeDAO.getByExternalCode(companyCode.trim());
+        if (groupCompany == null || groupCompany.getCompanyId() == null) {
+            return null;
+        }
+        WorkerEntry workerEntry = workerEntryDAO.getByExternalId(workerId, groupCompany.getCompanyId());
+        return workerEntry == null ? null : workerEntry.getPersonId();
     }
 
     private boolean validateFields(PersonAbsence absence) {

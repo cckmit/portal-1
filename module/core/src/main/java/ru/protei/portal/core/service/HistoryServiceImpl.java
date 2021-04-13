@@ -4,13 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_HistoryAction;
-import ru.protei.portal.core.model.dict.En_HistoryType;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.HistoryQuery;
+import ru.protei.portal.core.service.policy.PolicyService;
 
 import java.util.*;
 import java.util.function.Function;
@@ -19,6 +18,7 @@ import java.util.stream.Stream;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
@@ -38,6 +38,10 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Autowired
     ImportanceLevelDAO importanceLevelDAO;
+    @Autowired
+    CaseObjectDAO caseObjectDAO;
+    @Autowired
+    PolicyService policyService;
 
     @Override
     @Transactional
@@ -70,6 +74,21 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     public Result<List<History>> listHistories(AuthToken token, HistoryQuery query) {
+
+        List<History> list = historyDAO.listByQuery(query);
+        if (list == null) {
+            return error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        return ok(fillHistoriesWithColors(list));
+    }
+
+    @Override
+    public Result<List<History>> getCaseHistoryList(AuthToken token, En_CaseType caseType, HistoryQuery query) {
+        En_ResultStatus checkAccessStatus = checkAccessForCaseObjectByNumber(token, caseType, query.getCaseNumber());
+        if (checkAccessStatus != null) {
+            return error(checkAccessStatus);
+        }
 
         List<History> list = historyDAO.listByQuery(query);
         if (list == null) {
@@ -202,5 +221,17 @@ public class HistoryServiceImpl implements HistoryService {
                 .flatMap(history -> Stream.of(history.getOldId(), history.getNewId()))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    private En_ResultStatus checkAccessForCaseObjectByNumber(AuthToken token, En_CaseType caseType, Long caseNumber) {
+
+        if (token == null || caseType == null) {
+            return null;
+        }
+
+        if (CRM_SUPPORT.equals(caseType) && !policyService.hasAccessForCaseObject(token, En_Privilege.ISSUE_VIEW, caseObjectDAO.getCaseByNumber(caseType, caseNumber)))
+            return En_ResultStatus.PERMISSION_DENIED;
+
+        return null;
     }
 }

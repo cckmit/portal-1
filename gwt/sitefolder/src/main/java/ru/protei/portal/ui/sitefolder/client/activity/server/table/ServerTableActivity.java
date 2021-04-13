@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.sitefolder.client.activity.server.table;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
@@ -82,7 +83,6 @@ public abstract class ServerTableActivity implements
             requestPlatformAndLoadTable();
         }
     }
-
 
     @Event
     public void onCreateClicked(ActionBarEvents.Clicked event) {

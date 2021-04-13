@@ -71,8 +71,11 @@ public class PersonAbsenceDAO_Impl extends PortalBaseJdbcDAO<PersonAbsence> impl
                 }
             }
 
-            if (CollectionUtils.isNotEmpty(query.getReasonIds())) {
-                condition.append(" and person_absence.reason_id in " + HelperFunc.makeInArg(query.getReasonIds(), false));
+            if (CollectionUtils.isNotEmpty(query.getReasons())) {
+                Set<Integer> reasons = query.getReasons().stream()
+                        .map(En_AbsenceReason::getId)
+                        .collect(Collectors.toSet());
+                condition.append(" and person_absence.reason_id in " + HelperFunc.makeInArg(reasons, false));
             }
         });
     }

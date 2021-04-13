@@ -1,5 +1,6 @@
 package ru.protei.portal.core.aspect;
 
+import com.mysql.jdbc.MysqlDataTruncation;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataIntegrityViolationException;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.CreateAuditObjectEvent;
 import ru.protei.portal.core.exception.InsufficientPrivilegesException;
@@ -96,6 +98,11 @@ public class ServiceLayerInterceptor {
 
             if (JdbcHelper.isTemporaryDatabaseError (e)) {
                 return error( En_ResultStatus.DB_TEMP_ERROR);
+            }
+
+            if (e instanceof DataIntegrityViolationException &&
+                    e.getCause() instanceof MysqlDataTruncation) {
+                return error( En_ResultStatus.MYSQL_DATA_TRUNCATION);
             }
 
             if (e instanceof SQLException) {

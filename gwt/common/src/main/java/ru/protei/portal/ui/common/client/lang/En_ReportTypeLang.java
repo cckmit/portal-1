@@ -20,6 +20,7 @@ public class En_ReportTypeLang {
             case CASE_RESOLUTION_TIME: return lang.reportTypeCaseResolutionTime();
             case PROJECT: return lang.reportTypeProject();
             case CONTRACT: return lang.reportTypeContract();
+            case NIGHT_WORK: return lang.reportNightWork();
             default: return lang.unknownField();
         }
     }

@@ -94,6 +94,7 @@ public class En_ResultStatusLang {
             case NOT_ALLOWED_PARENT_STATE: return lang.errNotAllowedParentState();
             case NOT_ALLOWED_AUTOOPEN_ISSUE: return lang.errNotAllowedCompanyWithAutoOpenIssue();
             case NOT_ALLOWED_INTEGRATION_ISSUE: return lang.errNotAllowedIntegrationIssue();
+            case MYSQL_DATA_TRUNCATION: return lang.errMySqlDataTruncation();
             default: return lang.errUnknownResult();
         }
     }

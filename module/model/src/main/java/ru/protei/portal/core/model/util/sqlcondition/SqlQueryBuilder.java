@@ -580,7 +580,7 @@ public class SqlQueryBuilder implements Operator, Condition, Query {
     }
 
     private Object inString( Object o ) {
-        if (o instanceof String) return "'" + o.toString() + "'";
+        if (o instanceof String || o instanceof Enum<?>) return "'" + o.toString() + "'";
         return o.toString();
     }
 

@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.dict;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import ru.protei.winter.core.utils.enums.HasId;
 
 public enum En_AbsenceReason implements HasId {
@@ -24,6 +26,19 @@ public enum En_AbsenceReason implements HasId {
         this.actual = actual;
     }
 
+    @JsonCreator
+    public static En_AbsenceReason getById(Integer id) {
+        if(id == null)
+            return null;
+
+        for (En_AbsenceReason reason : En_AbsenceReason.values())
+            if (reason.id == id)
+                return reason;
+
+        return null;
+    }
+
+    @JsonValue
     @Override
     public int getId() {
         return id;

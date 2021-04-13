@@ -171,9 +171,10 @@ public class DateRangeUtils {
         return interval;
     }
 
-    public static Interval makeInterval(DateRange dateRange ) {
-        if ( dateRange == null )
+    public static Interval makeInterval(DateRange dateRange) {
+        if ( dateRange == null ) {
             return null;
+        }
 
         switch (dateRange.getIntervalType()) {
             case FIXED      : return new Interval(dateRange.getFrom(), dateRange.getTo());

@@ -4,7 +4,6 @@ import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -31,6 +30,10 @@ public class DocumentType extends AuditableObject {
     private String gost;
 
     public DocumentType() {
+    }
+
+    public DocumentType(Long id) {
+        this.id = id;
     }
 
     public String getName() {

@@ -42,6 +42,10 @@ public class CrmConstants {
         Long UNDEFINED = -1L;
     }
 
+    public interface Region {
+        Long UNDEFINED = -1L;
+    }
+
     public interface EmployeeRegistration {
         int ADDITIONAL_SOFT_MAX_LENGTH = 512;
         int RESOURCE_COMMENT_MAX_LENGTH = 512;
@@ -234,5 +238,9 @@ public class CrmConstants {
         long DELAY_STARTUP = 60;
         long DELAY_RUNTIME = 180;
         int DELAY_RANDOM = 120;
+    }
+
+    public interface NightWork {
+        Integer START_NIGHT = 21;
     }
 }

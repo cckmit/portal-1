@@ -4,9 +4,10 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
-import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.CaseObjectMeta;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 
 /**
@@ -23,13 +24,13 @@ public class IssueEvents {
             this.preScroll = preScroll;
         }
 
-        public Show (CaseFilter filter, Boolean preScroll) {
-            this.filter = filter;
+        public Show (CaseFilterDto<CaseQuery> caseFilterDto, Boolean preScroll) {
+            this.caseFilterDto = caseFilterDto;
             this.preScroll = preScroll;
         }
 
         @Omit
-        public CaseFilter filter;
+        public CaseFilterDto<CaseQuery> caseFilterDto;
         @Omit
         public Boolean preScroll = false;
     }

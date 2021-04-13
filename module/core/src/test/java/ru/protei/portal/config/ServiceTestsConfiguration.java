@@ -41,6 +41,8 @@ import ru.protei.portal.core.report.contract.ReportContract;
 import ru.protei.portal.core.report.contract.ReportContractImpl;
 import ru.protei.portal.core.report.dutylog.ReportDutyLog;
 import ru.protei.portal.core.report.dutylog.ReportDutyLogImpl;
+import ru.protei.portal.core.report.nightwork.ReportNightWork;
+import ru.protei.portal.core.report.nightwork.ReportNightWorkImpl;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.report.projects.ReportProjectImpl;
 import ru.protei.portal.core.service.*;
@@ -255,8 +257,8 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
-    public IssueFilterService getIssueFilterService () {
-        return new IssueFilterServiceImpl();
+    public CaseFilterService getIssueFilterService () {
+        return new CaseFilterServiceImpl();
     }
 
     @Bean
@@ -408,6 +410,11 @@ public class ServiceTestsConfiguration {
     @Bean
     public ReportCase getReportCase() {
         return new ReportCaseImpl();
+    }
+
+    @Bean
+    public ReportNightWork getReportNightWork() {
+        return new ReportNightWorkImpl();
     }
 
     @Bean
