@@ -18,6 +18,8 @@ public interface AbstractCaseTagEditView extends IsWidget {
 
     HasValue<String> colorPicker();
 
+    boolean colorPickerColorValid();
+
     HasValue<EntityOption> company();
 
     HasEnabled colorEnabled();

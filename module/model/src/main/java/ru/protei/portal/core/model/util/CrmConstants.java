@@ -70,6 +70,8 @@ public class CrmConstants {
     public interface CaseTag {
         Long NOT_SPECIFIED = -1L;
         int NAME_MAX_LENGTH = 64;
+        String DEFAULT_COLOR = "#e9edef";
+        String HEX_COLOR_MASK = "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$";
     }
 
     public interface Masks {

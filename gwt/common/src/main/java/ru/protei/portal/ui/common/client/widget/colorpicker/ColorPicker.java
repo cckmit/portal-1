@@ -2,15 +2,12 @@ package ru.protei.portal.ui.common.client.widget.colorpicker;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
@@ -18,7 +15,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.colorpicker.popup.ColorPickerPopup;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
-import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.core.model.util.CrmConstants.CaseTag.HEX_COLOR_MASK;
 
 public class ColorPicker extends Composite implements HasEnabled, HasValue<String>, ValueChangeHandler<String> {
 
@@ -26,6 +23,7 @@ public class ColorPicker extends Composite implements HasEnabled, HasValue<Strin
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
+        colorBox.setRegexp(HEX_COLOR_MASK);
         colorBox.getElement().setAttribute("placeholder", lang.colorHex());
     }
 
@@ -41,8 +39,7 @@ public class ColorPicker extends Composite implements HasEnabled, HasValue<Strin
 
     @Override
     public void setValue(String value, boolean fireEvents) {
-        resetTimer();
-        colorBox.setValue(value, fireEvents);
+        colorBox.setValue(value);
 
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
@@ -56,8 +53,7 @@ public class ColorPicker extends Composite implements HasEnabled, HasValue<Strin
 
     @Override
     public void onValueChange(ValueChangeEvent<String> event) {
-        String value = event.getValue();
-        setValue(value);
+        setValue(event.getValue());
     }
 
     @Override
@@ -78,9 +74,8 @@ public class ColorPicker extends Composite implements HasEnabled, HasValue<Strin
         }
     }
 
-    @UiHandler("colorBox")
-    public void onColorBoxValueChanged(KeyUpEvent event) {
-        resetTimer();
+    public boolean isColorValid() {
+        return colorBox.isValid();
     }
 
     private void ensureDebugIds() {
@@ -96,18 +91,6 @@ public class ColorPicker extends Composite implements HasEnabled, HasValue<Strin
         popup.showNear(relative);
     }
 
-    public static boolean isValidHexColor(String color) {
-        return !isBlank(color) && HEX_REGEX.exec(color) != null;
-    }
-
-    private void setColorRequired(boolean required) {
-        if (required) {
-            colorBox.addStyleName("required");
-        } else {
-            colorBox.removeStyleName("required");
-        }
-    }
-
     @Inject
     Lang lang;
     @Inject
@@ -120,21 +103,7 @@ public class ColorPicker extends Composite implements HasEnabled, HasValue<Strin
     @UiField
     Button colorPickerButton;
 
-    Timer timer = new Timer() {
-
-        @Override
-        public void run() {
-            setColorRequired(!isValidHexColor(colorBox.getValue()));
-        }
-    };
-
-    private void resetTimer() {
-        timer.scheduleRepeating(1);
-    }
-
     private HandlerRegistration popupValueChangeHandlerRegistration;
-
-    private static final RegExp HEX_REGEX = RegExp.compile("^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$");
 
     interface ColorPickerUiBinder extends UiBinder<HTMLPanel, ColorPicker> {}
     private static ColorPickerUiBinder ourUiBinder = GWT.create(ColorPickerUiBinder.class);

@@ -16,7 +16,6 @@ import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
-import ru.protei.portal.ui.common.client.widget.colorpicker.ColorPicker;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -128,14 +127,12 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
 
     @Override
     public void onChangeCaseTagName() {
-        String name = view.name().getValue();
-        if (isBlank(name)) {
-            setNameValidationStatus(ERROR, lang.errTagNameEmpty(), true);
-            return;
-        }
+        view.setCaseTagNameStatus(UNDEFINED);
 
-        if (name.length() > NAME_MAX_LENGTH) {
-            setNameValidationStatus(ERROR, lang.errTagNameLengthExceeded(NAME_MAX_LENGTH), true);
+        String name = view.name().getValue();
+        String errMsg = validateName(name);
+        if (errMsg != null) {
+            setNameValidationStatus(ERROR, errMsg, true);
             return;
         }
 
@@ -146,7 +143,10 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
 
         caseTagController.isTagNameExists(caseTagDto, new RequestCallback<Boolean>() {
             @Override
-            public void onError(Throwable throwable) {}
+            public void onError(Throwable throwable) {
+                view.setCaseTagNameStatus(ERROR);
+                fireEvent(new NotifyEvents.Show(lang.errTagNameValidationError(), NotifyEvents.NotifyType.ERROR));
+            }
 
             @Override
             public void onSuccess(Boolean isExists) {
@@ -160,27 +160,42 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
     }
 
     private String validateTagParams() {
-        if (isBlank(view.name().getValue())) {
-            setNameValidationStatus(ERROR, lang.errTagNameEmpty(), true);
+        String errMsg = validateName(view.name().getValue());
+        if (errMsg != null) {
+            return errMsg;
+        }
+
+        errMsg = validateColor(view.colorPicker().getValue());
+        if (errMsg != null) {
+            return errMsg;
+        }
+
+        if (caseTag.getCaseType() == null) {
+            return lang.errTagTypeNotSpecified();
+        }
+
+        return null;
+    }
+
+    private String validateName(String name) {
+        if (isBlank(name)) {
             return lang.errTagNameEmpty();
         }
 
-        String tagNameErrorMsg = view.caseTagNameErrorLabel().getText();
-        if (!tagNameErrorMsg.isEmpty()) {
-            return tagNameErrorMsg;
+        if (name.length() > NAME_MAX_LENGTH) {
+            return lang.errTagNameLengthExceeded(NAME_MAX_LENGTH);
         }
 
-        String color = view.colorPicker().getValue();
+        return null;
+    }
+
+    private String validateColor(String color) {
         if (isBlank(color)) {
             return lang.errTagColorEmpty();
         }
 
-        if (!ColorPicker.isValidHexColor(color)) {
+        if (!view.colorPickerColorValid()) {
             return lang.errTagColorIncorrectFormat();
-        }
-
-        if (caseTag.getCaseType() == null) {
-            return null;
         }
 
         return null;

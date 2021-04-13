@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.view.casetag.edit;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -15,6 +14,7 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casetag.edit.AbstractCaseTagEditActivity;
 import ru.protei.portal.ui.common.client.activity.casetag.edit.AbstractCaseTagEditView;
 import ru.protei.portal.ui.common.client.common.NameStatus;
+import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.colorpicker.ColorPicker;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
@@ -60,6 +60,11 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
     }
 
     @Override
+    public boolean colorPickerColorValid() {
+        return colorPicker.isColorValid();
+    }
+
+    @Override
     public HasValue<EntityOption> company() {
         return company;
     }
@@ -100,7 +105,7 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
     }
 
     @UiHandler("name")
-    public void onChangeTagName(KeyUpEvent event) {
+    public void onTagNameChanged(InputEvent event) {
         verifiableIcon.setClassName(NameStatus.UNDEFINED.getStyle());
         timer.cancel();
         timer.schedule(300);

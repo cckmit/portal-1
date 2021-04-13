@@ -3216,9 +3216,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errTagNameLengthExceeded(int maxLength);
 
+    String errTagNameValidationError();
+
     String errTagColorEmpty();
 
     String errTagColorIncorrectFormat();
+
+    String errTagTypeNotSpecified();
 
     String workTriggerNone();
 
