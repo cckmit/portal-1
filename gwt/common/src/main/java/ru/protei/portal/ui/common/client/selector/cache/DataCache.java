@@ -61,12 +61,11 @@ public class DataCache<T>  {
         this.savedChunks = savedChunks;
     }
 
-    public T get( int offset, Runnable loadingHandler ) {
+    public T get( int offset ) {
 
         T row = getRow( offset );
 
         if ( row == null ) {
-            loadingHandler.run();
             loadChunk( offset, " |" );
         }
         else {

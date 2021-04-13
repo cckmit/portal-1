@@ -42,6 +42,10 @@ public class SelectorDataCache<T> implements DataCache.DataCacheHandler<T>, Infi
 
     @Override
     public void loadData( int offset, int limit, AsyncCallback<List<T>> asyncCallback ) {
+        if (loadingHandler != null) {
+            loadingHandler.onLoadingStart();
+        }
+
         loadHandler.loadData( offset, limit, new AsyncCallback<List<T>>() {
             @Override
             public void onFailure( Throwable caught ) {
@@ -57,11 +61,9 @@ public class SelectorDataCache<T> implements DataCache.DataCacheHandler<T>, Infi
     }
 
     public T get( int elementIndex, LoadingHandler loadingHandler ) {
+        this.loadingHandler = loadingHandler;
         if (total <= elementIndex) return null;
-        return cache.get(elementIndex, () -> {
-            this.loadingHandler = loadingHandler;
-            loadingHandler.onLoadingStart();
-        });
+        return cache.get( elementIndex );
     }
 
     public void setTotal( int total ) {
