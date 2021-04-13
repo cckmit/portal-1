@@ -30,7 +30,7 @@ public class AuthServiceMock implements AuthService {
             En_Privilege.RESERVED_IP_EDIT, En_Privilege.RESERVED_IP_REMOVE,
             En_Privilege.PLAN_CREATE, En_Privilege.PLAN_EDIT, En_Privilege.PLAN_REMOVE, En_Privilege.PLAN_VIEW,
             En_Privilege.PROJECT_CREATE, En_Privilege.PROJECT_EDIT, En_Privilege.PROJECT_REMOVE, En_Privilege.PROJECT_VIEW,
-            En_Privilege.SITE_FOLDER_CREATE, En_Privilege.SITE_FOLDER_REMOVE,
+            En_Privilege.SITE_FOLDER_CREATE, En_Privilege.SITE_FOLDER_REMOVE, En_Privilege.SITE_FOLDER_EDIT,
             En_Privilege.ABSENCE_CREATE,
     };
 

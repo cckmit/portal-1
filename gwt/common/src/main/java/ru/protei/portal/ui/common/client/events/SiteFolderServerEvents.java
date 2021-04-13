@@ -87,24 +87,6 @@ public class SiteFolderServerEvents {
         }
     }
 
-    public static class ShowList {
-        public HasWidgets parent;
-        public Long platformId;
-        public ShowList(HasWidgets parent, Long platformId) {
-            this.parent = parent;
-            this.platformId = platformId;
-        }
-    }
-
-    public static class ShowDetailedList {
-        public HasWidgets parent;
-        public Long platformId;
-        public ShowDetailedList(HasWidgets parent, Long platformId) {
-            this.parent = parent;
-            this.platformId = platformId;
-        }
-    }
-
     public static class Changed {
         public ru.protei.portal.core.model.ent.Server server;
         public Changed(ru.protei.portal.core.model.ent.Server server) {
