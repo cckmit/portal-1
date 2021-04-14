@@ -673,6 +673,20 @@ public class PortalApiController {
                 .ifError(result -> log.warn("createAbsence1c(): Can't create absences by apiAbsence={}. {}", apiAbsence, result));
     }
 
+    @PostMapping(value = "/absence/1c/update")
+    public Result<Long> updateAbsence1c(HttpServletRequest request, HttpServletResponse response, @RequestBody ApiAbsence apiAbsence) {
+        log.info("API | updateAbsence1c(): apiAbsence={}", apiAbsence);
+
+        if (apiAbsence == null || !apiAbsence.isValid()) {
+            return Result.error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> absenceService.updateAbsenceByApi(authToken, apiAbsence))
+                .ifOk(id -> log.info("updateAbsence1c(): OK"))
+                .ifError(result -> log.warn("updateAbsence1c(): Can't update absences by apiAbsence={}. {}", apiAbsence, result));
+    }
+
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, apiQuery.getSearchString(), apiQuery.getSortField(), apiQuery.getSortDir());
         query.setLimit(apiQuery.getLimit());

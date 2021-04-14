@@ -16,6 +16,9 @@ import java.util.Date;
 )
 public class ApiAbsence implements Serializable {
 
+    @JsonProperty("id")
+    private Long id;
+
     @JsonProperty("person_id")
     private Long personId;
 
@@ -95,6 +98,14 @@ public class ApiAbsence implements Serializable {
 
     public void setTillTime(Date tillTime) {
         this.tillTime = tillTime;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public boolean isValid() {
