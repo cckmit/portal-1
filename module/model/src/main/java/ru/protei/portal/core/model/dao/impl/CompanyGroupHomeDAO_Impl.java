@@ -25,6 +25,11 @@ public class CompanyGroupHomeDAO_Impl extends PortalBaseJdbcDAO<CompanyHomeGroup
         return homeGroupCache().exists( entity -> entity.getCompanyId().equals( companyId ) );
     }
 
+    @Override
+    public boolean isSingleHomeCompany( Long companyId ) {
+        return homeGroupCache().exists( entity -> entity.getCompanyId().equals( companyId ) && entity.getMainId() == null );
+    }
+
     private EntityCache<CompanyHomeGroupItem> homeGroupCache() {
         if (homeGroupCache == null) {
             homeGroupCache = new EntityCache<>(this, TimeUnit.MINUTES.toMillis(10));

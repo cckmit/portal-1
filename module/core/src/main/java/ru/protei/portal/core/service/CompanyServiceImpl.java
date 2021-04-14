@@ -138,12 +138,12 @@ public class CompanyServiceImpl implements CompanyService {
                 .distinct()
                 .collect(Collectors.toList());
 
-        Company homeCompany = companyDAO.get(CrmConstants.Company.HOME_COMPANY_ID);
-        if (homeCompany == null) {
+        List<Company> singleHomeCompanies = companyDAO.getSingleHomeCompanies();
+        if (singleHomeCompanies == null) {
             return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        companies.add(0, homeCompany);
+        companies.addAll(0, singleHomeCompanies);
 
         return ok(companies.stream()
                 .map(Company::toEntityOption)

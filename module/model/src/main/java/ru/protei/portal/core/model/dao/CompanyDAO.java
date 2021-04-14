@@ -14,6 +14,8 @@ public interface CompanyDAO extends PortalBaseDAO<Company> {
 
     List<Long> getAllHomeCompanyIdsWithoutSync();
 
+    List<Company> getSingleHomeCompanies();
+
     List<Company> getAllHomeCompanies();
 
     boolean isEmployeeInHomeCompanies(long companyId);
