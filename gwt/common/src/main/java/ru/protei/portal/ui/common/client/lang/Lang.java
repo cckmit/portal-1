@@ -3349,4 +3349,10 @@ public interface Lang extends Messages, ContactItemLang {
     String errMySqlDataTruncation();
 
     String commentCancelMessage();
+
+    String platformSelectInitiator();
+
+    String errTooMuchPlatforms();
+
+    String issueFilterPlatform();
 }

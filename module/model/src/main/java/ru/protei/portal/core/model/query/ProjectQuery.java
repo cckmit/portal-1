@@ -30,6 +30,8 @@ public class ProjectQuery extends BaseQuery implements HasFilterQueryIds {
 
     private Set<Long> districtIds;
 
+    private Set<Long> platformIds;
+
     private Long memberId;
 
     private Set<Long> productIds;
@@ -114,6 +116,14 @@ public class ProjectQuery extends BaseQuery implements HasFilterQueryIds {
 
     public void setProductIds(Set<Long> productIds) {
         this.productIds = productIds;
+    }
+
+    public Set<Long> getPlatformIds() {
+        return platformIds;
+    }
+
+    public void setPlatformIds(Set<Long> platformIds) {
+        this.platformIds = platformIds;
     }
 
     public En_CustomerType getCustomerType() {
@@ -263,6 +273,11 @@ public class ProjectQuery extends BaseQuery implements HasFilterQueryIds {
     }
 
     @Override
+    public List<Long> getAllPlatformIds() {
+        return new ArrayList<>(emptyIfNull(platformIds));
+    }
+
+    @Override
     public Long getPlanId() {
         return null;
     }
@@ -299,6 +314,7 @@ public class ProjectQuery extends BaseQuery implements HasFilterQueryIds {
                 ", caseMemberIds=" + caseMemberIds +
                 ", directionIds=" + directionIds +
                 ", districtIds=" + districtIds +
+                ", platformIds=" + platformIds +
                 ", memberId=" + memberId +
                 ", productIds=" + productIds +
                 ", customerType=" + customerType +
@@ -326,6 +342,7 @@ public class ProjectQuery extends BaseQuery implements HasFilterQueryIds {
                 Objects.equals(caseMemberIds, that.caseMemberIds) &&
                 Objects.equals(directionIds, that.directionIds) &&
                 Objects.equals(districtIds, that.districtIds) &&
+                Objects.equals(platformIds, that.platformIds) &&
                 Objects.equals(memberId, that.memberId) &&
                 Objects.equals(productIds, that.productIds) &&
                 customerType == that.customerType &&
@@ -343,7 +360,7 @@ public class ProjectQuery extends BaseQuery implements HasFilterQueryIds {
     @Override
     public int hashCode() {
         return Objects.hash(caseIds, stateIds, regionIds, headManagerIds, caseMemberIds, directionIds,
-                districtIds, memberId, productIds, customerType, createdFrom, createdTo,
+                districtIds, platformIds, memberId, productIds, customerType, createdFrom, createdTo,
                 initiatorCompanyIds, commentCreationRange, pauseDateGreaterThan, deleted,
                 subcontractorIds, technicalSupportExpiresInDays, isActive);
     }

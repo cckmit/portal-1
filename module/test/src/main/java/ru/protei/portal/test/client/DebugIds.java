@@ -176,6 +176,10 @@ public class DebugIds {
         String INITIATORS_SELECTOR_CLEAR_BUTTON = "filter-initiators-selector-clear-button";
         String INITIATORS_SELECTOR_ITEM_CONTAINER = "filter-manager-selector-item-container";
         String INITIATORS_SELECTOR_LABEL = "filter-initiators-selector-label";
+        String PLATFORMS_SELECTOR_ADD_BUTTON = "filter-platforms-selector-add-button";
+        String PLATFORMS_SELECTOR_CLEAR_BUTTON = "filter-platforms-selector-clear-button";
+        String PLATFORMS_SELECTOR_ITEM_CONTAINER = "filter-platform-selector-item-container";
+        String PLATFORMS_SELECTOR_LABEL = "filter-platforms-selector-label";
         String TAG_SELECTOR_ADD_BUTTON = "filter-tag-selector-add-button";
         String TAG_SELECTOR_CLEAR_BUTTON = "filter-tag-selector-clear-button";
         String TAG_SELECTOR_ITEM_CONTAINER = "filter-tag-selector-item-container";

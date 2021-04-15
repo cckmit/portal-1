@@ -20,10 +20,7 @@ import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.query.CaseTagQuery;
-import ru.protei.portal.core.model.query.HasFilterQueryIds;
-import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -65,6 +62,8 @@ public class CaseFilterServiceImpl implements CaseFilterService {
     ObjectMapper objectMapper;
     @Autowired
     LocationDAO locationDAO;
+    @Autowired
+    SiteFolderService siteFolderService;
 
     @Override
     public Result<List<FilterShortView>> getCaseFilterShortViewList(Long loginId, En_CaseFilterType filterType ) {
@@ -176,6 +175,15 @@ public class CaseFilterServiceImpl implements CaseFilterService {
         if (filterEntityIds.getPlanId() != null) {
             Plan plan = planDAO.get(filterEntityIds.getPlanId());
             selectorsParams.setPlanOption(new PlanOption(plan.getId(), plan.getName(), plan.getCreatorId()));
+        }
+
+        if (!isEmpty( filterEntityIds.getAllPlatformIds() )) {
+            Result<List<PlatformOption>> result = siteFolderService.listPlatformsOptionList( token, new PlatformQuery() );
+            if (result.isOk()) {
+                selectorsParams.setPlatforms(result.getData());
+            } else {
+                return error(result.getStatus(), "Error at getPlatforms" );
+            }
         }
 
         return ok(selectorsParams);
