@@ -156,6 +156,7 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
         setTimeElapsedTypeIds(query.getTimeElapsedTypeIds());
         setWorkTriggersIds(query.getWorkTriggersIds());
         setOverdueDeadlines(query.getOverdueDeadlines());
+        setPlatformIds(query.getPlatformIds());
     }
 
     public Long getId() {
