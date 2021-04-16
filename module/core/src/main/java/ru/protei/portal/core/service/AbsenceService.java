@@ -51,4 +51,12 @@ public interface AbsenceService {
     @Privileged(En_Privilege.ABSENCE_CREATE)
     @Auditable(En_AuditType.ABSENCE_CREATE)
     Result<Long> createAbsenceByApi(AuthToken token, ApiAbsence absence);
+
+    @Privileged(En_Privilege.ABSENCE_EDIT)
+    @Auditable(En_AuditType.ABSENCE_MODIFY)
+    Result<Long> updateAbsenceByApi(AuthToken authToken, ApiAbsence apiAbsence);
+
+    @Privileged(En_Privilege.ABSENCE_REMOVE)
+    @Auditable(En_AuditType.ABSENCE_REMOVE)
+    Result<Long> removeAbsenceByApi(AuthToken authToken, ApiAbsence apiAbsence);
 }
