@@ -16,6 +16,8 @@ import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.service.CompanyService;
 import ru.protei.portal.core.service.session.SessionService;
@@ -32,6 +34,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 import static ru.protei.portal.api.struct.Result.error;
@@ -90,7 +93,34 @@ public class AvatarController {
 
         if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + fileName , response ) ) return;
 
-        loadFile( context.getRealPath( NOPHOTO_PATH ), response );
+        showNoPhotoImage(response);
+    }
+
+    @RequestMapping( value = "/avatars/email/{email:^[-a-zA-Z0-9_\\.]+@[-a-zA-Z0-9_\\.]+\\.\\w{2,4}$}" )
+    public void getAvatarByEmail(
+            @PathVariable String email,
+            HttpServletResponse response) throws IOException {
+
+        PersonQuery query = new PersonQuery();
+        query.setEmail(email);
+        List<Person> persons = personDAO.getPersons(query);
+        if (CollectionUtils.isEmpty(persons)) {
+            showNoPhotoImage(response);
+            return;
+        }
+
+        Person person = persons.get(0);
+        if (person == null || person.getId() == null ) {
+            showNoPhotoImage(response);
+            return;
+        }
+
+        if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + person.getId() + ".jpg" , response ) ) {
+            showNoPhotoImage(response);
+            return;
+        }
+
+        showNoPhotoImage(response);
     }
 
     @RequestMapping( value = "/avatars/old/{id}" )
@@ -112,7 +142,7 @@ public class AvatarController {
 
         if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + newFileName , response ) ) return;
 
-        loadFile( context.getRealPath( NOPHOTO_PATH ), response );
+        showNoPhotoImage(response);
     }
 
     @RequestMapping(
@@ -167,6 +197,10 @@ public class AvatarController {
         }
 
         return uploadResultSerialize(result);
+    }
+
+    private void showNoPhotoImage(HttpServletResponse response) throws IOException {
+        loadFile( context.getRealPath( NOPHOTO_PATH ), response );
     }
 
     private boolean loadFile( String pathname, HttpServletResponse response ) throws IOException {
