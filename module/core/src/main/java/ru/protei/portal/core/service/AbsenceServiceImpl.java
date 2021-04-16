@@ -329,28 +329,29 @@ public class AbsenceServiceImpl implements AbsenceService {
 
     @Override
     public Result<Long> createAbsenceByApi(AuthToken authToken, ApiAbsence apiAbsence) {
-        return apiAbsenceCrudAction(authToken, apiAbsence, (token, absence) -> createAbsence(authToken, absence));
+        return apiAbsenceCrudAction(authToken, apiAbsence,
+                absence -> absence == null || !absence.isValid(),
+                (token, absence) -> createAbsence(authToken, absence));
     }
 
     @Override
     public Result<Long> updateAbsenceByApi(AuthToken authToken, ApiAbsence apiAbsence) {
-        if (apiAbsence == null || apiAbsence.getId() == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-        return apiAbsenceCrudAction(authToken, apiAbsence, (token, absence) -> updateAbsence(authToken, absence));
+        return apiAbsenceCrudAction(authToken, apiAbsence,
+                absence -> absence == null || absence.getId() == null || !absence.isValid(),
+                (token, absence) -> updateAbsence(authToken, absence));
     }
 
     @Override
     public Result<Long> removeAbsenceByApi(AuthToken authToken, ApiAbsence apiAbsence) {
-        if (apiAbsence == null || apiAbsence.getId() == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-        return apiAbsenceCrudAction(authToken, apiAbsence, (token, absence) -> removeAbsence(authToken, absence));
+        return apiAbsenceCrudAction(authToken, apiAbsence,
+                absence -> absence == null || absence.getId() == null
+                        || ((StringUtils.isEmpty(absence.getCompanyCode()) || absence.getWorkerExtId() == null) && absence.getPersonId() == null),
+                (token, absence) -> removeAbsence(authToken, absence));
     }
 
-    private Result<Long> apiAbsenceCrudAction(AuthToken token, ApiAbsence apiAbsence,
+    private Result<Long> apiAbsenceCrudAction(AuthToken token, ApiAbsence apiAbsence, Function<ApiAbsence, Boolean> incorrectParamCheck,
                                               BiFunction<AuthToken, PersonAbsence, Result<Long>> crudAction) {
-        if (apiAbsence == null || !apiAbsence.isValid()) {
+        if (incorrectParamCheck.apply(apiAbsence)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
