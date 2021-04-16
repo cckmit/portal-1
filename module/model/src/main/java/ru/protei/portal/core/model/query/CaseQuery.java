@@ -35,6 +35,8 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
 
     private List<Long> initiatorIds;
 
+    private List<Long> platformIds;
+
     private Set<Long> productIds;
 
     private List<Long> locationIds;
@@ -154,6 +156,7 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
         setTimeElapsedTypeIds(query.getTimeElapsedTypeIds());
         setWorkTriggersIds(query.getWorkTriggersIds());
         setOverdueDeadlines(query.getOverdueDeadlines());
+        setPlatformIds(query.getPlatformIds());
     }
 
     public Long getId() {
@@ -199,6 +202,14 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
 
     public void setInitiatorIds(List<Long> initiatorIds) {
         this.initiatorIds = initiatorIds;
+    }
+
+    public List<Long> getPlatformIds() {
+        return platformIds;
+    }
+
+    public void setPlatformIds(List<Long> platformIds) {
+        this.platformIds = platformIds;
     }
 
     public Set<Long> getProductIds() {
@@ -371,6 +382,11 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
     }
 
     @Override
+    public List<Long> getAllPlatformIds() {
+        return new ArrayList<>(emptyIfNull(getPlatformIds()));
+    }
+
+    @Override
     public List<Long> getAllPersonIds() {
         List<Long> personsIds = new ArrayList<>();
         personsIds.addAll(emptyIfNull(getManagerIds()));
@@ -450,6 +466,7 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
                 CollectionUtils.isNotEmpty(companyIds) ||
                 CollectionUtils.isNotEmpty(managerCompanyIds) ||
                 CollectionUtils.isNotEmpty(initiatorIds) ||
+                CollectionUtils.isNotEmpty(platformIds) ||
                 CollectionUtils.isNotEmpty(productIds) ||
                 CollectionUtils.isNotEmpty(locationIds) ||
                 CollectionUtils.isNotEmpty(districtIds) ||
@@ -484,6 +501,7 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
                 CollectionUtils.isNotEmpty(caseIds) ||
                 CollectionUtils.isNotEmpty(companyIds) ||
                 CollectionUtils.isNotEmpty(initiatorIds) ||
+                CollectionUtils.isNotEmpty(platformIds) ||
                 CollectionUtils.isNotEmpty(productIds) ||
                 CollectionUtils.isNotEmpty(locationIds) ||
                 CollectionUtils.isNotEmpty(districtIds) ||
@@ -510,6 +528,7 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
                 ", companyIds=" + companyIds +
                 ", managerCompanyIds=" + managerCompanyIds +
                 ", initiatorIds=" + initiatorIds +
+                ", platformIds=" + platformIds +
                 ", productIds=" + productIds +
                 ", locationIds=" + locationIds +
                 ", districtIds=" + districtIds +
@@ -556,6 +575,7 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
                 Objects.equals(companyIds, caseQuery.companyIds) &&
                 Objects.equals(managerCompanyIds, caseQuery.managerCompanyIds) &&
                 Objects.equals(initiatorIds, caseQuery.initiatorIds) &&
+                Objects.equals(platformIds, caseQuery.platformIds) &&
                 Objects.equals(productIds, caseQuery.productIds) &&
                 Objects.equals(locationIds, caseQuery.locationIds) &&
                 Objects.equals(districtIds, caseQuery.districtIds) &&
@@ -581,7 +601,7 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, caseNumbers, caseIds, companyIds, managerCompanyIds, initiatorIds, productIds, locationIds, districtIds, managerIds,
+        return Objects.hash(id, caseNumbers, caseIds, companyIds, managerCompanyIds, initiatorIds, platformIds, productIds, locationIds, districtIds, managerIds,
                 type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdRange, modifiedRange,
                 searchStringAtComments, searchCasenoString, commentAuthorIds, caseTagsIds, caseTagsNames,
                 customerSearch, local, creatorIds, planId, personIdToIsFavorite,
