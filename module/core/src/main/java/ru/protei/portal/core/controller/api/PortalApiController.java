@@ -624,20 +624,6 @@ public class PortalApiController {
                 .ifError(result -> log.warn("deletePlatform(): Can't delete platform with id={}. {}", platformId, result));
     }
 
-    @PostMapping(value = "/absence/1c/get")
-    public Result<List<ApiAbsence>> getAbsence1cGet(HttpServletRequest request, HttpServletResponse response, @RequestBody AbsenceApiQuery apiQuery) {
-        log.info("API | getAbsence1cGet(): apiQuery={}", apiQuery);
-
-        if (apiQuery == null || !apiQuery.isValid()) {
-            return Result.error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        return authenticate(request, response, authService, sidGen, log)
-                .flatMap(authToken -> absenceService.getAbsencesByApiQuery(authToken, apiQuery))
-                .ifOk(id -> log.info("getAbsence1cGet(): OK"))
-                .ifError(result -> log.warn("getAbsence1cGet(): Can't get absences by apiQuery={}. {}", apiQuery, result));
-    }
-
     @PostMapping(value = "/doc/create")
     public Result<Document> createDocument(HttpServletRequest request, HttpServletResponse response,
                                           @RequestBody DocumentApiInfo documentApiInfo) {
@@ -657,6 +643,16 @@ public class PortalApiController {
                 .flatMap(authToken -> documentService.removeDocumentByApi(authToken, documentId))
                 .ifOk(id -> log.info("removeDocument(): OK"))
                 .ifError(result -> log.warn("removeDocument(): Can't remove document={}. {}", documentId, result));
+    }
+
+    @PostMapping(value = "/absence/1c/get")
+    public Result<List<ApiAbsence>> getAbsence1cGet(HttpServletRequest request, HttpServletResponse response, @RequestBody AbsenceApiQuery apiQuery) {
+        log.info("API | getAbsence1cGet(): apiQuery={}", apiQuery);
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> absenceService.getAbsencesByApiQuery(authToken, apiQuery))
+                .ifOk(id -> log.info("getAbsence1cGet(): OK"))
+                .ifError(result -> log.warn("getAbsence1cGet(): Can't get absences by apiQuery={}. {}", apiQuery, result));
     }
 
     @PostMapping(value = "/absence/1c/create")
