@@ -879,6 +879,8 @@ create table if not exists contract
     organization_id    bigint   null,
     parent_contract_id bigint   null,
     project_id         bigint   null,
+    constraint project_id
+        unique (project_id),
     constraint `contract-case_object-id-fk`
         foreign key (id) references case_object (ID)
             on update cascade on delete cascade,
