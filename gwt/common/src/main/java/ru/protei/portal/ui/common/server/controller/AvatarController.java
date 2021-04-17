@@ -115,10 +115,7 @@ public class AvatarController {
             return;
         }
 
-        if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + person.getId() + ".jpg" , response ) ) {
-            showNoPhotoImage(response);
-            return;
-        }
+        if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + person.getId() + ".jpg" , response ) ) return;
 
         showNoPhotoImage(response);
     }
