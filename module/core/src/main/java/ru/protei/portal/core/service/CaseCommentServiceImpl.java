@@ -18,10 +18,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
-import ru.protei.portal.core.model.query.HistoryQuery;
-import ru.protei.portal.core.model.query.PersonQuery;
-import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
+import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
 import ru.protei.portal.core.model.struct.receivedmail.ReceivedMail;
@@ -91,6 +88,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     CompanyDAO companyDAO;
     @Autowired
     AttachmentDAO attachmentDAO;
+    @Autowired
+    CaseTagDAO caseTagDAO;
 
 /*
     @Autowired
@@ -674,9 +673,34 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CommentsAndHistories commentsAndHistories = new CommentsAndHistories();
 
         commentsAndHistories.setComments(caseCommentListResult.getData());
-        commentsAndHistories.setHistories(historyListResult.getData());
+        commentsAndHistories.setHistories(
+                applyFilterByScope(historyListResult.getData(), token, caseType)
+        );
 
         return ok(commentsAndHistories);
+    }
+
+    private List<History> applyFilterByScope(List<History> histories, AuthToken token, En_CaseType en_caseType) {
+        Set<UserRole> roles = token.getRoles();
+        if (en_caseType != CRM_SUPPORT || policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+            return histories;
+        }
+
+        CaseTagQuery tagQuery = new CaseTagQuery();
+        tagQuery.setCompanyId(token.getCompanyId());
+        List<Long> customerTagsIds = caseTagDAO.getListByQuery(tagQuery)
+                .stream().map(CaseTag::getId).collect(Collectors.toList());
+
+        return stream(histories).filter(history -> customerHistoryPredicate(history, customerTagsIds))
+                .collect(Collectors.toList());
+    }
+
+    private boolean customerHistoryPredicate(History history, List<Long> customerTagsIds){
+        if (history.getType() == En_HistoryType.TAG) {
+            return (history.getAction() == En_HistoryAction.ADD && customerTagsIds.contains(history.getNewId()))
+                    || (history.getAction() == En_HistoryAction.REMOVE && customerTagsIds.contains(history.getOldId()));
+        }
+        return true;
     }
 
     private CaseComment createComment(CaseObject caseObject, Person person, String comment) {

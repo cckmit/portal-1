@@ -9,7 +9,6 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.TransliterationUtils;
@@ -97,7 +96,10 @@ public abstract class CaseHistoryItemListActivity implements AbstractCaseHistory
                 currentHistoryItemsContainers.add(0, lastHistoryItemsContainer);
             }
 
-            addHistoryItem(nextHistory, lastHistoryItemsContainer);
+            CaseHistoryItem caseHistoryItem = makeHistoryItem(nextHistory);
+            if (caseHistoryItem != null) {
+                lastHistoryItemsContainer.itemsContainer().add(caseHistoryItem);
+            }
         }
 
         currentHistoryItemsContainers.forEach(itemsContainer -> historyContainer.insert(itemsContainer, 0));
@@ -105,19 +107,16 @@ public abstract class CaseHistoryItemListActivity implements AbstractCaseHistory
         historyItemsContainers.addAll(currentHistoryItemsContainers);
     }
 
-    private void addHistoryItem(History history, CaseHistoryItemsContainer historyItemsContainer) {
-        if (policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)) {
-            CaseHistoryItem itemView;
-            switch (history.getType()) {
-                case PLAN: itemView = makeHistoryItem(history, lang.plan(), Plan.class); break;
-                case TAG: itemView = makeHistoryItem(history, lang.tag(), CaseTag.class); break;
-                case CASE_STATE: itemView = makeHistoryItem(history, lang.issueState(), CaseState.class); break;
-                case CASE_MANAGER: itemView = makeHistoryItem(history, lang.issueManager(), EmployeeShortView.class); break;
-                case CASE_IMPORTANCE: itemView = makeHistoryItem(history, lang.issueImportance(), ImportanceLevel.class); break;
-                default: return;
-            }
-            historyItemsContainer.itemsContainer().add(itemView);
+    private CaseHistoryItem makeHistoryItem(History history) {
+        CaseHistoryItem itemView = null;
+        switch (history.getType()) {
+            case PLAN: itemView = makeHistoryItem(history, lang.plan(), Plan.class); break;
+            case TAG: itemView = makeHistoryItem(history, lang.tag(), CaseTag.class); break;
+            case CASE_STATE: itemView = makeHistoryItem(history, lang.issueState(), CaseState.class); break;
+            case CASE_MANAGER: itemView = makeHistoryItem(history, lang.issueManager(), EmployeeShortView.class); break;
+            case CASE_IMPORTANCE: itemView = makeHistoryItem(history, lang.issueImportance(), ImportanceLevel.class); break;
         }
+        return itemView;
     }
 
     private CaseHistoryItem makeHistoryItem(History history, String historyType, Class<?> clazz) {
