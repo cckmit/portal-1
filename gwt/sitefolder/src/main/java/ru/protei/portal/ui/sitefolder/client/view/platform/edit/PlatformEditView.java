@@ -43,6 +43,11 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     }
 
     @Override
+    public HasEnabled saveEnabled() {
+        return saveButton;
+    }
+
+    @Override
     public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler) {
         fileUploader.setUploadHandler(handler);
     }

@@ -11,6 +11,8 @@ public interface AbstractPlatformEditView extends IsWidget {
 
     void setActivity(AbstractPlatformEditActivity activity);
 
+    HasEnabled saveEnabled();
+
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
 
     void setCaseNumber(Long caseNumber);
