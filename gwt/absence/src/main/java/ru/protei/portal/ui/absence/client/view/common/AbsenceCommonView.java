@@ -86,7 +86,11 @@ public class AbsenceCommonView extends Composite implements AbstractAbsenceCommo
 
     @UiHandler("reason")
     public void onReasonChanged(ValueChangeEvent<En_AbsenceReason> event) {
-        activity.onReasonChanged(event.getValue());
+        if (!event.getValue().equals(En_AbsenceReason.NIGHT_WORK)) {
+            return;
+        }
+
+        activity.onReasonChangeToNightWork();
     }
 
     protected void ensureDebugIds() {

@@ -95,7 +95,7 @@
                                 <div class="col-md-12">
                                     <state:ProjectStateFormSelector ui:field="projectState" validation="false"
                                                                    header="{lang.projectState}"
-                                                                   hasNullValue="true"
+                                                                   hasNullValue="false"
                                                                    mandatory="false"/>
                                 </div>
                             </div>

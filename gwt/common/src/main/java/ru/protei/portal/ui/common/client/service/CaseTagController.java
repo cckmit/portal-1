@@ -22,4 +22,6 @@ public interface CaseTagController extends RemoteService {
     void attachTag(Long caseId, Long tagId) throws RequestFailedException;
 
     Long detachTag( Long caseId, Long tagId) throws RequestFailedException;
+
+    boolean isTagNameExists(CaseTag caseTag) throws RequestFailedException;
 }

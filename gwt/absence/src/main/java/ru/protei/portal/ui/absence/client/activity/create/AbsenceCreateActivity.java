@@ -3,7 +3,6 @@ package ru.protei.portal.ui.absence.client.activity.create;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.ui.absence.client.activity.common.AbsenceCommonActivity;
@@ -48,16 +47,15 @@ public abstract class AbsenceCreateActivity extends AbsenceCommonActivity {
     }
 
     @Override
-    public void onReasonChanged(En_AbsenceReason newReason) {
+    public void onReasonChangeToNightWork() {
         List<DateInterval> intervals = createView.dateRange().getValue();
         int lastIntervalIndex = intervals.size() - 1;
         DateInterval lastInterval = intervals.get(lastIntervalIndex);
 
         Date to = lastInterval.to;
-        boolean isNightWork = newReason.equals(En_AbsenceReason.NIGHT_WORK);
-        to.setHours(isNightWork ? 13 : 23);
-        to.setMinutes(isNightWork ? 0 : 59);
-        to.setSeconds(isNightWork ? 0 : 59);
+        to.setHours(13);
+        to.setMinutes(0);
+        to.setSeconds(0);
 
         createView.dateRange().setValue(intervals);
     }

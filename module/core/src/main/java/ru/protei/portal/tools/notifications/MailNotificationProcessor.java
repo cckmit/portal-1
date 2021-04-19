@@ -271,6 +271,7 @@ public class MailNotificationProcessor {
         }
 
         notifiers.forEach((entry) -> {
+            log.info("Send message to {}", entry.getAddress());
             MimeMessageHeadersFacade headers =  makeHeaders( caseObject.getCaseNumber(), lastMessageId, entry.hashCode() );
 
             String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipients);

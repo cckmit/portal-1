@@ -52,6 +52,12 @@
                                         <g:Button styleName="btn btn-complete btn-block btn-sm" ui:field="send" text="{lang.commentSendMessage}"/>
                                     </div>
 
+                                    <div class="col-md-auto p-l-0">
+                                        <g:Button styleName="btn btn-default btn-sm" ui:field="cancel" title="{lang.commentCancelMessage}">
+                                            <i class="fa fa-backspace"/>
+                                        </g:Button>
+                                    </div>
+
                                     <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" addStyleNames="col-md-4 p-l-0" fixedStrategy="false"/>
 
                                     <div class="col-md-2 p-l-0">

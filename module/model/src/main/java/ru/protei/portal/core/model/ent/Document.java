@@ -7,7 +7,6 @@ import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +27,9 @@ public class Document extends AuditableObject {
     @JdbcColumn
     private String name;
 
+    /**
+     * Обозначение Документа
+     */
     @JdbcColumn(name = "decimal_number")
     private String decimalNumber;
 
@@ -118,7 +120,7 @@ public class Document extends AuditableObject {
     private PersonShortView approvedBy;
 
     /**
-     * Дата создания
+     * Дата утверждения
      */
     @JdbcColumn(name = "approval_date")
     private Date approvalDate;

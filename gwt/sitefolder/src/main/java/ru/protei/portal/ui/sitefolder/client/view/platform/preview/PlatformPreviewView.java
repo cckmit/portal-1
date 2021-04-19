@@ -102,6 +102,13 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         }
     }
 
+    @UiHandler("exportServersButton")
+    public void exportButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onExportServersClicked();
+        }
+    }
+
     @UiHandler("name")
     public void fullScreenClick(ClickEvent event) {
         event.preventDefault();
@@ -133,6 +140,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         copyPreviewLink.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.COPY_PREVIEW_LINK_BUTTON);
         name.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.NAME);
         openServersButton.ensureDebugId(DebugIds.SITE_FOLDER.SERVER.OPEN_BUTTON);
+        openServersButton.ensureDebugId(DebugIds.SITE_FOLDER.SERVER.EXPORT_BUTTON);
         comment.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.COMMENT);
         company.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.COMPANY);
         manager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.MANAGER);
@@ -173,6 +181,8 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     HTMLPanel serversContainer;
     @UiField
     Button openServersButton;
+    @UiField
+    Button exportServersButton;
     @Inject
     @UiField(provided = true)
     AttachmentList attachmentContainer;

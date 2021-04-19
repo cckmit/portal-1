@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.project.client.activity.quickcreate;
 
 import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -16,6 +17,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.util.CrmConstants.State.UNKNOWN;
 
 /**
  * Активность создания проекта с минимальным набором параметров
@@ -73,6 +76,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
                     fireEvent(new ProjectEvents.ChangeModel());
                     fireEvent(new ProjectEvents.Set(new EntityOption(project.getData().getName(), project.getData().getId())));
                     initialView(new Project());
+                    fireEvent(new DocumentEvents.ProjectCreated());
                 }));
     }
 
@@ -155,6 +159,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
         project.setProducts( toSet(view.products().getValue(), DevUnit::fromProductShortView));
         project.setTeam(toPersonProjectMemberViewList(view.headManagers().getValue()));
+        project.setStateId(UNKNOWN);
     }
 
     private boolean validate() {

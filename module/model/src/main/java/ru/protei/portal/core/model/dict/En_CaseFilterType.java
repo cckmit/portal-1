@@ -28,6 +28,7 @@ public enum En_CaseFilterType {
      */
     PROJECT(ProjectQuery.class),
 
+
     /**
      * Фильтр ночным работам
      */

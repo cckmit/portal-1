@@ -406,6 +406,7 @@ public class DebugIds {
             String TEXT_INPUT = "issue-preview-comment-list-text-input";
             String PRIVACY_BUTTON = "issue-preview-comment-list-privacy-button";
             String SEND_BUTTON = "issue-preview-comment-list-send-button";
+            String CANCEL_BUTTON = "issue-preview-comment-list-cancel-button";
             String FILES_UPLOAD = "issue-preview-comment-list-files-upload";
             String TIME_ELAPSED = "issue-preview-comment-list-time-elapsed";
             String TIME_ELAPSED_TYPE = "issue-preview-comment-list-time-elapsed-type";
@@ -956,6 +957,7 @@ public class DebugIds {
 
         interface TAG {
             String NAME_LABEL = "dialog-details-tag-name-label";
+            String VERIFIABLE_ICON = "dialog-details-tag-verifiable-icon";;
             String COMPANY_LABEL = "dialog-details-tag-company-label";
             String COLOR_LABEL = "dialog-details-tag-color-label";
             String AUTHOR_LABEL = "dialog-details-author-label";
@@ -997,6 +999,7 @@ public class DebugIds {
         }
         interface SERVER {
             String OPEN_BUTTON = "site-folder-server-open-button";
+            String EXPORT_BUTTON = "site-folder-server-export-button";
             String CREATE_BUTTON = "site-folder-server-create-button";
             String ITEM = "site-folder-server-list-item";
             String NAME = "site-folder-server-name";

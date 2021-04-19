@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.api.ApiContract;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
+import ru.protei.portal.core.model.dto.DocumentApiInfo;
 import ru.protei.portal.core.model.dto.PersonInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -84,6 +85,8 @@ public class PortalApiController {
     private AbsenceService absenceService;
     @Autowired
     private HistoryService historyService;
+    @Autowired
+    private DocumentService documentService;
     @Autowired
     PortalConfig config;
 
@@ -621,18 +624,66 @@ public class PortalApiController {
                 .ifError(result -> log.warn("deletePlatform(): Can't delete platform with id={}. {}", platformId, result));
     }
 
+    @PostMapping(value = "/doc/create")
+    public Result<Document> createDocument(HttpServletRequest request, HttpServletResponse response,
+                                          @RequestBody DocumentApiInfo documentApiInfo) {
+        log.info("API | createDocument(): documentApiInfo={}", documentApiInfo);
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(token -> documentService.createDocumentByApi(token, documentApiInfo))
+                .ifOk(caseTagId -> log.info("createDocument(): OK"))
+                .ifError(result -> log.warn("createDocument(): Can't create document={}. {}", documentApiInfo, result));
+    }
+
+    @PostMapping(value = "/doc/remove/{documentId:[0-9]+}")
+    public Result<Long> removeDocument(HttpServletRequest request, HttpServletResponse response, @PathVariable("documentId") Long documentId) {
+        log.info("API | removeDocument(): id={}", documentId);
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> documentService.removeDocumentByApi(authToken, documentId))
+                .ifOk(id -> log.info("removeDocument(): OK"))
+                .ifError(result -> log.warn("removeDocument(): Can't remove document={}. {}", documentId, result));
+    }
+
     @PostMapping(value = "/absence/1c/get")
     public Result<List<ApiAbsence>> getAbsence1cGet(HttpServletRequest request, HttpServletResponse response, @RequestBody AbsenceApiQuery apiQuery) {
         log.info("API | getAbsence1cGet(): apiQuery={}", apiQuery);
-
-        if (apiQuery == null || !apiQuery.isValid()) {
-            return Result.error(En_ResultStatus.INCORRECT_PARAMS);
-        }
 
         return authenticate(request, response, authService, sidGen, log)
                 .flatMap(authToken -> absenceService.getAbsencesByApiQuery(authToken, apiQuery))
                 .ifOk(id -> log.info("getAbsence1cGet(): OK"))
                 .ifError(result -> log.warn("getAbsence1cGet(): Can't get absences by apiQuery={}. {}", apiQuery, result));
+    }
+
+    @PostMapping(value = "/absence/1c/create")
+    public Result<Long> createAbsence1c(HttpServletRequest request, HttpServletResponse response, @RequestBody ApiAbsence apiAbsence) {
+        log.info("API | createAbsence1c(): apiAbsence={}", apiAbsence);
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> absenceService.createAbsenceByApi(authToken, apiAbsence))
+                .ifOk(id -> log.info("createAbsence1c(): OK"))
+                .ifError(result -> log.warn("createAbsence1c(): Can't create absences by apiAbsence={}. {}", apiAbsence, result));
+    }
+
+    @PostMapping(value = "/absence/1c/update")
+    public Result<Long> updateAbsence1c(HttpServletRequest request, HttpServletResponse response, @RequestBody ApiAbsence apiAbsence) {
+        log.info("API | updateAbsence1c(): apiAbsence={}", apiAbsence);
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> absenceService.updateAbsenceByApi(authToken, apiAbsence))
+                .ifOk(id -> log.info("updateAbsence1c(): OK"))
+                .ifError(result -> log.warn("updateAbsence1c(): Can't update absences by apiAbsence={}. {}", apiAbsence, result));
+    }
+
+
+    @PostMapping(value = "/absence/1c/remove")
+    public Result<Long> removeAbsence1c(HttpServletRequest request, HttpServletResponse response, @RequestBody ApiAbsence apiAbsence) {
+        log.info("API | removeAbsence1c(): apiAbsence={}", apiAbsence);
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> absenceService.removeAbsenceByApi(authToken, apiAbsence))
+                .ifOk(id -> log.info("removeAbsence1c(): OK"))
+                .ifError(result -> log.warn("removeAbsence1c(): Can't remove absences by apiAbsence={}. {}", apiAbsence, result));
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {

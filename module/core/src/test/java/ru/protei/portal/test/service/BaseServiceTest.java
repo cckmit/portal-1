@@ -146,6 +146,7 @@ public class BaseServiceTest {
         CaseTag caseTag = new CaseTag();
         caseTag.setCaseType(type);
         caseTag.setName(name);
+        caseTag.setColor(CrmConstants.CaseTag.DEFAULT_COLOR);
         caseTag.setCompanyId(companyId);
         return caseTag;
     }
@@ -414,4 +415,16 @@ public class BaseServiceTest {
     protected ObjectMapper objectMapper;
     @Autowired
     protected CompanyImportanceItemDAO companyImportanceItemDAO;
+    @Autowired
+    protected WorkerEntryDAO workerEntryDAO;
+    @Autowired
+    protected CompanyDepartmentDAO companyDepartmentDAO;
+    @Autowired
+    protected WorkerPositionDAO workerPositionDAO;
+    @Autowired
+    protected CompanyGroupHomeDAO companyGroupHomeDAO;
+    @Autowired
+    protected DocumentTypeDAO documentTypeDAO;
+    @Autowired
+    protected DocumentDAO documentDAO;
 }

@@ -203,6 +203,13 @@ public class CommentAndHistoryListView
         }
     }
 
+    @UiHandler( "cancel" )
+    public void onCancelClicked( ClickEvent event ) {
+        if ( activity != null ) {
+            activity.onCancelClicked();
+        }
+    }
+
     @UiHandler("attachmentList")
     public void onRemoveAttachment(RemoveEvent event){
         activity.removeTempAttachment(event.getAttachment());
@@ -297,6 +304,7 @@ public class CommentAndHistoryListView
         newCommentUserImage.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CASE_COMMENT.COMMENT_LIST.USER_ICON);
         comment.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.TEXT_INPUT);
         send.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.SEND_BUTTON);
+        cancel.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.CANCEL_BUTTON);
         filesUpload.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CASE_COMMENT.COMMENT_LIST.FILES_UPLOAD);
         timeElapsed.ensureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.TIME_ELAPSED);
         timeElapsedType.setEnsureDebugId(DebugIds.CASE_COMMENT.COMMENT_LIST.TIME_ELAPSED_TYPE);
@@ -328,6 +336,8 @@ public class CommentAndHistoryListView
     PrivacyTypeSelector privacyType;
     @UiField
     Button send;
+    @UiField
+    Button cancel;
     @Inject
     @UiField(provided = true)
     AttachmentList attachmentList;
