@@ -104,8 +104,6 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
 
     @Override
     public void onSaveClicked() {
-        view.saveEnabled().setEnabled(false);
-
         String validationErrorMsg = validate();
         if (validationErrorMsg != null) {
             fireEvent(new NotifyEvents.Show(validationErrorMsg, NotifyEvents.NotifyType.ERROR));
@@ -114,9 +112,12 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
 
         fillPlatform(platform);
 
+        view.saveEnabled().setEnabled(false);
+
         siteFolderController.savePlatform(platform, new FluentCallback<Platform>()
                 .withError(throwable -> {
                     view.saveEnabled().setEnabled(true);
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotSaved(), NotifyEvents.NotifyType.ERROR));
                 })
                 .withSuccess(result -> {
                     view.saveEnabled().setEnabled(true);
