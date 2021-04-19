@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
+import ru.protei.portal.core.model.query.ServerGroupQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
@@ -30,7 +31,7 @@ public interface SiteFolderService {
     Result<SearchResult<Server>> getServersWithAppsNames( AuthToken token, ServerQuery query);
 
     @Privileged(value = En_Privilege.SITE_FOLDER_VIEW)
-    Result<List<ServerGroup>> getServerGroups(AuthToken token, Long platformId, int limit, int offset);
+    Result<List<ServerGroup>> getServerGroups(AuthToken token, ServerGroupQuery serverGroupQuery);
 
     Result<List<PlatformOption>> listPlatformsOptionList(AuthToken token, PlatformQuery query);
 

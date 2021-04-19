@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.ent.ServerGroup;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
+import ru.protei.portal.core.model.query.ServerGroupQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
@@ -32,7 +33,7 @@ public interface SiteFolderController extends RemoteService {
 
     List<EntityOption> getServersOptionList(ServerQuery query) throws RequestFailedException;
 
-    List<ServerGroup> getServerGroups(Long platformId, int limit, int offset) throws RequestFailedException;
+    List<ServerGroup> getServerGroups(ServerGroupQuery serverGroupQuery) throws RequestFailedException;
 
     Platform getPlatform(long id) throws RequestFailedException;
 

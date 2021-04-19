@@ -2,7 +2,6 @@ package ru.protei.portal.ui.sitefolder.client.view.platform.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -19,7 +18,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
+import ru.protei.portal.ui.common.client.widget.markdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
@@ -37,8 +36,7 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
         initWidget(ourUiBinder.createAndBindUi(this));
         manager.setItemRenderer( value -> value == null ? lang.selectManager() : value.getDisplayShortName() );
         comment.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
-        comment.setDisplayPreviewHandler(isDisplay ->
-                localStorageService.set(COMMENT_DISPLAY_PREVIEW, String.valueOf(isDisplay)));
+        comment.setDisplayPreviewHandler(isDisplay -> activity.onDisplayCommentPreviewClicked(isDisplay));
 
         ensureDebugIds();
     }
@@ -90,7 +88,7 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     }
 
     @Override
-    public Panel serversContainer() {
+    public HasWidgets serversContainer() {
         return serversContainer;
     }
 
@@ -130,8 +128,8 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     }
 
     @Override
-    public Element getRootElement() {
-        return root.getElement();
+    public void setDisplayCommentPreview(boolean isDisplay) {
+        comment.setDisplayPreview(isDisplay);
     }
 
     @UiHandler("saveButton")

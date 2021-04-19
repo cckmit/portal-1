@@ -26,7 +26,7 @@ public interface AbstractPlatformPreviewView extends IsWidget {
 
     HasWidgets contactsContainer();
 
-    Panel serversContainer();
+    HasWidgets serversContainer();
 
     HasAttachments attachmentsContainer();
 

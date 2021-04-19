@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.ent.ServerGroup;
+import ru.protei.portal.core.model.query.ServerGroupQuery;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -22,7 +23,7 @@ public abstract class ServerGroupModel implements Activity, AsyncSelectorModel<S
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         cache.clearCache();
-        cache.setLoadHandler(makeLoadHandler(null));
+        cache.setLoadHandler(makeLoadHandler(makeQuery(null)));
     }
 
     @Override
@@ -32,21 +33,24 @@ public abstract class ServerGroupModel implements Activity, AsyncSelectorModel<S
 
     public void setPlatformId(Long platformId) {
         cache.clearCache();
-        cache.setLoadHandler(makeLoadHandler(platformId));
+        cache.setLoadHandler(makeLoadHandler(makeQuery(platformId)));
     }
 
     public void clearCache() {
         cache.clearCache();
     }
 
-    private SelectorDataCacheLoadHandler<ServerGroup> makeLoadHandler(Long platformId) {
+    private SelectorDataCacheLoadHandler<ServerGroup> makeLoadHandler(ServerGroupQuery serverGroupQuery) {
         return (offset, limit, handler) -> {
-            if (platformId == null) {
+            if (serverGroupQuery.getPlatformId() == null) {
                 handler.onSuccess(new ArrayList<>());
                 return;
             }
 
-            serverGroupService.getServerGroups(platformId, limit, offset, new FluentCallback<List<ServerGroup>>()
+            serverGroupQuery.setLimit(limit);
+            serverGroupQuery.setOffset(offset);
+
+            serverGroupService.getServerGroups(serverGroupQuery, new FluentCallback<List<ServerGroup>>()
                     .withError(throwable -> {
                         fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
                         handler.onFailure( throwable );
@@ -54,6 +58,10 @@ public abstract class ServerGroupModel implements Activity, AsyncSelectorModel<S
                     .withSuccess(handler::onSuccess)
             );
         };
+    }
+
+    private ServerGroupQuery makeQuery(Long platformId) {
+        return new ServerGroupQuery(platformId);
     }
 
     @Inject

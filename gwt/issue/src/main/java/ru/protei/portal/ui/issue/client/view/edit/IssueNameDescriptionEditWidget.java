@@ -20,7 +20,7 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
-import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
+import ru.protei.portal.ui.common.client.widget.markdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.uploader.AbstractAttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;

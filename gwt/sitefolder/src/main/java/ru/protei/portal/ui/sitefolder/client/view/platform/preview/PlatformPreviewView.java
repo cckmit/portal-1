@@ -82,7 +82,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     }
 
     @Override
-    public Panel serversContainer() {
+    public HasWidgets serversContainer() {
         return serversContainer;
     }
 

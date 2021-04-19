@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
+             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.markdown"
              xmlns:text="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
              xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'>

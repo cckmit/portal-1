@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.edit;
 
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
@@ -11,14 +10,15 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentControllerAsync;
@@ -30,10 +30,13 @@ import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.util.CrmConstants.Platform.PARAMETERS_MAX_LENGTH;
+import static ru.protei.portal.ui.common.client.common.UiConstants.COMMENT_DISPLAY_PREVIEW;
 import static ru.protei.portal.ui.common.client.util.AttachmentUtils.getRemoveErrorHandler;
 
 public abstract class PlatformEditActivity implements AbstractPlatformEditActivity {
@@ -72,8 +75,7 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
 
         initDetails.parent.clear();
 
-        scrollPosition = 0;
-        Window.scrollTo(0, scrollPosition);
+        Window.scrollTo(0, 0);
 
         initDetails.parent.add(view.asWidget());
         previousCompanyName = EMPTY_NAME;
@@ -179,10 +181,14 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
 
     @Override
     public void renderMarkdownText(String text, Consumer<String> consumer) {
-        En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
-        textRenderController.render(text, textMarkup, new FluentCallback<String>()
+        textRenderController.render(text, En_TextMarkup.MARKDOWN, new FluentCallback<String>()
                 .withError(throwable -> consumer.accept(text))
                 .withSuccess(consumer));
+    }
+
+    @Override
+    public void onDisplayCommentPreviewClicked(boolean isDisplay) {
+        localStorageService.set(COMMENT_DISPLAY_PREVIEW, String.valueOf(isDisplay));
     }
 
     private boolean isNew(Platform platform) {
@@ -237,25 +243,15 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
         view.name().setValue(platform.getName());
         view.parameters().setValue(platform.getParams());
         view.comment().setValue(platform.getComment());
+        view.setDisplayCommentPreview(localStorageService.getBooleanOrDefault(COMMENT_DISPLAY_PREVIEW, false));
         view.serversContainerVisibility().setVisible(isNotNew);
         view.setCaseNumber(platform.getId());
         view.attachmentsContainer().clear();
 
         if (isNotNew) {
             view.attachmentsContainer().add(platform.getAttachments());
-            view.serversContainer().addDomHandler(event -> scrollPosition = getScrollPosition(), ClickEvent.getType());
-            fireEvent(new SiteFolderServerEvents.ShowTable(
-                    view.serversContainer(), platform, () -> setScrollTo(scrollPosition))
-            );
+            fireEvent(new SiteFolderServerEvents.ShowTable(view.serversContainer(), platform));
         }
-    }
-
-    private int getScrollPosition() {
-        return Window.getScrollTop();
-    }
-
-    private void setScrollTo(int scrollPosition) {
-        Window.scrollTo(0, scrollPosition);
     }
 
     private void fireShowCompanyContacts(Long companyId) {
@@ -337,12 +333,13 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
     RegionControllerAsync regionService;
     @Inject
     TextRenderControllerAsync textRenderController;
+    @Inject
+    LocalStorageService localStorageService;
 
     private Platform platform;
     private String previousCompanyName = EMPTY_NAME;
     private AppEvents.InitDetails initDetails;
     private Runnable fireBackEvent = () -> fireEvent(new Back());
-    private int scrollPosition;
 
     private static final String EMPTY_NAME = "";
 }

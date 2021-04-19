@@ -30,13 +30,6 @@ public abstract class ServerTableActivity implements Activity, AbstractServerTab
     }
 
     @Event
-    public void onAuthSuccess(AuthEvents.Success event) {
-        view.nameOrIp().setValue(null);
-        view.sortField().setValue(En_SortField.name);
-        view.sortDir().setValue(false);
-    }
-
-    @Event
     public void onShow(SiteFolderServerEvents.ShowTable event) {
         if (event.platform == null || event.platform.getId() == null) {
             return;
@@ -49,11 +42,10 @@ public abstract class ServerTableActivity implements Activity, AbstractServerTab
                 () -> fireEvent(new SiteFolderPlatformEvents.Show(true)) :
                 () -> fireEvent(new Back());
 
-        this.onServersLoaded = event.onServersLoaded;
-
         event.parent.clear();
         event.parent.add(view.asWidget());
 
+        resetFilter();
         reloadTable();
     }
 
@@ -131,6 +123,12 @@ public abstract class ServerTableActivity implements Activity, AbstractServerTab
         return group == null ? lang.siteFolderServerGroupWithoutGroup() : group.getName();
     }
 
+    private void resetFilter() {
+        view.nameOrIp().setValue(null);
+        view.sortField().setValue(En_SortField.name);
+        view.sortDir().setValue(false);
+    }
+
     private void reloadTable() {
         view.clearRecords();
         requestServers();
@@ -141,7 +139,6 @@ public abstract class ServerTableActivity implements Activity, AbstractServerTab
         siteFolderController.getServers(serverQuery, new FluentCallback<SearchResult<Server>>()
                 .withSuccess(sr -> {
                     view.addRecords(nullsLast(sr.getResults(), Server::getServerGroupId));
-                    onServersLoaded.run();
                 }));
     }
 
@@ -202,5 +199,4 @@ public abstract class ServerTableActivity implements Activity, AbstractServerTab
 
     private Platform platform;
     private Runnable backEvent = () -> fireEvent(new Back());
-    private Runnable onServersLoaded;
 }

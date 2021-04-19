@@ -4,7 +4,7 @@
              xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.subscription.list"
              xmlns:typebtn='urn:import:ru.protei.portal.ui.product.client.widget.type'
              xmlns:devunit='urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit'
-             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
+             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.markdown"
              xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
              xmlns:alias='urn:import:ru.protei.portal.ui.common.client.widget.stringselect.input'
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"

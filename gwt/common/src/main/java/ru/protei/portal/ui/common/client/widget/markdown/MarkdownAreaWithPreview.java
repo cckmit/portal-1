@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.makdown;
+package ru.protei.portal.ui.common.client.widget.markdown;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;

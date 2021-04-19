@@ -8,6 +8,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
+import ru.protei.portal.core.model.query.ServerGroupQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
@@ -78,10 +79,10 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     }
 
     @Override
-    public List<ServerGroup> getServerGroups(Long platformId, int limit, int offset) throws RequestFailedException {
-        log.info("getServerGroups(): platformId={}, limit={}, offset={}", platformId, limit, offset);
+    public List<ServerGroup> getServerGroups(ServerGroupQuery serverGroupQuery) throws RequestFailedException {
+        log.info("getServerGroups(): serverGroupQuery={}", serverGroupQuery);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(siteFolderService.getServerGroups(token, platformId, limit, offset));
+        return ServiceUtils.checkResultAndGetData(siteFolderService.getServerGroups(token, serverGroupQuery));
     }
 
     @Override

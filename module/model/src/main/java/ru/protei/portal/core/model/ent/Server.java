@@ -100,6 +100,7 @@ public class Server extends AuditableObject {
 
     public void setPlatform(Platform platform) {
         this.platform = platform;
+        this.platformId = platform == null ? null : platform.getId();
     }
 
     public Long getApplicationsCount() {

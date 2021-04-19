@@ -15,4 +15,5 @@ public interface AbstractPlatformEditActivity extends Activity {
     void onRemoveAttachment(Attachment attachment);
     void refreshProjectSpecificFields();
     void renderMarkdownText(String text, Consumer<String> consumer);
+    void onDisplayCommentPreviewClicked(boolean isDisplay);
 }

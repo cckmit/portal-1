@@ -28,7 +28,7 @@ public interface AbstractPlatformEditView extends IsWidget {
 
     HasValue<String> comment();
 
-    Panel serversContainer();
+    HasWidgets serversContainer();
 
     HasVisibility serversContainerVisibility();
 
@@ -44,7 +44,5 @@ public interface AbstractPlatformEditView extends IsWidget {
 
     HasValue<EntityOption> project();
 
-    String COMMENT_DISPLAY_PREVIEW = "platform_view_is_comment_preview_displayed";
-
-    Element getRootElement();
+    void setDisplayCommentPreview(boolean isDisplay);
 }

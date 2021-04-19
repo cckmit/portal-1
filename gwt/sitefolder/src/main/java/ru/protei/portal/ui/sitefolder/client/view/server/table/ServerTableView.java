@@ -2,6 +2,7 @@ package ru.protei.portal.ui.sitefolder.client.view.server.table;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -164,6 +165,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
         public void fillColumnValue(Element cell, Server value) {
             Element element = DOM.createDiv();
             element.setInnerText(value.getName());
+            cell.getStyle().setCursor(Style.Cursor.AUTO);
             cell.appendChild(element);
         }
     };
@@ -181,6 +183,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
             element.addClassName("column-hidable");
             element.setInnerText(value.getIp());
 
+            cell.getStyle().setCursor(Style.Cursor.AUTO);
             cell.appendChild(element);
         }
     };
@@ -198,6 +201,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
             element.addClassName("column-hidable");
             element.setInnerText(value.getParams());
 
+            cell.getStyle().setCursor(Style.Cursor.AUTO);
             cell.appendChild(element);
         }
     };
@@ -219,6 +223,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
             a.setTitle(lang.siteFolderApps());
             element.appendChild(a);
 
+            cell.getStyle().setCursor(Style.Cursor.AUTO);
             cell.appendChild(element);
         }
     };

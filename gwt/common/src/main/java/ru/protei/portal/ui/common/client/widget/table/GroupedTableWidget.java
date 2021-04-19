@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 public class GroupedTableWidget<T, G> extends TableWidget<T> {
     public void setGroupFunctions(HasGroupFunctions<T, G> hasGroupFunctions) {

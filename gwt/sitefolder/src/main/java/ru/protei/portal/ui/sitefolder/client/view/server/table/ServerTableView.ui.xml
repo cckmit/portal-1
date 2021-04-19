@@ -34,7 +34,7 @@
                     </div>
                 </div>
             </div>
-            <table:GroupedTableWidget ui:field="table" styleName="table table-hover server сol-md-12"/>
+            <table:GroupedTableWidget ui:field="table" styleName="table table-hover server server-on-preview сol-md-12"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

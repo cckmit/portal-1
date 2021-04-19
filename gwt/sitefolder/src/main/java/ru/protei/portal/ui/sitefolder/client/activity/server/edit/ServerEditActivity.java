@@ -192,6 +192,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
         view.listContainerVisibility().setVisible(!isNew);
         view.listContainerHeaderVisibility().setVisible(!isNew);
         view.serverGroup().setValue(createServerGroup(server));
+        view.serverGroupEnabled().setEnabled(server.getPlatformId() != null);
         if (!isNew) {
             fireEvent(new SiteFolderAppEvents.ShowList(view.listContainer(), server.getId()));
         }

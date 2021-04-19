@@ -6,7 +6,7 @@
              xmlns:tab='urn:import:ru.protei.portal.ui.common.client.widget.tab'
              xmlns:w='urn:import:ru.protei.portal.ui.common.client.widget'
              xmlns:project='urn:import:ru.protei.portal.ui.common.client.widget.selector.project'
-             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
+             xmlns:markdown="urn:import:ru.protei.portal.ui.common.client.widget.markdown"
              xmlns:fileUploader="urn:import:ru.protei.portal.ui.common.client.widget.uploader.impl">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -41,7 +41,7 @@
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.siteFolderComment}"/></label>
-                    <makdown:MarkdownAreaWithPreview ui:field="comment"
+                    <markdown:MarkdownAreaWithPreview ui:field="comment"
                                                      minRows="2"
                                                      maxRows="10"/>
                 </div>

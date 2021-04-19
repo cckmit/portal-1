@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
+import ru.protei.portal.core.model.query.ServerGroupQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -409,8 +410,8 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    public Result<List<ServerGroup>> getServerGroups(AuthToken token, Long platformId, int limit, int offset) {
-        return ok(serverGroupDAO.getListByPlatformId(platformId, limit, offset));
+    public Result<List<ServerGroup>> getServerGroups(AuthToken token, ServerGroupQuery serverGroupQuery) {
+        return ok(serverGroupDAO.listByQuery(serverGroupQuery));
     }
 
     @Override

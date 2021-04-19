@@ -16,7 +16,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
+import ru.protei.portal.ui.common.client.widget.markdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;

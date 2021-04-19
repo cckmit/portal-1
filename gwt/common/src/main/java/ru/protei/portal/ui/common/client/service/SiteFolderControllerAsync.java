@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.ent.ServerGroup;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
+import ru.protei.portal.core.model.query.ServerGroupQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
@@ -20,7 +21,7 @@ public interface SiteFolderControllerAsync {
 
     void getServers(ServerQuery query, AsyncCallback<SearchResult<Server>> async);
 
-    void getServerGroups(Long platformId, int limit, int offset, AsyncCallback<List<ServerGroup>> async);
+    void getServerGroups(ServerGroupQuery serverGroupQuery, AsyncCallback<List<ServerGroup>> async);
 
     void getApplications(ApplicationQuery query, AsyncCallback<SearchResult<Application>> async);
 

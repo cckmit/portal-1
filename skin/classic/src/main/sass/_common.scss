@@ -4018,8 +4018,8 @@ table {
         height: 40px;
 
         div {
-          height: 40px;
-          max-height: 40px;
+          height: 60px;
+          max-height: 60px;
           white-space: pre-line;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -4061,6 +4061,12 @@ table {
   }
 
   word-break: break-word;
+}
+
+.table.server.server-on-preview {
+  overflow-y: auto;
+  min-height: 500px;
+  max-height: 500px;
 }
 
 .application .table {

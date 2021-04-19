@@ -1,8 +1,6 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.preview;
 
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -42,9 +40,6 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
         platformRequest(event.platform.getId(), this::fillView);
         view.footerContainerVisibility().setVisible(false);
 
-        scrollPosition = 0;
-
-        isFullScreen = false;
         view.isFullScreen(false);
     }
 
@@ -62,9 +57,6 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
         platformRequest(event.platformId, this::fillView);
         view.footerContainerVisibility().setVisible(true);
 
-        scrollPosition = 0;
-
-        isFullScreen = true;
         view.isFullScreen(true);
     }
 
@@ -144,14 +136,7 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
         view.attachmentsContainer().clear();
         view.attachmentsContainer().add(platform.getAttachments());
 
-        view.serversContainer().addDomHandler(
-                event -> scrollPosition = getScrollPosition(view, isFullScreen), ClickEvent.getType()
-        );
-        fireEvent(new SiteFolderServerEvents.ShowTable(
-                view.serversContainer(),
-                platform,
-                () -> setScrollTo(view, isFullScreen, scrollPosition), !isFullScreen)
-        );
+        fireEvent(new SiteFolderServerEvents.ShowTable(view.serversContainer(), platform));
         if (platform.getProjectId() != null){
             projectRequest(platform.getProjectId(), this::fillProjectSpecificFields);
         }
@@ -163,22 +148,6 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
             ));
             view.setTechnicalSupportValidity(lang.technicalSupportValidityNotDefined());
             showContacts(platform.getCompanyId());
-        }
-    }
-
-    private int getScrollPosition(AbstractPlatformPreviewView view, boolean isFullScreen) {
-        if (isFullScreen) {
-            return Window.getScrollTop();
-        } else {
-            return view.getPreviewWrapperContainerElement().getScrollTop();
-        }
-    }
-
-    private void setScrollTo(AbstractPlatformPreviewView view, boolean isFullScreen, int scrollPosition) {
-        if (isFullScreen) {
-            Window.scrollTo(0, scrollPosition);
-        } else {
-            view.getPreviewWrapperContainerElement().setScrollTop(scrollPosition);
         }
     }
 
@@ -216,6 +185,4 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
 
     private Long platformId;
     private AppEvents.InitDetails initDetails;
-    private boolean isFullScreen;
-    private int scrollPosition;
 }
