@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.edit;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -27,11 +28,9 @@ public interface AbstractPlatformEditView extends IsWidget {
 
     HasValue<String> comment();
 
-    HasWidgets listContainer();
+    HasWidgets serversContainer();
 
-    HasVisibility listContainerVisibility();
-
-    HasVisibility listContainerHeaderVisibility();
+    HasVisibility serversContainerVisibility();
 
     HasEnabled companyEnabled();
 
@@ -39,13 +38,11 @@ public interface AbstractPlatformEditView extends IsWidget {
 
     HasValidable companyValidator();
 
-    HasVisibility openButtonVisibility();
-
-    HasVisibility createButtonVisibility();
-
     HasWidgets contactsContainer();
 
     HasAttachments attachmentsContainer();
 
     HasValue<EntityOption> project();
+
+    void setDisplayCommentPreview(boolean isDisplay);
 }

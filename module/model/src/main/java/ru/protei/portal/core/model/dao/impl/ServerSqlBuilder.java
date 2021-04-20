@@ -1,9 +1,12 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.winter.jdbc.JdbcHelper;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 public class ServerSqlBuilder {
 
@@ -44,6 +47,15 @@ public class ServerSqlBuilder {
             if (query.getComment() != null && !query.getComment().isEmpty()) {
                 condition.append(" and server.comment like ?");
                 args.add(HelperFunc.makeLikeArg(query.getComment(), true));
+            }
+
+            if (isNotEmpty(query.getNameOrIp())) {
+                condition.append(" and (server.name like ? OR server.ip like ?)");
+
+                String nameOrIpLikeArg = HelperFunc.makeLikeArg(query.getNameOrIp(), true);
+
+                args.add(nameOrIpLikeArg);
+                args.add(nameOrIpLikeArg);
             }
         });
     }

@@ -31,10 +31,4 @@ public class PlatformButtonSelector extends ButtonPopupSingleSelector<PlatformOp
 
     @Inject
     PolicyService policyService;
-
-//    public void setDefaultValue(String defaultValue) {
-//        this.defaultValue = defaultValue;
-//    }
-//
-//    private String defaultValue = null;
 }

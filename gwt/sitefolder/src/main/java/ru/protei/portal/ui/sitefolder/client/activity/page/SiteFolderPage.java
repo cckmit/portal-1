@@ -10,7 +10,6 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
@@ -46,7 +45,7 @@ public abstract class SiteFolderPage implements Activity {
     }
 
     @Event
-    public void onShowTable(SiteFolderServerEvents.Show event) {
+    public void onShowTable(SiteFolderServerEvents.ShowSummaryTable event) {
         fireSelectTab();
     }
 

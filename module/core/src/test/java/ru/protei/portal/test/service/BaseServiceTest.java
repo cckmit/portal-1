@@ -185,6 +185,22 @@ public class BaseServiceTest {
         return dutyLog;
     }
 
+    protected ServerGroup createServerGroup(Long platformId, String name) {
+        ServerGroup serverGroup = new ServerGroup();
+        serverGroup.setName(name);
+        serverGroup.setPlatformId(platformId);
+        return serverGroup;
+    }
+
+    protected Server createServer(Long platformId, String name) {
+        Server server = new Server();
+        server.setPlatformId(platformId);
+        server.setName(name);
+        server.setParams("123");
+
+        return server;
+    }
+
     public static void checkResult( Result result ) {
         assertNotNull( "Expected result", result );
         assertTrue( "Expected ok result", result.isOk() );

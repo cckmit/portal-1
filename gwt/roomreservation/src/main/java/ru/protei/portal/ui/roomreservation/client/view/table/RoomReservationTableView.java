@@ -15,6 +15,8 @@ import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_RoomReservationReasonLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.DateUtils;
+import ru.protei.portal.ui.common.client.widget.table.GroupedTableWidget;
 import ru.protei.portal.ui.roomreservation.client.activity.table.AbstractRoomReservationTableActivity;
 import ru.protei.portal.ui.roomreservation.client.activity.table.AbstractRoomReservationTableView;
 import ru.protei.portal.ui.roomreservation.client.util.AccessUtil;
@@ -22,6 +24,7 @@ import ru.protei.portal.ui.roomreservation.client.widget.filter.RoomReservationF
 import ru.protei.portal.ui.roomreservation.client.widget.filter.RoomReservationParamWidget;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class RoomReservationTableView extends Composite implements AbstractRoomReservationTableView {
@@ -56,6 +59,8 @@ public class RoomReservationTableView extends Composite implements AbstractRoomR
             clickColumn.setHandler(activity);
             clickColumn.setColumnProvider(columnProvider);
         });
+
+        table.setGroupFunctions(activity);
     }
 
     @Override
@@ -65,12 +70,7 @@ public class RoomReservationTableView extends Composite implements AbstractRoomR
 
     @Override
     public void addRecords(List<RoomReservation> roomReservations) {
-        roomReservations.forEach(roomReservation -> table.addRow(roomReservation));
-    }
-
-    @Override
-    public void addSeparator(String label) {
-        table.addCustomRow(new InlineLabel(label).getElement(), "separator-cell", "separator-row");
+        table.addRecords(roomReservations);
     }
 
     @Override
@@ -124,7 +124,7 @@ public class RoomReservationTableView extends Composite implements AbstractRoomR
     }
 
     @UiField
-    TableWidget<RoomReservation> table;
+    GroupedTableWidget<RoomReservation, Date> table;
     @UiField
     HTMLPanel pagerContainer;
 

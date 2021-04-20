@@ -178,4 +178,5 @@ public class UiConstants {
     public static final String ATTACHMENTS_PANEL_VISIBILITY = "attachments-panel-body";
     public static final String MULTI_TAB_COMMENTS_SELECTED = "multi-tab-comments-selected";
     public static final String MULTI_TAB_HISTORY_SELECTED = "multi-tab-history-selected";
+    public static final String COMMENT_DISPLAY_PREVIEW = "platform_view_is_comment_preview_displayed";
 }

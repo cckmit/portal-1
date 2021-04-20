@@ -33,6 +33,15 @@ public class Server extends AuditableObject {
     @JdbcJoinedObject(localColumn = "platform_id", remoteColumn = "id", sqlTableAlias = "p")
     private Platform platform;
 
+    @JdbcColumn(name = "server_group_id")
+    private Long serverGroupId;
+
+    @JdbcJoinedColumn(
+            localColumn = "server_group_id", remoteColumn = "id",
+            table = "server_group", mappedColumn = "name", sqlTableAlias = "sg"
+    )
+    private String serverGroupName;
+
     private Long applicationsCount;
 
     private List<String> appNames;
@@ -91,6 +100,7 @@ public class Server extends AuditableObject {
 
     public void setPlatform(Platform platform) {
         this.platform = platform;
+        this.platformId = platform == null ? null : platform.getId();
     }
 
     public Long getApplicationsCount() {
@@ -114,6 +124,22 @@ public class Server extends AuditableObject {
             appNames = new ArrayList<>();
         }
         appNames.add(appName);
+    }
+
+    public Long getServerGroupId() {
+        return serverGroupId;
+    }
+
+    public void setServerGroupId(Long serverGroupId) {
+        this.serverGroupId = serverGroupId;
+    }
+
+    public String getServerGroupName() {
+        return serverGroupName;
+    }
+
+    public void setServerGroupName(String serverGroupName) {
+        this.serverGroupName = serverGroupName;
     }
 
     public static Server fromEntityOption(EntityOption entityOption) {
@@ -157,10 +183,14 @@ public class Server extends AuditableObject {
         return "Server{" +
                 "id=" + id +
                 ", platformId=" + platformId +
-                ", name=" + name +
-                ", ip=" + ip +
-                ", params=" + params +
-                ", comment=" + comment +
+                ", name='" + name + '\'' +
+                ", ip='" + ip + '\'' +
+                ", params='" + params + '\'' +
+                ", comment='" + comment + '\'' +
+                ", serverGroupId=" + serverGroupId +
+                ", serverName='" + serverGroupName + '\'' +
+                ", applicationsCount=" + applicationsCount +
+                ", appNames=" + appNames +
                 '}';
     }
 }

@@ -6,83 +6,78 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="previewWrapperContainer" styleName="card-fixed preview-card">
-        <g:HTMLPanel ui:field="preview" styleName="preview site-folder card-body no-padding">
-            <div class="card card-default no-border">
-                <div class="card-body">
-                    <h4 class="col-md-12 copy-panel no-margin no-padding">
-                        <g:Anchor ui:field="copyPreviewLink" styleName="copy-button" >
-                            <i class="far fa-clone"/>
-                        </g:Anchor>
-                        <g:Anchor ui:field="name" styleName="full-screen-link small" href="#"/>
-
-                        <div class="pull-right">
-                            <g:Button styleName="btn btn-xs btn-info " ui:field="openServersButton"
-                                      text="{lang.siteFolderServers}"/>
-
-                            <g:Button styleName="btn btn-xs btn-info"
-                                      ui:field="exportServersButton"
-                                      text="{lang.siteFolderPlatformServersExport}"/>
-                        </div>
-                    </h4>
-
-                    <g:Label styleName="small hint-text pre-formatted-info" ui:field="comment"/>
-
-                    <div class="small">
-                        <b>
-                            <ui:text from="{lang.siteFolderCompany}: "/>
-                        </b>
-                        <span ui:field="company"/>
-                    </div>
-
-                    <div class="small">
-                        <b>
-                            <ui:text from="{lang.siteFolderManager}: "/>
-                        </b>
-                        <span ui:field="manager"/>
-                    </div>
-
-                    <div class="small">
-                        <b>
-                            <ui:text from="{lang.siteFolderParams}: "/>
-                        </b>
-                        <span class="pre-formatted-info" ui:field="parameters"/>
-                    </div>
-
-                    <div class="small">
-                        <b>
-                            <ui:text from="{lang.siteFolderProject}: "/>
-                        </b>
-                        <g:Anchor styleName="pre-formatted-info" ui:field="project" href="#" target="_blank"/>
-                    </div>
-
-                    <div class="small">
-                        <b>
-                            <ui:text from="{lang.technicalSupportValidity}: "/>
-                        </b>
-                        <span class="pre-formatted-info" ui:field="technicalSupportValidity"/>
-                    </div>
-
-                    <h5>
-                        <ui:text from="{lang.siteFolderAttachments}"/>
-                    </h5>
-                    <w:attachment.list.AttachmentList ui:field="attachmentContainer" addStyleNames="p-l-0"/>
-
-                    <tab:TabWidget styleName="" ui:field="tabWidget">
-
-                        <tab:pane.TabWidgetPane tabName="{lang.siteFolderServers}">
-                            <g:HTMLPanel ui:field="serversContainer"/>
-                        </tab:pane.TabWidgetPane>
-
-                        <tab:pane.TabWidgetPane tabName="{lang.siteFolderCompanyContacts}">
-                            <g:HTMLPanel ui:field="contactsContainer"/>
-                        </tab:pane.TabWidgetPane>
-                    </tab:TabWidget>
+    <g:HTMLPanel ui:field="previewWrapperContainer" styleName="card no-margin card-default card-fixed site-folder">
+        <div class="card-body">
+            <h4 class="col-md-12 copy-panel no-margin no-padding">
+                <g:Anchor ui:field="copyPreviewLink" styleName="copy-button">
+                    <i class="far fa-clone"/>
+                </g:Anchor>
+                <g:Anchor ui:field="name" styleName="full-screen-link small" href="#"/>
+                <div class="pull-right">
+                    <g:Button styleName="btn btn-xs btn-info " ui:field="openServersButton"
+                              text="{lang.siteFolderServers}"/>
+                    <g:Button styleName="btn btn-xs btn-info"
+                              ui:field="exportServersButton"
+                              text="{lang.siteFolderPlatformServersExport}"/>
                 </div>
+            </h4>
 
+            <div class="markdown m-t-10 m-b-10">
+                <span ui:field="comment"/>
             </div>
-        </g:HTMLPanel>
-        <g:HTMLPanel ui:field="footerContainer" styleName="card-footer forcibly-bottom text-right">
+
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.siteFolderCompany}: "/>
+                </b>
+                <span ui:field="company"/>
+            </div>
+
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.siteFolderManager}: "/>
+                </b>
+                <span ui:field="manager"/>
+            </div>
+
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.siteFolderParams}: "/>
+                </b>
+                <span class="pre-formatted-info" ui:field="parameters"/>
+            </div>
+
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.siteFolderProject}: "/>
+                </b>
+                <g:Anchor styleName="pre-formatted-info" ui:field="project" href="#" target="_blank"/>
+            </div>
+
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.technicalSupportValidity}: "/>
+                </b>
+                <span class="pre-formatted-info" ui:field="technicalSupportValidity"/>
+            </div>
+
+            <h5>
+                <ui:text from="{lang.siteFolderAttachments}"/>
+            </h5>
+            <w:attachment.list.AttachmentList ui:field="attachmentContainer" addStyleNames="p-l-0"/>
+
+            <tab:TabWidget styleName="" ui:field="tabWidget">
+
+                <tab:pane.TabWidgetPane tabName="{lang.siteFolderServers}">
+                    <g:HTMLPanel ui:field="serversContainer"/>
+                </tab:pane.TabWidgetPane>
+
+                <tab:pane.TabWidgetPane tabName="{lang.siteFolderCompanyContacts}">
+                    <g:HTMLPanel ui:field="contactsContainer"/>
+                </tab:pane.TabWidgetPane>
+            </tab:TabWidget>
+        </div>
+        <g:HTMLPanel ui:field="footerContainer" styleName="card-footer">
             <div class="card card-transparent no-margin">
                 <div class="text-right m-r-15">
                     <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToPlatforms}"/>

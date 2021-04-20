@@ -22,7 +22,9 @@ public class SelectorDataCache<T> implements DataCache.DataCacheHandler<T>, Infi
 
     @Override
     public void onDataCacheChanged() {
-        if (loadingHandler != null) loadingHandler.onLoadingComplete();
+        if (loadingHandler != null) {
+            loadingHandler.onLoadingComplete();
+        }
     }
 
     public void setSavedChunks( int savedChunks ) {
@@ -40,6 +42,10 @@ public class SelectorDataCache<T> implements DataCache.DataCacheHandler<T>, Infi
 
     @Override
     public void loadData( int offset, int limit, AsyncCallback<List<T>> asyncCallback ) {
+        if (loadingHandler != null) {
+            loadingHandler.onLoadingStart();
+        }
+
         loadHandler.loadData( offset, limit, new AsyncCallback<List<T>>() {
             @Override
             public void onFailure( Throwable caught ) {
@@ -55,13 +61,9 @@ public class SelectorDataCache<T> implements DataCache.DataCacheHandler<T>, Infi
     }
 
     public T get( int elementIndex, LoadingHandler loadingHandler ) {
+        this.loadingHandler = loadingHandler;
         if (total <= elementIndex) return null;
-        T option = cache.get( elementIndex );
-        if (option == null) {
-            this.loadingHandler = loadingHandler;
-            loadingHandler.onLoadingStart();
-        }
-        return option;
+        return cache.get( elementIndex );
     }
 
     public void setTotal( int total ) {

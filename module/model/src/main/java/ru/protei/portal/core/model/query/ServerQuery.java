@@ -14,6 +14,7 @@ public class ServerQuery extends BaseQuery {
     private String ip;
     private String params;
     private String comment;
+    private String nameOrIp;
 
     public ServerQuery() {
         this("", En_SortField.id, En_SortDir.ASC);
@@ -108,5 +109,13 @@ public class ServerQuery extends BaseQuery {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public String getNameOrIp() {
+        return nameOrIp;
+    }
+
+    public void setNameOrIp(String nameOrIp) {
+        this.nameOrIp = nameOrIp;
     }
 }
