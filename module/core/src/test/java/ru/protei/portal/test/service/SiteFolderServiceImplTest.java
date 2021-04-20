@@ -40,14 +40,8 @@ public class SiteFolderServiceImplTest extends BaseServiceTest {
     @Autowired
     ServerGroupDAO serverGroupDAO;
 
-    private AuthServiceMock authService;
-
-    @Autowired
-    private void authService( AuthService authService ) {
-        this.authService = (AuthServiceMock) authService;
-    }
-
     @Test
+    @Transactional
     public void createServerGroupWithoutPlatform() {
         ServerGroup serverGroup = new ServerGroup();
         serverGroup.setName("test_server_group");
