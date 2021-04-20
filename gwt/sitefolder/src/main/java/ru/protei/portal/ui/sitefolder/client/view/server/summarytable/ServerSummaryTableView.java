@@ -20,6 +20,10 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.table.GroupedTableWidget;
 import ru.protei.portal.ui.sitefolder.client.activity.server.summarytable.AbstractServerSummaryTableActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.summarytable.AbstractServerSummaryTableView;
+import ru.protei.portal.ui.sitefolder.client.column.AccessParamsColumn;
+import ru.protei.portal.ui.sitefolder.client.column.AppsColumn;
+import ru.protei.portal.ui.sitefolder.client.column.IpColumn;
+import ru.protei.portal.ui.sitefolder.client.column.NameColumn;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -130,53 +134,15 @@ public class ServerSummaryTableView extends Composite implements AbstractServerS
     private EditClickColumn<Server> editClickColumn;
     @Inject
     private RemoveClickColumn<Server> removeClickColumn;
-    private ClickColumn<Server> nameColumn = new ClickColumn<Server>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setClassName("server-name");
-            columnHeader.setInnerText(lang.siteFolderName());
-        }
-        @Override
-        public void fillColumnValue(Element cell, Server value) {
-            Element element = DOM.createDiv();
-            element.setInnerText(value.getName());
-            cell.appendChild(element);
-        }
-    };
+    @Inject
+    private NameColumn nameColumn;
+    @Inject
+    private IpColumn ip;
+    @Inject
+    private AppsColumn appsColumn;
+    @Inject
+    private AccessParamsColumn accessParams;
 
-    private ClickColumn<Server> ip = new ClickColumn<Server>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.addClassName("server-ip column-hidable");
-            columnHeader.setInnerText(lang.siteFolderIP());
-        }
-        @Override
-        public void fillColumnValue(Element cell, Server value) {
-            Element element = DOM.createDiv();
-
-            element.addClassName("column-hidable");
-            element.setInnerText(value.getIp());
-
-            cell.appendChild(element);
-        }
-    };
-
-    private ClickColumn<Server> accessParams = new ClickColumn<Server>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.addClassName("server-access-params column-hidable");
-            columnHeader.setInnerText(lang.serverAccessParamsColumn());
-        }
-        @Override
-        public void fillColumnValue(Element cell, Server value) {
-            Element element = DOM.createDiv();
-
-            element.addClassName("column-hidable");
-            element.setInnerText(value.getParams());
-
-            cell.appendChild(element);
-        }
-    };
     private ClickColumn<Server> platformColumn = new ClickColumn<Server>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
@@ -189,27 +155,6 @@ public class ServerSummaryTableView extends Composite implements AbstractServerS
             Element element = DOM.createDiv();
 
             element.setInnerText(value.getPlatform() == null ? "?" : value.getPlatform().getName());
-
-            cell.appendChild(element);
-        }
-    };
-    private ClickColumn<Server> appsColumn = new ClickColumn<Server>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setClassName("server-apps");
-            columnHeader.setInnerText(lang.siteFolderApps());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, Server value) {
-            Element element = DOM.createDiv();
-
-            element.setInnerText((value.getApplicationsCount() == null ? "0" : String.valueOf(value.getApplicationsCount())) + " " +lang.amountShort());
-            AnchorElement a = DOM.createAnchor().cast();
-            a.setHref("#");
-            a.addClassName("fa fa-share cell-inline-icon");
-            a.setTitle(lang.siteFolderApps());
-            element.appendChild(a);
 
             cell.appendChild(element);
         }

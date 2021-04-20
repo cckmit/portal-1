@@ -51,8 +51,11 @@ public class ServerSqlBuilder {
 
             if (isNotEmpty(query.getNameOrIp())) {
                 condition.append(" and (server.name like ? OR server.ip like ?)");
-                args.add("%" + query.getNameOrIp() + "%");
-                args.add("%" + query.getNameOrIp() + "%");
+
+                String nameOrIpLikeArg = HelperFunc.makeLikeArg(query.getNameOrIp(), true);
+
+                args.add(nameOrIpLikeArg);
+                args.add(nameOrIpLikeArg);
             }
         });
     }

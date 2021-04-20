@@ -1,15 +1,11 @@
 package ru.protei.portal.ui.sitefolder.client.view.server.table;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.AnchorElement;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
@@ -26,11 +22,14 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.common.client.widget.table.GroupedTableWidget;
 import ru.protei.portal.ui.sitefolder.client.activity.server.table.AbstractServerTableActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.table.AbstractServerTableView;
+import ru.protei.portal.ui.sitefolder.client.column.AccessParamsColumn;
+import ru.protei.portal.ui.sitefolder.client.column.AppsColumn;
+import ru.protei.portal.ui.sitefolder.client.column.IpColumn;
+import ru.protei.portal.ui.sitefolder.client.column.NameColumn;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Function;
 
 public class ServerTableView extends Composite implements AbstractServerTableView {
 
@@ -105,6 +104,11 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT) );
         removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_REMOVE) );
 
+        nameColumn.setCursorAuto(true);
+        ip.setCursorAuto(true);
+        appsColumn.setCursorAuto(true);
+        accessParams.setCursorAuto(true);
+
         columns.add(nameColumn);
         columns.add(ip);
         columns.add(appsColumn);
@@ -145,6 +149,14 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     private EditClickColumn<Server> editClickColumn;
     @Inject
     private RemoveClickColumn<Server> removeClickColumn;
+    @Inject
+    private NameColumn nameColumn;
+    @Inject
+    private IpColumn ip;
+    @Inject
+    private AppsColumn appsColumn;
+    @Inject
+    private AccessParamsColumn accessParams;
 
     private Timer nameChangeTimer = new Timer() {
         @Override
@@ -155,78 +167,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
 
     private AbstractServerTableActivity activity;
 
-    private ClickColumn<Server> nameColumn = new ClickColumn<Server>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setClassName("server-name");
-            columnHeader.setInnerText(lang.siteFolderName());
-        }
-        @Override
-        public void fillColumnValue(Element cell, Server value) {
-            Element element = DOM.createDiv();
-            element.setInnerText(value.getName());
-            cell.getStyle().setCursor(Style.Cursor.AUTO);
-            cell.appendChild(element);
-        }
-    };
 
-    private ClickColumn<Server> ip = new ClickColumn<Server>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.addClassName("server-ip column-hidable");
-            columnHeader.setInnerText(lang.siteFolderIP());
-        }
-        @Override
-        public void fillColumnValue(Element cell, Server value) {
-            Element element = DOM.createDiv();
-
-            element.addClassName("column-hidable");
-            element.setInnerText(value.getIp());
-
-            cell.getStyle().setCursor(Style.Cursor.AUTO);
-            cell.appendChild(element);
-        }
-    };
-
-    private ClickColumn<Server> accessParams = new ClickColumn<Server>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.addClassName("server-access-params column-hidable");
-            columnHeader.setInnerText(lang.serverAccessParamsColumn());
-        }
-        @Override
-        public void fillColumnValue(Element cell, Server value) {
-            Element element = DOM.createDiv();
-
-            element.addClassName("column-hidable");
-            element.setInnerText(value.getParams());
-
-            cell.getStyle().setCursor(Style.Cursor.AUTO);
-            cell.appendChild(element);
-        }
-    };
-    private ClickColumn<Server> appsColumn = new ClickColumn<Server>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setClassName("server-apps");
-            columnHeader.setInnerText(lang.siteFolderApps());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, Server value) {
-            Element element = DOM.createDiv();
-
-            element.setInnerText((value.getApplicationsCount() == null ? "0" : String.valueOf(value.getApplicationsCount())) + " " +lang.amountShort());
-            AnchorElement a = DOM.createAnchor().cast();
-            a.setHref("#");
-            a.addClassName("fa fa-share cell-inline-icon");
-            a.setTitle(lang.siteFolderApps());
-            element.appendChild(a);
-
-            cell.getStyle().setCursor(Style.Cursor.AUTO);
-            cell.appendChild(element);
-        }
-    };
     private Collection<ClickColumn<Server>> columns = new LinkedList<>();
     private ClickColumnProvider<Server> columnProvider = new ClickColumnProvider<>();
 

@@ -63,6 +63,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
                 requestServer(event.serverIdToBeCloned, server -> {
                     serverIdOfAppsToBeCloned = server.getId();
                     server.setId(null);
+                    serverGroupModel.setPlatformId(server.getPlatformId());
                     fillView(server);
                 });
                 return;

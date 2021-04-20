@@ -4,7 +4,7 @@
              xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.subscription.list"
              xmlns:typebtn='urn:import:ru.protei.portal.ui.product.client.widget.type'
              xmlns:devunit='urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit'
-             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.markdown"
+             xmlns:markdown="urn:import:ru.protei.portal.ui.common.client.widget.markdown"
              xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
              xmlns:alias='urn:import:ru.protei.portal.ui.common.client.widget.stringselect.input'
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
@@ -36,7 +36,7 @@
                             </div>
                             <div class="form-group col-md-12">
                                 <label ui:field="descriptionLabel"/>
-                                <makdown:MarkdownAreaWithPreview ui:field="info"
+                                <markdown:MarkdownAreaWithPreview ui:field="info"
                                                                        minRows="2"
                                                                        maxRows="10"/>
                             </div>
@@ -88,15 +88,15 @@
             <div class="container-fluid padding-15 bg-white">
                 <tab:TabWidget styleName="" ui:field="tabWidget">
                     <tab:pane.TabWidgetPane tabName="{lang.productHistoryVersion}">
-                        <makdown:MarkdownAreaWithPreview ui:field="historyVersion"/>
+                        <markdown:MarkdownAreaWithPreview ui:field="historyVersion"/>
                     </tab:pane.TabWidgetPane>
 
                     <tab:pane.TabWidgetPane tabName="{lang.productConfiguration}">
-                        <makdown:MarkdownAreaWithPreview ui:field="configuration"/>
+                        <markdown:MarkdownAreaWithPreview ui:field="configuration"/>
                     </tab:pane.TabWidgetPane>
 
                     <tab:pane.TabWidgetPane tabName="{lang.productCDRDescription}">
-                        <makdown:MarkdownAreaWithPreview ui:field="cdrDescription"/>
+                        <markdown:MarkdownAreaWithPreview ui:field="cdrDescription"/>
                     </tab:pane.TabWidgetPane>
                 </tab:TabWidget>
             </div>
