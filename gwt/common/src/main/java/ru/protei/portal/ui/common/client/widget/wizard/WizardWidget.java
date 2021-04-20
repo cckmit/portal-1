@@ -136,6 +136,10 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
         findFirstPane().ifPresent(p -> onTabSelected(p.getTabName()));
     }
 
+    public void selectTab(String tabName) {
+        findPaneByName(tabName).ifPresent(p -> onTabSelected(p.getTabName()));
+    }
+
     @Override
     public void onTabSelected(String tabName) {
 
@@ -268,6 +272,10 @@ public class WizardWidget extends Composite implements HasWidgets, WizardWidgetH
 
     private Optional<WizardWidgetPane> findFirstPane() {
         return tabNameToPane.values().stream().findFirst();
+    }
+
+    private Optional<WizardWidgetPane> findPaneByName(String name) {
+        return tabNameToPane.values().stream().filter(pane -> pane.getTabName().equals(name)).findFirst();
     }
 
     @UiField

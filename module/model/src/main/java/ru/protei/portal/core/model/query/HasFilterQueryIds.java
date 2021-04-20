@@ -12,5 +12,6 @@ public interface HasFilterQueryIds extends FilterQuery, Serializable {
     List<Long> getAllDirectionIds();
     List<Long> getAllTagIds();
     List<Long> getAllRegionIds();
+    List<Long> getAllPlatformIds();
     Long getPlanId();
 }

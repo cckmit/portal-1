@@ -5,6 +5,8 @@ import ru.protei.portal.core.model.ent.CaseTag;
 
 import java.io.Serializable;
 
+import static ru.protei.portal.core.model.util.CrmConstants.CaseTag.DEFAULT_COLOR;
+
 public class CaseTagInfo implements Serializable {
     private Long id;
 
@@ -47,6 +49,7 @@ public class CaseTagInfo implements Serializable {
 
         caseTag.setId(info.getId());
         caseTag.setName(info.getName());
+        caseTag.setColor(DEFAULT_COLOR);
         caseTag.setCompanyId(info.getCompanyId());
         caseTag.setCaseType(En_CaseType.CRM_SUPPORT);
 

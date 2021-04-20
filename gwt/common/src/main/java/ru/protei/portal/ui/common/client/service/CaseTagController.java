@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -22,4 +23,6 @@ public interface CaseTagController extends RemoteService {
     void attachTag(Long caseId, Long tagId) throws RequestFailedException;
 
     Long detachTag( Long caseId, Long tagId) throws RequestFailedException;
+
+    boolean isTagNameExists(CaseTag caseTag) throws RequestFailedException;
 }

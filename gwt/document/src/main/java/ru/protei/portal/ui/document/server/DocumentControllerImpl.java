@@ -21,6 +21,8 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static ru.protei.portal.core.model.struct.DocumentFile.FileItemDocumentFile;
+
 @Service("DocumentController")
 public class DocumentControllerImpl implements DocumentController {
 
@@ -67,7 +69,11 @@ public class DocumentControllerImpl implements DocumentController {
         sessionService.setFileApprovalSheet(httpRequest, null);
 
         if (document.getId() == null) {
-            response = documentService.createDocument(token, document, docFile, pdfFile, approvalSheetFile, token.getPersonDisplayShortName());
+            response = documentService.createDocument(token, document,
+                    new FileItemDocumentFile(docFile),
+                    new FileItemDocumentFile(pdfFile),
+                    new FileItemDocumentFile(approvalSheetFile),
+                    token.getPersonDisplayShortName());
         } else {
             response = documentService.updateDocument(token, document, docFile, pdfFile, approvalSheetFile, token.getPersonDisplayShortName());
         }

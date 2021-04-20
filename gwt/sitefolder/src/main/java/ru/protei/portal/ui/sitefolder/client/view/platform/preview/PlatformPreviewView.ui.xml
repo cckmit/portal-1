@@ -9,12 +9,17 @@
     <g:HTMLPanel ui:field="previewWrapperContainer" styleName="card no-margin card-default card-fixed site-folder">
         <div class="card-body">
             <h4 class="col-md-12 copy-panel no-margin no-padding">
-                <g:Anchor ui:field="copyPreviewLink" styleName="copy-button" >
+                <g:Anchor ui:field="copyPreviewLink" styleName="copy-button">
                     <i class="far fa-clone"/>
                 </g:Anchor>
                 <g:Anchor ui:field="name" styleName="full-screen-link small" href="#"/>
-                <g:Button styleName="btn btn-xs btn-info pull-right" ui:field="openServersButton"
-                          text="{lang.siteFolderServers}"/>
+                <div class="pull-right">
+                    <g:Button styleName="btn btn-xs btn-info " ui:field="openServersButton"
+                              text="{lang.siteFolderServers}"/>
+                    <g:Button styleName="btn btn-xs btn-info"
+                              ui:field="exportServersButton"
+                              text="{lang.siteFolderPlatformServersExport}"/>
+                </div>
             </h4>
 
             <div class="markdown m-t-10 m-b-10">

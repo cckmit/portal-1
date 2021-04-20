@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.sitefolder.server;
+package ru.protei.portal.ui.sitefolder.server.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

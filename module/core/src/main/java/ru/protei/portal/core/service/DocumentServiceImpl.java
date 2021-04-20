@@ -14,23 +14,23 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.DocumentDocFileUpdatedByMemberEvent;
 import ru.protei.portal.core.event.DocumentMemberAddedEvent;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
-import ru.protei.portal.core.model.dao.ContactItemDAO;
-import ru.protei.portal.core.model.dao.DocumentDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dao.ProjectDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_DocumentFormat;
 import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dto.DocumentApiInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
+import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.DocumentUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DocumentQuery;
+import ru.protei.portal.core.model.struct.DocumentFile;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.events.EventPublisherService;
@@ -50,7 +50,9 @@ import static com.mysql.jdbc.StringUtils.isEmptyOrWhitespaceOnly;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+import static ru.protei.portal.core.model.struct.DocumentFile.*;
 
 public class DocumentServiceImpl implements DocumentService {
 
@@ -84,6 +86,8 @@ public class DocumentServiceImpl implements DocumentService {
     ProjectService projectService;
     @Autowired
     PortalConfig config;
+    @Autowired
+    DocumentTypeDAO documentTypeDAO;
 
     @Async(BACKGROUND_TASKS)
     @Override
@@ -186,17 +190,17 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     @Transactional
-    public Result<Document> createDocument(AuthToken token, Document document, FileItem docFile, FileItem pdfFile, FileItem approvalSheetFile, String author) {
+    public Result<Document> createDocument(AuthToken token, Document document, DocumentFile docFile, DocumentFile pdfFile, DocumentFile approvalSheetFile, String author) {
         if (document == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        boolean withDoc = docFile != null;
-        boolean withPdf = pdfFile != null;
-        boolean withApprovalSheet = approvalSheetFile != null;
-        En_DocumentFormat docFormat = withDoc ? predictDocFormat(docFile) : null;
-        En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
-        En_DocumentFormat ApprovalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
+        boolean withDoc = docFile != null && docFile.isPresent();
+        boolean withPdf = pdfFile != null && pdfFile.isPresent();
+        boolean withApprovalSheet = approvalSheetFile != null && approvalSheetFile.isPresent();
+        En_DocumentFormat docFormat = withDoc ? docFile.getFormat() : null;
+        En_DocumentFormat pdfFormat = withPdf ? pdfFile.getFormat() : null;
+        En_DocumentFormat ApprovalSheetFormat = withApprovalSheet ? approvalSheetFile.getFormat() : null;
 
         if (document.getProjectId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -226,7 +230,7 @@ public class DocumentServiceImpl implements DocumentService {
             String commitMessageAdd = getCommitMessageAdd(documentId, projectId, author, "");
             String commitMessageRemoveAuto = getCommitMessageRemove(documentId, projectId, authorRollback, "");
 
-            if (withPdf && !saveToIndex(pdfFile.get(), documentId, projectId)) {
+            if (withPdf && !saveToIndex(pdfFile.getBytes(), documentId, projectId)) {
                 log.error("createDocument(" + documentId + "): failed to add pdf file to the index");
                 if (!removeFromDB(documentId)) log.error("createDocument(" + documentId + "): failed to rollback document from the db");
                 return error(En_ResultStatus.NOT_CREATED);
@@ -274,7 +278,7 @@ public class DocumentServiceImpl implements DocumentService {
         boolean withDoc = docFile != null;
         boolean withPdf = pdfFile != null;
         boolean withApprovalSheet = approvalSheetFile != null;
-        En_DocumentFormat docFormat = withDoc ? predictDocFormat(docFile) : null;
+        En_DocumentFormat docFormat = withDoc ? predictDocFormat(docFile.getName()) : null;
         En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
         En_DocumentFormat ApprovalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
 
@@ -392,7 +396,7 @@ public class DocumentServiceImpl implements DocumentService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        En_DocumentFormat docFormat = predictDocFormat(docFile);
+        En_DocumentFormat docFormat = predictDocFormat(docFile.getName());
 
         if (docFormat != En_DocumentFormat.DOC && docFormat != En_DocumentFormat.DOCX) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -526,6 +530,74 @@ public class DocumentServiceImpl implements DocumentService {
         return getDocuments(token, query);
     }
 
+    @Override
+    public Result<Document> createDocumentByApi(AuthToken token, DocumentApiInfo documentApiInfo) {
+        if (!isValid(documentApiInfo)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        Document document = new Document();
+
+        document.setName(documentApiInfo.getName());
+        document.setDecimalNumber(documentApiInfo.getDecimalNumber());
+        document.setInventoryNumber(documentApiInfo.getInventoryNumber());
+        document.setState(En_DocumentState.ACTIVE);
+
+        document.setType(documentApiInfo.getTypeId() != null ? documentTypeDAO.get(documentApiInfo.getTypeId()) : null);
+        document.setAnnotation(documentApiInfo.getAnnotation());
+        document.setRegistrar(documentApiInfo.getRegistrarId() != null ? new PersonShortView(documentApiInfo.getRegistrarId()) : null);
+        document.setContractor(documentApiInfo.getContractorId() != null ? new PersonShortView(documentApiInfo.getContractorId()) : null);
+        document.setProjectId(documentApiInfo.getProjectId());
+        document.setEquipment(documentApiInfo.getEquipmentId() != null ? new Equipment(documentApiInfo.getEquipmentId()) : null);
+        document.setVersion(documentApiInfo.getVersion());
+        document.setCreated(new Date());
+        document.setApproved(documentApiInfo.getApproved() != null ? documentApiInfo.getApproved() : false);
+        document.setApprovedBy(documentApiInfo.getApprovedById() != null ? new PersonShortView(documentApiInfo.getApprovedById()) : null);
+        document.setKeywords(documentApiInfo.getKeywords());
+        document.setApprovalDate(documentApiInfo.getApprovalDate());
+        document.setExecutionType(documentApiInfo.getExecutionType());
+        document.setMembers(stream(documentApiInfo.getMemberIds()).map(PersonShortView::new).collect(Collectors.toList()));
+
+        byte[] docFile = documentApiInfo.getWorkDocFileBase64() != null ? base64toByte(documentApiInfo.getWorkDocFileBase64()) : null;
+        byte[] pdfFile = documentApiInfo.getArchivePdfFileBase64() != null ? base64toByte(documentApiInfo.getArchivePdfFileBase64()) : null;
+        byte[] approvalSheet = documentApiInfo.getApprovalSheetPdfBase64() != null ? base64toByte(documentApiInfo.getApprovalSheetPdfBase64()) : null;
+
+        En_DocumentFormat workDocFileFormat = En_DocumentFormat.of(documentApiInfo.getWorkDocFileExtension());
+
+        return createDocument(token, document,
+                new PortalApiDocumentFile(docFile, workDocFileFormat != null ? workDocFileFormat : En_DocumentFormat.DOCX),
+                new PortalApiDocumentFile(pdfFile, En_DocumentFormat.PDF),
+                new PortalApiDocumentFile(approvalSheet, En_DocumentFormat.AS),
+                token.getPersonDisplayShortName());
+    }
+
+    @Override
+    public Result<Long> removeDocumentByApi(AuthToken token, Long documentId) {
+        Document document = documentDAO.partialGet(documentId, "project_id");
+        if (document == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+        return removeDocument(token, documentId, document.getProjectId(), token.getPersonDisplayShortName());
+    }
+
+    private boolean isValid(DocumentApiInfo documentApiInfo) {
+        return documentApiInfo != null &&
+                documentApiInfo.getName() != null &&
+                documentApiInfo.getProjectId() != null &&
+                documentApiInfo.getExecutionType() != null &&
+                documentApiInfo.getContractorId() != null &&
+                documentApiInfo.getRegistrarId() != null &&
+                (documentApiInfo.getApproved() == null || !documentApiInfo.getApproved() ||
+                        (documentApiInfo.getApprovedById() != null &&
+                        documentApiInfo.getApprovalDate() != null &&
+                        documentApiInfo.getArchivePdfFileBase64() != null)
+                );
+    }
+
+    private byte[] base64toByte(String src) {
+        return Base64.getDecoder().decode(src);
+    }
+
     private List<Long> fetchNewMemberIds(Document oldDocument, Document newDocument) {
         List<Long> oldMembers = toList( oldDocument.getMembers(), PersonShortView::getId );
         List<Long> newMembers = toList( newDocument.getMembers(), PersonShortView::getId );
@@ -604,8 +676,7 @@ public class DocumentServiceImpl implements DocumentService {
         return oldObj != null && !oldObj.equals(newObj);
     }
 
-    private En_DocumentFormat predictDocFormat(FileItem fileItem) {
-        String fileName = fileItem.getName();
+    private En_DocumentFormat predictDocFormat(String fileName) {
         String fileExt = FilenameUtils.getExtension(fileName);
         En_DocumentFormat documentFormat = En_DocumentFormat.of(fileExt);
         return documentFormat == null ? En_DocumentFormat.DOCX : documentFormat;

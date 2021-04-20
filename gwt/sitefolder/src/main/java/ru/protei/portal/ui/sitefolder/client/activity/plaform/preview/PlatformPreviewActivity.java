@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.sitefolder.client.activity.plaform.preview;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -69,6 +71,13 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
     public void onOpenServersClicked() {
         if (platformId != null) {
             fireEvent(new SiteFolderServerEvents.ShowSummaryTable(platformId, false));
+        }
+    }
+
+    @Override
+    public void onExportServersClicked() {
+        if (platformId != null) {
+            Window.open(EXPORT_SERVERS_PATH + platformId, "_blank", "");
         }
     }
 
@@ -185,4 +194,6 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
 
     private Long platformId;
     private AppEvents.InitDetails initDetails;
+
+    private static final String EXPORT_SERVERS_PATH = GWT.getModuleBaseURL() + "springApi/server/download/";
 }

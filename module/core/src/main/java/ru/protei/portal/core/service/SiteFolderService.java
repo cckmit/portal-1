@@ -40,6 +40,8 @@ public interface SiteFolderService {
     @Privileged(En_Privilege.SITE_FOLDER_VIEW)
     Result<Platform> getPlatform( AuthToken token, long id);
 
+    Result<String> getPlatformName(AuthToken token, long id);
+
     @Privileged(En_Privilege.SITE_FOLDER_VIEW)
     Result<Server> getServer( AuthToken token, long id);
 

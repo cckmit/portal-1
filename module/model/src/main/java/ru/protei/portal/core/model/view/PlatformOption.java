@@ -1,8 +1,10 @@
 package ru.protei.portal.core.model.view;
 
+import ru.protei.portal.core.model.marker.HasLongId;
+
 import java.io.Serializable;
 
-public class PlatformOption implements Serializable {
+public class PlatformOption implements Serializable, HasLongId {
 
     private String displayText;
     private Long id;
@@ -30,10 +32,12 @@ public class PlatformOption implements Serializable {
         this.displayText = displayText;
     }
 
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

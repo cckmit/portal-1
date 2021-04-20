@@ -85,4 +85,9 @@ public class PlatformDAO_Impl extends PortalBaseJdbcDAO<Platform> implements Pla
     public List<Platform> getByProjectId(Long id) {
         return (id == null ? null : partialGetListByCondition("project_id=?", CollectionUtils.listOf(id), "id", "name"));
     }
+
+    @Override
+    public String getName(Long id) {
+        return partialGet(id, "name").getName();
+    }
 }

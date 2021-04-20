@@ -1,9 +1,11 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'>
 
     <g:HTMLPanel ui:field="root" styleName="input-group color-picker">
 
-        <g:TextBox ui:field="colorBox" styleName="form-control"/>
+        <validablefield:ValidableTextBox ui:field="colorBox" styleName="form-control"
+                                         notNull="true"/>
 
         <div class="input-group-btn">
             <g:Button ui:field="colorPickerButton" styleName="btn btn-default">

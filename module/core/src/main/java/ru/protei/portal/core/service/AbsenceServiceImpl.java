@@ -3,7 +3,10 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AbsenceNotificationEvent;
 import ru.protei.portal.core.event.EventAction;
@@ -23,6 +26,8 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -309,44 +314,68 @@ public class AbsenceServiceImpl implements AbsenceService {
             workerEntries = workerEntryDAO.partialGetByPersonIds(personIds, companyId);
         }
 
-        Map<Long, String> personIdToExtIdMap = CollectionUtils.emptyIfNull(workerEntries).stream()
-                    .collect(Collectors.toMap(
-                            WorkerEntry::getPersonId,
-                            WorkerEntry::getExternalId));
+        // сотрудник может работать по совместительству на разных должностях в _одной_ компании
+        // поэтому отсутствия для 1С формируем на основе данных worker_extId
+        Map<Long, Set<String>> personIdToExtIdMap = CollectionUtils.emptyIfNull(workerEntries).stream()
+                    .collect(Collectors.groupingBy(
+                            WorkerEntry::getPersonId, Collectors.mapping(WorkerEntry::getExternalId, Collectors.toSet())));
 
-        List<ApiAbsence> apiAbsences = absences.stream()
-                .map(absence -> new ApiAbsence(absence)
-                        .withWorkerId(personIdToExtIdMap.get(absence.getPersonId())))
-                .collect(Collectors.toList());
+        List<ApiAbsence> apiAbsences = new ArrayList<>();
+        for (PersonAbsence absence : absences) {
+            Set<String> personExtIds = personIdToExtIdMap.get(absence.getPersonId());
+            if (CollectionUtils.isNotEmpty(personExtIds)) {
+                for (String extId : personExtIds) {
+                    apiAbsences.add(new ApiAbsence(absence).withWorkerId(extId));
+                }
+            }
+        }
 
         return Result.ok(apiAbsences);
     }
 
     @Override
-    public Result<Long> createAbsenceByApi(AuthToken token, ApiAbsence apiAbsence) {
-        if (apiAbsence == null || !apiAbsence.isValid()) {
+    public Result<Long> createAbsenceByApi(AuthToken authToken, ApiAbsence apiAbsence) {
+        return apiAbsenceCrudAction(authToken, apiAbsence,
+                absence -> absence == null || !absence.isValid(),
+                (token, absence) -> createAbsence(authToken, absence));
+    }
+
+    @Override
+    public Result<Long> updateAbsenceByApi(AuthToken authToken, ApiAbsence apiAbsence) {
+        return apiAbsenceCrudAction(authToken, apiAbsence,
+                absence -> absence == null || absence.getId() == null || !absence.isValid(),
+                (token, absence) -> updateAbsence(authToken, absence));
+    }
+
+    @Override
+    public Result<Long> removeAbsenceByApi(AuthToken authToken, ApiAbsence apiAbsence) {
+        return apiAbsenceCrudAction(authToken, apiAbsence,
+                absence -> absence == null || absence.getId() == null
+                        || ((StringUtils.isEmpty(absence.getCompanyCode()) || absence.getWorkerExtId() == null) && absence.getPersonId() == null),
+                (token, absence) -> removeAbsence(authToken, absence));
+    }
+
+    private Result<Long> apiAbsenceCrudAction(AuthToken token, ApiAbsence apiAbsence, Function<ApiAbsence, Boolean> incorrectParamCheck,
+                                              BiFunction<AuthToken, PersonAbsence, Result<Long>> crudAction) {
+        if (incorrectParamCheck.apply(apiAbsence)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        PersonAbsence personAbsence = new PersonAbsence();
-        if (isWorkerIdSet(apiAbsence)) {
-            Long personIdByWorkerId = getPersonIdByWorkerId(apiAbsence.getWorkerExtId(), apiAbsence.getCompanyCode());
-            if (personIdByWorkerId == null) {
-                return error(En_ResultStatus.NOT_FOUND);
-            } else {
-                personAbsence.setPersonId(personIdByWorkerId);
-            }
-        } else {
-            personAbsence.setPersonId(apiAbsence.getPersonId());
+        Long personId = getPersonIdByApiAbsence(apiAbsence);
+        if (personId == null) {
+            return error(En_ResultStatus.NOT_FOUND);
         }
-        personAbsence.setReason(apiAbsence.getReason());
-        personAbsence.setFromTime(apiAbsence.getFromTime());
-        personAbsence.setTillTime(apiAbsence.getTillTime());
-        return createAbsence(token, personAbsence);
+
+        PersonAbsence personAbsence = new PersonAbsence(apiAbsence.getId(), personId, apiAbsence.getReason(), apiAbsence.getFromTime(), apiAbsence.getTillTime());
+        return crudAction.apply(token, personAbsence);
     }
 
-    private boolean isWorkerIdSet(ApiAbsence apiAbsence) {
-        return StringUtils.isNotEmpty(apiAbsence.getCompanyCode()) && apiAbsence.getWorkerExtId() != null;
+    private Long getPersonIdByApiAbsence(ApiAbsence apiAbsence) {
+        if (apiAbsence.getPersonId() != null) {
+            return apiAbsence.getPersonId();
+        }
+
+        return getPersonIdByWorkerId(apiAbsence.getWorkerExtId(), apiAbsence.getCompanyCode());
     }
 
     private Long getPersonIdByWorkerId(String workerId, String companyCode) {

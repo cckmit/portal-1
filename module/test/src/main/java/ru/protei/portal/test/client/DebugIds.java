@@ -176,6 +176,10 @@ public class DebugIds {
         String INITIATORS_SELECTOR_CLEAR_BUTTON = "filter-initiators-selector-clear-button";
         String INITIATORS_SELECTOR_ITEM_CONTAINER = "filter-manager-selector-item-container";
         String INITIATORS_SELECTOR_LABEL = "filter-initiators-selector-label";
+        String PLATFORMS_SELECTOR_ADD_BUTTON = "filter-platforms-selector-add-button";
+        String PLATFORMS_SELECTOR_CLEAR_BUTTON = "filter-platforms-selector-clear-button";
+        String PLATFORMS_SELECTOR_ITEM_CONTAINER = "filter-platform-selector-item-container";
+        String PLATFORMS_SELECTOR_LABEL = "filter-platforms-selector-label";
         String TAG_SELECTOR_ADD_BUTTON = "filter-tag-selector-add-button";
         String TAG_SELECTOR_CLEAR_BUTTON = "filter-tag-selector-clear-button";
         String TAG_SELECTOR_ITEM_CONTAINER = "filter-tag-selector-item-container";
@@ -957,6 +961,7 @@ public class DebugIds {
 
         interface TAG {
             String NAME_LABEL = "dialog-details-tag-name-label";
+            String VERIFIABLE_ICON = "dialog-details-tag-verifiable-icon";;
             String COMPANY_LABEL = "dialog-details-tag-company-label";
             String COLOR_LABEL = "dialog-details-tag-color-label";
             String AUTHOR_LABEL = "dialog-details-author-label";
@@ -998,6 +1003,7 @@ public class DebugIds {
         }
         interface SERVER {
             String OPEN_BUTTON = "site-folder-server-open-button";
+            String EXPORT_BUTTON = "site-folder-server-export-button";
             String CREATE_BUTTON = "site-folder-server-create-button";
             String ITEM = "site-folder-server-list-item";
             String NAME = "site-folder-server-name";

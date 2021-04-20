@@ -7,12 +7,11 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.Document;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -31,6 +30,8 @@ import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.StringUtils.emptyIfNull;
 
 public abstract class DocumentPreviewActivity implements Activity, AbstractDocumentPreviewActivity {
 
@@ -111,7 +112,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         boolean hasAccessToDoc = hasAccessToDoc(document);
         boolean hasAccessToDocModification = hasAccessToDocModification(document);
         view.setDocumentNumber(document.getName() + " (#" + document.getId() + ")");
-        view.setVersion(lang.documentVersion() + " " + document.getVersion());
+        view.setVersion(lang.documentVersion() + " " + emptyIfNull(document.getVersion()));
         view.setCreatedBy(lang.createBy("", DateFormatter.formatDateTime(document.getCreated())));
         view.setType(document.getType().getName());
         view.setAnnotation(document.getAnnotation());

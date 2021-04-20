@@ -86,6 +86,10 @@ public class CaseObjectSqlBuilder {
                 condition.append(" and initiator in " + makeInArg(query.getInitiatorIds(), false));
             }
 
+            if (isNotEmpty(query.getPlatformIds())) {
+                condition.append(" and platform_id in " + makeInArg(query.getPlatformIds(), false));
+            }
+
             if (isNotEmpty(query.getManagerCompanyIds())) {
                 condition.append(" and manager_company_id in " + makeInArg(query.getManagerCompanyIds(), false));
             }

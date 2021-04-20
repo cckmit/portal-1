@@ -18,6 +18,8 @@ public interface AbstractDocumentCreateView extends IsWidget {
 
     // Wizard 1st tab
 
+    void setWizardTab(String tabName);
+
     HasWidgets projectSearchContainer();
 
     HasWidgets projectCreateContainer();

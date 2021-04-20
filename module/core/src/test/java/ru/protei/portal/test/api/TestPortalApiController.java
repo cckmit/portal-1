@@ -2,7 +2,10 @@ package ru.protei.portal.test.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -24,8 +27,10 @@ import ru.protei.portal.core.model.api.ApiAbsence;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
+import ru.protei.portal.core.model.dto.DocumentApiInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContactItem;
@@ -1452,6 +1457,158 @@ public class TestPortalApiController extends BaseServiceTest {
         createPostResultAction("/api/absence/1c/create", apiInfo)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.ABSENCE_HAS_INTERSECTIONS.toString())));
+    }
+
+    @Test
+    @Transactional
+    public void createDoc() throws Exception {
+        DocumentType documentType = new DocumentType();
+        documentType.setName("documentType");
+        documentType.setDocumentCategory(En_DocumentCategory.TP);
+        Long documentTypeId = documentTypeDAO.persist(documentType);
+
+        CaseObject caseObject = createNewCaseObject(person);
+        caseObject.setName("createDoc");
+        caseObject.setInitiatorCompanyId(company.getId());
+        caseObject.setType(En_CaseType.PROJECT);
+        Long projectId = caseObjectDAO.persist(caseObject);
+        Project project = new Project();
+        project.setId(projectId);
+        projectDAO.persist(project);
+
+        DocumentApiInfo info = new DocumentApiInfo();
+        info.setName("createDoc() : Test Doc Name");
+        info.setProjectId(projectId);
+        info.setTypeId(documentTypeId);
+        info.setRegistrarId(person.getId());
+        info.setContractorId(person.getId());
+        info.setExecutionType(En_DocumentExecutionType.ELECTRONIC);
+        List<Long> members = CollectionUtils.listOf(person.getId());
+        info.setMemberIds(members);
+
+        createPostResultAction("/api/doc/create", info)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
+    }
+
+    @Test
+    @Transactional
+    public void createDocNoProject() throws Exception {
+        DocumentType documentType = new DocumentType();
+        documentType.setName("documentType");
+        documentType.setDocumentCategory(En_DocumentCategory.TP);
+        Long documentTypeId = documentTypeDAO.persist(documentType);
+
+        DocumentApiInfo info = new DocumentApiInfo();
+        info.setName("createDoc() : Test Doc Name");
+
+        info.setProjectId(null);
+
+        info.setTypeId(documentTypeId);
+        info.setRegistrarId(person.getId());
+        info.setContractorId(person.getId());
+        info.setExecutionType(En_DocumentExecutionType.ELECTRONIC);
+        List<Long> members = CollectionUtils.listOf(person.getId());
+        info.setMemberIds(members);
+
+        createPostResultAction("/api/doc/create", info)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.VALIDATION_ERROR.toString())));
+    }
+
+
+    @Test
+    @Transactional
+    public void createDocApprovedNoFile() throws Exception {
+        DocumentType documentType = new DocumentType();
+        documentType.setName("documentType");
+        documentType.setDocumentCategory(En_DocumentCategory.TP);
+        Long documentTypeId = documentTypeDAO.persist(documentType);
+
+        CaseObject caseObject = createNewCaseObject(person);
+        caseObject.setName("createDoc");
+        caseObject.setInitiatorCompanyId(company.getId());
+        caseObject.setType(En_CaseType.PROJECT);
+        Long projectId = caseObjectDAO.persist(caseObject);
+        Project project = new Project();
+        project.setId(projectId);
+        projectDAO.persist(project);
+
+        DocumentApiInfo info = new DocumentApiInfo();
+        info.setName("createDoc() : Test Doc Name");
+        info.setProjectId(null);
+        info.setTypeId(documentTypeId);
+        info.setRegistrarId(person.getId());
+        info.setContractorId(person.getId());
+        info.setExecutionType(En_DocumentExecutionType.ELECTRONIC);
+        List<Long> members = CollectionUtils.listOf(person.getId());
+        info.setMemberIds(members);
+
+        info.setApproved(true);
+        info.setApprovedById(person.getId());
+        info.setApprovalDate(new Date());
+        info.setDecimalNumber("40412735.АПКБГОО.14417.18");
+        info.setArchivePdfFileBase64(null);
+
+        createPostResultAction("/api/doc/create", info)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.VALIDATION_ERROR.toString())));
+    }
+
+    @Test
+    @Transactional
+    public void removeDoc() throws Exception {
+        DocumentType documentType = new DocumentType();
+        documentType.setName("documentType");
+        documentType.setDocumentCategory(En_DocumentCategory.TP);
+        documentTypeDAO.persist(documentType);
+
+        CaseObject caseObject = createNewCaseObject(person);
+        caseObject.setName("createDoc");
+        caseObject.setInitiatorCompanyId(company.getId());
+        caseObject.setType(En_CaseType.PROJECT);
+        Long projectId = caseObjectDAO.persist(caseObject);
+        Project project = new Project();
+        project.setId(projectId);
+        projectDAO.persist(project);
+
+        Document document = new Document();
+        document.setState(En_DocumentState.ACTIVE);
+        document.setType(documentType);
+        document.setProjectId(project.getId());
+        documentDAO.persist(document);
+
+        createPostResultAction("/api/doc/remove/" + document.getId(), null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
+    }
+
+    @Test
+    @Transactional
+    public void removeDocInvalid() throws Exception {
+        DocumentType documentType = new DocumentType();
+        documentType.setName("documentType");
+        documentType.setDocumentCategory(En_DocumentCategory.TP);
+        documentTypeDAO.persist(documentType);
+
+        CaseObject caseObject = createNewCaseObject(person);
+        caseObject.setName("createDoc");
+        caseObject.setInitiatorCompanyId(company.getId());
+        caseObject.setType(En_CaseType.PROJECT);
+        Long projectId = caseObjectDAO.persist(caseObject);
+        Project project = new Project();
+        project.setId(projectId);
+        projectDAO.persist(project);
+
+        Document document = new Document();
+        document.setState(En_DocumentState.ACTIVE);
+        document.setType(documentType);
+        document.setProjectId(project.getId());
+        documentDAO.persist(document);
+
+        createPostResultAction("/api/doc/remove/" + document.getId() + 1, null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.NOT_FOUND.toString())));
     }
 
     private String getPlatformId (String strResult) {
