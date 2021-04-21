@@ -674,22 +674,21 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         commentsAndHistories.setComments(caseCommentListResult.getData());
         commentsAndHistories.setHistories(
-                applyFilterByScope(historyListResult.getData(), token, caseType)
+                filterHistories(historyListResult.getData(), token, caseType)
         );
 
         return ok(commentsAndHistories);
     }
 
-    private List<History> applyFilterByScope(List<History> histories, AuthToken token, En_CaseType en_caseType) {
+    private List<History> filterHistories(List<History> histories, AuthToken token, En_CaseType caseType) {
         Set<UserRole> roles = token.getRoles();
-        if (en_caseType != CRM_SUPPORT || policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+        if (caseType != CRM_SUPPORT || policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
             return histories;
         }
 
         CaseTagQuery tagQuery = new CaseTagQuery();
         tagQuery.setCompanyId(token.getCompanyId());
-        List<Long> customerTagsIds = caseTagDAO.getListByQuery(tagQuery)
-                .stream().map(CaseTag::getId).collect(Collectors.toList());
+        List<Long> customerTagsIds = toList(caseTagDAO.getListByQuery(tagQuery), CaseTag::getId);
 
         return stream(histories).filter(history -> customerHistoryPredicate(history, customerTagsIds))
                 .collect(Collectors.toList());

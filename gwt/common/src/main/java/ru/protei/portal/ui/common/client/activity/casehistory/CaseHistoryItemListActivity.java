@@ -108,15 +108,14 @@ public abstract class CaseHistoryItemListActivity implements AbstractCaseHistory
     }
 
     private CaseHistoryItem makeHistoryItem(History history) {
-        CaseHistoryItem itemView = null;
         switch (history.getType()) {
-            case PLAN: itemView = makeHistoryItem(history, lang.plan(), Plan.class); break;
-            case TAG: itemView = makeHistoryItem(history, lang.tag(), CaseTag.class); break;
-            case CASE_STATE: itemView = makeHistoryItem(history, lang.issueState(), CaseState.class); break;
-            case CASE_MANAGER: itemView = makeHistoryItem(history, lang.issueManager(), EmployeeShortView.class); break;
-            case CASE_IMPORTANCE: itemView = makeHistoryItem(history, lang.issueImportance(), ImportanceLevel.class); break;
+            case PLAN: return makeHistoryItem(history, lang.plan(), Plan.class);
+            case TAG: return makeHistoryItem(history, lang.tag(), CaseTag.class);
+            case CASE_STATE: return makeHistoryItem(history, lang.issueState(), CaseState.class);
+            case CASE_MANAGER: return makeHistoryItem(history, lang.issueManager(), EmployeeShortView.class);
+            case CASE_IMPORTANCE: return makeHistoryItem(history, lang.issueImportance(), ImportanceLevel.class);
+            default: return null;
         }
-        return itemView;
     }
 
     private CaseHistoryItem makeHistoryItem(History history, String historyType, Class<?> clazz) {
