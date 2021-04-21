@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.History;
-import ru.protei.portal.core.model.query.HistoryApiQuery;
 import ru.protei.portal.core.model.query.HistoryQuery;
 
 import java.util.List;
