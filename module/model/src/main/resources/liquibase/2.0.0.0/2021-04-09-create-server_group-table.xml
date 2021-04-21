@@ -1,0 +1,46 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create-server_group-table" author="fomin">
+        <createTable tableName="server_group">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="platform_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-server_group-platform_id-fk" author="fomin">
+        <addForeignKeyConstraint baseTableName="server_group"
+                                 baseColumnNames="platform_id"
+                                 constraintName="server_group_platform_id_to_platform_fk"
+                                 referencedTableName="platform"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="add-server_group-unique-constraint" author="fomin">
+        <addUniqueConstraint tableName="server_group" columnNames="name, platform_id" constraintName="uniq_name_platform_id"/>
+    </changeSet>
+
+    <changeSet id="add-server_group_id-column-to-server-table" author="fomin">
+        <addColumn tableName="server">
+            <column name="server_group_id" type="bigint"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-server-server_group_id-fk" author="fomin">
+        <addForeignKeyConstraint baseTableName="server" baseColumnNames="server_group_id"
+                                 constraintName="server_group_id_to_server_group_fk"
+                                 referencedTableName="server_group"
+                                 referencedColumnNames="id" onDelete="SET NULL"/>
+    </changeSet>
+</databaseChangeLog>

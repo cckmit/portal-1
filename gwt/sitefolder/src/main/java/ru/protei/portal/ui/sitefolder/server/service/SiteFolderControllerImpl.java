@@ -8,6 +8,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
+import ru.protei.portal.core.model.query.ServerGroupQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
@@ -75,6 +76,13 @@ public class SiteFolderControllerImpl implements SiteFolderController {
             throw new RequestFailedException(response.getStatus());
         }
         return response.getData();
+    }
+
+    @Override
+    public List<ServerGroup> getServerGroups(ServerGroupQuery serverGroupQuery) throws RequestFailedException {
+        log.info("getServerGroups(): serverGroupQuery={}", serverGroupQuery);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(siteFolderService.getServerGroups(token, serverGroupQuery));
     }
 
     @Override
@@ -175,6 +183,23 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     }
 
     @Override
+    public ServerGroup saveServerGroup(ServerGroup serverGroup) throws RequestFailedException {
+        log.info("saveServerGroup(): serverGroup={}", serverGroup);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result<ServerGroup> response;
+        if (serverGroup.getId() == null) {
+            response = siteFolderService.createServerGroup(token, serverGroup);
+        } else {
+            response = siteFolderService.updateServerGroup(token, serverGroup);
+        }
+        if (response.isError()) {
+            log.warn("saveServerGroup(): status={}", response.getStatus());
+            throw new RequestFailedException(response.getStatus());
+        }
+        return response.getData();
+    }
+
+    @Override
     public Long removePlatform(long id) throws RequestFailedException {
 
         log.info("removePlatform(id={})", id);
@@ -194,6 +219,18 @@ public class SiteFolderControllerImpl implements SiteFolderController {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         Result<Long> response = siteFolderService.removeServer(token, id);
         log.info("removeServer(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+        return response.getData();
+    }
+
+    @Override
+    public Long removeServerGroup(Long id) throws RequestFailedException {
+        log.info("removeServerGroup(id={})", id);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        Result<Long> response = siteFolderService.removeServerGroup(token, id);
+        log.info("removeServerGroup(id={}): {}", id, response.isOk() ? "ok" : response.getStatus());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }

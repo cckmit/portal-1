@@ -15,7 +15,7 @@
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>
                     <div class="control-group">
-                        <sortfield:SortFieldSelector ui:field="sortField" type="SITE_FOLDER" hasNullValue="false"/>
+                        <sortfield:SortFieldSelector ui:field="sortField" type="SITE_FOLDER_SERVER" hasNullValue="false"/>
                         <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
                     </div>
                 </div>

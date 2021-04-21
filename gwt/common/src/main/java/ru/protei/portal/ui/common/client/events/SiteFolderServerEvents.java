@@ -12,18 +12,34 @@ import ru.protei.portal.core.model.ent.Platform;
 public class SiteFolderServerEvents {
 
     @Url(value = "sfservers", primary = true)
-    public static class Show {
+    public static class ShowSummaryTable {
         @Name("platform")
         public Long platformId;
         @Omit
         public Boolean preScroll;
-        public Show() {
+        public ShowSummaryTable() {
             this(null, false);
         }
-        public Show (Long platformId, Boolean preScroll) {
+        public ShowSummaryTable(Long platformId, Boolean preScroll) {
             this.platformId = platformId;
             this.preScroll = preScroll;
         }
+    }
+
+    public static class ShowTable {
+        public ShowTable(HasWidgets parent, Platform platform) {
+            this(parent, platform, false);
+        }
+
+        public ShowTable(HasWidgets parent, Platform platform, boolean isPlatformPreview) {
+            this.parent = parent;
+            this.platform = platform;
+            this.isPlatformPreview = isPlatformPreview;
+        }
+
+        public HasWidgets parent;
+        public Platform platform;
+        public boolean isPlatformPreview;
     }
 
     @Url(value = "sfserver")
@@ -40,6 +56,10 @@ public class SiteFolderServerEvents {
             this(null);
         }
         public Edit(Long serverId) {
+            this(null, serverId);
+        }
+        public Edit(Platform platform, Long serverId) {
+            this.platform = platform;
             this.serverId = serverId;
         }
         public static Edit withPlatform(Platform platform) {
@@ -64,24 +84,6 @@ public class SiteFolderServerEvents {
         public ShowPreview(HasWidgets parent, ru.protei.portal.core.model.ent.Server server) {
             this.parent = parent;
             this.server = server;
-        }
-    }
-
-    public static class ShowList {
-        public HasWidgets parent;
-        public Long platformId;
-        public ShowList(HasWidgets parent, Long platformId) {
-            this.parent = parent;
-            this.platformId = platformId;
-        }
-    }
-
-    public static class ShowDetailedList {
-        public HasWidgets parent;
-        public Long platformId;
-        public ShowDetailedList(HasWidgets parent, Long platformId) {
-            this.parent = parent;
-            this.platformId = platformId;
         }
     }
 

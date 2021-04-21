@@ -280,6 +280,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public ServerGroupDAO getServerGroupDAO() {
+        return new ServerGroupDAO_Impl();
+    }
+
+    @Bean
     public ApplicationDAO getApplicationDAO() {
         return new ApplicationDAO_Impl();
     }

@@ -1015,6 +1015,9 @@ public class DebugIds {
             String COPY_BUTTON = "site-folder-server-copy-button";
             String REMOVE_BUTTON = "site-folder-server-remove-button";
         }
+        interface SERVER_GROUP {
+            String NAME = "site-folder-server-group-name";
+        }
         interface LINK {
             String PLATFORM = "sitefolder-link-platform";
         }

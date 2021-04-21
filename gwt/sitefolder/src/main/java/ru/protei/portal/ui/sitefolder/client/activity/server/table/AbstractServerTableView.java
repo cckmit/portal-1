@@ -1,33 +1,25 @@
 package ru.protei.portal.ui.sitefolder.client.activity.server.table;
 
-import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Server;
-import ru.protei.portal.ui.common.client.animation.TableAnimation;
+
+import java.util.List;
 
 public interface AbstractServerTableView extends IsWidget {
+    void addRecords(List<Server> servers);
 
     void setActivity(AbstractServerTableActivity activity);
 
-    void setAnimation(TableAnimation animation);
+    HasValue<String> nameOrIp();
+
+    HasValue<En_SortField> sortField();
+
+    HasValue<Boolean> sortDir();
 
     void clearRecords();
 
-    void triggerTableLoad();
-
-    void setTotalRecords(int totalRecords);
-
-    int getPageCount();
-
-    void scrollTo(int page);
-
-    void updateRow(Server item);
-
-    HasWidgets getPreviewContainer();
-
-    HasWidgets getFilterContainer();
-
-    HasWidgets getPagerContainer();
-
-    void clearSelection();
+    HasVisibility createButtonVisibility();
 }
