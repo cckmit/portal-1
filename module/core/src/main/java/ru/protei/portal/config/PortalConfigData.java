@@ -497,6 +497,7 @@ public class PortalConfigData {
         private final boolean redmineEnabled;
         private final boolean redmineBackchannelEnabled;
         private final boolean youtrackEnabled;
+        private final boolean youtrackBackchannelEnabled;
         private final boolean youtrackCompanySyncEnabled;
         private final boolean youtrackEmployeeSyncEnabled;
         private final boolean youtrackLinksMigrationEnabled;
@@ -510,6 +511,7 @@ public class PortalConfigData {
             redmineEnabled = properties.getProperty("integration.redmine", Boolean.class, false);
             redmineBackchannelEnabled = properties.getProperty("integration.redmine.backchannel", Boolean.class, false);
             youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
+            youtrackBackchannelEnabled = properties.getProperty("integration.youtrack.backchannel", Boolean.class, false);
             youtrackCompanySyncEnabled = properties.getProperty("integration.youtrack.companies", Boolean.class, false);
             youtrackEmployeeSyncEnabled = properties.getProperty("integration.youtrack.employees", Boolean.class, false);
             youtrackLinksMigrationEnabled = properties.getProperty("migration.youtrack.links", Boolean.class, false);
@@ -530,6 +532,10 @@ public class PortalConfigData {
 
         public boolean isYoutrackEnabled() {
             return youtrackEnabled;
+        }
+
+        public boolean isYoutrackBackchannelEnabled() {
+            return youtrackBackchannelEnabled;
         }
 
         public boolean isYoutrackCompanySyncEnabled() {

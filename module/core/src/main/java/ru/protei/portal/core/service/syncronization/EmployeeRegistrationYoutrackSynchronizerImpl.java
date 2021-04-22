@@ -63,7 +63,7 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
     
     @PostConstruct
     public void init(){
-        if (!config.data().integrationConfig().isYoutrackEnabled()) {
+        if (!config.data().integrationConfig().isYoutrackBackchannelEnabled()) {
             log.debug("init(): employee registration youtrack synchronizer is not started because YouTrack integration is disabled in configuration");
             return;
         }
