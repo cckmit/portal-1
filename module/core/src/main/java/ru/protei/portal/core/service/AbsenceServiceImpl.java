@@ -82,6 +82,7 @@ public class AbsenceServiceImpl implements AbsenceService {
         }
 
         absence.setCreated(new Date());
+        absence.setCreatedFrom1C(true);
         absence.setCreatorId(token.getPersonId());
 
         Long absenceId = personAbsenceDAO.persist(absence);

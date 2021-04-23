@@ -43,6 +43,9 @@ public class PersonAbsence extends AuditableObject implements Serializable {
     @JdbcColumn(name = "user_comment")
     private String userComment;
 
+    @JdbcColumn(name = "created_from_1c")
+    private boolean createdFrom1C;
+
     public static final String AUDIT_TYPE = "PersonAbsence";
 
     public PersonAbsence() {}
@@ -72,6 +75,7 @@ public class PersonAbsence extends AuditableObject implements Serializable {
         this.fromTime = absence.getFromTime();
         this.tillTime = absence.getTillTime();
         this.userComment = absence.getUserComment();
+        this.createdFrom1C = absence.isCreatedFrom1C();
     }
 
     public Long getId() {
@@ -152,6 +156,14 @@ public class PersonAbsence extends AuditableObject implements Serializable {
         this.userComment = userComment;
     }
 
+    public boolean isCreatedFrom1C() {
+        return createdFrom1C;
+    }
+
+    public void setCreatedFrom1C(boolean createdFrom1C) {
+        this.createdFrom1C = createdFrom1C;
+    }
+
     @Override
     public String getAuditType() {
         return AUDIT_TYPE;
@@ -182,6 +194,7 @@ public class PersonAbsence extends AuditableObject implements Serializable {
                 ", fromTime=" + fromTime +
                 ", tillTime=" + tillTime +
                 ", userComment='" + userComment + '\'' +
+                ", createdFrom1C=" + createdFrom1C +
                 '}';
     }
 }
