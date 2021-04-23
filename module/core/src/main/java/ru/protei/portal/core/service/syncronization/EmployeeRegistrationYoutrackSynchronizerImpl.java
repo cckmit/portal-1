@@ -184,6 +184,7 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
         for (CaseLink caseLink : caseLinks) {
             String ytIssueId = caseLink.getRemoteId();
             YouTrackIssueInfo ytIssue = youtrackService.getIssueInfo(ytIssueId).getData();
+            if (ytIssue == null) continue;
             List<YouTrackIssueStateChange> ytIssueStateChanges = youtrackService.getIssueStateChanges(ytIssueId).getData();
 
             log.info("updateIssues(): caseId={}, caseLink={}", employeeRegistration.getId(), caseLink);
