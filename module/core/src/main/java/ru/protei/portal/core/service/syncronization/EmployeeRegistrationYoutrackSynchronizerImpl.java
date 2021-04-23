@@ -171,7 +171,7 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
 
 
         Long newState = employeeRegistration.getStateId();
-        if (newState != oldState && newState == CrmConstants.State.DONE) {
+        if (newState.equals(oldState) && newState == CrmConstants.State.DONE) {
             log.debug("synchronizeEmployeeRegistration(): state was changed to DONE, sending notification");
             fireEmployeeRegistrationEvent(employeeRegistration);
         }
