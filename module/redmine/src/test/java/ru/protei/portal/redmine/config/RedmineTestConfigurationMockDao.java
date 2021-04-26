@@ -409,6 +409,16 @@ public class RedmineTestConfigurationMockDao {
         return mock( ProjectTechnicalSupportValidityReportInfoDAO.class);
     }
 
+    @Bean
+    public DeliveryDAO getDeliveryDAO() {
+        return mock(DeliveryDAO.class);
+    }
+
+    @Bean
+    public KitDAO getKitDAO() {
+        return mock(KitDAO.class);
+    }
+
     /* DAO converters */
 
     @Bean

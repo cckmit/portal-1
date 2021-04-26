@@ -1,0 +1,94 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create-delivery-table" author="porubov">
+        <createTable tableName="delivery">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="created" type="DATETIME" defaultValueDate="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified" type="DATETIME"/>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="mediumtext"/>
+            <column name="project_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="attribute" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="delivered" type="DATETIME"/>
+            <column name="kit_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-delivery-unique-constraint" author="porubov">
+        <addUniqueConstraint tableName="delivery" columnNames="name, project_id" constraintName="uniq_delivery_name_project_id"/>
+    </changeSet>
+
+    <changeSet id="add-delivery-project_id-fk" author="porubov">
+        <addForeignKeyConstraint baseTableName="delivery"
+                                 baseColumnNames="project_id"
+                                 constraintName="delivery_project_id_to_project_fk"
+                                 referencedTableName="project"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="create-kit-table" author="porubov">
+        <createTable tableName="kit">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="created" type="DATETIME" defaultValueDate="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified" type="DATETIME"/>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-delivery-kit_id-fk" author="porubov">
+        <addForeignKeyConstraint baseTableName="delivery"
+                                 baseColumnNames="kit_id"
+                                 constraintName="delivery_kit_id_to_kit_fk"
+                                 referencedTableName="kit"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="create-delivery_subscriber-table" author="porubov">
+        <createTable tableName="delivery_subscriber">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="delivery_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="person_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+
+</databaseChangeLog>

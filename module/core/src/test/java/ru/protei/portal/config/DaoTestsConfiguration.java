@@ -474,4 +474,14 @@ public class DaoTestsConfiguration {
     public ProjectTechnicalSupportValidityReportInfoDAO getProjectTechnicalSupportValidityReportInfoDAO() {
         return new ProjectTechnicalSupportValidityReportInfoDAO_Impl();
     }
+
+    @Bean
+    public DeliveryDAO getDeliveryDAO() {
+        return new DeliveryDAO_Impl();
+    }
+
+    @Bean
+    public KitDAO getKitDAO() {
+        return new KitDAO_Impl();
+    }
 }

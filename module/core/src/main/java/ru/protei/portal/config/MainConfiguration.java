@@ -633,6 +633,16 @@ public class MainConfiguration {
     }
 
     @Bean
+    public DeliveryDAO getDeliveryDAO() {
+        return new DeliveryDAO_Impl();
+    }
+
+    @Bean
+    public KitDAO getKitDAO() {
+        return new KitDAO_Impl();
+    }
+
+    @Bean
     public YoutrackHttpClient getYoutrackHttpClient() {
         return new YoutrackHttpClientImpl();
     }

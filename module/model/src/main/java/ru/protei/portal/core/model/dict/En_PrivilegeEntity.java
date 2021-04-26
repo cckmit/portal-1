@@ -31,6 +31,7 @@ public enum En_PrivilegeEntity {
     ABSENCE(25),
     EDUCATION(26),
     DUTY_LOG(27),
+    DELIVERY(28),
     ;
 
     private final Integer order;
