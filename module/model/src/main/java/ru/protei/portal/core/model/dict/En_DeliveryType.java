@@ -7,7 +7,7 @@ public enum En_DeliveryType implements HasId {
     UPGRADE_HW(2),
     UPGRADE_SW(3),
     REPLACEMENT_HW(4),
-    BUG_FIX(5),
+    BUGFIX(5),
     NEW_VERSION(6),
     NEW_VERSION_SW(7),
     NEW_DELIVERY(8),

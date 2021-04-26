@@ -3377,4 +3377,48 @@ public interface Lang extends Messages, ContactItemLang {
     String errTooMuchPlatforms();
 
     String issueFilterPlatform();
+
+    String deliveryStatusPreliminary();
+
+    String deliveryStatusPreReserve();
+
+    String deliveryStatusReserve();
+
+    String deliveryStatusAssembly();
+
+    String deliveryStatusTest();
+
+    String deliveryStatusReady();
+
+    String deliveryStatusSent();
+
+    String deliveryStatusWork();
+
+    String deliveryAttributeDelivery();
+
+    String deliveryAttributeTest();
+
+    String deliveryAttributePilotZone();
+
+    String deliveryTypeUpgrade();
+
+    String deliveryTypeUpgradeHW();
+
+    String deliveryTypeUpgradeSW();
+
+    String deliveryTypeReplacementHW();
+
+    String deliveryTypeBugfix();
+
+    String deliveryTypeNewVersion();
+
+    String deliveryTypeNewVersionSW();
+
+    String deliveryTypeNewDelivery();
+
+    String deliveryTypeTrialOperation();
+
+    String deliveryTypeDelivery();
+
+    String deliveryTypeSupport();
 }
