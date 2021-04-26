@@ -171,12 +171,12 @@ public class CompanyServiceImpl implements CompanyService {
                 .distinct()
                 .collect(Collectors.toList());
 
-        Company homeCompany = companyDAO.get(CrmConstants.Company.HOME_COMPANY_ID);
-        if (homeCompany == null) {
+        List<Company> singleHomeCompanies = companyDAO.getSingleHomeCompanies();
+        if (singleHomeCompanies == null) {
             return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        companies.add(0, homeCompany);
+        companies.addAll(0, singleHomeCompanies);
 
         return ok(companies.stream()
                 .map(Company::toEntityOption)
@@ -392,16 +392,27 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<Company>> getAllHomeCompanies(AuthToken token) {
+    public Result<List<EntityOption>> getAllHomeCompanies(AuthToken token) {
         List<Company> companies = companyDAO.getAllHomeCompanies();
         jdbcManyRelationsHelper.fill(companies, Company.Fields.CONTACT_ITEMS);
-        return ok(companies);
+        return ok(companies.stream()
+                .map(Company::toEntityOption)
+                .collect(Collectors.toList()));
     }
 
     @Override
     public Result<List<CompanyImportanceItem>> getCompanyImportanceItems(AuthToken token, Long companyId) {
         List<CompanyImportanceItem> result = companyImportanceItemDAO.getSortedImportanceLevels(companyId);
         return ok(result);
+    }
+
+    @Override
+    public Result<List<EntityOption>> getSingleHomeCompanies(AuthToken token) {
+        List<Company> companies = companyDAO.getSingleHomeCompanies();
+        jdbcManyRelationsHelper.fill(companies, Company.Fields.CONTACT_ITEMS);
+        return ok(companies.stream()
+                .map(Company::toEntityOption)
+                .collect(Collectors.toList()));
     }
 
     private List<Long> collectParentCompanyIds(List<Company> companies) {

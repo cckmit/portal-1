@@ -19,6 +19,8 @@ import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public interface AbstractIssueFilterParamView extends IsWidget {
@@ -67,6 +69,8 @@ public interface AbstractIssueFilterParamView extends IsWidget {
     void presetCompany(Company company);
 
     void presetManagerCompany(Company company);
+
+    void presetManagerCompanies(List<EntityOption> companies);
 
     void fillFilterFields(CaseQuery caseQuery, SelectorsParams selectorsParams);
 

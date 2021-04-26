@@ -80,9 +80,11 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
             condition.append("1=1");
 
             if (query.getHomeGroupFlag() != null) {
-                condition.append(" and company.id").append(query.getHomeGroupFlag() ? " in" : " not in").append(" ( select companyId from company_group_home where companyId != " + CrmConstants.Company.HOME_COMPANY_ID + " ) ");
-            } else {
-                condition.append(" and company.id not in").append(" (select companyId from company_group_home where mainId is not null) ");
+                if (query.getHomeGroupFlag()) {
+                    condition.append(" and company.id in ( select companyId from company_group_home where companyId != " + CrmConstants.Company.HOME_COMPANY_ID + " ) ");
+                } else {
+                    condition.append(" and company.id not in").append(" (select companyId from company_group_home where mainId is not null) ");
+                }
             }
 
             if (query.getSynchronizeWith1C() != null){

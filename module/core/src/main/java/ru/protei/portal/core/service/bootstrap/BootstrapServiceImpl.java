@@ -188,6 +188,41 @@ public class BootstrapServiceImpl implements BootstrapService {
 
         /**
          *  end Спринт */
+
+        /**
+         * begin Спринт 72 */
+        if (!bootstrapAppDAO.isActionExists("changePersonToSingleCompany")) {
+            this.changePersonToSingleCompany();
+            bootstrapAppDAO.createAction("changePersonToSingleCompany");
+        }
+
+        /**
+         *  end Спринт */
+    }
+
+    private void changePersonToSingleCompany() {
+        companyDAO.getSingleHomeCompanies().forEach(company -> {
+            if (CrmConstants.Company.HOME_COMPANY_ID != company.getId()) {
+                WorkerEntryQuery query = new WorkerEntryQuery(company.getId(), 1);
+                List<WorkerEntry> workerEntryShortViewList = workerEntryDAO.listByQuery(query);
+                List<Long> personIds = workerEntryShortViewList.stream()
+                        .map(WorkerEntry::getPersonId)
+                        .distinct()
+                        .collect(Collectors.toList());
+
+                personIds.forEach(personId -> {
+                    personDAO.partialMerge(new Person(personId, company.getId()), "company_id");
+                });
+
+                CaseQuery caseQuery = new CaseQuery();
+                caseQuery.setType(En_CaseType.CRM_SUPPORT);
+                caseQuery.setManagerIds(personIds);
+                caseShortViewDAO.listByQuery(caseQuery).forEach(caseShortView -> {
+                    caseShortView.setManagerCompanyId(company.getId());
+                    caseShortViewDAO.partialMerge(caseShortView, "manager_company_id");
+                });
+            }
+        });
     }
 
     private void updateContactItemsAccessType() {
@@ -1410,6 +1445,10 @@ public class BootstrapServiceImpl implements BootstrapService {
     EmployeeRegistrationDAO employeeRegistrationDAO;
     @Autowired
     CaseStateDAO caseStateDAO;
+    @Autowired
+    WorkerEntryDAO workerEntryDAO;
+    @Autowired
+    CaseShortViewDAO caseShortViewDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 

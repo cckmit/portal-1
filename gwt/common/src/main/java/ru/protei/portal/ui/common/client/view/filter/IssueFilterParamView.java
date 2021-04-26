@@ -255,6 +255,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         updateManagers(managerCompanies);
     }
 
+    @Override
+    public void presetManagerCompanies(List<EntityOption> companies) {
+        HashSet<EntityOption> managerCompanies = new HashSet<>(companies);
+        this.managerCompanies.setValue(managerCompanies);
+        updateManagers(managerCompanies);
+    }
+
     private void toggleMsgSearchThreshold() {
         if (searchByComments.getValue()) {
             int actualLength = search.getValue().length();

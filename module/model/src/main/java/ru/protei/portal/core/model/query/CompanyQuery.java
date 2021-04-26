@@ -20,7 +20,7 @@ public class CompanyQuery extends BaseQuery {
      * false - without home group companies
      * null - all companies. Attention! With Universum! Use isShowHidden=false to hide it.
      */
-    private Boolean homeGroupFlag;
+    private Boolean homeGroupFlag = false;
 
     private Boolean synchronizeWith1C;
 
