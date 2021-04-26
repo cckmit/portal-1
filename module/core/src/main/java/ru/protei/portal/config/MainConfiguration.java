@@ -1149,6 +1149,11 @@ public class MainConfiguration {
         return new ImportanceLevelServiceImpl();
     }
 
+    @Bean
+    public DeliveryService getDeliveryService() {
+        return new DeliveryServiceImpl();
+    }
+
     /* ASPECT/INTERCEPTORS */
 
     @Bean

@@ -130,6 +130,10 @@ public enum En_AuditType implements HasId {
     SERVER_GROUP_CREATE(86),
     SERVER_GROUP_MODIFY(87),
     SERVER_GROUP_REMOVE(88),
+
+    DELIVERY_CREATE(89),
+    DELIVERY_MODIFY(90),
+    DELIVERY_REMOVE(91),
     ;
 
     En_AuditType(int id ) {
