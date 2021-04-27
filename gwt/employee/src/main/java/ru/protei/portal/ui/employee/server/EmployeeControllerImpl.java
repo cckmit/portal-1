@@ -58,10 +58,7 @@ public class EmployeeControllerImpl implements EmployeeController {
 
         log.info( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
-        if ( result.isError() )
-            throw new RequestFailedException( result.getStatus() );
-
-        return result.getData();
+        return ServiceUtils.checkResultAndGetData(result);
     }
 
     @Override
@@ -94,7 +91,6 @@ public class EmployeeControllerImpl implements EmployeeController {
         }
 
         log.info("saveEmployee(): save person, id: {} ", HelperFunc.nvl(person.getId()));
-
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         Result<Person> response;
@@ -107,12 +103,7 @@ public class EmployeeControllerImpl implements EmployeeController {
         }
 
         log.info("saveEmployee(): save person, result: {}", response.isOk() ? "ok" : response.getStatus());
-
-        if (response.isOk()) {
-            return response.getData();
-        }
-
-        throw new RequestFailedException(response.getStatus());
+        return ServiceUtils.checkResultAndGetData(response);
     }
 
     @Override
@@ -125,11 +116,7 @@ public class EmployeeControllerImpl implements EmployeeController {
 
         log.info("fire employee, id: {} -> {} ", person.getId(), response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "fired");
 
-        if (response.isOk()) {
-            return response.getData();
-        }
-
-        throw new RequestFailedException(response.getStatus());
+        return ServiceUtils.checkResultAndGetData(response);
     }
 
     @Override

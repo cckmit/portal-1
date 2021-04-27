@@ -201,28 +201,82 @@ public class BootstrapServiceImpl implements BootstrapService {
     }
 
     private void changePersonToSingleCompany() {
-        companyDAO.getSingleHomeCompanies().forEach(company -> {
+
+        log.debug("changePersonToSingleCompany(): start");
+
+        List<Company> companies = companyDAO.getSingleHomeCompanies();
+        for (Company company : companies) {
             if (CrmConstants.Company.HOME_COMPANY_ID != company.getId()) {
-                WorkerEntryQuery query = new WorkerEntryQuery(company.getId(), 1);
-                List<WorkerEntry> workerEntryShortViewList = workerEntryDAO.listByQuery(query);
+                WorkerEntryQuery workerEntryQuery = new WorkerEntryQuery(company.getId(), 1);
+                List<WorkerEntry> workerEntryShortViewList = workerEntryDAO.listByQuery(workerEntryQuery);
                 List<Long> personIds = workerEntryShortViewList.stream()
                         .map(WorkerEntry::getPersonId)
                         .distinct()
                         .collect(Collectors.toList());
 
+                if (CollectionUtils.isEmpty(personIds)) {
+                    continue;
+                }
+
+                // Update person company
                 personIds.forEach(personId -> {
                     personDAO.partialMerge(new Person(personId, company.getId()), "company_id");
+                    log.info("changePersonToSingleCompany(): person with id={} updated", personId);
                 });
 
+                // Update manager company of issue
                 CaseQuery caseQuery = new CaseQuery();
                 caseQuery.setType(En_CaseType.CRM_SUPPORT);
                 caseQuery.setManagerIds(personIds);
                 caseShortViewDAO.listByQuery(caseQuery).forEach(caseShortView -> {
                     caseShortView.setManagerCompanyId(company.getId());
                     caseShortViewDAO.partialMerge(caseShortView, "manager_company_id");
+                    log.info("changePersonToSingleCompany(): issue with id={} updated", caseShortView.getId());
                 });
+
+                // Update manager company of filter
+                List<CaseFilter> filters = caseFilterDAO.getListByCondition("params like ? and type = ?", "%managerIds%", En_CaseFilterType.CASE_OBJECTS.name());
+                for (CaseFilter filter : filters) {
+                    try {
+                        CaseQuery query = objectMapper.readValue(filter.getParams(), CaseQuery.class);
+                        List<Long> managerCompanyIds = emptyIfNull(query.getManagerCompanyIds());
+                        if (emptyIfNull(query.getManagerIds()).stream().anyMatch(personIds::contains) &&
+                                !managerCompanyIds.contains(company.getId())) {
+                            managerCompanyIds.add(company.getId());
+                            query.setManagerCompanyIds(managerCompanyIds);
+                            filter.setParams(objectMapper.writeValueAsString(query));
+                            caseFilterDAO.partialMerge(filter, "params");
+                            log.info("changePersonToSingleCompany(): filter with id={} updated", filter.getId());
+                        }
+                    } catch (IOException e) {
+                        log.warn("changePersonToSingleCompany(): cannot update filter with id={}", filter.getId());
+                        continue;
+                    }
+                }
+
+                // Update manager company of report
+                List<Report> reports = reportDAO.getListByCondition("case_query like ? and type=? and is_removed=?", "%managerIds%", En_ReportType.CASE_OBJECTS.name(), false);
+                for (Report report : reports) {
+                    try {
+                        CaseQuery query = objectMapper.readValue(report.getQuery(), CaseQuery.class);
+                        List<Long> managerCompanyIds = emptyIfNull(query.getManagerCompanyIds());
+                        if (emptyIfNull(query.getManagerIds()).stream().anyMatch(personIds::contains) &&
+                                !managerCompanyIds.contains(company.getId())) {
+                            managerCompanyIds.add(company.getId());
+                            query.setManagerCompanyIds(managerCompanyIds);
+                            report.setQuery(objectMapper.writeValueAsString(query));
+                            reportDAO.partialMerge(report, "case_query");
+                            log.info("changePersonToSingleCompany(): report with id={} updated", report.getId());
+                        }
+                    } catch (IOException e) {
+                        log.warn("changePersonToSingleCompany(): cannot update report with id={}", report.getId());
+                        continue;
+                    }
+                }
             }
-        });
+        }
+
+        log.debug("changePersonToSingleCompany(): finish");
     }
 
     private void updateContactItemsAccessType() {
