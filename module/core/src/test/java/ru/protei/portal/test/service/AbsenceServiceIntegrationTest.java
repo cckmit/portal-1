@@ -16,13 +16,13 @@ import java.util.Date;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
-public class AbsenceServiceTest extends BaseServiceTest {
+public class AbsenceServiceIntegrationTest extends BaseServiceTest {
 
     @Test
     public void testAbsence() {
         /* create */
         PersonAbsence absence = createAbsence(1L);
-        Assert.assertNotNull("Absence not created", absenceService.createAbsence(getAuthToken(), absence));
+        Assert.assertNotNull("Absence not created", absenceService.createAbsenceFromPortal(getAuthToken(), absence));
 
         /* update */
         absence.setTillTime(new Date(absence.getTillTime().getTime() + 600000L));

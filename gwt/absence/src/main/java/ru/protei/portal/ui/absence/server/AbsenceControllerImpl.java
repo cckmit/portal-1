@@ -48,7 +48,7 @@ public class AbsenceControllerImpl implements AbsenceController {
         log.info("saveAbsence(): absence={}", absence);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
         Result<Long> result = absence.getId() == null ?
-                absenceService.createAbsence(token, absence) :
+                absenceService.createAbsenceFromPortal(token, absence) :
                 absenceService.updateAbsence(token, absence);
         log.info("saveAbsence(): result={}", result.isOk() ? "ok" : result.getStatus());
         return checkResultAndGetData(result);
