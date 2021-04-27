@@ -167,6 +167,11 @@ public abstract class ServerTableActivity implements Activity, AbstractServerTab
             @Override
             public void onSuccess(Long result) {
                 fireEvent(new NotifyEvents.Show(lang.siteFolderServerRemoved(), NotifyEvents.NotifyType.SUCCESS));
+
+                platform.setServersCount(platform.getServersCount() - 1);
+
+                fireEvent(new SiteFolderPlatformEvents.Changed(platform));
+                reloadTable();
             }
         });
     }
