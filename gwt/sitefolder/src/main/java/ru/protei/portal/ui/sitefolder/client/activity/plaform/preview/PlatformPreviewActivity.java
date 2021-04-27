@@ -145,7 +145,7 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
         view.attachmentsContainer().clear();
         view.attachmentsContainer().add(platform.getAttachments());
 
-        fireEvent(new SiteFolderServerEvents.ShowTable(view.serversContainer(), platform));
+        fireEvent(new SiteFolderServerEvents.ShowTable(view.serversContainer(), platform, true));
         if (platform.getProjectId() != null){
             projectRequest(platform.getProjectId(), this::fillProjectSpecificFields);
         }
