@@ -163,6 +163,9 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
+        Map<Long, Long> platformIdToServersCount = serverDAO.countByPlatformIds(Collections.singletonList(id));
+        result.setServersCount(platformIdToServersCount.get(id));
+
         jdbcManyRelationsHelper.fill(result, "attachments");
 
         return ok(result);
