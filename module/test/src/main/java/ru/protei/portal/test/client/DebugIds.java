@@ -246,14 +246,22 @@ public class DebugIds {
     }
 
     public interface IMPORTANCE_BUTTON {
-        String PREFIX = "importance-button-";
+        String DEFAULT = "importance-button-";
+        String CRITICAL = "importance-button-critical";
+        String IMPORTANT = "importance-button-important";
+        String BASIC = "importance-button-basic";
+        String COSMETIC = "importance-button-cosmetic";
+        String MEDIUM = "importance-button-medium";
+        String EMERGENCY = "importance-button-emergency";
+        String HIGH = "importance-button-high";
+        String LOW = "importance-button-low";
     }
 
-    public interface PRIVACY_TYPE_BUTTON {
-        String DEFAULT = "privacy-type-button-";
-        String PUBLIC = "privacy-type-button-public";
-        String PRIVATE_CUSTOMER = "privacy-type-button-private-customer";
-        String PRIVATE = "privacy-type-button-private";
+    public interface PRIVACY_TYPE {
+        String DEFAULT = "privacy-type-";
+        String PUBLIC = "privacy-type-public";
+        String PRIVATE_CUSTOMER = "privacy-type-private-customer";
+        String PRIVATE = "privacy-type-private";
     }
 
     public interface PRODUCT_TYPES_BUTTON {
@@ -293,6 +301,7 @@ public class DebugIds {
         String NX_REQUEST = "issue-state-nx-request";
         String CUST_REQUEST = "issue-state-cust-request";
         String REQUEST_TO_PARTNER = "issue-state-request-to-partner";
+        String BLOCKED = "issue-state-blocked";
     }
 
     public interface ISSUE {

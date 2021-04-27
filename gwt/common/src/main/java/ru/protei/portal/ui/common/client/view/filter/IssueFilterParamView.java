@@ -71,8 +71,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         dateCreatedRange.setHeader(lang.created());
         dateModifiedRange.setHeader(lang.updated());
         initiators.setPersonModel( initiatorsModel );
-        managers.setPersonModel( managersModel );
+        managersModel.setIsFired(null);
+        managersModel.setIsPeople(true);
+        managers.setPersonModel(managersModel);
         managers.setNullItem(() -> new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
+        creators.setAsyncSearchModel(creatorsModel);
         searchByCommentsWarning.setText(
                 lang.searchByCommentsUnavailable(CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS));
         products.setTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
@@ -93,11 +96,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     public void setManagerCompaniesModel(AsyncSelectorModel companyModel) {
         managerCompanies.setAsyncModel(companyModel);
         updateManagers(managerCompanies.getValue());
-    }
-
-    @Override
-    public void setCreatorModel(AsyncPersonModel asyncPersonModel) {
-        creators.setAsyncSearchModel(asyncPersonModel);
     }
 
     @Override
@@ -929,6 +927,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     PersonModel initiatorsModel;
     @Inject
     PersonModel managersModel;
+    @Inject
+    AsyncPersonModel creatorsModel;
 
 
     private Timer timer = null;

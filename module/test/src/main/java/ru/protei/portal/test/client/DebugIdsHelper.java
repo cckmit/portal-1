@@ -2,8 +2,32 @@ package ru.protei.portal.test.client;
 
 public class DebugIdsHelper {
     public static final class IMPORTANCE_BUTTON {
-        public static String byCode(String importanceCode) {
-            return DebugIds.IMPORTANCE_BUTTON.PREFIX + importanceCode;
+        public static String byId(long id) {
+            if (id == 1) {
+                return DebugIds.IMPORTANCE_BUTTON.CRITICAL;
+            }
+            if (id == 2) {
+                return DebugIds.IMPORTANCE_BUTTON.IMPORTANT;
+            }
+            if (id == 3) {
+                return DebugIds.IMPORTANCE_BUTTON.BASIC;
+            }
+            if (id == 4) {
+                return DebugIds.IMPORTANCE_BUTTON.COSMETIC;
+            }
+            if (id == 5) {
+                return DebugIds.IMPORTANCE_BUTTON.MEDIUM;
+            }
+            if (id == 6) {
+                return DebugIds.IMPORTANCE_BUTTON.EMERGENCY;
+            }
+            if (id == 7) {
+                return DebugIds.IMPORTANCE_BUTTON.HIGH;
+            }
+            if (id == 8) {
+                return DebugIds.IMPORTANCE_BUTTON.LOW;
+            }
+            return DebugIds.IMPORTANCE_BUTTON.DEFAULT + id;
         }
     }
 
@@ -90,15 +114,18 @@ public class DebugIdsHelper {
             if (id == 37) {
                 return DebugIds.ISSUE_STATE.REQUEST_TO_PARTNER;
             }
+            if (id == 38) {
+                return DebugIds.ISSUE_STATE.BLOCKED;
+            }
             return DebugIds.ISSUE_STATE.DEFAULT + id;
         }
     }
     public static final class LOCALE_BUTTON {
         public static String byLocale(String locale) {
-            if (locale.equals("en")) {
+            if ("en".equals(locale)) {
                 return DebugIds.LOCALE_BUTTON.EN;
             }
-            if (locale.equals("ru")) {
+            if ("ru".equals(locale)) {
                 return DebugIds.LOCALE_BUTTON.RU;
             }
             return DebugIds.LOCALE_BUTTON.DEFAULT + locale;
@@ -119,6 +146,21 @@ public class DebugIdsHelper {
                 return DebugIds.PRODUCT_TYPES_BUTTON.COMPLEX;
             }
             return DebugIds.PRODUCT_TYPES_BUTTON.DEFAULT + id;
+        }
+    }
+
+    public static final class PRIVACY_TYPE {
+        public static String byType(String type) {
+            if ("public".equals(type)) {
+                return DebugIds.PRIVACY_TYPE.PUBLIC;
+            }
+            if ("private_customer".equals(type)) {
+                return DebugIds.PRIVACY_TYPE.PRIVATE_CUSTOMER;
+            }
+            if ("private".equals(type)) {
+                return DebugIds.PRIVACY_TYPE.PRIVATE;
+            }
+            return DebugIds.PRIVACY_TYPE.DEFAULT + type;
         }
     }
 }

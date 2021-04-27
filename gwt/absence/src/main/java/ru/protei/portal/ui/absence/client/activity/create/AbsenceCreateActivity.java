@@ -5,6 +5,7 @@ import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.absence.client.activity.common.AbsenceCommonActivity;
 import ru.protei.portal.ui.common.client.events.AbsenceEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
@@ -33,6 +34,7 @@ public abstract class AbsenceCreateActivity extends AbsenceCommonActivity {
             return;
         }
         dialogView.setHeader(lang.absenceCreation());
+        this.employee = event.employee;
         onShow();
     }
 
@@ -61,8 +63,10 @@ public abstract class AbsenceCreateActivity extends AbsenceCommonActivity {
     }
 
     protected void performFillView() {
-        fillView(new PersonAbsence());
-
+        fillView(this.employee != null ? new PersonAbsence(
+                this.employee.getId(),
+                this.employee.getDisplayName()) : new PersonAbsence());
+        this.employee = null;
         createView.dateRange().setValue(new ArrayList<>());
         createView.setDateRangeValid(true);
         dialogView.saveButtonVisibility().setVisible(true);
@@ -137,4 +141,6 @@ public abstract class AbsenceCreateActivity extends AbsenceCommonActivity {
 
     @Inject
     AbstractAbsenceCreateView createView;
+
+    private EmployeeShortView employee;
 }

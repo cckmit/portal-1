@@ -615,6 +615,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                 homeCompanyService.getHomeCompany(CrmConstants.Company.HOME_COMPANY_ID, company -> {
                     issueMetaView.setManagerCompany(company);
                     issueMetaView.updateManagersCompanyFilter(company.getId());
+                    caseObjectMeta.setManagerCompany(company);
                 });
             }
         }
