@@ -35,6 +35,7 @@ import static org.mockito.Mockito.*;
 public class AbsenceServiceUnitTest extends BaseServiceTest {
 
     private static final Long ABSENCE_ID = 1L;
+    private static final Long TIME_DIFFERENCE = 1000000L;
 
     @Autowired
     AbsenceService absenceService;
@@ -47,7 +48,7 @@ public class AbsenceServiceUnitTest extends BaseServiceTest {
     @Test
     public void checkIsAbsenceCreatedFromPortal() {
         PersonAbsence absence = createAbsence(ABSENCE_ID);
-        absence.setTillTime(new Date(absence.getFromTime().getTime() + 1000000));
+        absence.setTillTime(new Date(absence.getFromTime().getTime() + TIME_DIFFERENCE));
 
         when(personAbsenceDAO.listByEmployeeAndDateBounds(anyLong(), any(Date.class), any(Date.class)))
                              .thenReturn(new ArrayList<>());
@@ -65,7 +66,7 @@ public class AbsenceServiceUnitTest extends BaseServiceTest {
     @Test
     public void checkIsAbsenceCreatedFromPortalNegative() {
         PersonAbsence absence = createAbsence(ABSENCE_ID);
-        absence.setTillTime(new Date(absence.getFromTime().getTime() + 1000000));
+        absence.setTillTime(new Date(absence.getFromTime().getTime() + TIME_DIFFERENCE));
 
         absence.setCreatedFrom1C(true);
 
@@ -88,7 +89,7 @@ public class AbsenceServiceUnitTest extends BaseServiceTest {
         apiAbsence.setCompanyCode("companyCode");
         apiAbsence.setReason(En_AbsenceReason.REMOTE_WORK);
         apiAbsence.setFromTime(new Date());
-        apiAbsence.setTillTime((new Date(apiAbsence.getFromTime().getTime() + 1000000)));
+        apiAbsence.setTillTime((new Date(apiAbsence.getFromTime().getTime() + TIME_DIFFERENCE)));
         apiAbsence.setPersonId(ABSENCE_ID);
 
         ArgumentCaptor<PersonAbsence> requestCaptor = forClass(PersonAbsence.class);

@@ -1455,24 +1455,11 @@ public class TestPortalApiController extends BaseServiceTest {
     public void createAbsenceAndCheckWhetherItCreatedFrom1C() throws Exception {
         ApiAbsence apiInfo = createApiAbsence();
 
-        ResultActions result = createPostResultAction("/api/absence/1c/create", apiInfo)
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
+        ResultActions resultActions = createPostResultAction("/api/absence/1c/create", apiInfo)
+                .andExpect(status().isOk());
 
-        Long absenceId = getAbsenceId(result);
+        Long absenceId = getData(resultActions, Long.class);
         Assert.assertTrue(absenceId != null && personAbsenceDAO.get(absenceId).isCreatedFrom1C());
-    }
-
-    private Long getAbsenceId(ResultActions result) {
-        try {
-            String json = result.andReturn().getResponse().getContentAsString();
-            int startIndex = json.indexOf("data") + 6;
-            int endIndex = json.indexOf("}");
-            return Long.parseLong(json.substring(startIndex, endIndex));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     @Test
