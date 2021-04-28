@@ -88,7 +88,6 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                         }));
     }
 
-
     @Event
     public void onCreateDepartment(CompanyDepartmentEvents.Created event){
         view.companyDepartmentSelectorReload();
@@ -166,14 +165,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return;
         }
 
-        List<WorkerEntry> workers = fillWorkers();
-        if (personId == null) {
-            createPersonAndUpdateWorkers(workers);
-        } else if (isEditablePerson) {
-            updatePersonAndUpdateWorkers(workers);
-        } else {
-            updateEmployeeWorkers(workers);
-        }
+        saveEmployee(fillEmployee(), fillWorkers(), isEditablePerson, view.changeAccount().getValue());
     }
 
     @Override
@@ -361,7 +353,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         return false;
     }
 
-    private Person applyChangesEmployee() {
+    private Person fillEmployee() {
         employee.setId(personId);
         employee.setGender(view.gender().getValue());
         employee.setFirstName(view.firstName().getValue());
@@ -565,32 +557,17 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.ipAddressEnabled().setEnabled(isEnabled);
     }
 
-    private void updateEmployeeWorkers (List<WorkerEntry> workers) {
-        employeeService.updateEmployeeWorkers(workers, new FluentCallback<Boolean>()
+    private void saveEmployee(Person person, List<WorkerEntry> workers, boolean isEditablePerson, boolean needToChangeAccount) {
+        employeeService.saveEmployee(person, workers, isEditablePerson, needToChangeAccount, new FluentCallback<Person>()
                 .withError(throwable -> {
                     if ((throwable instanceof RequestFailedException) && En_ResultStatus.EMPLOYEE_MIGRATION_FAILED.equals(((RequestFailedException) throwable).status)) {
                         fireEvent(new Back());
                     }
                     errorHandler.accept(throwable);
                 })
-                .withSuccess(workerEntryList -> {
+                .withSuccess(result -> {
                     fireEvent(new NotifyEvents.Show(lang.employeeSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new EmployeeEvents.Show(!isNew(personId)));
-                }));
-    }
-
-    private void createPersonAndUpdateWorkers(List<WorkerEntry> workers) {
-        employeeService.createEmployeePerson(applyChangesEmployee(), new FluentCallback<Person>()
-                .withSuccess(person -> {
-                    workers.forEach(workerEntry -> workerEntry.setPersonId(person.getId()));
-                    updateEmployeeWorkers(workers);
-                }));
-    }
-
-    private void updatePersonAndUpdateWorkers(List<WorkerEntry> workers) {
-        employeeService.updateEmployeePerson(applyChangesEmployee(), view.changeAccount().getValue(), new FluentCallback<Boolean>()
-                .withSuccess(success -> {
-                    updateEmployeeWorkers(workers);
                 }));
     }
 
@@ -619,7 +596,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     }
 
     private Runnable removeAction() {
-        return () -> employeeService.fireEmployee(applyChangesEmployee(), new FluentCallback<Boolean>()
+        return () -> employeeService.fireEmployee(fillEmployee(), new FluentCallback<Boolean>()
                 .withError(throwable -> {
                     if ((throwable instanceof RequestFailedException) && En_ResultStatus.EMPLOYEE_MIGRATION_FAILED.equals(((RequestFailedException) throwable).status)) {
                         fireEvent(new Back());

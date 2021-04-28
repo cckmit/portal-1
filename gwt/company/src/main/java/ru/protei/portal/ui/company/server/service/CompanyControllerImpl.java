@@ -289,9 +289,7 @@ public class CompanyControllerImpl implements CompanyController {
     public List<EntityOption> getAllHomeCompanies() throws RequestFailedException {
         log.info("getAllHomeCompanies()");
         AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
-        List<Company> companies = checkResultAndGetData(companyService.getAllHomeCompanies(authToken));
-
-        return companies.stream().map(company -> new EntityOption(company.getCname(), company.getId())).collect(Collectors.toList());
+        return checkResultAndGetData(companyService.getAllHomeCompanies(authToken));
     }
 
     @Override
@@ -300,6 +298,13 @@ public class CompanyControllerImpl implements CompanyController {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
         return checkResultAndGetData(companyService.getCompanyImportanceItems(token,companyId));
+    }
+
+    @Override
+    public List<EntityOption> getSingleHomeCompanies() throws RequestFailedException {
+        log.info("getSingleHomeCompanies()");
+        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(companyService.getSingleHomeCompanies(authToken));
     }
 
     @Autowired

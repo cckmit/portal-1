@@ -4,20 +4,21 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel ui:field="root">
-        <g:HTMLPanel ui:field="label" tag="label" styleName="hide"/>
-
-        <g:HTMLPanel ui:field="select2" styleName="select2-container select2-container-multi multi-input-select">
-            <g:HTMLPanel ui:field="itemContainer" tag="ul" styleName="select2-choices"/>
-            <div ui:field="selectButton" class="select2-button">
-                <g:Button ui:field="caretButton" styleName="select2-add-button btn btn-flat bg-white no-border">
-                    <span ui:field="addIcon" class="hide"/>
-                    <span ui:field="add" class="caret"/>
-                </g:Button>
-                <g:Button ui:field="clearButton" visible="false" styleName="btn btn-flat bg-white no-border">
-                    <span ui:field="clearIcon" class="hide"/>
-                    <span ui:field="clear" class="fa fa-times"/>
-                </g:Button>
+        <div ui:field="form" class="form-group-default form-group-default-select2">
+            <label ui:field="label" class="hide"/>
+            <div ui:field="select2" class="select2-container select2-container-multi multi-input-select">
+                <g:HTMLPanel ui:field="itemContainer" tag="ul" styleName="select2-choices"/>
+                <div ui:field="selectButton" class="select2-button">
+                    <g:Button ui:field="caretButton" styleName="select2-add-button btn btn-flat bg-white no-border">
+                        <span ui:field="addIcon" class="hide"/>
+                        <span ui:field="add" class="caret"/>
+                    </g:Button>
+                    <g:Button ui:field="clearButton" visible="false" styleName="btn btn-flat bg-white no-border">
+                        <span ui:field="clearIcon" class="hide"/>
+                        <span ui:field="clear" class="fa fa-times"/>
+                    </g:Button>
+                </div>
             </div>
-        </g:HTMLPanel>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

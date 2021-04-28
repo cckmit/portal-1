@@ -33,7 +33,7 @@ public class ImportanceBtnGroupMulti extends ToggleBtnGroupMulti<ImportanceLevel
                     level.getColor(),
                     makeContrastColor(level.getColor())
             );
-            setEnsureDebugId(level, DebugIdsHelper.IMPORTANCE_BUTTON.byCode(level.getCode()));
+            setEnsureDebugId(level, DebugIdsHelper.IMPORTANCE_BUTTON.byId(level.getId()));
         }
     }
 }

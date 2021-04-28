@@ -117,6 +117,12 @@ public class Person extends AuditableObject {
         this.id = personId;
     }
 
+    public Person(Long personId, Long companyId){
+        this();
+        this.id = personId;
+        this.companyId = companyId;
+    }
+
     public Person () {
     }
 

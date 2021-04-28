@@ -303,8 +303,6 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         description.ensureDebugId(DebugIds.PROJECT.DESCRIPTION_INPUT);
         projectState.setEnsureDebugId(DebugIds.PROJECT.STATE_SELECTOR);
         projectRegion.setEnsureDebugId(DebugIds.PROJECT.REGION_SELECTOR);
-        productDirection.ensureDebugId(DebugIds.PROJECT.DIRECTION_SELECTOR);
-        products.ensureDebugId(DebugIds.PROJECT.PRODUCT_SELECTOR);
         company.setEnsureDebugId(DebugIds.PROJECT.COMPANY_SELECTOR);
         customerType.setEnsureDebugId(DebugIds.PROJECT.CUSTOMER_TYPE_SELECTOR);
         saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
@@ -314,10 +312,26 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         technicalSupportValidity.setEnsureDebugId(DebugIds.PROJECT.TECHNICAL_SUPPORT_VALIDITY_CONTAINER);
         workCompletionDate.setEnsureDebugId(DebugIds.PROJECT.WORK_COMPLETION_DATE);
         purchaseDate.setEnsureDebugId(DebugIds.PROJECT.PURCHASE_DATE);
+        productDirection.ensureDebugId(DebugIds.PROJECT.DIRECTION_SELECTOR);
+        productDirection.setAddEnsureDebugId(DebugIds.PROJECT.DIRECTION_SELECTOR_ADD_BUTTON);
+        productDirection.setClearEnsureDebugId(DebugIds.PROJECT.DIRECTION_SELECTOR_CLEAR_BUTTON);
+        productDirection.setItemContainerEnsureDebugId(DebugIds.PROJECT.DIRECTION_SELECTOR_ITEM_CONTAINER);
+        productDirection.setLabelEnsureDebugId(DebugIds.PROJECT.DIRECTION_SELECTOR_LABEL);
+        products.ensureDebugId(DebugIds.PROJECT.PRODUCT_SELECTOR);
+        products.setAddEnsureDebugId(DebugIds.PROJECT.PRODUCT_SELECTOR_ADD_BUTTON);
+        products.setClearEnsureDebugId(DebugIds.PROJECT.PRODUCT_SELECTOR_CLEAR_BUTTON);
+        products.setItemContainerEnsureDebugId(DebugIds.PROJECT.PRODUCT_SELECTOR_ITEM_CONTAINER);
+        products.setLabelEnsureDebugId(DebugIds.PROJECT.PRODUCT_SELECTOR_LABEL);
+        subcontractors.ensureDebugId(DebugIds.PROJECT.SUBCONTRACTOR_SELECTOR);
         subcontractors.setAddEnsureDebugId(DebugIds.PROJECT.SUBCONTRACTOR_SELECTOR_ADD_BUTTON);
         subcontractors.setClearEnsureDebugId(DebugIds.PROJECT.SUBCONTRACTOR_SELECTOR_CLEAR_BUTTON);
         subcontractors.setItemContainerEnsureDebugId(DebugIds.PROJECT.SUBCONTRACTOR_SELECTOR_ITEM_CONTAINER);
         subcontractors.setLabelEnsureDebugId(DebugIds.PROJECT.SUBCONTRACTOR_SELECTOR_LABEL);
+        plans.ensureDebugId(DebugIds.PROJECT.PLAN_SELECTOR);
+        plans.setAddEnsureDebugId(DebugIds.PROJECT.PLAN_SELECTOR_ADD_BUTTON);
+        plans.setClearEnsureDebugId(DebugIds.PROJECT.PLAN_SELECTOR_CLEAR_BUTTON);
+        plans.setItemContainerEnsureDebugId(DebugIds.PROJECT.PLAN_SELECTOR_ITEM_CONTAINER);
+        plans.setLabelEnsureDebugId(DebugIds.PROJECT.PLAN_SELECTOR_LABEL);
     }
 
     @UiField
