@@ -75,7 +75,9 @@ public class AbsenceTableView extends Composite implements AbstractAbsenceTableV
         completeClickColumn.setDisplayPredicate(value -> AccessUtil.isAllowedEdit(policyService, value));
         completeClickColumn.setEnabledPredicate(value -> new Date().after(value.getFromTime()) && new Date().before(value.getTillTime()));
         editClickColumn.setDisplayPredicate(value -> AccessUtil.isAllowedEdit(policyService, value));
+        editClickColumn.setEnabledPredicate(value -> !value.isCreatedFrom1C());
         removeClickColumn.setDisplayPredicate(value -> AccessUtil.isAllowedRemove(policyService, value));
+        removeClickColumn.setEnabledPredicate(value -> !value.isCreatedFrom1C());
 
         columns.add(reason);
         columns.add(fromTime);

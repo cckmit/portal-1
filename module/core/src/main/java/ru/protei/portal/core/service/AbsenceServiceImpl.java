@@ -3,10 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AbsenceNotificationEvent;
 import ru.protei.portal.core.event.EventAction;
@@ -71,7 +68,12 @@ public class AbsenceServiceImpl implements AbsenceService {
 
     @Override
     @Transactional
-    public Result<Long> createAbsence(AuthToken token, PersonAbsence absence) {
+    public Result<Long> createAbsenceFromPortal(AuthToken token, PersonAbsence absence) {
+        absence.setCreatedFrom1C(false);
+        return createAbsence( token, absence);
+    }
+
+    private Result<Long> createAbsence(AuthToken token, PersonAbsence absence) {
 
         if (!validateFields(absence)) {
             return error( En_ResultStatus.INCORRECT_PARAMS);
@@ -337,7 +339,10 @@ public class AbsenceServiceImpl implements AbsenceService {
     public Result<Long> createAbsenceByApi(AuthToken authToken, ApiAbsence apiAbsence) {
         return apiAbsenceCrudAction(authToken, apiAbsence,
                 absence -> absence == null || !absence.isValid(),
-                (token, absence) -> createAbsence(authToken, absence));
+                (token, absence) -> {
+                    absence.setCreatedFrom1C(true);
+                    return createAbsence(authToken, absence);
+                });
     }
 
     @Override

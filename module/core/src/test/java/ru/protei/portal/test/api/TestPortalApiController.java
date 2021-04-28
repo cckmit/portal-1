@@ -1439,16 +1439,7 @@ public class TestPortalApiController extends BaseServiceTest {
     @Test
     @Transactional
     public void createAbsenceByPersonIdAndIntersectPeriod() throws Exception {
-        ApiAbsence apiInfo = new ApiAbsence();
-        apiInfo.setPersonId(person.getId());
-        apiInfo.setReason(En_AbsenceReason.REMOTE_WORK);
-
-        Date now = new Date();
-        Date tomorrow = new Date();
-        tomorrow.setDate(now.getDate() + 1);
-
-        apiInfo.setFromTime(now);
-        apiInfo.setTillTime(tomorrow);
+        ApiAbsence apiInfo = createApiAbsence();
 
         createPostResultAction("/api/absence/1c/create", apiInfo)
                 .andExpect(status().isOk())
@@ -1457,6 +1448,18 @@ public class TestPortalApiController extends BaseServiceTest {
         createPostResultAction("/api/absence/1c/create", apiInfo)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.ABSENCE_HAS_INTERSECTIONS.toString())));
+    }
+
+    @Test
+    @Transactional
+    public void createAbsenceAndCheckWhetherItCreatedFrom1C() throws Exception {
+        ApiAbsence apiInfo = createApiAbsence();
+
+        ResultActions resultActions = createPostResultAction("/api/absence/1c/create", apiInfo)
+                .andExpect(status().isOk());
+
+        Long absenceId = getData(resultActions, Long.class);
+        Assert.assertTrue(absenceId != null && personAbsenceDAO.get(absenceId).isCreatedFrom1C());
     }
 
     @Test
@@ -1785,5 +1788,18 @@ public class TestPortalApiController extends BaseServiceTest {
         ytIssueComment.id = "2";
         ytIssueComment.deleted = false;
         return ytIssueComment;
+    }
+
+    private ApiAbsence createApiAbsence() {
+        ApiAbsence apiInfo = new ApiAbsence();
+        apiInfo.setPersonId(person.getId());
+        apiInfo.setReason(En_AbsenceReason.REMOTE_WORK);
+
+        Date now = new Date();
+        Date tomorrow = new Date(now.getTime() + 1000000);
+
+        apiInfo.setFromTime(now);
+        apiInfo.setTillTime(tomorrow);
+        return apiInfo;
     }
 }
