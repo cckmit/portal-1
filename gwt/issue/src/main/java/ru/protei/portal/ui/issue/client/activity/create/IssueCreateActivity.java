@@ -605,7 +605,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
 
-    private void fillManagerInfoContainer(final AbstractIssueMetaView issueMetaView, CaseObjectMeta caseObjectMeta) {
+    private void fillManagerInfoContainer(final AbstractIssueMetaView issueMetaView, final CaseObjectMeta caseObjectMeta) {
         issueMetaView.managerCompanyEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE));
         issueMetaView.managerEnabled().setEnabled(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE) || policyService.isSubcontractorCompany());
 
@@ -613,7 +613,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
             issueMetaView.setManagerCompany(new EntityOption(caseObjectMeta.getManagerCompanyName(), caseObjectMeta.getManagerCompanyId()));
             issueMetaView.updateManagersCompanyFilter(caseObjectMeta.getManagerCompanyId());
         } else {
-            if (policyService.isSubcontractorCompany()) {
+            if (policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE) || policyService.isSubcontractorCompany()) {
                 issueMetaView.setManagerCompany(policyService.getUserCompany().toEntityOption());
                 issueMetaView.updateManagersCompanyFilter(policyService.getUserCompany().getId());
             } else {

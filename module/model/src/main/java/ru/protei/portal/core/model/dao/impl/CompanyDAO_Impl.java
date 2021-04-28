@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 
@@ -53,9 +54,15 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
     }
 
     @Override
+    public List<Company> getSingleHomeCompanies() {
+        String condition = "company.id IN (SELECT companyId FROM company_group_home where mainId is NULL)";
+        return getListByCondition(condition);
+    }
+
+    @Override
     public List<Company> getAllHomeCompanies() {
-        String sql = "company.id IN (SELECT companyId FROM company_group_home)";
-        return getListByCondition(sql);
+        String condition = "company.id IN (SELECT companyId FROM company_group_home)";
+        return getListByCondition(condition);
     }
 
     @Override
@@ -73,7 +80,11 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
             condition.append("1=1");
 
             if (query.getHomeGroupFlag() != null) {
-                condition.append(" and company.id").append(query.getHomeGroupFlag() ? " in" : " not in").append(" ( select companyId from company_group_home where mainId is not null ) ");
+                if (query.getHomeGroupFlag()) {
+                    condition.append(" and company.id in ( select companyId from company_group_home where companyId != " + CrmConstants.Company.HOME_COMPANY_ID + " ) ");
+                } else {
+                    condition.append(" and company.id not in").append(" (select companyId from company_group_home where mainId is not null) ");
+                }
             }
 
             if (query.getSynchronizeWith1C() != null){

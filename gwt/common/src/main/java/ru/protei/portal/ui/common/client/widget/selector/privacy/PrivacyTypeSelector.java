@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.widget.selector.privacy;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
+import ru.protei.portal.test.client.DebugIdsHelper;
 import ru.protei.portal.ui.common.client.common.PrivacyTypeStyleProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseCommentPrivacyTypeLang;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
@@ -13,18 +14,19 @@ public class PrivacyTypeSelector extends ButtonPopupSingleSelector<En_CaseCommen
     @Inject
     public void init() {
         setSearchEnabled( false );
-        setItemRenderer( value -> value == null ? defaultValue : "<i class='" + makeValue(value) + "'></i>");
+        setItemRenderer( value -> value == null ? defaultValue : "<i class='" + makeIcon(value) + "'></i>");
     }
 
-    private String makeValue(En_CaseCommentPrivacyType value) {
+    private String makeIcon(En_CaseCommentPrivacyType value) {
         return PrivacyTypeStyleProvider.getIcon(value);
     }
 
     @Override
-    protected SelectorItem<En_CaseCommentPrivacyType> makeSelectorItem(En_CaseCommentPrivacyType element, String elementHtml ) {
+    protected SelectorItem<En_CaseCommentPrivacyType> makeSelectorItem(En_CaseCommentPrivacyType element, String elementHtml) {
         PopupSelectorItem<En_CaseCommentPrivacyType> item = new PopupSelectorItem();
-        item.setIcon(makeValue(element) + " m-r-5");
+        item.setIcon(makeIcon(element) + " m-r-5");
         item.setName(privacyTypeLang.getName(element));
+        item.ensureDebugId(DebugIdsHelper.PRIVACY_TYPE.byType(element.name().toLowerCase()));
         return item;
     }
 

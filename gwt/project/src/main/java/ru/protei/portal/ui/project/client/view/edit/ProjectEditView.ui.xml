@@ -159,12 +159,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group m-t-10 m-b-0">
-                            <label><ui:text from="{lang.projectDirections}"/></label>
-                        </div>
                         <div class="row form-group">
                             <div class="col-md-12">
                                 <productdirection:ProductDirectionMultiSelector ui:field="productDirection"
+                                                                                header="{lang.projectDirections}"
                                                                                 buttonStyle="btn-info btn-xs"
                                                                                 styleName="case-products"
                                                                                 validation="true"
@@ -172,35 +170,28 @@
                                                                                 mandatory="true"/>
                             </div>
                         </div>
-                        <div class="form-group m-t-10 m-b-0">
-                            <label><ui:text from="{lang.projectProducts}"/></label>
-                        </div>
                         <div class="row form-group">
                             <div class="col-md-12">
                                 <devunit:DevUnitWithImageMultiSelector ui:field="products"
+                                                                       header="{lang.projectProducts}"
                                                                        buttonStyle="btn-info btn-xs"
                                                                        styleName="case-products"
                                                                        hasNullValue="false"
                                                                        validation="false"/>
                             </div>
                         </div>
-
-                        <div class="form-group m-t-10 m-b-0">
-                            <label><ui:text from="{lang.projectSubcontractors}"/></label>
-                        </div>
                         <div class="row form-group">
                             <div class="col-md-12">
                                 <company:CompanyMultiSelector ui:field="subcontractors"
+                                                              header="{lang.projectSubcontractors}"
                                                               buttonStyle="btn-info btn-xs"
                                                               styleName="case-subscribers"/>
                             </div>
                         </div>
-                        <div class="form-group m-t-10 m-b-0">
-                            <label ui:field="plansLabel"><ui:text from="{lang.plans}"/></label>
-                        </div>
                         <div class="row form-group">
                             <div class="col-md-12">
                                 <plan:PlanMultiSelector ui:field="plans"
+                                                        header="{lang.plans}"
                                                         buttonStyle="btn-info btn-xs"
                                                         styleName="case-plans"
                                                         hasNullValue="false"/>

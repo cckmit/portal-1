@@ -25,7 +25,6 @@ import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
@@ -42,7 +41,6 @@ public class IssueFilterWidget extends Composite {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.model = model;
         ensureDebugIds();
-        issueFilterParamView.setCreatorModel(asyncPersonModel);
         issueFilterParamView.commentAuthorsVisibility().setVisible(false);
         issueFilterParamView.timeElapsedVisibility().setVisible(false);
     }
@@ -299,9 +297,6 @@ public class IssueFilterWidget extends Composite {
     DivElement filterNameContainer;
     @UiField
     DivElement footer;
-
-    @Inject
-    AsyncPersonModel asyncPersonModel;
 
     AbstractIssueFilterWidgetModel model;
 

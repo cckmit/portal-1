@@ -47,11 +47,9 @@ public class PersonAbsence extends AuditableObject implements Serializable {
 
     public PersonAbsence() {}
 
-    public PersonAbsence(Long personId, String personDisplayName, Date fromTime, Date tillTime) {
+    public PersonAbsence(Long personId, String personDisplayName) {
         this.personId = personId;
         this.personDisplayName = personDisplayName;
-        this.fromTime = fromTime;
-        this.tillTime = tillTime;
     }
 
     public PersonAbsence(Long id, Long personId, En_AbsenceReason reason, Date fromTime, Date tillTime) {

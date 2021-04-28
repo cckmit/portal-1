@@ -71,7 +71,7 @@ public class CompanyServiceImpl implements CompanyService {
     ProjectDAO projectDAO;
 
     @Override
-    public Result<SearchResult<Company>> getCompanies( AuthToken token, CompanyQuery query) {
+    public Result<SearchResult<Company>> getCompanies(AuthToken token, CompanyQuery query) {
 
         applyFilterByScope(token, query);
 
@@ -82,8 +82,8 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<EntityOption>> companyOptionList( AuthToken token, CompanyQuery query) {
-        applyFilterByScope( token, query );
+    public Result<List<EntityOption>> companyOptionList(AuthToken token, CompanyQuery query) {
+        applyFilterByScope(token, query);
         List<Company> list = companyDAO.listByQuery(query);
         if (list == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
@@ -102,7 +102,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<EntityOption>> companyOptionListByIds(AuthToken token, List<Long> ids ) {
+    public Result<List<EntityOption>> companyOptionListByIds(AuthToken token, List<Long> ids) {
         List<Company> list = companyDAO.getListByKeys(ids);
 
         if (list == null)
@@ -138,12 +138,12 @@ public class CompanyServiceImpl implements CompanyService {
                 .distinct()
                 .collect(Collectors.toList());
 
-        Company homeCompany = companyDAO.get(CrmConstants.Company.HOME_COMPANY_ID);
-        if (homeCompany == null) {
+        List<Company> singleHomeCompanies = companyDAO.getSingleHomeCompanies();
+        if (singleHomeCompanies == null) {
             return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        companies.add(0, homeCompany);
+        companies.addAll(0, singleHomeCompanies);
 
         return ok(companies.stream()
                 .map(Company::toEntityOption)
@@ -171,12 +171,12 @@ public class CompanyServiceImpl implements CompanyService {
                 .distinct()
                 .collect(Collectors.toList());
 
-        Company homeCompany = companyDAO.get(CrmConstants.Company.HOME_COMPANY_ID);
-        if (homeCompany == null) {
+        List<Company> singleHomeCompanies = companyDAO.getSingleHomeCompanies();
+        if (singleHomeCompanies == null) {
             return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        companies.add(0, homeCompany);
+        companies.addAll(0, singleHomeCompanies);
 
         return ok(companies.stream()
                 .map(Company::toEntityOption)
@@ -392,16 +392,27 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Result<List<Company>> getAllHomeCompanies(AuthToken token) {
+    public Result<List<EntityOption>> getAllHomeCompanies(AuthToken token) {
         List<Company> companies = companyDAO.getAllHomeCompanies();
         jdbcManyRelationsHelper.fill(companies, Company.Fields.CONTACT_ITEMS);
-        return ok(companies);
+        return ok(companies.stream()
+                .map(Company::toEntityOption)
+                .collect(Collectors.toList()));
     }
 
     @Override
     public Result<List<CompanyImportanceItem>> getCompanyImportanceItems(AuthToken token, Long companyId) {
         List<CompanyImportanceItem> result = companyImportanceItemDAO.getSortedImportanceLevels(companyId);
         return ok(result);
+    }
+
+    @Override
+    public Result<List<EntityOption>> getSingleHomeCompanies(AuthToken token) {
+        List<Company> companies = companyDAO.getSingleHomeCompanies();
+        jdbcManyRelationsHelper.fill(companies, Company.Fields.CONTACT_ITEMS);
+        return ok(companies.stream()
+                .map(Company::toEntityOption)
+                .collect(Collectors.toList()));
     }
 
     private List<Long> collectParentCompanyIds(List<Company> companies) {
@@ -513,10 +524,9 @@ public class CompanyServiceImpl implements CompanyService {
         return Objects.equals( En_CompanyCategory.HOME, o1.getCategory() ) ? -1 : Objects.equals( En_CompanyCategory.HOME, o2.getCategory() ) ? 1 : 0;
     }
 
-    private void applyFilterByScope( AuthToken token, CompanyQuery query ) {
-        Set< UserRole > roles = token.getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW ) ) {
-            query.setCompanyIds( acceptAllowedCompanies(query.getCompanyIds(), token.getCompanyAndChildIds() ) );
+    private void applyFilterByScope(AuthToken token, CompanyQuery query) {
+        if (!policyService.hasSystemScope(token.getRoles())) {
+            query.setCompanyIds(acceptAllowedCompanies(query.getCompanyIds(), token.getCompanyAndChildIds()));
         }
     }
 

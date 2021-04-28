@@ -53,17 +53,9 @@ public interface EmployeeController extends RemoteService {
 
     EmployeeShortView getEmployeeWithChangedHiddenCompanyNames(Long employeeId) throws RequestFailedException;
 
-    Person createEmployeePerson (Person person) throws RequestFailedException;
-
-    WorkerEntry createEmployeeWorker (WorkerEntry worker) throws RequestFailedException;
-
-    Boolean updateEmployeePerson(Person person, boolean needToChangeAccount) throws RequestFailedException;
-
-    Boolean updateEmployeeWorker(WorkerEntry workerEntry) throws RequestFailedException;
+    Person saveEmployee(Person person, List<WorkerEntry> workerEntries, boolean isEditablePerson, boolean needToChangeAccount) throws RequestFailedException;
 
     boolean fireEmployee(Person person) throws RequestFailedException;
-
-    boolean updateEmployeeWorkers(List<WorkerEntry> workerEntryList) throws RequestFailedException;
 
     EmployeesBirthdays getEmployeesBirthdays(Date dateFrom, Date dateUntil) throws RequestFailedException;
 }

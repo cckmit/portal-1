@@ -7,12 +7,10 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dao.PersonShortViewDAO;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -105,8 +103,7 @@ public class PersonServiceImpl implements PersonService {
     }
 
     private Result<PersonQuery> fillQueryByScope(AuthToken token, PersonQuery personQuery) {
-        Set<UserRole> roles = token.getRoles();
-        if (policyService.hasGrantAccessFor(roles, En_Privilege.COMPANY_VIEW)) {
+        if (policyService.hasSystemScope(token.getRoles())) {
             return ok(personQuery);
         }
 
