@@ -10,7 +10,7 @@ import ru.protei.winter.core.utils.file.WinterFilePathResolver;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class IssueCommentHelpTextConverter implements InitializingBean {
 
@@ -36,7 +36,7 @@ public class IssueCommentHelpTextConverter implements InitializingBean {
         URL path = ConfigUtils.locateFileOrDirectory(fileName, resolver.resolve(fileName));
         log.info("File path is " + path);
         try (InputStream in = path.openStream()) {
-            html = IOUtils.toString(in, Charset.defaultCharset());
+            html = IOUtils.toString(in, StandardCharsets.UTF_8);
             log.info("{} loaded successful from {}", fileName, path);
         } catch (Exception e) {
             log.warn("{} not found", fileName);
