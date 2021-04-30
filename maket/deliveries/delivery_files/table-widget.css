@@ -1,0 +1,49 @@
+.table-widget-container .scroller {
+    display: none;
+}
+
+
+
+.table-widget-container.scrollable {
+    position: relative;
+}
+
+.table-widget-container.scrollable .scroller {
+    display: block;
+    width: 20px;
+    height: 100%;
+    position: absolute;
+    background: white;
+    background: rgba(255,255,255,0.35);
+    -webkit-transition: opacity 0.5s ease-out 0.2s;
+    -moz-transition: opacity 0.5s ease-out 0.2s;
+    -o-transition: opacity 0.5s ease-out 0.2s;
+    transition: opacity 0.5s ease-out 0.2s;
+    opacity: 0;
+}
+
+.table-widget-container.scrollable .scroller.visible {
+    opacity: 1;
+    z-index: 1;
+}
+
+.table-widget-container.scrollable .scroller.left {
+    background: linear-gradient(to left, rgba(255,255,255,0.0), #fff);
+    cursor: w-resize;
+    left: 0;
+}
+
+.table-widget-container.scrollable .scroller.right {
+    background: linear-gradient(to right, rgba(255,255,255,0.0), #fff);
+    cursor: e-resize;
+    right: 0;
+}
+
+.table-widget-container.scrollable .table-container {
+    overflow-x: hidden;
+}
+
+.table-widget-container.scrollable .table-container .table {
+    position: relative;
+    max-width: none;
+}
