@@ -647,11 +647,11 @@ label.bordered:after {
   opacity: 1;
 }
 .issues table tbody tr td {
-  height: 70px;
+  height: 80px;
 }
 .issues table tbody tr td div {
-  height: 70px;
-  max-height: 70px;
+  height: 80px;
+  max-height: 80px;
   white-space: pre-line;
   overflow: hidden;
   text-overflow: ellipsis;
