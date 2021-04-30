@@ -3421,4 +3421,6 @@ public interface Lang extends Messages, ContactItemLang {
     String deliveryTypeDelivery();
 
     String deliveryTypeSupport();
+
+    String deliveries();
 }

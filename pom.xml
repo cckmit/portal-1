@@ -76,6 +76,7 @@
                 <module>gwt/plan</module>
                 <module>gwt/absence</module>
                 <module>gwt/dutylog</module>
+                <module>gwt/delivery</module>
 
                 <module>app/portal</module>
             </modules>

@@ -10,6 +10,7 @@ import ru.protei.portal.ui.common.client.factory.CommonClientModule;
 import ru.protei.portal.ui.company.client.factory.CompanyClientModule;
 import ru.protei.portal.ui.contact.client.factory.ContactClientModule;
 import ru.protei.portal.ui.contract.client.factory.ContractClientModule;
+import ru.protei.portal.ui.delivery.client.factory.DeliveryClientModule;
 import ru.protei.portal.ui.document.client.factory.DocumentClientModule;
 import ru.protei.portal.ui.documenttype.client.factory.DocumentTypeClientModule;
 import ru.protei.portal.ui.dutylog.client.factory.DutyLogClientModule;
@@ -41,7 +42,7 @@ import ru.protei.portal.ui.plan.client.factory.PlanClientModule;
         DutyLogClientModule.class, EquipmentClientModule.class, DocumentClientModule.class, DocumentTypeClientModule.class, ContractClientModule.class,
         IpReservationClientModule.class, RoomReservationClientModule.class, EducationClientModule.class,
         RoleClientModule.class, AccountClientModule.class,
-        AbsenceClientModule.class, CommonClientModule.class
+        AbsenceClientModule.class, CommonClientModule.class, DeliveryClientModule.class
 })
 public interface ClientFactory
         extends FactoryInjector
