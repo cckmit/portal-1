@@ -88,6 +88,8 @@ public class PortalApiController {
     @Autowired
     private DocumentService documentService;
     @Autowired
+    private ProjectService projectService;
+    @Autowired
     PortalConfig config;
 
 
@@ -684,6 +686,25 @@ public class PortalApiController {
                 .flatMap(authToken -> absenceService.removeAbsenceByApi(authToken, apiAbsence))
                 .ifOk(id -> log.info("removeAbsence1c(): OK"))
                 .ifError(result -> log.warn("removeAbsence1c(): Can't remove absences by apiAbsence={}. {}", apiAbsence, result));
+    }
+
+    @PostMapping(value = "/projects/delete/{projectId}")
+    public Result<Long> deleteProject(HttpServletRequest request, HttpServletResponse response,
+                                      @PathVariable("projectId") Long projectId) {
+
+        log.info("API | deleteProject(): projectId={}", projectId);
+
+        Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
+
+        if (authenticate.isError()) {
+            return error(authenticate.getStatus(), authenticate.getMessage());
+        }
+
+        AuthToken authToken = authenticate.getData();
+
+        return projectService.removeProject(authToken, projectId)
+                .ifOk(result -> log.info("deleteProject(): OK"))
+                .ifError(result -> log.warn("deleteProject(): Can't delete project with id={}. {}", projectId, result));
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
