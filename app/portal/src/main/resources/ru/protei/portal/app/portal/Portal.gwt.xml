@@ -27,6 +27,7 @@
     <inherits name="ru.protei.portal.ui.plan.Plan"/>
     <inherits name="ru.protei.portal.ui.absence.Absence"/>
     <inherits name="ru.protei.portal.ui.dutylog.DutyLog"/>
+    <inherits name="ru.protei.portal.ui.delivery.Delivery"/>
 
     <entry-point class='ru.protei.portal.app.portal.client.Main'/>
 
