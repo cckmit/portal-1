@@ -1,17 +1,21 @@
 package ru.protei.portal.core.model.dto;
 
 import ru.protei.portal.core.model.dict.En_CustomerType;
+import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.ent.Plan;
+import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.ProductShortView;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.util.CrmConstants.State.PAUSED;
 
 public class ProjectInfo implements Serializable {
 
@@ -26,9 +30,26 @@ public class ProjectInfo implements Serializable {
     private String name;
 
     /**
+     * Описание проекта
+     */
+    private String description;
+
+    /**
+     * Состояние проекта
+     */
+    private Long stateId;
+
+    private Long pauseDate;
+
+    /**
      * Дата создания
      */
     private Date created;
+
+    /**
+     * Компания
+     */
+    private Long customerId;
 
     /**
      * Тип заказчика
@@ -46,6 +67,18 @@ public class ProjectInfo implements Serializable {
     private Set<ProductShortView> products;
 
     private Date technicalSupportValidity;
+
+    private Date workCompletionDate;
+
+    private Date purchaseDate;
+
+    private List<PersonProjectMemberView> team;
+
+    private List<ProjectSla> projectSlas;
+
+    private List<Plan> projectPlans;
+
+    private List<Company> subcontractors;
 
     public ProjectInfo() {
     }
@@ -72,12 +105,28 @@ public class ProjectInfo implements Serializable {
         return name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public Long getStateId() {
+        return stateId;
+    }
+
     public Date getCreated() {
         return created;
     }
 
+    public Long getCustomerId() {
+        return customerId;
+    }
+
     public En_CustomerType getCustomerType() {
         return customerType;
+    }
+
+    public List<PersonProjectMemberView> getTeam() {
+        return team;
     }
 
     public EntityOption getRegion() {
@@ -108,6 +157,30 @@ public class ProjectInfo implements Serializable {
         this.technicalSupportValidity = technicalSupportValidity;
     }
 
+    public Date getWorkCompletionDate() {
+        return workCompletionDate;
+    }
+
+    public Date getPurchaseDate() {
+        return purchaseDate;
+    }
+
+    public Long getPauseDate() {
+        return pauseDate;
+    }
+
+    public List<ProjectSla> getProjectSlas() {
+        return projectSlas;
+    }
+
+    public List<Company> getSubcontractors() {
+        return subcontractors;
+    }
+
+    public List<Plan> getProjectPlans() {
+        return projectPlans;
+    }
+
     public static ProjectInfo fromProject(Project project) {
         if (project == null)
             return null;
@@ -123,5 +196,57 @@ public class ProjectInfo implements Serializable {
                 project.getCustomer() == null ? null : new EntityOption(project.getCustomer().getCname(), project.getCustomer().getId()),
                 project.getProducts() == null ? null : project.getProducts().stream().map(ProductShortView::fromProduct).collect(Collectors.toSet()),
                 project.getTechnicalSupportValidity());
+    }
+
+    public static Project fromProjectInfo(ProjectInfo info) {
+        if (info == null)
+            return null;
+
+        Project project = new Project();
+        project.setCreated(new Date());
+
+        project.setName(info.getName());
+        project.setCustomer(new Company(info.getCustomerId()));
+        project.setCustomerType(info.getCustomerType());
+
+        if (info.getProductDirection() != null) {
+            Set<DevUnit> devUnitProductDirections = new HashSet<DevUnit>();
+            for (EntityOption option: info.getProductDirection()) {
+                devUnitProductDirections.add(DevUnit.fromEntityOption(option));
+            }
+
+            project.setProductDirections(devUnitProductDirections);
+        }
+
+        project.setTeam(info.getTeam());
+
+        project.setStateId(info.getStateId() == null ? 0 : info.getStateId());
+        project.setDescription(info.getDescription());
+        project.setStateId(info.getStateId());
+
+        if (info.getStateId().equals(PAUSED)) {
+            project.setPauseDate(info.getPauseDate());
+        }
+
+        project.setRegion(info.getRegion());
+
+        if (info.getProducts() != null) {
+            Set<DevUnit> devUnitProducts = new HashSet<DevUnit>();
+            for (ProductShortView view: info.getProducts()) {
+                devUnitProducts.add(DevUnit.fromProductShortView(view));
+            }
+
+            project.setProducts(devUnitProducts);
+        }
+
+        project.setTechnicalSupportValidity(info.getTechnicalSupportValidity());
+        project.setWorkCompletionDate(info.getWorkCompletionDate());
+        project.setPurchaseDate(info.getPurchaseDate());
+
+        project.setSubcontractors(info.getSubcontractors());
+        project.setProjectPlans(info.getProjectPlans());
+        project.setProjectSlas(info.getProjectSlas());
+
+        return project;
     }
 }

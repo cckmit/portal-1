@@ -13,10 +13,7 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.model.api.ApiAbsence;
 import ru.protei.portal.core.model.api.ApiContract;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.dto.CaseTagInfo;
-import ru.protei.portal.core.model.dto.DevUnitInfo;
-import ru.protei.portal.core.model.dto.DocumentApiInfo;
-import ru.protei.portal.core.model.dto.PersonInfo;
+import ru.protei.portal.core.model.dto.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
@@ -705,6 +702,16 @@ public class PortalApiController {
         return projectService.removeProject(authToken, projectId)
                 .ifOk(result -> log.info("deleteProject(): OK"))
                 .ifError(result -> log.warn("deleteProject(): Can't delete project with id={}. {}", projectId, result));
+    }
+
+    @PostMapping(value = "/projects/create")
+    public Result<Project> createProjectByInfo(HttpServletRequest request, HttpServletResponse response, @RequestBody ProjectInfo projectInfo) {
+        log.info("API | createProject(): project={}", projectInfo);
+
+        return authenticate(request, response, authService, sidGen, log)
+                 .flatMap(authToken -> projectService.createProjectByInfo(authToken, projectInfo))
+                 .ifError(result -> log.warn("createProject(): Can't create project={}. {}", projectInfo, result))
+                 .ifOk(result -> log.info("createProject(): OK"));
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {

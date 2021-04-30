@@ -12,10 +12,7 @@ import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.dto.Project;
-import ru.protei.portal.core.model.dto.ProjectInfo;
-import ru.protei.portal.core.model.dto.ProjectTSVReportInfo;
-import ru.protei.portal.core.model.dto.RegionInfo;
+import ru.protei.portal.core.model.dto.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.DateRangeUtils;
@@ -389,6 +386,21 @@ public class ProjectServiceImpl implements ProjectService {
         ProjectCreateEvent projectCreateEvent = new ProjectCreateEvent(this, token.getPersonId(), project.getId());
 
         return new Result<>(En_ResultStatus.OK, project, createdLinksResult.getMessage(), Collections.singletonList(projectCreateEvent));
+    }
+
+    @Override
+    public Result<Project> createProjectByInfo(AuthToken token, ProjectInfo projectInfo) {
+        if (projectInfo.getId() != null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        //todo add validation
+
+//        if (projectInfo.getCommonManagerId() != null && !isCommonManagerIsNotPeople(product.getCommonManagerId())) {
+//            return error(En_ResultStatus.INCORRECT_PARAMS);
+//        }
+
+        return createProject(token, ProjectInfo.fromProjectInfo(projectInfo));
     }
 
     @Override
