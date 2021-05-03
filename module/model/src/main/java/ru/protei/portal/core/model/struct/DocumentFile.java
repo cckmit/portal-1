@@ -1,8 +1,8 @@
 package ru.protei.portal.core.model.struct;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FilenameUtils;
 import ru.protei.portal.core.model.dict.En_DocumentFormat;
+import ru.protei.portal.core.model.helper.DocumentUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -18,11 +18,6 @@ public interface DocumentFile {
 
     InputStream getInputStream();
 
-    default En_DocumentFormat getFormatByExtension(String fileExt)  {
-        En_DocumentFormat documentFormat = En_DocumentFormat.of(fileExt);
-        return documentFormat == null ? En_DocumentFormat.DOCX : documentFormat;
-    }
-
     class FileItemDocumentFile implements DocumentFile {
         private final FileItem fileItem;
 
@@ -37,7 +32,7 @@ public interface DocumentFile {
 
         @Override
         public En_DocumentFormat getFormat() {
-            return isPresent() ? getFormatByExtension(FilenameUtils.getExtension(fileItem.getName())) : null;
+            return isPresent() ? DocumentUtils.predictDocumentFormat(fileItem.getName()) : null;
         }
 
         @Override

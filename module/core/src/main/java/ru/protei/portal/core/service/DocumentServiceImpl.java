@@ -199,8 +199,8 @@ public class DocumentServiceImpl implements DocumentService {
         boolean withPdf = pdfFile != null && pdfFile.isPresent();
         boolean withApprovalSheet = approvalSheetFile != null && approvalSheetFile.isPresent();
         En_DocumentFormat docFormat = withDoc ? docFile.getFormat() : null;
-        En_DocumentFormat pdfFormat = withPdf ? pdfFile.getFormat() : null;
-        En_DocumentFormat ApprovalSheetFormat = withApprovalSheet ? approvalSheetFile.getFormat() : null;
+        En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
+        En_DocumentFormat approvalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
 
         if (document.getProjectId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -251,7 +251,7 @@ public class DocumentServiceImpl implements DocumentService {
                 return error(En_ResultStatus.NOT_CREATED);
             }
 
-            if (withApprovalSheet && !saveToSVN(approvalSheetFile.getInputStream(), documentId, projectId, ApprovalSheetFormat, author)) {
+            if (withApprovalSheet && !saveToSVN(approvalSheetFile.getInputStream(), documentId, projectId, approvalSheetFormat, author)) {
                 log.error("createDocument(" + documentId + "): failed to save approval sheet file to the svn");
                 if (withDoc && !removeFromSVN(documentId, projectId, docFormat, authorRollback)) log.error("createDocument(" + documentId + "): failed to rollback doc file from the svn");
                 if (withPdf && !removeFromSVN(documentId, projectId, pdfFormat, authorRollback)) log.error("createDocument(" + documentId + "): failed to rollback pdf file from the svn");
@@ -278,7 +278,7 @@ public class DocumentServiceImpl implements DocumentService {
         boolean withDoc = docFile != null;
         boolean withPdf = pdfFile != null;
         boolean withApprovalSheet = approvalSheetFile != null;
-        En_DocumentFormat docFormat = withDoc ? predictDocFormat(docFile.getName()) : null;
+        En_DocumentFormat docFormat = withDoc ? DocumentUtils.predictDocumentFormat(docFile.getName()) : null;
         En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
         En_DocumentFormat ApprovalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
 
@@ -396,7 +396,7 @@ public class DocumentServiceImpl implements DocumentService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        En_DocumentFormat docFormat = predictDocFormat(docFile.getName());
+        En_DocumentFormat docFormat = DocumentUtils.predictDocumentFormat(docFile.getName());
 
         if (docFormat != En_DocumentFormat.DOC && docFormat != En_DocumentFormat.DOCX) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -674,12 +674,6 @@ public class DocumentServiceImpl implements DocumentService {
 
     private <T> boolean isValueSetTwice(T oldObj, T newObj) {
         return oldObj != null && !oldObj.equals(newObj);
-    }
-
-    private En_DocumentFormat predictDocFormat(String fileName) {
-        String fileExt = FilenameUtils.getExtension(fileName);
-        En_DocumentFormat documentFormat = En_DocumentFormat.of(fileExt);
-        return documentFormat == null ? En_DocumentFormat.DOCX : documentFormat;
     }
 
     private En_DocumentFormat mergeDocDocxFormats(Long documentId, Long projectId, En_DocumentFormat format) throws SVNException {

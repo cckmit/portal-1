@@ -1,7 +1,9 @@
 package ru.protei.portal.core.model.helper;
 
+import org.apache.commons.io.FilenameUtils;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
+import ru.protei.portal.core.model.dict.En_DocumentFormat;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
@@ -62,5 +64,11 @@ public class DocumentUtils {
             return true;
         }
         return DocumentDecimalNumberValidator.isValid(document.getDecimalNumber(), document.getType().getDocumentCategory());
+    }
+
+    static public En_DocumentFormat predictDocumentFormat(String fileName) {
+        String fileExt = FilenameUtils.getExtension(fileName);
+        En_DocumentFormat documentFormat = En_DocumentFormat.of(fileExt);
+        return documentFormat == null ? En_DocumentFormat.DOCX : documentFormat;
     }
 }
