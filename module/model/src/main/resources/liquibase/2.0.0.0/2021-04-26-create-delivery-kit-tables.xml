@@ -91,7 +91,7 @@
     </changeSet>
 
     <changeSet id="add-serial_number-to-kit-table" author="porubov">
-        <addColumn tableName="contract">
+        <addColumn tableName="kit">
             <column name="serial_number" type="VARCHAR(64)">
                 <constraints nullable="false"/>
             </column>
