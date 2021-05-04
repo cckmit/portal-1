@@ -3423,4 +3423,12 @@ public interface Lang extends Messages, ContactItemLang {
     String deliveryTypeSupport();
 
     String deliveries();
+
+    String deliveryNumber();
+
+    String deliveryInfo();
+
+    String deliveryContacts();
+
+    String deliveryManager();
 }

@@ -20,11 +20,16 @@ import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.delivery.client.activity.table.AbstractDeliveryTableActivity;
 import ru.protei.portal.ui.delivery.client.activity.table.AbstractDeliveryTableView;
+import ru.protei.portal.ui.delivery.client.view.table.column.InfoColumn;
+import ru.protei.portal.ui.delivery.client.view.table.column.NumberColumn;
 
 public class DeliveryTableView extends Composite implements AbstractDeliveryTableView {
 
     @Inject
-    public void init() {
+    public void init( NumberColumn numberColumn,
+                      InfoColumn infoColumn) {
+        this.numberColumn = numberColumn;
+        this.infoColumn = infoColumn;
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
@@ -89,9 +94,13 @@ public class DeliveryTableView extends Composite implements AbstractDeliveryTabl
 
         columnProvider = new ClickColumnProvider<>();
 
-        table.addColumn(columnName.header, columnName.values);
-        columnName.setHandler(activity);
-        columnName.setColumnProvider(columnProvider);
+        table.addColumn(numberColumn.header, numberColumn.values);
+        numberColumn.setHandler( activity );
+        numberColumn.setColumnProvider( columnProvider );
+
+        table.addColumn( infoColumn.header, infoColumn.values );
+        infoColumn.setHandler( activity );
+        infoColumn.setColumnProvider( columnProvider );
 
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT));
         table.addColumn(editClickColumn.header, editClickColumn.values);
@@ -102,16 +111,6 @@ public class DeliveryTableView extends Composite implements AbstractDeliveryTabl
 
         table.setLoadHandler(activity);
     }
-
-    private final ClickColumn<Delivery> columnName = new ClickColumn<Delivery>() {
-//        protected String getColumnClassName() { return "contract-column-state"; }
-        protected void fillColumnHeader(Element columnHeader) {}
-        public void fillColumnValue(Element cell, Delivery delivery) {
-            Element root = DOM.createDiv();
-            root.setInnerHTML(delivery.getName());
-            cell.appendChild(root);
-        }
-    };
 
     @UiField
     Lang lang;
@@ -125,6 +124,9 @@ public class DeliveryTableView extends Composite implements AbstractDeliveryTabl
     HTMLPanel filterContainer;
     @UiField
     HTMLPanel pagerContainer;
+
+    NumberColumn numberColumn;
+    InfoColumn infoColumn;
 
     @Inject
     private EditClickColumn<Delivery> editClickColumn;

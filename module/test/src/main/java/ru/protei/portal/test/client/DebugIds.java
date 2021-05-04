@@ -856,6 +856,13 @@ public class DebugIds {
             String NAME = "table-issue-name";
             String DESCRIPTION = "table-issue-description";
         }
+
+        interface DELIVERY {
+            String PRODUCT = "table-delivery-product";
+            String DELIVERY_DATE = "table-delivery-delivery-date";
+            String NAME = "table-delivery-name";
+            String DESCRIPTION = "table-delivery-description";
+        }
     }
 
     public interface ATTACHMENT {

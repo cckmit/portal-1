@@ -820,6 +820,63 @@ label.bordered:after {
   }
 }
 
+.deliveries {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 70px;
+
+          div {
+            height: 70px;
+            max-height: 70px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          small {
+            font-size: 85%;
+          }
+
+          p {
+            margin: 0;
+            font-size: 85%;
+            line-height: 1.3em;
+          }
+
+          label {
+            font-weight: 600;
+            line-height: 1.2em;
+            vertical-align: inherit;
+            font-size: 0.9em;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+    .number {
+      width: 10%;
+      text-align: center;
+      .number-size {
+        font-size: 22px;
+      }
+    }
+    .delivery-type {
+      font-size: 13px;
+      font-weight: bold;
+    }
+    .contacts {
+      width: 15%;
+    }
+    .manager {
+      width: 15%;
+    }
+    .info {
+    }
+  }
+}
+
 .companies {
   table {
     tbody {
@@ -2577,7 +2634,7 @@ div.select2-container {
   }
 }
 
-.issue-filter, .filter-widget, .room-reservation-filter {
+.issue-filter, .filter-widget, .room-reservation-filter, .deliveries-filter {
   padding-top: 0px !important;
 
   .user-filter {
