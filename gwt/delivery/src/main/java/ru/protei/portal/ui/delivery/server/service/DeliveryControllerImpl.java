@@ -9,7 +9,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.query.DataQuery;
+import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.service.DeliveryService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.DeliveryController;
@@ -26,7 +26,7 @@ import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
 public class DeliveryControllerImpl implements DeliveryController {
 
     @Override
-    public SearchResult<Delivery> getDeliveries(DataQuery query) throws RequestFailedException {
+    public SearchResult<Delivery> getDeliveries(BaseQuery query) throws RequestFailedException {
         log.info("getDeliveries(): query={}", query);
         Result<SearchResult<Delivery>> result = deliveryService.getDeliveries(getAuthToken(sessionService, httpRequest), query);
         log.info("getDeliveries(): result={}", result);

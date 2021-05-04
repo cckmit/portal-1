@@ -90,5 +90,16 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="add-serial_number-to-kit-table" author="porubov">
+        <addColumn tableName="contract">
+            <column name="serial_number" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-delivery-kit-unique-constraint" author="porubov">
+        <addUniqueConstraint tableName="kit" columnNames="serial_number" constraintName="uniq_delivery_kit_serial-number"/>
+    </changeSet>
 
 </databaseChangeLog>

@@ -20,8 +20,6 @@ import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterActivity;
-import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterView;
 import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryFilterActivity;
 import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryFilterView;
 import ru.protei.portal.ui.common.client.lang.Lang;

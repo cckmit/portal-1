@@ -9,7 +9,9 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Delivery;
-import ru.protei.portal.core.model.query.DeliveryQuery;
+import ru.protei.portal.core.model.query.BaseQuery;
+import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryFilterActivity;
+import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryFilterView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -20,8 +22,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryFilterActivity;
-import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -100,7 +100,7 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
     @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Delivery>> asyncCallback) {
         boolean isFirstChunk = offset == 0;
-        DeliveryQuery query = makeQuery();
+        BaseQuery query = makeQuery();
         query.setOffset(offset);
         query.setLimit(limit);
         deliveryService.getDeliveries(query, new FluentCallback<SearchResult<Delivery>>()
@@ -136,8 +136,9 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
         view.triggerTableLoad();
     }
 
-    private DeliveryQuery makeQuery() {
-        DeliveryQuery query = new DeliveryQuery();
+    private BaseQuery makeQuery() {
+        return new BaseQuery();
+//        DeliveryQuery query = new DeliveryQuery();
 //        query.searchString = filterView.searchString().getValue();
 //        query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
 //        query.setSortField(filterView.sortField().getValue());
@@ -154,7 +155,7 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
 //        query.setDateSigningRange(toDateRange(filterView.dateSigningRange().getValue()));
 //        query.setDateValidRange(toDateRange(filterView.dateValidRange().getValue()));
 //        query.setDeliveryNumber(filterView.deliveryNumber().getValue());
-        return query;
+//        return query;
     }
 
     private void showPreview(Delivery value) {
