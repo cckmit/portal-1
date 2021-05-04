@@ -19,6 +19,9 @@ public class Kit extends AuditableObject {
     @JdbcColumn(name = "modified")
     private Date modified;
 
+    @JdbcColumn(name = "serial_number")
+    private String serialNumber;
+
     @JdbcColumn(name = "name")
     private String name;
 
@@ -62,6 +65,14 @@ public class Kit extends AuditableObject {
         this.modified = modified;
     }
 
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
     public String getName() {
         return name;
     }
@@ -97,6 +108,7 @@ public class Kit extends AuditableObject {
                 "id=" + id +
                 ", created=" + created +
                 ", modified=" + modified +
+                ", serialNumber='" + serialNumber + '\'' +
                 ", name='" + name + '\'' +
                 ", status=" + status +
                 '}';
