@@ -76,9 +76,10 @@ public class Delivery extends AuditableObject {
     /**
      * Признак
      */
-    @JdbcColumn(name = "status")
+    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.STATE, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     @JdbcEnumerated(EnumType.ID)
-    private En_DeliveryStatus status;
+    private En_DeliveryStatus state;
 
     /**
      * Тип
@@ -183,12 +184,12 @@ public class Delivery extends AuditableObject {
         this.attribute = attribute;
     }
 
-    public En_DeliveryStatus getStatus() {
-        return status;
+    public En_DeliveryStatus getState() {
+        return state;
     }
 
-    public void setStatus(En_DeliveryStatus status) {
-        this.status = status;
+    public void setState(En_DeliveryStatus state) {
+        this.state = state;
     }
 
     public En_DeliveryType getType() {

@@ -9,6 +9,7 @@ import java.util.Objects;
 
 @JdbcEntity(table = "kit")
 public class Kit extends AuditableObject {
+    public static final String AUDIT_TYPE = "Kit";
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -25,9 +26,9 @@ public class Kit extends AuditableObject {
     @JdbcColumn(name = "name")
     private String name;
 
-    @JdbcColumn(name = "status")
+    @JdbcColumn(name = "state")
     @JdbcEnumerated(EnumType.ID)
-    private En_DeliveryStatus status;
+    private En_DeliveryStatus state;
 
     public Kit() {}
 
@@ -81,12 +82,12 @@ public class Kit extends AuditableObject {
         this.name = name;
     }
 
-    public En_DeliveryStatus getStatus() {
-        return status;
+    public En_DeliveryStatus getState() {
+        return state;
     }
 
-    public void setStatus(En_DeliveryStatus status) {
-        this.status = status;
+    public void setState(En_DeliveryStatus state) {
+        this.state = state;
     }
 
     @Override
@@ -110,9 +111,7 @@ public class Kit extends AuditableObject {
                 ", modified=" + modified +
                 ", serialNumber='" + serialNumber + '\'' +
                 ", name='" + name + '\'' +
-                ", status=" + status +
+                ", state=" + state +
                 '}';
     }
-
-    public static final String AUDIT_TYPE = "Kit";
 }

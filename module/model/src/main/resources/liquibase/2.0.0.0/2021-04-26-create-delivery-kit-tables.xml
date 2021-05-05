@@ -15,9 +15,6 @@
             <column name="attribute" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column name="status" type="int">
-                <constraints nullable="false"/>
-            </column>
             <column name="type" type="int">
                 <constraints nullable="false"/>
             </column>
@@ -55,10 +52,10 @@
             <column name="serial_number" type="VARCHAR(64)">
                 <constraints nullable="false"/>
             </column>
-            <column name="name" type="varchar(100)">
+            <column name="name" type="varchar(1024)">
                 <constraints nullable="false"/>
             </column>
-            <column name="status" type="int">
+            <column name="state" type="int">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -66,33 +63,6 @@
 
     <changeSet id="add-delivery-kit-unique-constraint" author="porubov">
         <addUniqueConstraint tableName="kit" columnNames="serial_number" constraintName="uniq_delivery_kit_serial-number"/>
-    </changeSet>
-
-    <changeSet id="create-delivery_subscriber-table" author="porubov">
-        <createTable tableName="delivery_subscriber">
-            <column name="delivery_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="person_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="create-delivery_subscriber-table-fk" author="porubov">
-        <addForeignKeyConstraint baseTableName="delivery_subscriber"
-                                 baseColumnNames="delivery_id"
-                                 constraintName="delivery_subscriber_delivery_id_to_delivery_fk"
-                                 referencedTableName="delivery"
-                                 referencedColumnNames="id"
-                                 onDelete="CASCADE"/>
-
-        <addForeignKeyConstraint baseTableName="delivery_subscriber"
-                                 baseColumnNames="person_id"
-                                 constraintName="delivery_subscriber_person_id_to_person_fk"
-                                 referencedTableName="person"
-                                 referencedColumnNames="id"
-                                 onDelete="CASCADE"/>
     </changeSet>
 
     <changeSet id="create-delivery_kit-table" author="porubov">
