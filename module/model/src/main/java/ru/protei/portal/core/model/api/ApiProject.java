@@ -22,13 +22,9 @@ import static ru.protei.portal.core.model.util.CrmConstants.State.PAUSED;
 public class ApiProject implements Serializable {
 
     private String name;
-
     private String description;
-
-    private List<ProjectSla> projectSlas;
-
+    private List<ProjectSla> slas;
     private List<PersonProjectMemberView> team;
-
     private Long stateId;
 
     private Long regionId;
@@ -51,7 +47,7 @@ public class ApiProject implements Serializable {
 
     private List<Long> subcontractorsIds;
 
-    private List<Long> projectPlansIds;
+    private List<Long> plansIds;
 
     public String getName() {
         return name;
@@ -61,8 +57,8 @@ public class ApiProject implements Serializable {
         return description;
     }
 
-    public List<ProjectSla> getProjectSlas() {
-        return projectSlas;
+    public List<ProjectSla> getSlas() {
+        return slas;
     }
 
     public List<PersonProjectMemberView> getTeam() {
@@ -113,8 +109,8 @@ public class ApiProject implements Serializable {
         return subcontractorsIds;
     }
 
-    public List<Long> getProjectPlansIds() {
-        return projectPlansIds;
+    public List<Long> getPlansIds() {
+        return plansIds;
     }
 
     public boolean isValid() {
@@ -145,7 +141,7 @@ public class ApiProject implements Serializable {
         return "ApiProject{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", projectSlas=" + projectSlas +
+                ", slas=" + slas +
                 ", team=" + team +
                 ", stateId=" + stateId +
                 ", regionId=" + regionId +
@@ -158,7 +154,7 @@ public class ApiProject implements Serializable {
                 ", directionsIds=" + directionsIds +
                 ", productsIds=" + productsIds +
                 ", subcontractorsIds=" + subcontractorsIds +
-                ", projectPlansIds=" + projectPlansIds +
+                ", plansIds=" + plansIds +
                 '}';
     }
 }

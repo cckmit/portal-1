@@ -36,7 +36,7 @@ public class ApiProjectToProjectMapper {
         project.setTechnicalSupportValidity(api.getTechnicalSupportValidity());
         project.setWorkCompletionDate(api.getWorkCompletionDate());
         project.setPurchaseDate(api.getPurchaseDate());
-        project.setProjectSlas(isEmpty(api.getProjectSlas()) ? null : api.getProjectSlas());
+        project.setProjectSlas(isEmpty(api.getSlas()) ? null : api.getSlas());
 
         project.setProductDirections(isEmpty(api.getDirectionsIds()) ? null :
                 api.getDirectionsIds().stream().map(DevUnit::new).collect(toSet()));
@@ -47,8 +47,8 @@ public class ApiProjectToProjectMapper {
         project.setSubcontractors(isEmpty(api.getSubcontractorsIds()) ? null :
                 api.getSubcontractorsIds().stream().map(Company::new).collect(toList()));
 
-        project.setProjectPlans(isEmpty(api.getProjectPlansIds()) ? null :
-                api.getProjectPlansIds().stream().map(Plan::new).collect(toList()));
+        project.setProjectPlans(isEmpty(api.getPlansIds()) ? null :
+                api.getPlansIds().stream().map(Plan::new).collect(toList()));
 
         return project;
     }
