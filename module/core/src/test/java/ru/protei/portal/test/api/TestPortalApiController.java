@@ -62,6 +62,7 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.util.CrmConstants.State.CREATED;
+import static ru.protei.portal.core.model.util.CrmConstants.State.UNKNOWN;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -1614,6 +1615,29 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.NOT_FOUND.toString())));
     }
 
+    @Test
+    @Transactional
+    public void deleteProject() throws Exception {
+        Project project = createNewProject();
+        CaseObject caseObject = createCaseObjectFromProject(project);
+
+        Long caseObjectId = caseObjectDAO.persist(caseObject);
+        Assert.assertNotNull(caseObjectId);
+
+        project.setId(caseObjectId);
+        Long createdProjectId = projectDAO.persist(project);
+
+        createPostResultAction("/api/projects/delete/" + createdProjectId, null)
+                .andExpect(status().isOk());
+
+        createPostResultAction("/api/projects/delete/12345", null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.NOT_FOUND.toString())));
+
+        createPostResultAction("/api/projects/delete/incorrect_id", null)
+                .andExpect(status().isBadRequest());
+    }
+
     private String getPlatformId (String strResult) {
         int idIndex = strResult.indexOf("id");
         strResult = strResult.substring(idIndex);
@@ -1801,5 +1825,36 @@ public class TestPortalApiController extends BaseServiceTest {
         apiInfo.setFromTime(now);
         apiInfo.setTillTime(tomorrow);
         return apiInfo;
+    }
+
+    private Project createNewProject() {
+        Project project = new Project();
+        project.setStateId(UNKNOWN);
+        project.setName("Test API project");
+        return project;
+    }
+
+    private CaseObject createCaseObjectFromProject(Project project) {
+        CaseObject caseObject = new CaseObject();
+        caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
+        caseObject.setType(En_CaseType.PROJECT);
+        caseObject.setCreated(project.getCreated() == null ? new Date() : project.getCreated());
+        caseObject.setCreatorId(project.getCreatorId());
+
+        caseObject.setId(project.getId());
+        caseObject.setStateId(project.getStateId());
+
+        caseObject.setName(project.getName());
+        caseObject.setInfo(project.getDescription());
+        caseObject.setManagerId(project.getLeader() == null ? null : project.getLeader().getId());
+        caseObject.setPauseDate(project.getPauseDate());
+
+        if (project.getCustomer() == null) {
+            caseObject.setInitiatorCompany(null);
+        } else {
+            caseObject.setInitiatorCompanyId(project.getCustomer().getId());
+        }
+
+        return caseObject;
     }
 }

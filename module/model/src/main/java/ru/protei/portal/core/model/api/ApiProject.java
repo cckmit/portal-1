@@ -22,9 +22,13 @@ import static ru.protei.portal.core.model.util.CrmConstants.State.PAUSED;
 public class ApiProject implements Serializable {
 
     private String name;
+
     private String description;
+
     private List<ProjectSla> slas;
+
     private List<PersonProjectMemberView> team;
+
     private Long stateId;
 
     private Long regionId;
@@ -53,6 +57,10 @@ public class ApiProject implements Serializable {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -63,6 +71,10 @@ public class ApiProject implements Serializable {
 
     public List<PersonProjectMemberView> getTeam() {
         return team;
+    }
+
+    public void setTeam(List<PersonProjectMemberView> team) {
+        this.team = team;
     }
 
     public Long getStateId() {
@@ -81,8 +93,16 @@ public class ApiProject implements Serializable {
         return companyId;
     }
 
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
+    }
+
     public Integer getCustomerTypeId() {
         return customerTypeId;
+    }
+
+    public void setCustomerTypeId(Integer customerTypeId) {
+        this.customerTypeId = customerTypeId;
     }
 
     public Date getTechnicalSupportValidity() {
@@ -101,8 +121,16 @@ public class ApiProject implements Serializable {
         return directionsIds;
     }
 
+    public void setDirectionsIds(Set<Long> directionsIds) {
+        this.directionsIds = directionsIds;
+    }
+
     public Set<Long> getProductsIds() {
         return productsIds;
+    }
+
+    public void setProductsIds(Set<Long> productsIds) {
+        this.productsIds = productsIds;
     }
 
     public List<Long> getSubcontractorsIds() {
@@ -115,7 +143,7 @@ public class ApiProject implements Serializable {
 
     public boolean isValid() {
         return StringUtils.isNotEmpty(name) &&
-               CollectionUtils.isNotEmpty(productsIds) &&
+               CollectionUtils.isNotEmpty(directionsIds) &&
                hasProjectManager(team) &&
                pauseDateFilled(stateId) &&
                companyId != null &&
@@ -133,7 +161,7 @@ public class ApiProject implements Serializable {
     }
 
     private boolean pauseDateFilled(Long stateId) {
-        return stateId.equals(PAUSED) ? pauseDate != null : true;
+        return stateId != null && stateId.equals(PAUSED) ? pauseDate != null : true;
     }
 
     @Override

@@ -710,16 +710,11 @@ public class PortalApiController {
     public Result<Project> createProjectByApi(HttpServletRequest request, HttpServletResponse response, @RequestBody ApiProject apiProject) {
         log.info("API | createProjectByApi(): project={}", apiProject);
 
-        if (apiProject.isValid()) {
-            Project project = toProject(apiProject);
-            return authenticate(request, response, authService, sidGen, log)
-                    .flatMap(authToken -> projectService.createProject(authToken, project))
-                    .ifError(result -> log.warn("createProjectByApi(): Can't create project={}. {}", project, result))
-                    .ifOk(result -> log.info("createProjectByApi(): OK"));
-        } else {
-            log.error("createProjectByApi(): incorrect params={}", apiProject.toString());
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> apiProject.isValid() ? ok(authToken) : error(En_ResultStatus.INCORRECT_PARAMS))
+                .flatMap(authToken -> projectService.createProject(authToken, toProject(apiProject)))
+                .ifError(project -> log.warn("createProjectByApi(): Can't create project={}. {}", project, project))
+                .ifOk(result -> log.info("createProjectByApi(): OK"));
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
