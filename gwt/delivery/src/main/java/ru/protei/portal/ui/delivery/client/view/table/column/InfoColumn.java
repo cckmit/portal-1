@@ -29,7 +29,7 @@ public class InfoColumn extends ClickColumn<Delivery>{
     @Override
     protected void fillColumnHeader( Element columnHeader ) {
         columnHeader.addClassName( "info" );
-        columnHeader.setInnerText( lang.issueInfo() );
+        columnHeader.setInnerText( lang.deliveryInfo() );
     }
 
     @Override
@@ -43,6 +43,7 @@ public class InfoColumn extends ClickColumn<Delivery>{
         List<String> ts = Arrays.asList("ProductName1", "ProductName2", "ProductName3");
         productElement.setInnerText(StringUtils.join(ts,","));
 //        productElement.setInnerText( value == null ? "" : value.getName() == null ? "" : value.getProductName() );
+
         productElement.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.DELIVERY.PRODUCT );
         divElement.appendChild( productElement );
 

@@ -20,16 +20,22 @@ import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.delivery.client.activity.table.AbstractDeliveryTableActivity;
 import ru.protei.portal.ui.delivery.client.activity.table.AbstractDeliveryTableView;
+import ru.protei.portal.ui.delivery.client.view.table.column.ContactColumn;
 import ru.protei.portal.ui.delivery.client.view.table.column.InfoColumn;
+import ru.protei.portal.ui.delivery.client.view.table.column.ManagerColumn;
 import ru.protei.portal.ui.delivery.client.view.table.column.NumberColumn;
 
 public class DeliveryTableView extends Composite implements AbstractDeliveryTableView {
 
     @Inject
     public void init( NumberColumn numberColumn,
-                      InfoColumn infoColumn) {
+                      InfoColumn infoColumn,
+                      ContactColumn contactColumn,
+                      ManagerColumn managerColumn) {
         this.numberColumn = numberColumn;
         this.infoColumn = infoColumn;
+        this.contactColumn = contactColumn;
+        this.managerColumn = managerColumn;
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
@@ -102,6 +108,14 @@ public class DeliveryTableView extends Composite implements AbstractDeliveryTabl
         infoColumn.setHandler( activity );
         infoColumn.setColumnProvider( columnProvider );
 
+        table.addColumn( contactColumn.header, contactColumn.values );
+        contactColumn.setHandler( activity );
+        contactColumn.setColumnProvider( columnProvider );
+
+        table.addColumn( managerColumn.header, managerColumn.values );
+        managerColumn.setHandler( activity );
+        managerColumn.setColumnProvider( columnProvider );
+
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT));
         table.addColumn(editClickColumn.header, editClickColumn.values);
         editClickColumn.setActionHandler(activity);
@@ -127,6 +141,8 @@ public class DeliveryTableView extends Composite implements AbstractDeliveryTabl
 
     NumberColumn numberColumn;
     InfoColumn infoColumn;
+    ContactColumn contactColumn;
+    ManagerColumn managerColumn;
 
     @Inject
     private EditClickColumn<Delivery> editClickColumn;

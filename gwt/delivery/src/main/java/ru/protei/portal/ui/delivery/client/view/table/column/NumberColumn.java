@@ -4,17 +4,11 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DeliveryStatus;
-import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.ent.Delivery;
-import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.lang.En_DeliveryStatusLang;
 import ru.protei.portal.ui.common.client.lang.En_DeliveryTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-
-import static ru.protei.portal.core.model.helper.StringUtils.firstUppercaseChar;
-import static ru.protei.portal.ui.common.client.util.ColorUtils.makeContrastColor;
 
 /**
  *  серийный номер первого комплекта, тип поставки, статус поставки
