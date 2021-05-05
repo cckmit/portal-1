@@ -12,6 +12,7 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.model.api.ApiAbsence;
 import ru.protei.portal.core.model.api.ApiContract;
+import ru.protei.portal.core.model.api.ApiProject;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.*;
 import ru.protei.portal.core.model.ent.*;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.mapper.ApiProjectToProjectMapper.toProject;
 import static ru.protei.portal.util.AuthUtils.authenticate;
 
 /**
@@ -705,13 +707,19 @@ public class PortalApiController {
     }
 
     @PostMapping(value = "/projects/create")
-    public Result<Project> createProjectByInfo(HttpServletRequest request, HttpServletResponse response, @RequestBody ProjectInfo projectInfo) {
-        log.info("API | createProject(): project={}", projectInfo);
+    public Result<Project> createProjectByApi(HttpServletRequest request, HttpServletResponse response, @RequestBody ApiProject apiProject) {
+        log.info("API | createProjectByApi(): project={}", apiProject);
 
-        return authenticate(request, response, authService, sidGen, log)
-                 .flatMap(authToken -> projectService.createProjectByInfo(authToken, projectInfo))
-                 .ifError(result -> log.warn("createProject(): Can't create project={}. {}", projectInfo, result))
-                 .ifOk(result -> log.info("createProject(): OK"));
+        if (apiProject.isValid()) {
+            Project project = toProject(apiProject);
+            return authenticate(request, response, authService, sidGen, log)
+                    .flatMap(authToken -> projectService.createProject(authToken, project))
+                    .ifError(result -> log.warn("createProjectByApi(): Can't create project={}. {}", project, result))
+                    .ifOk(result -> log.info("createProjectByApi(): OK"));
+        } else {
+            log.error("createProjectByApi(): incorrect params={}", apiProject.toString());
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {

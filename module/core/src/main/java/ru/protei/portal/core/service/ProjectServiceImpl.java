@@ -24,7 +24,6 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.schedule.PortalScheduleTasks;
@@ -386,21 +385,6 @@ public class ProjectServiceImpl implements ProjectService {
         ProjectCreateEvent projectCreateEvent = new ProjectCreateEvent(this, token.getPersonId(), project.getId());
 
         return new Result<>(En_ResultStatus.OK, project, createdLinksResult.getMessage(), Collections.singletonList(projectCreateEvent));
-    }
-
-    @Override
-    public Result<Project> createProjectByInfo(AuthToken token, ProjectInfo projectInfo) {
-        if (projectInfo.getId() != null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        //todo add validation
-
-//        if (projectInfo.getCommonManagerId() != null && !isCommonManagerIsNotPeople(product.getCommonManagerId())) {
-//            return error(En_ResultStatus.INCORRECT_PARAMS);
-//        }
-
-        return createProject(token, ProjectInfo.fromProjectInfo(projectInfo));
     }
 
     @Override
