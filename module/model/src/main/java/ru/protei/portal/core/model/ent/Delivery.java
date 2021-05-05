@@ -1,10 +1,11 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
-import ru.protei.portal.core.model.dict.En_DeliveryStatus;
+import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
@@ -33,6 +34,7 @@ public class Delivery extends AuditableObject {
     @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
             mappedColumn = CaseObject.Columns.CREATED, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Date created;
+
     /**
      * Дата изменения
      */
@@ -67,6 +69,19 @@ public class Delivery extends AuditableObject {
     private Project project;
 
     /**
+     * Контактное лицо
+     */
+    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.INITIATOR, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
+    private Long initiatorId;
+
+    @JdbcJoinedObject(joinPath = {
+            @JdbcJoinPath(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE),
+            @JdbcJoinPath(localColumn = CaseObject.Columns.INITIATOR, remoteColumn = "id", table = "person"),
+    })
+    private PersonShortView initiator;
+
+    /**
      * Признак
      */
     @JdbcColumn(name = "attribute")
@@ -79,7 +94,7 @@ public class Delivery extends AuditableObject {
     @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
             mappedColumn = CaseObject.Columns.STATE, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     @JdbcEnumerated(EnumType.ID)
-    private En_DeliveryStatus state;
+    private En_DeliveryState state;
 
     /**
      * Тип
@@ -176,6 +191,22 @@ public class Delivery extends AuditableObject {
         this.project = project;
     }
 
+    public Long getInitiatorId() {
+        return initiatorId;
+    }
+
+    public void setInitiatorId(Long initiatorId) {
+        this.initiatorId = initiatorId;
+    }
+
+    public PersonShortView getInitiator() {
+        return initiator;
+    }
+
+    public void setInitiator(PersonShortView initiator) {
+        this.initiator = initiator;
+    }
+
     public En_DeliveryAttribute getAttribute() {
         return attribute;
     }
@@ -184,11 +215,11 @@ public class Delivery extends AuditableObject {
         this.attribute = attribute;
     }
 
-    public En_DeliveryStatus getState() {
+    public En_DeliveryState getState() {
         return state;
     }
 
-    public void setState(En_DeliveryStatus state) {
+    public void setState(En_DeliveryState state) {
         this.state = state;
     }
 

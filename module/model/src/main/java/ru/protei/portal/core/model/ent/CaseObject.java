@@ -74,10 +74,10 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "CREATOR_IP")
     private String creatorIp;
 
-    @JdbcColumn(name = "INITIATOR")
+    @JdbcColumn(name = INITIATOR)
     private Long initiatorId;
 
-    @JdbcJoinedObject( localColumn = "INITIATOR", remoteColumn = "id", updateLocalColumn = false, sqlTableAlias = "PersonInitiator" )
+    @JdbcJoinedObject( localColumn = INITIATOR, remoteColumn = "id", updateLocalColumn = false, sqlTableAlias = "PersonInitiator" )
     private Person initiator;
 
     @JdbcColumn(name = "initiator_company")
@@ -633,6 +633,7 @@ public class CaseObject extends AuditableObject {
         String DEADLINE = "deadline";
         String WORK_TRIGGER = "work_trigger";
         String INITIATOR_COMPANY = "initiator_company";
+        String INITIATOR = "initiator";
     }
 
     public static final int NOT_DELETED = 0;

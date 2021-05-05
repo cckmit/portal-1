@@ -1,6 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_DeliveryStatus;
+import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -28,7 +28,7 @@ public class Kit extends AuditableObject {
 
     @JdbcColumn(name = "state")
     @JdbcEnumerated(EnumType.ID)
-    private En_DeliveryStatus state;
+    private En_DeliveryState state;
 
     public Kit() {}
 
@@ -82,11 +82,11 @@ public class Kit extends AuditableObject {
         this.name = name;
     }
 
-    public En_DeliveryStatus getState() {
+    public En_DeliveryState getState() {
         return state;
     }
 
-    public void setState(En_DeliveryStatus state) {
+    public void setState(En_DeliveryState state) {
         this.state = state;
     }
 

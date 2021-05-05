@@ -12,13 +12,12 @@
             <column name="project_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
-            <column name="attribute" type="int">
-                <constraints nullable="false"/>
-            </column>
+            <column name="attribute" type="int"/>
             <column name="type" type="int">
                 <constraints nullable="false"/>
             </column>
             <column name="departure_date" type="DATETIME"/>
+            <column name="contract_id" type="bigint"/>
         </createTable>
     </changeSet>
 
@@ -37,7 +36,13 @@
                                  constraintName="delivery_project_id_to_project_fk"
                                  referencedTableName="project"
                                  referencedColumnNames="id"
-                                 onDelete="CASCADE"/>
+                                 onDelete="NO ACTION"/>
+        <addForeignKeyConstraint baseTableName="delivery"
+                                 baseColumnNames="contract_id"
+                                 constraintName="delivery_contract_id_to_contract_fk"
+                                 referencedTableName="project"
+                                 referencedColumnNames="id"
+                                 onDelete="NO ACTION"/>
     </changeSet>
 
     <changeSet id="create-kit-table" author="porubov">
@@ -52,9 +57,7 @@
             <column name="serial_number" type="VARCHAR(64)">
                 <constraints nullable="false"/>
             </column>
-            <column name="name" type="varchar(1024)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="name" type="varchar(1024)"/>
             <column name="state" type="int">
                 <constraints nullable="false"/>
             </column>
