@@ -8,55 +8,104 @@ import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
+
+/**
+ * Информация о поставке
+ */
 
 @JdbcEntity(table = "delivery")
 public class Delivery extends AuditableObject {
+    public static final String AUDIT_TYPE = "Delivery";
+    public static final String CASE_OBJECT_TABLE = "case_object";
+    public static final String CASE_OBJECT_ALIAS = "CO";
 
-    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    /**
+     * Идентификатор
+     */
+    @JdbcId(name = Columns.ID, idInsertMode = IdInsertMode.EXPLICIT)
     private Long id;
 
-    @JdbcColumn(name = "created")
+    /**
+     * Дата создания
+     */
+    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.CREATED, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Date created;
-
-    @JdbcColumn(name = "modified")
+    /**
+     * Дата изменения
+     */
+    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.MODIFIED, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Date modified;
 
-    @JdbcColumn(name = "name")
+    /**
+     * Название
+     */
+    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.CASE_NAME, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private String name;
 
-    @JdbcColumn(name = "description")
+    /**
+     * Описание
+     */
+    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.INFO, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private String description;
 
+    /**
+     * Идентификатор проекта
+     */
     @JdbcColumn(name = "project_id")
     private long projectId;
 
-    @JdbcJoinedObject(localColumn = "project_id", remoteColumn = "id")
+    /**
+     * Проект
+     */
+    @JdbcJoinedObject(localColumn = "project_id", remoteColumn = Project.Columns.ID)
     private Project project;
 
+    /**
+     * Признак
+     */
     @JdbcColumn(name = "attribute")
     @JdbcEnumerated(EnumType.ID)
     private En_DeliveryAttribute attribute;
 
+    /**
+     * Признак
+     */
     @JdbcColumn(name = "status")
     @JdbcEnumerated(EnumType.ID)
     private En_DeliveryStatus status;
 
+    /**
+     * Тип
+     */
     @JdbcColumn(name = "type")
     @JdbcEnumerated(EnumType.ID)
     private En_DeliveryType type;
 
-    @JdbcColumn(name = "delivered")
-    private Date delivered;
+    /**
+     * Дата отправки
+     */
+    @JdbcColumn(name = "departure_date")
+    private Date departureDate;
 
-    @JdbcManyToMany(linkTable = "delivery_subscriber", localLinkColumn = "delivery_id", remoteLinkColumn = "person_id")
+    /**
+     * Подписчики
+     */
+    @JdbcManyToMany(linkTable = "delivery_subscriber",
+            localLinkColumn = "delivery_id", remoteLinkColumn = "person_id")
     private Set<Person> subscribers;
 
-    @JdbcColumn(name = "kit_id")
-    private long kitId;
-
-    @JdbcJoinedObject(localColumn = "kit_id", remoteColumn = "id")
-    private Kit kit;
+    /**
+     * Комплекты
+     */
+    @JdbcManyToMany(linkTable = "delivery_subscriber",
+            localLinkColumn = "delivery_id", remoteLinkColumn = "person_id")
+    private List<Kit> kits;
 
     public Delivery() {}
 
@@ -150,12 +199,12 @@ public class Delivery extends AuditableObject {
         this.type = type;
     }
 
-    public Date getDelivered() {
-        return delivered;
+    public Date getDepartureDate() {
+        return departureDate;
     }
 
-    public void setDelivered(Date delivered) {
-        this.delivered = delivered;
+    public void setDepartureDate(Date departureDate) {
+        this.departureDate = departureDate;
     }
 
     public Set<Person> getSubscribers() {
@@ -166,21 +215,15 @@ public class Delivery extends AuditableObject {
         this.subscribers = subscribers;
     }
 
-    public long getKitId() {
-        return kitId;
+    public List<Kit> getKits() {
+        return kits;
     }
 
-    public void setKitId(long kitId) {
-        this.kitId = kitId;
+    public void setKits(List<Kit> kits) {
+        this.kits = kits;
     }
 
-    public Kit getKit() {
-        return kit;
+    public interface Columns {
+        String ID = "id";
     }
-
-    public void setKit(Kit kit) {
-        this.kit = kit;
-    }
-
-    public static final String AUDIT_TYPE = "Delivery";
 }

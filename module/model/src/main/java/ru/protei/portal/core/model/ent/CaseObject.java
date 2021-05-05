@@ -22,7 +22,7 @@ import static ru.protei.portal.core.model.ent.CaseObject.Columns.*;
 @JdbcEntity(table = "case_object")
 public class CaseObject extends AuditableObject {
 
-    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    @JdbcId(name = ID, idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
     @JdbcColumn(name = CASE_TYPE)
@@ -35,7 +35,7 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = CREATED)
     private Date created;
 
-    @JdbcColumn(name = "MODIFIED")
+    @JdbcColumn(name = MODIFIED)
     private Date modified;
 
     @JdbcColumn(name = CASE_NAME)
@@ -617,12 +617,14 @@ public class CaseObject extends AuditableObject {
     }
 
     public interface Columns {
+        String ID = "id";
         String EXT_APP = "EXT_APP";
         String CASE_TYPE = "case_type";
         String PAUSE_DATE = "pause_date";
         String DELETED = "deleted";
         String INFO = "INFO";
         String CREATED = "CREATED";
+        String MODIFIED = "MODIFIED";
         String CREATOR = "CREATOR";
         String STATE = "STATE";
         String CASE_NAME = "CASE_NAME";
