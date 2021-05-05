@@ -3431,4 +3431,12 @@ public interface Lang extends Messages, ContactItemLang {
     String deliveryContacts();
 
     String deliveryManager();
+
+    String deliveryFilterNotDefined();
+
+    String deliveryFilterName();
+
+    String deliveryFilterRemoveConfirmMessage();
+
+    String deliveryFilterRemoveSuccessed();
 }

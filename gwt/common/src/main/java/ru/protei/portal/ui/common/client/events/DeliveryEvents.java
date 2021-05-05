@@ -4,17 +4,26 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.dto.DeliveryFilterDto;
+import ru.protei.portal.core.model.query.DeliveryQuery;
 
 public class DeliveryEvents {
 
     @Url( value = "deliveries", primary = true )
     public static class Show {
-        @Omit
-        public Boolean preScroll = false;
         public Show () {}
         public Show (Boolean preScroll) {
             this.preScroll = preScroll;
         }
+        public Show (DeliveryFilterDto<DeliveryQuery> deliveryFilterDto, Boolean preScroll) {
+            this.deliveryFilterDto = deliveryFilterDto;
+            this.preScroll = preScroll;
+        }
+
+        @Omit
+        public Boolean preScroll = false;
+        @Omit
+        public DeliveryFilterDto<DeliveryQuery> deliveryFilterDto;
     }
 
     @Url( value = "delivery")
@@ -63,4 +72,9 @@ public class DeliveryEvents {
     }
 
     public static class ChangeModel {}
+
+    /**
+     * Изменилась модель фильтров пользователя
+     */
+    public static class ChangeUserFilterModel{}
 }
