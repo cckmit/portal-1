@@ -3378,21 +3378,63 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueFilterPlatform();
 
-    String deliveryStatusPreliminary();
+    String deliveryName();
 
-    String deliveryStatusPreReserve();
+    String deliveryDescription();
 
-    String deliveryStatusReserve();
+    String deliveryProject();
 
-    String deliveryStatusAssembly();
+    String deliveryAttribute();
 
-    String deliveryStatusTest();
+    String deliveryState();
 
-    String deliveryStatusReady();
+    String deliveryType();
 
-    String deliveryStatusSent();
+    String deliveryCustomerInfo();
 
-    String deliveryStatusWork();
+    String deliveryCustomerType();
+
+    String deliveryCustomerCompany();
+
+    String deliveryCustomerEmployee();
+
+    String deliveryManagerInfo();
+
+    String deliveryManagerCompany();
+
+    String deliveryManager();
+
+    String deliveryContract();
+
+    String deliveryProducts();
+
+    String deliveryDepartureDate();
+
+    String deliverySubscribers();
+
+    String deliveryKit();
+
+    String deliveryKitSerialNumber();
+
+    String deliveryKitStatus();
+
+    String deliveryKitName();
+
+    String deliveryStatePreliminary();
+
+    String deliveryStatePreReserve();
+
+    String deliveryStateReserve();
+
+    String deliveryStateAssembly();
+
+    String deliveryStateTest();
+
+    String deliveryStateReady();
+
+    String deliveryStateSent();
+
+    String deliveryStateWork();
 
     String deliveryAttributeDelivery();
 
@@ -3423,4 +3465,10 @@ public interface Lang extends Messages, ContactItemLang {
     String deliveryTypeSupport();
 
     String deliveries();
+
+    String backToDeliveries();
+
+    String selectDeliveryCustomerInitiator();
+
+    String selectDeliveryContract();
 }

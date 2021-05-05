@@ -218,6 +218,11 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                 condition.append(")");
                 args.add(query.getOpenStateDate());
             }
+
+            if (query.getProjectId() != null) {
+                condition.append(" and contract.project_id = ?");
+                args.add(query.getProjectId());
+            }
         }));
     }
 }

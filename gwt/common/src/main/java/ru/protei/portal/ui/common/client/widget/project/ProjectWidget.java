@@ -61,12 +61,12 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
 
     @Override
     public boolean isEnabled() {
-        return button.isEnabled();
+        return search.isEnabled();
     }
 
     @Override
     public void setEnabled(boolean enabled) {
-        button.setEnabled(enabled);
+        search.setEnabled(enabled);
     }
 
     public void setValidation(boolean isValidable){
@@ -87,24 +87,38 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
         }
     }
 
+    public void setMandatory( boolean mandatory ) {
+        if ( mandatory ) {
+            root.addStyleName(REQUIRED);
+        } else {
+            root.removeStyleName(REQUIRED);
+        }
+    }
+
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<ProjectInfo> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
-    @UiHandler( "button" )
-    public void onButtonClicked ( ClickEvent event ) {
+    @UiHandler("search")
+    public void onSearchClicked(ClickEvent event ) {
         fireEvent(new ProjectEvents.Search(dialogView.getBodyContainer(), false, true));
         dialogView.showPopup();
     }
 
+    @UiHandler("reset")
+    public void onResetClicked(ClickEvent event ) {
+        setValue(null, true);
+    }
+
     public void setEnsureDebugId( String debugId ) {
-        button.ensureDebugId(debugId);
+        search.ensureDebugId(debugId);
     }
 
     private void ensureDebugIds() {
         name.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.PROJECT.NAME);
-        button.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.PROJECT.SEARCH_BUTTON);
+        search.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.PROJECT.SEARCH_BUTTON);
+        reset.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.PROJECT.RESET_BUTTON);
     }
 
     private void prepareDialog(AbstractDialogDetailsView dialog) {
@@ -147,7 +161,9 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
     TextBox name;
 
     @UiField
-    Button button;
+    Button search;
+    @UiField
+    Button reset;
 
     @UiField
     Lang lang;

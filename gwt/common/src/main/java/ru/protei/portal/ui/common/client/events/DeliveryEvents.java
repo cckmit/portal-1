@@ -17,6 +17,12 @@ public class DeliveryEvents {
         }
     }
 
+
+    @Url( value = "delivery_create")
+    public static class Create {
+        public Create() {}
+    }
+
     @Url( value = "delivery")
     public static class Edit {
         public Edit() {}

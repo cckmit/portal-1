@@ -39,6 +39,8 @@ public class ProjectInfo implements Serializable {
 
     private Set<EntityOption> productDirection;
 
+    private String managerCompany;
+
     private EntityOption manager;
 
     private EntityOption contragent;
@@ -51,13 +53,15 @@ public class ProjectInfo implements Serializable {
     }
 
     public ProjectInfo(Long id, String name, Date created, En_CustomerType customerType, EntityOption region,
-                       Set<EntityOption> productDirection, EntityOption manager, EntityOption contragent, Set<ProductShortView> products, Date technicalSupportValidity) {
+                       Set<EntityOption> productDirection, String managerCompany, EntityOption manager,
+                       EntityOption contragent, Set<ProductShortView> products, Date technicalSupportValidity) {
         this.id = id;
         this.name = name;
         this.created = created;
         this.customerType = customerType;
         this.region = region;
         this.productDirection = productDirection;
+        this.managerCompany = managerCompany;
         this.manager = manager;
         this.contragent = contragent;
         this.products = products;
@@ -86,6 +90,10 @@ public class ProjectInfo implements Serializable {
 
     public Set<EntityOption> getProductDirection() {
         return productDirection;
+    }
+
+    public String getManagerCompany() {
+        return managerCompany;
     }
 
     public EntityOption getManager() {
@@ -119,6 +127,7 @@ public class ProjectInfo implements Serializable {
                 project.getCustomerType(),
                 CollectionUtils.isEmpty(project.getLocations()) ? null : EntityOption.fromLocation(project.getLocations().get(0).getLocation()),
                 new HashSet<>(emptyIfNull(project.getProductDirectionEntityOptionList())),
+                project.getManagerCompanyName(),
                 project.getManagerId() == null || project.getManagerName() == null ? null : new EntityOption(project.getManagerName(), project.getManagerId()),
                 project.getCustomer() == null ? null : new EntityOption(project.getCustomer().getCname(), project.getCustomer().getId()),
                 project.getProducts() == null ? null : project.getProducts().stream().map(ProductShortView::fromProduct).collect(Collectors.toSet()),
