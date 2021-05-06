@@ -3471,4 +3471,16 @@ public interface Lang extends Messages, ContactItemLang {
     String selectDeliveryCustomerInitiator();
 
     String selectDeliveryContract();
+
+    String deliveryValidationEmptyName();
+
+    String deliveryValidationEmptyState();
+
+    String deliveryValidationInvalidStateAtCreate();
+
+    String deliveryValidationEmptyProject();
+
+    String deliveryValidationEmptyAttribute();
+
+    String deliveryValidationEmptyContractAtAttributeDelivery();
 }

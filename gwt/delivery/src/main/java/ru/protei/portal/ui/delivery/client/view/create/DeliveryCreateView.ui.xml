@@ -114,10 +114,11 @@
                                                                                       header="{lang.deliveryAttribute}"
                                                                                       hasNullValue="false"
                                                                                       mandatory="true"
-                                                                                    searchEnabled="false"/>
+                                                                                      searchEnabled="false"/>
                                 </div>
                             </div>
                             <contract:ContractFormSelector ui:field="contract" searchEnabled="true"
+                                                           hasNullValue="true"
                                                            defaultValue="{lang.selectDeliveryContract}"
                                                            header="{lang.deliveryContract}"/>
                             <div class="form-group form-group-default">

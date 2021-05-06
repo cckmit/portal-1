@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 
 public abstract class DeliveryCreateActivity implements Activity, AbstractDeliveryCreateActivity {
 
@@ -58,11 +59,11 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
 
     @Override
     public void onSaveClicked() {
-        Delivery delivery = fillDto();
         if (getValidationError() != null) {
             showValidationError();
             return;
         }
+        Delivery delivery = fillDto();
         save(delivery);
     }
 
@@ -81,8 +82,10 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
     public void onAttributeChanged() {
         if (En_DeliveryAttribute.DELIVERY.equals(view.attribute().getValue())) {
             view.contractEnable().setEnabled(true);
+            view.setContractFieldMandatory(true);
         } else {
             view.contractEnable().setEnabled(false);
+            view.setContractFieldMandatory(false);
             view.contract().setValue(null);
         }
     }
@@ -161,9 +164,11 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         delivery.setName(view.name().getValue());
         delivery.setDescription(view.description().getText());
         delivery.setProjectId(view.project().getValue().getId());
+        delivery.setInitiatorId(view.initiator().getValue() != null ? view.initiator().getValue().getId() : null);
         delivery.setAttribute(view.attribute().getValue());
         delivery.setState(view.state().getValue());
         delivery.setType(view.type().getValue());
+        delivery.setContractId(view.contract().getValue() != null? view.contract().getValue().getId() : null);
         delivery.setDepartureDate(view.departureDate().getValue());
         delivery.setSubscribers(view.getSubscribers());
 
@@ -175,39 +180,33 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
     }
 
     private String getValidationError() {
-        /*if (isBlank(contract.getNumber()))
-            return lang.contractValidationEmptyNumber();
-
-        if (isBlank(contract.getDescription()))
-            return lang.contractValidationEmptyDescription();
-
-        if (contract.getContractType() == null)
-            return lang.contractValidationEmptyType();
-
-        if (contract.getStateId() == null)
-            return lang.contractValidationEmptyState();
-
-        if (contract.getDateSigning() == null && !(contract.getState().equals(En_ContractState.AGREEMENT)))
-            return lang.contractValidationEmptyDateSigning();
-
-        if (contract.getDateSigning() != null && contract.getDateValid() != null &&
-                isBefore(contract.getDateSigning(), contract.getDateValid()))
-            return lang.contractValidationInvalidDateValid();
-
-        if (contract.getCost() == null || contract.getCost().getFull() < 0)
-            return lang.contractValidationInvalidCost();
-
-        if (contract.getProjectId() == null)
-            return lang.contractValidationEmptyProject();
-
-        if (!view.validateContractSpecifications().isValid())
-            return lang.contractValidationContractSpecification();*/
+        if (isBlank(view.name().getValue())) {
+            return lang.deliveryValidationEmptyName();
+        }
+        En_DeliveryState state = view.state().getValue();
+        if (state == null) {
+            return lang.deliveryValidationEmptyState();
+        } else if (En_DeliveryState.PRELIMINARY != state) {
+            return lang.deliveryValidationInvalidStateAtCreate();
+        }
+        if (view.project().getValue() == null) {
+            return lang.deliveryValidationEmptyProject();
+        }
+        En_DeliveryAttribute attribute = view.attribute().getValue();
+        if (attribute == null) {
+            return lang.deliveryValidationEmptyAttribute();
+        } else if (En_DeliveryAttribute.DELIVERY == attribute && view.contract().getValue() == null) {
+            return lang.deliveryValidationEmptyContractAtAttributeDelivery();
+        }
 
         return null;
     }
 
     private void save(Delivery delivery) {
-        saveContract(delivery, throwable -> {}, () -> fireEvent(new DeliveryEvents.ChangeModel()));
+        saveContract(delivery, throwable -> {}, () -> {
+            fireEvent(new DeliveryEvents.ChangeModel());
+            fireEvent(new Back());
+        });
     }
 
     private void saveContract(Delivery delivery, Consumer<Throwable> onFailure, Runnable onSuccess) {

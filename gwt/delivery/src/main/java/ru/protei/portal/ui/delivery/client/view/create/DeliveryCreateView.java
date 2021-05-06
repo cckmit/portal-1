@@ -138,6 +138,11 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     }
 
     @Override
+    public void setContractFieldMandatory(boolean isMandatory) {
+        contract.setMandatory(isMandatory);
+    }
+
+    @Override
     public void updateContractModel(Long projectId) {
         contractModel.updateProject(null, projectId);
     }

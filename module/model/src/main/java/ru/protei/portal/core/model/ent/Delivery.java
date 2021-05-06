@@ -36,6 +36,13 @@ public class Delivery extends AuditableObject {
     private Date created;
 
     /**
+     * Создатель
+     */
+    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.CREATOR, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
+    private Long creatorId;
+
+    /**
      * Дата изменения
      */
     @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
@@ -57,14 +64,11 @@ public class Delivery extends AuditableObject {
     private String description;
 
     /**
-     * Идентификатор проекта
-     */
-    @JdbcColumn(name = "project_id")
-    private long projectId;
-
-    /**
      * Проект
      */
+    @JdbcColumn(name = "project_id")
+    private Long projectId;
+
     @JdbcJoinedObject(localColumn = "project_id", remoteColumn = Project.Columns.ID)
     private Project project;
 
@@ -110,17 +114,23 @@ public class Delivery extends AuditableObject {
     private Date departureDate;
 
     /**
+     * Договор
+     */
+    @JdbcColumn(name = "contract_id")
+    private Long contractId;
+
+    /**
      * Подписчики
      */
-    @JdbcManyToMany(linkTable = "delivery_subscriber",
-            localLinkColumn = "delivery_id", remoteLinkColumn = "person_id")
+    @JdbcManyToMany(linkTable = "case_notifier",
+            localLinkColumn = "case_id", remoteLinkColumn = "person_id")
     private Set<Person> subscribers;
 
     /**
      * Комплекты
      */
-    @JdbcManyToMany(linkTable = "delivery_subscriber",
-            localLinkColumn = "delivery_id", remoteLinkColumn = "person_id")
+    @JdbcManyToMany(linkTable = "delivery_kit",
+            localLinkColumn = "delivery_id", remoteLinkColumn = "kit_id")
     private List<Kit> kits;
 
     public Delivery() {}
@@ -151,6 +161,14 @@ public class Delivery extends AuditableObject {
         this.created = created;
     }
 
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
+    }
+
     public Date getModified() {
         return modified;
     }
@@ -175,11 +193,11 @@ public class Delivery extends AuditableObject {
         this.description = description;
     }
 
-    public long getProjectId() {
+    public Long getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(long projectId) {
+    public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
 
@@ -237,6 +255,14 @@ public class Delivery extends AuditableObject {
 
     public void setDepartureDate(Date departureDate) {
         this.departureDate = departureDate;
+    }
+
+    public Long getContractId() {
+        return contractId;
+    }
+
+    public void setContractId(Long contractId) {
+        this.contractId = contractId;
     }
 
     public Set<Person> getSubscribers() {

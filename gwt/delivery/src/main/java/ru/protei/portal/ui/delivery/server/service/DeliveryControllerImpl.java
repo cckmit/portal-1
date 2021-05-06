@@ -44,21 +44,13 @@ public class DeliveryControllerImpl implements DeliveryController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
 
-        Result<Delivery> response;
-        if ( delivery.getId() == null ) {
-            response = deliveryService.createDelivery(token, delivery);
-        } else {
-            response = deliveryService.updateDelivery(token, delivery);
-        }
+        Result<Delivery> response = ( delivery.getId() == null ) ?
+                deliveryService.createDelivery(token, delivery)
+                : deliveryService.updateDelivery(token, delivery);
 
         log.info("saveDelivery, result: {}", response.isOk() ? "ok" : response.getStatus());
 
-        if (response.isOk()) {
-            log.info("saveDelivery, applied id: {}", response.getData());
-            return response.getData();
-        }
-
-        throw new RequestFailedException(response.getStatus());
+        return checkResultAndGetData(response);
     }
 
     @Autowired

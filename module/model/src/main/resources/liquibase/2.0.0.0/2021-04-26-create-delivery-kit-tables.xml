@@ -40,7 +40,7 @@
         <addForeignKeyConstraint baseTableName="delivery"
                                  baseColumnNames="contract_id"
                                  constraintName="delivery_contract_id_to_contract_fk"
-                                 referencedTableName="project"
+                                 referencedTableName="contract"
                                  referencedColumnNames="id"
                                  onDelete="NO ACTION"/>
     </changeSet>
