@@ -481,6 +481,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public DeliverySqlBuilder deliverySqlBuilder() {
+        return new DeliverySqlBuilder();
+    }
+
+    @Bean
     public KitDAO getKitDAO() {
         return new KitDAO_Impl();
     }
