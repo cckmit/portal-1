@@ -346,6 +346,11 @@ public enum En_ResultStatus {
     /**
      * Данные превышают размерность, заданную в MySQL
      */
-    MYSQL_DATA_TRUNCATION
+    MYSQL_DATA_TRUNCATION,
+
+    /**
+     * Неверный формат файла
+     */
+    INVALID_FILE_FORMAT
     ;
 }

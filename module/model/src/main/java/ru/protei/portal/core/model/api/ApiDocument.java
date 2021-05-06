@@ -1,12 +1,18 @@
-package ru.protei.portal.core.model.dto;
+package ru.protei.portal.core.model.api;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class DocumentApiInfo implements Serializable {
+@JsonAutoDetect(
+        getterVisibility = JsonAutoDetect.Visibility.NONE,
+        setterVisibility = JsonAutoDetect.Visibility.NONE,
+        fieldVisibility = JsonAutoDetect.Visibility.ANY
+)
+public class ApiDocument implements Serializable {
     /**
      * Наименование документа
      */
@@ -248,5 +254,18 @@ public class DocumentApiInfo implements Serializable {
 
     public void setApprovalSheetPdfBase64(String approvalSheetPdfBase64) {
         this.approvalSheetPdfBase64 = approvalSheetPdfBase64;
+    }
+
+    public boolean isValid() {
+        return name != null &&
+                projectId != null &&
+                executionType != null &&
+                contractorId != null &&
+                registrarId != null &&
+                (isApproved == null || !isApproved ||
+                        (approvedById != null &&
+                                approvalDate != null &&
+                                archivePdfFileBase64 != null)
+                );
     }
 }

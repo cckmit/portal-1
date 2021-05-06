@@ -38,6 +38,14 @@ public enum En_DocumentFormat {
         }
     }
 
+    public String getExtension() {
+        switch (this) {
+            case AS:
+                return PDF.getFormat();
+            default: return format;
+        }
+    }
+
     public static En_DocumentFormat of(String format) {
         for (En_DocumentFormat it : En_DocumentFormat.values()) {
             if (Objects.equals(it.getFormat(), format)) {

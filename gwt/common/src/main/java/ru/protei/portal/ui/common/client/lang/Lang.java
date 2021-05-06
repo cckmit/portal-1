@@ -3377,4 +3377,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errTooMuchPlatforms();
 
     String issueFilterPlatform();
+
+    String errInvalidFileFormat();
 }

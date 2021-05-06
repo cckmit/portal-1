@@ -19,7 +19,7 @@ import ru.protei.portal.core.model.dict.En_DocumentFormat;
 import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.dto.DocumentApiInfo;
+import ru.protei.portal.core.model.api.ApiDocument;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -198,9 +198,15 @@ public class DocumentServiceImpl implements DocumentService {
         boolean withDoc = docFile != null && docFile.isPresent();
         boolean withPdf = pdfFile != null && pdfFile.isPresent();
         boolean withApprovalSheet = approvalSheetFile != null && approvalSheetFile.isPresent();
-        En_DocumentFormat docFormat = withDoc ? docFile.getFormat() : null;
-        En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
+        En_DocumentFormat docFormat = withDoc ? predictDocumentFormat(docFile.getName()) : null;
+        En_DocumentFormat pdfFormat = withPdf ? predictDocumentFormat(pdfFile.getName()) : null;
         En_DocumentFormat approvalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
+
+        if ((withDoc && docFormat != En_DocumentFormat.DOC && docFormat != En_DocumentFormat.DOCX) ||
+                (withPdf && pdfFormat != En_DocumentFormat.PDF) ||
+                (withApprovalSheet && !Objects.equals(approvalSheetFormat.getExtension(), FilenameUtils.getExtension(approvalSheetFile.getName())))) {
+            return error(En_ResultStatus.INVALID_FILE_FORMAT);
+        }
 
         if (document.getProjectId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -278,9 +284,15 @@ public class DocumentServiceImpl implements DocumentService {
         boolean withDoc = docFile != null;
         boolean withPdf = pdfFile != null;
         boolean withApprovalSheet = approvalSheetFile != null;
-        En_DocumentFormat docFormat = withDoc ? DocumentUtils.predictDocumentFormat(docFile.getName()) : null;
-        En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
-        En_DocumentFormat ApprovalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
+        En_DocumentFormat docFormat = withDoc ? predictDocumentFormat(docFile.getName()) : null;
+        En_DocumentFormat pdfFormat = withPdf ? predictDocumentFormat(pdfFile.getName()) : null;
+        En_DocumentFormat approvalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
+
+        if ((withDoc && docFormat != En_DocumentFormat.DOC && docFormat != En_DocumentFormat.DOCX) ||
+                (withPdf && pdfFormat != En_DocumentFormat.PDF) ||
+                (withApprovalSheet && !Objects.equals(approvalSheetFormat.getExtension(), FilenameUtils.getExtension(approvalSheetFile.getName())))) {
+            return error(En_ResultStatus.INVALID_FILE_FORMAT);
+        }
 
         ProjectInfo projectInfo = ProjectInfo.fromProject(projectDAO.get(document.getProjectId()));
         if (document.getId() == null || !DocumentUtils.isValidDocument(document, projectInfo)) {
@@ -313,7 +325,7 @@ public class DocumentServiceImpl implements DocumentService {
 
             boolean withDocAtSvn = withDoc && listFormatsAtSvn.contains(docFormat);
             boolean withPdfAtSvn = withPdf && listFormatsAtSvn.contains(pdfFormat);
-            boolean withApprovalSheetAtSvn = withApprovalSheet && listFormatsAtSvn.contains(ApprovalSheetFormat);
+            boolean withApprovalSheetAtSvn = withApprovalSheet && listFormatsAtSvn.contains(approvalSheetFormat);
 
             boolean isPdfInSvn = listFormatsAtSvn.contains(En_DocumentFormat.PDF);
             if (!oldDocument.getApproved() && document.getApproved() && !(isPdfInSvn || withPdf)) {
@@ -322,7 +334,7 @@ public class DocumentServiceImpl implements DocumentService {
 
             byte[] oldBytesDoc = withDoc && withDocAtSvn ? getFromSVN(documentId, projectId, docFormat) : null;
             byte[] oldBytesPdf = withPdf && withPdfAtSvn ? getFromSVN(documentId, projectId, pdfFormat) : null;
-            byte[] oldBytesApprovalSheet = withApprovalSheet && withApprovalSheetAtSvn ? getFromSVN(documentId, projectId, ApprovalSheetFormat) : null;
+            byte[] oldBytesApprovalSheet = withApprovalSheet && withApprovalSheetAtSvn ? getFromSVN(documentId, projectId, approvalSheetFormat) : null;
             boolean withDocFileRollback = withDoc && oldBytesDoc != null;
             boolean withPdfFileRollback = withPdf && oldBytesPdf != null;
             boolean withApprovalSheetFileRollback = withApprovalSheet && oldBytesApprovalSheet != null;
@@ -365,8 +377,8 @@ public class DocumentServiceImpl implements DocumentService {
             }
 
             if (withApprovalSheet && (withApprovalSheetAtSvn ?
-                    !updateAtSVN(approvalSheetFile.getInputStream(), documentId, projectId, ApprovalSheetFormat, author) :
-                    !saveToSVN(approvalSheetFile.getInputStream(), documentId, projectId, ApprovalSheetFormat, author))
+                    !updateAtSVN(approvalSheetFile.getInputStream(), documentId, projectId, approvalSheetFormat, author) :
+                    !saveToSVN(approvalSheetFile.getInputStream(), documentId, projectId, approvalSheetFormat, author))
             ) {
                 log.error("updateDocument(" + documentId + "): failed to update approval sheet file at the svn");
                 if (withDocFileRollback && !updateAtSVN(oldBytesDoc, documentId, projectId, docFormat, authorRollback)) log.error("updateDocument(" + documentId + "): failed to rollback doc file from the svn");
@@ -396,7 +408,7 @@ public class DocumentServiceImpl implements DocumentService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        En_DocumentFormat docFormat = DocumentUtils.predictDocumentFormat(docFile.getName());
+        En_DocumentFormat docFormat = predictDocumentFormat(docFile.getName());
 
         if (docFormat != En_DocumentFormat.DOC && docFormat != En_DocumentFormat.DOCX) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -531,43 +543,41 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Result<Document> createDocumentByApi(AuthToken token, DocumentApiInfo documentApiInfo) {
-        if (!isValid(documentApiInfo)) {
+    public Result<Document> createDocumentByApi(AuthToken token, ApiDocument apiDocument) {
+        if (apiDocument == null || !apiDocument.isValid()) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
         Document document = new Document();
 
-        document.setName(documentApiInfo.getName());
-        document.setDecimalNumber(documentApiInfo.getDecimalNumber());
-        document.setInventoryNumber(documentApiInfo.getInventoryNumber());
+        document.setName(apiDocument.getName());
+        document.setDecimalNumber(apiDocument.getDecimalNumber());
+        document.setInventoryNumber(apiDocument.getInventoryNumber());
         document.setState(En_DocumentState.ACTIVE);
 
-        document.setType(documentApiInfo.getTypeId() != null ? documentTypeDAO.get(documentApiInfo.getTypeId()) : null);
-        document.setAnnotation(documentApiInfo.getAnnotation());
-        document.setRegistrar(documentApiInfo.getRegistrarId() != null ? new PersonShortView(documentApiInfo.getRegistrarId()) : null);
-        document.setContractor(documentApiInfo.getContractorId() != null ? new PersonShortView(documentApiInfo.getContractorId()) : null);
-        document.setProjectId(documentApiInfo.getProjectId());
-        document.setEquipment(documentApiInfo.getEquipmentId() != null ? new Equipment(documentApiInfo.getEquipmentId()) : null);
-        document.setVersion(documentApiInfo.getVersion());
+        document.setType(apiDocument.getTypeId() != null ? documentTypeDAO.get(apiDocument.getTypeId()) : null);
+        document.setAnnotation(apiDocument.getAnnotation());
+        document.setRegistrar(apiDocument.getRegistrarId() != null ? new PersonShortView(apiDocument.getRegistrarId()) : null);
+        document.setContractor(apiDocument.getContractorId() != null ? new PersonShortView(apiDocument.getContractorId()) : null);
+        document.setProjectId(apiDocument.getProjectId());
+        document.setEquipment(apiDocument.getEquipmentId() != null ? new Equipment(apiDocument.getEquipmentId()) : null);
+        document.setVersion(apiDocument.getVersion());
         document.setCreated(new Date());
-        document.setApproved(documentApiInfo.getApproved() != null ? documentApiInfo.getApproved() : false);
-        document.setApprovedBy(documentApiInfo.getApprovedById() != null ? new PersonShortView(documentApiInfo.getApprovedById()) : null);
-        document.setKeywords(documentApiInfo.getKeywords());
-        document.setApprovalDate(documentApiInfo.getApprovalDate());
-        document.setExecutionType(documentApiInfo.getExecutionType());
-        document.setMembers(stream(documentApiInfo.getMemberIds()).map(PersonShortView::new).collect(Collectors.toList()));
+        document.setApproved(apiDocument.getApproved() != null ? apiDocument.getApproved() : false);
+        document.setApprovedBy(apiDocument.getApprovedById() != null ? new PersonShortView(apiDocument.getApprovedById()) : null);
+        document.setKeywords(apiDocument.getKeywords());
+        document.setApprovalDate(apiDocument.getApprovalDate());
+        document.setExecutionType(apiDocument.getExecutionType());
+        document.setMembers(stream(apiDocument.getMemberIds()).map(PersonShortView::new).collect(Collectors.toList()));
 
-        byte[] docFile = documentApiInfo.getWorkDocFileBase64() != null ? base64toByte(documentApiInfo.getWorkDocFileBase64()) : null;
-        byte[] pdfFile = documentApiInfo.getArchivePdfFileBase64() != null ? base64toByte(documentApiInfo.getArchivePdfFileBase64()) : null;
-        byte[] approvalSheet = documentApiInfo.getApprovalSheetPdfBase64() != null ? base64toByte(documentApiInfo.getApprovalSheetPdfBase64()) : null;
-
-        En_DocumentFormat workDocFileFormat = En_DocumentFormat.of(documentApiInfo.getWorkDocFileExtension());
+        byte[] docFile = apiDocument.getWorkDocFileBase64() != null ? base64toByte(apiDocument.getWorkDocFileBase64()) : null;
+        byte[] pdfFile = apiDocument.getArchivePdfFileBase64() != null ? base64toByte(apiDocument.getArchivePdfFileBase64()) : null;
+        byte[] approvalSheet = apiDocument.getApprovalSheetPdfBase64() != null ? base64toByte(apiDocument.getApprovalSheetPdfBase64()) : null;
 
         return createDocument(token, document,
-                new PortalApiDocumentFile(docFile, workDocFileFormat != null ? workDocFileFormat : En_DocumentFormat.DOCX),
-                new PortalApiDocumentFile(pdfFile, En_DocumentFormat.PDF),
-                new PortalApiDocumentFile(approvalSheet, En_DocumentFormat.AS),
+                new PortalApiDocumentFile(docFile, apiDocument.getWorkDocFileExtension()),
+                new PortalApiDocumentFile(pdfFile, "pdf"),
+                new PortalApiDocumentFile(approvalSheet, "pdf"),
                 token.getPersonDisplayShortName());
     }
 
@@ -578,20 +588,6 @@ public class DocumentServiceImpl implements DocumentService {
             return error(En_ResultStatus.NOT_FOUND);
         }
         return removeDocument(token, documentId, document.getProjectId(), token.getPersonDisplayShortName());
-    }
-
-    private boolean isValid(DocumentApiInfo documentApiInfo) {
-        return documentApiInfo != null &&
-                documentApiInfo.getName() != null &&
-                documentApiInfo.getProjectId() != null &&
-                documentApiInfo.getExecutionType() != null &&
-                documentApiInfo.getContractorId() != null &&
-                documentApiInfo.getRegistrarId() != null &&
-                (documentApiInfo.getApproved() == null || !documentApiInfo.getApproved() ||
-                        (documentApiInfo.getApprovedById() != null &&
-                        documentApiInfo.getApprovalDate() != null &&
-                        documentApiInfo.getArchivePdfFileBase64() != null)
-                );
     }
 
     private byte[] base64toByte(String src) {
@@ -871,5 +867,10 @@ public class DocumentServiceImpl implements DocumentService {
             commitMessage += ": " + comment;
         }
         return commitMessage;
+    }
+
+    private En_DocumentFormat predictDocumentFormat(String fileName) {
+        String fileExtension = FilenameUtils.getExtension(fileName);
+        return En_DocumentFormat.of(fileExtension);
     }
 }

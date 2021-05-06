@@ -1,8 +1,6 @@
 package ru.protei.portal.core.model.struct;
 
 import org.apache.commons.fileupload.FileItem;
-import ru.protei.portal.core.model.dict.En_DocumentFormat;
-import ru.protei.portal.core.model.helper.DocumentUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -10,15 +8,17 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 public interface DocumentFile {
+
     boolean isPresent();
 
-    En_DocumentFormat getFormat();
+    String getName();
 
     byte[] getBytes();
 
     InputStream getInputStream();
 
     class FileItemDocumentFile implements DocumentFile {
+
         private final FileItem fileItem;
 
         public FileItemDocumentFile(FileItem fileItem) {
@@ -31,8 +31,8 @@ public interface DocumentFile {
         }
 
         @Override
-        public En_DocumentFormat getFormat() {
-            return isPresent() ? DocumentUtils.predictDocumentFormat(fileItem.getName()) : null;
+        public String getName() {
+            return isPresent() ? fileItem.getName() : "";
         }
 
         @Override
@@ -51,12 +51,13 @@ public interface DocumentFile {
     }
 
     class PortalApiDocumentFile implements DocumentFile {
-        private final byte[] content;
-        private final En_DocumentFormat format;
 
-        public PortalApiDocumentFile(byte[] content, En_DocumentFormat format) {
+        private final byte[] content;
+        private final String extension;
+
+        public PortalApiDocumentFile(byte[] content, String extension) {
             this.content = content;
-            this.format = format;
+            this.extension = extension;
         }
 
         @Override
@@ -65,8 +66,8 @@ public interface DocumentFile {
         }
 
         @Override
-        public En_DocumentFormat getFormat() {
-            return format;
+        public String getName() {
+            return extension == null ? "" : "." + extension;
         }
 
         @Override
