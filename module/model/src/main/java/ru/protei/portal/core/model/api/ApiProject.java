@@ -65,8 +65,16 @@ public class ApiProject implements Serializable {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public List<ProjectSla> getSlas() {
         return slas;
+    }
+
+    public void setSlas(List<ProjectSla> slas) {
+        this.slas = slas;
     }
 
     public List<PersonProjectMemberView> getTeam() {
@@ -81,12 +89,24 @@ public class ApiProject implements Serializable {
         return stateId;
     }
 
+    public void setStateId(Long stateId) {
+        this.stateId = stateId;
+    }
+
     public Long getRegionId() {
         return regionId;
     }
 
+    public void setRegionId(Long regionId) {
+        this.regionId = regionId;
+    }
+
     public Long getPauseDate() {
         return pauseDate;
+    }
+
+    public void setPauseDate(Long pauseDate) {
+        this.pauseDate = pauseDate;
     }
 
     public Long getCompanyId() {
@@ -109,12 +129,24 @@ public class ApiProject implements Serializable {
         return technicalSupportValidity;
     }
 
+    public void setTechnicalSupportValidity(Date technicalSupportValidity) {
+        this.technicalSupportValidity = technicalSupportValidity;
+    }
+
     public Date getWorkCompletionDate() {
         return workCompletionDate;
     }
 
+    public void setWorkCompletionDate(Date workCompletionDate) {
+        this.workCompletionDate = workCompletionDate;
+    }
+
     public Date getPurchaseDate() {
         return purchaseDate;
+    }
+
+    public void setPurchaseDate(Date purchaseDate) {
+        this.purchaseDate = purchaseDate;
     }
 
     public Set<Long> getDirectionsIds() {
@@ -137,8 +169,16 @@ public class ApiProject implements Serializable {
         return subcontractorsIds;
     }
 
+    public void setSubcontractorsIds(List<Long> subcontractorsIds) {
+        this.subcontractorsIds = subcontractorsIds;
+    }
+
     public List<Long> getPlansIds() {
         return plansIds;
+    }
+
+    public void setPlansIds(List<Long> plansIds) {
+        this.plansIds = plansIds;
     }
 
     public boolean isValid() {
