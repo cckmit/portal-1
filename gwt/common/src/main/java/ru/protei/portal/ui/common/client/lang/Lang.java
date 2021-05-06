@@ -3378,21 +3378,61 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueFilterPlatform();
 
-    String deliveryStatusPreliminary();
+    String deliveryName();
 
-    String deliveryStatusPreReserve();
+    String deliveryDescription();
 
-    String deliveryStatusReserve();
+    String deliveryProject();
 
-    String deliveryStatusAssembly();
+    String deliveryAttribute();
 
-    String deliveryStatusTest();
+    String deliveryState();
 
-    String deliveryStatusReady();
+    String deliveryType();
 
-    String deliveryStatusSent();
+    String deliveryCustomerInfo();
 
-    String deliveryStatusWork();
+    String deliveryCustomerType();
+
+    String deliveryCustomerCompany();
+
+    String deliveryCustomerEmployee();
+
+    String deliveryManagerInfo();
+
+    String deliveryManagerCompany();
+
+    String deliveryContract();
+
+    String deliveryProducts();
+
+    String deliveryDepartureDate();
+
+    String deliverySubscribers();
+
+    String deliveryKit();
+
+    String deliveryKitSerialNumber();
+
+    String deliveryKitStatus();
+
+    String deliveryKitName();
+
+    String deliveryStatePreliminary();
+
+    String deliveryStatePreReserve();
+
+    String deliveryStateReserve();
+
+    String deliveryStateAssembly();
+
+    String deliveryStateTest();
+
+    String deliveryStateReady();
+
+    String deliveryStateSent();
+
+    String deliveryStateWork();
 
     String deliveryAttributeDelivery();
 
@@ -3424,11 +3464,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String deliveries();
 
-    String deliveryNumber();
+    String deliveryColumnNumber();
 
-    String deliveryInfo();
+    String deliveryColumnInfo();
 
-    String deliveryContacts();
+    String deliveryColumnContacts();
+
+    String deliveryColumnManager();
 
     String deliveryManager();
 
@@ -3439,4 +3481,22 @@ public interface Lang extends Messages, ContactItemLang {
     String deliveryFilterRemoveConfirmMessage();
 
     String deliveryFilterRemoveSuccessed();
+
+    String backToDeliveries();
+
+    String selectDeliveryCustomerInitiator();
+
+    String selectDeliveryContract();
+
+    String deliveryValidationEmptyName();
+
+    String deliveryValidationEmptyState();
+
+    String deliveryValidationInvalidStateAtCreate();
+
+    String deliveryValidationEmptyProject();
+
+    String deliveryValidationEmptyAttribute();
+
+    String deliveryValidationEmptyContractAtAttributeDelivery();
 }

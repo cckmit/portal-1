@@ -1,62 +1,137 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
-import ru.protei.portal.core.model.dict.En_DeliveryStatus;
+import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
+
+/**
+ * Информация о поставке
+ */
 
 @JdbcEntity(table = "delivery")
 public class Delivery extends AuditableObject {
+    public static final String AUDIT_TYPE = "Delivery";
+    public static final String CASE_OBJECT_TABLE = "case_object";
+    public static final String CASE_OBJECT_ALIAS = "CO";
 
-    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    /**
+     * Идентификатор
+     */
+    @JdbcId(name = Columns.ID, idInsertMode = IdInsertMode.EXPLICIT)
     private Long id;
 
-    @JdbcColumn(name = "created")
+    /**
+     * Дата создания
+     */
+    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.CREATED, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Date created;
 
-    @JdbcColumn(name = "modified")
+    /**
+     * Создатель
+     */
+    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.CREATOR, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
+    private Long creatorId;
+
+    /**
+     * Дата изменения
+     */
+    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.MODIFIED, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Date modified;
 
-    @JdbcColumn(name = "name")
+    /**
+     * Название
+     */
+    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.CASE_NAME, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private String name;
 
-    @JdbcColumn(name = "description")
+    /**
+     * Описание
+     */
+    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.INFO, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private String description;
 
+    /**
+     * Проект
+     */
     @JdbcColumn(name = "project_id")
-    private long projectId;
+    private Long projectId;
 
-    @JdbcJoinedObject(localColumn = "project_id", remoteColumn = "id")
+    @JdbcJoinedObject(localColumn = "project_id", remoteColumn = Project.Columns.ID)
     private Project project;
 
+    /**
+     * Контактное лицо
+     */
+    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.INITIATOR, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
+    private Long initiatorId;
+
+    @JdbcJoinedObject(joinPath = {
+            @JdbcJoinPath(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE),
+            @JdbcJoinPath(localColumn = CaseObject.Columns.INITIATOR, remoteColumn = "id", table = "person"),
+    })
+    private PersonShortView initiator;
+
+    /**
+     * Признак
+     */
     @JdbcColumn(name = "attribute")
     @JdbcEnumerated(EnumType.ID)
     private En_DeliveryAttribute attribute;
 
-    @JdbcColumn(name = "status")
+    /**
+     * Признак
+     */
+    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.STATE, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     @JdbcEnumerated(EnumType.ID)
-    private En_DeliveryStatus status;
+    private En_DeliveryState state;
 
+    /**
+     * Тип
+     */
     @JdbcColumn(name = "type")
     @JdbcEnumerated(EnumType.ID)
     private En_DeliveryType type;
 
-    @JdbcColumn(name = "delivered")
-    private Date delivered;
+    /**
+     * Дата отправки
+     */
+    @JdbcColumn(name = "departure_date")
+    private Date departureDate;
 
-    @JdbcManyToMany(linkTable = "delivery_subscriber", localLinkColumn = "delivery_id", remoteLinkColumn = "person_id")
+    /**
+     * Договор
+     */
+    @JdbcColumn(name = "contract_id")
+    private Long contractId;
+
+    /**
+     * Подписчики
+     */
+    @JdbcManyToMany(linkTable = "case_notifier",
+            localLinkColumn = "case_id", remoteLinkColumn = "person_id")
     private Set<Person> subscribers;
 
-    @JdbcColumn(name = "kit_id")
-    private long kitId;
-
-    @JdbcJoinedObject(localColumn = "kit_id", remoteColumn = "id")
-    private Kit kit;
+    /**
+     * Комплекты
+     */
+    @JdbcManyToMany(linkTable = "delivery_kit",
+            localLinkColumn = "delivery_id", remoteLinkColumn = "kit_id")
+    private List<Kit> kits;
 
     public Delivery() {}
 
@@ -86,6 +161,14 @@ public class Delivery extends AuditableObject {
         this.created = created;
     }
 
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
+    }
+
     public Date getModified() {
         return modified;
     }
@@ -110,11 +193,11 @@ public class Delivery extends AuditableObject {
         this.description = description;
     }
 
-    public long getProjectId() {
+    public Long getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(long projectId) {
+    public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
 
@@ -126,6 +209,22 @@ public class Delivery extends AuditableObject {
         this.project = project;
     }
 
+    public Long getInitiatorId() {
+        return initiatorId;
+    }
+
+    public void setInitiatorId(Long initiatorId) {
+        this.initiatorId = initiatorId;
+    }
+
+    public PersonShortView getInitiator() {
+        return initiator;
+    }
+
+    public void setInitiator(PersonShortView initiator) {
+        this.initiator = initiator;
+    }
+
     public En_DeliveryAttribute getAttribute() {
         return attribute;
     }
@@ -134,12 +233,12 @@ public class Delivery extends AuditableObject {
         this.attribute = attribute;
     }
 
-    public En_DeliveryStatus getStatus() {
-        return status;
+    public En_DeliveryState getState() {
+        return state;
     }
 
-    public void setStatus(En_DeliveryStatus status) {
-        this.status = status;
+    public void setState(En_DeliveryState state) {
+        this.state = state;
     }
 
     public En_DeliveryType getType() {
@@ -150,12 +249,20 @@ public class Delivery extends AuditableObject {
         this.type = type;
     }
 
-    public Date getDelivered() {
-        return delivered;
+    public Date getDepartureDate() {
+        return departureDate;
     }
 
-    public void setDelivered(Date delivered) {
-        this.delivered = delivered;
+    public void setDepartureDate(Date departureDate) {
+        this.departureDate = departureDate;
+    }
+
+    public Long getContractId() {
+        return contractId;
+    }
+
+    public void setContractId(Long contractId) {
+        this.contractId = contractId;
     }
 
     public Set<Person> getSubscribers() {
@@ -166,21 +273,15 @@ public class Delivery extends AuditableObject {
         this.subscribers = subscribers;
     }
 
-    public long getKitId() {
-        return kitId;
+    public List<Kit> getKits() {
+        return kits;
     }
 
-    public void setKitId(long kitId) {
-        this.kitId = kitId;
+    public void setKits(List<Kit> kits) {
+        this.kits = kits;
     }
 
-    public Kit getKit() {
-        return kit;
+    public interface Columns {
+        String ID = "id";
     }
-
-    public void setKit(Kit kit) {
-        this.kit = kit;
-    }
-
-    public static final String AUDIT_TYPE = "Delivery";
 }

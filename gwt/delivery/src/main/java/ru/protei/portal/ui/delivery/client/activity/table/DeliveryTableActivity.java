@@ -121,7 +121,7 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
 
         view.clearSelection();
 
-        fireEvent(new DeliveryEvents.Edit());
+        fireEvent(new DeliveryEvents.Create());
     }
 
     @Override

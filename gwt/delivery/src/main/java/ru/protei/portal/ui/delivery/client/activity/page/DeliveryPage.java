@@ -35,7 +35,7 @@ public abstract class DeliveryPage
     }
 
     @Event
-    public void onShowDetail( DeliveryEvents.Edit event ) {
+    public void onShowDetail( DeliveryEvents.Create event ) {
         fireSelectTab();
     }
 

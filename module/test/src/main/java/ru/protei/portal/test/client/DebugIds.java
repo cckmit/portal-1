@@ -950,6 +950,7 @@ public class DebugIds {
         interface PROJECT {
             String NAME = "contract-project-name";
             String SEARCH_BUTTON = "contract-project-search-button";
+            String RESET_BUTTON = "contract-project-reset-button";
         }
     }
 

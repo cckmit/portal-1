@@ -22,7 +22,7 @@ public class ManagerColumn extends ClickColumn<Delivery> {
     @Override
     protected void fillColumnHeader( Element columnHeader ) {
         columnHeader.addClassName( "manager" );
-        columnHeader.setInnerText( lang.deliveryManager() );
+        columnHeader.setInnerText( lang.deliveryColumnManager() );
     }
 
     @Override

@@ -117,6 +117,13 @@ public class Project extends AuditableObject {
             @JdbcJoinPath(localColumn = Columns.MANAGER, remoteColumn = "id", table = "person")}, mappedColumn = "displayShortName")
     private String managerName;
 
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = Columns.MANAGER, remoteColumn = "id", table = "person"),
+            @JdbcJoinPath(localColumn = "company_id", remoteColumn = "id", table = "company")
+    }, mappedColumn = "cname")
+    private String managerCompanyName;
+
     private List<Platform> platforms;
 
     @JdbcColumn(name = "technical_support_validity")
@@ -376,6 +383,14 @@ public class Project extends AuditableObject {
         this.managerName = managerName;
     }
 
+    public String getManagerCompanyName() {
+        return managerCompanyName;
+    }
+
+    public void setManagerCompanyName(String managerCompanyName) {
+        this.managerCompanyName = managerCompanyName;
+    }
+
     public List<Platform> getPlatforms() {
         return platforms;
     }
@@ -483,6 +498,7 @@ public class Project extends AuditableObject {
                 ", creator=" + creator +
                 ", managerId=" + managerId +
                 ", managerName='" + managerName + '\'' +
+                ", managerCompany='" + managerCompanyName + '\'' +
                 ", platformsIds=" + stream(platforms).map(Platform::getId).collect(Collectors.toList()) +
                 ", technicalSupportValidity=" + technicalSupportValidity +
                 ", workCompletionDate=" + workCompletionDate +

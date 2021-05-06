@@ -188,6 +188,26 @@ public class BootstrapServiceImpl implements BootstrapService {
 
         /**
          *  end Спринт */
+
+        /**
+         * begin Спринт 73 */
+        if (!bootstrapAppDAO.isActionExists("addDeliveryCaseType")) {
+            this.addDeliveryCaseType();
+            bootstrapAppDAO.createAction("addDeliveryCaseType");
+        }
+
+        /**
+         *  end Спринт */
+
+    }
+
+    private void addDeliveryCaseType() {
+        CaseType caseType = new CaseType();
+        caseType.setId(En_CaseType.DELIVERY.getId());
+        caseType.setCode("delivery");
+        caseType.setInfo("Поставки");
+        caseType.setNextId(1L);
+        caseTypeDAO.persist(caseType);
     }
 
     private void updateContactItemsAccessType() {

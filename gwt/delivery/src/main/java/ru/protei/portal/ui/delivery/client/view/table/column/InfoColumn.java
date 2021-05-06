@@ -29,7 +29,7 @@ public class InfoColumn extends ClickColumn<Delivery>{
     @Override
     protected void fillColumnHeader( Element columnHeader ) {
         columnHeader.addClassName( "info" );
-        columnHeader.setInnerText( lang.deliveryInfo() );
+        columnHeader.setInnerText( lang.deliveryColumnInfo() );
     }
 
     @Override
@@ -47,7 +47,7 @@ public class InfoColumn extends ClickColumn<Delivery>{
         productElement.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.DELIVERY.PRODUCT );
         divElement.appendChild( productElement );
 
-        Date delivered = value == null ? null : value.getDelivered();
+        Date delivered = value == null ? null : value.getDepartureDate();
         if ( delivered != null ) {
             Element groupElement = DOM.createElement( "p" );
             groupElement.addClassName( "text-semimuted pull-right" );

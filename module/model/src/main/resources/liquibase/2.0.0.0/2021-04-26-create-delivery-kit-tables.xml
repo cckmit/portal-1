@@ -9,35 +9,25 @@
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="created" type="DATETIME" defaultValueDate="CURRENT_TIMESTAMP">
-                <constraints nullable="false"/>
-            </column>
-            <column name="modified" type="DATETIME"/>
-            <column name="name" type="varchar(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="description" type="mediumtext"/>
             <column name="project_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
-            <column name="attribute" type="int">
-                <constraints nullable="false"/>
-            </column>
-            <column name="status" type="int">
-                <constraints nullable="false"/>
-            </column>
+            <column name="attribute" type="int"/>
             <column name="type" type="int">
                 <constraints nullable="false"/>
             </column>
-            <column name="delivered" type="DATETIME"/>
-            <column name="kit_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
+            <column name="departure_date" type="DATETIME"/>
+            <column name="contract_id" type="bigint"/>
         </createTable>
     </changeSet>
 
-    <changeSet id="add-delivery-unique-constraint" author="porubov">
-        <addUniqueConstraint tableName="delivery" columnNames="name, project_id" constraintName="uniq_delivery_name_project_id"/>
+    <changeSet id="add-delivery_case_object_fk" author="porubov">
+        <addForeignKeyConstraint baseTableName="delivery"
+                                 baseColumnNames="id"
+                                 constraintName="delivery-case_object-id-fk"
+                                 referencedTableName="case_object"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
     </changeSet>
 
     <changeSet id="add-delivery-project_id-fk" author="porubov">
@@ -46,7 +36,13 @@
                                  constraintName="delivery_project_id_to_project_fk"
                                  referencedTableName="project"
                                  referencedColumnNames="id"
-                                 onDelete="CASCADE"/>
+                                 onDelete="NO ACTION"/>
+        <addForeignKeyConstraint baseTableName="delivery"
+                                 baseColumnNames="contract_id"
+                                 constraintName="delivery_contract_id_to_contract_fk"
+                                 referencedTableName="contract"
+                                 referencedColumnNames="id"
+                                 onDelete="NO ACTION"/>
     </changeSet>
 
     <changeSet id="create-kit-table" author="porubov">
@@ -58,48 +54,44 @@
                 <constraints nullable="false"/>
             </column>
             <column name="modified" type="DATETIME"/>
-            <column name="name" type="varchar(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="status" type="int">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="add-delivery-kit_id-fk" author="porubov">
-        <addForeignKeyConstraint baseTableName="delivery"
-                                 baseColumnNames="kit_id"
-                                 constraintName="delivery_kit_id_to_kit_fk"
-                                 referencedTableName="kit"
-                                 referencedColumnNames="id"
-                                 onDelete="CASCADE"/>
-    </changeSet>
-
-    <changeSet id="create-delivery_subscriber-table" author="porubov">
-        <createTable tableName="delivery_subscriber">
-            <column name="id" type="bigint" autoIncrement="true">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="delivery_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="person_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="add-serial_number-to-kit-table" author="porubov">
-        <addColumn tableName="kit">
             <column name="serial_number" type="VARCHAR(64)">
                 <constraints nullable="false"/>
             </column>
-        </addColumn>
+            <column name="name" type="varchar(1024)"/>
+            <column name="state" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
     </changeSet>
 
     <changeSet id="add-delivery-kit-unique-constraint" author="porubov">
         <addUniqueConstraint tableName="kit" columnNames="serial_number" constraintName="uniq_delivery_kit_serial-number"/>
     </changeSet>
 
+    <changeSet id="create-delivery_kit-table" author="porubov">
+        <createTable tableName="delivery_kit">
+            <column name="delivery_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="kit_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-delivery_kit-table-kf" author="porubov">
+        <addForeignKeyConstraint baseTableName="delivery_kit"
+                                 baseColumnNames="delivery_id"
+                                 constraintName="delivery_kit_delivery_id_to_delivery_fk"
+                                 referencedTableName="delivery"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="delivery_kit"
+                                 baseColumnNames="kit_id"
+                                 constraintName="delivery_kit_kit_id_to_kit_fk"
+                                 referencedTableName="kit"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
 </databaseChangeLog>

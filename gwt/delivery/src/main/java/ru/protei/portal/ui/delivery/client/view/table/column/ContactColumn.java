@@ -22,7 +22,7 @@ public class ContactColumn extends ClickColumn<Delivery> {
     @Override
     protected void fillColumnHeader( Element columnHeader ) {
         columnHeader.addClassName( "contacts" );
-        columnHeader.setInnerText( lang.deliveryContacts() );
+        columnHeader.setInnerText( lang.deliveryColumnContacts() );
     }
 
     @Override
