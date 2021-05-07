@@ -73,11 +73,11 @@ public class DeliverySqlBuilder {
 //
 //            if ( deliveryInterval != null ) {
 //                if (deliveryInterval.from != null) {
-//                    condition.append( " and delivery.delivered >= ?" );
+//                    condition.append( " and delivery.departure_date >= ?" );
 //                    args.add( deliveryInterval.from );
 //                }
 //                if (deliveryInterval.to != null) {
-//                    condition.append( " and delivery.delivered < ?" );
+//                    condition.append( " and delivery.departure_date < ?" );
 //                    args.add( deliveryInterval.to );
 //                }
 //            }

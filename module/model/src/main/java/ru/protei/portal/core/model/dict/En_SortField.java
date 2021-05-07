@@ -245,6 +245,11 @@ public enum En_SortField {
      * Сортировка по ip сервера
      */
     server_ip("ip"),
+
+    /**
+     * Имя поставки
+     */
+    delivery_case_name("CO.CASE_NAME"),
     ;
 
     private String fieldName;

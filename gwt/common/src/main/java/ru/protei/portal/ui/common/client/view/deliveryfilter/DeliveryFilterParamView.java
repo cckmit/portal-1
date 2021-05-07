@@ -43,7 +43,6 @@ import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWit
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -218,7 +217,7 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
         state.setValue(null);
         dateDeliveryRange.setValue(null);
         dateModifiedRange.setValue(dateModified);
-        sortField.setValue(En_SortField.issue_number);
+        sortField.setValue(En_SortField.delivery_case_name);
         sortDir.setValue(false);
         search.setValue("");
         searchByComments.setValue(false);
@@ -271,7 +270,7 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
         search.setValue(deliveryQuery.getSearchString());
         sortDir.setValue(deliveryQuery.getSortDir() == null ? null : deliveryQuery.getSortDir().equals(En_SortDir.ASC));
         sortField.setValue(deliveryQuery.getSortField() == null ? En_SortField.creation_date : deliveryQuery.getSortField());
-        dateDeliveryRange.setValue(fromDateRange(deliveryQuery.getDeliveryRange()));
+        dateDeliveryRange.setValue(fromDateRange(deliveryQuery.getDepartureDateRange()));
 //        state.setValue(toSet(caseQuery.getStateIds(), id -> new CaseState(id)));
 
         Set<EntityOption> initiatorsCompanies = applyCompanies( filter.getCompanyEntityOptions(), deliveryQuery.getCompanyIds() );
@@ -313,8 +312,9 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
                 query.setCompanyIds(getCompaniesIdList(companies.getValue()));
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setManagerIds(getManagersIdList(managers.getValue()));
-//                query.setStateIds(nullIfEmpty(toList(states().getValue(), CaseState::getId)));
-                query.setDeliveryRange(toDateRange(dateDeliveryRange.getValue()));
+                query.setDepartureDateRange(toDateRange(dateDeliveryRange.getValue()));
+
+                //                query.setStateIds(nullIfEmpty(toList(states().getValue(), CaseState::getId)));
                 break;
             }
         }

@@ -19,7 +19,7 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
 
     private String name;
 
-    private DateRange deliveryRange;
+    private DateRange departureDateRange;
 
     private List<Long> companyIds;
 
@@ -43,12 +43,12 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
         this.id = id;
     }
 
-    public DateRange getDeliveryRange() {
-        return deliveryRange;
+    public DateRange getDepartureDateRange() {
+        return departureDateRange;
     }
 
-    public void setDeliveryRange(DateRange deliveryRange) {
-        this.deliveryRange = deliveryRange;
+    public void setDepartureDateRange(DateRange departureDateRange) {
+        this.departureDateRange = departureDateRange;
     }
 
     public DeliveryQuery() {}
@@ -64,7 +64,7 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
 
         setId(query.getId());
         setName(query.getName());
-        setDeliveryRange(query.getDeliveryRange());
+        setDepartureDateRange(query.getDepartureDateRange());
         setCompanyIds(query.getCompanyIds());
         setProductIds(query.getProductIds());
         setManagerIds(query.getManagerIds());
@@ -140,7 +140,7 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
                 CollectionUtils.isNotEmpty(companyIds) ||
                 CollectionUtils.isNotEmpty(productIds) ||
                 CollectionUtils.isNotEmpty(managerIds) ||
-                deliveryRange != null;
+                departureDateRange != null;
     }
 
     @Override
@@ -151,7 +151,7 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
                 ", companyIds=" + companyIds +
                 ", productIds=" + productIds +
                 ", managerIds=" + managerIds +
-                ", deliveryRange=" + deliveryRange +
+                ", departureDateRange=" + departureDateRange +
                 '}';
     }
 
@@ -165,11 +165,11 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
                 Objects.equals(companyIds, caseQuery.companyIds) &&
                 Objects.equals(productIds, caseQuery.productIds) &&
                 Objects.equals(managerIds, caseQuery.managerIds) &&
-                Objects.equals(deliveryRange, caseQuery.deliveryRange);
+                Objects.equals(departureDateRange, caseQuery.departureDateRange);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, companyIds, productIds, managerIds, deliveryRange);
+        return Objects.hash(id, name, companyIds, productIds, managerIds, departureDateRange);
     }
 }
