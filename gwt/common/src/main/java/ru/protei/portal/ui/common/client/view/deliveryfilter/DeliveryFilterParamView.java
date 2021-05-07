@@ -26,7 +26,6 @@ import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSear
 import ru.protei.portal.ui.common.client.widget.issuestate.IssueStatesOptionList;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.AsyncPersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
@@ -359,7 +358,7 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
         managers.setItemContainerEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_ITEM_CONTAINER);
         managers.setLabelEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_LABEL);
         labelSortBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.SORT_FIELD_LABEL);
-        labelIssueState.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_STATE_LABEL);
+        deliveryState.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.ISSUE_STATE_LABEL);
     }
 
     private void onFilterChanged() {
@@ -483,7 +482,7 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
     @UiField
     LabelElement labelSortBy;
     @UiField
-    LabelElement labelIssueState;
+    LabelElement deliveryState;
     @Inject
     @UiField(provided = true)
     IssueStatesOptionList state;

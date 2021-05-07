@@ -11,19 +11,22 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
-import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateFormSelector;
+import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.project.ProjectWidget;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractModel;
 import ru.protei.portal.ui.common.client.widget.selector.delivery.attribute.DeliveryAttributeFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.delivery.state.DeliveryStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.delivery.type.DeliveryTypeFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
@@ -49,6 +52,7 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
         ensureDebugIds();
         customerInitiator.setAsyncModel(customerInitiatorModel);
         contract.setAsyncModel(contractModel);
+        state.setStateModel( stateModel );
     }
 
     @Override
@@ -73,8 +77,13 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     }
 
     @Override
-    public HasValue<En_DeliveryState> state() {
+    public HasValue<CaseState> state() {
         return state;
+    }
+
+    @Override
+    public void setStateFilter(Selector.SelectorFilter<CaseState> filter) {
+        state.setFilter(filter);
     }
 
     @Override
@@ -217,6 +226,8 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
+//        state.setEnsureDebugId(DebugIds.ISSUE.STATE_SELECTOR);
+//        state.ensureLabelDebugId(DebugIds.ISSUE.LABEL.STATE);
 //        name.ensureDebugId(DebugIds.PROJECT.NAME_INPUT);
 //        description.ensureDebugId(DebugIds.PROJECT.DESCRIPTION_INPUT);
 //        deliveryStatus.setEnsureDebugId(DebugIds.PROJECT.STATE_SELECTOR);
@@ -247,7 +258,7 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     HTMLPanel kitContainer;
     @Inject
     @UiField( provided = true )
-    DeliveryStateFormSelector state;
+    IssueStateFormSelector state;
     @Inject
     @UiField( provided = true )
     DeliveryTypeFormSelector type;
@@ -292,6 +303,8 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     PersonModel customerInitiatorModel;
     @Inject
     ContractModel contractModel;
+    @Inject
+    StateModel stateModel;
 
     private AbstractDeliveryCreateActivity activity;
 

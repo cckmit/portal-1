@@ -3,29 +3,33 @@ package ru.protei.portal.ui.delivery.client.activity.create;
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
+import ru.brainworm.factory.context.client.request.ContextRequestCallback;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
 import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.DeliveryEvents;
-import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
@@ -33,9 +37,16 @@ import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 
 public abstract class DeliveryCreateActivity implements Activity, AbstractDeliveryCreateActivity {
 
+    public static final long PRELIMINARY_CASE_STATE_ID = 39L;
+
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+    }
+
+    @Event
+    public void onAuthSuccess (AuthEvents.Success event) {
+        updateDeliveryStatesFilter();
     }
 
     @Event
@@ -139,7 +150,7 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         view.name().setValue(null);
         view.description().setText(null);
         // view.kitContainer();
-        view.state().setValue(En_DeliveryState.PRELIMINARY);
+        view.state().setValue(new CaseState(PRELIMINARY_CASE_STATE_ID, "preliminary" ));
         view.type().setValue(null);
         view.project().setValue(null);
         view.setCustomerCompany(null);
@@ -166,7 +177,7 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         delivery.setProjectId(view.project().getValue().getId());
         delivery.setInitiatorId(view.initiator().getValue() != null ? view.initiator().getValue().getId() : null);
         delivery.setAttribute(view.attribute().getValue());
-        delivery.setState(view.state().getValue());
+        delivery.setStateId(view.state().getValue().getId());
         delivery.setType(view.type().getValue());
         delivery.setContractId(view.contract().getValue() != null? view.contract().getValue().getId() : null);
         delivery.setDepartureDate(view.departureDate().getValue());
@@ -183,10 +194,10 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         if (isBlank(view.name().getValue())) {
             return lang.deliveryValidationEmptyName();
         }
-        En_DeliveryState state = view.state().getValue();
+        CaseState state = view.state().getValue();
         if (state == null) {
             return lang.deliveryValidationEmptyState();
-        } else if (En_DeliveryState.PRELIMINARY != state) {
+        } else if (PRELIMINARY_CASE_STATE_ID != state.getId()) {
             return lang.deliveryValidationInvalidStateAtCreate();
         }
         if (view.project().getValue() == null) {
@@ -223,6 +234,11 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
             }));
     }
 
+    private void updateDeliveryStatesFilter() {
+        caseStateService.getCaseStates(En_CaseType.DELIVERY, new FluentCallback<List<CaseState>>()
+                .withSuccess(list -> { view.setStateFilter(list::contains); }));
+    }
+
     private boolean hasPrivileges() {
         return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE);
     }
@@ -239,6 +255,8 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
     DefaultErrorHandler defaultErrorHandler;
     @Inject
     En_CustomerTypeLang customerTypeLang;
+    @Inject
+    CaseStateControllerAsync caseStateService;
 
     private AppEvents.InitDetails initDetails;
 }

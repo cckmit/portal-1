@@ -53,7 +53,7 @@
                                         hasNullValue="true"/>
 
             <div ui:field="stateContainer" class="form-group col-md-8 resize-md-12">
-                <label ui:field="labelIssueState"><ui:text from="{lang.deliveryState}"/></label>
+                <label ui:field="deliveryState"><ui:text from="{lang.deliveryState}"/></label>
                 <issuestate:IssueStatesOptionList ui:field="state"/>
             </div>
         </div>

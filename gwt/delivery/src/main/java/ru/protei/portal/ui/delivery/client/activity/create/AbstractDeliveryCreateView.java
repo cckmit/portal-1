@@ -5,9 +5,11 @@ import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
 import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 
 import java.util.Date;
 import java.util.Set;
@@ -27,7 +29,9 @@ public interface AbstractDeliveryCreateView extends IsWidget {
 
     HTMLPanel kitContainer();
 
-    HasValue<En_DeliveryState> state();
+    HasValue<CaseState> state();
+
+    void setStateFilter(Selector.SelectorFilter<CaseState> filter);
 
     HasValue<En_DeliveryType> type();
 

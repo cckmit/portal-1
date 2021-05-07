@@ -116,10 +116,10 @@ public class DeliveryServiceImpl implements DeliveryService {
         if (isBlank(delivery.getName())) {
             return false;
         }
-        En_DeliveryState state = delivery.getState();
-        if (state == null) {
+        Long stateId = delivery.getStateId();
+        if (stateId == null) {
             return false;
-        } else if (isNew && En_DeliveryState.PRELIMINARY != state) {
+        } else if (isNew && 39L != stateId) {
             return false;
         }
         if (delivery.getProjectId() == null) {
@@ -151,7 +151,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         caseObject.setId(delivery.getId());
         caseObject.setName(delivery.getName());
         caseObject.setInfo(delivery.getDescription());
-        caseObject.setStateId(delivery.getState().getId());
+        caseObject.setStateId(delivery.getStateId());
         caseObject.setInitiatorId(delivery.getInitiatorId());
         caseObject.setNotifiers(delivery.getSubscribers());
 

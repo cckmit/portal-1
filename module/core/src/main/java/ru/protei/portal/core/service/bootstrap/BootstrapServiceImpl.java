@@ -196,6 +196,16 @@ public class BootstrapServiceImpl implements BootstrapService {
             bootstrapAppDAO.createAction("addDeliveryCaseType");
         }
 
+        if (!bootstrapAppDAO.isActionExists("addDeliveryCaseStates")) {
+            this.addDeliveryCaseStates();
+            bootstrapAppDAO.createAction("addDeliveryCaseStates");
+        }
+
+        if (!bootstrapAppDAO.isActionExists("addDeliveryCaseStateMatrix")) {
+            this.addDeliveryCaseStateMatrix();
+            bootstrapAppDAO.createAction("addDeliveryCaseStateMatrix");
+        }
+
         /**
          *  end Спринт */
 
@@ -208,6 +218,37 @@ public class BootstrapServiceImpl implements BootstrapService {
         caseType.setInfo("Поставки");
         caseType.setNextId(1L);
         caseTypeDAO.persist(caseType);
+    }
+
+    private void addDeliveryCaseStates() {
+
+        List<CaseState> deliveryStates = Arrays.asList(
+                new CaseState(CASE_STATE_DELIVERY_PRELIMINARY_ID, "preliminary", "#ef5350", "Предварительная" ),
+                new CaseState(CASE_STATE_DELIVERY_PRE_RESERVE_ID, "pre_reserve", "#42a5f5", "Резервирование комплектации" ),
+                new CaseState(CASE_STATE_DELIVERY_RESERVE_ID, "reserve", "#00bcd4", "Комплектация зарезервирована" ),
+                new CaseState(CASE_STATE_DELIVERY_ASSEMBLY_ID, "assembly", "#906094", "Сборка" ),
+                new CaseState(CASE_STATE_DELIVERY_TEST_ID, "test", "#3f5fbd", "Тестирование" ),
+                new CaseState(CASE_STATE_DELIVERY_READY_ID, "ready", "#4caf50", "Готова" ),
+                new CaseState(CASE_STATE_DELIVERY_SENT_ID, "sent", "#607d8b", "Отправлена" ),
+                new CaseState(CASE_STATE_DELIVERY_WORK_ID, "work", "#868686", "Работает" )
+        );
+        caseStateDAO.persistBatch(deliveryStates);
+    }
+
+    private void addDeliveryCaseStateMatrix() {
+
+        List<CaseStateMatrix> matrix = Arrays.asList(
+                new CaseStateMatrix(106L, En_CaseType.DELIVERY, CASE_STATE_DELIVERY_PRELIMINARY_ID, 12, "preliminary" ),
+                new CaseStateMatrix(107L, En_CaseType.DELIVERY, CASE_STATE_DELIVERY_PRE_RESERVE_ID, 13, "pre_reserve" ),
+                new CaseStateMatrix(108L, En_CaseType.DELIVERY, CASE_STATE_DELIVERY_RESERVE_ID, 14, "reserve" ),
+                new CaseStateMatrix(109L, En_CaseType.DELIVERY, CASE_STATE_DELIVERY_ASSEMBLY_ID, 15, "assembly" ),
+                new CaseStateMatrix(110L, En_CaseType.DELIVERY, CASE_STATE_DELIVERY_TEST_ID, 16, "test" ),
+                new CaseStateMatrix(111L, En_CaseType.DELIVERY, CASE_STATE_DELIVERY_READY_ID, 17, "ready" ),
+                new CaseStateMatrix(112L, En_CaseType.DELIVERY, CASE_STATE_DELIVERY_SENT_ID, 18, "sent" ),
+                new CaseStateMatrix(113L, En_CaseType.DELIVERY, CASE_STATE_DELIVERY_WORK_ID, 19, "work" )
+                );
+
+        caseStateMatrixDAO.persistBatch(matrix);
     }
 
     private void updateContactItemsAccessType() {
@@ -1436,6 +1477,8 @@ public class BootstrapServiceImpl implements BootstrapService {
     @Autowired
     CaseStateDAO caseStateDAO;
     @Autowired
+    CaseStateMatrixDAO caseStateMatrixDAO;
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -1455,4 +1498,13 @@ public class BootstrapServiceImpl implements BootstrapService {
         absenceReasonMap.put(11L, En_AbsenceReason.DUTY);
         absenceReasonMap.put(12L, En_AbsenceReason.REMOTE_WORK);
     }
+
+    private static final long CASE_STATE_DELIVERY_PRELIMINARY_ID = 39L;
+    private static final long CASE_STATE_DELIVERY_PRE_RESERVE_ID = 40L;
+    private static final long CASE_STATE_DELIVERY_RESERVE_ID = 41L;
+    private static final long CASE_STATE_DELIVERY_ASSEMBLY_ID = 42L;
+    private static final long CASE_STATE_DELIVERY_TEST_ID = 43L;
+    private static final long CASE_STATE_DELIVERY_READY_ID = 44L;
+    private static final long CASE_STATE_DELIVERY_SENT_ID = 45L;
+    private static final long CASE_STATE_DELIVERY_WORK_ID = 46L;
 }

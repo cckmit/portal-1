@@ -17,10 +17,8 @@ public class NumberColumn extends ClickColumn<Delivery> {
 
     @Inject
     public NumberColumn( Lang lang,
-                         En_DeliveryStateLang statusLang,
                          En_DeliveryTypeLang typeLang) {
         this.lang = lang;
-        this.statusLang = statusLang;
         this.typeLang = typeLang;
         setStopPropogationElementClassName("number-size");
     }
@@ -52,8 +50,8 @@ public class NumberColumn extends ClickColumn<Delivery> {
 
         com.google.gwt.dom.client.Element stateElement = DOM.createElement("p");
         stateElement.addClassName("label");
-        stateElement.getStyle().setBackgroundColor(statusColor.getColor(value.getState()));
-        stateElement.setInnerText(statusLang.getName(value.getState()));
+        stateElement.getStyle().setBackgroundColor(value.getStateColor());
+        stateElement.setInnerText(value.getStateName());
 
         divElement.appendChild( stateElement );
 
@@ -67,36 +65,5 @@ public class NumberColumn extends ClickColumn<Delivery> {
     }
 
     private Lang lang;
-    private En_DeliveryStateLang statusLang;
-    private DeliveryStatusColor statusColor = new DeliveryStatusColor();
     private En_DeliveryTypeLang typeLang;
-
-    //TODO remove stub
-    private class DeliveryStatusColor {
-        public String getColor(En_DeliveryState status) {
-            if (status == null){
-                return "";
-            }
-            switch (status) {
-                case PRELIMINARY:
-                    return "#ef5350";
-                case PRE_RESERVE:
-                    return "#42a5f5";
-                case RESERVE:
-                    return "#e6e6e6";
-                case ASSEMBLY:
-                    return "#868686";
-                case TEST:
-                    return "#607D8B";
-                case READY:
-                    return "#000000";
-                case SENT:
-                    return "#00bcd4";
-                case WORK:
-                    return "#580505";
-                default:
-                    return "";
-            }
-        }
-    }
 }
