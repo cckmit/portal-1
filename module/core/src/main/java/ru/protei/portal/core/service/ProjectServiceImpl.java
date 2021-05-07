@@ -214,8 +214,8 @@ public class ProjectServiceImpl implements ProjectService {
         project.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
         project.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
         project.getProducts().forEach(product -> product.setProductDirections(new HashSet<>(devUnitDAO.getProductDirections(product.getId()))));
-        project.setContracts(toList(contractDAO.getByProjectId(id), Contract::toEntityOption));
-        project.setPlatforms(toList(platformDAO.getByProjectId(id), Platform::toEntityOption));
+        project.setContracts(CollectionUtils.toList(contractDAO.getByProjectId(id), Contract::toEntityOption));
+        project.setPlatforms(CollectionUtils.toList(platformDAO.getByProjectId(id), Platform::toEntityOption));
 
         if (!canAccessProject(policyService, token, En_Privilege.PROJECT_VIEW, project.getTeam())) {
             return error(En_ResultStatus.PERMISSION_DENIED);
