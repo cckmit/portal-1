@@ -91,13 +91,6 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
             } else {
                 filterView.getDeliveryFilterParams().presetCompany(policyService.getProfile().getCompany());
             }
-        } else {
-            //TODO need companies?
-//            homeCompanyService.getHomeCompany(CrmConstants.Company.HOME_COMPANY_ID, company -> {
-//                Set<EntityOption> value = new HashSet<>();
-//                value.add(new EntityOption(company.getDisplayText(), company.getId()));
-//                filterView.getDeliveryFilterParams().managerCompanies().setValue(value, true);
-//            });
         }
 
         this.preScroll = event.preScroll;
@@ -108,9 +101,7 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
             fillFilterFieldsByCaseQuery(event.deliveryFilterDto);
         }
 
-        validateSearchField(filterView.getDeliveryFilterParams().isSearchFieldCorrect());
-        validateCreatedRange(filterView.getDeliveryFilterParams().isCreatedRangeValid());
-        validateModifiedRange(filterView.getDeliveryFilterParams().isModifiedRangeValid());
+        validateDepartureRange(filterView.getDeliveryFilterParams().isDepartureRangeValid());
     }
 
     @Event
@@ -156,16 +147,12 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
             return;
         }
 
-        boolean searchFieldCorrect = filterView.getDeliveryFilterParams().isSearchFieldCorrect();
-        boolean createdRangeValid = filterView.getDeliveryFilterParams().isCreatedRangeValid();
-        boolean modifiedRangeValid = filterView.getDeliveryFilterParams().isModifiedRangeValid();
+        boolean departureRangeValid = filterView.getDeliveryFilterParams().isDepartureRangeValid();
 
-        if(searchFieldCorrect && createdRangeValid && modifiedRangeValid) {
+        if(departureRangeValid) {
             loadTable();
         }
-        validateSearchField(searchFieldCorrect);
-        validateCreatedRange(createdRangeValid);
-        validateModifiedRange(modifiedRangeValid);
+        validateDepartureRange(departureRangeValid);
     }
 
     @Override
@@ -218,18 +205,8 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
         view.scrollTo(page);
     }
 
-    private void validateSearchField(boolean isCorrect){
-        filterView.getDeliveryFilterParams().searchByCommentsWarningVisibility().setVisible(!isCorrect);
-        filterView.createEnabled().setEnabled(isCorrect);
-    }
-
-    private void validateCreatedRange(boolean isValid){
-        filterView.getDeliveryFilterParams().setCreatedRangeValid(true, isValid);
-        filterView.createEnabled().setEnabled(isValid);
-    }
-
-    private void validateModifiedRange(boolean isValid){
-        filterView.getDeliveryFilterParams().setModifiedRangeValid(true, isValid);
+    private void validateDepartureRange(boolean isValid){
+        filterView.getDeliveryFilterParams().setDepartureRangeValid(true, isValid);
         filterView.createEnabled().setEnabled(isValid);
     }
 
@@ -274,10 +251,6 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
 
     private void applyFilterViewPrivileges() {
         filterView.getDeliveryFilterParams().productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
-        filterView.getDeliveryFilterParams().searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
-        filterView.getDeliveryFilterParams().planVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PLAN_VIEW));
-        filterView.getDeliveryFilterParams().creatorsVisibility().setVisible(policyService.personBelongsToHomeCompany());
-        filterView.getDeliveryFilterParams().initiatorsVisibility().setVisible(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || !policyService.isSubcontractorCompany());
         filterView.getDeliveryFilterParams().managersVisibility().setVisible(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || policyService.isSubcontractorCompany());
     }
 

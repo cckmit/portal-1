@@ -3499,4 +3499,10 @@ public interface Lang extends Messages, ContactItemLang {
     String deliveryValidationEmptyAttribute();
 
     String deliveryValidationEmptyContractAtAttributeDelivery();
+
+    String deliveryFilterProduct();
+
+    String deliveryFilterCompany();
+
+    String deliveryFilterManager();
 }

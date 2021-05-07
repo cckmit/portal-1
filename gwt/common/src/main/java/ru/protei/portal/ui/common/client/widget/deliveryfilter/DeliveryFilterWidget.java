@@ -40,17 +40,10 @@ public class DeliveryFilterWidget extends Composite {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.model = model;
         ensureDebugIds();
-        deliveryFilterParamView.setCreatorModel(asyncPersonModel);
-        deliveryFilterParamView.commentAuthorsVisibility().setVisible(false);
-        deliveryFilterParamView.timeElapsedVisibility().setVisible(false);
     }
 
     public void setInitiatorCompaniesModel(AsyncSelectorModel companyModel) {
         deliveryFilterParamView.setInitiatorCompaniesModel(companyModel);
-    }
-
-    public void setManagerCompaniesModel(AsyncSelectorModel companyModel) {
-        deliveryFilterParamView.setManagerCompaniesModel(companyModel);
     }
 
     public void resetFilter( DateIntervalWithType dateModified) {

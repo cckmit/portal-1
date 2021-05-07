@@ -23,19 +23,12 @@
         <div class="row">
             <div class="form-group col-md-12">
                 <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="m-b-0 m-t-15"/>
-                <g:HTMLPanel ui:field="searchByCommentsContainer" styleName="local-search-options-container">
-                    <g:Label ui:field="searchByCommentsWarning" styleName="warning"/>
-                    <g:CheckBox ui:field="searchByComments" styleName="checkbox" text="{lang.searchByComments}"/>
-                </g:HTMLPanel>
             </div>
         </div>
 
         <div class="row">
-            <range:TypedSelectorRangePicker ui:field="dateDeliveryRange" formatValue="dd.MM.yyyy HH:mm"
-                                            addStyleNames="form-group col-md-4 resize-md-12"/>
-
-            <range:TypedSelectorRangePicker ui:field="dateModifiedRange" formatValue="dd.MM.yyyy HH:mm"
-                                            addStyleNames="form-group col-md-4 resize-md-12"/>
+            <range:TypedSelectorRangePicker ui:field="dateDepartureRange" formatValue="dd.MM.yyyy HH:mm"
+                                            header="{lang.deliveryDepartureDate}" addStyleNames="form-group col-md-4 resize-md-12"/>
 
             <div ui:field="sortByContainer" class="form-group col-md-4 resize-md-12">
                 <label ui:field="labelSortBy"><ui:text from="{lang.sortBy}"/></label>
@@ -44,94 +37,24 @@
                     <g:ToggleButton ui:field="sortDir" styleName="btn empty btn-white sorting_button"/>
                 </div>
             </div>
-        </div>
-
-        <div class="row">
-            <person:PersonMultiSelector ui:field="creators"
-                                        header="{lang.issueCreator}"
-                                        addStyleNames="form-group col-md-4 resize-md-12"/>
 
             <productselector:devunit.DevUnitMultiSelector ui:field="products"
-                                                          header="{lang.issueProduct}"
+                                                          header="{lang.deliveryFilterProduct}"
                                                           addStyleNames="form-group col-md-4 resize-md-12"
                                                           hasNullValue="true"/>
 
             <companyselector:CompanyMultiSelector ui:field="companies"
-                                                  header="{lang.issueCompany}"
-                                                  addStyleNames="form-group col-md-4 resize-md-12"/>
-
-            <person:PersonMultiSelector ui:field="initiators"
-                                        header="{lang.issueInitiator}"
-                                        selectCompanyMessage="{lang.initiatorSelectACompany}"
-                                        addStyleNames="form-group col-md-4 resize-md-12"/>
-
-            <platform:PlatformMultiSelector ui:field="platforms"
-                                            header="{lang.issueFilterPlatform}"
-                                            addStyleNames="form-group col-md-4 resize-md-12"/>
-
-            <companyselector:CompanyMultiSelector ui:field="managerCompanies"
-                                                  header="{lang.issueManagerCompany}"
+                                                  header="{lang.deliveryFilterCompany}"
                                                   addStyleNames="form-group col-md-4 resize-md-12"/>
 
             <person:PersonMultiSelector ui:field="managers"
-                                        header="{lang.issueManager}"
-                                        selectCompanyMessage="{lang.managerSelectACompany}"
+                                        header="{lang.deliveryFilterManager}"
                                         addStyleNames="form-group col-md-4 resize-md-12"
                                         hasNullValue="true"/>
 
-            <person:EmployeeMultiSelector ui:field="commentAuthors"
-                                          header="{lang.reportTypeCaseTimeElapsedWorkAutor}"
-                                          addStyleNames="form-group col-md-4 resize-md-12"/>
-
-            <timeelapsedtypeselector:ElapsedTimeTypeMultiSelector ui:field="timeElapsedTypes"
-                                                                  header="{lang.timeElapsedType}"
-                                                                  addStyleNames="form-group col-md-4 resize-md-12"/>
-
-            <casetag:CaseTagMultiSelector ui:field="tags"
-                                          caseType="CRM_SUPPORT"
-                                          header="{lang.tags}"
-                                          addStyleNames="form-group col-md-4 resize-md-12"/>
-
-            <div class="form-group col-md-4 resize-md-12">
-                <plan:PlanButtonSelector ui:field="plan"
-                                         defaultValue="{lang.selectPlan}"
-                                         hasNullValue="true"
-                                         header="{lang.plan}"/>
-            </div>
-
-            <worktrigger:WorkTriggerButtonMultiSelector ui:field="workTriggers"
-                                                        header="{lang.issueWorkTrigger}"
-                                                        addStyleNames="form-group col-md-4 resize-md-12"
-                                                        searchEnabled="false"
-
-            />
-        </div>
-        <div class="row">
-            <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-md-4 resize-md-12">
-                <label ui:field="labelSearchPrivate"><ui:text from="{lang.searchPrivate}"/></label>
-                <threestate:ThreeStateButton ui:field="searchPrivate"/>
-            </g:HTMLPanel>
-
-            <g:HTMLPanel ui:field="searchFavoriteContainer" styleName="form-group col-md-4 resize-md-12">
-                <label><ui:text from="{lang.issueFavorites}"/></label>
-                <threestate:ThreeStateButton ui:field="searchFavorite"/>
-            </g:HTMLPanel>
-
-            <g:HTMLPanel ui:field="overdueDeadlinesContainer" styleName="form-group col-md-4 resize-md-12">
-                <label><ui:text from="{lang.overdueDeadlines}"/></label>
-                <threestate:ThreeStateButton ui:field="overdueDeadlines"/>
-            </g:HTMLPanel>
-
             <div ui:field="stateContainer" class="form-group col-md-8 resize-md-12">
-                <label ui:field="labelIssueState"><ui:text from="{lang.issueState}"/></label>
+                <label ui:field="labelIssueState"><ui:text from="{lang.deliveryState}"/></label>
                 <issuestate:IssueStatesOptionList ui:field="state"/>
-            </div>
-        </div>
-
-        <div class="row">
-            <div ui:field="importanceContainer" class="form-group col-md-8 resize-md-12">
-                <label ui:field="labelIssueImportance"><ui:text from="{lang.issueImportance}"/></label><br/>
-                <issueimportance:ImportanceBtnGroupMulti ui:field="importance" styleName="form-group importance-btn-group"/>
             </div>
         </div>
 
