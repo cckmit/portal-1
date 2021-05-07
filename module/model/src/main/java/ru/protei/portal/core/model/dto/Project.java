@@ -117,8 +117,6 @@ public class Project extends AuditableObject {
             @JdbcJoinPath(localColumn = Columns.MANAGER, remoteColumn = "id", table = "person")}, mappedColumn = "displayShortName")
     private String managerName;
 
-    private List<Platform> platforms;
-
     @JdbcColumn(name = "technical_support_validity")
     private Date technicalSupportValidity;
 
@@ -159,6 +157,8 @@ public class Project extends AuditableObject {
     private Set<DevUnit> productDirections;
 
     private Set<DevUnit> products;
+
+    private List<EntityOption> platforms;
 
     public Long getId() {
         return id;
@@ -376,11 +376,11 @@ public class Project extends AuditableObject {
         this.managerName = managerName;
     }
 
-    public List<Platform> getPlatforms() {
+    public List<EntityOption> getPlatforms() {
         return platforms;
     }
 
-    public void setPlatforms(List<Platform> platforms) {
+    public void setPlatforms(List<EntityOption> platforms) {
         this.platforms = platforms;
     }
 
@@ -483,7 +483,7 @@ public class Project extends AuditableObject {
                 ", creator=" + creator +
                 ", managerId=" + managerId +
                 ", managerName='" + managerName + '\'' +
-                ", platformsIds=" + stream(platforms).map(Platform::getId).collect(Collectors.toList()) +
+                ", platforms=" + platforms +
                 ", technicalSupportValidity=" + technicalSupportValidity +
                 ", workCompletionDate=" + workCompletionDate +
                 ", purchaseDate=" + purchaseDate +
