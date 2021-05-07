@@ -1632,11 +1632,19 @@ public class TestPortalApiController extends BaseServiceTest {
 
         createPostResultAction("/api/projects/delete/" + createdProjectId, null)
                 .andExpect(status().isOk());
+    }
 
+    @Test
+    @Transactional
+    public void deleteNotExistingProject() throws Exception {
         createPostResultAction("/api/projects/delete/12345", null)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.NOT_FOUND.toString())));
+    }
 
+    @Test
+    @Transactional
+    public void deleteProjectByIncorrectId() throws Exception {
         createPostResultAction("/api/projects/delete/incorrect_id", null)
                 .andExpect(status().isBadRequest());
     }
@@ -1667,7 +1675,11 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.data.products[0].id", is(apiProject.getProductsIds().iterator().next().intValue())))
                 .andExpect(jsonPath("$.data.subcontractors[0].id", is(apiProject.getSubcontractorsIds().get(0).intValue())))
                 .andExpect(jsonPath("$.data.projectPlans[0].id", is(apiProject.getPlansIds().get(0).intValue())));
+    }
 
+    @Test
+    @Transactional
+    public void createProjectWithoutRequiredFields() throws Exception {
         createPostResultAction("/api/projects/create", new ApiProject())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
