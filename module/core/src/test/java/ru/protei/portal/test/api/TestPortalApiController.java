@@ -1665,7 +1665,6 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.data.team[0].role", is(apiProject.getTeam().get(0).getRole().toString())))
                 .andExpect(jsonPath("$.data.stateId", is(apiProject.getStateId().intValue())))
                 .andExpect(jsonPath("$.data.pauseDate", is(apiProject.getPauseDate())))
-                .andExpect(jsonPath("$.data.region.id", is(apiProject.getRegionId().intValue())))
                 .andExpect(jsonPath("$.data.customer.id", is(apiProject.getCompanyId().intValue())))
                 .andExpect(jsonPath("$.data.customerType", is(requireNonNull(En_CustomerType.find(apiProject.getCustomerTypeId())).toString())))
                 .andExpect(jsonPath("$.data.technicalSupportValidity", is(apiProject.getTechnicalSupportValidity().getTime())))
@@ -1923,7 +1922,6 @@ public class TestPortalApiController extends BaseServiceTest {
 
         apiProject.setStateId(4L);
         apiProject.setPauseDate(new Date().getTime());
-        apiProject.setRegionId(1L);
         apiProject.setCompanyId(1L);
         apiProject.setCustomerTypeId(1);
 
@@ -1931,22 +1929,40 @@ public class TestPortalApiController extends BaseServiceTest {
         apiProject.setWorkCompletionDate(new Date());
         apiProject.setPurchaseDate(new Date());
 
+        DevUnit devUnit = new DevUnit(En_DevUnitType.PRODUCT, "Test product", "Info");
+        DevUnit devUnit_2 = new DevUnit(En_DevUnitType.PRODUCT, "Test product 2", "Info");
+        devUnitDAO.saveOrUpdate(devUnit);
+        devUnitDAO.saveOrUpdate(devUnit_2);
+
         Set<Long> directionIds = new HashSet<>();
-        directionIds.add(1L);
+        directionIds.add(devUnit.getId());
         apiProject.setDirectionsIds(directionIds);
 
         Set<Long> productsIds = new HashSet<>();
-        productsIds.add(2L);
+        productsIds.add(devUnit_2.getId());
         apiProject.setProductsIds(productsIds);
 
         List<Long> subContractors = new ArrayList<>();
         subContractors.add(1L);
         apiProject.setSubcontractorsIds(subContractors);
 
+        Plan plan = createPlan();
+        planDAO.saveOrUpdate(plan);
+
         List<Long> plansIds = new ArrayList<>();
-        plansIds.add(1L);
+        plansIds.add(plan.getId());
         apiProject.setPlansIds(plansIds);
 
         return apiProject;
+    }
+
+    public Plan createPlan() {
+        Plan plan = new Plan();
+        plan.setName("Test plan");
+        plan.setCreated(new Date());
+        plan.setCreatorId(1L);
+        plan.setStartDate(new Date());
+        plan.setFinishDate(new Date());
+        return plan;
     }
 }
