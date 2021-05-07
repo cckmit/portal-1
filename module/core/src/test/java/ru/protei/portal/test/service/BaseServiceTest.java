@@ -443,4 +443,6 @@ public class BaseServiceTest {
     protected DocumentTypeDAO documentTypeDAO;
     @Autowired
     protected DocumentDAO documentDAO;
+    @Autowired
+    protected PlanDAO planDAO;
 }

@@ -37,6 +37,12 @@ public class Plan extends AuditableObject {
 
     private Long issuesCount;
 
+    public Plan() {}
+
+    public Plan(Long id) {
+        this.id = id;
+    }
+
     @Override
     public String getAuditType() {
         return AUDIT_TYPE;

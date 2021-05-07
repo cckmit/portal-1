@@ -12,11 +12,9 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.model.api.ApiAbsence;
 import ru.protei.portal.core.model.api.ApiContract;
+import ru.protei.portal.core.model.api.ApiProject;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.dto.CaseTagInfo;
-import ru.protei.portal.core.model.dto.DevUnitInfo;
-import ru.protei.portal.core.model.dto.DocumentApiInfo;
-import ru.protei.portal.core.model.dto.PersonInfo;
+import ru.protei.portal.core.model.dto.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
@@ -45,6 +43,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.mapper.ApiProjectToProjectMapper.toProject;
 import static ru.protei.portal.util.AuthUtils.authenticate;
 
 /**
@@ -87,6 +86,8 @@ public class PortalApiController {
     private HistoryService historyService;
     @Autowired
     private DocumentService documentService;
+    @Autowired
+    private ProjectService projectService;
     @Autowired
     PortalConfig config;
 
@@ -684,6 +685,36 @@ public class PortalApiController {
                 .flatMap(authToken -> absenceService.removeAbsenceByApi(authToken, apiAbsence))
                 .ifOk(id -> log.info("removeAbsence1c(): OK"))
                 .ifError(result -> log.warn("removeAbsence1c(): Can't remove absences by apiAbsence={}. {}", apiAbsence, result));
+    }
+
+    @PostMapping(value = "/projects/delete/{projectId}")
+    public Result<Long> deleteProject(HttpServletRequest request, HttpServletResponse response,
+                                      @PathVariable("projectId") Long projectId) {
+
+        log.info("API | deleteProject(): projectId={}", projectId);
+
+        Result<AuthToken> authenticate = authenticate(request, response, authService, sidGen, log);
+
+        if (authenticate.isError()) {
+            return error(authenticate.getStatus(), authenticate.getMessage());
+        }
+
+        AuthToken authToken = authenticate.getData();
+
+        return projectService.removeProject(authToken, projectId)
+                .ifOk(result -> log.info("deleteProject(): OK"))
+                .ifError(result -> log.warn("deleteProject(): Can't delete project with id={}. {}", projectId, result));
+    }
+
+    @PostMapping(value = "/projects/create")
+    public Result<Project> createProjectByApi(HttpServletRequest request, HttpServletResponse response, @RequestBody ApiProject apiProject) {
+        log.info("API | createProjectByApi(): project={}", apiProject);
+
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> apiProject.isValid() ? ok(authToken) : error(En_ResultStatus.INCORRECT_PARAMS))
+                .flatMap(authToken -> projectService.createProject(authToken, toProject(apiProject)))
+                .ifError(project -> log.warn("createProjectByApi(): Can't create project={}. {}", project, project))
+                .ifOk(result -> log.info("createProjectByApi(): OK"));
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
