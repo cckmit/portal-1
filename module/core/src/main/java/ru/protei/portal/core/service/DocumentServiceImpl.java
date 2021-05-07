@@ -198,13 +198,13 @@ public class DocumentServiceImpl implements DocumentService {
         boolean withDoc = docFile != null && docFile.isPresent();
         boolean withPdf = pdfFile != null && pdfFile.isPresent();
         boolean withApprovalSheet = approvalSheetFile != null && approvalSheetFile.isPresent();
-        En_DocumentFormat docFormat = withDoc ? predictDocumentFormat(docFile.getName()) : null;
-        En_DocumentFormat pdfFormat = withPdf ? predictDocumentFormat(pdfFile.getName()) : null;
+        En_DocumentFormat docFormat = withDoc ? predictDOCFormat(docFile.getName()) : null;
+        En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
         En_DocumentFormat approvalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
 
-        if ((withDoc && docFormat != En_DocumentFormat.DOC && docFormat != En_DocumentFormat.DOCX) ||
-                (withPdf && pdfFormat != En_DocumentFormat.PDF) ||
-                (withApprovalSheet && !Objects.equals(approvalSheetFormat.getExtension(), FilenameUtils.getExtension(approvalSheetFile.getName())))) {
+        if ((withDoc && docFormat == null) ||
+                (withPdf && !isValidFileFormat(pdfFormat.getExtension(), pdfFile.getName())) ||
+                (withApprovalSheet && !isValidFileFormat(approvalSheetFormat.getExtension(), approvalSheetFile.getName()))) {
             return error(En_ResultStatus.INVALID_FILE_FORMAT);
         }
 
@@ -284,13 +284,13 @@ public class DocumentServiceImpl implements DocumentService {
         boolean withDoc = docFile != null;
         boolean withPdf = pdfFile != null;
         boolean withApprovalSheet = approvalSheetFile != null;
-        En_DocumentFormat docFormat = withDoc ? predictDocumentFormat(docFile.getName()) : null;
-        En_DocumentFormat pdfFormat = withPdf ? predictDocumentFormat(pdfFile.getName()) : null;
+        En_DocumentFormat docFormat = withDoc ? predictDOCFormat(docFile.getName()) : null;
+        En_DocumentFormat pdfFormat = withPdf ? En_DocumentFormat.PDF : null;
         En_DocumentFormat approvalSheetFormat = withApprovalSheet ? En_DocumentFormat.AS : null;
 
-        if ((withDoc && docFormat != En_DocumentFormat.DOC && docFormat != En_DocumentFormat.DOCX) ||
-                (withPdf && pdfFormat != En_DocumentFormat.PDF) ||
-                (withApprovalSheet && !Objects.equals(approvalSheetFormat.getExtension(), FilenameUtils.getExtension(approvalSheetFile.getName())))) {
+        if ((withDoc && docFormat == null) ||
+                (withPdf && !isValidFileFormat(pdfFormat.getExtension(), pdfFile.getName())) ||
+                (withApprovalSheet && !isValidFileFormat(approvalSheetFormat.getExtension(), approvalSheetFile.getName()))) {
             return error(En_ResultStatus.INVALID_FILE_FORMAT);
         }
 
@@ -408,9 +408,8 @@ public class DocumentServiceImpl implements DocumentService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        En_DocumentFormat docFormat = predictDocumentFormat(docFile.getName());
-
-        if (docFormat != En_DocumentFormat.DOC && docFormat != En_DocumentFormat.DOCX) {
+        En_DocumentFormat docFormat = predictDOCFormat(docFile.getName());
+        if (docFormat == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -527,7 +526,7 @@ public class DocumentServiceImpl implements DocumentService {
 
             for (En_DocumentFormat format : En_DocumentFormat.values()) {
                 if (!removeFromSVN(documentId, projectId, format, author)) {
-                    log.error("removeDocument(" + documentId + "): failed to remove " + format.getFormat() + " file from the svn | data inconsistency");
+                    log.error("removeDocument(" + documentId + "): failed to remove " + format.name() + " file from the svn | data inconsistency");
                 }
             }
 
@@ -823,13 +822,22 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     private List<En_DocumentFormat> listDocumentFormatsAtSVN(Long documentId, Long projectId) throws SVNException {
+        List<En_DocumentFormat> formats = Arrays.stream(En_DocumentFormat.values())
+                .filter(format -> format != En_DocumentFormat.AS)
+                .collect(Collectors.toList());
         return documentSvnApi.listDocuments(projectId, documentId)
                 .stream()
                 .map(FilenameUtils::getName)
                 .filter(Objects::nonNull)
                 .filter(filename -> filename.startsWith(String.valueOf(documentId)))
-                .map(FilenameUtils::getExtension)
-                .map(En_DocumentFormat::of)
+                .map(filename -> {
+                    if (En_DocumentFormat.AS.getFilename(documentId).equals(filename)) {
+                        return En_DocumentFormat.AS;
+                    }
+                    return formats.stream()
+                            .filter(format -> isValidFileFormat(format.getExtension(), filename))
+                            .findFirst().orElse(null);
+                })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
@@ -841,7 +849,7 @@ public class DocumentServiceImpl implements DocumentService {
                 .collect(Collectors.toList());
         for (En_DocumentFormat format : formatsToRemove) {
             if (!removeFromSVN(documentId, projectId, format, commitMessage)) {
-                log.error("removeDuplicatedDocFilesFromSvn(" + documentId + "): cleanup | failed to remove " + format.getFormat() + " file from the svn");
+                log.error("removeDuplicatedDocFilesFromSvn(" + documentId + "): cleanup | failed to remove " + format.name() + " file from the svn");
             }
         }
     }
@@ -869,8 +877,19 @@ public class DocumentServiceImpl implements DocumentService {
         return commitMessage;
     }
 
-    private En_DocumentFormat predictDocumentFormat(String fileName) {
+    private En_DocumentFormat predictDOCFormat(String fileName) {
         String fileExtension = FilenameUtils.getExtension(fileName);
-        return En_DocumentFormat.of(fileExtension);
+        if (Objects.equals(En_DocumentFormat.DOC.getExtension(), fileExtension)) {
+            return En_DocumentFormat.DOC;
+        }
+        if (Objects.equals(En_DocumentFormat.DOCX.getExtension(), fileExtension)) {
+            return En_DocumentFormat.DOCX;
+        }
+        return null;
+    }
+
+    private boolean isValidFileFormat(String extension, String fileName) {
+        String fileExtension = FilenameUtils.getExtension(fileName);
+        return Objects.equals(extension, fileExtension);
     }
 }

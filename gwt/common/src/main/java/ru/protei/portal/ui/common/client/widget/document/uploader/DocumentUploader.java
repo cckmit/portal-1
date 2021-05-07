@@ -56,7 +56,7 @@ public class DocumentUploader extends FileDropzoneUploader implements AbstractDo
 
     @Override
     public void submitForm(String url) {
-        super.submitForm(url + format.getFormat());
+        super.submitForm(url + format.name().toLowerCase());
     }
 
     @Override
