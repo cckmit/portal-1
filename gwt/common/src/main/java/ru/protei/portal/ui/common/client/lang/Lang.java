@@ -3396,7 +3396,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String deliveryCustomerCompany();
 
-    String deliveryCustomerEmployee();
+    String deliveryCustomerInitiator();
 
     String deliveryManagerInfo();
 
@@ -3415,6 +3415,8 @@ public interface Lang extends Messages, ContactItemLang {
     String deliveryKit();
 
     String deliveryKitSerialNumber();
+
+    String deliveryKitSerialNumberTitle();
 
     String deliveryKitStatus();
 
@@ -3503,6 +3505,8 @@ public interface Lang extends Messages, ContactItemLang {
     String deliveryValidationEmptyContractAtAttributeDelivery();
 
     String deliveryValidationInvalidKits();
+
+    String deliveryValidationOnlyOneKitForCivilProject();
 
     String deliveryFilterProduct();
 

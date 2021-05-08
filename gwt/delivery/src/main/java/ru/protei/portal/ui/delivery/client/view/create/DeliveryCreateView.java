@@ -35,7 +35,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateActivity;
 import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateView;
-import ru.protei.portal.ui.delivery.client.widget.kit.list.DeliveryKitList;
+import ru.protei.portal.ui.delivery.client.widget.kit.view.list.DeliveryKitList;
 
 import java.util.Date;
 import java.util.List;
@@ -78,6 +78,16 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     @Override
     public HasValue<List<Kit>> kits() {
         return kits;
+    }
+
+    @Override
+    public void kitsClear() {
+        kits.clear();
+    }
+
+    @Override
+    public void updateKitByProject(boolean isArmyProject) {
+        kits.setArmyProject(isArmyProject);
     }
 
     @Override
@@ -263,8 +273,6 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     ValidableTextBox name;
     @UiField
     TextArea description;
-    @UiField
-    HTMLPanel kitsContainer;
     @Inject
     @UiField(provided = true)
     DeliveryKitList kits;

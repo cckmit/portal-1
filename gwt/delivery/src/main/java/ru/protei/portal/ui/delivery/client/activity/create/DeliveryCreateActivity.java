@@ -7,10 +7,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
-import ru.protei.portal.core.model.dict.En_DeliveryState;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Delivery;
@@ -25,7 +22,6 @@ import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -136,6 +132,7 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         view.setProducts(joining(projectInfo.getProducts(), ", ", ProductShortView::getName));
         view.contract().setValue(null);
         view.updateContractModel(projectInfo.getId());
+        view.updateKitByProject(projectInfo.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE);
     }
 
     private void clearProjectSpecificFields() {
@@ -150,6 +147,7 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         view.contract().setValue(null);
         view.contractEnable().setEnabled(false);
         view.updateContractModel(-999L); // todo
+        view.updateKitByProject(false);
     }
 
     private void prepare() {
@@ -174,7 +172,7 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         view.setDepartureDateValid(true);
         view.setSubscribers(Collections.emptySet());
 
-        view.kits().setValue(Arrays.asList(createEmptyKit()));
+        view.kitsClear();
     }
 
     private Delivery fillDto() {

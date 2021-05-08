@@ -34,6 +34,10 @@ public interface AbstractDeliveryCreateView extends IsWidget {
 
     HasValue<List<Kit>> kits();
 
+    void kitsClear();
+
+    void updateKitByProject(boolean isArmyProject);
+
     HasValidable kitsValidate();
 
     HasValue<CaseState> state();
