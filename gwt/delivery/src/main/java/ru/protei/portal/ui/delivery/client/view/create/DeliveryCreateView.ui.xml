@@ -3,6 +3,7 @@
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
              xmlns:delivery="urn:import:ru.protei.portal.ui.common.client.widget.selector.delivery"
+             xmlns:deliverystate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
              xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.project"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:contract="urn:import:ru.protei.portal.ui.common.client.widget.selector.contract"
@@ -47,12 +48,13 @@
                         <div class="form-group form-group-attached">
                             <div class="row clearfix reset-no-padding">
                                 <div class="col-md-12">
-                                    <delivery:state.DeliveryStateFormSelector ui:field="state" validation="false"
-                                                                              header="{lang.deliveryState}"
-                                                                              searchEnabled="false"
-                                                                              hasNullValue="false"
-                                                                              mandatory="false"
-                                                                              enabled="false"/>
+                                    <deliverystate:IssueStateFormSelector ui:field="state"
+                                                                          header="{lang.deliveryState}"
+                                                                          searchEnabled="false"
+                                                                          hasNullValue="false"
+                                                                          mandatory="false"
+                                                                          enabled="false"/>
+
                                 </div>
                             </div>
                             <div class="row clearfix reset-no-padding">

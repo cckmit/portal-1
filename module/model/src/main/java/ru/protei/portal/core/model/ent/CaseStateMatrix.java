@@ -39,6 +39,14 @@ public class CaseStateMatrix {
     public CaseStateMatrix() {
     }
 
+    public CaseStateMatrix(Long id, En_CaseType type, Long caseStateId, int viewOrder, String info) {
+        this.id = id;
+        this.type = type;
+        this.caseStateId = caseStateId;
+        this.viewOrder = viewOrder;
+        this.info = info;
+    }
+
     public Long getId() {
         return id;
     }

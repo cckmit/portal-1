@@ -7,11 +7,18 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
+import ru.protei.portal.core.model.dict.En_DeliveryFilterType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dto.DeliveryFilterDto;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.query.BaseQuery;
-import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryFilterActivity;
-import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryFilterView;
+import ru.protei.portal.core.model.query.DeliveryQuery;
+import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryCollapseFilterActivity;
+import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryCollapseFilterView;
+import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryFilterModel;
+import ru.protei.portal.ui.common.client.activity.deliveryfilter.DeliveryFilterService;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -20,6 +27,8 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
+import ru.protei.portal.ui.common.client.widget.deliveryfilter.DeliveryFilterWidget;
+import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -27,20 +36,28 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.util.List;
 
 public abstract class DeliveryTableActivity implements AbstractDeliveryTableActivity,
-        AbstractDeliveryFilterActivity, AbstractPagerActivity, Activity {
+        AbstractDeliveryCollapseFilterActivity, AbstractDeliveryFilterModel, AbstractPagerActivity, Activity {
 
     @PostConstruct
     public void init() {
         view.setActivity(this);
         view.setAnimation(animation);
         pagerView.setActivity(this);
-        filterView.setActivity(this);
-        view.getFilterContainer().add(filterView.asWidget());
+
+        filterView.getDeliveryFilterParams().setModel(this);
+
+        collapseFilterView.setActivity(this);
+        collapseFilterView.getContainer().add(filterView.asWidget());
+        view.getFilterContainer().add( collapseFilterView.asWidget() );
+
+        toggleFilterCollapseState();
     }
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
-        filterView.resetFilter();
+        filterView.resetFilter(DEFAULT_MODIFIED_RANGE);
+        filterView.presetFilterType();
+        updateCaseStatesFilter();
     }
 
     @Event
@@ -55,18 +72,36 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
             return;
         }
 
+        applyFilterViewPrivileges();
+
         init.parent.clear();
         init.parent.add(view.asWidget());
         view.getPagerContainer().add(pagerView.asWidget());
+
+        filterView.showUserFilterControls();
 
         fireEvent(policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE) ?
                 new ActionBarEvents.Add(lang.buttonCreate(), null, UiConstants.ActionBarIdentity.DELIVERY) :
                 new ActionBarEvents.Clear()
         );
 
+        if(!policyService.hasSystemScopeForPrivilege(En_Privilege.DELIVERY_VIEW)){
+            if (policyService.isSubcontractorCompany()) {
+                filterView.getDeliveryFilterParams().presetManagerCompany(policyService.getProfile().getCompany());
+            } else {
+                filterView.getDeliveryFilterParams().presetCompany(policyService.getProfile().getCompany());
+            }
+        }
+
         this.preScroll = event.preScroll;
 
-        loadTable();
+        if (event.deliveryFilterDto == null || event.deliveryFilterDto.getQuery() == null) {
+            loadTable();
+        } else {
+            fillFilterFieldsByCaseQuery(event.deliveryFilterDto);
+        }
+
+        validateDepartureRange(filterView.getDeliveryFilterParams().isDepartureRangeValid());
     }
 
     @Event
@@ -93,22 +128,62 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
     }
 
     @Override
-    public void onFilterChanged() {
-        loadTable();
+    public void onFilterCollapse() {
+        animation.filterCollapse();
+        filterService.setFilterCollapsed(true);
+    }
+
+    @Override
+    public void onFilterRestore() {
+        animation.filterRestore();
+        filterService.setFilterCollapsed(false);
+    }
+
+    @Override
+    public void onUserFilterChanged() {
+        String validateString = filterView.getDeliveryFilterParams().validateMultiSelectorsTotalCount();
+        if ( validateString != null ){
+            fireEvent( new NotifyEvents.Show( lang.errTooMuchCompanies(), NotifyEvents.NotifyType.ERROR ) );
+            return;
+        }
+
+        boolean departureRangeValid = filterView.getDeliveryFilterParams().isDepartureRangeValid();
+
+        if(departureRangeValid) {
+            loadTable();
+        }
+        validateDepartureRange(departureRangeValid);
+    }
+
+    @Override
+    public void onPlanPresent(boolean isPresent) {
+        if (isPresent) {
+            filterView.getDeliveryFilterParams().sortField().setValue(En_SortField.by_plan);
+            filterView.getDeliveryFilterParams().sortDir().setValue(true);
+            filterView.getDeliveryFilterParams().resetRanges();
+            fireEvent(new NotifyEvents.Show(lang.reportCaseObjectPlanInfo(), NotifyEvents.NotifyType.INFO));
+        } else {
+            filterView.getDeliveryFilterParams().sortField().setValue(En_SortField.issue_number);
+            filterView.getDeliveryFilterParams().sortDir().setValue(false);
+        }
     }
 
     @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Delivery>> asyncCallback) {
         boolean isFirstChunk = offset == 0;
-        BaseQuery query = makeQuery();
+        BaseQuery query = getQuery();
         query.setOffset(offset);
         query.setLimit(limit);
+
         deliveryService.getDeliveries(query, new FluentCallback<SearchResult<Delivery>>()
                 .withError(throwable -> {
                     errorHandler.accept(throwable);
                     asyncCallback.onFailure(throwable);
                 })
                 .withSuccess(sr -> {
+                    if (!query.equals(getQuery())) {
+                        loadData(offset, limit, asyncCallback);
+                    }
                     if (isFirstChunk) {
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
@@ -130,32 +205,35 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
         view.scrollTo(page);
     }
 
+    private void validateDepartureRange(boolean isValid){
+        filterView.getDeliveryFilterParams().setDepartureRangeValid(true, isValid);
+        filterView.createEnabled().setEnabled(isValid);
+    }
+
     private void loadTable() {
         animation.closeDetails();
         view.clearRecords();
         view.triggerTableLoad();
     }
 
-    private BaseQuery makeQuery() {
-        return new BaseQuery();
-//        DeliveryQuery query = new DeliveryQuery();
-//        query.searchString = filterView.searchString().getValue();
-//        query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
-//        query.setSortField(filterView.sortField().getValue());
-//        query.setContractorIds(collectIds(filterView.contractors().getValue()));
-//        query.setCuratorIds(collectIds(filterView.curators().getValue()));
-//        query.setOrganizationIds(collectIds(filterView.organizations().getValue()));
-//        query.setManagerIds(collectIds(filterView.managers().getValue()));
-//        query.setTypes(nullIfEmpty(listOfOrNull(filterView.types().getValue())));
-//        query.setCaseTagsIds(nullIfEmpty(toList(filterView.tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
-//        query.setStates(nullIfEmpty(listOfOrNull(filterView.states().getValue())));
-//        ProductDirectionInfo value = filterView.direction().getValue();
-//        query.setDirectionId(value == null ? null : value.id);
-//        query.setKind(filterView.kind().getValue());
-//        query.setDateSigningRange(toDateRange(filterView.dateSigningRange().getValue()));
-//        query.setDateValidRange(toDateRange(filterView.dateValidRange().getValue()));
-//        query.setDeliveryNumber(filterView.deliveryNumber().getValue());
-//        return query;
+    private void fillFilterFieldsByCaseQuery(DeliveryFilterDto<DeliveryQuery> caseFilterDto) {
+        filterView.resetFilter(DEFAULT_MODIFIED_RANGE);
+        filterView.userFilter().setValue(caseFilterDto.getDeliveryFilter().toShortView());
+
+        final DeliveryQuery deliveryQuery = caseFilterDto.getQuery();
+
+        //TODO create DeliveryFilterService
+//        filterService.getSelectorsParams(deliveryQuery, new RequestCallback<SelectorsParams>() {
+//            @Override
+//            public void onError(Throwable throwable) {
+//                fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR));
+//            }
+//
+//            @Override
+//            public void onSuccess(SelectorsParams selectorsParams) {
+//                filterView.getDeliveryFilterParams().fillFilterFields(caseQuery, selectorsParams);
+//            }
+//        });
     }
 
     private void showPreview(Delivery value) {
@@ -164,6 +242,34 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
         } else {
             animation.showDetails();
             fireEvent(new DeliveryEvents.ShowPreview(view.getPreviewContainer(), value.getId()));
+        }
+    }
+
+    private DeliveryQuery getQuery() {
+        return filterView.getDeliveryFilterParams().getFilterFields(En_DeliveryFilterType.DELIVERY_OBJECTS);
+    }
+
+    private void applyFilterViewPrivileges() {
+        filterView.getDeliveryFilterParams().productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
+        filterView.getDeliveryFilterParams().managersVisibility().setVisible(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || policyService.isSubcontractorCompany());
+    }
+
+    private void updateCaseStatesFilter() {
+        if (!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)) {
+            //TODO need states?
+//            filterView.getDeliveryFilterParams().setStateFilter(caseStateFilter.makeFilter(policyService.getUserCompany().getCaseStates()));
+        }
+    }
+
+    private void toggleFilterCollapseState() {
+        Boolean isCollapsed = filterService.isFilterCollapsed();
+        if (isCollapsed == null) {
+            return;
+        }
+        if (isCollapsed) {
+            animation.filterCollapse();
+        } else {
+            animation.filterRestore();
         }
     }
 
@@ -191,7 +297,11 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
     @Inject
     private AbstractDeliveryTableView view;
     @Inject
-    private AbstractDeliveryFilterView filterView;
+    private DeliveryFilterWidget filterView;
+    @Inject
+    private AbstractDeliveryCollapseFilterView collapseFilterView;
+    @Inject
+    private DeliveryFilterService filterService;
     @Inject
     private DeliveryControllerAsync deliveryService;
     @Inject
@@ -202,4 +312,5 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
     private Integer scrollTo = 0;
     private Boolean preScroll = false;
     private AppEvents.InitDetails init;
+    private static final DateIntervalWithType DEFAULT_MODIFIED_RANGE = new DateIntervalWithType(null, En_DateIntervalType.PREVIOUS_AND_THIS_MONTH);
 }

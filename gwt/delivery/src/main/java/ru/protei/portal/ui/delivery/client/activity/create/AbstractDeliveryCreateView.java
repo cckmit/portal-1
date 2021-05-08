@@ -1,14 +1,18 @@
 package ru.protei.portal.ui.delivery.client.activity.create;
 
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
-import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Date;
@@ -32,7 +36,9 @@ public interface AbstractDeliveryCreateView extends IsWidget {
 
     HasValidable kitsValidate();
 
-    HasValue<En_DeliveryState> state();
+    HasValue<CaseState> state();
+
+    void setStateFilter(Selector.SelectorFilter<CaseState> filter);
 
     HasValue<En_DeliveryType> type();
 

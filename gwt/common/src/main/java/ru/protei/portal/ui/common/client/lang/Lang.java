@@ -3466,6 +3466,22 @@ public interface Lang extends Messages, ContactItemLang {
 
     String deliveries();
 
+    String deliveryColumnNumber();
+
+    String deliveryColumnInfo();
+
+    String deliveryColumnContacts();
+
+    String deliveryColumnManager();
+
+    String deliveryFilterNotDefined();
+
+    String deliveryFilterName();
+
+    String deliveryFilterRemoveConfirmMessage();
+
+    String deliveryFilterRemoveSuccessed();
+
     String backToDeliveries();
 
     String selectDeliveryCustomerInitiator();
@@ -3487,4 +3503,10 @@ public interface Lang extends Messages, ContactItemLang {
     String deliveryValidationEmptyContractAtAttributeDelivery();
 
     String deliveryValidationInvalidKits();
+
+    String deliveryFilterProduct();
+
+    String deliveryFilterCompany();
+
+    String deliveryFilterManager();
 }

@@ -1,7 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
-import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.struct.AuditableObject;
@@ -93,12 +92,27 @@ public class Delivery extends AuditableObject {
     private En_DeliveryAttribute attribute;
 
     /**
-     * Признак
+     * Статус поставки
      */
-    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
-            mappedColumn = CaseObject.Columns.STATE, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
-    @JdbcEnumerated(EnumType.ID)
-    private En_DeliveryState state;
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Delivery.Columns.STATE, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
+    private Long stateId;
+
+    /**
+     * Статус поставки в строковом виде
+     */
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = Delivery.Columns.STATE, remoteColumn = "id", table = "case_state", sqlTableAlias = CASE_OBJECT_ALIAS),
+    }, mappedColumn = "state")
+    private String stateName;
+
+    /**
+     * Цвет статуса поставки
+     */
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = Delivery.Columns.STATE, remoteColumn = "id", table = "case_state")}, mappedColumn = "color")
+    private String stateColor;
 
     /**
      * Тип
@@ -232,12 +246,28 @@ public class Delivery extends AuditableObject {
         this.attribute = attribute;
     }
 
-    public En_DeliveryState getState() {
-        return state;
+    public long getStateId() {
+        return stateId;
     }
 
-    public void setState(En_DeliveryState state) {
-        this.state = state;
+    public void setStateId(long stateId) {
+        this.stateId = stateId;
+    }
+
+    public String getStateName() {
+        return stateName;
+    }
+
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
+    }
+
+    public String getStateColor() {
+        return stateColor;
+    }
+
+    public void setStateColor(String stateColor) {
+        this.stateColor = stateColor;
     }
 
     public En_DeliveryType getType() {
@@ -282,5 +312,24 @@ public class Delivery extends AuditableObject {
 
     public interface Columns {
         String ID = "id";
+        String STATE = CaseObject.Columns.STATE;
+    }
+
+    @Override
+    public String toString() {
+        return "Delivery{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", stateId=" + stateId +
+                ", created=" + created +
+                ", modified=" + modified +
+                ", projectId=" + projectId +
+                ", departureDate=" + departureDate +
+                ", type=" + type +
+                ", initiatorId=" + initiatorId +
+                ", contractId=" + contractId +
+                ", attribute=" + attribute +
+                '}';
     }
 }
