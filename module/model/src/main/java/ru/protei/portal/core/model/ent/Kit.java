@@ -14,6 +14,9 @@ public class Kit extends AuditableObject {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
+    @JdbcColumn(name = "delivery_id")
+    private Long deliveryId;
+
     @JdbcColumn(name = "created")
     private Date created;
 
@@ -48,6 +51,14 @@ public class Kit extends AuditableObject {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getDeliveryId() {
+        return deliveryId;
+    }
+
+    public void setDeliveryId(Long deliveryId) {
+        this.deliveryId = deliveryId;
     }
 
     public Date getCreated() {
@@ -107,6 +118,7 @@ public class Kit extends AuditableObject {
     public String toString() {
         return "Kit{" +
                 "id=" + id +
+                ", deliveryId=" + deliveryId +
                 ", created=" + created +
                 ", modified=" + modified +
                 ", serialNumber='" + serialNumber + '\'' +

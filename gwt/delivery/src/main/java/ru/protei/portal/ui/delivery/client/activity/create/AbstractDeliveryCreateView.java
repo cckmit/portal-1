@@ -5,11 +5,14 @@ import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
 import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,7 +28,9 @@ public interface AbstractDeliveryCreateView extends IsWidget {
 
     HasText description();
 
-    HTMLPanel kitContainer();
+    HasValue<List<Kit>> kits();
+
+    HasValidable kitsValidate();
 
     HasValue<En_DeliveryState> state();
 

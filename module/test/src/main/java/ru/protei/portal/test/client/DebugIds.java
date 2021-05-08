@@ -1129,4 +1129,16 @@ public class DebugIds {
         String CONTAINER = "group-container";
         String ITEM = "group-item";
     }
+
+    public interface DELIVERY {
+        String NUMBER_INPUT = "delivery-";      //
+
+        interface KIT {
+            String ITEM = "delivery-item";
+            String SERIAL_NUMBER = "delivery-item-serial-number-input";
+            String STATE = "delivery-item-state-input";
+            String NAME = "delivery-item-name-input";
+            String REMOVE_BUTTON = "delivery-item-remove-button";
+        }
+    }
 }

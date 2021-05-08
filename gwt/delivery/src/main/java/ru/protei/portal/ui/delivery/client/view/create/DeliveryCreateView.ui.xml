@@ -7,6 +7,7 @@
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:contract="urn:import:ru.protei.portal.ui.common.client.widget.selector.contract"
              xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
+             xmlns:widgets="urn:import:ru.protei.portal.ui.delivery.client.widget"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -35,7 +36,8 @@
                                                                maxRows="10"/>
                     </div>
 
-                    <g:HTMLPanel ui:field="kitContainer" styleName="form-group form-group-default col-md-12">
+                    <g:HTMLPanel ui:field="kitsContainer" styleName="form-group form-group-default col-md-12">
+                        <widgets:kit.list.DeliveryKitList ui:field="kits" addStyleNames="row"/>
                     </g:HTMLPanel>
                 </div>
             </div>

@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 
 /**
@@ -81,6 +82,11 @@ public class DeliveryServiceImpl implements DeliveryService {
             throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
+        stream(delivery.getKits()).forEach(kit -> {
+            kit.setCreated(now);
+            kit.setModified(now);
+        });
+
         jdbcManyRelationsHelper.persist(delivery, "kits");
 
         if(isNotEmpty(caseObject.getNotifiers())){
@@ -120,6 +126,9 @@ public class DeliveryServiceImpl implements DeliveryService {
         if (state == null) {
             return false;
         } else if (isNew && En_DeliveryState.PRELIMINARY != state) {
+            return false;
+        }
+        if (delivery.getType() == null) {
             return false;
         }
         if (delivery.getProjectId() == null) {

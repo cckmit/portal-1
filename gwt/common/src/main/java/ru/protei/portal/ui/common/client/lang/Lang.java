@@ -3478,9 +3478,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String deliveryValidationInvalidStateAtCreate();
 
+    String deliveryValidationEmptyType();
+
     String deliveryValidationEmptyProject();
 
     String deliveryValidationEmptyAttribute();
 
     String deliveryValidationEmptyContractAtAttributeDelivery();
+
+    String deliveryValidationInvalidKits();
 }

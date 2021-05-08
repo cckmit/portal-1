@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.Delivery;
+import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -24,6 +25,7 @@ import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
@@ -96,6 +98,13 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
                 isDepartureDateFieldValid(view.isDepartureDateEmpty(), view.departureDate().getValue()));
     }
 
+    @Override
+    public Kit createEmptyKit() {
+        Kit kit = new Kit();
+        kit.setState(En_DeliveryState.PRELIMINARY);
+        return kit;
+    }
+
     private boolean isDepartureDateFieldValid(boolean isEmptyDeadlineField, Date date) {
         if (date == null) {
             return isEmptyDeadlineField;
@@ -138,7 +147,6 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
     private void prepare() {
         view.name().setValue(null);
         view.description().setText(null);
-        // view.kitContainer();
         view.state().setValue(En_DeliveryState.PRELIMINARY);
         view.type().setValue(null);
         view.project().setValue(null);
@@ -157,6 +165,8 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         view.departureDate().setValue(null);
         view.setDepartureDateValid(true);
         view.setSubscribers(Collections.emptySet());
+
+        view.kits().setValue(Arrays.asList(createEmptyKit()));
     }
 
     private Delivery fillDto() {
@@ -171,6 +181,7 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         delivery.setContractId(view.contract().getValue() != null? view.contract().getValue().getId() : null);
         delivery.setDepartureDate(view.departureDate().getValue());
         delivery.setSubscribers(view.getSubscribers());
+        delivery.setKits(view.kits().getValue());
 
         return delivery;
     }
@@ -189,6 +200,9 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         } else if (En_DeliveryState.PRELIMINARY != state) {
             return lang.deliveryValidationInvalidStateAtCreate();
         }
+        if (view.type().getValue() == null) {
+            return lang.deliveryValidationEmptyType();
+        }
         if (view.project().getValue() == null) {
             return lang.deliveryValidationEmptyProject();
         }
@@ -197,6 +211,9 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
             return lang.deliveryValidationEmptyAttribute();
         } else if (En_DeliveryAttribute.DELIVERY == attribute && view.contract().getValue() == null) {
             return lang.deliveryValidationEmptyContractAtAttributeDelivery();
+        }
+        if (!view.kitsValidate().isValid()) {
+            return lang.deliveryValidationInvalidKits();
         }
 
         return null;

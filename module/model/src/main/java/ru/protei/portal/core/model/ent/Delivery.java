@@ -129,8 +129,7 @@ public class Delivery extends AuditableObject {
     /**
      * Комплекты
      */
-    @JdbcManyToMany(linkTable = "delivery_kit",
-            localLinkColumn = "delivery_id", remoteLinkColumn = "kit_id")
+    @JdbcOneToMany( table = "kit", localColumn = "id", remoteColumn = "delivery_id" )
     private List<Kit> kits;
 
     public Delivery() {}

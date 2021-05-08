@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
 import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -28,11 +29,14 @@ import ru.protei.portal.ui.common.client.widget.selector.delivery.type.DeliveryT
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateActivity;
 import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateView;
+import ru.protei.portal.ui.delivery.client.widget.kit.list.DeliveryKitList;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -54,6 +58,7 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     @Override
     public void setActivity(AbstractDeliveryCreateActivity activity) {
         this.activity = activity;
+        kits.setEmptyItemProvider(activity::createEmptyKit);
     }
 
     @Override
@@ -68,8 +73,13 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     public HasText description() { return description; }
 
     @Override
-    public HTMLPanel kitContainer() {
-        return kitContainer;
+    public HasValue<List<Kit>> kits() {
+        return kits;
+    }
+
+    @Override
+    public HasValidable kitsValidate() {
+        return kits;
     }
 
     @Override
@@ -244,7 +254,10 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     @UiField
     TextArea description;
     @UiField
-    HTMLPanel kitContainer;
+    HTMLPanel kitsContainer;
+    @Inject
+    @UiField(provided = true)
+    DeliveryKitList kits;
     @Inject
     @UiField( provided = true )
     DeliveryStateFormSelector state;
