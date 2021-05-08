@@ -12,7 +12,7 @@
                 <div class="form-group form-group-default">
                     <label class="fade"><ui:text from="{lang.deliveryKitSerialNumber}"/></label>
                     <validablefield:ValidableTextBox ui:field="serialNumber" styleName="form-control"
-                                                     enabled="true" notNull="false"/>
+                                                     enabled="false" notNull="false"/>
                 </div>
             </div>
             <div class="col-md-4">
@@ -21,10 +21,10 @@
                                                           searchEnabled="false"
                                                           hasNullValue="false"
                                                           mandatory="false"
-                                                          enabled="true"/>
+                                                          enabled="false"/>
             </div>
             <div class="col-md-4">
-                <div class="form-group form-group-default">
+                <div class="form-group form-group-default required">
                     <label class="fade"><ui:text from="{lang.deliveryKitName}"/></label>
                     <validablefield:ValidableTextBox ui:field="name" styleName="form-control"
                                                      notNull="false"/>

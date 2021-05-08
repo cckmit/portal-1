@@ -24,4 +24,6 @@ public interface DeliveryService {
     @Privileged({ En_Privilege.DELIVERY_EDIT })
     @Auditable( En_AuditType.DELIVERY_MODIFY )
     Result<Delivery> updateDelivery(AuthToken token, Delivery delivery);
+
+    Result<String> getLastSerialNumber(AuthToken token, boolean isArmyProject);
 }

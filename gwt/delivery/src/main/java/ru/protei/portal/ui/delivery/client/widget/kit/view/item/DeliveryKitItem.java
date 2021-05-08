@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.widget.kit.item;
+package ru.protei.portal.ui.delivery.client.widget.kit.view.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
@@ -13,14 +13,17 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.ent.Kit;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.delivery.state.DeliveryStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.DELIVERY_KIT_SERIAL_NUMBER_PATTERN;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HAS_ERROR;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
@@ -34,6 +37,8 @@ public class DeliveryKitItem
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        serialNumber.setRegexp(DELIVERY_KIT_SERIAL_NUMBER_PATTERN);
+        serialNumber.setPlaceholder(lang.deliveryKitSerialNumberTitle());
         setTestAttributes();
     }
 
@@ -88,6 +93,10 @@ public class DeliveryKitItem
         changeTimer.schedule(50);
     }
 
+    public void setSerialNumber(String value) {
+        serialNumber.setValue(value, true);
+    }
+
     public void setError(boolean isError, String error) {
         markBoxAsError(isError);
 
@@ -102,7 +111,12 @@ public class DeliveryKitItem
     }
 
     public boolean isValid(){
-        return serialNumber.isValid() & name.isValid() & state.getValue() != null;
+        return serialNumber.isValid() & name.isValid() &&
+                state.getValue() != null && HelperFunc.isNotEmpty(name.getValue());
+    }
+
+    public HasEnabled removeEnable() {
+        return remove;
     }
 
     private void markBoxAsError(boolean isError) {

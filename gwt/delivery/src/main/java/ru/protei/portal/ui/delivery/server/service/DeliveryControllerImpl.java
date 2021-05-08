@@ -53,6 +53,12 @@ public class DeliveryControllerImpl implements DeliveryController {
         return checkResultAndGetData(response);
     }
 
+    @Override
+    public String getLastSerialNumber(boolean isArmyProject) throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(deliveryService.getLastSerialNumber(token, isArmyProject));
+    }
+
     @Autowired
     DeliveryService deliveryService;
 
