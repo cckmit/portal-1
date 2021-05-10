@@ -240,6 +240,11 @@ public enum En_SortField {
      * Сортировка по дням
      */
     day("day"),
+
+    /**
+     * Сортировка по ip сервера
+     */
+    server_ip("ip"),
     ;
 
     private String fieldName;

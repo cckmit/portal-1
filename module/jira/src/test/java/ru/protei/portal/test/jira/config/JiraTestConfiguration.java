@@ -444,6 +444,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public ServerGroupDAO getServerGroupDAO() {
+        return new ServerGroupDAO_Impl();
+    }
+
+    @Bean
     public ServerSqlBuilder getServerSqlBuilder() {
         return new ServerSqlBuilder();
     }

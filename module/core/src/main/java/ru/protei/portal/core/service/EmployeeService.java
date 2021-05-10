@@ -42,26 +42,26 @@ public interface EmployeeService {
 
     @Auditable(En_AuditType.EMPLOYEE_CREATE)
     @Privileged(En_Privilege.EMPLOYEE_CREATE)
-    Result<Person> createEmployeePerson(AuthToken token, Person person);
+    Result<Person> createEmployee(AuthToken token, Person person, List<WorkerEntry> workerEntries);
 
     @Auditable(En_AuditType.EMPLOYEE_MODIFY)
     @Privileged(En_Privilege.EMPLOYEE_EDIT)
-    Result<Boolean> updateEmployeePerson(AuthToken token, Person person, boolean needToChangeAccount);
-
-    @Auditable(En_AuditType.WORKER_CREATE)
-    @Privileged(En_Privilege.EMPLOYEE_CREATE)
-    Result<WorkerEntry> createEmployeeWorker(AuthToken token, WorkerEntry worker);
-
-    @Auditable(En_AuditType.WORKER_MODIFY)
-    @Privileged(En_Privilege.EMPLOYEE_EDIT)
-    Result<Boolean> updateEmployeeWorker(AuthToken token, WorkerEntry worker);
+    Result<Person> updateEmployee(AuthToken token, Person person, List<WorkerEntry> workerEntries, boolean needToChangeAccount);
 
     @Auditable(En_AuditType.EMPLOYEE_MODIFY)
     @Privileged(En_Privilege.EMPLOYEE_EDIT)
     Result<Boolean> fireEmployee(AuthToken token, Person person);
 
+    @Auditable(En_AuditType.WORKER_CREATE)
+    @Privileged(En_Privilege.EMPLOYEE_CREATE)
+    Result<WorkerEntry> createWorkerEntry(AuthToken token, WorkerEntry worker);
+
+    @Auditable(En_AuditType.WORKER_MODIFY)
     @Privileged(En_Privilege.EMPLOYEE_EDIT)
-    Result<Boolean> updateEmployeeWorkers(AuthToken token, List<WorkerEntry> workerEntryList);
+    Result<WorkerEntry> updateWorkerEntry(AuthToken token, WorkerEntry worker);
+
+    @Privileged(En_Privilege.EMPLOYEE_EDIT)
+    Result<Person> updateWorkerEntries(AuthToken token, Long personId, List<WorkerEntry> workerEntryList);
 
     @Privileged(En_Privilege.EMPLOYEE_VIEW)
     Result<EmployeesBirthdays> getEmployeesBirthdays(AuthToken token, Date dateFrom, Date dateUntil);

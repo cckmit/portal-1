@@ -254,6 +254,11 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public ServerGroupDAO getServerGroupDAO() {
+        return  mock(ServerGroupDAO.class);
+    }
+
+    @Bean
     public ApplicationDAO getApplicationDAO() {
         return  mock(ApplicationDAO.class);
     }

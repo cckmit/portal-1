@@ -2,7 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:accordion='urn:import:ru.protei.portal.ui.common.client.widget.accordion'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
-             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
+             xmlns:markdown="urn:import:ru.protei.portal.ui.common.client.widget.markdown"
              xmlns:text="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
              xmlns:buttonpanel="urn:import:ru.protei.portal.ui.common.client.widget.uploader.impl.buttonpanel"
              xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab">
@@ -49,7 +49,7 @@
                                 <label class="fade" ui:field="descriptionLabel">
                                     <ui:text from="{lang.description}"/>
                                 </label>
-                                <makdown:MarkdownAreaWithPreview ui:field="description" minRows="10" maxRows="20"/>
+                                <markdown:MarkdownAreaWithPreview ui:field="description" minRows="10" maxRows="20"/>
                             </g:HTMLPanel>
                         </div>
                     </g:HTMLPanel>

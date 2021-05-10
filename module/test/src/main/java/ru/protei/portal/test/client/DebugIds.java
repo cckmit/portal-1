@@ -176,6 +176,10 @@ public class DebugIds {
         String INITIATORS_SELECTOR_CLEAR_BUTTON = "filter-initiators-selector-clear-button";
         String INITIATORS_SELECTOR_ITEM_CONTAINER = "filter-manager-selector-item-container";
         String INITIATORS_SELECTOR_LABEL = "filter-initiators-selector-label";
+        String PLATFORMS_SELECTOR_ADD_BUTTON = "filter-platforms-selector-add-button";
+        String PLATFORMS_SELECTOR_CLEAR_BUTTON = "filter-platforms-selector-clear-button";
+        String PLATFORMS_SELECTOR_ITEM_CONTAINER = "filter-platform-selector-item-container";
+        String PLATFORMS_SELECTOR_LABEL = "filter-platforms-selector-label";
         String TAG_SELECTOR_ADD_BUTTON = "filter-tag-selector-add-button";
         String TAG_SELECTOR_CLEAR_BUTTON = "filter-tag-selector-clear-button";
         String TAG_SELECTOR_ITEM_CONTAINER = "filter-tag-selector-item-container";
@@ -246,14 +250,22 @@ public class DebugIds {
     }
 
     public interface IMPORTANCE_BUTTON {
-        String PREFIX = "importance-button-";
+        String DEFAULT = "importance-button-";
+        String CRITICAL = "importance-button-critical";
+        String IMPORTANT = "importance-button-important";
+        String BASIC = "importance-button-basic";
+        String COSMETIC = "importance-button-cosmetic";
+        String MEDIUM = "importance-button-medium";
+        String EMERGENCY = "importance-button-emergency";
+        String HIGH = "importance-button-high";
+        String LOW = "importance-button-low";
     }
 
-    public interface PRIVACY_TYPE_BUTTON {
-        String DEFAULT = "privacy-type-button-";
-        String PUBLIC = "privacy-type-button-public";
-        String PRIVATE_CUSTOMER = "privacy-type-button-private-customer";
-        String PRIVATE = "privacy-type-button-private";
+    public interface PRIVACY_TYPE {
+        String DEFAULT = "privacy-type-";
+        String PUBLIC = "privacy-type-public";
+        String PRIVATE_CUSTOMER = "privacy-type-private-customer";
+        String PRIVATE = "privacy-type-private";
     }
 
     public interface PRODUCT_TYPES_BUTTON {
@@ -293,6 +305,7 @@ public class DebugIds {
         String NX_REQUEST = "issue-state-nx-request";
         String CUST_REQUEST = "issue-state-cust-request";
         String REQUEST_TO_PARTNER = "issue-state-request-to-partner";
+        String BLOCKED = "issue-state-blocked";
     }
 
     public interface ISSUE {
@@ -469,8 +482,6 @@ public class DebugIds {
         String DESCRIPTION_INPUT = "project-description-input";
         String STATE_SELECTOR = "project-state-selector";
         String REGION_SELECTOR = "project-region-selector";
-        String DIRECTION_SELECTOR = "project-direction-selector";
-        String PRODUCT_SELECTOR = "project-product-selector";
         String CUSTOMER_TYPE_SELECTOR = "project-customer-type-selector";
         String COMPANY_SELECTOR = "project-company-selector";
         String LINKS_BUTTON = "project-links-button";
@@ -479,14 +490,29 @@ public class DebugIds {
         String PURCHASE_DATE = "project-purchase-date";
         String SLA_INPUT = "project-sla-input";
 
-        String SAVE_BUTTON = "project-save-button";
-        String CANCEL_BUTTON = "project-cancel-button";
-
+        String DIRECTION_SELECTOR = "project-direction-selector";
+        String DIRECTION_SELECTOR_ADD_BUTTON = "project-direction-selector-add-button";
+        String DIRECTION_SELECTOR_CLEAR_BUTTON = "project-direction-selector-clear-button";
+        String DIRECTION_SELECTOR_ITEM_CONTAINER = "project-direction-selector-item-container";
+        String DIRECTION_SELECTOR_LABEL = "project-direction-selector-label";
+        String PRODUCT_SELECTOR = "project-product-selector";
+        String PRODUCT_SELECTOR_ADD_BUTTON = "project-product-selector-add-button";
+        String PRODUCT_SELECTOR_CLEAR_BUTTON = "project-product-selector-clear-button";
+        String PRODUCT_SELECTOR_ITEM_CONTAINER = "project-product-selector-item-container";
+        String PRODUCT_SELECTOR_LABEL = "project-product-selector-label";
+        String SUBCONTRACTOR_SELECTOR = "project-subcontractor-selector";
         String SUBCONTRACTOR_SELECTOR_ADD_BUTTON = "project-subcontractor-selector-add-button";
         String SUBCONTRACTOR_SELECTOR_CLEAR_BUTTON = "project-subcontractor-selector-clear-button";
         String SUBCONTRACTOR_SELECTOR_ITEM_CONTAINER = "project-subcontractor-selector-item-container";
         String SUBCONTRACTOR_SELECTOR_LABEL = "project-subcontractor-selector-label";
+        String PLAN_SELECTOR = "project-plan-selector";
+        String PLAN_SELECTOR_ADD_BUTTON = "project-plan-selector-add-button";
+        String PLAN_SELECTOR_CLEAR_BUTTON = "project-plan-selector-clear-button";
+        String PLAN_SELECTOR_ITEM_CONTAINER = "project-plan-selector-item-container";
+        String PLAN_SELECTOR_LABEL = "project-plan-selector-label";
 
+        String SAVE_BUTTON = "project-save-button";
+        String CANCEL_BUTTON = "project-cancel-button";
     }
 
     public interface PROJECT_PREVIEW {
@@ -1010,6 +1036,9 @@ public class DebugIds {
             String EDIT_BUTTON = "site-folder-server-edit-button";
             String COPY_BUTTON = "site-folder-server-copy-button";
             String REMOVE_BUTTON = "site-folder-server-remove-button";
+        }
+        interface SERVER_GROUP {
+            String NAME = "site-folder-server-group-name";
         }
         interface LINK {
             String PLATFORM = "sitefolder-link-platform";

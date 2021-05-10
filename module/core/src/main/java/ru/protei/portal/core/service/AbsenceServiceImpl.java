@@ -311,15 +311,21 @@ public class AbsenceServiceImpl implements AbsenceService {
             workerEntries = workerEntryDAO.partialGetByPersonIds(personIds, companyId);
         }
 
-        Map<Long, String> personIdToExtIdMap = CollectionUtils.emptyIfNull(workerEntries).stream()
-                    .collect(Collectors.toMap(
-                            WorkerEntry::getPersonId,
-                            WorkerEntry::getExternalId));
+        // сотрудник может работать по совместительству на разных должностях в _одной_ компании
+        // поэтому отсутствия для 1С формируем на основе данных worker_extId
+        Map<Long, Set<String>> personIdToExtIdMap = CollectionUtils.emptyIfNull(workerEntries).stream()
+                    .collect(Collectors.groupingBy(
+                            WorkerEntry::getPersonId, Collectors.mapping(WorkerEntry::getExternalId, Collectors.toSet())));
 
-        List<ApiAbsence> apiAbsences = absences.stream()
-                .map(absence -> new ApiAbsence(absence)
-                        .withWorkerId(personIdToExtIdMap.get(absence.getPersonId())))
-                .collect(Collectors.toList());
+        List<ApiAbsence> apiAbsences = new ArrayList<>();
+        for (PersonAbsence absence : absences) {
+            Set<String> personExtIds = personIdToExtIdMap.get(absence.getPersonId());
+            if (CollectionUtils.isNotEmpty(personExtIds)) {
+                for (String extId : personExtIds) {
+                    apiAbsences.add(new ApiAbsence(absence).withWorkerId(extId));
+                }
+            }
+        }
 
         return Result.ok(apiAbsences);
     }

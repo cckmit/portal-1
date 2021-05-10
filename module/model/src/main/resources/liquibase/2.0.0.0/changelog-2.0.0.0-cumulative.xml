@@ -87,5 +87,8 @@
   <include file="2021-03-25-add-notnull-constraint-to-case_tag-table.xml" relativeToChangelogFile="true"/>
   <include file="2021-03-25-add-new-project-roles.xml" relativeToChangelogFile="true"/>
   <include file="2021-03-26-add-with-deadline_and_work_trigger-column-to-report-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-04-09-create-server_group-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-04-16-drop-project_id-unique-key-in-contract-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-04-19-add-name-unique-constraint-to-platform-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -1,10 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.PlanOption;
-import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.model.view.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -13,6 +10,8 @@ public class SelectorsParams implements Serializable {
     private List<EntityOption> companyEntityOptions;
 
     private List<PersonShortView> personShortViews;
+
+    private List<PlatformOption> platforms;
 
     private List<ProductShortView> productShortViews;
 
@@ -48,6 +47,14 @@ public class SelectorsParams implements Serializable {
 
     public void setPersonShortViews(List<PersonShortView> personShortViews) {
         this.personShortViews = personShortViews;
+    }
+
+    public List<PlatformOption> getPlatforms() {
+        return platforms;
+    }
+
+    public void setPlatforms(List<PlatformOption> platforms) {
+        this.platforms = platforms;
     }
 
     public List<ProductShortView> getProductShortViews() {

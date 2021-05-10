@@ -11,13 +11,12 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.ProjectStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.widget.sla.SlaInputReadOnly;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewActivity;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewView;
@@ -147,20 +146,13 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
-    public void setContracts(Map<String, String> contractNumberToLink) {
-        addLinksToContainer(contractNumberToLink, contracts);
+    public void setContracts(Map<EntityOption, String> contractToLink) {
+        addLinksToContainer(contractToLink, contracts);
     }
 
     @Override
-    public void setPlatforms(List<Platform> platformsList) {
-        platforms.clear();
-
-        for (Platform platform: platformsList) {
-            String link = LinkUtils.makePreviewLink(Platform.class, platform.getId());
-            Anchor a = new Anchor(platform.getName(), link, "_blank");
-            a.setStyleName("project-platform");
-            platforms.add(a);
-        }
+    public void setPlatforms(Map<EntityOption, String> platformToLink) {
+        addLinksToContainer(platformToLink, platforms);
     }
 
     @Override
@@ -221,15 +213,15 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         }
     }
 
-    private void addLinksToContainer(Map<String, String> nameToLink, HTMLPanel linksContainer) {
+    private void addLinksToContainer(Map<EntityOption, String> valueToLink, HTMLPanel linksContainer) {
         linksContainer.getElement().removeAllChildren();
 
-        for (Map.Entry<String, String> currEntry : nameToLink.entrySet()) {
-            AnchorElement contract = AnchorElement.as(DOM.createAnchor());
-            contract.setInnerText(currEntry.getKey());
-            contract.setHref(currEntry.getValue());
-            contract.setAttribute("target", "_blank");
-            linksContainer.getElement().appendChild(contract);
+        for (Map.Entry<EntityOption, String> currEntry : valueToLink.entrySet()) {
+            AnchorElement element = AnchorElement.as(DOM.createAnchor());
+            element.setInnerText(currEntry.getKey().getDisplayText());
+            element.setHref(currEntry.getValue());
+            element.setAttribute("target", "_blank");
+            linksContainer.getElement().appendChild(element);
         }
     }
 

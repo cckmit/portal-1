@@ -14,5 +14,7 @@ public interface AbstractServerPreviewView extends IsWidget {
 
     void setParameters(String value);
 
+    void setServerGroup(String value);
+
     void setComment(String value);
 }

@@ -42,6 +42,11 @@ public class ServerPreviewView extends Composite implements AbstractServerPrevie
     }
 
     @Override
+    public void setServerGroup(String value) {
+        serverGroup.setInnerText(value);
+    }
+
+    @Override
     public void setComment(String value) {
         comment.setText(value);
     }
@@ -61,6 +66,8 @@ public class ServerPreviewView extends Composite implements AbstractServerPrevie
     SpanElement ip;
     @UiField
     SpanElement parameters;
+    @UiField
+    SpanElement serverGroup;
     @UiField
     Label comment;
     @UiField

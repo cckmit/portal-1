@@ -86,7 +86,17 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
         fireEvent(new ConfirmDialogEvents.Show(lang.roomReservationRemoveConfirmMessage(), removeAction(value)));
     }
 
-    private void requestRoomReservation( int page ) {
+    @Override
+    public Date makeGroup(RoomReservation roomReservation) {
+        return DateUtils.resetTime(roomReservation.getDateFrom());
+    }
+
+    @Override
+    public String makeGroupName(Date group) {
+        return DateFormatter.formatDateOnly(group);
+    }
+
+    private void requestRoomReservation(int page ) {
         view.clearRecords();
 
         boolean isFirstChunk = page == 0;
@@ -104,12 +114,7 @@ public abstract class RoomReservationTableActivity implements AbstractRoomReserv
                             pagerView.setTotalPages( getTotalPages( r.getTotalCount() ) );
                         }
                         pagerView.setCurrentPage( page );
-                        r.getResults().stream()
-                                .collect(Collectors.groupingBy((RoomReservation roomReservation) -> DateUtils.resetTime(roomReservation.getDateFrom())))
-                                .forEach((separatorDate, roomReservations) -> {
-                                    view.addSeparator(DateFormatter.formatDateOnly(separatorDate));
-                                    view.addRecords(roomReservations);
-                                });
+                        view.addRecords(r.getResults());
 
                         restoreScroll();
                     }

@@ -51,7 +51,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
         } else {
             getPopup().getContainer().clear();
             getPopup().setNoElements(true, selectCompanyMessage);
-            getPopup().showNear( select2.getElement() );
+            getPopup().showNear( select2 );
         }
     }
 

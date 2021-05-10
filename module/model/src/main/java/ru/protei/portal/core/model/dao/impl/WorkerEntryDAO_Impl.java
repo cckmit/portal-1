@@ -95,6 +95,10 @@ public class WorkerEntryDAO_Impl extends PortalBaseJdbcDAO<WorkerEntry> implemen
                 condition.append(" and worker_entry.active = ?");
                 args.add(query.getActive());
             }
+            if (query.getCompanyId() != null) {
+                condition.append(" and worker_entry.companyId = ?");
+                args.add(query.getCompanyId());
+            }
         });
     }
 }

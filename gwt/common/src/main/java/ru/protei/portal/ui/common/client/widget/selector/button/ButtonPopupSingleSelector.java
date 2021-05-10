@@ -98,8 +98,8 @@ public class ButtonPopupSingleSelector<T> extends AbstractPopupSelector<T>
         }
     }
 
-    public void setEnsureDebugIdLabel( String company ) {
-        label.setId(DebugIds.DEBUG_ID_PREFIX + company);
+    public void setEnsureDebugIdLabel( String debugId ) {
+        label.setId(DebugIds.DEBUG_ID_PREFIX + debugId);
     }
 
     public void setEnsureDebugId( String companySelector ) {

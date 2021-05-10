@@ -35,6 +35,7 @@ public abstract class ServerPreviewActivity implements Activity, AbstractServerP
         view.setIp(value.getIp() == null ? "" : value.getIp());
         view.setParameters(value.getParams() == null ? "" : value.getParams());
         view.setComment(value.getComment() == null ? "" : value.getComment());
+        view.setServerGroup(value.getServerGroupName() == null ? "" : value.getServerGroupName());
     }
 
     @Override

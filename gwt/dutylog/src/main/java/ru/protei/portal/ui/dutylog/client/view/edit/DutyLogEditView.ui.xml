@@ -22,7 +22,7 @@
             </div>
 
             <form:FormPopupSingleSelector ui:field="type" header="{lang.dutyLogDuty}"
-                                          hasNullValue="false" addStyleNames="form-group required"/>
+                                          hasNullValue="false" mandatory="true"/>
 
         </g:HTMLPanel>
     </g:HTMLPanel>

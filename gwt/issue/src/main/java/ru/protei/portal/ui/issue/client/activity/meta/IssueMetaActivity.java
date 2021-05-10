@@ -608,11 +608,18 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             issueMetaView.setManagerCompany(new EntityOption(caseObjectMeta.getManagerCompanyName(), caseObjectMeta.getManagerCompanyId()));
             issueMetaView.updateManagersCompanyFilter(caseObjectMeta.getManagerCompanyId());
         } else {
-            homeCompanyService.getHomeCompany(CrmConstants.Company.HOME_COMPANY_ID, company -> {
+            if (policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) || policyService.isSubcontractorCompany()) {
+                EntityOption company = policyService.getUserCompany().toEntityOption();
                 issueMetaView.setManagerCompany(company);
                 issueMetaView.updateManagersCompanyFilter(company.getId());
-                caseObjectMeta.setManagerCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
-            });
+                caseObjectMeta.setManagerCompany(company);
+            } else {
+                homeCompanyService.getHomeCompany(CrmConstants.Company.HOME_COMPANY_ID, company -> {
+                    issueMetaView.setManagerCompany(company);
+                    issueMetaView.updateManagersCompanyFilter(company.getId());
+                    caseObjectMeta.setManagerCompany(company);
+                });
+            }
         }
 
         issueMetaView.setManager(caseObjectMeta.getManager());

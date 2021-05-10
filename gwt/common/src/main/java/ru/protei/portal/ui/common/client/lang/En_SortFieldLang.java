@@ -82,6 +82,8 @@ public class En_SortFieldLang {
                 return lang.dutyLogType();
             case by_plan:
                 return lang.planSort();
+            case server_ip:
+                return lang.siteFolderIP();
             default:
                 return lang.unknownField();
         }

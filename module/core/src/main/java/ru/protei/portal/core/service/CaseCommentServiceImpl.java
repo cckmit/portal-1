@@ -18,9 +18,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
-import ru.protei.portal.core.model.query.PersonQuery;
-import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
+import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
 import ru.protei.portal.core.model.struct.receivedmail.ReceivedMail;
@@ -673,9 +671,33 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CommentsAndHistories commentsAndHistories = new CommentsAndHistories();
 
         commentsAndHistories.setComments(caseCommentListResult.getData());
-        commentsAndHistories.setHistories(historyListResult.getData());
+        commentsAndHistories.setHistories(
+                filterHistories(historyListResult.getData(), token, caseType)
+        );
 
         return ok(commentsAndHistories);
+    }
+
+    private List<History> filterHistories(List<History> histories, AuthToken token, En_CaseType caseType) {
+        Set<UserRole> roles = token.getRoles();
+        if (caseType != CRM_SUPPORT || policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+            return histories;
+        }
+
+        CaseTagQuery tagQuery = new CaseTagQuery();
+        tagQuery.setCompanyId(token.getCompanyId());
+        List<Long> customerTagsIds = toList(caseTagDAO.getListByQuery(tagQuery), CaseTag::getId);
+
+        return stream(histories).filter(history -> customerHistoryPredicate(history, customerTagsIds))
+                .collect(Collectors.toList());
+    }
+
+    private boolean customerHistoryPredicate(History history, List<Long> customerTagsIds){
+        if (history.getType() == En_HistoryType.TAG) {
+            return (history.getAction() == En_HistoryAction.ADD && customerTagsIds.contains(history.getNewId()))
+                    || (history.getAction() == En_HistoryAction.REMOVE && customerTagsIds.contains(history.getOldId()));
+        }
+        return true;
     }
 
     private CaseComment createComment(CaseObject caseObject, Person person, String comment) {
@@ -777,6 +799,9 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     private En_ResultStatus checkAccessForCaseObjectByNumber(AuthToken token, En_CaseType caseType, Long caseNumber) {
+        if (caseNumber == null) {
+            return null;
+        }
         return checkAccessForCaseObject(token, caseType, caseObjectDAO.getCaseByNumber(caseType, caseNumber));
     }
 

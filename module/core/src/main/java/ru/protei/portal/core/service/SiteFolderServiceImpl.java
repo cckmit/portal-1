@@ -1,5 +1,7 @@
 package ru.protei.portal.core.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
@@ -10,8 +12,10 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
+import ru.protei.portal.core.model.query.ServerGroupQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -26,6 +30,7 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 
 public class SiteFolderServiceImpl implements SiteFolderService {
+    private static Logger log = LoggerFactory.getLogger(SiteFolderServiceImpl.class);
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
@@ -33,6 +38,8 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     PlatformDAO platformDAO;
     @Autowired
     ServerDAO serverDAO;
+    @Autowired
+    ServerGroupDAO serverGroupDAO;
     @Autowired
     ApplicationDAO applicationDAO;
     @Autowired
@@ -156,6 +163,9 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
+        Map<Long, Long> platformIdToServersCount = serverDAO.countByPlatformIds(Collections.singletonList(id));
+        result.setServersCount(platformIdToServersCount.get(id));
+
         jdbcManyRelationsHelper.fill(result, "attachments");
 
         return ok(result);
@@ -196,7 +206,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     public Result<Platform> createPlatform( AuthToken token, Platform platform) {
 
         String params = platform.getParams();
-        if (params != null && !isValid(params)) {
+        if (params != null && !isParamsValid(params)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
@@ -239,9 +249,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     @Override
     @Transactional
     public Result<Server> createServer( AuthToken token, Server server) {
-
-        String params = server.getParams();
-        if (params != null && !isValid(params)) {
+        if (!isServerValid(server)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
@@ -257,9 +265,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     @Override
     @Transactional
     public Result<Server> createServerAndCloneApps( AuthToken token, Server server, Long serverIdOfAppsToBeCloned) {
-
-        String params = server.getParams();
-        if (params != null && !isValid(params)) {
+        if (!isServerValid(server)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
@@ -290,7 +296,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     public Result<Platform> updatePlatform(AuthToken token, Platform platform) {
 
         String params = platform.getParams();
-        if (params != null && !isValid(params)) {
+        if (params != null && !isParamsValid(params)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
@@ -335,9 +341,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     @Override
     @Transactional
     public Result<Server> updateServer( AuthToken token, Server server) {
-
-        String params = server.getParams();
-        if (params != null && !isValid(params)) {
+        if (!isServerValid(server)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
@@ -413,6 +417,99 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         return ok(id);
     }
 
+    @Override
+    public Result<List<ServerGroup>> getServerGroups(AuthToken token, ServerGroupQuery serverGroupQuery) {
+        return ok(serverGroupDAO.listByQuery(serverGroupQuery));
+    }
+
+    @Override
+    @Transactional
+    public Result<ServerGroup> createServerGroup(AuthToken token, ServerGroup serverGroup) {
+        if (!isServerGroupValid(serverGroup)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        serverGroup.setId(serverGroupDAO.persist(serverGroup));
+
+        return ok(serverGroup);
+    }
+
+    @Override
+    @Transactional
+    public Result<ServerGroup> updateServerGroup(AuthToken token, ServerGroup serverGroup) {
+        if (!isServerGroupValid(serverGroup)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        serverGroupDAO.merge(serverGroup);
+
+        return ok(serverGroup);
+    }
+
+    @Override
+    @Transactional
+    public Result<Long> removeServerGroup(AuthToken token, Long serverGroupId) {
+        if (serverGroupId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!serverGroupDAO.removeByKey(serverGroupId)) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        return ok(serverGroupId);
+    }
+
+    private boolean isServerGroupValid(ServerGroup serverGroup) {
+        if (StringUtils.isBlank(serverGroup.getName())) {
+            log.warn("isServerGroupValid(): server group name is empty");
+            return false;
+        }
+
+        if (serverGroup.getPlatformId() == null) {
+            log.warn("isServerGroupValid(): platform id cannot be null");
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isServerValid(Server server) {
+        if (server == null) {
+            return false;
+        }
+
+        String params = server.getParams();
+
+        if (params == null) {
+            return false;
+        }
+
+        if (!isParamsValid(params)) {
+            return false;
+        }
+
+        if (!isServerGroupPlatformValid(server)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isServerGroupPlatformValid(Server server) {
+        if (server.getServerGroupId() == null) {
+            return true;
+        }
+
+        ServerGroup serverGroup = serverGroupDAO.get(server.getServerGroupId());
+
+        if (serverGroup.getPlatformId().equals(server.getPlatformId())) {
+            return true;
+        }
+
+        return false;
+    }
+
     private void cloneApplicationsForServer(Long serverId, Long serverIdOfAppsToBeCloned) {
         if (serverIdOfAppsToBeCloned == null || serverId == null) {
             return;
@@ -442,7 +539,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         return caseObject;
     }
 
-    private boolean isValid(String params) {
+    private boolean isParamsValid(String params) {
         return params.length() <= CrmConstants.Platform.PARAMETERS_MAX_LENGTH;
     }
 }

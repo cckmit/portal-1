@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
+import ru.protei.portal.core.model.query.ServerGroupQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PlatformOption;
@@ -29,11 +30,12 @@ public interface SiteFolderService {
     @Privileged(En_Privilege.SITE_FOLDER_VIEW)
     Result<SearchResult<Server>> getServersWithAppsNames( AuthToken token, ServerQuery query);
 
+    @Privileged(value = En_Privilege.SITE_FOLDER_VIEW)
+    Result<List<ServerGroup>> getServerGroups(AuthToken token, ServerGroupQuery serverGroupQuery);
 
     Result<List<PlatformOption>> listPlatformsOptionList(AuthToken token, PlatformQuery query);
 
     Result<List<EntityOption>> listServersOptionList( AuthToken token, ServerQuery query);
-
 
     @Privileged(En_Privilege.SITE_FOLDER_VIEW)
     Result<Platform> getPlatform( AuthToken token, long id);
@@ -62,6 +64,10 @@ public interface SiteFolderService {
     @Auditable(En_AuditType.APPLICATION_CREATE)
     Result<Application> createApplication( AuthToken token, Application application);
 
+    @Privileged(value = En_Privilege.SITE_FOLDER_CREATE)
+    @Auditable(value = En_AuditType.SERVER_GROUP_CREATE)
+    Result<ServerGroup> createServerGroup(AuthToken token, ServerGroup serverGroup);
+
     @Privileged(En_Privilege.SITE_FOLDER_EDIT)
     @Auditable(En_AuditType.PLATFORM_MODIFY)
     Result<Platform> updatePlatform( AuthToken token, Platform platform);
@@ -74,6 +80,10 @@ public interface SiteFolderService {
     @Auditable(En_AuditType.APPLICATION_MODIFY)
     Result<Application> updateApplication( AuthToken token, Application application);
 
+    @Privileged(value = En_Privilege.SITE_FOLDER_EDIT)
+    @Auditable(value = En_AuditType.SERVER_GROUP_MODIFY)
+    Result<ServerGroup> updateServerGroup(AuthToken token, ServerGroup serverGroup);
+
     @Privileged(En_Privilege.SITE_FOLDER_REMOVE)
     @Auditable(En_AuditType.PLATFORM_REMOVE)
     Result<Long> removePlatform( AuthToken token, long id);
@@ -85,4 +95,8 @@ public interface SiteFolderService {
     @Privileged(En_Privilege.SITE_FOLDER_REMOVE)
     @Auditable(En_AuditType.APPLICATION_REMOVE)
     Result<Long> removeApplication( AuthToken token, long id);
+
+    @Privileged(value = En_Privilege.SITE_FOLDER_REMOVE)
+    @Auditable(value = En_AuditType.SERVER_GROUP_REMOVE)
+    Result<Long> removeServerGroup(AuthToken token, Long serverGroupId);
 }

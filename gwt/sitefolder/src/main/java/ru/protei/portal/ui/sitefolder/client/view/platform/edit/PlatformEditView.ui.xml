@@ -6,6 +6,7 @@
              xmlns:tab='urn:import:ru.protei.portal.ui.common.client.widget.tab'
              xmlns:w='urn:import:ru.protei.portal.ui.common.client.widget'
              xmlns:project='urn:import:ru.protei.portal.ui.common.client.widget.selector.project'
+             xmlns:markdown="urn:import:ru.protei.portal.ui.common.client.widget.markdown"
              xmlns:fileUploader="urn:import:ru.protei.portal.ui.common.client.widget.uploader.impl">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -40,7 +41,9 @@
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.siteFolderComment}"/></label>
-                    <g:TextArea ui:field="comment" styleName="form-control sf-comment resize-vertical"/>
+                    <markdown:MarkdownAreaWithPreview ui:field="comment"
+                                                     minRows="2"
+                                                     maxRows="10"/>
                 </div>
 
                 <div class="form-group col-md-12">
@@ -61,15 +64,9 @@
 
             <div class="row">
 
-                <tab:TabWidget ui:field="tabWidget">
+                <tab:TabWidget ui:field="tabWidget" styleName="w-100">
                     <tab:pane.TabWidgetPane tabName="{lang.siteFolderServers}">
-                        <g:HTMLPanel styleName="form-group col-md-12 p-0" ui:field="listContainerHeader">
-                            <g:Button ui:field="openButton" styleName="btn btn-default m-r-10"
-                                      text="{lang.openTableView}"/>
-                            <g:Button ui:field="createButton" styleName="btn btn-default m-r-10"
-                                      text="{lang.siteFolderServerCreate}"/>
-                        </g:HTMLPanel>
-                        <g:HTMLPanel styleName="form-group col-md-12" ui:field="listContainer"/>
+                        <g:HTMLPanel styleName="form-group col-md-12" ui:field="serversContainer"/>
                     </tab:pane.TabWidgetPane>
 
                     <tab:pane.TabWidgetPane tabName="{lang.siteFolderCompanyContacts}">

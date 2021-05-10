@@ -2,6 +2,7 @@ package ru.protei.portal.ui.sitefolder.client.view.platform.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -72,7 +73,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
 
     @Override
     public void setComment(String value) {
-        comment.setText(value);
+        comment.setInnerHTML(value);
     }
 
     @Override
@@ -93,6 +94,11 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @Override
     public void isFullScreen(boolean isFullScreen) {
         previewWrapperContainer.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
+    }
+
+    @Override
+    public Element getPreviewWrapperContainerElement() {
+        return previewWrapperContainer.getElement();
     }
 
     @UiHandler("openServersButton")
@@ -140,8 +146,8 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         copyPreviewLink.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.COPY_PREVIEW_LINK_BUTTON);
         name.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.NAME);
         openServersButton.ensureDebugId(DebugIds.SITE_FOLDER.SERVER.OPEN_BUTTON);
-        openServersButton.ensureDebugId(DebugIds.SITE_FOLDER.SERVER.EXPORT_BUTTON);
-        comment.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.COMMENT);
+        exportServersButton.ensureDebugId(DebugIds.SITE_FOLDER.SERVER.EXPORT_BUTTON);
+        comment.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.COMMENT);
         company.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.COMPANY);
         manager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.MANAGER);
         parameters.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.SITE_FOLDER.PLATFORM.PARAMETERS);
@@ -155,8 +161,6 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         contactsContainer.ensureDebugId(DebugIds.SITE_FOLDER.PLATFORM.CONTACTS);
     }
 
-    @UiField
-    HTMLPanel preview;
     @UiField
     Anchor copyPreviewLink;
     @UiField
@@ -172,7 +176,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @UiField
     SpanElement technicalSupportValidity;
     @UiField
-    Label comment;
+    SpanElement comment;
     @UiField
     TabWidget tabWidget;
     @UiField

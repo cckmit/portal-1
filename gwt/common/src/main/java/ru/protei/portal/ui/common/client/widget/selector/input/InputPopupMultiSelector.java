@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.common.client.widget.selector.input;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -13,6 +15,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AbstractPopupSelector;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
@@ -53,16 +56,16 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     }
 
     public void setHeader( String label ) {
-        this.label.removeStyleName( HIDE );
-        this.label.getElement().setInnerText( label == null ? "" : label );
+        this.label.removeClassName( HIDE );
+        this.label.setInnerText( label == null ? "" : label );
     }
 
     public void setMandatory( boolean mandatory ) {
         if ( mandatory ) {
-            select2.addStyleName(REQUIRED);
-            return;
+            form.addClassName(REQUIRED);
+        } else {
+            form.removeClassName(REQUIRED);
         }
-        select2.removeStyleName(REQUIRED);
     }
 
     @Override
@@ -116,8 +119,12 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     }
 
     @Override
-    public void setValid(boolean isValid){
-        select2.setStyleName(HAS_ERROR, !isValid);
+    public void setValid(boolean isValid) {
+        if (isValid) {
+            select2.removeClassName(HAS_ERROR);
+        } else {
+            select2.addClassName(HAS_ERROR);
+        }
     }
 
     public void setValidation(boolean isValidable){
@@ -134,7 +141,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
         if (!getPopup().isVisible()) {
             getPopup().getContainer().clear();
             getSelector().fillFromBegin( this );
-            getPopup().showNear( select2.getElement() );
+            getPopup().showNear( select2 );
         }
     }
 
@@ -229,7 +236,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     }
 
     public void setLabelEnsureDebugId( String debugId ) {
-        label.ensureDebugId( debugId );
+        label.setId( DebugIds.DEBUG_ID_PREFIX +  debugId );
     }
 
     public void setAddName( String text ) {
@@ -278,11 +285,7 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     @UiField
     HTMLPanel root;
     @UiField
-    protected HTMLPanel select2;
-    @UiField
     Button caretButton;
-    @UiField
-    HTMLPanel label;
     @UiField
     protected HTMLPanel itemContainer;
     @UiField
@@ -297,18 +300,21 @@ public class InputPopupMultiSelector<T> extends AbstractPopupSelector<T>
     Button clearButton;
     @UiField
     Lang lang;
+    @UiField
+    LabelElement label;
+    @UiField
+    DivElement form;
+    @UiField
+    protected DivElement select2;
 
     @Inject
     Provider<SelectItemView> itemViewProvider;
 
-    List<SelectItemView> itemViews = new ArrayList<SelectItemView>();
+    List<SelectItemView> itemViews = new ArrayList<>();
 
     private boolean isEnabled = true;
     private boolean isValidable;
 
-    interface BlockSelectorUiBinder extends UiBinder<HTMLPanel, InputPopupMultiSelector> {
-    }
-
+    interface BlockSelectorUiBinder extends UiBinder<HTMLPanel, InputPopupMultiSelector> {}
     private static BlockSelectorUiBinder bsUiBinder = GWT.create( BlockSelectorUiBinder.class );
-
 }

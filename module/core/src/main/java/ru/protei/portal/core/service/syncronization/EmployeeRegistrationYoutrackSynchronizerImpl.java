@@ -63,7 +63,7 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
     
     @PostConstruct
     public void init(){
-        if (!config.data().integrationConfig().isYoutrackEnabled()) {
+        if (!config.data().integrationConfig().isYoutrackBackchannelEnabled()) {
             log.debug("init(): employee registration youtrack synchronizer is not started because YouTrack integration is disabled in configuration");
             return;
         }
@@ -171,7 +171,7 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
 
 
         Long newState = employeeRegistration.getStateId();
-        if (newState != oldState && newState == CrmConstants.State.DONE) {
+        if (!Objects.equals(newState, oldState) && newState == CrmConstants.State.DONE) {
             log.debug("synchronizeEmployeeRegistration(): state was changed to DONE, sending notification");
             fireEmployeeRegistrationEvent(employeeRegistration);
         }
@@ -184,6 +184,7 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
         for (CaseLink caseLink : caseLinks) {
             String ytIssueId = caseLink.getRemoteId();
             YouTrackIssueInfo ytIssue = youtrackService.getIssueInfo(ytIssueId).getData();
+            if (ytIssue == null) continue;
             List<YouTrackIssueStateChange> ytIssueStateChanges = youtrackService.getIssueStateChanges(ytIssueId).getData();
 
             log.info("updateIssues(): caseId={}, caseLink={}", employeeRegistration.getId(), caseLink);

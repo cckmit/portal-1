@@ -25,16 +25,15 @@ import ru.protei.portal.ui.sitefolder.client.activity.plaform.table.concise.Plat
 import ru.protei.portal.ui.sitefolder.client.activity.server.edit.AbstractServerEditView;
 import ru.protei.portal.ui.sitefolder.client.activity.server.edit.ServerEditActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.filter.AbstractServerFilterView;
-import ru.protei.portal.ui.sitefolder.client.activity.server.list.AbstractServerListView;
-import ru.protei.portal.ui.sitefolder.client.activity.server.list.ServerListActivity;
-import ru.protei.portal.ui.sitefolder.client.activity.server.list.item.AbstractServerListItemView;
-import ru.protei.portal.ui.sitefolder.client.activity.server.listdetailed.AbstractServerDetailedListView;
-import ru.protei.portal.ui.sitefolder.client.activity.server.listdetailed.ServerDetailedListActivity;
-import ru.protei.portal.ui.sitefolder.client.activity.server.listdetailed.item.AbstractServerDetailedListItemView;
 import ru.protei.portal.ui.sitefolder.client.activity.server.preview.AbstractServerPreviewView;
 import ru.protei.portal.ui.sitefolder.client.activity.server.preview.ServerPreviewActivity;
+import ru.protei.portal.ui.sitefolder.client.activity.server.summarytable.AbstractServerSummaryTableView;
+import ru.protei.portal.ui.sitefolder.client.activity.server.summarytable.ServerSummaryTableActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.table.AbstractServerTableView;
 import ru.protei.portal.ui.sitefolder.client.activity.server.table.ServerTableActivity;
+import ru.protei.portal.ui.sitefolder.client.activity.servergroup.edit.AbstractServerGroupEditActivity;
+import ru.protei.portal.ui.sitefolder.client.activity.servergroup.edit.AbstractServerGroupEditView;
+import ru.protei.portal.ui.sitefolder.client.activity.servergroup.edit.ServerGroupEditActivity;
 import ru.protei.portal.ui.sitefolder.client.view.app.edit.ApplicationEditView;
 import ru.protei.portal.ui.sitefolder.client.view.app.filter.ApplicationFilterView;
 import ru.protei.portal.ui.sitefolder.client.view.app.list.ApplicationListView;
@@ -48,12 +47,10 @@ import ru.protei.portal.ui.sitefolder.client.view.platform.table.PlatformTableVi
 import ru.protei.portal.ui.sitefolder.client.view.platform.table.concise.PlatformConciseTableView;
 import ru.protei.portal.ui.sitefolder.client.view.server.edit.ServerEditView;
 import ru.protei.portal.ui.sitefolder.client.view.server.filter.ServerFilterView;
-import ru.protei.portal.ui.sitefolder.client.view.server.list.ServerListView;
-import ru.protei.portal.ui.sitefolder.client.view.server.list.item.ServerListItemView;
-import ru.protei.portal.ui.sitefolder.client.view.server.listdetailed.ServerDetailedListView;
-import ru.protei.portal.ui.sitefolder.client.view.server.listdetailed.item.ServerDetailedListItemView;
 import ru.protei.portal.ui.sitefolder.client.view.server.preview.ServerPreviewView;
+import ru.protei.portal.ui.sitefolder.client.view.server.summarytable.ServerSummaryTableView;
 import ru.protei.portal.ui.sitefolder.client.view.server.table.ServerTableView;
+import ru.protei.portal.ui.sitefolder.client.view.servergroup.edit.ServerGroupEditView;
 
 public class SiteFolderClientModule extends AbstractGinModule {
 
@@ -75,19 +72,15 @@ public class SiteFolderClientModule extends AbstractGinModule {
         bind(AbstractPlatformConciseTableView.class).to(PlatformConciseTableView.class).in(Singleton.class);
 
         // Server
+        bind(ServerSummaryTableActivity.class).asEagerSingleton();
         bind(ServerTableActivity.class).asEagerSingleton();
         bind(ServerPreviewActivity.class).asEagerSingleton();
         bind(ServerEditActivity.class).asEagerSingleton();
+        bind(AbstractServerSummaryTableView.class).to(ServerSummaryTableView.class).in(Singleton.class);
         bind(AbstractServerTableView.class).to(ServerTableView.class).in(Singleton.class);
         bind(AbstractServerFilterView.class).to(ServerFilterView.class).in(Singleton.class);
         bind(AbstractServerPreviewView.class).to(ServerPreviewView.class).in(Singleton.class);
         bind(AbstractServerEditView.class).to(ServerEditView.class).in(Singleton.class);
-        bind(ServerListActivity.class).asEagerSingleton();
-        bind(AbstractServerListView.class).to(ServerListView.class);
-        bind(AbstractServerListItemView.class).to(ServerListItemView.class);
-        bind(ServerDetailedListActivity.class).asEagerSingleton();
-        bind(AbstractServerDetailedListView.class).to(ServerDetailedListView.class);
-        bind(AbstractServerDetailedListItemView.class).to(ServerDetailedListItemView.class);
 
         // App
         bind(ApplicationTableActivity.class).asEagerSingleton();
@@ -100,5 +93,9 @@ public class SiteFolderClientModule extends AbstractGinModule {
         bind(ApplicationListActivity.class).asEagerSingleton();
         bind(AbstractApplicationListView.class).to(ApplicationListView.class);
         bind(AbstractApplicationListItemView.class).to(ApplicationListItemView.class);
+
+        // Server group
+        bind(AbstractServerGroupEditActivity.class).to(ServerGroupEditActivity.class).asEagerSingleton();
+        bind(AbstractServerGroupEditView.class).to(ServerGroupEditView.class).in(Singleton.class);
     }
 }

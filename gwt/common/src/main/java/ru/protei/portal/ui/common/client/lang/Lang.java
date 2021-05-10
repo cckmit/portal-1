@@ -1690,6 +1690,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String siteFolderName();
 
+    String siteFolderNameOrIp();
+
     String siteFolderCompany();
 
     String siteFolderParams();
@@ -1751,6 +1753,26 @@ public interface Lang extends Messages, ContactItemLang {
     String siteFolderServerNotSaved();
 
     String siteFolderServerName();
+
+    String siteFolderServerGroupName();
+
+    String siteFolderServerGroupCreate();
+
+    String siteFolderServerGroupEdit();
+
+    String siteFolderServerGroupNameIsMissing();
+
+    String siteFolderServerGroupChooseGroup();
+
+    String siteFolderServerGroupAddGroup();
+
+    String siteFolderServerGroup();
+
+    String siteFolderServerGroupWithoutGroup();
+
+    String siteFolderServerGroupSaved();
+
+    String siteFolderServerGroupRemoved();
 
     String siteFolderApp();
 
@@ -3349,4 +3371,10 @@ public interface Lang extends Messages, ContactItemLang {
     String errMySqlDataTruncation();
 
     String commentCancelMessage();
+
+    String platformSelectInitiator();
+
+    String errTooMuchPlatforms();
+
+    String issueFilterPlatform();
 }

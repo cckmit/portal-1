@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.Platform;
@@ -15,11 +16,14 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
+import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.function.Consumer;
+
+import static ru.protei.portal.core.model.helper.StringUtils.emptyIfNull;
 
 public abstract class PlatformPreviewActivity implements AbstractPlatformPreviewActivity {
 
@@ -37,6 +41,7 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
 
         platformRequest(event.platform.getId(), this::fillView);
         view.footerContainerVisibility().setVisible(false);
+
         view.isFullScreen(false);
     }
 
@@ -53,6 +58,7 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
 
         platformRequest(event.platformId, this::fillView);
         view.footerContainerVisibility().setVisible(true);
+
         view.isFullScreen(true);
     }
 
@@ -64,7 +70,7 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
     @Override
     public void onOpenServersClicked() {
         if (platformId != null) {
-            fireEvent(new SiteFolderServerEvents.Show(platformId, false));
+            fireEvent(new SiteFolderServerEvents.ShowSummaryTable(platformId, false));
         }
     }
 
@@ -125,28 +131,32 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
         showContacts(project.getContragent() == null ? null : project.getContragent().getId());
     }
 
-    private void fillView( Platform value ) {
-        if (value == null) {
+    private void fillView( Platform platform ) {
+        if (platform == null) {
             return;
         }
-        view.setName(value.getName() == null ? "" : value.getName());
-        view.setParameters(value.getParams() == null ? "" : value.getParams());
+        view.setName(platform.getName() == null ? "" : platform.getName());
+        view.setParameters(platform.getParams() == null ? "" : platform.getParams());
 
-        view.setComment(value.getComment() == null ? "" : value.getComment());
+        textRenderController.render(platform.getComment(), En_TextMarkup.MARKDOWN, new FluentCallback<String>()
+                .withSuccess(view::setComment)
+        );
 
         view.attachmentsContainer().clear();
-        view.attachmentsContainer().add(value.getAttachments());
+        view.attachmentsContainer().add(platform.getAttachments());
 
-        fireEvent(new SiteFolderServerEvents.ShowDetailedList(view.serversContainer(), value.getId()));
-        if (value.getProjectId() != null){
-            projectRequest(value.getProjectId(), this::fillProjectSpecificFields);
+        fireEvent(new SiteFolderServerEvents.ShowTable(view.serversContainer(), platform, true));
+        if (platform.getProjectId() != null){
+            projectRequest(platform.getProjectId(), this::fillProjectSpecificFields);
         }
         else {
             view.setProject("", "");
-            view.setCompany(value.getCompany() == null ? "" : (value.getCompany().getCname() == null ? "" : value.getCompany().getCname()));
-            view.setManager(value.getManager() == null ? "" : (value.getManager().getDisplayShortName() == null ? "" : value.getManager().getDisplayShortName()));
+            view.setCompany(emptyIfNull(platform.getCompany() == null ? "" : platform.getCompany().getCname()));
+            view.setManager(emptyIfNull(
+                    platform.getManager() == null ? "" : platform.getManager().getDisplayShortName()
+            ));
             view.setTechnicalSupportValidity(lang.technicalSupportValidityNotDefined());
-            showContacts(value.getCompanyId());
+            showContacts(platform.getCompanyId());
         }
     }
 
@@ -178,6 +188,8 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
     PolicyService policyService;
     @Inject
     Lang lang;
+    @Inject
+    TextRenderControllerAsync textRenderController;
 
 
     private Long platformId;

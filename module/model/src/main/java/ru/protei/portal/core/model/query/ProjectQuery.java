@@ -116,6 +116,10 @@ public class ProjectQuery extends BaseQuery implements HasFilterQueryIds {
         this.productIds = productIds;
     }
 
+    public Set<Long> getPlatformIds() {
+        return new HashSet<Long>();
+    }
+
     public En_CustomerType getCustomerType() {
         return customerType;
     }
@@ -260,6 +264,11 @@ public class ProjectQuery extends BaseQuery implements HasFilterQueryIds {
     @Override
     public List<Long> getAllRegionIds() {
         return new ArrayList<>(emptyIfNull(regionIds));
+    }
+
+    @Override
+    public List<Long> getAllPlatformIds() {
+        return new ArrayList<>();
     }
 
     @Override

@@ -13,6 +13,7 @@
              xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance"
              xmlns:timeelapsedtypeselector="urn:import:ru.protei.portal.ui.common.client.view.selector"
              xmlns:worktrigger="urn:import:ru.protei.portal.ui.common.client.widget.selector.worktrigger"
+             xmlns:platform="urn:import:ru.protei.portal.ui.common.client.widget.selector.platform"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -48,7 +49,7 @@
         <div class="row">
             <person:PersonMultiSelector ui:field="creators"
                                         header="{lang.issueCreator}"
-                                        addStyleNames="form-group col-md-4 resize-md-12 3"/>
+                                        addStyleNames="form-group col-md-4 resize-md-12"/>
 
             <productselector:devunit.DevUnitMultiSelector ui:field="products"
                                                           header="{lang.issueProduct}"
@@ -62,7 +63,11 @@
             <person:PersonMultiSelector ui:field="initiators"
                                         header="{lang.issueInitiator}"
                                         selectCompanyMessage="{lang.initiatorSelectACompany}"
-                                        addStyleNames="form-group col-md-4 resize-md-12 1"/>
+                                        addStyleNames="form-group col-md-4 resize-md-12"/>
+
+            <platform:PlatformMultiSelector ui:field="platforms"
+                                            header="{lang.issueFilterPlatform}"
+                                            addStyleNames="form-group col-md-4 resize-md-12"/>
 
             <companyselector:CompanyMultiSelector ui:field="managerCompanies"
                                                   header="{lang.issueManagerCompany}"
@@ -71,7 +76,7 @@
             <person:PersonMultiSelector ui:field="managers"
                                         header="{lang.issueManager}"
                                         selectCompanyMessage="{lang.managerSelectACompany}"
-                                        addStyleNames="form-group col-md-4 resize-md-12 2"
+                                        addStyleNames="form-group col-md-4 resize-md-12"
                                         hasNullValue="true"/>
 
             <person:EmployeeMultiSelector ui:field="commentAuthors"
