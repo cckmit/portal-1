@@ -575,8 +575,8 @@ public class DocumentServiceImpl implements DocumentService {
 
         return createDocument(token, document,
                 new PortalApiDocumentFile(docFile, apiDocument.getWorkDocFileExtension()),
-                new PortalApiDocumentFile(pdfFile, "pdf"),
-                new PortalApiDocumentFile(approvalSheet, "pdf"),
+                new PortalApiDocumentFile(pdfFile, En_DocumentFormat.PDF.getExtension()),
+                new PortalApiDocumentFile(approvalSheet, En_DocumentFormat.AS.getExtension()),
                 token.getPersonDisplayShortName());
     }
 
