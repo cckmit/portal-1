@@ -26,9 +26,9 @@ import ru.protei.portal.core.controller.api.PortalApiController;
 import ru.protei.portal.core.model.api.ApiAbsence;
 import ru.protei.portal.core.model.api.ApiProject;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.api.ApiDocument;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
-import ru.protei.portal.core.model.dto.DocumentApiInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -1483,17 +1483,17 @@ public class TestPortalApiController extends BaseServiceTest {
         project.setId(projectId);
         projectDAO.persist(project);
 
-        DocumentApiInfo info = new DocumentApiInfo();
-        info.setName("createDoc() : Test Doc Name");
-        info.setProjectId(projectId);
-        info.setTypeId(documentTypeId);
-        info.setRegistrarId(person.getId());
-        info.setContractorId(person.getId());
-        info.setExecutionType(En_DocumentExecutionType.ELECTRONIC);
+        ApiDocument apiDocument = new ApiDocument();
+        apiDocument.setName("createDoc() : Test Doc Name");
+        apiDocument.setProjectId(projectId);
+        apiDocument.setTypeId(documentTypeId);
+        apiDocument.setRegistrarId(person.getId());
+        apiDocument.setContractorId(person.getId());
+        apiDocument.setExecutionType(En_DocumentExecutionType.ELECTRONIC);
         List<Long> members = CollectionUtils.listOf(person.getId());
-        info.setMemberIds(members);
+        apiDocument.setMemberIds(members);
 
-        createPostResultAction("/api/doc/create", info)
+        createPostResultAction("/api/doc/create", apiDocument)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
     }
@@ -1506,19 +1506,19 @@ public class TestPortalApiController extends BaseServiceTest {
         documentType.setDocumentCategory(En_DocumentCategory.TP);
         Long documentTypeId = documentTypeDAO.persist(documentType);
 
-        DocumentApiInfo info = new DocumentApiInfo();
-        info.setName("createDoc() : Test Doc Name");
+        ApiDocument apiDocument = new ApiDocument();
+        apiDocument.setName("createDoc() : Test Doc Name");
 
-        info.setProjectId(null);
+        apiDocument.setProjectId(null);
 
-        info.setTypeId(documentTypeId);
-        info.setRegistrarId(person.getId());
-        info.setContractorId(person.getId());
-        info.setExecutionType(En_DocumentExecutionType.ELECTRONIC);
+        apiDocument.setTypeId(documentTypeId);
+        apiDocument.setRegistrarId(person.getId());
+        apiDocument.setContractorId(person.getId());
+        apiDocument.setExecutionType(En_DocumentExecutionType.ELECTRONIC);
         List<Long> members = CollectionUtils.listOf(person.getId());
-        info.setMemberIds(members);
+        apiDocument.setMemberIds(members);
 
-        createPostResultAction("/api/doc/create", info)
+        createPostResultAction("/api/doc/create", apiDocument)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.VALIDATION_ERROR.toString())));
     }
@@ -1541,23 +1541,23 @@ public class TestPortalApiController extends BaseServiceTest {
         project.setId(projectId);
         projectDAO.persist(project);
 
-        DocumentApiInfo info = new DocumentApiInfo();
-        info.setName("createDoc() : Test Doc Name");
-        info.setProjectId(null);
-        info.setTypeId(documentTypeId);
-        info.setRegistrarId(person.getId());
-        info.setContractorId(person.getId());
-        info.setExecutionType(En_DocumentExecutionType.ELECTRONIC);
+        ApiDocument apiDocument = new ApiDocument();
+        apiDocument.setName("createDoc() : Test Doc Name");
+        apiDocument.setProjectId(null);
+        apiDocument.setTypeId(documentTypeId);
+        apiDocument.setRegistrarId(person.getId());
+        apiDocument.setContractorId(person.getId());
+        apiDocument.setExecutionType(En_DocumentExecutionType.ELECTRONIC);
         List<Long> members = CollectionUtils.listOf(person.getId());
-        info.setMemberIds(members);
+        apiDocument.setMemberIds(members);
 
-        info.setApproved(true);
-        info.setApprovedById(person.getId());
-        info.setApprovalDate(new Date());
-        info.setDecimalNumber("40412735.АПКБГОО.14417.18");
-        info.setArchivePdfFileBase64(null);
+        apiDocument.setApproved(true);
+        apiDocument.setApprovedById(person.getId());
+        apiDocument.setApprovalDate(new Date());
+        apiDocument.setDecimalNumber("40412735.АПКБГОО.14417.18");
+        apiDocument.setArchivePdfFileBase64(null);
 
-        createPostResultAction("/api/doc/create", info)
+        createPostResultAction("/api/doc/create", apiDocument)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.VALIDATION_ERROR.toString())));
     }

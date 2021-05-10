@@ -14,7 +14,11 @@ import ru.protei.portal.core.model.api.ApiAbsence;
 import ru.protei.portal.core.model.api.ApiContract;
 import ru.protei.portal.core.model.api.ApiProject;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.dto.*;
+import ru.protei.portal.core.model.api.ApiDocument;
+import ru.protei.portal.core.model.dto.CaseTagInfo;
+import ru.protei.portal.core.model.dto.DevUnitInfo;
+import ru.protei.portal.core.model.dto.PersonInfo;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
@@ -627,13 +631,13 @@ public class PortalApiController {
 
     @PostMapping(value = "/doc/create")
     public Result<Document> createDocument(HttpServletRequest request, HttpServletResponse response,
-                                          @RequestBody DocumentApiInfo documentApiInfo) {
-        log.info("API | createDocument(): documentApiInfo={}", documentApiInfo);
+                                          @RequestBody ApiDocument apiDocument) {
+        log.info("API | createDocument(): apiDocument={}", apiDocument);
 
         return authenticate(request, response, authService, sidGen, log)
-                .flatMap(token -> documentService.createDocumentByApi(token, documentApiInfo))
+                .flatMap(token -> documentService.createDocumentByApi(token, apiDocument))
                 .ifOk(caseTagId -> log.info("createDocument(): OK"))
-                .ifError(result -> log.warn("createDocument(): Can't create document={}. {}", documentApiInfo, result));
+                .ifError(result -> log.warn("createDocument(): Can't create document={}. {}", apiDocument, result));
     }
 
     @PostMapping(value = "/doc/remove/{documentId:[0-9]+}")

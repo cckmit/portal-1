@@ -6,7 +6,10 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import ru.protei.portal.core.model.dict.En_DocumentFormat;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.ui.common.client.util.FilenameUtils;
 import ru.protei.portal.ui.common.client.widget.uploaderdropzone.FileDropzoneUploader;
+
+import java.util.Objects;
 
 public class DocumentUploader extends FileDropzoneUploader implements AbstractDocumentUploader, ru.protei.portal.ui.common.client.widget.uploaderdropzone.UploadHandler {
 
@@ -14,9 +17,26 @@ public class DocumentUploader extends FileDropzoneUploader implements AbstractDo
         setUploadHandler(this);
     }
 
+    @Override
     public void setFormat(En_DocumentFormat format) {
         this.format = format;
-        setAccept(makeMimeTypes(this.format));
+        setAccept(makeMimeTypes(format));
+    }
+
+    @Override
+    public boolean isValidFileFormat() {
+        if (format == null) {
+            return false;
+        }
+        if (HelperFunc.isEmpty(getFilename())) {
+            return false;
+        }
+        String fileExtension = FilenameUtils.getExtension(getFilename());
+        if (format == En_DocumentFormat.DOC || format == En_DocumentFormat.DOCX) {
+            return Objects.equals(En_DocumentFormat.DOC.getExtension(), fileExtension) ||
+                    Objects.equals(En_DocumentFormat.DOCX.getExtension(), fileExtension);
+        }
+        return Objects.equals(format.getExtension(), fileExtension);
     }
 
     @Override
@@ -30,8 +50,13 @@ public class DocumentUploader extends FileDropzoneUploader implements AbstractDo
     }
 
     @Override
+    public boolean isFileSet() {
+        return HelperFunc.isNotEmpty(getFilename());
+    }
+
+    @Override
     public void submitForm(String url) {
-        super.submitForm(url + format.getFormat());
+        super.submitForm(url + format.name().toLowerCase());
     }
 
     @Override
@@ -86,10 +111,13 @@ public class DocumentUploader extends FileDropzoneUploader implements AbstractDo
     }
 
     private String makeMimeTypes(En_DocumentFormat format) {
-        if (format == En_DocumentFormat.PDF) {
-            return En_DocumentFormat.PDF.getMimeType();
+        if (format == null) {
+            return "";
         }
-        return En_DocumentFormat.DOCX.getMimeType() + "," + En_DocumentFormat.DOC.getMimeType();
+        if (format == En_DocumentFormat.DOC || format == En_DocumentFormat.DOCX) {
+            return En_DocumentFormat.DOC.getMimeType() + "," + En_DocumentFormat.DOCX.getMimeType();
+        }
+        return format.getMimeType();
     }
 
     private ResetHandler resetHandler;

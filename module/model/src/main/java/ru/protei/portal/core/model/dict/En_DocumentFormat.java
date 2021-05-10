@@ -6,16 +6,16 @@ public enum En_DocumentFormat {
     PDF("pdf"),
     DOCX("docx"),
     DOC("doc"),
-    AS("as"),
+    AS("pdf"),
     ;
 
-    En_DocumentFormat(String format) {
-        this.format = format;
+    En_DocumentFormat(String extension) {
+        this.extension = extension;
     }
-    private String format;
+    private String extension;
 
-    public String getFormat() {
-        return format;
+    public String getExtension() {
+        return extension;
     }
 
     public String getMimeType() {
@@ -32,15 +32,15 @@ public enum En_DocumentFormat {
     public String getFilename(Long documentId) {
         switch (this) {
             case AS:
-                return documentId + "_approval_sheet.pdf";
+                return documentId + "_approval_sheet." + getExtension();
             default:
-                return documentId + "." + getFormat();
+                return documentId + "." + getExtension();
         }
     }
 
     public static En_DocumentFormat of(String format) {
         for (En_DocumentFormat it : En_DocumentFormat.values()) {
-            if (Objects.equals(it.getFormat(), format)) {
+            if (Objects.equals(it.name().toLowerCase(), format)) {
                 return it;
             }
         }

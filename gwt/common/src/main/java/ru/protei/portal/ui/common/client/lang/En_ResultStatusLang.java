@@ -95,6 +95,7 @@ public class En_ResultStatusLang {
             case NOT_ALLOWED_AUTOOPEN_ISSUE: return lang.errNotAllowedCompanyWithAutoOpenIssue();
             case NOT_ALLOWED_INTEGRATION_ISSUE: return lang.errNotAllowedIntegrationIssue();
             case MYSQL_DATA_TRUNCATION: return lang.errMySqlDataTruncation();
+            case INVALID_FILE_FORMAT: return lang.errInvalidFileFormat();
             default: return lang.errUnknownResult();
         }
     }
