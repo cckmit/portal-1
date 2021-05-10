@@ -1,15 +1,16 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PlatformOption;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.Date;
 import java.util.List;
 
 @JdbcEntity(table = "platform")
-public class Platform extends AuditableObject {
+public class Platform extends AuditableObject implements EntityOptionSupport {
     public static final String AUDIT_TYPE = "Platform";
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
@@ -171,6 +172,10 @@ public class Platform extends AuditableObject {
         platformOption.setDisplayText(getName());
         platformOption.setCompanyId(getCompanyId());
         return platformOption;
+    }
+
+    public EntityOption toEntityOption() {
+        return new EntityOption(getName(), getId());
     }
 
     @Override
