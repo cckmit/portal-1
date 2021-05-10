@@ -88,6 +88,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     CompanyDAO companyDAO;
     @Autowired
     AttachmentDAO attachmentDAO;
+    @Autowired
+    CaseTagDAO caseTagDAO;
 
 /*
     @Autowired
