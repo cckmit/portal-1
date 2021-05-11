@@ -109,7 +109,9 @@ public class DeliveryKitList extends Composite
     }
 
     public void setEnsureDebugId(String debugId) {
-        add.ensureDebugId(debugId);
+        root.ensureDebugId(debugId);
+        add.ensureDebugId(debugId + "-add");
+        refreshSerialNumber.ensureDebugId(debugId + "-refresh");
     }
 
     public void setArmyProject(boolean armyProject) {
@@ -154,11 +156,7 @@ public class DeliveryKitList extends Composite
         DeliveryKitItem itemWidget = itemFactory.get();
         itemWidget.setValue( value );
         itemWidget.addCloseHandler(event -> {
-            container.remove( event.getTarget() );
-
-            Kit remove = modelToView.remove( event.getTarget() );
-            DeliveryKitList.this.value.removeIf(v -> remove == v);
-
+            remove(event.getTarget());
             refresh();
         });
 
@@ -166,6 +164,12 @@ public class DeliveryKitList extends Composite
         container.add( itemWidget );
 
         refresh();
+    }
+
+    private void remove(DeliveryKitItem item){
+        container.remove( item );
+        Kit remove = modelToView.remove( item );
+        DeliveryKitList.this.value.removeIf(v -> remove == v);
     }
 
     private void refresh() {
@@ -187,8 +191,7 @@ public class DeliveryKitList extends Composite
             }
 
             for (DeliveryKitItem item : toRemove) {
-                modelToView.remove(item);
-                item.removeFromParent();
+                remove(item);
             }
         }
         refreshMinimumKitNumber();

@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
@@ -245,26 +246,26 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-//        state.setEnsureDebugId(DebugIds.ISSUE.STATE_SELECTOR);
-//        state.ensureLabelDebugId(DebugIds.ISSUE.LABEL.STATE);
-//        name.ensureDebugId(DebugIds.PROJECT.NAME_INPUT);
-//        description.ensureDebugId(DebugIds.PROJECT.DESCRIPTION_INPUT);
-//        deliveryStatus.setEnsureDebugId(DebugIds.PROJECT.STATE_SELECTOR);
-//        projectRegion.setEnsureDebugId(DebugIds.PROJECT.REGION_SELECTOR);
-//        productDirection.ensureDebugId(DebugIds.PROJECT.DIRECTION_SELECTOR);
-//        products.ensureDebugId(DebugIds.PROJECT.PRODUCT_SELECTOR);
-//        customerCompany.setEnsureDebugId(DebugIds.PROJECT.COMPANY_SELECTOR);
-//        customerType.setEnsureDebugId(DebugIds.PROJECT.CUSTOMER_TYPE_SELECTOR);
-//        saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
-//        cancelButton.ensureDebugId(DebugIds.PROJECT.CANCEL_BUTTON);
-//        slaInput.setEnsureDebugId(DebugIds.PROJECT.SLA_INPUT);
-//        delivered.setEnsureDebugId(DebugIds.PROJECT.TECHNICAL_SUPPORT_VALIDITY_CONTAINER);
-//        workCompletionDate.setEnsureDebugId(DebugIds.PROJECT.WORK_COMPLETION_DATE);
-//        purchaseDate.setEnsureDebugId(DebugIds.PROJECT.PURCHASE_DATE);
-//        subcontractors.setAddEnsureDebugId(DebugIds.PROJECT.SUBCONTRACTOR_SELECTOR_ADD_BUTTON);
-//        subcontractors.setClearEnsureDebugId(DebugIds.PROJECT.SUBCONTRACTOR_SELECTOR_CLEAR_BUTTON);
-//        subcontractors.setItemContainerEnsureDebugId(DebugIds.PROJECT.SUBCONTRACTOR_SELECTOR_ITEM_CONTAINER);
-//        subcontractors.setLabelEnsureDebugId(DebugIds.PROJECT.SUBCONTRACTOR_SELECTOR_LABEL);
+        name.ensureDebugId(DebugIds.DELIVERY.NAME_INPUT);
+        description.ensureDebugId(DebugIds.DELIVERY.DESCRIPTION_INPUT);
+        kits.setEnsureDebugId(DebugIds.DELIVERY.KITS);
+        state.setEnsureDebugId(DebugIds.DELIVERY.STATE_SELECTOR);
+        type.setEnsureDebugId(DebugIds.DELIVERY.TYPE_SELECTOR);
+        projectWidget.setEnsureDebugId(DebugIds.DELIVERY.PROJECT_WIDGET);
+        customerType.ensureDebugId(DebugIds.DELIVERY.CUSTOMER_TYPE);
+        customerCompany.ensureDebugId(DebugIds.DELIVERY.CUSTOMER_COMPANY);
+        customerInitiator.ensureDebugId(DebugIds.DELIVERY.CUSTOMER_INITIATOR);
+        managerCompany.ensureDebugId(DebugIds.DELIVERY.MANAGER_COMPANY);
+        manager.ensureDebugId(DebugIds.DELIVERY.MANAGER);
+        attribute.ensureDebugId(DebugIds.DELIVERY.ATTRIBUTE);
+        contract.ensureDebugId(DebugIds.DELIVERY.CONTRACT);
+        products.ensureDebugId(DebugIds.DELIVERY.PRODUCTS);
+        departureDate.ensureDebugId(DebugIds.DELIVERY.DEPARTURE_DATE);
+        subscribers.setItemContainerEnsureDebugId(DebugIds.DELIVERY.SUBSCRIBERS);
+
+        backButton.ensureDebugId(DebugIds.DELIVERY.BACK_BUTTON);
+        saveButton.ensureDebugId(DebugIds.DELIVERY.SAVE_BUTTON);
+        cancelButton.ensureDebugId(DebugIds.DELIVERY.CANCEL_BUTTON);
     }
 
     @UiField
