@@ -24,7 +24,7 @@
                                                           enabled="false"/>
             </div>
             <div class="col-md-4">
-                <div class="form-group form-group-default required">
+                <div class="form-group form-group-default">
                     <label class="fade"><ui:text from="{lang.deliveryKitName}"/></label>
                     <validablefield:ValidableTextBox ui:field="name" styleName="form-control"
                                                      notNull="false"/>

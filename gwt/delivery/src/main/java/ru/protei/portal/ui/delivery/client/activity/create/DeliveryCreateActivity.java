@@ -213,9 +213,7 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
             return lang.deliveryValidationEmptyProject();
         }
         En_DeliveryAttribute attribute = view.attribute().getValue();
-        if (attribute == null) {
-            return lang.deliveryValidationEmptyAttribute();
-        } else if (En_DeliveryAttribute.DELIVERY == attribute && view.contract().getValue() == null) {
+         if (En_DeliveryAttribute.DELIVERY == attribute && view.contract().getValue() == null) {
             return lang.deliveryValidationEmptyContractAtAttributeDelivery();
         }
         if (!view.kitsValidate().isValid()) {

@@ -82,7 +82,7 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
 
     @Override
     public void kitsClear() {
-        kits.clear();
+        kits.prepare();
     }
 
     @Override

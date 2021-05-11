@@ -3412,7 +3412,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String deliverySubscribers();
 
-    String deliveryKit();
+    String deliveryKits();
 
     String deliveryKitSerialNumber();
 
@@ -3489,6 +3489,10 @@ public interface Lang extends Messages, ContactItemLang {
     String selectDeliveryCustomerInitiator();
 
     String selectDeliveryContract();
+
+    String deliveryButtonRefreshSerialNumber();
+
+    String errDeliverySerialNumberNotAvailable();
 
     String deliveryValidationEmptyName();
 

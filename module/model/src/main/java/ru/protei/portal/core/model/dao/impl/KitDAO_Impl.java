@@ -4,6 +4,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import ru.protei.portal.core.model.dao.KitDAO;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.ent.Kit;
+import ru.protei.portal.core.model.helper.HelperFunc;
+
+import java.util.List;
 
 /**
  * DAO для местоположений проекта
@@ -22,6 +25,18 @@ public class KitDAO_Impl extends PortalBaseJdbcDAO<Kit> implements KitDAO {
             return jdbcTemplate.queryForObject( sql, String.class );
         } catch (EmptyResultDataAccessException e) {
             return null;
+        }
+    }
+
+    @Override
+    public boolean isAvailableSerialNumbers(List<String> serialNumbers) {
+        String sql ="select count(serial_number) from kit " +
+                "where serial_number in " + HelperFunc.makeInArg(serialNumbers, true) + ";";
+
+        try {
+            return jdbcTemplate.queryForObject( sql, Integer.class ) == 0;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
         }
     }
 }

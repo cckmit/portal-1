@@ -73,6 +73,11 @@ public class DeliveryServiceImpl implements DeliveryService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
+        if (!kitDAO.isAvailableSerialNumbers(stream(delivery.getKits())
+                .map(Kit::getSerialNumber).collect(Collectors.toList()))) {
+            return error(En_ResultStatus.DELIVERY_KIT_SERIAL_NUMBER_NOT_AVAILABLE);
+        }
+
         Date now = new Date();
         CaseObject caseObject = createCaseObject(null, delivery, token.getPersonId(), now, now);
         Long caseId = caseObjectDAO.persist(caseObject);
@@ -150,9 +155,7 @@ public class DeliveryServiceImpl implements DeliveryService {
             return false;
         }
         En_DeliveryAttribute attribute = delivery.getAttribute();
-        if (attribute == null) {
-            return false;
-        } else if (En_DeliveryAttribute.DELIVERY == attribute && delivery.getContractId() == null) {
+        if (En_DeliveryAttribute.DELIVERY == attribute && delivery.getContractId() == null) {
             return false;
         }
 
@@ -160,8 +163,9 @@ public class DeliveryServiceImpl implements DeliveryService {
             return false;
         } else {
             for (Kit kit : delivery.getKits()) {
-                if (StringUtils.isEmpty(kit.getSerialNumber()) || !deliverySerialNumber.matcher(kit.getSerialNumber()).matches()
-                        || kit.getState() == null || StringUtils.isEmpty(kit.getName())) {
+                if (StringUtils.isEmpty(kit.getSerialNumber())
+                        || !deliverySerialNumber.matcher(kit.getSerialNumber()).matches()
+                        || kit.getState() == null) {
                     return false;
                 }
             }

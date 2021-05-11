@@ -6,6 +6,7 @@
     <g:HTMLPanel ui:field="root">
         <div class="form-group col-md-12">
             <div class="pull-right">
+                <g:Button ui:field="refreshSerialNumber" styleName="btn btn-xs btn-info" text="{lang.deliveryButtonRefreshSerialNumber}"/>
                 <g:Button ui:field="add" styleName="btn btn-xs btn-info" text="{lang.buttonAdd}"/>
             </div>
         </div>

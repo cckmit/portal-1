@@ -17,7 +17,6 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.ent.Kit;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.delivery.state.DeliveryStateFormSelector;
@@ -112,7 +111,7 @@ public class DeliveryKitItem
 
     public boolean isValid(){
         return serialNumber.isValid() & name.isValid() &&
-                state.getValue() != null && HelperFunc.isNotEmpty(name.getValue());
+                state.getValue() != null;
     }
 
     public HasEnabled removeEnable() {

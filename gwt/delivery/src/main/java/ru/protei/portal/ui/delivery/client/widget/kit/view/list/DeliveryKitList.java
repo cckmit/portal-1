@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HAS_ERROR;
@@ -48,13 +49,13 @@ public class DeliveryKitList extends Composite
 
     @Override
     public void setValue(List<Kit> value, boolean fireEvents ) {
-        clear();
+        prepare();
         this.value = value == null ? new ArrayList<>() : value;
         for ( Kit items : this.value ) {
             makeItemAndFillValue(items);
         }
 
-        refreshMinKitNumber();
+        refresh();
 
         isValid();
 
@@ -63,36 +64,16 @@ public class DeliveryKitList extends Composite
         }
     }
 
-    public void clear() {
+    public void prepare() {
         container.clear();
         modelToView.clear();
         value = new ArrayList<>();
-        refreshMinKitNumber();
+
+        refreshMinimumKitNumber();
         refreshMultiKitsAllow();
 
-        nextAvailableSerialNumberPrefix = null;
-        nextAvailableSerialNumberPostfix = null;
-        isArmyProject = false;
-        activity.getLastSerialNumber(isArmyProject,this::parseSerialNumber);
-    }
-
-    private void parseSerialNumber(String nextAvailableSerialNumber) {
-        String[] split = nextAvailableSerialNumber.split("\\.");
-        nextAvailableSerialNumberPrefix = split[0];
-        nextAvailableSerialNumberPostfix = NumberUtils.parseInteger(split[1]) + 1;
-        refreshSerialNumber();
-    }
-
-    private void refreshSerialNumber() {
-        if (nextAvailableSerialNumberPrefix == null || nextAvailableSerialNumberPostfix == null) {
-            return;
-        }
-        int count = nextAvailableSerialNumberPostfix;
-        for (Widget widget : container) {
-            DeliveryKitItem item = (DeliveryKitItem) widget;
-            item.setSerialNumber(nextAvailableSerialNumberPrefix + "." +
-                    NumberFormat.getFormat("000").format(count++));
-        }
+        resetSerialNumber();
+        activity.getLastSerialNumber(isArmyProject, lastSerialNumberCallback);
     }
 
     @Override
@@ -117,6 +98,12 @@ public class DeliveryKitList extends Composite
         ValueChangeEvent.fire( this, value );
     }
 
+    @UiHandler( "refreshSerialNumber" )
+    public void onRefreshSerialNumberClicked( ClickEvent event ) {
+        activity.getLastSerialNumber(isArmyProject, lastSerialNumberCallback);
+    }
+
+
     public void setEmptyItemProvider(Supplier<Kit> provider) {
         emptyKitProvider = provider;
     }
@@ -127,13 +114,13 @@ public class DeliveryKitList extends Composite
 
     public void setArmyProject(boolean armyProject) {
         isArmyProject = armyProject;
-        activity.getLastSerialNumber(isArmyProject,this::parseSerialNumber);
+        activity.getLastSerialNumber(isArmyProject, lastSerialNumberCallback);
         refreshMultiKitsAllow();
     }
 
-    public void setMinKitNumber(int minKitNumber) {
-        this.minKitNumber = minKitNumber;
-        refreshMinKitNumber();
+    public void setMinimumKitNumber(int minimumKitNumber) {
+        this.minimumKitNumber = minimumKitNumber;
+        refreshMinimumKitNumber();
     }
 
     public void setError(boolean isError, String error) {
@@ -149,7 +136,13 @@ public class DeliveryKitList extends Composite
         msg.setInnerText(null);
     }
 
-    private Supplier<Kit> emptyKitProvider;
+    private void markBoxAsError(boolean isError) {
+        if (isError) {
+            root.addStyleName(HAS_ERROR);
+            return;
+        }
+        root.removeStyleName(HAS_ERROR);
+    }
 
     private void addEmptyItem() {
         Kit item = emptyKitProvider.get();
@@ -166,43 +159,74 @@ public class DeliveryKitList extends Composite
             Kit remove = modelToView.remove( event.getTarget() );
             DeliveryKitList.this.value.removeIf(v -> remove == v);
 
-            refreshMultiKitsAllow();
-            refreshMinKitNumber();
-            refreshSerialNumber();
+            refresh();
         });
-
-        if (modelToView.size() < minKitNumber) {
-            itemWidget.removeEnable().setEnabled(false);
-        }
-
-        refreshMultiKitsAllow();
 
         modelToView.put( itemWidget, value );
         container.add( itemWidget );
 
+        refresh();
+    }
+
+    private void refresh() {
+        refreshMinimumKitNumber();
+        refreshMultiKitsAllow();
         refreshSerialNumber();
     }
 
     private void refreshMultiKitsAllow() {
         add.setEnabled(isArmyProject);
-        setError(!isArmyProject && modelToView.size() > 1, lang.deliveryValidationOnlyOneKitForCivilProject());
+        if (!isArmyProject) {
+            int count = 1;
+            List<DeliveryKitItem> toRemove = new ArrayList<>();
+            for (Widget widget : container) {
+                if (count > minimumKitNumber) {
+                    toRemove.add((DeliveryKitItem)widget);
+                }
+                count++;
+            }
+
+            for (DeliveryKitItem item : toRemove) {
+                modelToView.remove(item);
+                item.removeFromParent();
+            }
+        }
+        refreshMinimumKitNumber();
     }
 
-    private void refreshMinKitNumber() {
-        if (modelToView.size() < minKitNumber) {
-            int diff = minKitNumber - modelToView.size();
+    private void refreshMinimumKitNumber() {
+        if (modelToView.size() < minimumKitNumber) {
+            int diff = minimumKitNumber - modelToView.size();
             for (int i = 0; i < diff; i++) {
                 addEmptyItem();
             }
         }
+        container.forEach(widget -> ((DeliveryKitItem)widget)
+                .removeEnable().setEnabled(modelToView.size() > minimumKitNumber));
     }
 
-    private void markBoxAsError(boolean isError) {
-        if (isError) {
-            root.addStyleName(HAS_ERROR);
+    private void resetSerialNumber() {
+        nextAvailableSerialNumberPrefix = null;
+        nextAvailableSerialNumberPostfix = null;
+        isArmyProject = false;
+    }
+
+    private void parseSerialNumber(String nextAvailableSerialNumber) {
+        String[] split = nextAvailableSerialNumber.split("\\.");
+        nextAvailableSerialNumberPrefix = split[0];
+        nextAvailableSerialNumberPostfix = NumberUtils.parseInteger(split[1]) + 1;
+    }
+
+    private void refreshSerialNumber() {
+        if (nextAvailableSerialNumberPrefix == null || nextAvailableSerialNumberPostfix == null) {
             return;
         }
-        root.removeStyleName(HAS_ERROR);
+        int count = nextAvailableSerialNumberPostfix;
+        for (Widget widget : container) {
+            DeliveryKitItem item = (DeliveryKitItem) widget;
+            item.setSerialNumber(nextAvailableSerialNumberPrefix + "." +
+                    NumberFormat.getFormat("000").format(count++));
+        }
     }
 
 
@@ -213,6 +237,8 @@ public class DeliveryKitList extends Composite
     @UiField
     Button add;
     @UiField
+    Button refreshSerialNumber;
+    @UiField
     Element msg;
     @UiField
     Lang lang;
@@ -222,15 +248,17 @@ public class DeliveryKitList extends Composite
     List<Kit> value = new ArrayList<>();
     Map<DeliveryKitItem, Kit> modelToView = new HashMap<>();
 
-
     @Inject
     private AbstractDeliveryKitListActivity activity;
+
     private String nextAvailableSerialNumberPrefix;
     private Integer nextAvailableSerialNumberPostfix;
-
-
     private boolean isArmyProject = false;
-    private int minKitNumber = 1;
+
+    private int minimumKitNumber = 1;
+    private Supplier<Kit> emptyKitProvider;
+    private final Consumer<String> lastSerialNumberCallback =
+            ((Consumer<String>)this::parseSerialNumber).andThen(ignore -> refreshSerialNumber());
 
     interface DeliveryKitListUiBinder extends UiBinder< HTMLPanel, DeliveryKitList> {}
     private static DeliveryKitListUiBinder ourUiBinder = GWT.create( DeliveryKitListUiBinder.class );
