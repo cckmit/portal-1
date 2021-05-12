@@ -17,6 +17,9 @@ public interface DeliveryService {
     @Privileged({ En_Privilege.DELIVERY_VIEW })
     Result<SearchResult<Delivery>> getDeliveries(AuthToken token, DataQuery query);
 
+    @Privileged({ En_Privilege.DELIVERY_VIEW })
+    Result<Delivery> getDelivery(AuthToken token, Long id);
+
     @Privileged({ En_Privilege.DELIVERY_CREATE })
     @Auditable( En_AuditType.DELIVERY_CREATE )
     Result<Delivery> createDelivery(AuthToken token, Delivery delivery);

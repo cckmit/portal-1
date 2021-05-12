@@ -9,6 +9,8 @@ public interface DeliveryControllerAsync {
 
     void getDeliveries(BaseQuery query, AsyncCallback<SearchResult<Delivery>> async);
 
+    void getDelivery(long id, AsyncCallback<Delivery> callback);
+
     void saveDelivery(Delivery delivery, AsyncCallback<Delivery> async);
 
     void getLastSerialNumber(boolean isArmyProject, AsyncCallback<String> async);

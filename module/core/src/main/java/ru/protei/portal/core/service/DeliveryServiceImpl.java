@@ -22,6 +22,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,8 @@ public class DeliveryServiceImpl implements DeliveryService {
     CaseObjectDAO caseObjectDAO;
     @Autowired
     CaseNotifierDAO caseNotifierDAO;
+    @Autowired
+    DevUnitDAO devUnitDAO;
 
     @Autowired
     DeliveryDAO deliveryDAO;
@@ -59,12 +62,21 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Autowired
     AuthService authService;
 
-    private Pattern deliverySerialNumber = Pattern.compile(DELIVERY_KIT_SERIAL_NUMBER_PATTERN);
+    private final Pattern deliverySerialNumber = Pattern.compile(DELIVERY_KIT_SERIAL_NUMBER_PATTERN);
 
     @Override
     public Result<SearchResult<Delivery>> getDeliveries(AuthToken token, DataQuery query) {
         SearchResult<Delivery> sr = deliveryDAO.getSearchResultByQuery(query);
         return ok(sr);
+    }
+
+    @Override
+    public Result<Delivery> getDelivery(AuthToken token, Long id) {
+        Delivery delivery = deliveryDAO.get(id);
+        jdbcManyRelationsHelper.fill(delivery, "kits");
+        jdbcManyRelationsHelper.fill(delivery, "subscribers");
+        delivery.getProject().setProducts(new HashSet<>(devUnitDAO.getProjectProducts(delivery.getProject().getId())));
+        return ok(delivery);
     }
 
     @Override

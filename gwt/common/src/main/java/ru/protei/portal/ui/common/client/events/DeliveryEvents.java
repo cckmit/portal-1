@@ -5,6 +5,7 @@ import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.dto.DeliveryFilterDto;
+import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.query.DeliveryQuery;
 
 public class DeliveryEvents {
@@ -32,7 +33,7 @@ public class DeliveryEvents {
         public Create() {}
     }
 
-    @Url( value = "delivery")
+    @Url( value = "delivery_edit")
     public static class Edit {
         public Edit() {}
 
@@ -75,6 +76,16 @@ public class DeliveryEvents {
 
         public HasWidgets parent;
         public Long parentDeliveryId;
+    }
+
+    public static class EditDeliveryMeta {
+        public HasWidgets parent;
+        public Delivery delivery;
+
+        public EditDeliveryMeta(HasWidgets parent, Delivery delivery) {
+            this.parent = parent;
+            this.delivery = delivery;
+        }
     }
 
     public static class ChangeModel {}

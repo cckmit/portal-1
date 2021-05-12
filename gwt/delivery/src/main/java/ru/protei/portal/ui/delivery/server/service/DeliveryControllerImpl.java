@@ -34,6 +34,12 @@ public class DeliveryControllerImpl implements DeliveryController {
     }
 
     @Override
+    public Delivery getDelivery(long id) throws RequestFailedException {
+        Result<Delivery> result = deliveryService.getDelivery(getAuthToken(sessionService, httpRequest), id);
+        return checkResultAndGetData(result);
+    }
+
+    @Override
     public Delivery saveDelivery(Delivery delivery) throws RequestFailedException {
         if (delivery == null) {
             log.warn("null delivery in request");

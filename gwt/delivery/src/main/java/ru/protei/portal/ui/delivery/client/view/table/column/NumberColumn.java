@@ -3,6 +3,7 @@ package ru.protei.portal.ui.delivery.client.view.table.column;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.lang.En_DeliveryTypeLang;
@@ -48,8 +49,9 @@ public class NumberColumn extends ClickColumn<Delivery> {
 
         com.google.gwt.dom.client.Element stateElement = DOM.createElement("p");
         stateElement.addClassName("label");
-        stateElement.getStyle().setBackgroundColor(value.getStateColor());
-        stateElement.setInnerText(value.getStateName());
+        CaseState caseState = value.getState();
+        stateElement.getStyle().setBackgroundColor(caseState != null ? caseState.getColor() : null);
+        stateElement.setInnerText(caseState != null ? caseState.getState() : null);
 
         divElement.appendChild( stateElement );
 

@@ -69,10 +69,6 @@ public class DeliveryKitList extends Composite
         container.clear();
         modelToView.clear();
         value = new ArrayList<>();
-
-        refreshMinimumKitNumber();
-        refreshMultiKitsAllow();
-
         resetSerialNumber();
         activity.getLastSerialNumber(isArmyProject, lastSerialNumberCallback);
     }

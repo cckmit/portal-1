@@ -6,10 +6,16 @@ import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliver
 import ru.protei.portal.ui.common.client.view.deliveryfilter.DeliveryFilterCollapseView;
 import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateView;
 import ru.protei.portal.ui.delivery.client.activity.create.DeliveryCreateActivity;
+import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryEditView;
+import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryMetaView;
+import ru.protei.portal.ui.delivery.client.activity.edit.DeliveryEditActivity;
+import ru.protei.portal.ui.delivery.client.activity.edit.DeliveryMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.page.DeliveryPage;
 import ru.protei.portal.ui.delivery.client.activity.table.AbstractDeliveryTableView;
 import ru.protei.portal.ui.delivery.client.activity.table.DeliveryTableActivity;
 import ru.protei.portal.ui.delivery.client.view.create.DeliveryCreateView;
+import ru.protei.portal.ui.delivery.client.view.edit.DeliveryEditView;
+import ru.protei.portal.ui.delivery.client.view.edit.DeliveryMetaView;
 import ru.protei.portal.ui.delivery.client.view.table.DeliveryTableView;
 import ru.protei.portal.ui.delivery.client.widget.kit.activity.AbstractDeliveryKitListActivity;
 import ru.protei.portal.ui.delivery.client.widget.kit.activity.DeliveryKitListActivity;
@@ -24,6 +30,12 @@ public class DeliveryClientModule extends AbstractGinModule {
 
         bind(DeliveryCreateActivity.class).asEagerSingleton();
         bind(AbstractDeliveryCreateView.class).to(DeliveryCreateView.class).in(Singleton.class);
+
+        bind(DeliveryEditActivity.class).asEagerSingleton();
+        bind(DeliveryMetaActivity.class).asEagerSingleton();
+
+        bind(AbstractDeliveryEditView.class).to(DeliveryEditView.class).in(Singleton.class);
+        bind(AbstractDeliveryMetaView.class).to(DeliveryMetaView.class).in(Singleton.class);
 
         bind(AbstractDeliveryKitListActivity.class).to(DeliveryKitListActivity.class).asEagerSingleton();
 
