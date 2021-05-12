@@ -35,15 +35,15 @@ public class IssueInfoWidget extends Composite {
     @PostConstruct
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        ensureDebugIds();
 
         accordionWidget.setLocalStorageKey(UiConstants.ATTACHMENTS_PANEL_VISIBILITY);
         accordionWidget.setMaxHeight(UiConstants.Accordion.ATTACHMENTS_MAX_HEIGHT);
 
         multiTabWidget.setTabToNameRenderer(type -> commentOrHistoryTypeLang.getName(type));
         multiTabWidget.addTabs(Arrays.asList(COMMENT, HISTORY));
-
         multiTabWidget.setOnTabClickHandler(selectedTabs -> activity.selectedTabsChanged(selectedTabs));
+
+        ensureDebugIds();
     }
 
     public void setActivity( AbstractIssueEditActivity activity ) {
@@ -101,8 +101,10 @@ public class IssueInfoWidget extends Composite {
 
         descriptionReadOnly.ensureDebugId(DebugIds.ISSUE.DESCRIPTION_FIELD );
         attachmentListContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
-        accordionWidget.setTabNameDebugId(lang.attachment(), DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
+        accordionWidget.setTabNameDebugId(lang.attachment(), DebugIds.ISSUE.LABEL.ATTACHMENTS);
         accordionWidget.setCollapseButtonDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.ATTACHMENT_COLLAPSE_BUTTON);
+        multiTabWidget.setTabNameDebugId(COMMENT, DebugIds.ISSUE.TAB_COMMENT);
+        multiTabWidget.setTabNameDebugId(HISTORY, DebugIds.ISSUE.TAB_HISTORY);
     }
 
     @UiField

@@ -365,6 +365,8 @@ public class DebugIds {
         String WORK_TRIGGER_SELECTOR = "issue-work-trigger-selector";
         String SUBTASK_BUTTON = "issue-subtask-button";
         String TABS_CONTAINER = "issue-tabs-container";
+        String TAB_COMMENT = "issue-tab-comments";
+        String TAB_HISTORY = "issue-tab-history";
 
         interface LABEL {
             String NAME = "issue-label-name";
