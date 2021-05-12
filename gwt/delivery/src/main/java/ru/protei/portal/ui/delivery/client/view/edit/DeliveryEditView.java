@@ -63,7 +63,7 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     @UiHandler({"nameAndDescriptionEditButton"})
     public void onNameAndDescriptionEditButtonClicked(ClickEvent event) {
         if (activity != null) {
-//            activity.onBackClicked();
+            activity.onNameAndDescriptionEditClicked();
         }
     }
 

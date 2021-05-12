@@ -2,6 +2,7 @@ package ru.protei.portal.ui.delivery.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -40,7 +41,7 @@ public class DeliveryNameAndDescriptionView extends Composite  {
     @UiField
     LabelElement nameRO;
     @UiField
-    LabelElement descriptionRO;
+    DivElement descriptionRO;
 
     interface DeliveryNameAndDescriptionViewUiBinder extends UiBinder<HTMLPanel, DeliveryNameAndDescriptionView> { }
     private static DeliveryNameAndDescriptionViewUiBinder ourUiBinder = GWT.create( DeliveryNameAndDescriptionViewUiBinder.class );

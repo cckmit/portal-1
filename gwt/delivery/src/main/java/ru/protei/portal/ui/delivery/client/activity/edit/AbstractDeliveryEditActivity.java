@@ -5,5 +5,5 @@ package ru.protei.portal.ui.delivery.client.activity.edit;
  */
 public interface AbstractDeliveryEditActivity {
 //    void onBackClicked();
-//    void onNameAndDescriptionEditClicked();
+    void onNameAndDescriptionEditClicked();
 }

@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
+import static ru.protei.portal.core.model.util.CrmConstants.NAME_MAX_SIZE;
 
 /**
  * Вид создания и редактирования проекта
@@ -52,6 +53,7 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
+        name.setMaxLength(NAME_MAX_SIZE);
         customerInitiator.setAsyncModel(customerInitiatorModel);
         contract.setAsyncModel(contractModel);
     }
