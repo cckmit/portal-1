@@ -21,13 +21,12 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateFormSelector;
-import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.project.ProjectWidget;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractModel;
 import ru.protei.portal.ui.common.client.widget.selector.delivery.attribute.DeliveryAttributeFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.delivery.state.DeliveryStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.delivery.type.DeliveryTypeFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
@@ -56,13 +55,11 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
         ensureDebugIds();
         customerInitiator.setAsyncModel(customerInitiatorModel);
         contract.setAsyncModel(contractModel);
-        state.setStateModel( stateModel );
     }
 
     @Override
     public void setActivity(AbstractDeliveryCreateActivity activity) {
         this.activity = activity;
-        kits.setEmptyItemProvider(activity::createEmptyKit);
     }
 
     @Override
@@ -279,7 +276,7 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     DeliveryKitList kits;
     @Inject
     @UiField( provided = true )
-    IssueStateFormSelector state;
+    DeliveryStateFormSelector state;
     @Inject
     @UiField( provided = true )
     DeliveryTypeFormSelector type;
@@ -324,8 +321,6 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     PersonModel customerInitiatorModel;
     @Inject
     ContractModel contractModel;
-    @Inject
-    StateModel stateModel;
 
     private AbstractDeliveryCreateActivity activity;
 

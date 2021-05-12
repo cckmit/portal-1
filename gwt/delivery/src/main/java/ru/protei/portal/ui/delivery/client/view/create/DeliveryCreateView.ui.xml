@@ -49,7 +49,7 @@
                         <div class="form-group form-group-attached">
                             <div class="row clearfix reset-no-padding">
                                 <div class="col-md-12">
-                                    <deliverystate:IssueStateFormSelector ui:field="state"
+                                    <delivery:state.DeliveryStateFormSelector ui:field="state"
                                                                           header="{lang.deliveryState}"
                                                                           searchEnabled="false"
                                                                           hasNullValue="false"

@@ -13,6 +13,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.core.model.dict.En_DeliveryState;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -25,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HAS_ERROR;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
@@ -103,11 +104,6 @@ public class DeliveryKitList extends Composite
         activity.getLastSerialNumber(isArmyProject, lastSerialNumberCallback);
     }
 
-
-    public void setEmptyItemProvider(Supplier<Kit> provider) {
-        emptyKitProvider = provider;
-    }
-
     public void setEnsureDebugId(String debugId) {
         root.ensureDebugId(debugId);
         add.ensureDebugId(debugId + "-add");
@@ -147,9 +143,11 @@ public class DeliveryKitList extends Composite
     }
 
     private void addEmptyItem() {
-        Kit item = emptyKitProvider.get();
-        value.add(item);
-        makeItemAndFillValue( item );
+        Kit kit = new Kit();
+        kit.setState(new CaseState((long) En_DeliveryState.PRELIMINARY.getId()));
+        kit.setStateId((long)En_DeliveryState.PRELIMINARY.getId());
+        value.add(kit);
+        makeItemAndFillValue(kit);
     }
 
     private void makeItemAndFillValue(final Kit value ) {
@@ -259,7 +257,6 @@ public class DeliveryKitList extends Composite
     private boolean isArmyProject = false;
 
     private int minimumKitNumber = 1;
-    private Supplier<Kit> emptyKitProvider;
     private final Consumer<String> lastSerialNumberCallback =
             ((Consumer<String>)this::parseSerialNumber).andThen(ignore -> refreshSerialNumber());
 

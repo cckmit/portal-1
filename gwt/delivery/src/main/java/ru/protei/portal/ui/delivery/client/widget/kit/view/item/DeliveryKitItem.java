@@ -15,7 +15,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_DeliveryState;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -81,8 +81,9 @@ public class DeliveryKitItem
     }
 
     @UiHandler( "state" )
-    public void onChangeState(ValueChangeEvent<En_DeliveryState> event) {
+    public void onChangeState(ValueChangeEvent<CaseState> event) {
         value.setState(state.getValue());
+        value.setStateId(state.getValue().getId());
         changeTimer.schedule(50);
     }
 

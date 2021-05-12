@@ -1,37 +1,68 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 import java.util.Objects;
 
+import static ru.protei.portal.core.model.ent.Delivery.*;
+
 @JdbcEntity(table = "kit")
 public class Kit extends AuditableObject {
     public static final String AUDIT_TYPE = "Kit";
 
+    /**
+     * Идентификатор
+     */
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
+    /**
+     * Идентификатор поставки
+     */
     @JdbcColumn(name = "delivery_id")
     private Long deliveryId;
 
+    /**
+     * Дата создания
+     */
     @JdbcColumn(name = "created")
     private Date created;
 
+    /**
+     * Дата изменения
+     */
     @JdbcColumn(name = "modified")
     private Date modified;
 
+    /**
+     * Серийный номер
+     */
     @JdbcColumn(name = "serial_number")
     private String serialNumber;
 
+    /**
+     * Название
+     */
     @JdbcColumn(name = "name")
     private String name;
 
+    /**
+     * Идентификатор статуса
+     */
     @JdbcColumn(name = "state")
     @JdbcEnumerated(EnumType.ID)
-    private En_DeliveryState state;
+    private Long stateId;
+
+    /**
+     * Статус
+     */
+    @JdbcJoinedObject(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = Columns.STATE, remoteColumn = "id", table = "case_state", sqlTableAlias = CASE_OBJECT_ALIAS),
+    })
+    private CaseState state;
 
     public Kit() {}
 
@@ -93,11 +124,19 @@ public class Kit extends AuditableObject {
         this.name = name;
     }
 
-    public En_DeliveryState getState() {
+    public Long getStateId() {
+        return stateId;
+    }
+
+    public void setStateId(Long stateId) {
+        this.stateId = stateId;
+    }
+
+    public CaseState getState() {
         return state;
     }
 
-    public void setState(En_DeliveryState state) {
+    public void setState(CaseState state) {
         this.state = state;
     }
 
@@ -123,6 +162,7 @@ public class Kit extends AuditableObject {
                 ", modified=" + modified +
                 ", serialNumber='" + serialNumber + '\'' +
                 ", name='" + name + '\'' +
+                ", stateId=" + stateId +
                 ", state=" + state +
                 '}';
     }

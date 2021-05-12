@@ -7,11 +7,13 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_CustomerType;
+import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Delivery;
-import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
@@ -100,13 +102,6 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
     public void onDepartureDateChanged() {
         view.setDepartureDateValid(
                 isDepartureDateFieldValid(view.isDepartureDateEmpty(), view.departureDate().getValue()));
-    }
-
-    @Override
-    public Kit createEmptyKit() {
-        Kit kit = new Kit();
-        kit.setState(En_DeliveryState.PRELIMINARY);
-        return kit;
     }
 
     private boolean isDepartureDateFieldValid(boolean isEmptyDeadlineField, Date date) {
