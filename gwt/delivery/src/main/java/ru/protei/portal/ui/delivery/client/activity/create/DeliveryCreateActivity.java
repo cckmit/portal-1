@@ -7,26 +7,28 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
+import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.DeliveryEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
@@ -34,16 +36,9 @@ import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 
 public abstract class DeliveryCreateActivity implements Activity, AbstractDeliveryCreateActivity {
 
-    public static final long PRELIMINARY_CASE_STATE_ID = 39L;
-
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-    }
-
-    @Event
-    public void onAuthSuccess (AuthEvents.Success event) {
-        updateDeliveryStatesFilter();
     }
 
     @Event
@@ -89,7 +84,9 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
     @Override
     public void onAttributeChanged() {
         if (En_DeliveryAttribute.DELIVERY.equals(view.attribute().getValue())) {
-            view.contractEnable().setEnabled(true);
+            if (view.project().getValue() != null) {
+                view.contractEnable().setEnabled(true);
+            }
             view.setContractFieldMandatory(true);
         } else {
             view.contractEnable().setEnabled(false);
@@ -101,7 +98,8 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
     @Override
     public void onDepartureDateChanged() {
         view.setDepartureDateValid(
-                isDepartureDateFieldValid(view.isDepartureDateEmpty(), view.departureDate().getValue()));
+                isDepartureDateFieldValid(view.isDepartureDateEmpty(), view.departureDate().getValue())
+        );
     }
 
     private boolean isDepartureDateFieldValid(boolean isEmptyDeadlineField, Date date) {
@@ -128,6 +126,9 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         view.contract().setValue(null);
         view.updateContractModel(projectInfo.getId());
         view.updateKitByProject(projectInfo.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE);
+        if (En_DeliveryAttribute.DELIVERY.equals(view.attribute().getValue())) {
+            view.contractEnable().setEnabled(true);
+        }
     }
 
     private void clearProjectSpecificFields() {
@@ -135,34 +136,26 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         view.setCustomerType(null);
         view.initiatorEnable().setEnabled(false);
         view.initiator().setValue(null);
-        view.updateInitiatorModel(-999L);      // todo
+        view.updateInitiatorModel(null);
         view.setManagerCompany(null);
         view.setManager(null);
         view.setProducts(null);
         view.contract().setValue(null);
         view.contractEnable().setEnabled(false);
-        view.updateContractModel(-999L); // todo
+        view.updateContractModel(null);
         view.updateKitByProject(false);
     }
 
     private void prepare() {
         view.name().setValue(null);
         view.description().setText(null);
-        view.state().setValue(new CaseState(PRELIMINARY_CASE_STATE_ID, "preliminary" ));
+        view.state().setValue(new CaseState((long)En_DeliveryState.PRELIMINARY.getId()));
         view.type().setValue(null);
+
         view.project().setValue(null);
-        view.setCustomerCompany(null);
-        view.setCustomerType(null);
-        view.updateInitiatorModel(-999L);      // todo
-        view.initiator().setValue(null);
-        view.initiatorEnable().setEnabled(false);
-        view.setManagerCompany(null);
-        view.setManager(null);
+        clearProjectSpecificFields();
+
         view.attribute().setValue(null);
-        view.contract().setValue(null);
-        view.contractEnable().setEnabled(false);
-        view.updateContractModel(-999L); // todo
-        view.setProducts(null);
         view.departureDate().setValue(null);
         view.setDepartureDateValid(true);
         view.setSubscribers(Collections.emptySet());
@@ -198,7 +191,7 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         CaseState state = view.state().getValue();
         if (state == null) {
             return lang.deliveryValidationEmptyState();
-        } else if (PRELIMINARY_CASE_STATE_ID != state.getId()) {
+        } else if (!Objects.equals(En_DeliveryState.PRELIMINARY.getId(), state.getId().intValue())) {
             return lang.deliveryValidationInvalidStateAtCreate();
         }
         if (view.type().getValue() == null) {
@@ -239,11 +232,6 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
             }));
     }
 
-    private void updateDeliveryStatesFilter() {
-        caseStateService.getCaseStates(En_CaseType.DELIVERY, new FluentCallback<List<CaseState>>()
-                .withSuccess(list -> { view.setStateFilter(list::contains); }));
-    }
-
     private boolean hasPrivileges() {
         return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE);
     }
@@ -260,8 +248,6 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
     DefaultErrorHandler defaultErrorHandler;
     @Inject
     En_CustomerTypeLang customerTypeLang;
-    @Inject
-    CaseStateControllerAsync caseStateService;
 
     private AppEvents.InitDetails initDetails;
 }

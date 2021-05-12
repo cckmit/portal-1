@@ -22,7 +22,6 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.project.ProjectWidget;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractModel;
 import ru.protei.portal.ui.common.client.widget.selector.delivery.attribute.DeliveryAttributeFormSelector;
@@ -99,11 +98,6 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     }
 
     @Override
-    public void setStateFilter(Selector.SelectorFilter<CaseState> filter) {
-        state.setFilter(filter);
-    }
-
-    @Override
     public HasValue<En_DeliveryType> type() {
         return type;
     }
@@ -125,7 +119,7 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
 
     @Override
     public void updateInitiatorModel(Long companyId) {
-        customerInitiatorModel.updateCompanies( null, setOf(companyId) );
+        customerInitiatorModel.updateCompanies( null, companyId != null ? setOf(companyId) : null);
     }
 
     @Override
@@ -294,7 +288,8 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     ValidableTextBox managerCompany;
     @UiField
     ValidableTextBox manager;
-    @Inject    @UiField( provided = true )
+    @Inject
+    @UiField( provided = true )
     DeliveryAttributeFormSelector attribute;
     @Inject
     @UiField(provided = true)

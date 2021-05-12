@@ -12,7 +12,6 @@ import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Date;
@@ -41,8 +40,6 @@ public interface AbstractDeliveryCreateView extends IsWidget {
     HasValidable kitsValidate();
 
     HasValue<CaseState> state();
-
-    void setStateFilter(Selector.SelectorFilter<CaseState> filter);
 
     HasValue<En_DeliveryType> type();
 

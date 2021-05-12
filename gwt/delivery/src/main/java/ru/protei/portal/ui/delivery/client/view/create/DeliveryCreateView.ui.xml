@@ -63,7 +63,8 @@
                                     <delivery:type.DeliveryTypeFormSelector ui:field="type" validation="false"
                                                                             header="{lang.deliveryType}"
                                                                             searchEnabled="false"
-                                                                            hasNullValue="false"
+                                                                            hasNullValue="true"
+                                                                            defaultValue="{lang.selectDeliveryContract}"
                                                                             mandatory="true"/>
                                 </div>
                             </div>
