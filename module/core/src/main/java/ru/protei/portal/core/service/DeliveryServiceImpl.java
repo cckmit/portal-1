@@ -14,6 +14,8 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DataQuery;
+import ru.protei.portal.core.model.struct.delivery.DeliveryNameAndDescriptionChangeRequest;
+import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -136,6 +138,34 @@ public class DeliveryServiceImpl implements DeliveryService {
         deliveryDAO.persist(delivery);
 
         return ok(deliveryDAO.get(delivery.getId()));
+    }
+
+    @Override
+    public Result<DeliveryNameAndDescriptionChangeRequest> updateNameAndDescription(AuthToken token, DeliveryNameAndDescriptionChangeRequest changeRequest) {
+        CaseObject oldCaseObject = caseObjectDAO.get(changeRequest.getId());
+        if(oldCaseObject == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        DiffResult<String> nameDiff = new DiffResult<>(oldCaseObject.getName(), changeRequest.getName());
+        DiffResult<String> infoDiff = new DiffResult<>(oldCaseObject.getInfo(), changeRequest.getDescription());
+
+        if(!nameDiff.hasDifferences() && !infoDiff.hasDifferences()) {
+            return ok();
+        }
+
+        CaseObject caseObject = new CaseObject(changeRequest.getId());
+        caseObject.setName(changeRequest.getName());
+        caseObject.setInfo(changeRequest.getDescription());
+
+        boolean isUpdated = caseObjectDAO.partialMerge(caseObject, "CASE_NAME", "INFO");
+
+        if (!isUpdated) {
+            log.info("Failed to update issue {} at db", caseObject.getId());
+            return error(En_ResultStatus.NOT_UPDATED);
+        }
+
+        return ok(changeRequest);
     }
 
     @Override

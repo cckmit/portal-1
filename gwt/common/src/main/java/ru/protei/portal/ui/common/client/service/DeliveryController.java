@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.query.BaseQuery;
+import ru.protei.portal.core.model.struct.delivery.DeliveryNameAndDescriptionChangeRequest;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -17,4 +18,6 @@ public interface DeliveryController extends RemoteService {
     Delivery saveDelivery(Delivery delivery) throws RequestFailedException;
 
     String getLastSerialNumber(boolean isArmyProject) throws RequestFailedException;
+
+    void saveNameAndDescription(DeliveryNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException;
 }

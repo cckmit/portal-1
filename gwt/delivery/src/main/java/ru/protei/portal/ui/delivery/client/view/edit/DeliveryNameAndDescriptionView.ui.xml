@@ -2,10 +2,10 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
-    <g:HTMLPanel>
-        <h5 class="number-and-name-copy-panel no-margin">
+    <g:HTMLPanel styleName="no-margin">
+        <h5 class="no-margin">
             <label ui:field="nameRO" class="semi-bold large-text"/>
-            <label ui:field="descriptionRO" class="semi-bold large-text"/>
         </h5>
+        <div ui:field="descriptionRO" class="form-group markdown p-t-15"/>
     </g:HTMLPanel>
 </ui:UiBinder>
