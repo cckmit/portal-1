@@ -95,6 +95,7 @@ public class CrmConstants {
         String CONTRACTOR_FULL_NAME = "^.{1,250}$";
         String RUS_PHONE_NUMBER_PATTERN = "^((\\+7|8)[0-9]{9,10}|[0-9]{6,7})$"; // [+7 или 8] + [3 код региона] + [6-7 номер] ИЛИ [6-7 номер]
         String WORK_PHONE_NUMBER_PATTERN = "^\\d*#?\\d+$";
+        String DELIVERY_KIT_SERIAL_NUMBER_PATTERN = "^\\d{3}\\.\\d{3}$";
     }
 
     public interface Time {

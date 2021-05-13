@@ -50,6 +50,9 @@
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
+            <column name="delivery_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
             <column name="created" type="DATETIME" defaultValueDate="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
@@ -68,29 +71,11 @@
         <addUniqueConstraint tableName="kit" columnNames="serial_number" constraintName="uniq_delivery_kit_serial-number"/>
     </changeSet>
 
-    <changeSet id="create-delivery_kit-table" author="porubov">
-        <createTable tableName="delivery_kit">
-            <column name="delivery_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="kit_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
     <changeSet id="add-delivery_kit-table-kf" author="porubov">
-        <addForeignKeyConstraint baseTableName="delivery_kit"
+        <addForeignKeyConstraint baseTableName="kit"
                                  baseColumnNames="delivery_id"
-                                 constraintName="delivery_kit_delivery_id_to_delivery_fk"
+                                 constraintName="kit_delivery_id_to_delivery_fk"
                                  referencedTableName="delivery"
-                                 referencedColumnNames="id"
-                                 onDelete="CASCADE"/>
-
-        <addForeignKeyConstraint baseTableName="delivery_kit"
-                                 baseColumnNames="kit_id"
-                                 constraintName="delivery_kit_kit_id_to_kit_fk"
-                                 referencedTableName="kit"
                                  referencedColumnNames="id"
                                  onDelete="CASCADE"/>
     </changeSet>

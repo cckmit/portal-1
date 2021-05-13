@@ -3396,11 +3396,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String deliveryCustomerCompany();
 
-    String deliveryCustomerEmployee();
+    String deliveryCustomerInitiator();
 
     String deliveryManagerInfo();
 
     String deliveryManagerCompany();
+
+    String deliveryManager();
 
     String deliveryContract();
 
@@ -3410,9 +3412,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String deliverySubscribers();
 
-    String deliveryKit();
+    String deliveryKits();
 
     String deliveryKitSerialNumber();
+
+    String deliveryKitSerialNumberTitle();
 
     String deliveryKitStatus();
 
@@ -3472,8 +3476,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String deliveryColumnManager();
 
-    String deliveryManager();
-
     String deliveryFilterNotDefined();
 
     String deliveryFilterName();
@@ -3488,17 +3490,27 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectDeliveryContract();
 
+    String deliveryButtonRefreshSerialNumber();
+
+    String errDeliverySerialNumberNotAvailable();
+
     String deliveryValidationEmptyName();
 
     String deliveryValidationEmptyState();
 
     String deliveryValidationInvalidStateAtCreate();
 
+    String deliveryValidationEmptyType();
+
     String deliveryValidationEmptyProject();
 
     String deliveryValidationEmptyAttribute();
 
     String deliveryValidationEmptyContractAtAttributeDelivery();
+
+    String deliveryValidationInvalidKits();
+
+    String deliveryValidationOnlyOneKitForCivilProject();
 
     String deliveryFilterProduct();
 

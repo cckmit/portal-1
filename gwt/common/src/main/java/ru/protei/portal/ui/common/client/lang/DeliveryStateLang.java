@@ -1,26 +1,26 @@
 package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_DeliveryState;
+import ru.protei.portal.core.model.ent.CaseState;
 
-public class En_DeliveryStateLang {
-    public String getName(En_DeliveryState value) {
-        switch (value) {
-            case PRELIMINARY:
+public class DeliveryStateLang {
+    public String getName(CaseState value) {
+        switch (value.getId().intValue()) {
+            case 39:
                 return lang.deliveryStatePreliminary();
-            case PRE_RESERVE:
+            case 40:
                 return lang.deliveryStatePreReserve();
-            case RESERVE:
+            case 41:
                 return lang.deliveryStateReserve();
-            case ASSEMBLY:
+            case 42:
                 return lang.deliveryStateAssembly();
-            case TEST:
+            case 43:
                 return lang.deliveryStateTest();
-            case READY:
+            case 44:
                 return lang.deliveryStateReady();
-            case SENT:
+            case 45:
                 return lang.deliveryStateSent();
-            case WORK:
+            case 46:
                 return lang.deliveryStateWork();
             default:
                 return lang.unknownField();

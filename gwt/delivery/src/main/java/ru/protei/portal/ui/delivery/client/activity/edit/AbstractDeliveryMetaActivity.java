@@ -1,12 +1,9 @@
-package ru.protei.portal.ui.delivery.client.activity.create;
+package ru.protei.portal.ui.delivery.client.activity.edit;
 
 /**
  * Абстракция активности карточки создания поставки
  */
-public interface AbstractDeliveryCreateActivity {
-    void onSaveClicked();
-    void onCancelClicked();
-
+public interface AbstractDeliveryMetaActivity {
     void onProjectChanged();
     void onAttributeChanged();
     void onDepartureDateChanged();

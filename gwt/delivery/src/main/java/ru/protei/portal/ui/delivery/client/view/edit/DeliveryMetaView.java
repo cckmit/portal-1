@@ -1,20 +1,21 @@
-package ru.protei.portal.ui.delivery.client.view.create;
+package ru.protei.portal.ui.delivery.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -30,14 +31,11 @@ import ru.protei.portal.ui.common.client.widget.selector.delivery.type.DeliveryT
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
-import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
-import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateActivity;
-import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateView;
-import ru.protei.portal.ui.delivery.client.widget.kit.view.list.DeliveryKitList;
+import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryMetaActivity;
+import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryMetaView;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,7 +44,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 /**
  * Вид создания и редактирования проекта
  */
-public class DeliveryCreateView extends Composite implements AbstractDeliveryCreateView {
+public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaView {
 
     @Inject
     public void onInit() {
@@ -57,39 +55,8 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     }
 
     @Override
-    public void setActivity(AbstractDeliveryCreateActivity activity) {
+    public void setActivity(AbstractDeliveryMetaActivity activity) {
         this.activity = activity;
-    }
-
-    @Override
-    public HasEnabled saveEnabled() {
-        return saveButton;
-    }
-
-    @Override
-    public HasValue<String> name() { return name; }
-
-    @Override
-    public HasText description() { return description; }
-
-    @Override
-    public HasValue<List<Kit>> kits() {
-        return kits;
-    }
-
-    @Override
-    public void kitsClear() {
-        kits.prepare();
-    }
-
-    @Override
-    public void updateKitByProject(boolean isArmyProject) {
-        kits.setArmyProject(isArmyProject);
-    }
-
-    @Override
-    public HasValidable kitsValidate() {
-        return kits;
     }
 
     @Override
@@ -197,20 +164,6 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
         return subscribers.getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet());
     }
 
-    @UiHandler("saveButton")
-    public void onSaveClicked(ClickEvent event) {
-        if (activity != null) {
-            activity.onSaveClicked();
-        }
-    }
-
-    @UiHandler({"cancelButton", "backButton"})
-    public void onCancelClicked(ClickEvent event) {
-        if (activity != null) {
-            activity.onCancelClicked();
-        }
-    }
-
     @UiHandler("projectWidget")
     public void onProjectWidgetChanged(ValueChangeEvent<ProjectInfo> event) {
         if (activity != null) {
@@ -237,9 +190,6 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        name.ensureDebugId(DebugIds.DELIVERY.NAME_INPUT);
-        description.ensureDebugId(DebugIds.DELIVERY.DESCRIPTION_INPUT);
-        kits.setEnsureDebugId(DebugIds.DELIVERY.KITS);
         state.setEnsureDebugId(DebugIds.DELIVERY.STATE_SELECTOR);
         type.setEnsureDebugId(DebugIds.DELIVERY.TYPE_SELECTOR);
         projectWidget.setEnsureDebugId(DebugIds.DELIVERY.PROJECT_WIDGET);
@@ -253,21 +203,10 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
         products.ensureDebugId(DebugIds.DELIVERY.PRODUCTS);
         departureDate.ensureDebugId(DebugIds.DELIVERY.DEPARTURE_DATE);
         subscribers.setItemContainerEnsureDebugId(DebugIds.DELIVERY.SUBSCRIBERS);
-
-        backButton.ensureDebugId(DebugIds.DELIVERY.BACK_BUTTON);
-        saveButton.ensureDebugId(DebugIds.DELIVERY.SAVE_BUTTON);
-        cancelButton.ensureDebugId(DebugIds.DELIVERY.CANCEL_BUTTON);
     }
 
     @UiField
     HTMLPanel root;
-    @UiField
-    ValidableTextBox name;
-    @UiField
-    TextArea description;
-    @Inject
-    @UiField(provided = true)
-    DeliveryKitList kits;
     @Inject
     @UiField( provided = true )
     DeliveryStateFormSelector state;
@@ -302,13 +241,6 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     @Inject
     @UiField( provided = true )
     EmployeeMultiSelector subscribers;
-
-    @UiField
-    Button backButton;
-    @UiField
-    Button saveButton;
-    @UiField
-    Button cancelButton;
     @Inject
     @UiField
     Lang lang;
@@ -317,8 +249,8 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     @Inject
     ContractModel contractModel;
 
-    private AbstractDeliveryCreateActivity activity;
+    private AbstractDeliveryMetaActivity activity;
 
-    interface ViewUiBinder extends UiBinder<HTMLPanel, DeliveryCreateView> {}
+    interface ViewUiBinder extends UiBinder<HTMLPanel, DeliveryMetaView> {}
     private static ViewUiBinder ourUiBinder = GWT.create(ViewUiBinder.class);
 }

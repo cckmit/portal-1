@@ -12,5 +12,9 @@ public interface DeliveryController extends RemoteService {
 
     SearchResult<Delivery> getDeliveries(BaseQuery query) throws RequestFailedException;
 
+    Delivery getDelivery(long id) throws RequestFailedException;
+
     Delivery saveDelivery(Delivery delivery) throws RequestFailedException;
+
+    String getLastSerialNumber(boolean isArmyProject) throws RequestFailedException;
 }

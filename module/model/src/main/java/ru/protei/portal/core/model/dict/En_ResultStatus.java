@@ -346,6 +346,11 @@ public enum En_ResultStatus {
     /**
      * Данные превышают размерность, заданную в MySQL
      */
-    MYSQL_DATA_TRUNCATION
+    MYSQL_DATA_TRUNCATION,
+
+    /**
+     * Поставки, серийный номер занят
+     */
+    DELIVERY_KIT_SERIAL_NUMBER_NOT_AVAILABLE
     ;
 }

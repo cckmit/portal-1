@@ -112,7 +112,7 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
     }
 
     public void setEnsureDebugId( String debugId ) {
-        search.ensureDebugId(debugId);
+        root.ensureDebugId(debugId);
     }
 
     private void ensureDebugIds() {

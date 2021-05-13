@@ -10,10 +10,8 @@ import ru.protei.winter.jdbc.annotations.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.ent.CaseObject.Columns.STATE;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.ent.Delivery.Columns.ID;
 
 /**
  * Информация о поставке
@@ -28,41 +26,41 @@ public class Delivery extends AuditableObject {
     /**
      * Идентификатор
      */
-    @JdbcId(name = Columns.ID, idInsertMode = IdInsertMode.EXPLICIT)
+    @JdbcId(name = ID, idInsertMode = IdInsertMode.EXPLICIT)
     private Long id;
 
     /**
      * Дата создания
      */
-    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+    @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID,
             mappedColumn = CaseObject.Columns.CREATED, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Date created;
 
     /**
      * Создатель
      */
-    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+    @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID,
             mappedColumn = CaseObject.Columns.CREATOR, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long creatorId;
 
     /**
      * Дата изменения
      */
-    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+    @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID,
             mappedColumn = CaseObject.Columns.MODIFIED, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Date modified;
 
     /**
      * Название
      */
-    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+    @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID,
             mappedColumn = CaseObject.Columns.CASE_NAME, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private String name;
 
     /**
      * Описание
      */
-    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+    @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID,
             mappedColumn = CaseObject.Columns.INFO, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private String description;
 
@@ -78,12 +76,12 @@ public class Delivery extends AuditableObject {
     /**
      * Контактное лицо
      */
-    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID,
+    @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID,
             mappedColumn = CaseObject.Columns.INITIATOR, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long initiatorId;
 
     @JdbcJoinedObject(joinPath = {
-            @JdbcJoinPath(localColumn = Columns.ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE),
+            @JdbcJoinPath(localColumn = ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE),
             @JdbcJoinPath(localColumn = CaseObject.Columns.INITIATOR, remoteColumn = "id", table = "person"),
     })
     private PersonShortView initiator;
@@ -101,22 +99,11 @@ public class Delivery extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Delivery.Columns.STATE, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long stateId;
 
-    /**
-     * Статус поставки в строковом виде
-     */
-    @JdbcJoinedColumn(joinPath = {
+    @JdbcJoinedObject(joinPath = {
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
-            @JdbcJoinPath(localColumn = Delivery.Columns.STATE, remoteColumn = "id", table = "case_state", sqlTableAlias = CASE_OBJECT_ALIAS),
-    }, mappedColumn = "state")
-    private String stateName;
-
-    /**
-     * Цвет статуса поставки
-     */
-    @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
-            @JdbcJoinPath(localColumn = Delivery.Columns.STATE, remoteColumn = "id", table = "case_state")}, mappedColumn = "color")
-    private String stateColor;
+            @JdbcJoinPath(localColumn = Project.Columns.STATE, remoteColumn = "id", table = "case_state", sqlTableAlias = CASE_OBJECT_ALIAS),
+    })
+    private CaseState state;
 
     /**
      * Тип
@@ -137,6 +124,9 @@ public class Delivery extends AuditableObject {
     @JdbcColumn(name = "contract_id")
     private Long contractId;
 
+    @JdbcJoinedObject(localColumn = "contract_id", remoteColumn = ID)
+    private Contract contract;
+
     /**
      * Подписчики
      */
@@ -147,8 +137,7 @@ public class Delivery extends AuditableObject {
     /**
      * Комплекты
      */
-    @JdbcManyToMany(linkTable = "delivery_kit",
-            localLinkColumn = "delivery_id", remoteLinkColumn = "kit_id")
+    @JdbcOneToMany( table = "kit", localColumn = "id", remoteColumn = "delivery_id" )
     private List<Kit> kits;
 
     public Delivery() {}
@@ -259,20 +248,12 @@ public class Delivery extends AuditableObject {
         this.stateId = stateId;
     }
 
-    public String getStateName() {
-        return stateName;
+    public CaseState getState() {
+        return state;
     }
 
-    public void setStateName(String stateName) {
-        this.stateName = stateName;
-    }
-
-    public String getStateColor() {
-        return stateColor;
-    }
-
-    public void setStateColor(String stateColor) {
-        this.stateColor = stateColor;
+    public void setState(CaseState state) {
+        this.state = state;
     }
 
     public En_DeliveryType getType() {
@@ -297,6 +278,14 @@ public class Delivery extends AuditableObject {
 
     public void setContractId(Long contractId) {
         this.contractId = contractId;
+    }
+
+    public Contract getContract() {
+        return contract;
+    }
+
+    public void setContract(Contract contract) {
+        this.contract = contract;
     }
 
     public Set<Person> getSubscribers() {
@@ -327,6 +316,7 @@ public class Delivery extends AuditableObject {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", stateId=" + stateId +
+                ", state=" + state +
                 ", created=" + created +
                 ", modified=" + modified +
                 ", projectId=" + projectId +
@@ -334,6 +324,7 @@ public class Delivery extends AuditableObject {
                 ", type=" + type +
                 ", initiatorId=" + initiatorId +
                 ", contractId=" + contractId +
+                ", contract=" + contract +
                 ", attribute=" + attribute +
                 '}';
     }
