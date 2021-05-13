@@ -25,6 +25,7 @@ public class ApiProjectToProjectMapper {
 
         Project project = new Project();
         project.setCreated(new Date());
+        project.setCreatorId(api.getCreatorId());
         project.setName(api.getName());
         project.setDescription(api.getDescription());
         project.setStateId(api.getStateId() == null ? UNKNOWN : api.getStateId());
