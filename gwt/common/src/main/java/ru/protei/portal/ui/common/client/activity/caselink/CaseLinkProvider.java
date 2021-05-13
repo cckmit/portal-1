@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.ent.CaseInfo;
+import ru.protei.portal.core.model.ent.UitsIssueInfo;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.ui.common.client.service.CaseLinkControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
@@ -38,6 +39,10 @@ public class CaseLinkProvider {
 
     public void getYTLinkInfo(String ytId, AsyncCallback<YouTrackIssueInfo> async ) {
         caseLinkService.getYtLinkInfo( ytId, async );
+    }
+
+    public void getUitsLinkInfo(Long uitsId, AsyncCallback<UitsIssueInfo> async ) {
+        caseLinkService.getUitsLinkInfo( uitsId, async );
     }
 
     @Inject

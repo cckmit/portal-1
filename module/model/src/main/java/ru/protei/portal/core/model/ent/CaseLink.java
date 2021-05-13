@@ -37,6 +37,8 @@ public class CaseLink extends AuditableObject {
 
     private YouTrackIssueInfo youTrackIssueInfo;
 
+    private UitsIssueInfo uitsIssueInfo;
+
     public CaseLink() {}
 
     public CaseLink(Long id) {
@@ -99,6 +101,14 @@ public class CaseLink extends AuditableObject {
         this.youTrackIssueInfo = youTrackIssueInfo;
     }
 
+    public UitsIssueInfo getUitsIssueInfo() {
+        return uitsIssueInfo;
+    }
+
+    public void setUitsIssueInfo(UitsIssueInfo uitsIssueInfo) {
+        this.uitsIssueInfo = uitsIssueInfo;
+    }
+
     public Boolean getWithCrosslink() {
         return withCrosslink;
     }
@@ -148,6 +158,7 @@ public class CaseLink extends AuditableObject {
                 ", withCrosslink=" + withCrosslink +
                 ", caseInfo=" + caseInfo +
                 ", youTrackIssueInfo=" + youTrackIssueInfo +
+                ", uitsIssueInfo=" + uitsIssueInfo +
                 '}';
     }
 }

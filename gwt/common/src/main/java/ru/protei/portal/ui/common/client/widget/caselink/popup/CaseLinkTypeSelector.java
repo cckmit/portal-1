@@ -27,6 +27,7 @@ public class CaseLinkTypeSelector extends ButtonSelector<En_CaseLink> {
                 switch (value) {
                     case CRM: style += " type-selector-crm"; break;
                     case YT: style += " type-selector-youtrack"; break;
+                    case UITS: style += " type-selector-uits"; break;
                 }
                 return new DisplayOption(name, style, null);
             }

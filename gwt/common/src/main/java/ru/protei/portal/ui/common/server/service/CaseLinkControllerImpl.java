@@ -45,6 +45,11 @@ public class CaseLinkControllerImpl implements CaseLinkController {
         return checkResultAndGetData(caseLinkService.getYoutrackIssueInfo(authToken, ytId));
     }
 
+    @Override
+    public UitsIssueInfo getUitsLinkInfo(Long uitsId) throws RequestFailedException {
+        AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(caseLinkService.getUitsIssueInfo(authToken, uitsId));
+    }
 
     @Override
     public List<CaseLink> getCaseLinks( Long caseId ) throws RequestFailedException {

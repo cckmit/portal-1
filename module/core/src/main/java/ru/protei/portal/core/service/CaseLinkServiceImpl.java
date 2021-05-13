@@ -95,6 +95,22 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     @Override
+    public Result<UitsIssueInfo> getUitsIssueInfo(AuthToken authToken, Long uitsId) {
+        boolean isShowOnlyPublic = isShowOnlyPublicLinks(authToken);
+        if (isShowOnlyPublic && En_CaseLink.UITS.isForcePrivacy()) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+        //TODO remove stub
+        UitsIssueInfo uitsIssueInfo = new UitsIssueInfo();
+        uitsIssueInfo.setId(String.valueOf(uitsId));
+        uitsIssueInfo.setDescription("Stub description");
+        uitsIssueInfo.setSummary("Stub summary");
+        Result<UitsIssueInfo> result = new Result<UitsIssueInfo>().ok(uitsIssueInfo);
+
+        return result;
+    }
+
+    @Override
     @Transactional
     public Result<List<CaseLink>> createLinks(AuthToken authToken, List<CaseLink> linksToCreate, En_CaseType caseType) {
 

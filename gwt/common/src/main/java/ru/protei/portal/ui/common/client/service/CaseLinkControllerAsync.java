@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.UitsIssueInfo;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 
 import java.util.List;
@@ -14,6 +15,8 @@ public interface CaseLinkControllerAsync {
     void getLinkMap(AsyncCallback<Map<En_CaseLink, String>> async);
 
     void getYtLinkInfo( String ytId, AsyncCallback<YouTrackIssueInfo> async );
+
+    void getUitsLinkInfo( Long uitsId, AsyncCallback<UitsIssueInfo> async );
 
     void getCaseLinks( Long caseId, AsyncCallback<List<CaseLink>> async );
 
