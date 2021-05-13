@@ -59,8 +59,7 @@ public class Kit extends AuditableObject {
      * Статус
      */
     @JdbcJoinedObject(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
-            @JdbcJoinPath(localColumn = Columns.STATE, remoteColumn = "id", table = "case_state", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = "state", remoteColumn = "id", table = "case_state", sqlTableAlias = CASE_OBJECT_ALIAS),
     })
     private CaseState state;
 

@@ -166,25 +166,33 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
 
     @UiHandler("projectWidget")
     public void onProjectWidgetChanged(ValueChangeEvent<ProjectInfo> event) {
-        if (activity != null) {
-            activity.onProjectChanged();
-        }
+        activity.onProjectChanged();
     }
 
     @UiHandler("attribute")
     public void onAttributeChanged(ValueChangeEvent<En_DeliveryAttribute> event) {
-        if (activity != null) {
-            activity.onAttributeChanged();
-        }
+        activity.onAttributeChanged();
     }
 
     @UiHandler("departureDate")
     public void onDepartureDateChanged(ValueChangeEvent<Date> event) {
-        if (activity != null) {
-            activity.onDepartureDateChanged();
-        }
+        activity.onDepartureDateChanged();
     }
 
+    @UiHandler("state")
+    public void onStateChanged(ValueChangeEvent<CaseState> event) {
+        activity.onStateChange();
+    }
+
+    @UiHandler("type")
+    public void onTypeChanged(ValueChangeEvent<En_DeliveryType> event) {
+        activity.onTypeChange();
+    }
+
+    @UiHandler("subscribers")
+    public void onNotifiersChanged(ValueChangeEvent<Set<PersonShortView>> event) {
+        activity.onCaseMetaNotifiersChanged( );
+    }
 
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {

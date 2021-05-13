@@ -62,8 +62,9 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
 
     @Override
     public void onSaveClicked() {
-        if (getValidationError() != null) {
-            showValidationError();
+        String error = getValidationError();
+        if (error != null) {
+            showValidationError(error);
             return;
         }
         Delivery delivery = fillDto();
@@ -180,8 +181,8 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         return delivery;
     }
 
-    private void showValidationError() {
-        fireEvent(new NotifyEvents.Show(getValidationError(), NotifyEvents.NotifyType.ERROR));
+    private void showValidationError(String error) {
+        fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
     }
 
     private String getValidationError() {

@@ -49,6 +49,11 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     }
 
     @Override
+    public void updateKitByProject(boolean isArmyProject) {
+        kits.setArmyProject(isArmyProject);
+    }
+
+    @Override
     public HasWidgets getMetaContainer() {
         return metaContainer;
     }

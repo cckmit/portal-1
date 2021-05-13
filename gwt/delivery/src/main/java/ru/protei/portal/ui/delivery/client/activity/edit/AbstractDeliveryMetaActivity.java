@@ -7,4 +7,8 @@ public interface AbstractDeliveryMetaActivity {
     void onProjectChanged();
     void onAttributeChanged();
     void onDepartureDateChanged();
+
+    void onStateChange();
+    void onTypeChange();
+    default void onCaseMetaNotifiersChanged() {}
 }

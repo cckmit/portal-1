@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.struct.delivery.DeliveryNameAndDescriptionChangeRequest;
@@ -32,6 +33,14 @@ public interface DeliveryService {
     @Privileged({ En_Privilege.DELIVERY_EDIT })
     @Auditable( En_AuditType.DELIVERY_MODIFY )
     Result<DeliveryNameAndDescriptionChangeRequest> updateNameAndDescription(AuthToken token, DeliveryNameAndDescriptionChangeRequest changeRequest);
+
+    @Privileged({ En_Privilege.DELIVERY_EDIT })
+    @Auditable( En_AuditType.DELIVERY_MODIFY )
+    Result<Delivery> updateMeta(AuthToken token, Delivery meta);
+
+    @Privileged({ En_Privilege.DELIVERY_EDIT })
+    @Auditable( En_AuditType.DELIVERY_MODIFY )
+    Result<CaseObjectMetaNotifiers> updateCaseObjectMetaNotifiers(AuthToken token, CaseObjectMetaNotifiers caseMetaNotifiers );
 
     Result<String> getLastSerialNumber(AuthToken token, boolean isArmyProject);
 }

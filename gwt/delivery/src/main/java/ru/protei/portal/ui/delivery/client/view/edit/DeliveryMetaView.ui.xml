@@ -20,7 +20,7 @@
                                                                   searchEnabled="false"
                                                                   hasNullValue="false"
                                                                   mandatory="false"
-                                                                  enabled="false"/>
+                                                                  enabled="true"/>
                     </div>
                 </div>
                 <div class="row clearfix reset-no-padding">

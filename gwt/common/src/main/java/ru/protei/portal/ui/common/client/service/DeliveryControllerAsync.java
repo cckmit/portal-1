@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.struct.delivery.DeliveryNameAndDescriptionChangeRequest;
@@ -17,4 +18,8 @@ public interface DeliveryControllerAsync {
     void getLastSerialNumber(boolean isArmyProject, AsyncCallback<String> async);
 
     void saveNameAndDescription(DeliveryNameAndDescriptionChangeRequest changeRequest, AsyncCallback<Void> callback);
+
+    void updateMeta(Delivery meta, AsyncCallback<Delivery> async);
+
+    void updateMetaNotifiers(CaseObjectMetaNotifiers caseMetaNotifiers, AsyncCallback<CaseObjectMetaNotifiers> async);
 }

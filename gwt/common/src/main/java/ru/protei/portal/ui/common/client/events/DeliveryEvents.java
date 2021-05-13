@@ -5,6 +5,7 @@ import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.dto.DeliveryFilterDto;
+import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.query.DeliveryQuery;
 
@@ -81,10 +82,12 @@ public class DeliveryEvents {
     public static class EditDeliveryMeta {
         public HasWidgets parent;
         public Delivery delivery;
+        public CaseObjectMetaNotifiers metaNotifiers;
 
-        public EditDeliveryMeta(HasWidgets parent, Delivery delivery) {
+        public EditDeliveryMeta(HasWidgets parent, Delivery delivery, CaseObjectMetaNotifiers metaNotifiers) {
             this.parent = parent;
             this.delivery = delivery;
+            this.metaNotifiers = metaNotifiers;
         }
     }
 

@@ -7,7 +7,9 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
 import ru.protei.portal.core.model.dict.En_DeliveryState;
+import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Delivery;
@@ -22,6 +24,7 @@ import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.view.edit.DeliveryMetaView;
 
 import java.util.Date;
@@ -47,8 +50,10 @@ public abstract class DeliveryMetaActivity implements Activity, AbstractDelivery
         event.parent.add(deliveryMetaView.asWidget());
 
         delivery = event.delivery;
+        metaNotifiers = event.metaNotifiers;
 
         fillView( event.delivery );
+        fillNotifiersView( metaNotifiers );
     }
 
     @Override
@@ -69,6 +74,46 @@ public abstract class DeliveryMetaActivity implements Activity, AbstractDelivery
 //            view.setContractFieldMandatory(false);
 //            view.contract().setValue(null);
 //        }
+    }
+
+    @Override
+    public void onStateChange() {
+        CaseState caseState = deliveryMetaView.state().getValue();
+        delivery.setState(caseState);
+        delivery.setStateId(caseState.getId());
+        onCaseMetaChanged(delivery, () -> fireEvent(new DeliveryEvents.ChangeModel()));
+    }
+
+    @Override
+    public void onTypeChange() {
+        En_DeliveryType type = deliveryMetaView.type().getValue();
+        delivery.setType(type);
+        onCaseMetaChanged(delivery, () -> fireEvent(new DeliveryEvents.ChangeModel()));
+    }
+
+    @Override
+    public void onCaseMetaNotifiersChanged() {
+        metaNotifiers.setNotifiers( deliveryMetaView.getSubscribers() );
+        controller.updateMetaNotifiers(metaNotifiers, new FluentCallback<CaseObjectMetaNotifiers>()
+                .withSuccess(caseMetaNotifiersUpdated -> {
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    deliveryMetaView.setSubscribers(caseMetaNotifiersUpdated.getNotifiers());
+                }));
+    }
+
+    private void onCaseMetaChanged(Delivery delivery, Runnable runAfterUpdate) {
+//        String error = getValidationError();
+//        if (error != null) {
+//            showValidationError(error);
+//            return;
+//        }
+
+        controller.updateMeta(delivery, new FluentCallback<Delivery>()
+                .withSuccess(caseMetaUpdated -> {
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fillView( caseMetaUpdated );
+                    if(runAfterUpdate!=null) runAfterUpdate.run();
+                }));
     }
 
     @Override
@@ -146,17 +191,17 @@ public abstract class DeliveryMetaActivity implements Activity, AbstractDelivery
         deliveryMetaView.attribute().setValue(delivery.getAttribute());
         deliveryMetaView.departureDate().setValue(delivery.getDepartureDate());
         deliveryMetaView.setDepartureDateValid(true);
-        deliveryMetaView.setSubscribers(delivery.getSubscribers());
     }
 
-    private void showValidationError() {
-        fireEvent(new NotifyEvents.Show(getValidationError(), NotifyEvents.NotifyType.ERROR));
+    private void fillNotifiersView(CaseObjectMetaNotifiers caseMetaNotifiers) {
+        deliveryMetaView.setSubscribers(caseMetaNotifiers.getNotifiers());
+    }
+
+    private void showValidationError(String error) {
+        fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
     }
 
     private String getValidationError() {
-//        if (isBlank(deliveryMetaView.name().getValue())) {
-//            return lang.deliveryValidationEmptyName();
-//        }
         CaseState state = deliveryMetaView.state().getValue();
         if (state == null) {
             return lang.deliveryValidationEmptyState();
@@ -173,9 +218,6 @@ public abstract class DeliveryMetaActivity implements Activity, AbstractDelivery
          if (En_DeliveryAttribute.DELIVERY == attribute && deliveryMetaView.contract().getValue() == null) {
             return lang.deliveryValidationEmptyContractAtAttributeDelivery();
         }
-//        if (!deliveryMetaView.kitsValidate().isValid()) {
-//            return lang.deliveryValidationInvalidKits();
-//        }
 
         return null;
     }
@@ -196,6 +238,8 @@ public abstract class DeliveryMetaActivity implements Activity, AbstractDelivery
 
     @ContextAware
     Delivery delivery;
+    @ContextAware
+    CaseObjectMetaNotifiers metaNotifiers;
 
     private AppEvents.InitDetails initDetails;
 }

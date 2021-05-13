@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.struct.delivery.DeliveryNameAndDescriptionChangeRequest;
@@ -20,4 +21,8 @@ public interface DeliveryController extends RemoteService {
     String getLastSerialNumber(boolean isArmyProject) throws RequestFailedException;
 
     void saveNameAndDescription(DeliveryNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException;
+
+    Delivery updateMeta(Delivery meta) throws RequestFailedException;
+
+    CaseObjectMetaNotifiers updateMetaNotifiers(CaseObjectMetaNotifiers caseMetaNotifiers) throws RequestFailedException;
 }

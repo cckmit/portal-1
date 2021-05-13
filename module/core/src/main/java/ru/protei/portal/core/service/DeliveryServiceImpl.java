@@ -7,10 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
-import ru.protei.portal.core.model.dict.En_DeliveryState;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DataQuery;
@@ -51,10 +48,13 @@ public class DeliveryServiceImpl implements DeliveryService {
     CaseNotifierDAO caseNotifierDAO;
     @Autowired
     DevUnitDAO devUnitDAO;
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    CaseObjectMetaNotifiersDAO caseObjectMetaNotifiersDAO;
 
     @Autowired
     DeliveryDAO deliveryDAO;
-
     @Autowired
     KitDAO kitDAO;
 
@@ -130,17 +130,11 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     @Transactional
     public Result<Delivery> updateDelivery(AuthToken token, Delivery delivery) {
-        if (!isValid(delivery, false)) {
-            return error(En_ResultStatus.VALIDATION_ERROR);
-        }
-        Date now = new Date();
-        delivery.setModified(now);
-        deliveryDAO.persist(delivery);
-
-        return ok(deliveryDAO.get(delivery.getId()));
+        return error(En_ResultStatus.INTERNAL_ERROR);
     }
 
     @Override
+    @Transactional
     public Result<DeliveryNameAndDescriptionChangeRequest> updateNameAndDescription(AuthToken token, DeliveryNameAndDescriptionChangeRequest changeRequest) {
         CaseObject oldCaseObject = caseObjectDAO.get(changeRequest.getId());
         if(oldCaseObject == null) {
@@ -166,6 +160,74 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         return ok(changeRequest);
+    }
+
+    @Override
+    @Transactional
+    public Result<Delivery> updateMeta(AuthToken token, Delivery meta) {
+        if (meta.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        // validate with old state delivery
+        /*Delivery oldMeta = deliveryDAO.get(meta.getId());
+        if (oldMeta == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }*/
+
+        CaseObject caseObject = caseObjectDAO.get(meta.getId());
+        caseObject = createCaseObject(caseObject, meta, null, null, new Date());
+        boolean isUpdated = caseObjectDAO.merge(caseObject);
+        if (!isUpdated) {
+            log.info("Failed to update issue meta data {} at db", caseObject.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        isUpdated = deliveryDAO.merge(meta);
+        if (!isUpdated) {
+            log.warn("createDelivery(): delivery not created. delivery={}",  caseObject.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        // update kits
+
+        return getDelivery(token,  caseObject.getId());
+    }
+
+    public Result<CaseObjectMetaNotifiers> updateCaseObjectMetaNotifiers(AuthToken token, CaseObjectMetaNotifiers caseMetaNotifiers) {
+
+        if (caseMetaNotifiers.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CaseObject oldState = caseObjectDAO.get(caseMetaNotifiers.getId());
+        if (oldState == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        jdbcManyRelationsHelper.persist(caseMetaNotifiers, "notifiers");
+        if (isNotEmpty(caseMetaNotifiers.getNotifiers())) {
+            // update partially filled objects
+            caseMetaNotifiers.setNotifiers(new HashSet<>(
+                    personDAO.partialGetListByKeys(
+                            caseMetaNotifiers.getNotifiers().stream()
+                                    .map(Person::getId)
+                                    .collect(Collectors.toList()),
+                            "id", "displayShortName")
+            ));
+            jdbcManyRelationsHelper.fill(caseMetaNotifiers.getNotifiers(), Person.Fields.CONTACT_ITEMS);
+        }
+        caseMetaNotifiers.setModified(new Date());
+
+        boolean isUpdated = caseObjectMetaNotifiersDAO.merge(caseMetaNotifiers);
+        if (!isUpdated) {
+            log.info("Failed to update issue meta notifiers data {} at db", caseMetaNotifiers.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        // Event not needed
+
+        return ok(caseMetaNotifiers);
     }
 
     @Override

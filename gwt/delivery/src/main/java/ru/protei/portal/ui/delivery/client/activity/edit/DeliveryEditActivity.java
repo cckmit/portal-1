@@ -1,18 +1,24 @@
 package ru.protei.portal.ui.delivery.client.activity.edit;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.struct.delivery.DeliveryNameAndDescriptionChangeRequest;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.DeliveryEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
@@ -106,14 +112,18 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     }
 
     private void fillView(Delivery delivery) {
+        HasWidgets nameContainer = view.getNameContainer();
+        nameContainer.clear();
         nameAndDescriptionView.setName(delivery.getName());
         nameAndDescriptionView.setDescription(delivery.getDescription());
+        nameContainer.add(nameAndDescriptionView);
+        view.updateKitByProject(delivery.getProject().getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE);
         view.kits().setValue(delivery.getKits());
         renderMarkupText(delivery.getDescription(), En_TextMarkup.MARKDOWN, html -> nameAndDescriptionView.setDescription(html));
     }
 
     private void showMeta(Delivery delivery) {
-        fireEvent(new DeliveryEvents.EditDeliveryMeta(view.getMetaContainer(), delivery));
+        fireEvent(new DeliveryEvents.EditDeliveryMeta(view.getMetaContainer(), delivery, makeMetaNotifiers(delivery)));
     }
 
     private boolean hasPrivileges() {
@@ -124,6 +134,10 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         textRenderController.render( text, markup, new FluentCallback<String>()
                 .withError( throwable -> consumer.accept( null ) )
                 .withSuccess( consumer ) );
+    }
+
+    private CaseObjectMetaNotifiers makeMetaNotifiers(Delivery delivery) {
+        return new CaseObjectMetaNotifiers(delivery);
     }
 
     @Inject

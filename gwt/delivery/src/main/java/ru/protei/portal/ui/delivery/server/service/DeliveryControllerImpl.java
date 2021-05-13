@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.BaseQuery;
@@ -67,13 +68,27 @@ public class DeliveryControllerImpl implements DeliveryController {
 
     @Override
     public void saveNameAndDescription(DeliveryNameAndDescriptionChangeRequest changeRequest)  throws RequestFailedException {
-        log.info("saveIssueNameAndDescription(): id={}| name={}, description={}", changeRequest.getId(), changeRequest.getName(), changeRequest.getDescription());
         AuthToken token = getAuthToken(sessionService, httpRequest);
         Result response = deliveryService.updateNameAndDescription(token, changeRequest);
-        log.info("saveIssueNameAndDescription(): response.isOk()={}", response.isOk());
-
         checkResult(response);
     }
+
+    @Override
+    public Delivery updateMeta(Delivery meta) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        Result<Delivery> result = deliveryService.updateMeta(token, meta);
+        return checkResultAndGetData(result);
+    }
+
+    @Override
+    public CaseObjectMetaNotifiers updateMetaNotifiers(CaseObjectMetaNotifiers caseMetaNotifiers) throws RequestFailedException {
+        log.info("updateIssueMetaNotifiers(): caseId={} | caseMetaNotifiers={}", caseMetaNotifiers.getId(), caseMetaNotifiers);
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        Result<CaseObjectMetaNotifiers> result = deliveryService.updateCaseObjectMetaNotifiers(token, caseMetaNotifiers);
+        log.info("updateIssueMetaNotifiers(): caseId={} | status={}", caseMetaNotifiers.getId(), result.getStatus());
+        return checkResultAndGetData(result);
+    }
+
 
     @Autowired
     DeliveryService deliveryService;
