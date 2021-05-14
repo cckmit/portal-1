@@ -267,7 +267,7 @@ public abstract class CaseLinkListActivity
             itemWidget.setState(value.getYouTrackInfo().getState());
         } else if (Objects.equals(value.getType(), UITS) && value.getUitsIssueInfo() != null) {
             linkId = value.getRemoteId();
-            itemWidget.setNumber(linkId);
+            itemWidget.setNumber(lang.uitsPrefix() + linkId);
             itemWidget.setName(value.getUitsIssueInfo().getSummary());
             itemWidget.setState(value.getUitsIssueInfo().getState());
         } else {

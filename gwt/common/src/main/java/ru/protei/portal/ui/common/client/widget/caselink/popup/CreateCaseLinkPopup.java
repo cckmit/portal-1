@@ -204,16 +204,19 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     private Window.ScrollHandler windowScrollHandler;
     private HandlerRegistration resizeHandlerReg;
     private HandlerRegistration scrollHandlerReg;
-    private RegExp youTrackPattern = RegExp.compile("^\\w+-\\d+$");
-    private Timer keyTapTimer = new Timer() {
+    private final RegExp youTrackPattern = RegExp.compile("^\\w+-\\d+$");
+    private final Timer keyTapTimer = new Timer() {
         @Override
         public void run() {
             MatchResult youTrackMatcher = youTrackPattern.exec(trim(remoteIdInput.getValue()));
 
-            if (youTrackMatcher != null) {
-                setValueToTypeSelector(En_CaseLink.YT);
-            } else{
+            if (youTrackMatcher == null) {
+                if (typeSelector.getValue() == En_CaseLink.UITS){
+                    return;
+                }
                 setValueToTypeSelector(En_CaseLink.CRM);
+            } else {
+                setValueToTypeSelector(En_CaseLink.YT);
             }
         }
     };

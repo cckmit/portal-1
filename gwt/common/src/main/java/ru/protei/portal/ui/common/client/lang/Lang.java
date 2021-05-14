@@ -3383,4 +3383,10 @@ public interface Lang extends Messages, ContactItemLang {
     String issueFilterPlatform();
 
     String errInvalidFileFormat();
+
+    String caseLinkUits();
+
+    String caseLinkUitsShort();
+
+    String uitsPrefix();
 }

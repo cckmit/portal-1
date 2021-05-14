@@ -103,8 +103,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         //TODO remove stub
         UitsIssueInfo uitsIssueInfo = new UitsIssueInfo();
         uitsIssueInfo.setId(String.valueOf(uitsId));
-        uitsIssueInfo.setDescription("Stub description");
-        uitsIssueInfo.setSummary("Stub summary");
+        uitsIssueInfo.setDescription("UITS Stub description");
+        uitsIssueInfo.setSummary("UITS Stub summary");
         Result<UitsIssueInfo> result = new Result<UitsIssueInfo>().ok(uitsIssueInfo);
 
         return result;

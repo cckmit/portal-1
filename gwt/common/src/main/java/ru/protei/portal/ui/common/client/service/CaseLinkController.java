@@ -18,6 +18,7 @@ public interface CaseLinkController extends RemoteService {
     Map<En_CaseLink, String> getLinkMap() throws RequestFailedException;
 
     YouTrackIssueInfo getYtLinkInfo( String ytId ) throws RequestFailedException;
+
     UitsIssueInfo getUitsLinkInfo(Long uitsId) throws RequestFailedException;
 
     List<CaseLink> getCaseLinks(Long caseId ) throws RequestFailedException;

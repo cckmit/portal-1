@@ -12,6 +12,7 @@ public class En_CaseLinkLang {
         switch (caseLink) {
             case CRM: return lang.caseLinkCrm();
             case YT: return lang.caseLinkYouTrack();
+            case UITS: return lang.caseLinkUits();
             default: return lang.unknownField();
         }
     }
@@ -20,6 +21,7 @@ public class En_CaseLinkLang {
         switch (caseLink) {
             case CRM: return lang.caseLinkCrmShort();
             case YT: return lang.caseLinkYouTrackShort();
+            case UITS: return lang.caseLinkUitsShort();
             default: return lang.unknownField();
         }
     }
