@@ -1,5 +1,14 @@
 package ru.protei.portal.core.service;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +18,14 @@ import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.UitsIssueInfo;
+import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import static ru.protei.portal.api.struct.Result.error;
 
@@ -38,11 +55,56 @@ public class UitsServiceImpl implements UitsService {
         uitsIssueInfo.setSummary("UITS Stub summary");
         Result<UitsIssueInfo> result = new Result<UitsIssueInfo>().ok(uitsIssueInfo);
 
+        String resultStr = doUitsRequest(issueId);
+
         return result;
     }
 
+    private String doUitsRequest(Long issueId) {
+        String result = "";
 
-//    private YouTrackIssueInfo convertYtIssue(YtIssue issue) {
+        HttpClient httpclient = HttpClients.createDefault();
+        HttpPost httppost = new HttpPost("https://support.uits.spb.ru/rest/347/djueym3pkassk34f/crm.deal.get?id=59597");
+
+//        List<NameValuePair> params = new ArrayList<>(1);
+//        params.add(new BasicNameValuePair("id", String.valueOf(issueId)));
+//        httppost.setEntity(new UrlEncodedFormEntity(params, StandardCharsets.UTF_8));
+
+        HttpResponse response = null;
+        try {
+            response = httpclient.execute(httppost);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (response == null){
+            log.warn("UITS crm.deal.get response is null");
+            return "";
+        }
+
+        HttpEntity entity = response.getEntity();
+        InputStream inputStream = null;
+        try {
+            inputStream = entity.getContent();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (inputStream == null){
+            log.warn("UITS crm.deal.get inputStream is null");
+            return "";
+        }
+
+        try {
+            result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+//    private UitsIssueInfo convertYtIssue(YtIssue issue) {
 //        if (issue == null) return null;
 //        YouTrackIssueInfo issueInfo = new YouTrackIssueInfo();
 //        issueInfo.setId(issue.idReadable);
