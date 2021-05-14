@@ -74,6 +74,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         Map<En_CaseLink, String> linkMap = new HashMap<>();
         linkMap.put(En_CaseLink.CRM, portalConfig.data().getCaseLinkConfig().getLinkCrm());
         linkMap.put(En_CaseLink.YT, portalConfig.data().getCaseLinkConfig().getLinkYouTrack());
+        linkMap.put(En_CaseLink.UITS, portalConfig.data().getCaseLinkConfig().getLinkUits());
         return ok(linkMap);
     }
 

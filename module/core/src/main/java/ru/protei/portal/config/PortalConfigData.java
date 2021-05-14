@@ -663,12 +663,14 @@ public class PortalConfigData {
     public static class CaseLinkConfig {
         private final String linkCrm;
         private final String linkYouTrack;
+        private final String linkUits;
         private final String crossCrmLinkYoutrack;
         private final String crossProjectLinkYoutrack;
 
         public CaseLinkConfig(PropertiesWrapper properties) throws ConfigException {
             this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue_preview:id=%id%");
             this.linkYouTrack = properties.getProperty("case.link.youtrack", "https://youtrack.protei.ru/issue/%id%");
+            this.linkUits = properties.getProperty("case.link.uits", "https://support.uits.spb.ru/crm/deal/details/%id%/");
             this.crossCrmLinkYoutrack = properties.getProperty("case.crm.crosslink.youtrack", "http://newportal/crm/#issues/issue:id=%id%");
             this.crossProjectLinkYoutrack = properties.getProperty("case.project.crosslink.youtrack", "http://newportal/crm/#project_preview:id=%id%");
         }
@@ -679,6 +681,10 @@ public class PortalConfigData {
 
         public String getLinkYouTrack() {
             return linkYouTrack;
+        }
+
+        public String getLinkUits() {
+            return linkUits;
         }
 
         public String getCrossCrmLinkYoutrack() {
