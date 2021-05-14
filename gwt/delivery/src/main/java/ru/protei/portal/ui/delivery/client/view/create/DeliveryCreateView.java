@@ -34,6 +34,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateActivity;
 import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateView;
+import ru.protei.portal.ui.delivery.client.view.edit.namedescription.DeliveryNameDescriptionEditView;
 import ru.protei.portal.ui.delivery.client.widget.kit.view.list.DeliveryKitList;
 
 import java.util.Date;
@@ -42,7 +43,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
-import static ru.protei.portal.core.model.util.CrmConstants.NAME_MAX_SIZE;
 
 /**
  * Вид создания и редактирования проекта
@@ -53,7 +53,6 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        name.setMaxLength(NAME_MAX_SIZE);
         customerInitiator.setAsyncModel(customerInitiatorModel);
         contract.setAsyncModel(contractModel);
     }
@@ -69,10 +68,10 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     }
 
     @Override
-    public HasValue<String> name() { return name; }
+    public HasValue<String> name() { return nameDescription.name(); }
 
     @Override
-    public HasText description() { return description; }
+    public HasValue<String> description() { return nameDescription.description(); }
 
     @Override
     public HasValue<List<Kit>> kits() {
@@ -239,8 +238,6 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        name.ensureDebugId(DebugIds.DELIVERY.NAME_INPUT);
-        description.ensureDebugId(DebugIds.DELIVERY.DESCRIPTION_INPUT);
         kits.setEnsureDebugId(DebugIds.DELIVERY.KITS);
         state.setEnsureDebugId(DebugIds.DELIVERY.STATE_SELECTOR);
         type.setEnsureDebugId(DebugIds.DELIVERY.TYPE_SELECTOR);
@@ -263,10 +260,9 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
 
     @UiField
     HTMLPanel root;
-    @UiField
-    ValidableTextBox name;
-    @UiField
-    TextArea description;
+    @Inject
+    @UiField(provided = true)
+    DeliveryNameDescriptionEditView nameDescription;
     @Inject
     @UiField(provided = true)
     DeliveryKitList kits;

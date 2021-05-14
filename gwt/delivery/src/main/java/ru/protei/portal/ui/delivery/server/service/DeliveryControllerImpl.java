@@ -11,7 +11,8 @@ import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.BaseQuery;
-import ru.protei.portal.core.model.struct.delivery.DeliveryNameAndDescriptionChangeRequest;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
+import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.DeliveryService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.DeliveryController;
@@ -67,9 +68,9 @@ public class DeliveryControllerImpl implements DeliveryController {
     }
 
     @Override
-    public void saveNameAndDescription(DeliveryNameAndDescriptionChangeRequest changeRequest)  throws RequestFailedException {
+    public void saveNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest)  throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
-        Result response = deliveryService.updateNameAndDescription(token, changeRequest);
+        Result response = caseService.updateCaseNameAndDescription(token, changeRequest);
         checkResult(response);
     }
 
@@ -92,6 +93,8 @@ public class DeliveryControllerImpl implements DeliveryController {
 
     @Autowired
     DeliveryService deliveryService;
+    @Autowired
+    CaseService caseService;
 
     @Autowired
     SessionService sessionService;

@@ -149,7 +149,7 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
 
     private void prepare() {
         view.name().setValue(null);
-        view.description().setText(null);
+        view.description().setValue(null);
         view.state().setValue(new CaseState((long)En_DeliveryState.PRELIMINARY.getId()));
         view.type().setValue(null);
 
@@ -167,7 +167,7 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
     private Delivery fillDto() {
         Delivery delivery = new Delivery();
         delivery.setName(view.name().getValue());
-        delivery.setDescription(view.description().getText());
+        delivery.setDescription(view.description().getValue());
         delivery.setProjectId(view.project().getValue().getId());
         delivery.setInitiatorId(view.initiator().getValue() != null ? view.initiator().getValue().getId() : null);
         delivery.setAttribute(view.attribute().getValue());
