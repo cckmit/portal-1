@@ -6,7 +6,6 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
-import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
@@ -16,19 +15,15 @@ import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.DeliveryEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.delivery.client.view.edit.DeliveryMetaView;
+import ru.protei.portal.ui.delivery.client.view.edit.meta.DeliveryMetaView;
 
 import java.util.Date;
-import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 
@@ -37,11 +32,6 @@ public abstract class DeliveryMetaActivity implements Activity, AbstractDelivery
     @PostConstruct
     public void onInit() {
         deliveryMetaView.setActivity(this);
-    }
-
-    @Event
-    public void onInitDetails(AppEvents.InitDetails initDetails) {
-        this.initDetails = initDetails;
     }
 
     @Event
@@ -54,26 +44,6 @@ public abstract class DeliveryMetaActivity implements Activity, AbstractDelivery
 
         fillView( event.delivery );
         fillNotifiersView( metaNotifiers );
-    }
-
-    @Override
-    public void onProjectChanged() {
-//        ProjectInfo project = view.project().getValue();
-//        fillProjectSpecificFields(project);
-    }
-
-    @Override
-    public void onAttributeChanged() {
-//        if (En_DeliveryAttribute.DELIVERY.equals(view.attribute().getValue())) {
-//            if (view.project().getValue() != null) {
-//                view.contractEnable().setEnabled(true);
-//            }
-//            view.setContractFieldMandatory(true);
-//        } else {
-//            view.contractEnable().setEnabled(false);
-//            view.setContractFieldMandatory(false);
-//            view.contract().setValue(null);
-//        }
     }
 
     @Override
@@ -92,6 +62,60 @@ public abstract class DeliveryMetaActivity implements Activity, AbstractDelivery
     }
 
     @Override
+    public void onProjectChanged() {
+        ProjectInfo projectInfo = deliveryMetaView.project().getValue();
+        fillProjectSpecificFields(projectInfo);
+
+        delivery.setProjectId(projectInfo == null? null : projectInfo.getId());
+        delivery.setInitiatorId(null);
+        delivery.setInitiator(null);
+        onCaseMetaChanged(delivery, () -> fireEvent(new DeliveryEvents.ChangeModel()));
+    }
+
+    @Override
+    public void onInitiatorChange() {
+        PersonShortView initiator = deliveryMetaView.initiator().getValue();
+        delivery.setInitiatorId(initiator.getId());
+        delivery.setInitiator(initiator);
+        onCaseMetaChanged(delivery, () -> fireEvent(new DeliveryEvents.ChangeModel()));
+    }
+
+    @Override
+    public void onAttributeChanged() {
+        if (En_DeliveryAttribute.DELIVERY.equals(deliveryMetaView.attribute().getValue())) {
+            if (deliveryMetaView.project().getValue() != null) {
+                deliveryMetaView.contractEnable().setEnabled(true);
+            }
+            deliveryMetaView.setContractFieldMandatory(true);
+        } else {
+            deliveryMetaView.contractEnable().setEnabled(false);
+            deliveryMetaView.setContractFieldMandatory(false);
+            deliveryMetaView.contract().setValue(null);
+        }
+
+        delivery.setAttribute(deliveryMetaView.attribute().getValue());
+        delivery.setContractId(deliveryMetaView.contract().getValue() != null ? deliveryMetaView.contract().getValue().getId() : null);
+        onCaseMetaChanged(delivery, () -> fireEvent(new DeliveryEvents.ChangeModel()));
+    }
+
+    @Override
+    public void onContractChanged() {
+        delivery.setContractId(deliveryMetaView.contract().getValue() != null ? deliveryMetaView.contract().getValue().getId() : null);
+        onCaseMetaChanged(delivery, () -> fireEvent(new DeliveryEvents.ChangeModel()));
+    }
+
+    @Override
+    public void onDepartureDateChanged() {
+        boolean departureDateFieldValid = isDepartureDateFieldValid(deliveryMetaView.isDepartureDateEmpty(), deliveryMetaView.departureDate().getValue());
+        deliveryMetaView.setDepartureDateValid(departureDateFieldValid);
+        if (!departureDateFieldValid) {
+            return;
+        }
+        delivery.setDepartureDate(deliveryMetaView.departureDate().getValue());
+        onCaseMetaChanged(delivery, () -> fireEvent(new DeliveryEvents.ChangeModel()));
+    }
+
+    @Override
     public void onCaseMetaNotifiersChanged() {
         metaNotifiers.setNotifiers( deliveryMetaView.getSubscribers() );
         controller.updateMetaNotifiers(metaNotifiers, new FluentCallback<CaseObjectMetaNotifiers>()
@@ -102,25 +126,20 @@ public abstract class DeliveryMetaActivity implements Activity, AbstractDelivery
     }
 
     private void onCaseMetaChanged(Delivery delivery, Runnable runAfterUpdate) {
-//        String error = getValidationError();
-//        if (error != null) {
-//            showValidationError(error);
-//            return;
-//        }
+        String error = getValidationError();
+        if (error != null) {
+            showValidationError(error);
+            return;
+        }
 
         controller.updateMeta(delivery, new FluentCallback<Delivery>()
                 .withSuccess(caseMetaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fillView( caseMetaUpdated );
-                    if(runAfterUpdate!=null) runAfterUpdate.run();
+                    if (runAfterUpdate != null) {
+                        runAfterUpdate.run();
+                    }
                 }));
-    }
-
-    @Override
-    public void onDepartureDateChanged() {
-//        view.setDepartureDateValid(
-//                isDepartureDateFieldValid(view.isDepartureDateEmpty(), view.departureDate().getValue())
-//        );
     }
 
     private boolean isDepartureDateFieldValid(boolean isEmptyDeadlineField, Date date) {
@@ -136,35 +155,33 @@ public abstract class DeliveryMetaActivity implements Activity, AbstractDelivery
             clearProjectSpecificFields();
             return;
         }
-//        view.setCustomerCompany(projectInfo.getContragent().getDisplayText());
-//        view.setCustomerType(customerTypeLang.getName(projectInfo.getCustomerType()));
-//        view.initiator().setValue(null);
-//        view.updateInitiatorModel(projectInfo.getContragent().getId());
-//        view.initiatorEnable().setEnabled(true);
-//        view.setManagerCompany(projectInfo.getManagerCompany());
-//        view.setManager(projectInfo.getManager().getDisplayText());
-//        view.setProducts(joining(projectInfo.getProducts(), ", ", ProductShortView::getName));
-//        view.contract().setValue(null);
-//        view.updateContractModel(projectInfo.getId());
-//        view.updateKitByProject(projectInfo.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE);
-//        if (En_DeliveryAttribute.DELIVERY.equals(view.attribute().getValue())) {
-//            view.contractEnable().setEnabled(true);
-//        }
+        deliveryMetaView.setCustomerCompany(projectInfo.getContragent().getDisplayText());
+        deliveryMetaView.setCustomerType(customerTypeLang.getName(projectInfo.getCustomerType()));
+        deliveryMetaView.updateInitiatorModel(projectInfo.getContragent().getId());
+        deliveryMetaView.initiator().setValue(null);
+        deliveryMetaView.initiatorEnable().setEnabled(true);
+        deliveryMetaView.setManagerCompany(projectInfo.getManagerCompany());
+        deliveryMetaView.setManager(projectInfo.getManager().getDisplayText());
+        deliveryMetaView.setProducts(joining(projectInfo.getProducts(), ", ", ProductShortView::getName));
+        deliveryMetaView.contract().setValue(null);
+        deliveryMetaView.updateContractModel(projectInfo.getId());
+        if (En_DeliveryAttribute.DELIVERY.equals(deliveryMetaView.attribute().getValue())) {
+            deliveryMetaView.contractEnable().setEnabled(true);
+        }
     }
 
     private void clearProjectSpecificFields() {
-//        view.setCustomerCompany(null);
-//        view.setCustomerType(null);
-//        view.initiatorEnable().setEnabled(false);
-//        view.initiator().setValue(null);
-//        view.updateInitiatorModel(null);
-//        view.setManagerCompany(null);
-//        view.setManager(null);
-//        view.setProducts(null);
-//        view.contract().setValue(null);
-//        view.contractEnable().setEnabled(false);
-//        view.updateContractModel(null);
-//        view.updateKitByProject(false);
+        deliveryMetaView.setCustomerCompany(null);
+        deliveryMetaView.setCustomerType(null);
+        deliveryMetaView.initiatorEnable().setEnabled(false);
+        deliveryMetaView.updateInitiatorModel(null);
+        deliveryMetaView.initiator().setValue(null);
+        deliveryMetaView.setManagerCompany(null);
+        deliveryMetaView.setManager(null);
+        deliveryMetaView.setProducts(null);
+        deliveryMetaView.contract().setValue(null);
+        deliveryMetaView.contractEnable().setEnabled(false);
+        deliveryMetaView.updateContractModel(null);
     }
 
     private void fillView(Delivery delivery) {
@@ -175,8 +192,8 @@ public abstract class DeliveryMetaActivity implements Activity, AbstractDelivery
         deliveryMetaView.project().setValue(projectInfo);
         deliveryMetaView.setCustomerCompany(projectInfo.getContragent().getDisplayText());
         deliveryMetaView.setCustomerType(customerTypeLang.getName(projectInfo.getCustomerType()));
-        deliveryMetaView.initiator().setValue(new PersonShortView(projectInfo.getManager().getDisplayText(), projectInfo.getManager().getId()));
         deliveryMetaView.updateInitiatorModel(projectInfo.getContragent().getId());
+        deliveryMetaView.initiator().setValue(delivery.getInitiator());
         deliveryMetaView.initiatorEnable().setEnabled(true);
         deliveryMetaView.setManagerCompany(projectInfo.getManagerCompany());
         deliveryMetaView.setManager(projectInfo.getManager().getDisplayText());
@@ -205,8 +222,6 @@ public abstract class DeliveryMetaActivity implements Activity, AbstractDelivery
         CaseState state = deliveryMetaView.state().getValue();
         if (state == null) {
             return lang.deliveryValidationEmptyState();
-        } else if (!Objects.equals(En_DeliveryState.PRELIMINARY.getId(), state.getId().intValue())) {
-            return lang.deliveryValidationInvalidStateAtCreate();
         }
         if (deliveryMetaView.type().getValue() == null) {
             return lang.deliveryValidationEmptyType();
@@ -230,16 +245,10 @@ public abstract class DeliveryMetaActivity implements Activity, AbstractDelivery
     @Inject
     private DeliveryControllerAsync controller;
     @Inject
-    PolicyService policyService;
-    @Inject
-    DefaultErrorHandler defaultErrorHandler;
-    @Inject
     En_CustomerTypeLang customerTypeLang;
 
     @ContextAware
     Delivery delivery;
     @ContextAware
     CaseObjectMetaNotifiers metaNotifiers;
-
-    private AppEvents.InitDetails initDetails;
 }

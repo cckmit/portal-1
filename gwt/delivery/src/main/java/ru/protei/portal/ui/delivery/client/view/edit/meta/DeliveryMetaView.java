@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.view.edit;
+package ru.protei.portal.ui.delivery.client.view.edit.meta;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 
 /**
- * Вид создания и редактирования проекта
+ * Вид меты Поставки
  */
 public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaView {
 
@@ -61,6 +61,11 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
 
     @Override
     public HasValue<CaseState> state() {
+        return state;
+    }
+
+    @Override
+    public HasEnabled stateEnable() {
         return state;
     }
 
@@ -164,21 +169,6 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
         return subscribers.getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet());
     }
 
-    @UiHandler("projectWidget")
-    public void onProjectWidgetChanged(ValueChangeEvent<ProjectInfo> event) {
-        activity.onProjectChanged();
-    }
-
-    @UiHandler("attribute")
-    public void onAttributeChanged(ValueChangeEvent<En_DeliveryAttribute> event) {
-        activity.onAttributeChanged();
-    }
-
-    @UiHandler("departureDate")
-    public void onDepartureDateChanged(ValueChangeEvent<Date> event) {
-        activity.onDepartureDateChanged();
-    }
-
     @UiHandler("state")
     public void onStateChanged(ValueChangeEvent<CaseState> event) {
         activity.onStateChange();
@@ -187,6 +177,31 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     @UiHandler("type")
     public void onTypeChanged(ValueChangeEvent<En_DeliveryType> event) {
         activity.onTypeChange();
+    }
+
+    @UiHandler("projectWidget")
+    public void onProjectWidgetChanged(ValueChangeEvent<ProjectInfo> event) {
+        activity.onProjectChanged();
+    }
+
+    @UiHandler("customerInitiator")
+    public void onInitiatorChanged(ValueChangeEvent<PersonShortView> event) {
+        activity.onInitiatorChange();
+    }
+
+    @UiHandler("attribute")
+    public void onAttributeChanged(ValueChangeEvent<En_DeliveryAttribute> event) {
+        activity.onAttributeChanged();
+    }
+
+    @UiHandler("contract")
+    public void onContractChanged(ValueChangeEvent<EntityOption> event) {
+        activity.onContractChanged();
+    }
+
+    @UiHandler("departureDate")
+    public void onDepartureDateChanged(ValueChangeEvent<Date> event) {
+        activity.onDepartureDateChanged();
     }
 
     @UiHandler("subscribers")

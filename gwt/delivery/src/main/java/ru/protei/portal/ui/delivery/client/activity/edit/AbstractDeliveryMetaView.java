@@ -15,13 +15,15 @@ import java.util.Date;
 import java.util.Set;
 
 /**
- * Абстракция вида карточки создания/редактирования проекта
+ * Абстракция вида карточки меты Поставки
  */
 public interface AbstractDeliveryMetaView extends IsWidget {
 
     void setActivity(AbstractDeliveryMetaActivity activity);
 
     HasValue<CaseState> state();
+
+    HasEnabled stateEnable();
 
     HasValue<En_DeliveryType> type();
 

@@ -1,149 +1,30 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
-             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
-             xmlns:delivery="urn:import:ru.protei.portal.ui.common.client.widget.selector.delivery"
-             xmlns:deliverystate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
-             xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.project"
-             xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
-             xmlns:contract="urn:import:ru.protei.portal.ui.common.client.widget.selector.contract"
-             xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
              xmlns:widgets="urn:import:ru.protei.portal.ui.delivery.client.widget"
-             xmlns:name="urn:import:ru.protei.portal.ui.delivery.client.view.edit.namedescription"
+             xmlns:edit="urn:import:ru.protei.portal.ui.delivery.client.view.edit"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
         <div class="card-body row no-margin">
-            <div class="col-lg-8">
-                <div class="row p-b-10">
-                    <div class="btn-toolbar flex-wrap">
-                        <div class="btn-group form-group">
-                            <g:Button ui:field="backButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
-                                      title="{lang.backToDeliveries}">
-                                <i class="fa fa-arrow-left"/>
-                            </g:Button>
-                        </div>
+            <div class="col-lg-8 order-last order-lg-first p-l-25 p-r-5">
+                <div class="btn-toolbar flex-wrap">
+                    <div class="btn-group form-group">
+                        <g:Button ui:field="backButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
+                                  title="{lang.backToDeliveries}">
+                            <i class="fa fa-arrow-left"/>
+                        </g:Button>
                     </div>
-
-                    <name:DeliveryNameDescriptionEditView ui:field="nameDescription"
-                                                          styleName="form-group form-group-default col-md-12"/>
-
-                    <div class="form-group form-group-default col-md-12">
-                        <label class="fade"><ui:text from="{lang.deliveryKits}"/></label>
-                        <widgets:kit.view.list.DeliveryKitList ui:field="kits" addStyleNames="row"/>
-                    </div>
+                </div>
+                <edit:namedescription.DeliveryNameDescriptionEditView ui:field="nameDescription"/>
+                <div class="form-group form-group-default col-md-12">
+                    <label class="fade"><ui:text from="{lang.deliveryKits}"/></label>
+                    <widgets:kit.view.list.DeliveryKitList ui:field="kits" addStyleNames="row"/>
                 </div>
             </div>
             <div class="col-lg-4">
-                <div class="card card-default">
-                    <div class="card-body">
-                        <div class="form-group form-group-attached">
-                            <div class="row clearfix reset-no-padding">
-                                <div class="col-md-12">
-                                    <delivery:state.DeliveryStateFormSelector ui:field="state"
-                                                                          header="{lang.deliveryState}"
-                                                                          searchEnabled="false"
-                                                                          hasNullValue="false"
-                                                                          mandatory="false"
-                                                                          enabled="false"/>
-
-                                </div>
-                            </div>
-                            <div class="row clearfix reset-no-padding">
-                                <div class="col-md-12">
-                                    <delivery:type.DeliveryTypeFormSelector ui:field="type" validation="false"
-                                                                            header="{lang.deliveryType}"
-                                                                            searchEnabled="false"
-                                                                            hasNullValue="true"
-                                                                            defaultValue="{lang.selectDeliveryContract}"
-                                                                            mandatory="true"/>
-                                </div>
-                            </div>
-
-                            <project:ProjectWidget ui:field="projectWidget" validation="false" mandatory="true"
-                                                   addStyleNames="form-group form-group-default"/>
-                        </div>
-
-                        <div class="form-group m-t-10 m-b-10">
-                            <label><ui:text from="{lang.deliveryCustomerInfo}"/></label>
-                        </div>
-
-                        <div class="form-group form-group-attached">
-                            <div class="form-group form-group-default">
-                                <label class="fade"><ui:text from="{lang.deliveryCustomerType}"/></label>
-                                <validablefield:ValidableTextBox ui:field="customerType" styleName="form-control"
-                                                                     enabled="false" notNull="false"/>
-                            </div>
-                            <div class="form-group form-group-default">
-                                <label class="fade"><ui:text from="{lang.deliveryCustomerCompany}"/></label>
-                                <validablefield:ValidableTextBox ui:field="customerCompany" styleName="form-control"
-                                                                 enabled="false" notNull="false"/>
-                            </div>
-                            <person:PersonFormSelector hasNullValue="true"
-                                                       validation="false"
-                                                       ui:field="customerInitiator"
-                                                       defaultValue="{lang.selectDeliveryCustomerInitiator}"
-                                                       header="{lang.deliveryCustomerInitiator}"/>
-                        </div>
-
-                        <div class="form-group m-t-10 m-b-10">
-                            <label><ui:text from="{lang.deliveryManagerInfo}"/></label>
-                        </div>
-
-                        <div class="form-group-attached form-group">
-                            <div class="form-group form-group-default">
-                                <label class="fade"><ui:text from="{lang.deliveryManagerCompany}"/></label>
-                                <validablefield:ValidableTextBox ui:field="managerCompany" styleName="form-control"
-                                                                 enabled="false" notNull="false"/>
-                            </div>
-                            <div class="form-group form-group-default">
-                                <label class="fade"><ui:text from="{lang.deliveryManager}"/></label>
-                                <validablefield:ValidableTextBox ui:field="manager" styleName="form-control"
-                                                                 enabled="false" notNull="false"/>
-                            </div>
-                        </div>
-
-                        <div class="form-group-attached form-group">
-                            <div class="row clearfix reset-no-padding">
-                                <div class="col-md-12">
-                                    <delivery:attribute.DeliveryAttributeFormSelector ui:field="attribute"
-                                                                                      validation="false"
-                                                                                      header="{lang.deliveryAttribute}"
-                                                                                      hasNullValue="false"
-                                                                                      mandatory="false"
-                                                                                      searchEnabled="false"/>
-                                </div>
-                            </div>
-                            <contract:ContractFormSelector ui:field="contract" searchEnabled="true"
-                                                           hasNullValue="true"
-                                                           defaultValue="{lang.selectDeliveryContract}"
-                                                           header="{lang.deliveryContract}"/>
-                            <div class="form-group form-group-default">
-                                <label class="fade"><ui:text from="{lang.deliveryProducts}"/></label>
-                                <validablefield:ValidableTextBox ui:field="products" styleName="form-control"
-                                                                 enabled="false" notNull="false"/>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group form-group-default date-picker">
-                                        <label class="fade" ><ui:text from="{lang.deliveryDepartureDate}"/></label>
-                                        <datepicker:SinglePicker ui:field="departureDate" type="DATE"
-                                                                 formatValue="dd-MM-yyyy" styleName="clearfix"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <div class="col-md-12">
-                                <label><ui:text from="{lang.deliverySubscribers}"/></label>
-                                <person:EmployeeMultiSelector ui:field="subscribers" styleName="case-subscribers"
-                                                              buttonStyle="btn-info btn-xs" fixedStrategy="false"/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <edit:meta.DeliveryMetaView ui:field="meta"/>
             </div>
         </div>
         <div class="card-footer text-right">

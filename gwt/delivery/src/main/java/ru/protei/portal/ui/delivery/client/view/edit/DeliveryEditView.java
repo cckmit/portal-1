@@ -39,11 +39,6 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     }
 
     @Override
-    public HasWidgets getKitsContainer() {
-        return kitsContainer;
-    }
-
-    @Override
     public HasValue<List<Kit>> kits() {
         return kits;
     }

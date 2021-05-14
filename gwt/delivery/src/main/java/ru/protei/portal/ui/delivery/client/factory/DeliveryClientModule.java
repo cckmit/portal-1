@@ -15,7 +15,7 @@ import ru.protei.portal.ui.delivery.client.activity.table.AbstractDeliveryTableV
 import ru.protei.portal.ui.delivery.client.activity.table.DeliveryTableActivity;
 import ru.protei.portal.ui.delivery.client.view.create.DeliveryCreateView;
 import ru.protei.portal.ui.delivery.client.view.edit.DeliveryEditView;
-import ru.protei.portal.ui.delivery.client.view.edit.DeliveryMetaView;
+import ru.protei.portal.ui.delivery.client.view.edit.meta.DeliveryMetaView;
 import ru.protei.portal.ui.delivery.client.view.table.DeliveryTableView;
 import ru.protei.portal.ui.delivery.client.widget.kit.activity.AbstractDeliveryKitListActivity;
 import ru.protei.portal.ui.delivery.client.widget.kit.activity.DeliveryKitListActivity;

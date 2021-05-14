@@ -6,7 +6,6 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
-import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
 import ru.protei.portal.core.model.dict.En_DeliveryState;
@@ -22,6 +21,7 @@ import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -36,7 +36,7 @@ import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 
 public abstract class DeliveryCreateActivity implements Activity, AbstractDeliveryCreateActivity {
 
-    @PostConstruct
+    @Inject
     public void onInit() {
         view.setActivity(this);
     }
@@ -150,7 +150,7 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
     private void prepare() {
         view.name().setValue(null);
         view.description().setValue(null);
-        view.state().setValue(new CaseState((long)En_DeliveryState.PRELIMINARY.getId()));
+        fillStateSelector((long)En_DeliveryState.PRELIMINARY.getId());
         view.type().setValue(null);
 
         view.project().setValue(null);
@@ -213,13 +213,13 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
     }
 
     private void save(Delivery delivery) {
-        saveContract(delivery, throwable -> {}, () -> {
+        save(delivery, throwable -> {}, () -> {
             fireEvent(new DeliveryEvents.ChangeModel());
             fireEvent(new Back());
         });
     }
 
-    private void saveContract(Delivery delivery, Consumer<Throwable> onFailure, Runnable onSuccess) {
+    private void save(Delivery delivery, Consumer<Throwable> onFailure, Runnable onSuccess) {
         view.saveEnabled().setEnabled(false);
         controller.saveDelivery(delivery, new FluentCallback<Delivery>()
             .withError(throwable -> {
@@ -237,6 +237,12 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE);
     }
 
+    private void fillStateSelector(Long id) {
+        view.state().setValue(new CaseState(id));
+        caseStateController.getCaseStateWithoutCompaniesOmitPrivileges(id, new FluentCallback<CaseState>()
+                .withSuccess(caseState -> view.state().setValue(caseState)));
+    }
+
     @Inject
     private Lang lang;
     @Inject
@@ -244,11 +250,13 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
     @Inject
     private DeliveryControllerAsync controller;
     @Inject
-    PolicyService policyService;
+    private CaseStateControllerAsync caseStateController;
     @Inject
-    DefaultErrorHandler defaultErrorHandler;
+    private PolicyService policyService;
     @Inject
-    En_CustomerTypeLang customerTypeLang;
+    private DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    private En_CustomerTypeLang customerTypeLang;
 
     private AppEvents.InitDetails initDetails;
 }

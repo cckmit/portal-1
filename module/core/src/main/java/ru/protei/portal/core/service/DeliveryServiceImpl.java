@@ -141,12 +141,6 @@ public class DeliveryServiceImpl implements DeliveryService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        // validate with old state delivery
-        /*Delivery oldMeta = deliveryDAO.get(meta.getId());
-        if (oldMeta == null) {
-            return error(En_ResultStatus.NOT_FOUND);
-        }*/
-
         CaseObject caseObject = caseObjectDAO.get(meta.getId());
         caseObject = createCaseObject(caseObject, meta, null, null, new Date());
         boolean isUpdated = caseObjectDAO.merge(caseObject);
