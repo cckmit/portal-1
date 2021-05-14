@@ -53,6 +53,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Autowired
     private YoutrackService youtrackService;
     @Autowired
+    private UitsService uitsService;
+    @Autowired
     private LockService lockService;
     @Autowired
     private TransactionTemplate transactionTemplate;
@@ -100,14 +102,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         if (isShowOnlyPublic && En_CaseLink.UITS.isForcePrivacy()) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
-        //TODO remove stub
-        UitsIssueInfo uitsIssueInfo = new UitsIssueInfo();
-        uitsIssueInfo.setId(String.valueOf(uitsId));
-        uitsIssueInfo.setDescription("UITS Stub description");
-        uitsIssueInfo.setSummary("UITS Stub summary");
-        Result<UitsIssueInfo> result = new Result<UitsIssueInfo>().ok(uitsIssueInfo);
-
-        return result;
+        return uitsService.getIssueInfo(uitsId);
     }
 
     @Override
