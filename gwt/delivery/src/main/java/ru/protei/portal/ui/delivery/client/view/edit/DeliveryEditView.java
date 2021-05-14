@@ -18,7 +18,7 @@ import ru.protei.portal.ui.delivery.client.widget.kit.view.list.DeliveryKitList;
 import java.util.List;
 
 /**
- * Вид создания и редактирования проекта
+ * Вид редактирования Поставки
  */
 public class DeliveryEditView extends Composite implements AbstractDeliveryEditView {
 
@@ -61,7 +61,7 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     @UiHandler("backButton")
     public void onCancelClicked(ClickEvent event) {
         if (activity != null) {
-//            activity.onBackClicked();
+            activity.onBackClicked();
         }
     }
 

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
@@ -68,7 +69,7 @@ public class DeliveryControllerImpl implements DeliveryController {
     }
 
     @Override
-    public void saveNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest)  throws RequestFailedException {
+    public void updateNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest)  throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         Result response = caseService.updateCaseNameAndDescription(token, changeRequest);
         checkResult(response);
@@ -83,10 +84,8 @@ public class DeliveryControllerImpl implements DeliveryController {
 
     @Override
     public CaseObjectMetaNotifiers updateMetaNotifiers(CaseObjectMetaNotifiers caseMetaNotifiers) throws RequestFailedException {
-        log.info("updateIssueMetaNotifiers(): caseId={} | caseMetaNotifiers={}", caseMetaNotifiers.getId(), caseMetaNotifiers);
         AuthToken token = getAuthToken(sessionService, httpRequest);
-        Result<CaseObjectMetaNotifiers> result = deliveryService.updateCaseObjectMetaNotifiers(token, caseMetaNotifiers);
-        log.info("updateIssueMetaNotifiers(): caseId={} | status={}", caseMetaNotifiers.getId(), result.getStatus());
+        Result<CaseObjectMetaNotifiers> result = caseService.updateCaseObjectMetaNotifiers(token, En_CaseType.DELIVERY, caseMetaNotifiers);
         return checkResultAndGetData(result);
     }
 

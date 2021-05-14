@@ -4,6 +4,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
+import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
@@ -81,7 +82,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         changeRequest.setName( nameAndDescriptionEditView.name().getValue() );
         changeRequest.setInfo( nameAndDescriptionEditView.description().getValue() );
 
-        controller.saveNameAndDescription( changeRequest, new FluentCallback<Void>()
+        controller.updateNameAndDescription( changeRequest, new FluentCallback<Void>()
                 .withError( t -> requestedNameDescription = false )
                 .withSuccess( result -> {
                     requestedNameDescription = false;
@@ -89,6 +90,11 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
                     fireEvent( new NotifyEvents.Show( lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS ) );
                     onNameDescriptionChanged();
                 } ) );
+    }
+
+    @Override
+    public void onBackClicked() {
+        fireEvent(new Back());
     }
 
     @Override
@@ -104,6 +110,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
                 .withSuccess(delivery -> {
                     DeliveryEditActivity.this.delivery = delivery;
+                    switchNameDescriptionToEdit(false);
                     fillView(delivery);
                     showMeta(delivery);
                 }));
@@ -157,6 +164,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     private DeliveryNameDescriptionButtonsView nameAndDescriptionButtonView;
     @Inject
     private DeliveryControllerAsync controller;
+
     private boolean requestedNameDescription;
     private CaseNameAndDescriptionChangeRequest changeRequest;
     @Inject

@@ -166,42 +166,6 @@ public class DeliveryServiceImpl implements DeliveryService {
         return getDelivery(token,  caseObject.getId());
     }
 
-    public Result<CaseObjectMetaNotifiers> updateCaseObjectMetaNotifiers(AuthToken token, CaseObjectMetaNotifiers caseMetaNotifiers) {
-
-        if (caseMetaNotifiers.getId() == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        CaseObject oldState = caseObjectDAO.get(caseMetaNotifiers.getId());
-        if (oldState == null) {
-            return error(En_ResultStatus.NOT_FOUND);
-        }
-
-        jdbcManyRelationsHelper.persist(caseMetaNotifiers, "notifiers");
-        if (isNotEmpty(caseMetaNotifiers.getNotifiers())) {
-            // update partially filled objects
-            caseMetaNotifiers.setNotifiers(new HashSet<>(
-                    personDAO.partialGetListByKeys(
-                            caseMetaNotifiers.getNotifiers().stream()
-                                    .map(Person::getId)
-                                    .collect(Collectors.toList()),
-                            "id", "displayShortName")
-            ));
-            jdbcManyRelationsHelper.fill(caseMetaNotifiers.getNotifiers(), Person.Fields.CONTACT_ITEMS);
-        }
-        caseMetaNotifiers.setModified(new Date());
-
-        boolean isUpdated = caseObjectMetaNotifiersDAO.merge(caseMetaNotifiers);
-        if (!isUpdated) {
-            log.info("Failed to update issue meta notifiers data {} at db", caseMetaNotifiers.getId());
-            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
-        }
-
-        // Event not needed
-
-        return ok(caseMetaNotifiers);
-    }
-
     @Override
     public Result<String> getLastSerialNumber(AuthToken token, boolean isArmyProject) {
         String nextAvailableSerialNumber = kitDAO.getLastSerialNumber(isArmyProject);

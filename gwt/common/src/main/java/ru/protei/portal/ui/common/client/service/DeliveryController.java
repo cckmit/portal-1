@@ -20,7 +20,7 @@ public interface DeliveryController extends RemoteService {
 
     String getLastSerialNumber(boolean isArmyProject) throws RequestFailedException;
 
-    void saveNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException;
+    void updateNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException;
 
     Delivery updateMeta(Delivery meta) throws RequestFailedException;
 

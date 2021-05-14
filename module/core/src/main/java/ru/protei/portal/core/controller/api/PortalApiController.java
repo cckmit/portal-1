@@ -194,7 +194,7 @@ public class PortalApiController {
 
             return caseService.updateCaseNameAndDescription(authToken, new CaseNameAndDescriptionChangeRequest(caseObject.getId(), caseObject.getName(), caseObject.getInfo()))
                 .flatMap(o -> caseService.updateCaseObjectMeta(authToken, new CaseObjectMeta(caseObject)))
-                .flatMap(o -> caseService.updateCaseObjectMetaNotifiers(authToken, new CaseObjectMetaNotifiers(caseObject)))
+                .flatMap(o -> caseService.updateCaseObjectMetaNotifiers(authToken, En_CaseType.CRM_SUPPORT, new CaseObjectMetaNotifiers(caseObject)))
                 .flatMap(o -> {
                     if (En_ExtAppType.JIRA.getCode().equals(caseObject.getExtAppType())) {
                         return caseService.updateCaseObjectMetaJira(authToken, new CaseObjectMetaJira(caseObject));

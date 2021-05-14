@@ -51,9 +51,9 @@ public interface CaseService {
     @Privileged({ En_Privilege.ISSUE_VIEW })
     Result<CaseObjectMetaNotifiers> getCaseObjectMetaNotifiers( AuthToken token, Long issueId );
 
-    @Privileged({ En_Privilege.ISSUE_EDIT })
+    @Privileged({ En_Privilege.ISSUE_EDIT, En_Privilege.DELIVERY_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
-    Result<CaseObjectMetaNotifiers> updateCaseObjectMetaNotifiers( AuthToken token, CaseObjectMetaNotifiers caseMetaNotifiers );
+    Result<CaseObjectMetaNotifiers> updateCaseObjectMetaNotifiers( AuthToken token, En_CaseType caseType, CaseObjectMetaNotifiers caseMetaNotifiers );
 
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
