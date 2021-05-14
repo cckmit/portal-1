@@ -127,7 +127,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             StringBuilder teamBuilder = new StringBuilder();
             stream(value.getTeam())
                     .collect(Collectors.groupingBy(PersonProjectMemberView::getRole,
-                            Collectors.mapping(PersonProjectMemberView::getName, Collectors.joining(", "))))
+                            Collectors.mapping(PersonProjectMemberView::getDisplayName, Collectors.joining(", "))))
                     .forEach((role, team) ->
                             teamBuilder.append("<b>")
                                     .append(roleTypeLang.getName(role))

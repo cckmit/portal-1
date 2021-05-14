@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.ent.ProjectSla;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -20,6 +21,8 @@ import static ru.protei.portal.core.model.util.CrmConstants.State.PAUSED;
         fieldVisibility = JsonAutoDetect.Visibility.ANY
 )
 public class ApiProject implements Serializable {
+
+    private Long creatorId;
 
     private String name;
 
@@ -52,6 +55,14 @@ public class ApiProject implements Serializable {
     private List<Long> subcontractorsIds;
 
     private List<Long> plansIds;
+
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
+    }
 
     public String getName() {
         return name;
@@ -182,15 +193,16 @@ public class ApiProject implements Serializable {
     }
 
     public boolean isValid() {
-        return StringUtils.isNotEmpty(name) &&
-               CollectionUtils.isNotEmpty(directionsIds) &&
-               hasProjectManager(team) &&
+        return creatorId != null &&
+               StringUtils.isNotEmpty(name) &&
+               hasHeadManager(team) &&
                pauseDateFilled(stateId) &&
                companyId != null &&
-               customerTypeId != null;
+               En_CustomerType.find(customerTypeId) != null &&
+               CollectionUtils.isNotEmpty(directionsIds);
     }
 
-    private boolean hasProjectManager(List<PersonProjectMemberView> team) {
+    private boolean hasHeadManager(List<PersonProjectMemberView> team) {
         for (PersonProjectMemberView person : team) {
             if (person.getRole().equals(HEAD_MANAGER)) {
                 return true;
@@ -207,7 +219,8 @@ public class ApiProject implements Serializable {
     @Override
     public String toString() {
         return "ApiProject{" +
-                "name='" + name + '\'' +
+                "creatorId=" + creatorId +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", slas=" + slas +
                 ", team=" + team +

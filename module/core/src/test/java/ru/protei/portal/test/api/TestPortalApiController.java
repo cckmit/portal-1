@@ -1656,6 +1656,7 @@ public class TestPortalApiController extends BaseServiceTest {
         createPostResultAction("/api/projects/create", apiProject)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.creatorId", is(apiProject.getCreatorId().intValue())))
                 .andExpect(jsonPath("$.data.name", is(apiProject.getName())))
                 .andExpect(jsonPath("$.data.description", is(apiProject.getDescription())))
                 .andExpect(jsonPath("$.data.projectSlas[0].importanceCode", is(apiProject.getSlas().get(0).getImportanceCode())))
@@ -1907,6 +1908,7 @@ public class TestPortalApiController extends BaseServiceTest {
     private ApiProject createApiProject() {
         ApiProject apiProject = new ApiProject();
 
+        apiProject.setCreatorId(1L);
         apiProject.setName("Test API project");
         apiProject.setDescription("Test API description");
 
