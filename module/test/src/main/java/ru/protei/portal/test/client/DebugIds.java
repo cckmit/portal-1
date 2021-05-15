@@ -1138,8 +1138,8 @@ public class DebugIds {
     }
 
     public interface DELIVERY {
-        String NAME_INPUT = "delivery-name-input";
-        String DESCRIPTION_INPUT = "delivery-description-input";
+        String NAME = "delivery-name";
+        String DESCRIPTION = "delivery-description";
         String KITS = "delivery-kits";
         String STATE_SELECTOR = "delivery-kits-state-selector";
         String TYPE_SELECTOR = "delivery-kits-type-selector";

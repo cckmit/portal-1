@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 import static ru.protei.portal.core.model.dict.En_Privilege.DELIVERY_EDIT;
 import static ru.protei.portal.core.model.dict.En_TextMarkup.MARKDOWN;
 import static ru.protei.portal.core.model.util.CrmConstants.NAME_MAX_SIZE;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HAS_ERROR;
 
 public class DeliveryNameDescriptionEditView extends Composite {
 
@@ -95,8 +96,6 @@ public class DeliveryNameDescriptionEditView extends Composite {
     @UiField
     MarkdownAreaWithPreview description;
     @UiField
-    HTMLPanel descriptionContainer;
-    @UiField
     HTMLPanel nameContainer;
     @UiField
     HTMLPanel buttonContainer;
@@ -107,7 +106,6 @@ public class DeliveryNameDescriptionEditView extends Composite {
     @Inject
     LocalStorageService localStorageService;
 
-    public static final String HAS_ERROR = "has-error";
     private final String DESCRIPTION = "description";
 
     interface IssueNameWidgetUiBinder extends UiBinder<HTMLPanel, DeliveryNameDescriptionEditView> {}

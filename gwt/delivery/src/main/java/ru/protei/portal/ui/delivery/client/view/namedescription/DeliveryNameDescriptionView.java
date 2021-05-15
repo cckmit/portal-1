@@ -33,8 +33,8 @@ public class DeliveryNameDescriptionView extends Composite  {
             return;
         }
 
-        nameRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.NAME_FIELD);
-        nameRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.NAME_FIELD);
+        nameRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DELIVERY.NAME);
+        descriptionRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DELIVERY.DESCRIPTION);
     }
 
     @UiField

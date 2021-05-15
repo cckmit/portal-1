@@ -165,8 +165,6 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     @Inject
     private DeliveryControllerAsync controller;
 
-    private boolean requestedNameDescription;
-    private CaseNameAndDescriptionChangeRequest changeRequest;
     @Inject
     PolicyService policyService;
     @Inject
@@ -176,4 +174,6 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     Delivery delivery;
 
     private AppEvents.InitDetails initDetails;
+    private boolean requestedNameDescription;
+    private CaseNameAndDescriptionChangeRequest changeRequest;
 }

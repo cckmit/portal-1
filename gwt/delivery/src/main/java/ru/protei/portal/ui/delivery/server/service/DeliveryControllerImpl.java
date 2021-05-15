@@ -60,22 +60,19 @@ public class DeliveryControllerImpl implements DeliveryController {
     @Override
     public void updateNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest)  throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
-        Result response = caseService.updateCaseNameAndDescription(token, changeRequest);
-        checkResult(response);
+        checkResult(caseService.updateCaseNameAndDescription(token, changeRequest));
     }
 
     @Override
     public Delivery updateMeta(Delivery meta) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
-        Result<Delivery> result = deliveryService.updateMeta(token, meta);
-        return checkResultAndGetData(result);
+        return checkResultAndGetData(deliveryService.updateMeta(token, meta));
     }
 
     @Override
     public CaseObjectMetaNotifiers updateMetaNotifiers(CaseObjectMetaNotifiers caseMetaNotifiers) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
-        Result<CaseObjectMetaNotifiers> result = caseService.updateCaseObjectMetaNotifiers(token, En_CaseType.DELIVERY, caseMetaNotifiers);
-        return checkResultAndGetData(result);
+        return checkResultAndGetData(caseService.updateCaseObjectMetaNotifiers(token, En_CaseType.DELIVERY, caseMetaNotifiers));
     }
 
 

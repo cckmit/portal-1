@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Вид создания и редактирования проекта
+ * Вид создания Поставки
  */
 public class DeliveryCreateView extends Composite implements AbstractDeliveryCreateView {
 

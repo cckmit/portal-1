@@ -12,7 +12,7 @@
                 <text:ValidableTextBox ui:field="name" styleName="form-control" notNull="false"/>
         </g:HTMLPanel>
 
-        <g:HTMLPanel ui:field="descriptionContainer" styleName="form-group form-group-default col-md-12">
+        <g:HTMLPanel styleName="form-group form-group-default col-md-12">
                 <label class="fade"><ui:text from="{lang.deliveryDescription}"/></label>
                 <markdown:MarkdownAreaWithPreview ui:field="description" minRows="10" maxRows="20"/>
         </g:HTMLPanel>
