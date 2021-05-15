@@ -21,8 +21,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateActivity;
 import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateView;
-import ru.protei.portal.ui.delivery.client.view.edit.meta.DeliveryMetaView;
-import ru.protei.portal.ui.delivery.client.view.edit.namedescription.DeliveryNameDescriptionEditView;
+import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
+import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDescriptionEditView;
 import ru.protei.portal.ui.delivery.client.widget.kit.view.list.DeliveryKitList;
 
 import java.util.Date;
@@ -44,7 +44,6 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     @Override
     public void setActivity(AbstractDeliveryCreateActivity activity) {
         this.activity = activity;
-        meta.setActivity(activity);
     }
 
     @Override
@@ -79,6 +78,11 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     }
 
     @Override
+    public DeliveryMetaView getMetaView() {
+        return meta;
+    }
+
+    @Override
     public HasValue<CaseState> state() {
         return meta.state();
     }
@@ -94,38 +98,8 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     }
 
     @Override
-    public void setCustomerCompany(String value) {
-        meta.setCustomerCompany(value);
-    }
-
-    @Override
-    public void setCustomerType(String value) {
-        meta.setCustomerType(value);
-    }
-
-    @Override
-    public void updateInitiatorModel(Long companyId) {
-        meta.updateInitiatorModel( companyId);
-    }
-
-    @Override
     public HasValue<PersonShortView> initiator() {
         return meta.initiator();
-    }
-
-    @Override
-    public HasEnabled initiatorEnable() {
-        return meta.initiatorEnable();
-    }
-
-    @Override
-    public void setManagerCompany(String value) {
-        meta.setManagerCompany(value);
-    }
-
-    @Override
-    public void setManager(String value) {
-        meta.setManager(value);
     }
 
     @Override
@@ -139,33 +113,8 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     }
 
     @Override
-    public HasEnabled contractEnable() {
-        return meta.contractEnable();
-    }
-
-    @Override
-    public void setContractFieldMandatory(boolean isMandatory) {
-        meta.setContractFieldMandatory(isMandatory);
-    }
-
-    @Override
-    public void updateContractModel(Long projectId) {
-        meta.updateContractModel(projectId);
-    }
-
-    @Override
-    public void setProducts(String value) {
-        meta.setProducts(value);
-    }
-
-    @Override
     public HasValue<Date> departureDate() {
         return meta.departureDate();
-    }
-
-    @Override
-    public boolean isDepartureDateEmpty() {
-        return meta.isDepartureDateEmpty();
     }
 
     @Override

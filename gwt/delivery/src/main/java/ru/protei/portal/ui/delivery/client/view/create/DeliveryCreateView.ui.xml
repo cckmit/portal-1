@@ -1,8 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:widgets="urn:import:ru.protei.portal.ui.delivery.client.widget"
-             xmlns:edit="urn:import:ru.protei.portal.ui.delivery.client.view.edit"
->
+             xmlns:view="urn:import:ru.protei.portal.ui.delivery.client.view">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -17,14 +16,14 @@
                         </g:Button>
                     </div>
                 </div>
-                <edit:namedescription.DeliveryNameDescriptionEditView ui:field="nameDescription"/>
+                <view:namedescription.DeliveryNameDescriptionEditView ui:field="nameDescription"/>
                 <div class="form-group form-group-default col-md-12">
                     <label class="fade"><ui:text from="{lang.deliveryKits}"/></label>
                     <widgets:kit.view.list.DeliveryKitList ui:field="kits" addStyleNames="row"/>
                 </div>
             </div>
             <div class="col-lg-4">
-                <edit:meta.DeliveryMetaView ui:field="meta"/>
+                <view:meta.DeliveryMetaView ui:field="meta"/>
             </div>
         </div>
         <div class="card-footer text-right">

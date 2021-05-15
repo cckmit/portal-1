@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Objects;
 
 import static ru.protei.portal.core.model.ent.Delivery.*;
+import static ru.protei.portal.core.model.ent.Kit.Columns.ID;
 
 @JdbcEntity(table = "kit")
 public class Kit extends AuditableObject {
@@ -15,7 +16,7 @@ public class Kit extends AuditableObject {
     /**
      * Идентификатор
      */
-    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    @JdbcId(name = ID, idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
     /**
@@ -164,5 +165,10 @@ public class Kit extends AuditableObject {
                 ", stateId=" + stateId +
                 ", state=" + state +
                 '}';
+    }
+
+    public interface Columns {
+        String ID = "id";
+        String DELIVERY_ID = "delivery_id";
     }
 }

@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.activity.edit;
+package ru.protei.portal.ui.delivery.client.activity.meta;
 
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
@@ -18,6 +18,8 @@ import java.util.Set;
  * Абстракция вида карточки меты Поставки
  */
 public interface AbstractDeliveryMetaView extends IsWidget {
+
+    void setActivity(AbstractDeliveryCommonMeta activity);
 
     void setActivity(AbstractDeliveryMetaActivity activity);
 

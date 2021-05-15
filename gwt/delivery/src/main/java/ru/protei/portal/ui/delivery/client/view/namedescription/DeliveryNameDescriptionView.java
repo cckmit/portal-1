@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.view.edit.namedescription;
+package ru.protei.portal.ui.delivery.client.view.namedescription;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;

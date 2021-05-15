@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.activity.edit;
+package ru.protei.portal.ui.delivery.client.activity.meta;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
@@ -21,17 +21,16 @@ import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.delivery.client.view.edit.meta.DeliveryMetaView;
-
-import java.util.Date;
+import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 
-public abstract class DeliveryMetaActivity implements Activity, AbstractDeliveryMetaActivity {
+public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements Activity, AbstractDeliveryMetaActivity {
 
     @PostConstruct
     public void onInit() {
         deliveryMetaView.setActivity(this);
+        setDeliveryMetaView(deliveryMetaView, ignore -> {});
     }
 
     @Event
@@ -63,9 +62,9 @@ public abstract class DeliveryMetaActivity implements Activity, AbstractDelivery
 
     @Override
     public void onProjectChanged() {
-        ProjectInfo projectInfo = deliveryMetaView.project().getValue();
-        fillProjectSpecificFields(projectInfo);
+        super.onProjectChanged();
 
+        ProjectInfo projectInfo = deliveryMetaView.project().getValue();
         delivery.setProjectId(projectInfo == null? null : projectInfo.getId());
         delivery.setInitiatorId(null);
         delivery.setInitiator(null);
@@ -82,16 +81,7 @@ public abstract class DeliveryMetaActivity implements Activity, AbstractDelivery
 
     @Override
     public void onAttributeChanged() {
-        if (En_DeliveryAttribute.DELIVERY.equals(deliveryMetaView.attribute().getValue())) {
-            if (deliveryMetaView.project().getValue() != null) {
-                deliveryMetaView.contractEnable().setEnabled(true);
-            }
-            deliveryMetaView.setContractFieldMandatory(true);
-        } else {
-            deliveryMetaView.contractEnable().setEnabled(false);
-            deliveryMetaView.setContractFieldMandatory(false);
-            deliveryMetaView.contract().setValue(null);
-        }
+        super.onAttributeChanged();
 
         delivery.setAttribute(deliveryMetaView.attribute().getValue());
         delivery.setContractId(deliveryMetaView.contract().getValue() != null ? deliveryMetaView.contract().getValue().getId() : null);
@@ -106,11 +96,7 @@ public abstract class DeliveryMetaActivity implements Activity, AbstractDelivery
 
     @Override
     public void onDepartureDateChanged() {
-        boolean departureDateFieldValid = isDepartureDateFieldValid(deliveryMetaView.isDepartureDateEmpty(), deliveryMetaView.departureDate().getValue());
-        deliveryMetaView.setDepartureDateValid(departureDateFieldValid);
-        if (!departureDateFieldValid) {
-            return;
-        }
+        super.onDepartureDateChanged();
         delivery.setDepartureDate(deliveryMetaView.departureDate().getValue());
         onCaseMetaChanged(delivery, () -> fireEvent(new DeliveryEvents.ChangeModel()));
     }
@@ -140,48 +126,6 @@ public abstract class DeliveryMetaActivity implements Activity, AbstractDelivery
                         runAfterUpdate.run();
                     }
                 }));
-    }
-
-    private boolean isDepartureDateFieldValid(boolean isEmptyDeadlineField, Date date) {
-        if (date == null) {
-            return isEmptyDeadlineField;
-        }
-
-        return true;
-    }
-
-    private void fillProjectSpecificFields(ProjectInfo projectInfo) {
-        if (projectInfo == null) {
-            clearProjectSpecificFields();
-            return;
-        }
-        deliveryMetaView.setCustomerCompany(projectInfo.getContragent().getDisplayText());
-        deliveryMetaView.setCustomerType(customerTypeLang.getName(projectInfo.getCustomerType()));
-        deliveryMetaView.updateInitiatorModel(projectInfo.getContragent().getId());
-        deliveryMetaView.initiator().setValue(null);
-        deliveryMetaView.initiatorEnable().setEnabled(true);
-        deliveryMetaView.setManagerCompany(projectInfo.getManagerCompany());
-        deliveryMetaView.setManager(projectInfo.getManager().getDisplayText());
-        deliveryMetaView.setProducts(joining(projectInfo.getProducts(), ", ", ProductShortView::getName));
-        deliveryMetaView.contract().setValue(null);
-        deliveryMetaView.updateContractModel(projectInfo.getId());
-        if (En_DeliveryAttribute.DELIVERY.equals(deliveryMetaView.attribute().getValue())) {
-            deliveryMetaView.contractEnable().setEnabled(true);
-        }
-    }
-
-    private void clearProjectSpecificFields() {
-        deliveryMetaView.setCustomerCompany(null);
-        deliveryMetaView.setCustomerType(null);
-        deliveryMetaView.initiatorEnable().setEnabled(false);
-        deliveryMetaView.updateInitiatorModel(null);
-        deliveryMetaView.initiator().setValue(null);
-        deliveryMetaView.setManagerCompany(null);
-        deliveryMetaView.setManager(null);
-        deliveryMetaView.setProducts(null);
-        deliveryMetaView.contract().setValue(null);
-        deliveryMetaView.contractEnable().setEnabled(false);
-        deliveryMetaView.updateContractModel(null);
     }
 
     private void fillView(Delivery delivery) {
@@ -217,26 +161,6 @@ public abstract class DeliveryMetaActivity implements Activity, AbstractDelivery
     private void showValidationError(String error) {
         fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
     }
-
-    private String getValidationError() {
-        CaseState state = deliveryMetaView.state().getValue();
-        if (state == null) {
-            return lang.deliveryValidationEmptyState();
-        }
-        if (deliveryMetaView.type().getValue() == null) {
-            return lang.deliveryValidationEmptyType();
-        }
-        if (deliveryMetaView.project().getValue() == null) {
-            return lang.deliveryValidationEmptyProject();
-        }
-        En_DeliveryAttribute attribute = deliveryMetaView.attribute().getValue();
-         if (En_DeliveryAttribute.DELIVERY == attribute && deliveryMetaView.contract().getValue() == null) {
-            return lang.deliveryValidationEmptyContractAtAttributeDelivery();
-        }
-
-        return null;
-    }
-
 
     @Inject
     private Lang lang;

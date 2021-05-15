@@ -130,15 +130,13 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     @Transactional
-    public Result<Delivery> updateDelivery(AuthToken token, Delivery delivery) {
-        return error(En_ResultStatus.INTERNAL_ERROR);
-    }
-
-    @Override
-    @Transactional
     public Result<Delivery> updateMeta(AuthToken token, Delivery meta) {
         if (meta.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!isValid(meta, false)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
         CaseObject caseObject = caseObjectDAO.get(meta.getId());

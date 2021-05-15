@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.Delivery;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.service.CaseService;
@@ -48,18 +47,8 @@ public class DeliveryControllerImpl implements DeliveryController {
             log.warn("null delivery in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
-
-        log.info("saveDelivery, id: {}", HelperFunc.nvlt(delivery.getId(), "new"));
-
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-
-        Result<Delivery> response = ( delivery.getId() == null ) ?
-                deliveryService.createDelivery(token, delivery)
-                : deliveryService.updateDelivery(token, delivery);
-
-        log.info("saveDelivery, result: {}", response.isOk() ? "ok" : response.getStatus());
-
-        return checkResultAndGetData(response);
+        return checkResultAndGetData(deliveryService.createDelivery(token, delivery));
     }
 
     @Override

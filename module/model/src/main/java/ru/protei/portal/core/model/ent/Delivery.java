@@ -96,12 +96,13 @@ public class Delivery extends AuditableObject {
     /**
      * Статус поставки
      */
-    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Delivery.Columns.STATE, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
+    @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID, mappedColumn = CaseObject.Columns.STATE,
+            table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long stateId;
 
     @JdbcJoinedObject(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
-            @JdbcJoinPath(localColumn = Project.Columns.STATE, remoteColumn = "id", table = "case_state", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = CaseObject.Columns.STATE, remoteColumn = "id", table = "case_state", sqlTableAlias = CASE_OBJECT_ALIAS),
     })
     private CaseState state;
 
@@ -137,7 +138,7 @@ public class Delivery extends AuditableObject {
     /**
      * Комплекты
      */
-    @JdbcOneToMany( table = "kit", localColumn = "id", remoteColumn = "delivery_id" )
+    @JdbcOneToMany( localColumn = ID, remoteColumn = Kit.Columns.DELIVERY_ID )
     private List<Kit> kits;
 
     public Delivery() {}
@@ -306,7 +307,6 @@ public class Delivery extends AuditableObject {
 
     public interface Columns {
         String ID = "id";
-        String STATE = CaseObject.Columns.STATE;
     }
 
     @Override

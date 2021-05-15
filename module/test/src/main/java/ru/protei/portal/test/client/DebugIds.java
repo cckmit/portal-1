@@ -1157,6 +1157,7 @@ public class DebugIds {
         String BACK_BUTTON = "delivery-back-button";
         String SAVE_BUTTON = "delivery-save-button";
         String CANCEL_BUTTON = "delivery-cancel-button";
+        String NAME_AND_DESCRIPTION_EDIT_BUTTON = "delivery-name-and-description-edit-button";
 
         interface KIT {
             String ITEM = "delivery-item";

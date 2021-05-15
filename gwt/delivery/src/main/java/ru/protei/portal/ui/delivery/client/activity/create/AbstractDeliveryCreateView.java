@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
 
 import java.util.Date;
 import java.util.List;
@@ -38,41 +39,21 @@ public interface AbstractDeliveryCreateView extends IsWidget {
 
     HasValidable kitsValidate();
 
+    DeliveryMetaView  getMetaView();
+
     HasValue<CaseState> state();
 
     HasValue<En_DeliveryType> type();
 
     HasValue<ProjectInfo> project();
 
-    void setCustomerCompany(String value);
-
-    void setCustomerType(String value);
-
-    void updateInitiatorModel(Long companyId);
-
     HasValue<PersonShortView> initiator();
-
-    HasEnabled initiatorEnable();
-
-    void setManagerCompany(String value);
-
-    void setManager(String value);
 
     HasValue<En_DeliveryAttribute> attribute();
 
     HasValue<EntityOption> contract();
 
-    HasEnabled contractEnable();
-
-    void setContractFieldMandatory(boolean isMandatory);
-
-    void updateContractModel(Long projectId);
-
-    void setProducts(String value);
-
     HasValue<Date> departureDate();
-
-    boolean isDepartureDateEmpty();
 
     void setDepartureDateValid(boolean isValid);
 

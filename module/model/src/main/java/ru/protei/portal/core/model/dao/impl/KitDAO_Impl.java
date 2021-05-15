@@ -19,7 +19,7 @@ public class KitDAO_Impl extends PortalBaseJdbcDAO<Kit> implements KitDAO {
                         "from kit " +
                         "         join delivery d on d.id = kit.delivery_id " +
                         "         join project p on p.id = d.project_id " +
-                        "where p.customer_type " + (isArmyProject ? "=" : "<>") + En_CustomerType.MINISTRY_OF_DEFENCE.getId() +";";
+                        "where p.customer_type " + (isArmyProject ? "= " : "<> ") + En_CustomerType.MINISTRY_OF_DEFENCE.getId() +";";
 
         try {
             return jdbcTemplate.queryForObject( sql, String.class );

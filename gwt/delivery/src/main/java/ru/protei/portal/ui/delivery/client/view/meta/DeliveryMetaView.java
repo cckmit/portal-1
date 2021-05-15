@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.view.edit.meta;
+package ru.protei.portal.ui.delivery.client.view.meta;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
@@ -32,8 +32,9 @@ import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSel
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
-import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryMetaActivity;
-import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryMetaView;
+import ru.protei.portal.ui.delivery.client.activity.meta.AbstractDeliveryCommonMeta;
+import ru.protei.portal.ui.delivery.client.activity.meta.AbstractDeliveryMetaActivity;
+import ru.protei.portal.ui.delivery.client.activity.meta.AbstractDeliveryMetaView;
 
 import java.util.Date;
 import java.util.Set;
@@ -55,8 +56,18 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     }
 
     @Override
+    public void setActivity(AbstractDeliveryCommonMeta activity) {
+        this.commonActivity = activity;
+    }
+
+    @Override
     public void setActivity(AbstractDeliveryMetaActivity activity) {
-        this.activity = activity;
+        this.commonActivity = activity;
+        state.addValueChangeHandler(event -> activity.onStateChange());
+        type.addValueChangeHandler(event -> activity.onTypeChange());
+        customerInitiator.addValueChangeHandler(event -> activity.onInitiatorChange());
+        contract.addValueChangeHandler(event -> activity.onContractChanged());
+        subscribers.addValueChangeHandler(event -> activity.onCaseMetaNotifiersChanged());
     }
 
     @Override
@@ -169,44 +180,19 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
         return subscribers.getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet());
     }
 
-    @UiHandler("state")
-    public void onStateChanged(ValueChangeEvent<CaseState> event) {
-        activity.onStateChange();
-    }
-
-    @UiHandler("type")
-    public void onTypeChanged(ValueChangeEvent<En_DeliveryType> event) {
-        activity.onTypeChange();
-    }
-
     @UiHandler("projectWidget")
     public void onProjectWidgetChanged(ValueChangeEvent<ProjectInfo> event) {
-        activity.onProjectChanged();
-    }
-
-    @UiHandler("customerInitiator")
-    public void onInitiatorChanged(ValueChangeEvent<PersonShortView> event) {
-        activity.onInitiatorChange();
+        commonActivity.onProjectChanged();
     }
 
     @UiHandler("attribute")
     public void onAttributeChanged(ValueChangeEvent<En_DeliveryAttribute> event) {
-        activity.onAttributeChanged();
-    }
-
-    @UiHandler("contract")
-    public void onContractChanged(ValueChangeEvent<EntityOption> event) {
-        activity.onContractChanged();
+        commonActivity.onAttributeChanged();
     }
 
     @UiHandler("departureDate")
     public void onDepartureDateChanged(ValueChangeEvent<Date> event) {
-        activity.onDepartureDateChanged();
-    }
-
-    @UiHandler("subscribers")
-    public void onNotifiersChanged(ValueChangeEvent<Set<PersonShortView>> event) {
-        activity.onCaseMetaNotifiersChanged( );
+        commonActivity.onDepartureDateChanged();
     }
 
     private void ensureDebugIds() {
@@ -272,7 +258,7 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     @Inject
     ContractModel contractModel;
 
-    private AbstractDeliveryMetaActivity activity;
+    private AbstractDeliveryCommonMeta commonActivity;
 
     interface ViewUiBinder extends UiBinder<HTMLPanel, DeliveryMetaView> {}
     private static ViewUiBinder ourUiBinder = GWT.create(ViewUiBinder.class);

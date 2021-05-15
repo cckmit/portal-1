@@ -23,9 +23,9 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.delivery.client.view.edit.namedescription.DeliveryNameDescriptionButtonsView;
-import ru.protei.portal.ui.delivery.client.view.edit.namedescription.DeliveryNameDescriptionEditView;
-import ru.protei.portal.ui.delivery.client.view.edit.namedescription.DeliveryNameDescriptionView;
+import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDescriptionButtonsView;
+import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDescriptionEditView;
+import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDescriptionView;
 
 import java.util.function.Consumer;
 

@@ -71,9 +71,10 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-//        name.ensureDebugId(DebugIds.DELIVERY.NAME_INPUT);
+        kits.setEnsureDebugId(DebugIds.DELIVERY.KITS);
 
         backButton.ensureDebugId(DebugIds.DELIVERY.BACK_BUTTON);
+        nameAndDescriptionEditButton.ensureDebugId(DebugIds.DELIVERY.NAME_AND_DESCRIPTION_EDIT_BUTTON);
     }
 
     @UiField
