@@ -96,6 +96,7 @@ public class En_ResultStatusLang {
             case NOT_ALLOWED_INTEGRATION_ISSUE: return lang.errNotAllowedIntegrationIssue();
             case MYSQL_DATA_TRUNCATION: return lang.errMySqlDataTruncation();
             case DELIVERY_KIT_SERIAL_NUMBER_NOT_AVAILABLE: return lang.errDeliverySerialNumberNotAvailable();
+            case DELIVERY_FORBIDDEN_CHANGE_STATUS: return lang.errDeliveryForbiddenChangeStatus();
             default: return lang.errUnknownResult();
         }
     }

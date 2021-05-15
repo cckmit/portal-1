@@ -131,6 +131,7 @@ public enum En_Privilege {
     DELIVERY_CREATE(DELIVERY, CREATE),
     DELIVERY_EDIT(DELIVERY, EDIT),
     DELIVERY_REMOVE(DELIVERY, REMOVE),
+    DELIVERY_CHANGE_STATUS(DELIVERY, EDIT),
 
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),

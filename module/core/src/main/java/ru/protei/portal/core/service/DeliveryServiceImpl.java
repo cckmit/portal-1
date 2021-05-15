@@ -7,10 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
-import ru.protei.portal.core.model.dict.En_DeliveryState;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DataQuery;
@@ -19,10 +16,7 @@ import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -139,6 +133,15 @@ public class DeliveryServiceImpl implements DeliveryService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
+        CaseObject oldMeta = caseObjectDAO.get(meta.getId());
+        if (oldMeta == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (isForbiddenToChangeState(token, oldMeta.getStateId(), meta.getStateId())) {
+            return error(En_ResultStatus.DELIVERY_FORBIDDEN_CHANGE_STATUS);
+        }
+
         CaseObject caseObject = caseObjectDAO.get(meta.getId());
         caseObject = createCaseObject(caseObject, meta, null, null, new Date());
         boolean isUpdated = caseObjectDAO.merge(caseObject);
@@ -205,6 +208,12 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         return true;
+    }
+
+    private boolean isForbiddenToChangeState(AuthToken token, Long oldState, Long newState) {
+        return Objects.equals(oldState, (long)En_DeliveryState.PRELIMINARY.getId())
+                && !Objects.equals(oldState, newState)
+                && !policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CHANGE_STATUS, token.getRoles());
     }
 
     private CaseObject createCaseObject(CaseObject caseObject, Delivery delivery, Long creatorId,

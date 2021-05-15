@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.CaseState;
@@ -15,6 +16,7 @@ import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.DeliveryEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
@@ -43,6 +45,7 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
 
         fillView( event.delivery );
         fillNotifiersView( metaNotifiers );
+        deliveryMetaView.stateEnable().setEnabled(hasPrivilegesChangeStatus());
     }
 
     @Override
@@ -162,6 +165,10 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
     }
 
+    private boolean hasPrivilegesChangeStatus() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CHANGE_STATUS);
+    }
+
     @Inject
     private Lang lang;
     @Inject
@@ -169,8 +176,9 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
     @Inject
     private DeliveryControllerAsync controller;
     @Inject
-    En_CustomerTypeLang customerTypeLang;
-
+    private En_CustomerTypeLang customerTypeLang;
+    @Inject
+    private PolicyService policyService;
     @ContextAware
     Delivery delivery;
     @ContextAware

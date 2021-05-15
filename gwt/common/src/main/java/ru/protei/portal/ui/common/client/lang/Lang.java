@@ -3494,6 +3494,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errDeliverySerialNumberNotAvailable();
 
+    String errDeliveryForbiddenChangeStatus();
+
     String deliveryValidationEmptyName();
 
     String deliveryValidationEmptyState();
