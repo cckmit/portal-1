@@ -81,7 +81,6 @@
             </modules>
         </profile>
 
-
         <profile>
             <id>api</id>
             <modules>
@@ -92,6 +91,7 @@
                 <module>module/jira</module>
                 <module>module/redmine</module>
                 <module>module/nrpe</module>
+                <module>module/test-api</module>
             </modules>
         </profile>
 
@@ -102,17 +102,23 @@
                 <module>module/embeddeddb</module>
                 <module>module/core</module>
                 <module>module/ws-api</module>
-                <module>module/nrpe</module>
             </modules>
         </profile>
 
         <profile>
             <id>debug-ids</id>
-
             <modules>
                 <module>module/test</module>
             </modules>
         </profile>
+
+        <profile>
+            <id>test-api</id>
+            <modules>
+                <module>module/test-api</module>
+            </modules>
+        </profile>
+
     </profiles>
 
     <dependencies>
