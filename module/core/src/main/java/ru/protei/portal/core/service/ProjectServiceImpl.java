@@ -27,7 +27,6 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.schedule.PortalScheduleTasks;
@@ -210,19 +209,12 @@ public class ProjectServiceImpl implements ProjectService {
             return error(En_ResultStatus.NOT_FOUND, "Project was not found");
         }
 
-        project.setPlatforms(platformDAO.getByProjectId(id));
-
         jdbcManyRelationsHelper.fillAll( project );
         project.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
         project.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
         project.getProducts().forEach(product -> product.setProductDirections(new HashSet<>(devUnitDAO.getProductDirections(product.getId()))));
-
-        List<Contract> contracts = contractDAO.getByProjectId(id);
-
-        if (CollectionUtils.isNotEmpty(contracts)) {
-
-            project.setContracts(contracts.stream().map(contract -> new EntityOption(contract.getNumber(), contract.getId())).collect(toList()));
-        }
+        project.setContracts(CollectionUtils.toList(contractDAO.getByProjectId(id), Contract::toEntityOption));
+        project.setPlatforms(CollectionUtils.toList(platformDAO.getByProjectId(id), Platform::toEntityOption));
 
         if (!canAccessProject(policyService, token, En_Privilege.PROJECT_VIEW, project.getTeam())) {
             return error(En_ResultStatus.PERMISSION_DENIED);

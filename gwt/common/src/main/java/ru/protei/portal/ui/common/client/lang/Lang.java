@@ -3378,6 +3378,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueFilterPlatform();
 
+    String errInvalidFileFormat();
+
     String deliveryName();
 
     String deliveryDescription();
@@ -3400,7 +3402,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String deliveryManagerInfo();
 
-    String deliveryManagerCompany();
+    String deliveryContractCompany();
 
     String deliveryManager();
 
@@ -3493,6 +3495,8 @@ public interface Lang extends Messages, ContactItemLang {
     String deliveryButtonRefreshSerialNumber();
 
     String errDeliverySerialNumberNotAvailable();
+
+    String errDeliveryForbiddenChangeStatus();
 
     String deliveryValidationEmptyName();
 

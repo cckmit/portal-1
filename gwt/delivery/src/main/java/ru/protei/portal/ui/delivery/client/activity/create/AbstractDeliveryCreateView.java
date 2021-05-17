@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.delivery.client.activity.create;
 
 import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
@@ -10,16 +9,17 @@ import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 /**
- * Абстракция вида карточки создания/редактирования проекта
+ * Абстракция вида карточки создания Поставки
  */
 public interface AbstractDeliveryCreateView extends IsWidget {
 
@@ -29,7 +29,7 @@ public interface AbstractDeliveryCreateView extends IsWidget {
 
     HasValue<String> name();
 
-    HasText description();
+    HasValue<String> description();
 
     HasValue<List<Kit>> kits();
 
@@ -39,41 +39,21 @@ public interface AbstractDeliveryCreateView extends IsWidget {
 
     HasValidable kitsValidate();
 
+    DeliveryMetaView  getMetaView();
+
     HasValue<CaseState> state();
 
     HasValue<En_DeliveryType> type();
 
     HasValue<ProjectInfo> project();
 
-    void setCustomerCompany(String value);
-
-    void setCustomerType(String value);
-
-    void updateInitiatorModel(Long companyId);
-
     HasValue<PersonShortView> initiator();
-
-    HasEnabled initiatorEnable();
-
-    void setManagerCompany(String value);
-
-    void setManager(String value);
 
     HasValue<En_DeliveryAttribute> attribute();
 
-    HasValue<EntityOption> contract();
-
-    HasEnabled contractEnable();
-
-    void setContractFieldMandatory(boolean isMandatory);
-
-    void updateContractModel(Long projectId);
-
-    void setProducts(String value);
+    HasValue<ContractInfo> contract();
 
     HasValue<Date> departureDate();
-
-    boolean isDepartureDateEmpty();
 
     void setDepartureDateValid(boolean isValid);
 

@@ -100,18 +100,17 @@ public abstract class IssueTableFilterActivity
                 new ActionBarEvents.Clear()
         );
 
-        if(!policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)){
+        if(!policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)) {
             if (policyService.isSubcontractorCompany()) {
                 filterView.getIssueFilterParams().presetManagerCompany(policyService.getProfile().getCompany());
             } else {
                 filterView.getIssueFilterParams().presetCompany(policyService.getProfile().getCompany());
             }
         } else {
-            homeCompanyService.getHomeCompany(CrmConstants.Company.HOME_COMPANY_ID, company -> {
-                Set<EntityOption> value = new HashSet<>();
-                value.add(new EntityOption(company.getDisplayText(), company.getId()));
-                filterView.getIssueFilterParams().managerCompanies().setValue(value, true);
-            });
+            companyService.getSingleHomeCompanies(new FluentCallback<List<EntityOption>>()
+                    .withSuccess(companies -> {
+                        filterView.getIssueFilterParams().presetManagerCompanies(companies);
+                    }));
         }
 
         this.preScroll = event.preScroll;
@@ -450,9 +449,6 @@ public abstract class IssueTableFilterActivity
 
     @Inject
     IssueFilterWidget filterView;
-
-    @Inject
-    HomeCompanyService homeCompanyService;
 
     @Inject
     CompanyModel companyModel;

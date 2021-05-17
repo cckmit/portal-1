@@ -7,24 +7,16 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
-import ru.protei.portal.core.model.dict.En_DeliveryState;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DataQuery;
-import ru.protei.portal.core.model.struct.delivery.DeliveryNameAndDescriptionChangeRequest;
-import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -51,10 +43,13 @@ public class DeliveryServiceImpl implements DeliveryService {
     CaseNotifierDAO caseNotifierDAO;
     @Autowired
     DevUnitDAO devUnitDAO;
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    CaseObjectMetaNotifiersDAO caseObjectMetaNotifiersDAO;
 
     @Autowired
     DeliveryDAO deliveryDAO;
-
     @Autowired
     KitDAO kitDAO;
 
@@ -129,53 +124,51 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     @Transactional
-    public Result<Delivery> updateDelivery(AuthToken token, Delivery delivery) {
-        if (!isValid(delivery, false)) {
+    public Result<Delivery> updateMeta(AuthToken token, Delivery meta) {
+        if (meta.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!isValid(meta, false)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
-        Date now = new Date();
-        delivery.setModified(now);
-        deliveryDAO.persist(delivery);
 
-        return ok(deliveryDAO.get(delivery.getId()));
-    }
-
-    @Override
-    public Result<DeliveryNameAndDescriptionChangeRequest> updateNameAndDescription(AuthToken token, DeliveryNameAndDescriptionChangeRequest changeRequest) {
-        CaseObject oldCaseObject = caseObjectDAO.get(changeRequest.getId());
-        if(oldCaseObject == null) {
+        CaseObject oldMeta = caseObjectDAO.get(meta.getId());
+        if (oldMeta == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        DiffResult<String> nameDiff = new DiffResult<>(oldCaseObject.getName(), changeRequest.getName());
-        DiffResult<String> infoDiff = new DiffResult<>(oldCaseObject.getInfo(), changeRequest.getDescription());
-
-        if(!nameDiff.hasDifferences() && !infoDiff.hasDifferences()) {
-            return ok();
+        if (isForbiddenToChangeState(token, oldMeta.getStateId(), meta.getStateId())) {
+            return error(En_ResultStatus.DELIVERY_FORBIDDEN_CHANGE_STATUS);
         }
 
-        CaseObject caseObject = new CaseObject(changeRequest.getId());
-        caseObject.setName(changeRequest.getName());
-        caseObject.setInfo(changeRequest.getDescription());
-
-        boolean isUpdated = caseObjectDAO.partialMerge(caseObject, "CASE_NAME", "INFO");
-
+        CaseObject caseObject = caseObjectDAO.get(meta.getId());
+        caseObject = createCaseObject(caseObject, meta, null, null, new Date());
+        boolean isUpdated = caseObjectDAO.merge(caseObject);
         if (!isUpdated) {
-            log.info("Failed to update issue {} at db", caseObject.getId());
-            return error(En_ResultStatus.NOT_UPDATED);
+            log.info("Failed to update issue meta data {} at db", caseObject.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
-        return ok(changeRequest);
+        isUpdated = deliveryDAO.merge(meta);
+        if (!isUpdated) {
+            log.warn("createDelivery(): delivery not created. delivery={}",  caseObject.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        // update kits
+
+        return getDelivery(token,  caseObject.getId());
     }
 
     @Override
     public Result<String> getLastSerialNumber(AuthToken token, boolean isArmyProject) {
-        String nextAvailableSerialNumber = kitDAO.getLastSerialNumber(isArmyProject);
-        if (nextAvailableSerialNumber == null) {
-            return ok(isArmyProject? "100.001" :
-                    "0" + (new GregorianCalendar().get(Calendar.YEAR) - 2000) + ".001");
+        String lastSerialNumber = kitDAO.getLastSerialNumber(isArmyProject);
+        if (lastSerialNumber == null) {
+            return ok(isArmyProject? "100.000" :
+                    "0" + (new GregorianCalendar().get(Calendar.YEAR) - 2000) + ".000");
         }
-        return ok(nextAvailableSerialNumber);
+        return ok(lastSerialNumber);
     }
 
     private boolean isValid(Delivery delivery, boolean isNew) {
@@ -215,6 +208,12 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         return true;
+    }
+
+    private boolean isForbiddenToChangeState(AuthToken token, Long oldState, Long newState) {
+        return Objects.equals(oldState, (long)En_DeliveryState.PRELIMINARY.getId())
+                && !Objects.equals(oldState, newState)
+                && !policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CHANGE_PRELIMINARY_STATUS, token.getRoles());
     }
 
     private CaseObject createCaseObject(CaseObject caseObject, Delivery delivery, Long creatorId,

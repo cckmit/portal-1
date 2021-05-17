@@ -5,7 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.query.ContractQuery;
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.ContractEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -20,7 +20,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class ContractModel extends BaseSelectorModel<EntityOption> implements Activity {
+public abstract class ContractModel extends BaseSelectorModel<ContractInfo> implements Activity {
 
     @Event
     public void onInit(AuthEvents.Success event) {
@@ -43,8 +43,8 @@ public abstract class ContractModel extends BaseSelectorModel<EntityOption> impl
         contractController.getContracts(query, new FluentCallback<SearchResult<Contract>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(contracts -> {
-                    List<EntityOption> options = contracts.getResults().stream()
-                            .map(Contract::toEntityOption)
+                    List<ContractInfo> options = contracts.getResults().stream()
+                            .map(Contract::toContactInfo)
                             .collect(Collectors.toList());
                     updateElements(options, selector);
                     if(refreshable!=null){

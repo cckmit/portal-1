@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
@@ -504,4 +505,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         return new EntityOption(getNumber(), getId());
     }
 
+    public ContractInfo toContactInfo(){
+        return new ContractInfo(id, number, organizationName);
+    }
 }

@@ -18,7 +18,7 @@ import ru.protei.portal.ui.delivery.client.widget.kit.view.list.DeliveryKitList;
 import java.util.List;
 
 /**
- * Вид создания и редактирования проекта
+ * Вид редактирования Поставки
  */
 public class DeliveryEditView extends Composite implements AbstractDeliveryEditView {
 
@@ -39,13 +39,13 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     }
 
     @Override
-    public HasWidgets getKitsContainer() {
-        return kitsContainer;
+    public HasValue<List<Kit>> kits() {
+        return kits;
     }
 
     @Override
-    public HasValue<List<Kit>> kits() {
-        return kits;
+    public void updateKitByProject(boolean isArmyProject) {
+        kits.setArmyProject(isArmyProject);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     @UiHandler("backButton")
     public void onCancelClicked(ClickEvent event) {
         if (activity != null) {
-//            activity.onBackClicked();
+            activity.onBackClicked();
         }
     }
 
@@ -71,9 +71,10 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-//        name.ensureDebugId(DebugIds.DELIVERY.NAME_INPUT);
+        kits.setEnsureDebugId(DebugIds.DELIVERY.KITS);
 
         backButton.ensureDebugId(DebugIds.DELIVERY.BACK_BUTTON);
+        nameAndDescriptionEditButton.ensureDebugId(DebugIds.DELIVERY.NAME_AND_DESCRIPTION_EDIT_BUTTON);
     }
 
     @UiField

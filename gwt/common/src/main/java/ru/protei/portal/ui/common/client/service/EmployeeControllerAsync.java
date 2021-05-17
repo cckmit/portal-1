@@ -42,21 +42,13 @@ public interface EmployeeControllerAsync {
 
     void getWorkerEntryList(int offset, int limit, AsyncCallback<List<WorkerEntryShortView>> async);
 
-    void createEmployeePerson(Person person, AsyncCallback<Person> async);
-
-    void createEmployeeWorker(WorkerEntry workerEntry, AsyncCallback<WorkerEntry> async);
-
-    void updateEmployeeWorker(WorkerEntry workerEntry, AsyncCallback<Boolean> async);
-
-    void updateEmployeeWorkers(List<WorkerEntry> workerEntryList, AsyncCallback<Boolean> async);
-
     void getEmployeeWithChangedHiddenCompanyNames(Long employeeId, AsyncCallback<EmployeeShortView> async);
 
     void getEmployeesWithChangedHiddenCompanyNames(EmployeeQuery query, AsyncCallback<SearchResult<EmployeeShortView>> async);
 
     void fireEmployee(Person person, AsyncCallback<Boolean> async);
 
-    void updateEmployeePerson(Person person, boolean needToChangeAccount, AsyncCallback<Boolean> async);
+    void saveEmployee(Person person, List<WorkerEntry> workerEntries, boolean isEditablePerson, boolean needToChangeAccount, AsyncCallback<Person> async);
 
     void getEmployeesBirthdays(Date dateFrom, Date dateUntil, AsyncCallback<EmployeesBirthdays> async);
 }

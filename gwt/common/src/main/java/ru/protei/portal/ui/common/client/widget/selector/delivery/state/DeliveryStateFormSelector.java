@@ -23,10 +23,9 @@ public class DeliveryStateFormSelector extends FormPopupSingleSelector<CaseState
     protected SelectorItem<CaseState> makeSelectorItem(CaseState element, String elementHtml) {
         PopupSelectorItem<CaseState> item = new PopupSelectorItem();
         item.setName(elementHtml);
-        item.setStyle("project-state-item");
         if (element != null) {
             item.setTitle(getStateName(element));
-            item.setIcon("fas fa-circle selector  m-r-5");
+            item.setIcon("fas fa-circle selector m-r-5");
             item.setIconColor(element.getColor());
         }
 

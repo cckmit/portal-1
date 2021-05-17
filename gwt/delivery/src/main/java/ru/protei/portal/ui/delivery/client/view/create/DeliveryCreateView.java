@@ -3,49 +3,34 @@ package ru.protei.portal.ui.delivery.client.view.create;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.project.ProjectWidget;
-import ru.protei.portal.ui.common.client.widget.selector.contract.ContractFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.contract.ContractModel;
-import ru.protei.portal.ui.common.client.widget.selector.delivery.attribute.DeliveryAttributeFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.delivery.state.DeliveryStateFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.delivery.type.DeliveryTypeFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
-import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateActivity;
 import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateView;
+import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
+import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDescriptionEditView;
 import ru.protei.portal.ui.delivery.client.widget.kit.view.list.DeliveryKitList;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-
-import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
-import static ru.protei.portal.core.model.util.CrmConstants.NAME_MAX_SIZE;
 
 /**
- * Вид создания и редактирования проекта
+ * Вид создания Поставки
  */
 public class DeliveryCreateView extends Composite implements AbstractDeliveryCreateView {
 
@@ -53,9 +38,7 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        name.setMaxLength(NAME_MAX_SIZE);
-        customerInitiator.setAsyncModel(customerInitiatorModel);
-        contract.setAsyncModel(contractModel);
+        meta.stateEnable().setEnabled(false);
     }
 
     @Override
@@ -69,10 +52,10 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     }
 
     @Override
-    public HasValue<String> name() { return name; }
+    public HasValue<String> name() { return nameDescription.name(); }
 
     @Override
-    public HasText description() { return description; }
+    public HasValue<String> description() { return nameDescription.description(); }
 
     @Override
     public HasValue<List<Kit>> kits() {
@@ -95,108 +78,58 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     }
 
     @Override
+    public DeliveryMetaView getMetaView() {
+        return meta;
+    }
+
+    @Override
     public HasValue<CaseState> state() {
-        return state;
+        return meta.state();
     }
 
     @Override
     public HasValue<En_DeliveryType> type() {
-        return type;
+        return meta.type();
     }
 
     @Override
     public HasValue<ProjectInfo> project() {
-        return projectWidget;
-    }
-
-    @Override
-    public void setCustomerCompany(String value) {
-        customerCompany.setValue(value);
-    }
-
-    @Override
-    public void setCustomerType(String value) {
-        customerType.setValue(value);
-    }
-
-    @Override
-    public void updateInitiatorModel(Long companyId) {
-        customerInitiatorModel.updateCompanies( null, companyId != null ? setOf(companyId) : null);
+        return meta.project();
     }
 
     @Override
     public HasValue<PersonShortView> initiator() {
-        return customerInitiator;
-    }
-
-    @Override
-    public HasEnabled initiatorEnable() {
-        return customerInitiator;
-    }
-
-    @Override
-    public void setManagerCompany(String value) {
-        managerCompany.setValue(value);
-    }
-
-    @Override
-    public void setManager(String value) {
-        manager.setValue(value);
+        return meta.initiator();
     }
 
     @Override
     public HasValue<En_DeliveryAttribute> attribute() {
-        return attribute;
+        return meta.attribute();
     }
 
     @Override
-    public HasValue<EntityOption> contract() {
-        return contract;
-    }
-
-    @Override
-    public HasEnabled contractEnable() {
-        return contract;
-    }
-
-    @Override
-    public void setContractFieldMandatory(boolean isMandatory) {
-        contract.setMandatory(isMandatory);
-    }
-
-    @Override
-    public void updateContractModel(Long projectId) {
-        contractModel.updateProject(null, projectId);
-    }
-
-    @Override
-    public void setProducts(String value) {
-        products.setValue(value);
+    public HasValue<ContractInfo> contract() {
+        return meta.contract();
     }
 
     @Override
     public HasValue<Date> departureDate() {
-        return departureDate;
-    }
-
-    @Override
-    public boolean isDepartureDateEmpty() {
-        return HelperFunc.isEmpty(departureDate.getInputValue());
+        return meta.departureDate();
     }
 
     @Override
     public void setDepartureDateValid(boolean isValid) {
-        departureDate.markInputValid(isValid);
+        meta.setDepartureDateValid(isValid);
     }
 
     @Override
     public void setSubscribers(Set<Person> persons) {
-        subscribers.setValue(persons.stream().map(PersonShortView::new).collect(Collectors.toSet()));
+        meta.setSubscribers(persons);
     }
 
     @Override
     public Set<Person> getSubscribers() {
-        return subscribers.getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet());
+        return meta.getSubscribers();
     }
 
     @UiHandler("saveButton")
@@ -213,48 +146,11 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
         }
     }
 
-    @UiHandler("projectWidget")
-    public void onProjectWidgetChanged(ValueChangeEvent<ProjectInfo> event) {
-        if (activity != null) {
-            activity.onProjectChanged();
-        }
-    }
-
-    @UiHandler("attribute")
-    public void onAttributeChanged(ValueChangeEvent<En_DeliveryAttribute> event) {
-        if (activity != null) {
-            activity.onAttributeChanged();
-        }
-    }
-
-    @UiHandler("departureDate")
-    public void onDepartureDateChanged(ValueChangeEvent<Date> event) {
-        if (activity != null) {
-            activity.onDepartureDateChanged();
-        }
-    }
-
-
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        name.ensureDebugId(DebugIds.DELIVERY.NAME_INPUT);
-        description.ensureDebugId(DebugIds.DELIVERY.DESCRIPTION_INPUT);
         kits.setEnsureDebugId(DebugIds.DELIVERY.KITS);
-        state.setEnsureDebugId(DebugIds.DELIVERY.STATE_SELECTOR);
-        type.setEnsureDebugId(DebugIds.DELIVERY.TYPE_SELECTOR);
-        projectWidget.setEnsureDebugId(DebugIds.DELIVERY.PROJECT_WIDGET);
-        customerType.ensureDebugId(DebugIds.DELIVERY.CUSTOMER_TYPE);
-        customerCompany.ensureDebugId(DebugIds.DELIVERY.CUSTOMER_COMPANY);
-        customerInitiator.ensureDebugId(DebugIds.DELIVERY.CUSTOMER_INITIATOR);
-        managerCompany.ensureDebugId(DebugIds.DELIVERY.MANAGER_COMPANY);
-        manager.ensureDebugId(DebugIds.DELIVERY.MANAGER);
-        attribute.ensureDebugId(DebugIds.DELIVERY.ATTRIBUTE);
-        contract.ensureDebugId(DebugIds.DELIVERY.CONTRACT);
-        products.ensureDebugId(DebugIds.DELIVERY.PRODUCTS);
-        departureDate.ensureDebugId(DebugIds.DELIVERY.DEPARTURE_DATE);
-        subscribers.setItemContainerEnsureDebugId(DebugIds.DELIVERY.SUBSCRIBERS);
 
         backButton.ensureDebugId(DebugIds.DELIVERY.BACK_BUTTON);
         saveButton.ensureDebugId(DebugIds.DELIVERY.SAVE_BUTTON);
@@ -263,47 +159,15 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
 
     @UiField
     HTMLPanel root;
-    @UiField
-    ValidableTextBox name;
-    @UiField
-    TextArea description;
+    @Inject
+    @UiField(provided = true)
+    DeliveryNameDescriptionEditView nameDescription;
     @Inject
     @UiField(provided = true)
     DeliveryKitList kits;
     @Inject
-    @UiField( provided = true )
-    DeliveryStateFormSelector state;
-    @Inject
-    @UiField( provided = true )
-    DeliveryTypeFormSelector type;
-    @Inject
     @UiField(provided = true)
-    ProjectWidget projectWidget;
-    @UiField
-    ValidableTextBox customerCompany;
-    @UiField
-    ValidableTextBox customerType;
-    @Inject
-    @UiField( provided = true )
-    PersonFormSelector customerInitiator;
-    @UiField
-    ValidableTextBox managerCompany;
-    @UiField
-    ValidableTextBox manager;
-    @Inject
-    @UiField( provided = true )
-    DeliveryAttributeFormSelector attribute;
-    @Inject
-    @UiField(provided = true)
-    ContractFormSelector contract;
-    @UiField
-    ValidableTextBox products;
-    @Inject
-    @UiField(provided = true)
-    SinglePicker departureDate;
-    @Inject
-    @UiField( provided = true )
-    EmployeeMultiSelector subscribers;
+    DeliveryMetaView meta;
 
     @UiField
     Button backButton;
@@ -314,10 +178,6 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     @Inject
     @UiField
     Lang lang;
-    @Inject
-    PersonModel customerInitiatorModel;
-    @Inject
-    ContractModel contractModel;
 
     private AbstractDeliveryCreateActivity activity;
 

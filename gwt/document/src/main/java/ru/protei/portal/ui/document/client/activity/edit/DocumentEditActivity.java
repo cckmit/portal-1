@@ -326,9 +326,17 @@ public abstract class DocumentEditActivity
 
         if (!isValid) {
             fireErrorMessage(getValidationErrorMessage(newDocument));
+            return false;
         }
 
-        return isValid;
+        if ((view.documentDocUploader().isFileSet() && !view.documentDocUploader().isValidFileFormat()) ||
+                (view.documentPdfUploader().isFileSet() && !view.documentPdfUploader().isValidFileFormat()) ||
+                (view.documentApprovalSheetUploader().isFileSet() && !view.documentApprovalSheetUploader().isValidFileFormat())) {
+            fireErrorMessage(lang.errInvalidFileFormat());
+            return false;
+        }
+
+        return true;
     }
 
     private void saveDocument(Document document) {
@@ -368,6 +376,7 @@ public abstract class DocumentEditActivity
             andThen.run();
             return;
         }
+
         view.documentPdfUploader().setUploadHandler(new UploadHandler() {
             @Override
             public void onError() { fireErrorMessage(lang.errSaveDocumentFile()); }

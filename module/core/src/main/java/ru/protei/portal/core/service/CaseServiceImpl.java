@@ -546,7 +546,8 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public Result<CaseObjectMetaNotifiers> updateCaseObjectMetaNotifiers(AuthToken token, CaseObjectMetaNotifiers caseMetaNotifiers) {
+    public Result<CaseObjectMetaNotifiers> updateCaseObjectMetaNotifiers(AuthToken token, En_CaseType caseType,
+                                                                         CaseObjectMetaNotifiers caseMetaNotifiers) {
 
         if (caseMetaNotifiers.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -557,7 +558,7 @@ public class CaseServiceImpl implements CaseService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, oldState)) {
+        if (caseType == CRM_SUPPORT && !hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, oldState)) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
@@ -921,7 +922,7 @@ public class CaseServiceImpl implements CaseService {
         jdbcManyRelationsHelper.fill(caseObjectMetaNotifiers, "notifiers");
 
         caseObjectMetaNotifiers.getNotifiers().add(Person.fromPersonShortView(personShortView));
-        return updateCaseObjectMetaNotifiers(authToken, caseObjectMetaNotifiers);
+        return updateCaseObjectMetaNotifiers(authToken, CRM_SUPPORT, caseObjectMetaNotifiers);
     }
 
     private Result<Long> openParentIssuesIfAllLinksInTerminalState(AuthToken token, long caseObjectId) {

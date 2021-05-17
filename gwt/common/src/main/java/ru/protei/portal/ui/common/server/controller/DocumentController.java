@@ -95,7 +95,7 @@ public class DocumentController {
             En_DocumentFormat actualDocumentFormat = result.getData();
             String mimeType = actualDocumentFormat.getMimeType();
             String documentName = getDocumentName(documentId);
-            String fileName = documentName + "." + actualDocumentFormat.getFormat();
+            String fileName = documentName + "." + actualDocumentFormat.getExtension();
 
             response.setStatus(HttpStatus.OK.value());
             response.setContentType(mimeType);

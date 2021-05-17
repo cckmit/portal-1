@@ -24,10 +24,11 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.controller.api.PortalApiController;
 import ru.protei.portal.core.model.api.ApiAbsence;
+import ru.protei.portal.core.model.api.ApiProject;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.api.ApiDocument;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
-import ru.protei.portal.core.model.dto.DocumentApiInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -35,6 +36,7 @@ import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
@@ -53,6 +55,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.requireNonNull;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -62,6 +65,7 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.util.CrmConstants.State.CREATED;
+import static ru.protei.portal.core.model.util.CrmConstants.State.UNKNOWN;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -1439,16 +1443,7 @@ public class TestPortalApiController extends BaseServiceTest {
     @Test
     @Transactional
     public void createAbsenceByPersonIdAndIntersectPeriod() throws Exception {
-        ApiAbsence apiInfo = new ApiAbsence();
-        apiInfo.setPersonId(person.getId());
-        apiInfo.setReason(En_AbsenceReason.REMOTE_WORK);
-
-        Date now = new Date();
-        Date tomorrow = new Date();
-        tomorrow.setDate(now.getDate() + 1);
-
-        apiInfo.setFromTime(now);
-        apiInfo.setTillTime(tomorrow);
+        ApiAbsence apiInfo = createApiAbsence();
 
         createPostResultAction("/api/absence/1c/create", apiInfo)
                 .andExpect(status().isOk())
@@ -1457,6 +1452,18 @@ public class TestPortalApiController extends BaseServiceTest {
         createPostResultAction("/api/absence/1c/create", apiInfo)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.ABSENCE_HAS_INTERSECTIONS.toString())));
+    }
+
+    @Test
+    @Transactional
+    public void createAbsenceAndCheckWhetherItCreatedFrom1C() throws Exception {
+        ApiAbsence apiInfo = createApiAbsence();
+
+        ResultActions resultActions = createPostResultAction("/api/absence/1c/create", apiInfo)
+                .andExpect(status().isOk());
+
+        Long absenceId = getData(resultActions, Long.class);
+        Assert.assertTrue(absenceId != null && personAbsenceDAO.get(absenceId).isCreatedFrom1C());
     }
 
     @Test
@@ -1476,17 +1483,17 @@ public class TestPortalApiController extends BaseServiceTest {
         project.setId(projectId);
         projectDAO.persist(project);
 
-        DocumentApiInfo info = new DocumentApiInfo();
-        info.setName("createDoc() : Test Doc Name");
-        info.setProjectId(projectId);
-        info.setTypeId(documentTypeId);
-        info.setRegistrarId(person.getId());
-        info.setContractorId(person.getId());
-        info.setExecutionType(En_DocumentExecutionType.ELECTRONIC);
+        ApiDocument apiDocument = new ApiDocument();
+        apiDocument.setName("createDoc() : Test Doc Name");
+        apiDocument.setProjectId(projectId);
+        apiDocument.setTypeId(documentTypeId);
+        apiDocument.setRegistrarId(person.getId());
+        apiDocument.setContractorId(person.getId());
+        apiDocument.setExecutionType(En_DocumentExecutionType.ELECTRONIC);
         List<Long> members = CollectionUtils.listOf(person.getId());
-        info.setMemberIds(members);
+        apiDocument.setMemberIds(members);
 
-        createPostResultAction("/api/doc/create", info)
+        createPostResultAction("/api/doc/create", apiDocument)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())));
     }
@@ -1499,19 +1506,19 @@ public class TestPortalApiController extends BaseServiceTest {
         documentType.setDocumentCategory(En_DocumentCategory.TP);
         Long documentTypeId = documentTypeDAO.persist(documentType);
 
-        DocumentApiInfo info = new DocumentApiInfo();
-        info.setName("createDoc() : Test Doc Name");
+        ApiDocument apiDocument = new ApiDocument();
+        apiDocument.setName("createDoc() : Test Doc Name");
 
-        info.setProjectId(null);
+        apiDocument.setProjectId(null);
 
-        info.setTypeId(documentTypeId);
-        info.setRegistrarId(person.getId());
-        info.setContractorId(person.getId());
-        info.setExecutionType(En_DocumentExecutionType.ELECTRONIC);
+        apiDocument.setTypeId(documentTypeId);
+        apiDocument.setRegistrarId(person.getId());
+        apiDocument.setContractorId(person.getId());
+        apiDocument.setExecutionType(En_DocumentExecutionType.ELECTRONIC);
         List<Long> members = CollectionUtils.listOf(person.getId());
-        info.setMemberIds(members);
+        apiDocument.setMemberIds(members);
 
-        createPostResultAction("/api/doc/create", info)
+        createPostResultAction("/api/doc/create", apiDocument)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.VALIDATION_ERROR.toString())));
     }
@@ -1534,23 +1541,23 @@ public class TestPortalApiController extends BaseServiceTest {
         project.setId(projectId);
         projectDAO.persist(project);
 
-        DocumentApiInfo info = new DocumentApiInfo();
-        info.setName("createDoc() : Test Doc Name");
-        info.setProjectId(null);
-        info.setTypeId(documentTypeId);
-        info.setRegistrarId(person.getId());
-        info.setContractorId(person.getId());
-        info.setExecutionType(En_DocumentExecutionType.ELECTRONIC);
+        ApiDocument apiDocument = new ApiDocument();
+        apiDocument.setName("createDoc() : Test Doc Name");
+        apiDocument.setProjectId(null);
+        apiDocument.setTypeId(documentTypeId);
+        apiDocument.setRegistrarId(person.getId());
+        apiDocument.setContractorId(person.getId());
+        apiDocument.setExecutionType(En_DocumentExecutionType.ELECTRONIC);
         List<Long> members = CollectionUtils.listOf(person.getId());
-        info.setMemberIds(members);
+        apiDocument.setMemberIds(members);
 
-        info.setApproved(true);
-        info.setApprovedById(person.getId());
-        info.setApprovalDate(new Date());
-        info.setDecimalNumber("40412735.АПКБГОО.14417.18");
-        info.setArchivePdfFileBase64(null);
+        apiDocument.setApproved(true);
+        apiDocument.setApprovedById(person.getId());
+        apiDocument.setApprovalDate(new Date());
+        apiDocument.setDecimalNumber("40412735.АПКБГОО.14417.18");
+        apiDocument.setArchivePdfFileBase64(null);
 
-        createPostResultAction("/api/doc/create", info)
+        createPostResultAction("/api/doc/create", apiDocument)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.VALIDATION_ERROR.toString())));
     }
@@ -1609,6 +1616,73 @@ public class TestPortalApiController extends BaseServiceTest {
         createPostResultAction("/api/doc/remove/" + document.getId() + 1, null)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.NOT_FOUND.toString())));
+    }
+
+    @Test
+    @Transactional
+    public void deleteProject() throws Exception {
+        Project project = createNewProject();
+        CaseObject caseObject = createCaseObjectFromProject(project);
+
+        Long caseObjectId = caseObjectDAO.persist(caseObject);
+        Assert.assertNotNull(caseObjectId);
+
+        project.setId(caseObjectId);
+        Long createdProjectId = projectDAO.persist(project);
+
+        createPostResultAction("/api/projects/delete/" + createdProjectId, null)
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Transactional
+    public void deleteNotExistingProject() throws Exception {
+        createPostResultAction("/api/projects/delete/12345", null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.NOT_FOUND.toString())));
+    }
+
+    @Test
+    @Transactional
+    public void deleteProjectByIncorrectId() throws Exception {
+        createPostResultAction("/api/projects/delete/incorrect_id", null)
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Transactional
+    public void createProject() throws Exception {
+        ApiProject apiProject = createApiProject();
+        createPostResultAction("/api/projects/create", apiProject)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data.creatorId", is(apiProject.getCreatorId().intValue())))
+                .andExpect(jsonPath("$.data.name", is(apiProject.getName())))
+                .andExpect(jsonPath("$.data.description", is(apiProject.getDescription())))
+                .andExpect(jsonPath("$.data.projectSlas[0].importanceCode", is(apiProject.getSlas().get(0).getImportanceCode())))
+                .andExpect(jsonPath("$.data.projectSlas[0].reactionTime", is(apiProject.getSlas().get(0).getReactionTime().intValue())))
+                .andExpect(jsonPath("$.data.projectSlas[0].temporarySolutionTime", is(apiProject.getSlas().get(0).getTemporarySolutionTime().intValue())))
+                .andExpect(jsonPath("$.data.projectSlas[0].fullSolutionTime", is(apiProject.getSlas().get(0).getFullSolutionTime().intValue())))
+                .andExpect(jsonPath("$.data.team[0].role", is(apiProject.getTeam().get(0).getRole().toString())))
+                .andExpect(jsonPath("$.data.stateId", is(apiProject.getStateId().intValue())))
+                .andExpect(jsonPath("$.data.pauseDate", is(apiProject.getPauseDate())))
+                .andExpect(jsonPath("$.data.customer.id", is(apiProject.getCompanyId().intValue())))
+                .andExpect(jsonPath("$.data.customerType", is(requireNonNull(En_CustomerType.find(apiProject.getCustomerTypeId())).toString())))
+                .andExpect(jsonPath("$.data.technicalSupportValidity", is(apiProject.getTechnicalSupportValidity().getTime())))
+                .andExpect(jsonPath("$.data.workCompletionDate", is(apiProject.getWorkCompletionDate().getTime())))
+                .andExpect(jsonPath("$.data.purchaseDate", is(apiProject.getPurchaseDate().getTime())))
+                .andExpect(jsonPath("$.data.productDirections[0].id", is(apiProject.getDirectionsIds().iterator().next().intValue())))
+                .andExpect(jsonPath("$.data.products[0].id", is(apiProject.getProductsIds().iterator().next().intValue())))
+                .andExpect(jsonPath("$.data.subcontractors[0].id", is(apiProject.getSubcontractorsIds().get(0).intValue())))
+                .andExpect(jsonPath("$.data.projectPlans[0].id", is(apiProject.getPlansIds().get(0).intValue())));
+    }
+
+    @Test
+    @Transactional
+    public void createProjectWithoutRequiredFields() throws Exception {
+        createPostResultAction("/api/projects/create", new ApiProject())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
     }
 
     private String getPlatformId (String strResult) {
@@ -1785,5 +1859,112 @@ public class TestPortalApiController extends BaseServiceTest {
         ytIssueComment.id = "2";
         ytIssueComment.deleted = false;
         return ytIssueComment;
+    }
+
+    private ApiAbsence createApiAbsence() {
+        ApiAbsence apiInfo = new ApiAbsence();
+        apiInfo.setPersonId(person.getId());
+        apiInfo.setReason(En_AbsenceReason.REMOTE_WORK);
+
+        Date now = new Date();
+        Date tomorrow = new Date(now.getTime() + 1000000);
+
+        apiInfo.setFromTime(now);
+        apiInfo.setTillTime(tomorrow);
+        return apiInfo;
+    }
+
+    private Project createNewProject() {
+        Project project = new Project();
+        project.setStateId(UNKNOWN);
+        project.setName("Test API project");
+        return project;
+    }
+
+    private CaseObject createCaseObjectFromProject(Project project) {
+        CaseObject caseObject = new CaseObject();
+        caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
+        caseObject.setType(En_CaseType.PROJECT);
+        caseObject.setCreated(project.getCreated() == null ? new Date() : project.getCreated());
+        caseObject.setCreatorId(project.getCreatorId());
+
+        caseObject.setId(project.getId());
+        caseObject.setStateId(project.getStateId());
+
+        caseObject.setName(project.getName());
+        caseObject.setInfo(project.getDescription());
+        caseObject.setManagerId(project.getLeader() == null ? null : project.getLeader().getId());
+        caseObject.setPauseDate(project.getPauseDate());
+
+        if (project.getCustomer() == null) {
+            caseObject.setInitiatorCompany(null);
+        } else {
+            caseObject.setInitiatorCompanyId(project.getCustomer().getId());
+        }
+
+        return caseObject;
+    }
+
+    private ApiProject createApiProject() {
+        ApiProject apiProject = new ApiProject();
+
+        apiProject.setCreatorId(1L);
+        apiProject.setName("Test API project");
+        apiProject.setDescription("Test API description");
+
+        List<ProjectSla> slas = new ArrayList<>();
+        slas.add(new ProjectSla(1, 60L, 120L, 180L));
+        apiProject.setSlas(slas);
+
+        List<PersonProjectMemberView> team = new ArrayList<>();
+        PersonProjectMemberView headManager = new PersonProjectMemberView();
+        headManager.setRole(En_DevUnitPersonRoleType.HEAD_MANAGER);
+        team.add(headManager);
+        apiProject.setTeam(team);
+
+        apiProject.setStateId(4L);
+        apiProject.setPauseDate(new Date().getTime());
+        apiProject.setCompanyId(1L);
+        apiProject.setCustomerTypeId(1);
+
+        apiProject.setTechnicalSupportValidity(new Date());
+        apiProject.setWorkCompletionDate(new Date());
+        apiProject.setPurchaseDate(new Date());
+
+        DevUnit devUnit = new DevUnit(En_DevUnitType.PRODUCT, "Test product", "Info");
+        DevUnit devUnit_2 = new DevUnit(En_DevUnitType.PRODUCT, "Test product 2", "Info");
+        devUnitDAO.saveOrUpdate(devUnit);
+        devUnitDAO.saveOrUpdate(devUnit_2);
+
+        Set<Long> directionIds = new HashSet<>();
+        directionIds.add(devUnit.getId());
+        apiProject.setDirectionsIds(directionIds);
+
+        Set<Long> productsIds = new HashSet<>();
+        productsIds.add(devUnit_2.getId());
+        apiProject.setProductsIds(productsIds);
+
+        List<Long> subContractors = new ArrayList<>();
+        subContractors.add(1L);
+        apiProject.setSubcontractorsIds(subContractors);
+
+        Plan plan = createPlan();
+        planDAO.saveOrUpdate(plan);
+
+        List<Long> plansIds = new ArrayList<>();
+        plansIds.add(plan.getId());
+        apiProject.setPlansIds(plansIds);
+
+        return apiProject;
+    }
+
+    public Plan createPlan() {
+        Plan plan = new Plan();
+        plan.setName("Test plan");
+        plan.setCreated(new Date());
+        plan.setCreatorId(1L);
+        plan.setStartDate(new Date());
+        plan.setFinishDate(new Date());
+        return plan;
     }
 }

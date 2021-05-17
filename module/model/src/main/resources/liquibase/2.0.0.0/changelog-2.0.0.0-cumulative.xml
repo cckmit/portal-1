@@ -90,6 +90,7 @@
   <include file="2021-04-09-create-server_group-table.xml" relativeToChangelogFile="true"/>
   <include file="2021-04-16-drop-project_id-unique-key-in-contract-table.xml" relativeToChangelogFile="true"/>
   <include file="2021-04-19-add-name-unique-constraint-to-platform-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-04-22-add-created-from-1c-column-to-person_absence-table.xml" relativeToChangelogFile="true"/>
   <include file="2021-04-26-create-delivery-kit-tables.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

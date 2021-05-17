@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.view.edit;
+package ru.protei.portal.ui.delivery.client.view.meta;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
@@ -18,7 +18,7 @@ import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -32,8 +32,9 @@ import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSel
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
-import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryMetaActivity;
-import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryMetaView;
+import ru.protei.portal.ui.delivery.client.activity.meta.AbstractDeliveryCommonMeta;
+import ru.protei.portal.ui.delivery.client.activity.meta.AbstractDeliveryMetaActivity;
+import ru.protei.portal.ui.delivery.client.activity.meta.AbstractDeliveryMetaView;
 
 import java.util.Date;
 import java.util.Set;
@@ -42,7 +43,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 
 /**
- * Вид создания и редактирования проекта
+ * Вид меты Поставки
  */
 public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaView {
 
@@ -55,12 +56,27 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     }
 
     @Override
+    public void setActivity(AbstractDeliveryCommonMeta activity) {
+        this.commonActivity = activity;
+    }
+
+    @Override
     public void setActivity(AbstractDeliveryMetaActivity activity) {
-        this.activity = activity;
+        this.commonActivity = activity;
+        state.addValueChangeHandler(event -> activity.onStateChange());
+        type.addValueChangeHandler(event -> activity.onTypeChange());
+        customerInitiator.addValueChangeHandler(event -> activity.onInitiatorChange());
+        contract.addValueChangeHandler(event -> activity.onContractChanged());
+        subscribers.addValueChangeHandler(event -> activity.onCaseMetaNotifiersChanged());
     }
 
     @Override
     public HasValue<CaseState> state() {
+        return state;
+    }
+
+    @Override
+    public HasEnabled stateEnable() {
         return state;
     }
 
@@ -100,8 +116,8 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     }
 
     @Override
-    public void setManagerCompany(String value) {
-        managerCompany.setValue(value);
+    public void setContractCompany(String value) {
+        contractCompany.setValue(value);
     }
 
     @Override
@@ -115,7 +131,7 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     }
 
     @Override
-    public HasValue<EntityOption> contract() {
+    public HasValue<ContractInfo> contract() {
         return contract;
     }
 
@@ -166,25 +182,18 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
 
     @UiHandler("projectWidget")
     public void onProjectWidgetChanged(ValueChangeEvent<ProjectInfo> event) {
-        if (activity != null) {
-            activity.onProjectChanged();
-        }
+        commonActivity.onProjectChanged();
     }
 
     @UiHandler("attribute")
     public void onAttributeChanged(ValueChangeEvent<En_DeliveryAttribute> event) {
-        if (activity != null) {
-            activity.onAttributeChanged();
-        }
+        commonActivity.onAttributeChanged();
     }
 
     @UiHandler("departureDate")
     public void onDepartureDateChanged(ValueChangeEvent<Date> event) {
-        if (activity != null) {
-            activity.onDepartureDateChanged();
-        }
+        commonActivity.onDepartureDateChanged();
     }
-
 
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
@@ -196,7 +205,7 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
         customerType.ensureDebugId(DebugIds.DELIVERY.CUSTOMER_TYPE);
         customerCompany.ensureDebugId(DebugIds.DELIVERY.CUSTOMER_COMPANY);
         customerInitiator.ensureDebugId(DebugIds.DELIVERY.CUSTOMER_INITIATOR);
-        managerCompany.ensureDebugId(DebugIds.DELIVERY.MANAGER_COMPANY);
+        contractCompany.ensureDebugId(DebugIds.DELIVERY.CONTRACT_COMPANY);
         manager.ensureDebugId(DebugIds.DELIVERY.MANAGER);
         attribute.ensureDebugId(DebugIds.DELIVERY.ATTRIBUTE);
         contract.ensureDebugId(DebugIds.DELIVERY.CONTRACT);
@@ -224,7 +233,7 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     @UiField( provided = true )
     PersonFormSelector customerInitiator;
     @UiField
-    ValidableTextBox managerCompany;
+    ValidableTextBox contractCompany;
     @UiField
     ValidableTextBox manager;
     @Inject
@@ -249,7 +258,7 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     @Inject
     ContractModel contractModel;
 
-    private AbstractDeliveryMetaActivity activity;
+    private AbstractDeliveryCommonMeta commonActivity;
 
     interface ViewUiBinder extends UiBinder<HTMLPanel, DeliveryMetaView> {}
     private static ViewUiBinder ourUiBinder = GWT.create(ViewUiBinder.class);

@@ -4,8 +4,8 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.ProjectSla;
+import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.List;
 import java.util.Map;
@@ -45,9 +45,9 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     HasVisibility slaContainerVisibility();
 
-    void setContracts(Map<String, String> contractNumberToLink);
+    void setContracts(Map<EntityOption, String> contractToLink);
 
-    void setPlatforms(List<Platform> platforms);
+    void setPlatforms(Map<EntityOption, String> platformToLink);
 
     void isFullScreen(boolean isFullScreen);
 

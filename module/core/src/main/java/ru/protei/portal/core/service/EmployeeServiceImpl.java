@@ -122,7 +122,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         return ok(list);
     }
 
-
     @Override
     public Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
 
@@ -241,10 +240,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         return ok( null );
     }
 
-    @Transactional
     @Override
-    public Result<Person> createEmployeePerson(AuthToken token, Person person) {
-        if (person == null) {
+    @Transactional
+    public Result<Person> createEmployee(AuthToken token, Person person, List<WorkerEntry> workerEntries) {
+
+        if (person == null || CollectionUtils.isEmpty(workerEntries)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -273,34 +273,41 @@ public class EmployeeServiceImpl implements EmployeeService {
         person.setCreated(new Date());
         person.setCreator(token.getPersonDisplayShortName());
 
-        person.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
+        WorkerEntry mainWorkerEntry = checkAndGetMainWorkerEntry(workerEntries);
+        person.setCompanyId(groupHomeDAO.isSingleHomeCompany(mainWorkerEntry.getCompanyId()) ? mainWorkerEntry.getCompanyId(): CrmConstants.Company.HOME_COMPANY_ID);
 
         Long personId = personDAO.persist(person);
-
-        if (personId != null) {
-
-            person.setId(personId);
-            contactItemDAO.saveOrUpdateBatch(person.getContactItems());
-            jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
-
-            return createLDAPAccount(person)
-                    .flatMap(userLogin -> {
-                        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-                        if (!saveUserLogin(userLogin, token)) {
-                            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
-                        }
-                        return ok();
-                    }).map(ignore -> person);
+        if (personId == null) {
+            log.error("createEmployee(): failed to create employee to db");
+            return error(En_ResultStatus.NOT_CREATED);
         }
 
-        log.warn("createEmployeePerson(): person not created. id = null. person={}, token={}", person, token);
-        return error(En_ResultStatus.NOT_CREATED);
+        person.setId(personId);
+        contactItemDAO.saveOrUpdateBatch(person.getContactItems());
+        jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
+
+        updateWorkerEntries(token, personId, workerEntries);
+
+        Result<UserLogin> userLoginResult = createLDAPAccount(token, person);
+        if (userLoginResult.isError()) {
+            throw new RollbackTransactionException(userLoginResult.getStatus(), "Failed to create employee login, personId=" + personId);
+        }
+
+        if (portalConfig.data().legacySysConfig().isExportEnabled()) {
+            if (!updateEmployeeInOldPortal(personId)) {
+                log.warn("createEmployee(): failed to migrate employee to old portal, personId={}", personId);
+                return error(En_ResultStatus.EMPLOYEE_MIGRATION_FAILED);
+            }
+        }
+
+        return ok(person);
     }
 
     @Override
     @Transactional
-    public Result<Boolean> updateEmployeePerson(AuthToken token, Person person, boolean needToChangeAccount) {
-        if (person == null) {
+    public Result<Person> updateEmployee(AuthToken token, Person person, List<WorkerEntry> workerEntries, boolean needToChangeAccount) {
+
+        if (person == null || CollectionUtils.isEmpty(workerEntries)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -322,10 +329,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         person.setDisplayName(person.getLastName() + " " + person.getFirstName() + (StringUtils.isNotEmpty(person.getSecondName()) ? " " + person.getSecondName() : ""));
         person.setDisplayShortName(createPersonShortName(person));
-        person.setCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
         person.setContactInfo(removeSensitiveInformation(person.getContactInfo()));
 
-        boolean success = personDAO.partialMerge(person,  "company_id", "firstname", "lastname", "secondname", "sex", "birthday", "ipaddress", "displayname", "displayShortName");
+        boolean success = personDAO.partialMerge(person,  "firstname", "lastname", "secondname", "sex", "birthday", "ipaddress", "displayname", "displayShortName");
         if (!success) {
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
@@ -333,18 +339,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         contactItemDAO.saveOrUpdateBatch(person.getContactItems());
         jdbcManyRelationsHelper.persist(person, Person.Fields.CONTACT_ITEMS);
 
-        final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
+        updateWorkerEntries(token, person.getId(), workerEntries);
 
+        final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
         if (needToChangeAccount && YOUTRACK_INTEGRATION_ENABLED) {
             createChangeLastNameYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), oldPerson.getLastName());
         }
 
-        return ok(true);
+        return ok(person);
     }
 
     @Override
     @Transactional
-    public Result<Boolean> updateEmployeeWorker(AuthToken token, WorkerEntry worker) {
+    public Result<WorkerEntry> updateWorkerEntry(AuthToken token, WorkerEntry worker) {
         if (worker == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -356,7 +363,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         boolean result = workerEntryDAO.partialMerge(worker, "dep_id", "companyId", "positionId", "active");
 
         if (result) {
-            return ok(true);
+            return ok(worker);
         }
 
         return error(En_ResultStatus.INTERNAL_ERROR);
@@ -364,7 +371,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional
-    public Result<WorkerEntry> createEmployeeWorker(AuthToken token, WorkerEntry worker) {
+    public Result<WorkerEntry> createWorkerEntry(AuthToken token, WorkerEntry worker) {
         if (worker == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -440,52 +447,44 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional
-    public Result<Boolean> updateEmployeeWorkers(AuthToken token, List<WorkerEntry> newWorkerEntries){
-        if (newWorkerEntries == null || newWorkerEntries.isEmpty() || newWorkerEntries.get(0).getPersonId() == null) {
+    public Result<Person> updateWorkerEntries(AuthToken token, Long personId, List<WorkerEntry> workerEntries) {
+
+        if (personId == null || CollectionUtils.isEmpty(workerEntries)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Long personId = newWorkerEntries.get(0).getPersonId();
+        workerEntries.forEach(workerEntry -> workerEntry.setPersonId(personId));
+
         final int TO_CREATE = 1;
         final int TO_REMOVE = 2;
-
-        checkActiveFlag(newWorkerEntries);
-        hireEmployeeIfNeed(personId);
 
         WorkerEntryQuery query = new WorkerEntryQuery(personId);
         List<WorkerEntry> oldWorkerEntries = workerEntryDAO.getWorkers(query);
 
         Map<WorkerEntry, Integer> finalWorkersMap = new HashMap<>();
-        fillMapWorkersToCreate(finalWorkersMap, newWorkerEntries, TO_CREATE);
-        fillMapWorkersToRemove(finalWorkersMap, newWorkerEntries, oldWorkerEntries, TO_REMOVE);
+        fillMapWorkersToCreate(finalWorkersMap, workerEntries, TO_CREATE);
+        fillMapWorkersToRemove(finalWorkersMap, workerEntries, oldWorkerEntries, TO_REMOVE);
 
         for (Map.Entry<WorkerEntry, Integer> entry : finalWorkersMap.entrySet()) {
-            switch (entry.getValue()){
+            switch (entry.getValue()) {
                 case TO_CREATE :
-                    Result createResult  = createEmployeeWorker(token, entry.getKey());
-                    makeAudit(entry.getKey(), En_AuditType.WORKER_CREATE, token);
-                    if (createResult.isError()){
-                        throw new RollbackTransactionException(createResult.getStatus(), "Error while worker entry creating");
+                    Result createResult  = createWorkerEntry(token, entry.getKey());
+                    if (createResult.isError()) {
+                        throw new RollbackTransactionException(createResult.getStatus(), "Failed to create worker entry, personId=" + personId);
                     }
+                    makeAudit(entry.getKey(), En_AuditType.WORKER_CREATE, token);
                     break;
                 case TO_REMOVE :
-                    Result removeStatus  = removeWorkerEntry(entry.getKey());
-                    makeAudit(entry.getKey(), En_AuditType.WORKER_REMOVE, token);
-                    if (removeStatus.isError()){
-                        throw new RollbackTransactionException(removeStatus.getStatus(), "Error while worker entry removing");
+                    Result removeResult  = removeWorkerEntry(entry.getKey());
+                    if (removeResult.isError()) {
+                        throw new RollbackTransactionException(removeResult.getStatus(), "Failed to remove worker entry, personId=" + personId);
                     }
+                    makeAudit(entry.getKey(), En_AuditType.WORKER_REMOVE, token);
                     break;
             }
         }
 
-        if (portalConfig.data().legacySysConfig().isExportEnabled()) {
-            if (!updateEmployeeInOldPortal(personId)) {
-                log.warn("updateEmployeeWorkers(): fail to migrate employee to old portal. personId={}", personId);
-                return error(En_ResultStatus.EMPLOYEE_MIGRATION_FAILED);
-            }
-        }
-
-        return ok(true);
+        return ok(personDAO.get(personId));
     }
 
     @Override
@@ -681,13 +680,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         return migrationManager.saveExternalEmployee(person, "", "").equals(En_ResultStatus.OK);
     }
 
-    private void checkActiveFlag(List<WorkerEntry> newWorkerEntries) {
-        boolean isFlagSet = newWorkerEntries.stream()
-                .anyMatch(workerEntry -> workerEntry.getActiveFlag() > 0);
-
-        if (!isFlagSet){
+    private WorkerEntry checkAndGetMainWorkerEntry(List<WorkerEntry> newWorkerEntries) {
+        Optional<WorkerEntry> mainWorkerEntry = newWorkerEntries.stream().filter(WorkerEntry::isMain).findFirst();
+        if (!mainWorkerEntry.isPresent()) {
             newWorkerEntries.get(0).setActiveFlag(1);
         }
+        return newWorkerEntries.stream().filter(WorkerEntry::isMain).findFirst().get();
     }
 
     private void createChangeLastNameYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String oldLastName) {
@@ -871,14 +869,20 @@ public class EmployeeServiceImpl implements EmployeeService {
         return list;
     }
 
-    private Result<UserLogin> createLDAPAccount(Person person) {
-            String email = new PlainContactInfoFacade(person.getContactInfo()).getEmail();
-
-            UserLogin userLogin = userLoginDAO.createNewUserLogin(person);
-            userLogin.setUlogin(makeLogin(email));
-            userLogin.setAuthType(En_AuthType.LDAP);
-            userLogin.setRoles(new HashSet<>(userRoleDAO.getDefaultEmployeeRoles()));
-            return ok(userLogin);
+    private Result<UserLogin> createLDAPAccount(AuthToken token, Person person) {
+        String email = new PlainContactInfoFacade(person.getContactInfo()).getEmail();
+        UserLogin userLogin = userLoginDAO.createNewUserLogin(person);
+        userLogin.setUlogin(makeLogin(email));
+        userLogin.setAuthType(En_AuthType.LDAP);
+        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+        userLogin.setRoles(new HashSet<>(userRoleDAO.getDefaultEmployeeRoles()));
+        Long userLoginId = userLoginDAO.persist(userLogin);
+        if (userLoginId == null) {
+            return error(En_ResultStatus.NOT_CREATED);
+        }
+        jdbcManyRelationsHelper.persist(userLogin, "roles");
+        makeAudit(userLogin, En_AuditType.ACCOUNT_CREATE, token);
+        return ok(userLogin);
     }
 
     private String makeLogin(String email) {
@@ -887,17 +891,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private boolean isUserLoginExist(String email) {
         return !userLoginDAO.isUnique(makeLogin(email));
-    }
-
-    private boolean saveUserLogin(UserLogin userLogin, AuthToken authToken) {
-        if (userLoginDAO.saveOrUpdate(userLogin)) {
-            jdbcManyRelationsHelper.persist( userLogin, "roles" );
-            makeAudit(userLogin, En_AuditType.ACCOUNT_CREATE, authToken);
-            return true;
-        } else {
-            log.warn("saveUserLogin(): fail to create login. Rollback transaction. userLogin={}, authToken={}", userLogin, authToken);
-           return false;
-        }
     }
 
     AbsenceQuery makeAbsenceQuery(Set<Long> employeeIds) {

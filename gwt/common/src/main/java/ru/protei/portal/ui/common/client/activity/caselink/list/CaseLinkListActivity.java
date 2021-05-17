@@ -135,8 +135,8 @@ public abstract class CaseLinkListActivity
             bundleTypeToPanel.put(bundleType, panel);
 
             String bundleTypePrefix = getBundleTypePrefix(bundleType);
-            tabWidgetPane.setTabDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LINKS_CONTAINER + bundleTypePrefix);
-            view.setTabNameDebugId(tabWidgetPane.getTabName(), DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.LINKS + bundleTypePrefix);
+            tabWidgetPane.setTabDebugId(DebugIds.ISSUE.LINKS_CONTAINER + bundleTypePrefix);
+            view.setTabNameDebugId(tabWidgetPane.getTabName(), DebugIds.ISSUE.LABEL.LINKS + bundleTypePrefix);
         });
     }
 

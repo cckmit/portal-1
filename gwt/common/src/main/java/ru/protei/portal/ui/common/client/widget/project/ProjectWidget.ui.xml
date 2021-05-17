@@ -12,9 +12,6 @@
             <g:Button ui:field="search" styleName="btn btn-complete b-r-0">
                 <i class="fa fa-search"/>
             </g:Button>
-            <g:Button ui:field="reset" styleName="btn btn-default b-r-0">
-                <i class="fa fa-backspace"/>
-            </g:Button>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

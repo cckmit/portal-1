@@ -5,6 +5,9 @@ import ru.protei.portal.core.model.ent.CaseState;
 
 public class DeliveryStateLang {
     public String getName(CaseState value) {
+        if (value.getId() == null) {
+            return value.getState();
+        }
         switch (value.getId().intValue()) {
             case 39:
                 return lang.deliveryStatePreliminary();

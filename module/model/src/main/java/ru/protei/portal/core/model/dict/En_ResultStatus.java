@@ -349,8 +349,18 @@ public enum En_ResultStatus {
     MYSQL_DATA_TRUNCATION,
 
     /**
+     * Неверный формат файла
+     */
+    INVALID_FILE_FORMAT,
+
+    /**
      * Поставки, серийный номер занят
      */
-    DELIVERY_KIT_SERIAL_NUMBER_NOT_AVAILABLE
+    DELIVERY_KIT_SERIAL_NUMBER_NOT_AVAILABLE,
+
+    /**
+     * Поставки, нет прав менять статус
+     */
+    DELIVERY_FORBIDDEN_CHANGE_STATUS
     ;
 }

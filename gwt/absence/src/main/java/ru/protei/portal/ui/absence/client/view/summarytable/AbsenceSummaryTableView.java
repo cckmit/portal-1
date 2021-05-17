@@ -49,10 +49,12 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
         editClickColumn.setHandler(activity);
         editClickColumn.setEditHandler(activity);
         editClickColumn.setColumnProvider(columnProvider);
+        editClickColumn.setEnabledPredicate(value -> !value.isCreatedFrom1C());
 
         removeClickColumn.setHandler(activity);
         removeClickColumn.setRemoveHandler(activity);
         removeClickColumn.setColumnProvider(columnProvider);
+        removeClickColumn.setEnabledPredicate(value -> !value.isCreatedFrom1C());
 
         columns.forEach(clickColumn -> {
             clickColumn.setHandler(activity);

@@ -1,11 +1,11 @@
 package ru.protei.portal.ui.common.client.widget.selector.contract;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 
-public class ContractFormSelector extends FormPopupSingleSelector<EntityOption> {
+public class ContractFormSelector extends FormPopupSingleSelector<ContractInfo> {
 
     @Inject
     public void init(ContractModel model, Lang lang) {
@@ -14,7 +14,7 @@ public class ContractFormSelector extends FormPopupSingleSelector<EntityOption> 
             if (value == null) {
                 return defaultValue == null ? lang.selectValue() : defaultValue;
             }
-            return lang.contractNum(value.getDisplayText());
+            return lang.contractNum(value.getNumber());
         });
     }
 

@@ -57,7 +57,6 @@ public class DeliveryKitList extends Composite
         }
 
         refresh();
-
         isValid();
 
         if ( fireEvents ) {
@@ -144,6 +143,7 @@ public class DeliveryKitList extends Composite
         kit.setStateId((long)En_DeliveryState.PRELIMINARY.getId());
         value.add(kit);
         makeItemAndFillValue(kit);
+        refresh();
     }
 
     private void makeItemAndFillValue(final Kit value ) {
@@ -156,8 +156,6 @@ public class DeliveryKitList extends Composite
 
         modelToView.put( itemWidget, value );
         container.add( itemWidget );
-
-        refresh();
     }
 
     private void remove(DeliveryKitItem item){
@@ -205,7 +203,6 @@ public class DeliveryKitList extends Composite
     private void resetSerialNumber() {
         nextAvailableSerialNumberPrefix = null;
         nextAvailableSerialNumberPostfix = null;
-        isArmyProject = false;
     }
 
     private void parseSerialNumber(String nextAvailableSerialNumber) {
@@ -221,8 +218,10 @@ public class DeliveryKitList extends Composite
         int count = nextAvailableSerialNumberPostfix;
         for (Widget widget : container) {
             DeliveryKitItem item = (DeliveryKitItem) widget;
-            item.setSerialNumber(nextAvailableSerialNumberPrefix + "." +
-                    NumberFormat.getFormat("000").format(count++));
+            if (modelToView.get(item).getId() == null) {
+                item.setSerialNumber(nextAvailableSerialNumberPrefix + "." +
+                        NumberFormat.getFormat("000").format(count++));
+            }
         }
     }
 

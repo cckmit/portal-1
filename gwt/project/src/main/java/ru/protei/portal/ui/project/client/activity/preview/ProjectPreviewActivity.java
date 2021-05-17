@@ -119,15 +119,15 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
-        view.setContracts(emptyIfNull(value.getContracts()).stream().collect(Collectors.toMap(EntityOption::getDisplayText, contract -> LinkUtils.makePreviewLink(Contract.class, contract.getId()))));
-        view.setPlatforms(value.getPlatforms() == null ? Collections.emptyList() : value.getPlatforms());
+        view.setContracts(emptyIfNull(value.getContracts()).stream().collect(Collectors.toMap(contract -> contract, contract -> LinkUtils.makePreviewLink(Contract.class, contract.getId()))));
+        view.setPlatforms(emptyIfNull(value.getPlatforms()).stream().collect(Collectors.toMap(platform -> platform, platform -> LinkUtils.makePreviewLink(Platform.class, platform.getId()))));
         view.setSubcontractors(stream(value.getSubcontractors()).map(Company::getCname).collect(Collectors.joining(", ")));
 
         if( isNotEmpty(value.getTeam()) ) {
             StringBuilder teamBuilder = new StringBuilder();
             stream(value.getTeam())
                     .collect(Collectors.groupingBy(PersonProjectMemberView::getRole,
-                            Collectors.mapping(PersonProjectMemberView::getName, Collectors.joining(", "))))
+                            Collectors.mapping(PersonProjectMemberView::getDisplayName, Collectors.joining(", "))))
                     .forEach((role, team) ->
                             teamBuilder.append("<b>")
                                     .append(roleTypeLang.getName(role))

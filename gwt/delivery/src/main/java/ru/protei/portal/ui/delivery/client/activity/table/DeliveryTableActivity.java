@@ -7,10 +7,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_DateIntervalType;
-import ru.protei.portal.core.model.dict.En_DeliveryFilterType;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.DeliveryFilterDto;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.query.BaseQuery;
@@ -174,6 +171,8 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
         BaseQuery query = getQuery();
         query.setOffset(offset);
         query.setLimit(limit);
+        query.setSortDir(En_SortDir.DESC);
+        query.setSortField(En_SortField.id);
 
         deliveryService.getDeliveries(query, new FluentCallback<SearchResult<Delivery>>()
                 .withError(throwable -> {

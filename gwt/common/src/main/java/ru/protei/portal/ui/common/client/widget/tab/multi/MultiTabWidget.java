@@ -59,6 +59,12 @@ public class MultiTabWidget<T> extends Composite implements MultiTabHandler<T> {
         tabs.forEach(this::selectTab);
     }
 
+    public void setTabNameDebugId(T tab, String debugId) {
+        MultiTabWidgetNavItem<T> navItem = tabNameToNavItem.get(tab);
+        if (navItem == null) return;
+        navItem.setTabNameDebugId(debugId);
+    }
+
     private void deselectAllTabs() {
         selectedTabs.clear();
         tabNameToNavItem.values().forEach(MultiTabWidgetNavItem::setInactive);
@@ -83,7 +89,6 @@ public class MultiTabWidget<T> extends Composite implements MultiTabHandler<T> {
         navItem.setTab(tab, tabToNameRenderer.apply(tab));
         navItem.setActivity(this);
         navItem.setInactive();
-        navItem.setTabNameDebugId(TABS_CONTAINER + "-" + tabToNameRenderer.apply(tab));
         return navItem;
     }
 

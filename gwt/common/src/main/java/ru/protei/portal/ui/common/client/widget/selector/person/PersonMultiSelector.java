@@ -7,11 +7,9 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.item.PopupSelectableItem;
-import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
 import java.util.Collections;
 import java.util.Set;
@@ -51,7 +49,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
         } else {
             getPopup().getContainer().clear();
             getPopup().setNoElements(true, selectCompanyMessage);
-            getPopup().showNear( select2.getElement() );
+            getPopup().showNear( select2 );
         }
     }
 

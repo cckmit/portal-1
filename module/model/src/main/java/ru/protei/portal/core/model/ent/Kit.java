@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Objects;
 
 import static ru.protei.portal.core.model.ent.Delivery.*;
+import static ru.protei.portal.core.model.ent.Kit.Columns.ID;
 
 @JdbcEntity(table = "kit")
 public class Kit extends AuditableObject {
@@ -15,7 +16,7 @@ public class Kit extends AuditableObject {
     /**
      * Идентификатор
      */
-    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    @JdbcId(name = ID, idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
     /**
@@ -59,8 +60,7 @@ public class Kit extends AuditableObject {
      * Статус
      */
     @JdbcJoinedObject(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
-            @JdbcJoinPath(localColumn = Columns.STATE, remoteColumn = "id", table = "case_state", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = "state", remoteColumn = "id", table = "case_state", sqlTableAlias = CASE_OBJECT_ALIAS),
     })
     private CaseState state;
 
@@ -165,5 +165,10 @@ public class Kit extends AuditableObject {
                 ", stateId=" + stateId +
                 ", state=" + state +
                 '}';
+    }
+
+    public interface Columns {
+        String ID = "id";
+        String DELIVERY_ID = "delivery_id";
     }
 }

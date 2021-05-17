@@ -8,7 +8,7 @@ import ru.protei.portal.core.model.ent.Kit;
 import java.util.List;
 
 /**
- * Абстракция вида карточки создания/редактирования проекта
+ * Абстракция вида карточки редактирования Поставки
  */
 public interface AbstractDeliveryEditView extends IsWidget {
 
@@ -16,9 +16,9 @@ public interface AbstractDeliveryEditView extends IsWidget {
 
     HasWidgets getNameContainer();
 
-    HasWidgets getKitsContainer();
-
     HasValue<List<Kit>> kits();
+
+    void updateKitByProject(boolean isArmyProject);
 
     HasWidgets getMetaContainer();
 }
