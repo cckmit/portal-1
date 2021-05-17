@@ -1,0 +1,82 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create-delivery-table" author="porubov">
+        <createTable tableName="delivery">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="project_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="attribute" type="int"/>
+            <column name="type" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="departure_date" type="DATETIME"/>
+            <column name="contract_id" type="bigint"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-delivery_case_object_fk" author="porubov">
+        <addForeignKeyConstraint baseTableName="delivery"
+                                 baseColumnNames="id"
+                                 constraintName="delivery-case_object-id-fk"
+                                 referencedTableName="case_object"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="add-delivery-project_id-fk" author="porubov">
+        <addForeignKeyConstraint baseTableName="delivery"
+                                 baseColumnNames="project_id"
+                                 constraintName="delivery_project_id_to_project_fk"
+                                 referencedTableName="project"
+                                 referencedColumnNames="id"
+                                 onDelete="NO ACTION"/>
+        <addForeignKeyConstraint baseTableName="delivery"
+                                 baseColumnNames="contract_id"
+                                 constraintName="delivery_contract_id_to_contract_fk"
+                                 referencedTableName="contract"
+                                 referencedColumnNames="id"
+                                 onDelete="NO ACTION"/>
+    </changeSet>
+
+    <changeSet id="create-kit-table" author="porubov">
+        <createTable tableName="kit">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="delivery_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created" type="DATETIME" defaultValueDate="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified" type="DATETIME"/>
+            <column name="serial_number" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(1024)"/>
+            <column name="state" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-delivery-kit-unique-constraint" author="porubov">
+        <addUniqueConstraint tableName="kit" columnNames="serial_number" constraintName="uniq_delivery_kit_serial-number"/>
+    </changeSet>
+
+    <changeSet id="add-delivery_kit-table-kf" author="porubov">
+        <addForeignKeyConstraint baseTableName="kit"
+                                 baseColumnNames="delivery_id"
+                                 constraintName="kit_delivery_id_to_delivery_fk"
+                                 referencedTableName="delivery"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+</databaseChangeLog>

@@ -245,7 +245,7 @@ public abstract class DocumentEditActivity
 
     private void renderViewState(ProjectInfo project) {
 
-        boolean isNew = document.getId() == null;
+        boolean isNew = document == null || document.getId() == null;
         En_DocumentCategory documentCategory = view.documentCategory().getValue();
 
         boolean isDesignationEnabled = isDecimalAndInventoryNumbersVisible(project, documentCategory);

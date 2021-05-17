@@ -43,6 +43,8 @@ public class ContractQuery extends BaseQuery {
 
     private String deliveryNumber;
 
+    private Long projectId;
+
     public Long getDirectionId() {
         return directionId;
     }
@@ -163,6 +165,14 @@ public class ContractQuery extends BaseQuery {
         this.deliveryNumber = deliveryNumber;
     }
 
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -172,6 +182,7 @@ public class ContractQuery extends BaseQuery {
                 kind != null ||
                 openStateDate != null ||
                 StringUtils.isNotEmpty(deliveryNumber) ||
+                projectId != null ||
                 isNotEmpty(types) ||
                 isNotEmpty(states) ||
                 isNotEmpty(caseTagsIds) ||
@@ -201,6 +212,7 @@ public class ContractQuery extends BaseQuery {
                 ", refKeys=" + refKeys +
                 ", openStateDate=" + openStateDate +
                 ", deliveryNumber=" + deliveryNumber +
+                ", projectId=" + projectId +
                 '}';
     }
 }

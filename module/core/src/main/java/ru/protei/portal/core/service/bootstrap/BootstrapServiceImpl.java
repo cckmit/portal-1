@@ -1,66 +1,29 @@
 package ru.protei.portal.core.service.bootstrap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dao.impl.PortalBaseJdbcDAO;
-import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.dto.ReportCaseQuery;
+import ru.protei.portal.core.model.dict.En_CaseFilterType;
+import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_ContactDataAccess;
+import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.helper.PhoneUtils;
-import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.*;
-import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.ContactItem;
-import ru.protei.portal.core.model.struct.DateRange;
-import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.util.sqlcondition.Condition;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.service.YoutrackService;
-import ru.protei.portal.core.svn.document.DocumentSvnApi;
-import ru.protei.portal.tools.migrate.struct.ExternalPersonAbsence;
-import ru.protei.portal.tools.migrate.struct.ExternalPersonLeave;
-import ru.protei.portal.tools.migrate.struct.ExternalReservedIp;
-import ru.protei.portal.tools.migrate.struct.ExternalSubnet;
-import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
-import ru.protei.winter.core.utils.beans.SearchResult;
-import ru.protei.winter.jdbc.JdbcBaseDAO;
-import ru.protei.winter.jdbc.JdbcDAO;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
-import ru.protei.winter.jdbc.JdbcObjectMapperRegistrator;
-import ru.protei.winter.jdbc.annotations.ConverterType;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
 
-import javax.inject.Inject;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
-import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
-import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
 /**
  * Сервис выполняющий первичную инициализацию, работу с исправлением данных
@@ -92,7 +55,67 @@ public class BootstrapServiceImpl implements BootstrapService {
         /**
          *  end Спринт 72 */
 
+        /**
+         * begin Спринт 73 */
+        if (!bootstrapAppDAO.isActionExists("addDeliveryCaseType")) {
+            this.addDeliveryCaseType();
+            bootstrapAppDAO.createAction("addDeliveryCaseType");
+        }
+
+        if (!bootstrapAppDAO.isActionExists("addDeliveryCaseStates")) {
+            this.addDeliveryCaseStates();
+            bootstrapAppDAO.createAction("addDeliveryCaseStates");
+        }
+
+        if (!bootstrapAppDAO.isActionExists("addDeliveryCaseStateMatrix")) {
+            this.addDeliveryCaseStateMatrix();
+            bootstrapAppDAO.createAction("addDeliveryCaseStateMatrix");
+        }
+
+        /**
+         *  end Спринт */
+
         log.info( "bootstrapApplication(): BootstrapService complete."  );
+    }
+
+    private void addDeliveryCaseType() {
+        CaseType caseType = new CaseType();
+        caseType.setId(En_CaseType.DELIVERY.getId());
+        caseType.setCode("delivery");
+        caseType.setInfo("Поставки");
+        caseType.setNextId(1L);
+        caseTypeDAO.persist(caseType);
+    }
+
+    private void addDeliveryCaseStates() {
+
+        List<CaseState> deliveryStates = Arrays.asList(
+                new CaseState(CASE_STATE_DELIVERY_PRELIMINARY_ID, "preliminary", "#ef5350", "Предварительная" ),
+                new CaseState(CASE_STATE_DELIVERY_PRE_RESERVE_ID, "pre_reserve", "#42a5f5", "Резервирование комплектации" ),
+                new CaseState(CASE_STATE_DELIVERY_RESERVE_ID, "reserve", "#00bcd4", "Комплектация зарезервирована" ),
+                new CaseState(CASE_STATE_DELIVERY_ASSEMBLY_ID, "assembly", "#906094", "Сборка" ),
+                new CaseState(CASE_STATE_DELIVERY_TEST_ID, "test", "#3f5fbd", "Тестирование" ),
+                new CaseState(CASE_STATE_DELIVERY_READY_ID, "ready", "#4caf50", "Готова" ),
+                new CaseState(CASE_STATE_DELIVERY_SENT_ID, "sent", "#607d8b", "Отправлена" ),
+                new CaseState(CASE_STATE_DELIVERY_WORK_ID, "work", "#868686", "Работает" )
+        );
+        caseStateDAO.persistBatch(deliveryStates);
+    }
+
+    private void addDeliveryCaseStateMatrix() {
+
+        List<CaseStateMatrix> matrix = Arrays.asList(
+                new CaseStateMatrix(106L, En_CaseType.DELIVERY, CASE_STATE_DELIVERY_PRELIMINARY_ID, 12, "preliminary" ),
+                new CaseStateMatrix(107L, En_CaseType.DELIVERY, CASE_STATE_DELIVERY_PRE_RESERVE_ID, 13, "pre_reserve" ),
+                new CaseStateMatrix(108L, En_CaseType.DELIVERY, CASE_STATE_DELIVERY_RESERVE_ID, 14, "reserve" ),
+                new CaseStateMatrix(109L, En_CaseType.DELIVERY, CASE_STATE_DELIVERY_ASSEMBLY_ID, 15, "assembly" ),
+                new CaseStateMatrix(110L, En_CaseType.DELIVERY, CASE_STATE_DELIVERY_TEST_ID, 16, "test" ),
+                new CaseStateMatrix(111L, En_CaseType.DELIVERY, CASE_STATE_DELIVERY_READY_ID, 17, "ready" ),
+                new CaseStateMatrix(112L, En_CaseType.DELIVERY, CASE_STATE_DELIVERY_SENT_ID, 18, "sent" ),
+                new CaseStateMatrix(113L, En_CaseType.DELIVERY, CASE_STATE_DELIVERY_WORK_ID, 19, "work" )
+        );
+
+        caseStateMatrixDAO.persistBatch(matrix);
     }
 
     private void changePersonToSingleCompany() {
@@ -201,4 +224,21 @@ public class BootstrapServiceImpl implements BootstrapService {
     WorkerEntryDAO workerEntryDAO;
     @Autowired
     CaseShortViewDAO caseShortViewDAO;
+    @Autowired
+    CaseStateDAO caseStateDAO;
+    @Autowired
+    CaseStateMatrixDAO caseStateMatrixDAO;
+    @Autowired
+    CaseTypeDAO caseTypeDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
+    private static final long CASE_STATE_DELIVERY_PRELIMINARY_ID = 39L;
+    private static final long CASE_STATE_DELIVERY_PRE_RESERVE_ID = 40L;
+    private static final long CASE_STATE_DELIVERY_RESERVE_ID = 41L;
+    private static final long CASE_STATE_DELIVERY_ASSEMBLY_ID = 42L;
+    private static final long CASE_STATE_DELIVERY_TEST_ID = 43L;
+    private static final long CASE_STATE_DELIVERY_READY_ID = 44L;
+    private static final long CASE_STATE_DELIVERY_SENT_ID = 45L;
+    private static final long CASE_STATE_DELIVERY_WORK_ID = 46L;
 }

@@ -26,6 +26,12 @@ public class CaseObjectMetaNotifiers implements Serializable {
         setNotifiers(co.getNotifiers());
     }
 
+    public CaseObjectMetaNotifiers(Delivery de) {
+        setId(de.getId());
+        setModified(de.getModified());
+        setNotifiers(de.getSubscribers());
+    }
+
     public CaseObject collectToCaseObject(CaseObject co) {
         co.setId(getId());
         co.setModified(getModified());

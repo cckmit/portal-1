@@ -19,6 +19,7 @@ public enum En_CaseType implements HasId {
     EMPLOYEE_REGISTRATION(11, "employee-reg"),
     CONTRACT(12, "contract"),
     SF_PLATFORM(13, "sf-platform"),
+    DELIVERY(14, "delivery"),
     ;
 
     En_CaseType (int id, String code) {

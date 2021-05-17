@@ -5,9 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.query.ContractQuery;
-import ru.protei.portal.core.model.query.PlatformQuery;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PlatformOption;
+import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.ContractEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -15,14 +13,14 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
 import ru.protei.portal.ui.common.client.selector.model.BaseSelectorModel;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.LifecycleSelectorModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.Refreshable;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class ContractModel extends BaseSelectorModel<EntityOption> implements Activity {
+public abstract class ContractModel extends BaseSelectorModel<ContractInfo> implements Activity {
 
     @Event
     public void onInit(AuthEvents.Success event) {
@@ -34,18 +32,30 @@ public abstract class ContractModel extends BaseSelectorModel<EntityOption> impl
         clean();
     }
 
+    public void updateProject(Refreshable selector, Long projectId) {
+        this.refreshable = selector;
+        query.setProjectId( projectId );
+        clean();
+    }
+
     @Override
     protected void requestData(LoadingHandler selector, String searchText ) {
-        contractController.getContracts(new ContractQuery(), new FluentCallback<SearchResult<Contract>>()
+        contractController.getContracts(query, new FluentCallback<SearchResult<Contract>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(contracts -> {
-                    List<EntityOption> options = contracts.getResults().stream()
-                            .map(Contract::toEntityOption)
+                    List<ContractInfo> options = contracts.getResults().stream()
+                            .map(Contract::toContactInfo)
                             .collect(Collectors.toList());
                     updateElements(options, selector);
+                    if(refreshable!=null){
+                        refreshable.refresh();
+                    }
                 })
         );
     }
+
+    private ContractQuery query = new ContractQuery();
+    private Refreshable refreshable;
 
     @Inject
     Lang lang;

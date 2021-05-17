@@ -116,6 +116,10 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption(En_SortField.duty_log_employee);
                 addOption(En_SortField.duty_log_type);
                 break;
+            case DELIVERY:
+                addOption( En_SortField.delivery_serial_number );
+                addOption( En_SortField.delivery_case_name );
+                break;
         }
     }
 

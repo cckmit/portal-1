@@ -633,6 +633,21 @@ public class MainConfiguration {
     }
 
     @Bean
+    public DeliveryDAO getDeliveryDAO() {
+        return new DeliveryDAO_Impl();
+    }
+
+    @Bean
+    public DeliverySqlBuilder deliverySqlBuilder() {
+        return new DeliverySqlBuilder();
+    }
+
+    @Bean
+    public KitDAO getKitDAO() {
+        return new KitDAO_Impl();
+    }
+
+    @Bean
     public YoutrackHttpClient getYoutrackHttpClient() {
         return new YoutrackHttpClientImpl();
     }
@@ -1137,6 +1152,11 @@ public class MainConfiguration {
     @Bean
     public ImportanceLevelService getImportanceLevelService() {
         return new ImportanceLevelServiceImpl();
+    }
+
+    @Bean
+    public DeliveryService getDeliveryService() {
+        return new DeliveryServiceImpl();
     }
 
     /* ASPECT/INTERCEPTORS */

@@ -3379,4 +3379,146 @@ public interface Lang extends Messages, ContactItemLang {
     String issueFilterPlatform();
 
     String errInvalidFileFormat();
+
+    String deliveryName();
+
+    String deliveryDescription();
+
+    String deliveryProject();
+
+    String deliveryAttribute();
+
+    String deliveryState();
+
+    String deliveryType();
+
+    String deliveryCustomerInfo();
+
+    String deliveryCustomerType();
+
+    String deliveryCustomerCompany();
+
+    String deliveryCustomerInitiator();
+
+    String deliveryManagerInfo();
+
+    String deliveryContractCompany();
+
+    String deliveryManager();
+
+    String deliveryContract();
+
+    String deliveryProducts();
+
+    String deliveryDepartureDate();
+
+    String deliverySubscribers();
+
+    String deliveryKits();
+
+    String deliveryKitSerialNumber();
+
+    String deliveryKitSerialNumberTitle();
+
+    String deliveryKitStatus();
+
+    String deliveryKitName();
+
+    String deliveryStatePreliminary();
+
+    String deliveryStatePreReserve();
+
+    String deliveryStateReserve();
+
+    String deliveryStateAssembly();
+
+    String deliveryStateTest();
+
+    String deliveryStateReady();
+
+    String deliveryStateSent();
+
+    String deliveryStateWork();
+
+    String deliveryAttributeDelivery();
+
+    String deliveryAttributeTest();
+
+    String deliveryAttributePilotZone();
+
+    String deliveryTypeUpgrade();
+
+    String deliveryTypeUpgradeHW();
+
+    String deliveryTypeUpgradeSW();
+
+    String deliveryTypeReplacementHW();
+
+    String deliveryTypeBugfix();
+
+    String deliveryTypeNewVersion();
+
+    String deliveryTypeNewVersionSW();
+
+    String deliveryTypeNewDelivery();
+
+    String deliveryTypeTrialOperation();
+
+    String deliveryTypeDelivery();
+
+    String deliveryTypeSupport();
+
+    String deliveries();
+
+    String deliveryColumnNumber();
+
+    String deliveryColumnInfo();
+
+    String deliveryColumnContacts();
+
+    String deliveryColumnManager();
+
+    String deliveryFilterNotDefined();
+
+    String deliveryFilterName();
+
+    String deliveryFilterRemoveConfirmMessage();
+
+    String deliveryFilterRemoveSuccessed();
+
+    String backToDeliveries();
+
+    String selectDeliveryCustomerInitiator();
+
+    String selectDeliveryContract();
+
+    String deliveryButtonRefreshSerialNumber();
+
+    String errDeliverySerialNumberNotAvailable();
+
+    String errDeliveryForbiddenChangeStatus();
+
+    String deliveryValidationEmptyName();
+
+    String deliveryValidationEmptyState();
+
+    String deliveryValidationInvalidStateAtCreate();
+
+    String deliveryValidationEmptyType();
+
+    String deliveryValidationEmptyProject();
+
+    String deliveryValidationEmptyAttribute();
+
+    String deliveryValidationEmptyContractAtAttributeDelivery();
+
+    String deliveryValidationInvalidKits();
+
+    String deliveryValidationOnlyOneKitForCivilProject();
+
+    String deliveryFilterProduct();
+
+    String deliveryFilterCompany();
+
+    String deliveryFilterManager();
 }

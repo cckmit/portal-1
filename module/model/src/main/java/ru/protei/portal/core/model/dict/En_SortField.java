@@ -245,6 +245,17 @@ public enum En_SortField {
      * Сортировка по ip сервера
      */
     server_ip("ip"),
+
+    /**
+     * Имя поставки
+     */
+    delivery_case_name("CO.CASE_NAME"),
+
+    /**
+     * Серийный номер
+     */
+    //TODO fix serial number sort field
+    delivery_serial_number("serial_number"),
     ;
 
     private String fieldName;

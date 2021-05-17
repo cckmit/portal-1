@@ -477,6 +477,11 @@ public class ServiceTestsConfiguration {
         return new NRPEServiceImpl();
     }
 
+    @Bean
+    public DeliveryService getDeliveryService() {
+        return new DeliveryServiceImpl();
+    }
+
     /* ASPECT/INTERCEPTORS */
 
     @Bean

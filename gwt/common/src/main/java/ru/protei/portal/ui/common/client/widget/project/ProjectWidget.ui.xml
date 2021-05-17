@@ -5,11 +5,11 @@
 
     <g:HTMLPanel ui:field="root" styleName="input-group">
         <div class="form-input-group flex-1">
-            <label><ui:text from="{lang.contractProject}"/></label>
+            <label class="fade"><ui:text from="{lang.contractProject}"/></label>
             <g:TextBox ui:field="name" styleName="form-control" enabled="false"/>
         </div>
         <div class="d-flex">
-            <g:Button ui:field="button" styleName="btn btn-complete b-r-0">
+            <g:Button ui:field="search" styleName="btn btn-complete b-r-0">
                 <i class="fa fa-search"/>
             </g:Button>
         </div>

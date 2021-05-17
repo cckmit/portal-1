@@ -880,6 +880,13 @@ public class DebugIds {
             String NAME = "table-issue-name";
             String DESCRIPTION = "table-issue-description";
         }
+
+        interface DELIVERY {
+            String PRODUCT = "table-delivery-product";
+            String DELIVERY_DATE = "table-delivery-delivery-date";
+            String NAME = "table-delivery-name";
+            String DESCRIPTION = "table-delivery-description";
+        }
     }
 
     public interface ATTACHMENT {
@@ -967,6 +974,7 @@ public class DebugIds {
         interface PROJECT {
             String NAME = "contract-project-name";
             String SEARCH_BUTTON = "contract-project-search-button";
+            String RESET_BUTTON = "contract-project-reset-button";
         }
     }
 
@@ -1151,5 +1159,36 @@ public class DebugIds {
         String ROOT = "group-root";
         String CONTAINER = "group-container";
         String ITEM = "group-item";
+    }
+
+    public interface DELIVERY {
+        String NAME = "delivery-name";
+        String DESCRIPTION = "delivery-description";
+        String KITS = "delivery-kits";
+        String STATE_SELECTOR = "delivery-kits-state-selector";
+        String TYPE_SELECTOR = "delivery-kits-type-selector";
+        String PROJECT_WIDGET = "delivery-kits-project-widget";
+        String CUSTOMER_TYPE = "delivery-customer-type";
+        String CUSTOMER_COMPANY = "delivery-customer-company";
+        String CUSTOMER_INITIATOR = "delivery-customer-initiator-selector";
+        String CONTRACT_COMPANY = "delivery-contract-company";
+        String MANAGER = "delivery-manager";
+        String ATTRIBUTE = "delivery-attribute-selector";
+        String CONTRACT = "delivery-contract-selector";
+        String PRODUCTS = "delivery-products-selector";
+        String DEPARTURE_DATE = "delivery-departure-date-container";
+        String SUBSCRIBERS = "delivery-subscribers-container";
+        String BACK_BUTTON = "delivery-back-button";
+        String SAVE_BUTTON = "delivery-save-button";
+        String CANCEL_BUTTON = "delivery-cancel-button";
+        String NAME_AND_DESCRIPTION_EDIT_BUTTON = "delivery-name-and-description-edit-button";
+
+        interface KIT {
+            String ITEM = "delivery-item";
+            String SERIAL_NUMBER = "delivery-item-serial-number-input";
+            String STATE = "delivery-item-state-input";
+            String NAME = "delivery-item-name-input";
+            String REMOVE_BUTTON = "delivery-item-remove-button";
+        }
     }
 }
