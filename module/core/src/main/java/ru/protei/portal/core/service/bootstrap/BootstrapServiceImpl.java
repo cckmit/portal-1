@@ -53,10 +53,37 @@ public class BootstrapServiceImpl implements BootstrapService {
             this.changePersonToSingleCompanyForNotActiveWorkerEntry();
             bootstrapAppDAO.createAction("changePersonToSingleCompanyForNotActiveWorkerEntry");
         }
+
+        if (!bootstrapAppDAO.isActionExists("changeIssueInitiatorCompany")) {
+            this.changeIssueInitiatorCompany();
+            bootstrapAppDAO.createAction("changeIssueInitiatorCompany");
+        }
+
         /**
          *  end Спринт 72 */
 
         log.info( "bootstrapApplication(): BootstrapService complete."  );
+    }
+
+    private void changeIssueInitiatorCompany() {
+        log.debug("changeIssueInitiatorCompany(): start");
+        List<Company> companies = companyDAO.getSingleHomeCompanies();
+        for (Company company : companies) {
+
+            if (CrmConstants.Company.HOME_COMPANY_ID == company.getId()) {
+                continue;
+            }
+
+            WorkerEntryQuery workerEntryQuery = new WorkerEntryQuery(company.getId(), 1);
+            List<WorkerEntry> workerEntryShortViewList = workerEntryDAO.listByQuery(workerEntryQuery);
+            List<Long> personIds = workerEntryShortViewList.stream()
+                    .map(WorkerEntry::getPersonId)
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            changeIssueInitiatorCompany(personIds, company.getId());
+        }
+        log.debug("changeIssueInitiatorCompany(): finish");
     }
 
     private void changePersonToSingleCompanyForNotActiveWorkerEntry() {
@@ -131,6 +158,9 @@ public class BootstrapServiceImpl implements BootstrapService {
             log.info("changePersonToSingleCompany(): issue with id={} updated", caseShortView.getId());
         });
 
+        // Update initiator company of issue
+        changeIssueInitiatorCompany(personIds, companyId);
+
         // Update manager company of filter
         List<CaseFilter> filters = caseFilterDAO.getListByCondition("params like ? and type = ?", "%managerIds%", En_CaseFilterType.CASE_OBJECTS.name());
         for (CaseFilter filter : filters) {
@@ -170,6 +200,18 @@ public class BootstrapServiceImpl implements BootstrapService {
                 continue;
             }
         }
+    }
+
+    private void changeIssueInitiatorCompany(List<Long> personIds, Long companyId) {
+        // Update initiator company of issue
+        CaseQuery caseQuery = new CaseQuery();
+        caseQuery.setType(En_CaseType.CRM_SUPPORT);
+        caseQuery.setInitiatorIds(personIds);
+        caseShortViewDAO.listByQuery(caseQuery).forEach(caseShortView -> {
+            caseShortView.setInitiatorCompanyId(companyId);
+            caseShortViewDAO.partialMerge(caseShortView, "initiator_company");
+            log.info("changeIssueInitiatorCompany(): issue with id={} updated", caseShortView.getId());
+        });
     }
 
     private void updateContactItemsAccessType() {
