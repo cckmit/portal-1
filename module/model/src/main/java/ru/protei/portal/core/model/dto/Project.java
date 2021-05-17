@@ -394,7 +394,7 @@ public class Project extends AuditableObject {
     public List<EntityOption> getPlatforms() {
         return platforms;
     }
-r
+
     public void setPlatforms(List<EntityOption> platforms) {
         this.platforms = platforms;
     }
