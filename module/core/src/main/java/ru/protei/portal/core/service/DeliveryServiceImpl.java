@@ -163,12 +163,12 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public Result<String> getLastSerialNumber(AuthToken token, boolean isArmyProject) {
-        String nextAvailableSerialNumber = kitDAO.getLastSerialNumber(isArmyProject);
-        if (nextAvailableSerialNumber == null) {
-            return ok(isArmyProject? "100.001" :
-                    "0" + (new GregorianCalendar().get(Calendar.YEAR) - 2000) + ".001");
+        String lastSerialNumber = kitDAO.getLastSerialNumber(isArmyProject);
+        if (lastSerialNumber == null) {
+            return ok(isArmyProject? "100.000" :
+                    "0" + (new GregorianCalendar().get(Calendar.YEAR) - 2000) + ".000");
         }
-        return ok(nextAvailableSerialNumber);
+        return ok(lastSerialNumber);
     }
 
     private boolean isValid(Delivery delivery, boolean isNew) {
@@ -213,7 +213,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     private boolean isForbiddenToChangeState(AuthToken token, Long oldState, Long newState) {
         return Objects.equals(oldState, (long)En_DeliveryState.PRELIMINARY.getId())
                 && !Objects.equals(oldState, newState)
-                && !policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CHANGE_STATUS, token.getRoles());
+                && !policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CHANGE_PRELIMINARY_STATUS, token.getRoles());
     }
 
     private CaseObject createCaseObject(CaseObject caseObject, Delivery delivery, Long creatorId,

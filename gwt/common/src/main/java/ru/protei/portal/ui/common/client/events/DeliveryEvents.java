@@ -91,8 +91,6 @@ public class DeliveryEvents {
         }
     }
 
-    public static class ChangeModel {}
-
     /**
      * Изменилась модель фильтров пользователя
      */

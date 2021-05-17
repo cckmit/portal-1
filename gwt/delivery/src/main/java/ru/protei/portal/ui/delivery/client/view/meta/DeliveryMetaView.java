@@ -18,7 +18,7 @@ import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -116,8 +116,8 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     }
 
     @Override
-    public void setManagerCompany(String value) {
-        managerCompany.setValue(value);
+    public void setContractCompany(String value) {
+        contractCompany.setValue(value);
     }
 
     @Override
@@ -131,7 +131,7 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     }
 
     @Override
-    public HasValue<EntityOption> contract() {
+    public HasValue<ContractInfo> contract() {
         return contract;
     }
 
@@ -205,7 +205,7 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
         customerType.ensureDebugId(DebugIds.DELIVERY.CUSTOMER_TYPE);
         customerCompany.ensureDebugId(DebugIds.DELIVERY.CUSTOMER_COMPANY);
         customerInitiator.ensureDebugId(DebugIds.DELIVERY.CUSTOMER_INITIATOR);
-        managerCompany.ensureDebugId(DebugIds.DELIVERY.MANAGER_COMPANY);
+        contractCompany.ensureDebugId(DebugIds.DELIVERY.CONTRACT_COMPANY);
         manager.ensureDebugId(DebugIds.DELIVERY.MANAGER);
         attribute.ensureDebugId(DebugIds.DELIVERY.ATTRIBUTE);
         contract.ensureDebugId(DebugIds.DELIVERY.CONTRACT);
@@ -233,7 +233,7 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     @UiField( provided = true )
     PersonFormSelector customerInitiator;
     @UiField
-    ValidableTextBox managerCompany;
+    ValidableTextBox contractCompany;
     @UiField
     ValidableTextBox manager;
     @Inject

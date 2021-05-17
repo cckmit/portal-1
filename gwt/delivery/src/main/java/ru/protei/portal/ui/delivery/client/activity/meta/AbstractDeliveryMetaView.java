@@ -8,7 +8,7 @@ import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.Date;
@@ -41,13 +41,13 @@ public interface AbstractDeliveryMetaView extends IsWidget {
 
     HasEnabled initiatorEnable();
 
-    void setManagerCompany(String value);
+    void setContractCompany(String value);
 
     void setManager(String value);
 
     HasValue<En_DeliveryAttribute> attribute();
 
-    HasValue<EntityOption> contract();
+    HasValue<ContractInfo> contract();
 
     HasEnabled contractEnable();
 

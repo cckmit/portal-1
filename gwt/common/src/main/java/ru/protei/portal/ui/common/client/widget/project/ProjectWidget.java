@@ -106,11 +106,6 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
         dialogView.showPopup();
     }
 
-    @UiHandler("reset")
-    public void onResetClicked(ClickEvent event ) {
-        setValue(null, true);
-    }
-
     public void setEnsureDebugId( String debugId ) {
         root.ensureDebugId(debugId);
     }
@@ -118,7 +113,6 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
     private void ensureDebugIds() {
         name.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.PROJECT.NAME);
         search.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.PROJECT.SEARCH_BUTTON);
-        reset.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.PROJECT.RESET_BUTTON);
     }
 
     private void prepareDialog(AbstractDialogDetailsView dialog) {
@@ -162,8 +156,6 @@ abstract public class ProjectWidget extends Composite implements HasValue<Projec
 
     @UiField
     Button search;
-    @UiField
-    Button reset;
 
     @UiField
     Lang lang;

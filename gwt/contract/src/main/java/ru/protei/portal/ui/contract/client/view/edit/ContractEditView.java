@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -144,7 +145,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<EntityOption> contractParent() {
+    public HasValue<ContractInfo> contractParent() {
         return contractParent;
     }
 
@@ -261,7 +262,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @UiHandler("contractParent")
-    public void onContractParentChanged(ValueChangeEvent<EntityOption> event) {
+    public void onContractParentChanged(ValueChangeEvent<ContractInfo> event) {
         if (activity != null) {
             activity.onContractParentChanged();
         }

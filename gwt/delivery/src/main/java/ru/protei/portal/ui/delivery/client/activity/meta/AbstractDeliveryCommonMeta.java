@@ -8,6 +8,8 @@ public interface AbstractDeliveryCommonMeta {
 
     void onDepartureDateChanged();
 
+    void onContractChanged();
+
     void clearProjectSpecificFields();
 
     String getValidationError();

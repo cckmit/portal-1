@@ -65,7 +65,6 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         delivery.setDescription(changeRequest.getInfo());
         switchNameDescriptionToEdit(false);
         fillView(delivery);
-        fireEvent(new DeliveryEvents.ChangeModel());
     }
 
     @Override

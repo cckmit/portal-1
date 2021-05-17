@@ -3400,7 +3400,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String deliveryManagerInfo();
 
-    String deliveryManagerCompany();
+    String deliveryContractCompany();
 
     String deliveryManager();
 

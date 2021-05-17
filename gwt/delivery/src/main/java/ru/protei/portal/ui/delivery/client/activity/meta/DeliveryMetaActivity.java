@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
+import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dto.ProjectInfo;
@@ -13,7 +14,7 @@ import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Delivery;
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -24,6 +25,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
+
+import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 
@@ -45,7 +48,7 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
 
         fillView( event.delivery );
         fillNotifiersView( metaNotifiers );
-        deliveryMetaView.stateEnable().setEnabled(hasPrivilegesChangeStatus());
+        deliveryMetaView.stateEnable().setEnabled(hasPrivilegesChangeStatus(event.delivery.getState()));
     }
 
     @Override
@@ -53,14 +56,14 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         CaseState caseState = deliveryMetaView.state().getValue();
         delivery.setState(caseState);
         delivery.setStateId(caseState.getId());
-        onCaseMetaChanged(delivery, () -> fireEvent(new DeliveryEvents.ChangeModel()));
+        onCaseMetaChanged(delivery);
     }
 
     @Override
     public void onTypeChange() {
         En_DeliveryType type = deliveryMetaView.type().getValue();
         delivery.setType(type);
-        onCaseMetaChanged(delivery, () -> fireEvent(new DeliveryEvents.ChangeModel()));
+        onCaseMetaChanged(delivery);
     }
 
     @Override
@@ -71,7 +74,8 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         delivery.setProjectId(projectInfo == null? null : projectInfo.getId());
         delivery.setInitiatorId(null);
         delivery.setInitiator(null);
-        onCaseMetaChanged(delivery, () -> fireEvent(new DeliveryEvents.ChangeModel()));
+        delivery.setContractId(null);
+        onCaseMetaChanged(delivery);
     }
 
     @Override
@@ -79,7 +83,7 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         PersonShortView initiator = deliveryMetaView.initiator().getValue();
         delivery.setInitiatorId(initiator.getId());
         delivery.setInitiator(initiator);
-        onCaseMetaChanged(delivery, () -> fireEvent(new DeliveryEvents.ChangeModel()));
+        onCaseMetaChanged(delivery);
     }
 
     @Override
@@ -88,20 +92,20 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
 
         delivery.setAttribute(deliveryMetaView.attribute().getValue());
         delivery.setContractId(deliveryMetaView.contract().getValue() != null ? deliveryMetaView.contract().getValue().getId() : null);
-        onCaseMetaChanged(delivery, () -> fireEvent(new DeliveryEvents.ChangeModel()));
+        onCaseMetaChanged(delivery);
     }
 
     @Override
     public void onContractChanged() {
         delivery.setContractId(deliveryMetaView.contract().getValue() != null ? deliveryMetaView.contract().getValue().getId() : null);
-        onCaseMetaChanged(delivery, () -> fireEvent(new DeliveryEvents.ChangeModel()));
+        onCaseMetaChanged(delivery);
     }
 
     @Override
     public void onDepartureDateChanged() {
         super.onDepartureDateChanged();
         delivery.setDepartureDate(deliveryMetaView.departureDate().getValue());
-        onCaseMetaChanged(delivery, () -> fireEvent(new DeliveryEvents.ChangeModel()));
+        onCaseMetaChanged(delivery);
     }
 
     @Override
@@ -114,7 +118,7 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
                 }));
     }
 
-    private void onCaseMetaChanged(Delivery delivery, Runnable runAfterUpdate) {
+    private void onCaseMetaChanged(Delivery delivery) {
         String error = getValidationError();
         if (error != null) {
             showValidationError(error);
@@ -125,9 +129,6 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
                 .withSuccess(caseMetaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fillView( caseMetaUpdated );
-                    if (runAfterUpdate != null) {
-                        runAfterUpdate.run();
-                    }
                 }));
     }
 
@@ -142,17 +143,18 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         deliveryMetaView.updateInitiatorModel(projectInfo.getContragent().getId());
         deliveryMetaView.initiator().setValue(delivery.getInitiator());
         deliveryMetaView.initiatorEnable().setEnabled(true);
-        deliveryMetaView.setManagerCompany(projectInfo.getManagerCompany());
         deliveryMetaView.setManager(projectInfo.getManager().getDisplayText());
         deliveryMetaView.setProducts(joining(projectInfo.getProducts(), ", ", ProductShortView::getName));
         deliveryMetaView.updateContractModel(projectInfo.getId());
 
         Contract contract = delivery.getContract();
-        deliveryMetaView.contract().setValue(contract != null ? new EntityOption(contract.getNumber(), delivery.getContract().getId()) : null);
+        deliveryMetaView.contract().setValue(contract != null ? new ContractInfo(delivery.getContract().getId(), contract.getNumber(), contract.getOrganizationName() ) : null);
         if (En_DeliveryAttribute.DELIVERY.equals(delivery.getAttribute())) {
             deliveryMetaView.contractEnable().setEnabled(true);
         }
         deliveryMetaView.attribute().setValue(delivery.getAttribute());
+        deliveryMetaView.contractEnable().setEnabled(delivery.getAttribute() == En_DeliveryAttribute.DELIVERY);
+        deliveryMetaView.setContractCompany(contract != null ? contract.getOrganizationName() : null);
         deliveryMetaView.departureDate().setValue(delivery.getDepartureDate());
         deliveryMetaView.setDepartureDateValid(true);
     }
@@ -165,8 +167,9 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
     }
 
-    private boolean hasPrivilegesChangeStatus() {
-        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CHANGE_STATUS);
+    private boolean hasPrivilegesChangeStatus(CaseState caseState) {
+        return !Objects.equals(caseState.getId(), (long)En_DeliveryState.PRELIMINARY.getId())
+                || policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CHANGE_PRELIMINARY_STATUS);
     }
 
     @Inject

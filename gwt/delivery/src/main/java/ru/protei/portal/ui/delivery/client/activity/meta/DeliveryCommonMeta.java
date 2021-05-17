@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -39,6 +40,17 @@ public class DeliveryCommonMeta implements AbstractDeliveryCommonMeta {
             view.contractEnable().setEnabled(false);
             view.setContractFieldMandatory(false);
             view.contract().setValue(null);
+            view.setContractCompany(null);
+        }
+    }
+
+    @Override
+    public void onContractChanged() {
+        ContractInfo contract = view.contract().getValue();
+        if (contract == null) {
+            view.setContractCompany(null);
+        } else {
+            view.setContractCompany(contract.getOrganizationName());
         }
     }
 
@@ -67,10 +79,10 @@ public class DeliveryCommonMeta implements AbstractDeliveryCommonMeta {
         view.initiator().setValue(null);
         view.updateInitiatorModel(projectInfo.getContragent().getId());
         view.initiatorEnable().setEnabled(true);
-        view.setManagerCompany(projectInfo.getManagerCompany());
         view.setManager(projectInfo.getManager().getDisplayText());
         view.setProducts(joining(projectInfo.getProducts(), ", ", ProductShortView::getName));
         view.contract().setValue(null);
+        view.setContractCompany(null);
         view.updateContractModel(projectInfo.getId());
         isArmyProject.accept(projectInfo.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE);
         if (En_DeliveryAttribute.DELIVERY.equals(view.attribute().getValue())) {
@@ -85,11 +97,11 @@ public class DeliveryCommonMeta implements AbstractDeliveryCommonMeta {
         view.initiatorEnable().setEnabled(false);
         view.initiator().setValue(null);
         view.updateInitiatorModel(null);
-        view.setManagerCompany(null);
         view.setManager(null);
         view.setProducts(null);
         view.contract().setValue(null);
         view.contractEnable().setEnabled(false);
+        view.setContractCompany(null);
         view.setContractFieldMandatory(false);
         isArmyProject.accept(false);
         view.updateContractModel(null);

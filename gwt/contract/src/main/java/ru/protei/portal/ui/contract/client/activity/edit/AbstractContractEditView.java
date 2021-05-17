@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
+import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -49,7 +50,7 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<EntityOption> organization();
 
-    HasValue<EntityOption> contractParent();
+    HasValue<ContractInfo> contractParent();
 
     HasEnabled costEnabled();
 

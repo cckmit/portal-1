@@ -10,8 +10,6 @@ public interface AbstractDeliveryMetaActivity extends AbstractDeliveryCommonMeta
     void onTypeChange();
 
     void onInitiatorChange() ;
-    
-    void onContractChanged();
 
     void onCaseMetaNotifiersChanged() ;
 }

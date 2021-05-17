@@ -14,7 +14,7 @@ import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -108,7 +108,7 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     }
 
     @Override
-    public HasValue<EntityOption> contract() {
+    public HasValue<ContractInfo> contract() {
         return meta.contract();
     }
 

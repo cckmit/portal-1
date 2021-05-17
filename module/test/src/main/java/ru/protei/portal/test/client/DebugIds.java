@@ -1147,7 +1147,7 @@ public class DebugIds {
         String CUSTOMER_TYPE = "delivery-customer-type";
         String CUSTOMER_COMPANY = "delivery-customer-company";
         String CUSTOMER_INITIATOR = "delivery-customer-initiator-selector";
-        String MANAGER_COMPANY = "delivery-manager-company";
+        String CONTRACT_COMPANY = "delivery-contract-company";
         String MANAGER = "delivery-manager";
         String ATTRIBUTE = "delivery-attribute-selector";
         String CONTRACT = "delivery-contract-selector";

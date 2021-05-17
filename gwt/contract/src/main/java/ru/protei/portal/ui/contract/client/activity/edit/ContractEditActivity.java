@@ -10,7 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.ContractDate;
+import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
 import ru.protei.portal.core.model.util.ContractSupportService;
@@ -30,7 +30,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
+import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.struct.Vat.NoVat;
 import static ru.protei.portal.ui.common.client.util.DateUtils.*;
@@ -110,7 +111,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     @Override
     public void onContractParentChanged() {
-        EntityOption contractParent = view.contractParent().getValue();
+        ContractInfo contractParent = view.contractParent().getValue();
         En_ContractKind kind = getContractKind(contractParent);
         view.setKind(kind);
     }
@@ -219,7 +220,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.dateValidDate().setValue(contract.getDateValid());
         view.dateValidDays().setValue(getDaysBetween(contract.getDateSigning(), contract.getDateValid()));
         view.contractSpecifications().setValue(contract.getContractSpecifications());
-        view.contractParent().setValue(createOptionOrNull(contract.getParentContractId(), contract.getParentContractNumber()));
+        view.contractParent().setValue(createContractInfoOrNull(contract));
         view.organization().setValue(createOptionOrNull(contract.getOrganizationId(), contract.getOrganizationName()));
         view.setOrganization(contract.getOrganizationName());
         view.contractor().setValue(contract.getContractor());
@@ -263,7 +264,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setContractSpecifications(view.contractSpecifications().getValue());
         contract.setOrganizationId(getOptionIdOrNull(view.organization().getValue()));
         contract.setOrganizationName(view.organization().getValue() == null ? "" : view.organization().getValue().getDisplayText());
-        contract.setParentContractId(getOptionIdOrNull(view.contractParent().getValue()));
+        contract.setParentContractId(getContractIdOrNull(view.contractParent().getValue()));
         contract.setProjectId(view.project().getValue() == null ? null : view.project().getValue().getId());
         contract.setContractor(view.contractor().getValue());
         contract.setContractSignManagerId(getPersonIdOrNull(view.contractSignManager().getValue()));
@@ -349,7 +350,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             }));
     }
 
-    private En_ContractKind getContractKind(EntityOption contractParent) {
+    private En_ContractKind getContractKind(ContractInfo contractParent) {
         boolean contractParentExists = contractParent != null;
         return ContractSupportService.getContractKind(contractParentExists);
     }
@@ -362,12 +363,19 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         return option == null ? null : option.getId();
     }
 
+    private Long getContractIdOrNull(ContractInfo info) {
+        return info == null ? null : info.getId();
+    }
+
     private Long getPersonIdOrNull(PersonShortView option) {
         return option == null ? null : option.getId();
     }
 
     private EntityOption createOptionOrNull(Long id, String name) {
         return id == null ? null : new EntityOption(name, id);
+    }
+    private ContractInfo createContractInfoOrNull(Contract contract) {
+        return contract == null ? null : contract.toContactInfo();
     }
 
     private PersonShortView createPersonOrNull(Long id, String name) {

@@ -135,7 +135,6 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
 
     private void save(Delivery delivery) {
         save(delivery, throwable -> {}, () -> {
-            fireEvent(new DeliveryEvents.ChangeModel());
             fireEvent(new Back());
         });
     }
