@@ -168,6 +168,7 @@ public class DeliveryServiceImpl implements DeliveryService {
             return ok(isArmyProject? "100.000" :
                     "0" + (new GregorianCalendar().get(Calendar.YEAR) - 2000) + ".000");
         }
+        log.debug("getLastSerialNumber(): isArmyProject = {}, result = {}", isArmyProject, lastSerialNumber);
         return ok(lastSerialNumber);
     }
 
