@@ -1,0 +1,143 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-delivery-values-in-case_type-table" author="porubov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM case_type WHERE id = '14'
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="case_type">
+            <column name="id" value="14"/>
+            <column name="CT_CODE" value="delivery"/>
+            <column name="CT_INFO" value="Поставки"/>
+            <column name="NEXT_ID" value="1"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="add-delivery-values-in-case_state-table" author="porubov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM case_state WHERE id = '39'
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="case_state">
+            <column name="id" value="39"/>
+            <column name="STATE" value="preliminary"/>
+            <column name="color" value="#ef5350"/>
+            <column name="INFO" value="Предварительная"/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="40"/>
+            <column name="STATE" value="pre_reserve"/>
+            <column name="color" value="#42a5f5"/>
+            <column name="INFO" value="Резервирование комплектации"/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="41"/>
+            <column name="STATE" value="reserve"/>
+            <column name="color" value="#00bcd4"/>
+            <column name="INFO" value="Комплектация зарезервирована"/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="42"/>
+            <column name="STATE" value="assembly"/>
+            <column name="color" value="#906094"/>
+            <column name="INFO" value="Сборка"/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="43"/>
+            <column name="STATE" value="test"/>
+            <column name="color" value="#3f5fbd"/>
+            <column name="INFO" value="Тестирование"/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="44"/>
+            <column name="STATE" value="ready"/>
+            <column name="color" value="#4caf50"/>
+            <column name="INFO" value="Готова"/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="45"/>
+            <column name="STATE" value="sent"/>
+            <column name="color" value="#607d8b"/>
+            <column name="INFO" value="Отправлена"/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="46"/>
+            <column name="STATE" value="work"/>
+            <column name="color" value="#868686"/>
+            <column name="INFO" value="Работает"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="add-delivery-values-in-case_state_matrix-table" author="porubov">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM case_state_matrix WHERE id = '106'
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="case_state_matrix">
+            <column name="id" value="106"/>
+            <column name="CASE_TYPE" value="14"/>
+            <column name="CASE_STATE" value="39"/>
+            <column name="view_order" value="12"/>
+            <column name="info" value="preliminary"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="id" value="107"/>
+            <column name="CASE_TYPE" value="14"/>
+            <column name="CASE_STATE" value="40"/>
+            <column name="view_order" value="13"/>
+            <column name="info" value="pre_reserve"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="id" value="108"/>
+            <column name="CASE_TYPE" value="14"/>
+            <column name="CASE_STATE" value="41"/>
+            <column name="view_order" value="14"/>
+            <column name="info" value="reserve"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="id" value="109"/>
+            <column name="CASE_TYPE" value="14"/>
+            <column name="CASE_STATE" value="42"/>
+            <column name="view_order" value="15"/>
+            <column name="info" value="assembly"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="id" value="110"/>
+            <column name="CASE_TYPE" value="14"/>
+            <column name="CASE_STATE" value="43"/>
+            <column name="view_order" value="16"/>
+            <column name="info" value="test"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="id" value="111"/>
+            <column name="CASE_TYPE" value="14"/>
+            <column name="CASE_STATE" value="44"/>
+            <column name="view_order" value="17"/>
+            <column name="info" value="ready"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="id" value="112"/>
+            <column name="CASE_TYPE" value="14"/>
+            <column name="CASE_STATE" value="45"/>
+            <column name="view_order" value="18"/>
+            <column name="info" value="sent"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="id" value="113"/>
+            <column name="CASE_TYPE" value="14"/>
+            <column name="CASE_STATE" value="46"/>
+            <column name="view_order" value="19"/>
+            <column name="info" value="work"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
