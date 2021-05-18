@@ -165,11 +165,14 @@ public class DeliveryServiceImpl implements DeliveryService {
     public Result<String> getLastSerialNumber(AuthToken token, boolean isArmyProject) {
         String lastSerialNumber = kitDAO.getLastSerialNumber(isArmyProject);
         if (lastSerialNumber == null) {
-            return ok(isArmyProject? "100.000" :
-                    "0" + (new GregorianCalendar().get(Calendar.YEAR) - 2000) + ".000");
+            return ok(isArmyProject? "100.000" : makeFirstCivilNumberOfYear());
         }
         log.debug("getLastSerialNumber(): isArmyProject = {}, result = {}", isArmyProject, lastSerialNumber);
         return ok(lastSerialNumber);
+    }
+
+    private String makeFirstCivilNumberOfYear() {
+        return "0" + (new GregorianCalendar().get(Calendar.YEAR) - 2000) + ".000";
     }
 
     private boolean isValid(Delivery delivery, boolean isNew) {
