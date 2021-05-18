@@ -23,6 +23,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.deliverystate.DeliveryStatesOptionList;
 import ru.protei.portal.ui.common.client.widget.issuestate.IssueStatesOptionList;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
@@ -485,7 +486,7 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
     LabelElement deliveryState;
     @Inject
     @UiField(provided = true)
-    IssueStatesOptionList state;
+    DeliveryStatesOptionList state;
     @UiField
     DivElement sortByContainer;
     @UiField

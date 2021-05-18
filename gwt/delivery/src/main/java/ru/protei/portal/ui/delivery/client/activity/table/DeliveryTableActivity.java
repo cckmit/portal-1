@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.DeliveryFilterDto;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.DeliveryQuery;
@@ -23,6 +24,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseStateWorkflowControllerAsync;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.widget.deliveryfilter.DeliveryFilterWidget;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
@@ -31,6 +33,8 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
 public abstract class DeliveryTableActivity implements AbstractDeliveryTableActivity,
         AbstractDeliveryCollapseFilterActivity, AbstractDeliveryFilterModel, AbstractPagerActivity, Activity {
@@ -54,7 +58,6 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
     public void onAuthSuccess (AuthEvents.Success event) {
         filterView.resetFilter(DEFAULT_MODIFIED_RANGE);
         filterView.presetFilterType();
-        updateCaseStatesFilter();
     }
 
     @Event
@@ -251,13 +254,6 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
     private void applyFilterViewPrivileges() {
         filterView.getDeliveryFilterParams().productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
         filterView.getDeliveryFilterParams().managersVisibility().setVisible(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || policyService.isSubcontractorCompany());
-    }
-
-    private void updateCaseStatesFilter() {
-        if (!policyService.hasSystemScopeForPrivilege(En_Privilege.COMPANY_VIEW)) {
-            //TODO need states?
-//            filterView.getDeliveryFilterParams().setStateFilter(caseStateFilter.makeFilter(policyService.getUserCompany().getCaseStates()));
-        }
     }
 
     private void toggleFilterCollapseState() {

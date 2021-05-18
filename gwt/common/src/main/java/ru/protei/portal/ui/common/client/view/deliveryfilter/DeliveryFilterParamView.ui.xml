@@ -8,7 +8,7 @@
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
              xmlns:casetag="urn:import:ru.protei.portal.ui.common.client.widget.selector.casetag"
-             xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
+             xmlns:states="urn:import:ru.protei.portal.ui.common.client.widget.deliverystate"
              xmlns:plan="urn:import:ru.protei.portal.ui.common.client.widget.selector.plan.selector"
              xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance"
              xmlns:timeelapsedtypeselector="urn:import:ru.protei.portal.ui.common.client.view.selector"
@@ -54,7 +54,7 @@
 
             <div ui:field="stateContainer" class="form-group col-md-8 resize-md-12">
                 <label ui:field="deliveryState"><ui:text from="{lang.deliveryState}"/></label>
-                <issuestate:IssueStatesOptionList ui:field="state"/>
+                <states:DeliveryStatesOptionList ui:field="state"/>
             </div>
         </div>
 
