@@ -64,6 +64,16 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     public Result<SearchResult<Delivery>> getDeliveries(AuthToken token, DataQuery query) {
         SearchResult<Delivery> sr = deliveryDAO.getSearchResultByQuery(query);
+
+        for (Delivery delivery : emptyIfNull(sr.getResults())){
+            if (delivery.getProject() == null){
+                continue;
+            }
+            delivery.getProject().setProducts(new HashSet<>(devUnitDAO.getProjectProducts(delivery.getProject().getId())));
+
+            jdbcManyRelationsHelper.fill(delivery, "kits");
+        }
+
         return ok(sr);
     }
 
