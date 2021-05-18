@@ -98,6 +98,7 @@ public class En_ResultStatusLang {
             case INVALID_FILE_FORMAT: return lang.errInvalidFileFormat();
             case DELIVERY_KIT_SERIAL_NUMBER_NOT_AVAILABLE: return lang.errDeliverySerialNumberNotAvailable();
             case DELIVERY_FORBIDDEN_CHANGE_STATUS: return lang.errDeliveryForbiddenChangeStatus();
+            case DELIVERY_FORBIDDEN_CHANGE_PROJECT: return lang.errDeliveryForbiddenChangeProject();
             default: return lang.errUnknownResult();
         }
     }

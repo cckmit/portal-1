@@ -133,13 +133,17 @@ public class DeliveryServiceImpl implements DeliveryService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        CaseObject oldMeta = caseObjectDAO.get(meta.getId());
+        Delivery oldMeta = deliveryDAO.get(meta.getId());
         if (oldMeta == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
         if (isForbiddenToChangeState(token, oldMeta.getStateId(), meta.getStateId())) {
             return error(En_ResultStatus.DELIVERY_FORBIDDEN_CHANGE_STATUS);
+        }
+
+        if (!Objects.equals(oldMeta.getProjectId(), meta.getProjectId())) {
+            return error(En_ResultStatus.DELIVERY_FORBIDDEN_CHANGE_PROJECT);
         }
 
         CaseObject caseObject = caseObjectDAO.get(meta.getId());

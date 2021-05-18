@@ -361,6 +361,11 @@ public enum En_ResultStatus {
     /**
      * Поставки, нет прав менять статус
      */
-    DELIVERY_FORBIDDEN_CHANGE_STATUS
+    DELIVERY_FORBIDDEN_CHANGE_STATUS,
+
+    /**
+     * Поставки, запрещено менять проект поставки
+     */
+    DELIVERY_FORBIDDEN_CHANGE_PROJECT
     ;
 }

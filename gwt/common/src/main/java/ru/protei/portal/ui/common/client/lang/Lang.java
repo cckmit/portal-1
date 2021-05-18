@@ -3498,6 +3498,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errDeliveryForbiddenChangeStatus();
 
+    String errDeliveryForbiddenChangeProject();
+
     String deliveryValidationEmptyName();
 
     String deliveryValidationEmptyState();
