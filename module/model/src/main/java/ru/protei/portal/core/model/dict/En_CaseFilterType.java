@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.HasFilterQueryIds;
 import ru.protei.portal.core.model.query.ProjectQuery;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public enum En_CaseFilterType {
