@@ -221,7 +221,10 @@ public class DeliveryKitList extends Composite
         for (Widget widget : container) {
             DeliveryKitItem item = (DeliveryKitItem) widget;
             if (modelToView.get(item).getId() == null) {
-                String number = prefix + "." + NumberFormat.getFormat("000").format(count++);
+                String number =
+                        NumberFormat.getFormat("000").format(prefix)
+                        + "." +
+                        NumberFormat.getFormat("000").format(count++);
                 item.setSerialNumber(number);
             }
         }
