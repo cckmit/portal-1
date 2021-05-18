@@ -115,9 +115,9 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
 
     private AbstractContactItemView createItemView(List<En_ContactItemType> allowedTypes){
         AbstractContactItemView itemView = itemFactory.get();
-        if(allowedTypes.size() != 1)
+        if(allowedTypes.size() != 1) {
             itemView.fillTypeOptions(allowedTypes);
-        else {
+        } else {
             itemView.typeVisibility().setVisible(false);
         }
 
