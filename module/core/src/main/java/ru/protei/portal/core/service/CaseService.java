@@ -37,7 +37,7 @@ public interface CaseService {
     @Auditable( En_AuditType.ISSUE_CREATE )
     Result<CaseObject> createCaseObject(AuthToken token, CaseObjectCreateRequest request);
 
-    @Privileged({ En_Privilege.ISSUE_EDIT, En_Privilege.DELIVERY_EDIT })
+    @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.DELIVERY_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
     Result<CaseNameAndDescriptionChangeRequest> updateCaseNameAndDescription(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest);
 
@@ -51,7 +51,7 @@ public interface CaseService {
     @Privileged({ En_Privilege.ISSUE_VIEW })
     Result<CaseObjectMetaNotifiers> getCaseObjectMetaNotifiers( AuthToken token, Long issueId );
 
-    @Privileged({ En_Privilege.ISSUE_EDIT, En_Privilege.DELIVERY_EDIT })
+    @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.DELIVERY_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
     Result<CaseObjectMetaNotifiers> updateCaseObjectMetaNotifiers( AuthToken token, En_CaseType caseType, CaseObjectMetaNotifiers caseMetaNotifiers );
 

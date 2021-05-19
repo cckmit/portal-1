@@ -133,13 +133,17 @@ public class DeliveryServiceImpl implements DeliveryService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        CaseObject oldMeta = caseObjectDAO.get(meta.getId());
+        Delivery oldMeta = deliveryDAO.get(meta.getId());
         if (oldMeta == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
         if (isForbiddenToChangeState(token, oldMeta.getStateId(), meta.getStateId())) {
             return error(En_ResultStatus.DELIVERY_FORBIDDEN_CHANGE_STATUS);
+        }
+
+        if (!Objects.equals(oldMeta.getProjectId(), meta.getProjectId())) {
+            return error(En_ResultStatus.DELIVERY_FORBIDDEN_CHANGE_PROJECT);
         }
 
         CaseObject caseObject = caseObjectDAO.get(meta.getId());
@@ -165,11 +169,25 @@ public class DeliveryServiceImpl implements DeliveryService {
     public Result<String> getLastSerialNumber(AuthToken token, boolean isArmyProject) {
         String lastSerialNumber = kitDAO.getLastSerialNumber(isArmyProject);
         if (lastSerialNumber == null) {
-            return ok(isArmyProject? "100.000" :
-                    "0" + (new GregorianCalendar().get(Calendar.YEAR) - 2000) + ".000");
+            return ok(isArmyProject? "100.000" : makeFirstCivilNumberOfYear(getCurrentYear()));
+        }
+        if (!isArmyProject) {
+            int serialYear = Integer.parseInt(lastSerialNumber.split("\\.")[1]);
+            int currentYear = getCurrentYear();
+            if (serialYear < currentYear) {
+                return ok(makeFirstCivilNumberOfYear(currentYear));
+            }
         }
         log.debug("getLastSerialNumber(): isArmyProject = {}, result = {}", isArmyProject, lastSerialNumber);
         return ok(lastSerialNumber);
+    }
+
+    private int getCurrentYear() {
+        return (new GregorianCalendar().get(Calendar.YEAR) - 2000);
+    }
+
+    private String makeFirstCivilNumberOfYear(int year) {
+        return "0" + year + ".000";
     }
 
     private boolean isValid(Delivery delivery, boolean isNew) {

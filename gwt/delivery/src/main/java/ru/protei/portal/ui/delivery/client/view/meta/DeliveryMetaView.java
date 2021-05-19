@@ -91,6 +91,11 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     }
 
     @Override
+    public HasEnabled projectEnabled() {
+        return projectWidget;
+    }
+
+    @Override
     public void setCustomerCompany(String value) {
         customerCompany.setValue(value);
     }
