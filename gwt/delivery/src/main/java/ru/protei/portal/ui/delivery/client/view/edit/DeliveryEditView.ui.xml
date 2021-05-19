@@ -14,6 +14,9 @@
                                   title="{lang.backToDeliveries}">
                             <i class="fa fa-arrow-left"/>
                         </g:Button>
+                        <g:Button ui:field="showEditViewButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.openFullScreen}">
+                            <i class="fas fa-expand-arrows-alt"/>
+                        </g:Button>
                         <g:Button ui:field="nameAndDescriptionEditButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
                                   title="{lang.editNameAndDescription}">
                             <i class="fa fa-pencil-alt"/>

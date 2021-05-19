@@ -53,6 +53,36 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         return metaContainer;
     }
 
+    @Override
+    public HasVisibility backButtonVisibility() {
+        return backButton;
+    }
+
+    @Override
+    public HasVisibility showEditViewButtonVisibility() {
+        return showEditViewButton;
+    }
+
+    @Override
+    public void setPreviewStyles(boolean isPreview) {
+        root.removeStyleName("card-default");
+        root.removeStyleName("card-transparent");
+        root.removeStyleName("card-fixed");
+        if (isPreview) {
+            root.addStyleName("card-default");
+            root.addStyleName("card-fixed");
+        } else {
+            root.addStyleName("card-transparent");
+        }
+    }
+
+    @UiHandler("showEditViewButton")
+    public void onShowEditViewModeButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onOpenEditViewClicked();
+        }
+    }
+
     @UiHandler("backButton")
     public void onCancelClicked(ClickEvent event) {
         if (activity != null) {
@@ -74,6 +104,7 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         kits.setEnsureDebugId(DebugIds.DELIVERY.KITS);
 
         backButton.ensureDebugId(DebugIds.DELIVERY.BACK_BUTTON);
+        showEditViewButton.ensureDebugId(DebugIds.DELIVERY.SHOW_EDIT_BUTTON);
         nameAndDescriptionEditButton.ensureDebugId(DebugIds.DELIVERY.NAME_AND_DESCRIPTION_EDIT_BUTTON);
     }
 
@@ -90,6 +121,8 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     HTMLPanel metaContainer;
     @UiField
     Button backButton;
+    @UiField
+    Button showEditViewButton;
     @UiField
     Button nameAndDescriptionEditButton;
     @UiField

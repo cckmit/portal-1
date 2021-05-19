@@ -45,6 +45,18 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         this.initDetails = initDetails;
     }
 
+    @Event
+    public void onShow( DeliveryEvents.ShowPreview event ) {
+        HasWidgets container = event.parent;
+        if (!policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden(container));
+            return;
+        }
+
+        viewModeIsPreview(true);
+        requestDelivery(event.id, container);
+    }
+
     @Event(Type.FILL_CONTENT)
     public void onShow(DeliveryEvents.Edit event) {
         if (!hasPrivileges()) {
@@ -52,11 +64,9 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
             return;
         }
 
-        initDetails.parent.clear();
         Window.scrollTo(0, 0);
-        initDetails.parent.add(view.asWidget());
-
-        requestDelivery(event.id);
+        viewModeIsPreview(false);
+        requestDelivery(event.id, initDetails.parent);
     }
 
     @Override
@@ -97,6 +107,11 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     }
 
     @Override
+    public void onOpenEditViewClicked() {
+        fireEvent(new DeliveryEvents.Edit(delivery.getId()));
+    }
+
+    @Override
     public void onNameAndDescriptionEditClicked() {
         nameAndDescriptionEditView.name().setValue(delivery.getName());
         nameAndDescriptionEditView.description().setValue(delivery.getDescription());
@@ -104,7 +119,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         switchNameDescriptionToEdit(true);
     }
 
-    private void requestDelivery(Long id) {
+    private void requestDelivery(Long id, HasWidgets container) {
         controller.getDelivery(id, new FluentCallback<Delivery>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
                 .withSuccess(delivery -> {
@@ -112,6 +127,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
                     switchNameDescriptionToEdit(false);
                     fillView(delivery);
                     showMeta(delivery);
+                    attachToContainer(container);
                 }));
     }
 
@@ -125,6 +141,17 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
 
     private void showMeta(Delivery delivery) {
         fireEvent(new DeliveryEvents.EditDeliveryMeta(view.getMetaContainer(), delivery, makeMetaNotifiers(delivery)));
+    }
+
+    private void viewModeIsPreview( boolean isPreviewMode){
+        view.backButtonVisibility().setVisible(!isPreviewMode);
+        view.showEditViewButtonVisibility().setVisible(isPreviewMode);
+        view.setPreviewStyles(isPreviewMode);
+    }
+
+    private void attachToContainer(HasWidgets container) {
+        container.clear();
+        container.add(view.asWidget());
     }
 
     private boolean hasPrivileges() {
