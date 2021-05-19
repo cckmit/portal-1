@@ -31,6 +31,8 @@ public interface AbstractDeliveryMetaView extends IsWidget {
 
     HasValue<ProjectInfo> project();
 
+    HasEnabled projectEnabled();
+
     void setCustomerCompany(String value);
 
     void setCustomerType(String value);

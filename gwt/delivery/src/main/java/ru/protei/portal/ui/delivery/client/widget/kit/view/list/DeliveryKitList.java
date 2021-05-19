@@ -201,26 +201,31 @@ public class DeliveryKitList extends Composite
     }
 
     private void resetSerialNumber() {
-        nextAvailableSerialNumberPrefix = null;
-        nextAvailableSerialNumberPostfix = null;
+        lastSerialNumberPrefix = null;
+        lastSerialNumberPostfix = null;
     }
 
-    private void parseSerialNumber(String nextAvailableSerialNumber) {
-        String[] split = nextAvailableSerialNumber.split("\\.");
-        nextAvailableSerialNumberPrefix = split[0];
-        nextAvailableSerialNumberPostfix = NumberUtils.parseInteger(split[1]) + 1;
+    private void parseSerialNumber(String lastSerialNumber) {
+        String[] split = lastSerialNumber.split("\\.");
+        lastSerialNumberPrefix = NumberUtils.parseInteger(split[0]);
+        lastSerialNumberPostfix = NumberUtils.parseInteger(split[1]);
     }
 
     private void refreshSerialNumber() {
-        if (nextAvailableSerialNumberPrefix == null || nextAvailableSerialNumberPostfix == null) {
+        if (lastSerialNumberPrefix == null || lastSerialNumberPostfix == null) {
             return;
         }
-        int count = nextAvailableSerialNumberPostfix;
+
+        int prefix = isArmyProject ? lastSerialNumberPrefix + 1 : lastSerialNumberPrefix;
+        int count = isArmyProject ? 1 : lastSerialNumberPostfix + 1;
         for (Widget widget : container) {
             DeliveryKitItem item = (DeliveryKitItem) widget;
             if (modelToView.get(item).getId() == null) {
-                item.setSerialNumber(nextAvailableSerialNumberPrefix + "." +
-                        NumberFormat.getFormat("000").format(count++));
+                String number =
+                        NumberFormat.getFormat("000").format(prefix)
+                        + "." +
+                        NumberFormat.getFormat("000").format(count++);
+                item.setSerialNumber(number);
             }
         }
     }
@@ -247,8 +252,8 @@ public class DeliveryKitList extends Composite
     @Inject
     private AbstractDeliveryKitListActivity activity;
 
-    private String nextAvailableSerialNumberPrefix;
-    private Integer nextAvailableSerialNumberPostfix;
+    private Integer lastSerialNumberPrefix;
+    private Integer lastSerialNumberPostfix;
     private boolean isArmyProject = false;
 
     private int minimumKitNumber = 1;

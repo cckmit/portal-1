@@ -35,6 +35,7 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
     @PostConstruct
     public void onInit() {
         deliveryMetaView.setActivity(this);
+        deliveryMetaView.projectEnabled().setEnabled(false);
         setDeliveryMetaView(deliveryMetaView, ignore -> {});
     }
 
