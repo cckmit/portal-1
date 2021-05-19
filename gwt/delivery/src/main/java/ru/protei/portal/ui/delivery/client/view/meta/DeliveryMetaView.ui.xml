@@ -75,7 +75,7 @@
                 </div>
             </div>
 
-            <div class="form-group m-t-10 m-b-10">
+            <div class="form-group m-t-10 m-b-0">
                 <label><ui:text from="{lang.deliveryCustomerInfo}"/></label>
             </div>
 
