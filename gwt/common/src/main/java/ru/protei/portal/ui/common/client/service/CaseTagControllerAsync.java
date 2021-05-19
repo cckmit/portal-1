@@ -1,10 +1,8 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.query.CaseTagQuery;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
 

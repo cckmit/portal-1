@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.model.dao.CaseShortViewDAO;
-import ru.protei.portal.core.model.dao.CaseStateDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dao.UserCaseAssignmentDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_TableEntity;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -45,6 +42,8 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
     PersonDAO personDAO;
     @Autowired
     CaseStateDAO caseStateDAO;
+    @Autowired
+    CompanyGroupHomeDAO companyGroupHomeDAO;
     @Autowired
     PortalConfig config;
 
@@ -290,7 +289,9 @@ public class UserCaseAssignmentServiceImpl implements UserCaseAssignmentService 
         CaseQuery query = new CaseQuery();
         query.setStateIds(stateIds);
         query.setManagerIds(managerIds);
-        query.setManagerCompanyIds(Collections.singletonList(token.getCompanyId()));
+        if (!companyGroupHomeDAO.isHomeCompany(token.getCompanyId())) {
+            query.setManagerCompanyIds(Collections.singletonList(token.getCompanyId()));
+        }
         return query;
     }
 
