@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.events.CommentAndHistoryEvents;
 import ru.protei.portal.ui.common.client.events.DeliveryEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
@@ -129,6 +130,7 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         controller.updateMeta(delivery, new FluentCallback<Delivery>()
                 .withSuccess(caseMetaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new CommentAndHistoryEvents.Reload());
                     fillView( caseMetaUpdated );
                 }));
     }

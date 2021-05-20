@@ -8,17 +8,13 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
-import ru.protei.portal.core.model.dict.En_CustomerType;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.DeliveryEvents;
-import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
@@ -27,7 +23,10 @@ import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDesc
 import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDescriptionEditView;
 import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDescriptionView;
 
+import java.util.List;
 import java.util.function.Consumer;
+
+import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
 
 public abstract class DeliveryEditActivity implements Activity, AbstractDeliveryEditActivity,
             AbstractDeliveryNameDescriptionEditActivity {
@@ -104,6 +103,12 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         switchNameDescriptionToEdit(true);
     }
 
+    @Override
+    public void onSelectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
+        saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
+        fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));
+    }
+
     private void requestDelivery(Long id) {
         controller.getDelivery(id, new FluentCallback<Delivery>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
@@ -121,6 +126,8 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         view.updateKitByProject(delivery.getProject().getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE);
         view.kits().setValue(delivery.getKits());
         renderMarkupText(delivery.getDescription(), En_TextMarkup.MARKDOWN, html -> nameAndDescriptionView.setDescription(html));
+        fireEvent(new CommentAndHistoryEvents.Show(view.getItemsContainer(), delivery.getId(),
+                                                   En_CaseType.DELIVERY, true, delivery.getCreatorId()));
     }
 
     private void showMeta(Delivery delivery) {
@@ -168,6 +175,8 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     PolicyService policyService;
     @Inject
     TextRenderControllerAsync textRenderController;
+    @Inject
+    LocalStorageService localStorageService;
 
     @ContextAware
     Delivery delivery;

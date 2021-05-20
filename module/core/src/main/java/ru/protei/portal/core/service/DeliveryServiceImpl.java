@@ -16,6 +16,8 @@ import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -30,6 +32,9 @@ import static ru.protei.portal.core.model.util.CrmConstants.Masks.DELIVERY_KIT_S
  * Реализация сервиса управления поставками
  */
 public class DeliveryServiceImpl implements DeliveryService {
+
+    private final static DateFormat DEPARTURE_DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
+
     private static Logger log = LoggerFactory.getLogger(DeliveryServiceImpl.class);
 
     @Autowired
@@ -58,6 +63,10 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Autowired
     AuthService authService;
+    @Autowired
+    HistoryService historyService;
+    @Autowired
+    CaseStateDAO caseStateDAO;
 
     private final Pattern deliverySerialNumber = Pattern.compile(DELIVERY_KIT_SERIAL_NUMBER_PATTERN);
 
@@ -119,6 +128,12 @@ public class DeliveryServiceImpl implements DeliveryService {
             jdbcManyRelationsHelper.fill(caseObject.getNotifiers(), Person.Fields.CONTACT_ITEMS);
         }
 
+        long stateId = delivery.getStateId();
+        Result<Long> resultState = addStateHistory(token, deliveryId, stateId, caseStateDAO.get(stateId).getInfo());
+        if (resultState.isError()) {
+            log.error("State message for the delivery {} not saved!", caseId);
+        }
+
         return ok(deliveryDAO.get(delivery.getId()));
     }
 
@@ -161,6 +176,21 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         // update kits
+
+        if (meta.getStateId() != oldMeta.getStateId()) {
+            Result<Long> resultState = changeStateHistory(token, meta.getId(), oldMeta.getId(), caseStateDAO.get(oldMeta.getStateId()).getInfo(),
+                                                          meta.getStateId(), caseStateDAO.get(meta.getStateId()).getInfo());
+            if (resultState.isError()) {
+                log.error("State message for the delivery {} not saved!", meta.getId());
+            }
+        }
+
+        if (departureIsChanged(meta.getDepartureDate(), oldMeta.getDepartureDate())) {
+            Result<Long> resultDate = changeDateHistory(token, meta.getId(), oldMeta.getDepartureDate(), meta.getDepartureDate());
+            if (resultDate.isError()) {
+                log.error("Date message for the delivery {} not saved!", meta.getId());
+            }
+        }
 
         return getDelivery(token,  caseObject.getId());
     }
@@ -256,5 +286,23 @@ public class DeliveryServiceImpl implements DeliveryService {
         caseObject.setNotifiers(delivery.getSubscribers());
 
         return caseObject;
+    }
+
+    private boolean departureIsChanged(Date date, Date oldDate) {
+        return (date != null) && (oldDate == null || date.getTime() != oldDate.getTime());
+    }
+
+    private Result<Long> addStateHistory(AuthToken authToken, Long deliveryId, Long stateId, String stateName) {
+        return historyService.createHistory(authToken, deliveryId, En_HistoryAction.ADD, En_HistoryType.CASE_STATE, null, null, stateId, stateName);
+    }
+
+    private Result<Long> changeStateHistory(AuthToken token, Long deliveryId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
+        return historyService.createHistory(token, deliveryId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
+    }
+
+    private Result<Long> changeDateHistory(AuthToken token, Long deliveryId, Date oldDate, Date newDate) {
+        return historyService.createHistory(token, deliveryId, En_HistoryAction.CHANGE, En_HistoryType.DATE, null,
+                                            oldDate != null ? DEPARTURE_DATE_FORMAT.format(oldDate) : null, deliveryId,
+                                            newDate != null ? DEPARTURE_DATE_FORMAT.format(newDate) : null);
     }
 }

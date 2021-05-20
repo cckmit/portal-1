@@ -21,4 +21,6 @@ public interface AbstractDeliveryEditView extends IsWidget {
     void updateKitByProject(boolean isArmyProject);
 
     HasWidgets getMetaContainer();
+
+    HasWidgets getItemsContainer();
 }
