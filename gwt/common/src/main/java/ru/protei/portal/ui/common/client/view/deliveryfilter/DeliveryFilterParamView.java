@@ -54,7 +54,6 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
         search.getElement().setPropertyString("placeholder", lang.search());
         sortDir.setValue(false);
         fillDateRanges(dateDepartureRange);
-        dateDepartureRange.setHeader(lang.created());
         managers.setPersonModel( managersModel );
         managers.setNullItem(() -> new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
         products.setTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
@@ -161,7 +160,7 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
         sortDir.setValue(deliveryQuery.getSortDir() == null ? null : deliveryQuery.getSortDir().equals(En_SortDir.ASC));
         sortField.setValue(deliveryQuery.getSortField() == null ? En_SortField.creation_date : deliveryQuery.getSortField());
         dateDepartureRange.setValue(fromDateRange(deliveryQuery.getDepartureDateRange()));
-//        state.setValue(toSet(caseQuery.getStateIds(), id -> new CaseState(id)));
+        state.setValue(toSet(deliveryQuery.getStateIds(), id -> new CaseState(id)));
 
         Set<EntityOption> initiatorsCompanies = applyCompanies( filter.getCompanyEntityOptions(), deliveryQuery.getCompanyIds() );
         companies.setValue(initiatorsCompanies);
@@ -198,8 +197,7 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setManagerIds(getManagersIdList(managers.getValue()));
                 query.setDepartureDateRange(toDateRange(dateDepartureRange.getValue()));
-
-                //                query.setStateIds(nullIfEmpty(toList(states().getValue(), CaseState::getId)));
+                query.setStateIds(nullIfEmpty(toList(states().getValue(), CaseState::getId)));
                 break;
             }
         }
@@ -272,13 +270,6 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
         final boolean isSubcontractor = policyService.isSubcontractorCompany();
 
         search.setVisible(filterType.equals(En_DeliveryFilterType.DELIVERY_OBJECTS));
-        if (filterType.equals(En_DeliveryFilterType.DELIVERY_OBJECTS)) {
-            dateDepartureRange.setHeader(lang.created());
-            sortByContainer.removeClassName(HIDE);
-        } else {
-            dateDepartureRange.setHeader(lang.period());
-            sortByContainer.addClassName(HIDE);
-        }
         managers.setVisible((!isCustomer || isSubcontractor) && filterType.equals(En_DeliveryFilterType.DELIVERY_OBJECTS));
     }
 

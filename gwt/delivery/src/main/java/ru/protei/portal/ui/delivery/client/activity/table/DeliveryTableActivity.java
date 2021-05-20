@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dto.DeliveryFilterDto;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.DeliveryQuery;
+import ru.protei.portal.core.model.query.PlanQuery;
 import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryCollapseFilterActivity;
 import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryCollapseFilterView;
 import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryFilterModel;
@@ -94,7 +95,7 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
         if (event.deliveryFilterDto == null || event.deliveryFilterDto.getQuery() == null) {
             loadTable();
         } else {
-            fillFilterFieldsByCaseQuery(event.deliveryFilterDto);
+            fillFilterFieldsByQuery(event.deliveryFilterDto);
         }
 
         validateDepartureRange(filterView.getDeliveryFilterParams().isDepartureRangeValid());
@@ -167,7 +168,7 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
     @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Delivery>> asyncCallback) {
         boolean isFirstChunk = offset == 0;
-        BaseQuery query = getQuery();
+        DeliveryQuery query = getQuery();
         query.setOffset(offset);
         query.setLimit(limit);
         query.setSortDir(En_SortDir.DESC);
@@ -214,7 +215,7 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
         view.triggerTableLoad();
     }
 
-    private void fillFilterFieldsByCaseQuery(DeliveryFilterDto<DeliveryQuery> caseFilterDto) {
+    private void fillFilterFieldsByQuery(DeliveryFilterDto<DeliveryQuery> caseFilterDto) {
         filterView.resetFilter(DEFAULT_MODIFIED_RANGE);
         filterView.userFilter().setValue(caseFilterDto.getDeliveryFilter().toShortView());
 

@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.query.BaseQuery;
+import ru.protei.portal.core.model.query.DeliveryQuery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -12,7 +13,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 @RemoteServiceRelativePath("springGwtServices/DeliveryController")
 public interface DeliveryController extends RemoteService {
 
-    SearchResult<Delivery> getDeliveries(BaseQuery query) throws RequestFailedException;
+    SearchResult<Delivery> getDeliveries(DeliveryQuery query) throws RequestFailedException;
 
     Delivery getDelivery(long id) throws RequestFailedException;
 

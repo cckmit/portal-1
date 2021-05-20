@@ -4,12 +4,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.query.BaseQuery;
+import ru.protei.portal.core.model.query.DeliveryQuery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 public interface DeliveryControllerAsync {
 
-    void getDeliveries(BaseQuery query, AsyncCallback<SearchResult<Delivery>> async);
+    void getDeliveries(DeliveryQuery query, AsyncCallback<SearchResult<Delivery>> async);
 
     void getDelivery(long id, AsyncCallback<Delivery> callback);
 

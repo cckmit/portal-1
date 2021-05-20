@@ -27,6 +27,8 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
 
     private List<Long> managerIds;
 
+    private List<Long> stateIds;
+
     public String getName() {
         return name;
     }
@@ -42,6 +44,12 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public List<Long> getStateIds() {
+        return stateIds;
+    }
+
+    public void setStateIds(List<Long> stateIds) { this.stateIds = stateIds; }
 
     public DateRange getDepartureDateRange() {
         return departureDateRange;
@@ -140,6 +148,7 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
                 CollectionUtils.isNotEmpty(companyIds) ||
                 CollectionUtils.isNotEmpty(productIds) ||
                 CollectionUtils.isNotEmpty(managerIds) ||
+                CollectionUtils.isNotEmpty(stateIds) ||
                 departureDateRange != null;
     }
 
@@ -148,10 +157,15 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
         return "DeliveryQuery{" +
                 "id=" + id +
                 ", name=" + name +
+                ", departureDateRange=" + departureDateRange +
                 ", companyIds=" + companyIds +
                 ", productIds=" + productIds +
                 ", managerIds=" + managerIds +
-                ", departureDateRange=" + departureDateRange +
+                ", stateIds=" + stateIds +
+                ", sortField=" + sortField +
+                ", sortDir=" + sortDir +
+                ", limit=" + limit +
+                ", offset=" + offset +
                 '}';
     }
 

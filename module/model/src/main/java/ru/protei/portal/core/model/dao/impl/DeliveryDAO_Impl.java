@@ -19,9 +19,5 @@ public class DeliveryDAO_Impl extends PortalBaseJdbcDAO<Delivery> implements Del
     @SqlConditionBuilder
     public SqlCondition baseQueryCondition(DeliveryQuery query) {
         return deliverySqlBuilder.getCondition(query);
-
-//        return new SqlCondition().build((condition, args) -> {
-//            condition.append("1 = 1");
-//        });
     }
 }

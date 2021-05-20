@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.Delivery;
-import ru.protei.portal.core.model.query.BaseQuery;
+import ru.protei.portal.core.model.query.DeliveryQuery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.DeliveryService;
@@ -28,7 +28,7 @@ import static ru.protei.portal.ui.common.server.ServiceUtils.*;
 public class DeliveryControllerImpl implements DeliveryController {
 
     @Override
-    public SearchResult<Delivery> getDeliveries(BaseQuery query) throws RequestFailedException {
+    public SearchResult<Delivery> getDeliveries(DeliveryQuery query) throws RequestFailedException {
         log.info("getDeliveries(): query={}", query);
         Result<SearchResult<Delivery>> result = deliveryService.getDeliveries(getAuthToken(sessionService, httpRequest), query);
         log.info("getDeliveries(): result={}", result);
