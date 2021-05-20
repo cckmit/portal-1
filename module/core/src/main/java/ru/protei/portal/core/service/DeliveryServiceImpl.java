@@ -64,7 +64,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public Result<SearchResult<Delivery>> getDeliveries(AuthToken token, DeliveryQuery query) {
-        SearchResult<Delivery> sr = deliveryDAO.getSearchResultByQuery(query);
+        SearchResult<Delivery> sr = deliveryDAO.getSearchResult(query);
 
         for (Delivery delivery : emptyIfNull(sr.getResults())){
             if (delivery.getProject() == null){

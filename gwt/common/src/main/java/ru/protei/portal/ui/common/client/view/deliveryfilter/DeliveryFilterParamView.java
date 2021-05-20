@@ -131,7 +131,7 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
         products.setValue(null);
         state.setValue(null);
         dateDepartureRange.setValue(null);
-        sortField.setValue(En_SortField.delivery_case_name);
+        sortField.setValue(En_SortField.delivery_departure_date);
         sortDir.setValue(false);
         search.setValue("");
 
@@ -158,7 +158,7 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
     public void fillFilterFields(DeliveryQuery deliveryQuery, SelectorsParams filter) {
         search.setValue(deliveryQuery.getSearchString());
         sortDir.setValue(deliveryQuery.getSortDir() == null ? null : deliveryQuery.getSortDir().equals(En_SortDir.ASC));
-        sortField.setValue(deliveryQuery.getSortField() == null ? En_SortField.creation_date : deliveryQuery.getSortField());
+        sortField.setValue(deliveryQuery.getSortField() == null ? En_SortField.delivery_departure_date : deliveryQuery.getSortField());
         dateDepartureRange.setValue(fromDateRange(deliveryQuery.getDepartureDateRange()));
         state.setValue(toSet(deliveryQuery.getStateIds(), id -> new CaseState(id)));
 
@@ -356,12 +356,6 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
     private void onFilterChanged() {
         if (model != null) {
             model.onUserFilterChanged();
-        }
-    }
-
-    private void onPlanChanged(boolean isPresent) {
-        if (model != null) {
-            model.onPlanPresent(isPresent);
         }
     }
 

@@ -84,6 +84,10 @@ public class En_SortFieldLang {
                 return lang.planSort();
             case server_ip:
                 return lang.siteFolderIP();
+            case delivery_case_name:
+                return lang.deliveryName();
+            case delivery_departure_date:
+                return lang.deliveryDepartureDate();
             default:
                 return lang.unknownField();
         }
