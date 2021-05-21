@@ -14,9 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.uits.UitsDealStageMapping;
-import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.UitsIssueInfo;
@@ -39,10 +37,6 @@ public class UitsServiceImpl implements UitsService {
     public static final String STAGE_ID = "STAGE_ID";
     public static final String ID = "ID";
 
-    @Autowired
-    YoutrackApi api;
-    @Autowired
-    PortalConfig config;
     @Autowired
     CaseStateDAO caseStateDAO;
 

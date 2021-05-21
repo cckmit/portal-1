@@ -43,7 +43,7 @@ public class UitsIssueInfo implements Serializable {
 
     @Override
     public String toString() {
-        return "YouTrackIssueInfo{" +
+        return "UitsIssueInfo{" +
                 "stateId=" + state +
                 ", id='" + id + '\'' +
                 ", summary='" + summary + '\'' +

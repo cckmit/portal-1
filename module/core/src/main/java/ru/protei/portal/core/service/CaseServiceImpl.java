@@ -1351,11 +1351,11 @@ public class CaseServiceImpl implements CaseService {
             if (link.getRemoteId() == null) continue;
             if (YT.equals( link.getType() )){
                 youtrackService.getIssueInfo( link.getRemoteId() )
-                        .ifError(e -> log.warn( "fillYouTrackInfo(): case link with id={}, caseId={}, linkType={}, remoteId={} not found! ", link.getId(), link.getCaseId(), link.getType(), link.getRemoteId()))
+                        .ifError(e -> log.warn( "fillLinkedEntryInfo(): YouTrack case link with id={}, caseId={}, linkType={}, remoteId={} not found! ", link.getId(), link.getCaseId(), link.getType(), link.getRemoteId()))
                         .ifOk(link::setYouTrackIssueInfo);
             } else if (UITS.equals( link.getType() )) {
                 uitsService.getIssueInfo( Long.valueOf(link.getRemoteId()) )
-                        .ifError(e -> log.warn( "fillUitsInfo(): case link with id={}, caseId={}, linkType={}, remoteId={} not found! ", link.getId(), link.getCaseId(), link.getType(), link.getRemoteId()))
+                        .ifError(e -> log.warn( "fillLinkedEntryInfo(): UITS case link with id={}, caseId={}, linkType={}, remoteId={} not found! ", link.getId(), link.getCaseId(), link.getType(), link.getRemoteId()))
                         .ifOk(link::setUitsIssueInfo);
             }
         }

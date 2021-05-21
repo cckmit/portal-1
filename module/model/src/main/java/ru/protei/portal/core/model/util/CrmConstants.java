@@ -243,4 +243,13 @@ public class CrmConstants {
     public interface NightWork {
         Integer START_NIGHT = 21;
     }
+
+    public interface UitsState {
+        String NEW = "NEW"; //Новый (не рассмотрен)
+        String EXECUTING = "EXECUTING"; //В работе
+        String REPORT_PREPARE = "1"; //Подготовка отчета
+        String FEEDBACK_EXPECT = "2"; //Ожидание обратной связи
+        String WON = "WON"; //Решено (Услуги оказаны)
+        String LOSE = "LOSE"; //Отклонено (отказ)
+    }
 }
