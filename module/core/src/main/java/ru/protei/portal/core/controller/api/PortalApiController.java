@@ -730,10 +730,15 @@ public class PortalApiController {
         query.setManagerIds(apiQuery.getManagerIds());
         query.setCompanyIds(apiQuery.getCompanyIds());
         query.setAllowViewPrivate(apiQuery.isAllowViewPrivate());
+        query.setViewPrivate(apiQuery.getViewPrivate());
         query.setCreatedRange(new DateRange(En_DateIntervalType.FIXED,
                                             parseDate(apiQuery.getCreatedFrom()),
                                             parseDate(apiQuery.getCreatedTo()))
                              );
+        query.setModifiedRange(new DateRange(En_DateIntervalType.FIXED,
+                apiQuery.getModifiedFrom(),
+                apiQuery.getModifiedTo())
+        );
         query.setManagerCompanyIds(apiQuery.getManagerCompanyIds());
         query.setProductIds(apiQuery.getProductIds());
         query.setCaseTagsNames(apiQuery.getCaseTagsNames());

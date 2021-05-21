@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.En_CaseType;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -39,6 +40,10 @@ public class CaseApiQuery extends BaseQuery {
     @JsonAlias({"to", "createdTo" })
     private String createdTo;
 
+    private Date modifiedFrom;
+
+    private Date modifiedTo;
+
     public CaseApiQuery() {}
 
     public En_CaseType getType() {
@@ -70,6 +75,14 @@ public class CaseApiQuery extends BaseQuery {
         this.allowViewPrivate = isAllowViewPrivate;
     }
 
+    public Boolean getViewPrivate() {
+        return viewPrivate;
+    }
+
+    public void setViewPrivate(Boolean viewPrivate) {
+        this.viewPrivate = viewPrivate;
+    }
+
     public List<Long> getManagerCompanyIds() {
         return managerCompanyIds;
     }
@@ -91,20 +104,38 @@ public class CaseApiQuery extends BaseQuery {
         this.caseTagsNames = caseTagsNames;
     }
 
+    public Date getModifiedFrom() {
+        return modifiedFrom;
+    }
+
+    public void setModifiedFrom(Date modifiedFrom) {
+        this.modifiedFrom = modifiedFrom;
+    }
+
+    public Date getModifiedTo() {
+        return modifiedTo;
+    }
+
+    public void setModifiedTo(Date modifiedTo) {
+        this.modifiedTo = modifiedTo;
+    }
+
     @Override
     public String toString() {
         return "CaseApiQuery{" +
                 "managerIds=" + managerIds +
-                ", states=" + stateIds +
+                ", companyIds=" + companyIds +
+                ", managerCompanyIds=" + managerCompanyIds +
+                ", stateIds=" + stateIds +
+                ", productIds=" + productIds +
+                ", caseTagsNames=" + caseTagsNames +
                 ", type=" + type +
                 ", allowViewPrivate=" + allowViewPrivate +
                 ", viewPrivate=" + viewPrivate +
                 ", createdFrom='" + createdFrom + '\'' +
                 ", createdTo='" + createdTo + '\'' +
-                ", companyIds=" + companyIds +
-                ", managerCompanyIds=" + managerCompanyIds +
-                ", productIds=" + productIds +
-                ", caseTagNames=" + caseTagsNames +
+                ", modifiedFrom=" + modifiedFrom +
+                ", modifiedTo=" + modifiedTo +
                 '}';
     }
 }
