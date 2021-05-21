@@ -49,8 +49,6 @@ public interface CommonService {
 
     Result<Long>  mergeExtAppData( ExternalCaseAppData appData );
 
-    Result<List<CaseComment>> getCaseComments( CaseCommentQuery caseCommentQuery );
-
     Result<RedminePriorityMapEntry> getByRedminePriorityId( Integer priorityId, long priorityMapId );
     Result<RedminePriorityMapEntry> getByPortalPriorityId( Integer impLevel, long priorityMapId );
 
@@ -62,4 +60,7 @@ public interface CommonService {
     Result<Boolean> updateUpdatedOn( RedmineEndpoint endpoint );
 
     List<Platform> getPlatforms(Long companyId);
+
+    Result<Date> getLatestHistoryDate(Long caseObjectId);
+    Result<Date> getLatestCommentDate(Long caseObjectId);
 }

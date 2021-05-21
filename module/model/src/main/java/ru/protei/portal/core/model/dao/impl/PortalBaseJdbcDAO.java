@@ -153,11 +153,11 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
     }
 
     public Long getMaxId () {
-        return getMaxValue(getIdColumnName(), Long.class, null, (Object[])null);
+        return getMaxValue(getIdColumnName(), Long.class, null, null, (Object[])null);
     }
 
     public Long getMaxId (String cond, Object... args) {
-        return getMaxValue(getIdColumnName(), Long.class, cond, args);
+        return getMaxValue(getIdColumnName(), Long.class, null, cond, args);
     }
 
     @Override
@@ -185,9 +185,14 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         return handled;
     }
 
-    public <V> V getMaxValue (String field, Class<V> type, String cond, Object...args) {
+    public <V> V getMaxValue (String field, Class<V> type, String join, String cond, Object...args) {
 
         String query = "select max(" + field + ") from " + getTableName();
+
+        if (join != null) {
+            query += " " + join;
+        }
+
         if (cond != null) {
             query += " where " + cond;
         }

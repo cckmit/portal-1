@@ -15,7 +15,6 @@ import ru.protei.portal.core.event.CaseObjectMetaEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
@@ -119,11 +118,6 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public Result<List<CaseComment>> getCaseComments( CaseCommentQuery caseCommentQuery ) {
-        return ok(caseCommentDAO.getCaseComments( caseCommentQuery ));
-    }
-
-    @Override
     public Result<RedminePriorityMapEntry> getByRedminePriorityId( Integer priorityId, long priorityMapId ) {
         return ok( priorityMapEntryDAO.getByRedminePriorityId( priorityId, priorityMapId ) );
     }
@@ -139,8 +133,20 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public Result<RedmineStatusMapEntry> getRedmineStatus(long initStateId, long lastStateId, long statusMapId ) {
+    public Result<RedmineStatusMapEntry> getRedmineStatus( long initStateId, long lastStateId, long statusMapId ) {
         return ok( statusMapEntryDAO.getRedmineStatus(initStateId, lastStateId, statusMapId) );
+    }
+
+    public Result<Date> getLatestHistoryDate(Long caseObjectId) {
+        return ok(historyDAO.getMaxValue("history.date", Date.class,
+                "left join person on history.initiator_id = person.id",
+                "case_object_id = ? and person.creator = 'redmine'", caseObjectId));
+    }
+
+    public Result<Date> getLatestCommentDate(Long caseObjectId) {
+        return ok(caseCommentDAO.getMaxValue("case_comment.created", Date.class,
+                "left join person on case_comment.author_id = person.id",
+                "case_comment.case_id = ? and person.creator = 'redmine'", caseObjectId));
     }
 
     @Override
