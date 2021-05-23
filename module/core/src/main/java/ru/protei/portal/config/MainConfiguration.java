@@ -970,6 +970,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public UitsService getUitsService() {
+        return new UitsServiceImpl();
+    }
+
+    @Bean
     public EmployeeRegistrationService getEmployeeRegistrationService() {
         return new EmployeeRegistrationServiceImpl();
     }

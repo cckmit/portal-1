@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.UitsIssueInfo;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -18,7 +19,9 @@ public interface CaseLinkController extends RemoteService {
 
     YouTrackIssueInfo getYtLinkInfo( String ytId ) throws RequestFailedException;
 
-    List<CaseLink> getCaseLinks( Long caseId ) throws RequestFailedException;
+    UitsIssueInfo getUitsLinkInfo(Long uitsId) throws RequestFailedException;
+
+    List<CaseLink> getCaseLinks(Long caseId ) throws RequestFailedException;
 
     CaseLink createLinkWithPublish(CaseLink value, En_CaseType caseType) throws RequestFailedException;
 

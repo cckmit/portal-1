@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.dict.En_CaseLink.UITS;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -135,6 +136,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     YoutrackService youtrackService;
+
+    @Autowired
+    UitsService uitsService;
 
     @Autowired
     PortalConfig portalConfig;
@@ -773,7 +777,7 @@ public class CaseServiceImpl implements CaseService {
     @Override
     public Result<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId ) {
         return caseLinkService.getLinks( token, caseId )
-                .map( this::fillYouTrackInfo );
+                .map( this::fillLinkedEntryInfo);
     }
 
 
@@ -1343,12 +1347,18 @@ public class CaseServiceImpl implements CaseService {
         return date == null || date > System.currentTimeMillis();
     }
 
-    private List<CaseLink> fillYouTrackInfo( List<CaseLink> caseLinks ) {
+    private List<CaseLink> fillLinkedEntryInfo(List<CaseLink> caseLinks ) {
         for (CaseLink link : emptyIfNull( caseLinks )) {
-            if (!YT.equals( link.getType() ) || link.getRemoteId() == null) continue;
-            youtrackService.getIssueInfo( link.getRemoteId() )
-                    .ifError(e -> log.warn( "fillYouTrackInfo(): case link with id={}, caseId={}, linkType={}, remoteId={} not found! ", link.getId(), link.getCaseId(), link.getType(), link.getRemoteId()))
-                    .ifOk(link::setYouTrackIssueInfo);
+            if (link.getRemoteId() == null) continue;
+            if (YT.equals( link.getType() )){
+                youtrackService.getIssueInfo( link.getRemoteId() )
+                        .ifError(e -> log.warn( "fillLinkedEntryInfo(): YouTrack case link with id={}, caseId={}, linkType={}, remoteId={} not found! ", link.getId(), link.getCaseId(), link.getType(), link.getRemoteId()))
+                        .ifOk(link::setYouTrackIssueInfo);
+            } else if (UITS.equals( link.getType() )) {
+                uitsService.getIssueInfo( Long.valueOf(link.getRemoteId()) )
+                        .ifError(e -> log.warn( "fillLinkedEntryInfo(): UITS case link with id={}, caseId={}, linkType={}, remoteId={} not found! ", link.getId(), link.getCaseId(), link.getType(), link.getRemoteId()))
+                        .ifOk(link::setUitsIssueInfo);
+            }
         }
         return caseLinks;
     }

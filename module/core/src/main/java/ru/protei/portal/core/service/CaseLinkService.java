@@ -48,4 +48,5 @@ public interface CaseLinkService {
     Result<List<Long>> getProjectIdsByYoutrackId(AuthToken token, String youtrackId);
 
     Result<CaseLink> getYtLink(AuthToken token, String youtrackId, Long caseId);
+    Result<UitsIssueInfo> getUitsIssueInfo(AuthToken authToken, Long uitsId);
 }

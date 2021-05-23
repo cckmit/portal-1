@@ -53,6 +53,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Autowired
     private YoutrackService youtrackService;
     @Autowired
+    private UitsService uitsService;
+    @Autowired
     private LockService lockService;
     @Autowired
     private TransactionTemplate transactionTemplate;
@@ -72,6 +74,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         Map<En_CaseLink, String> linkMap = new HashMap<>();
         linkMap.put(En_CaseLink.CRM, portalConfig.data().getCaseLinkConfig().getLinkCrm());
         linkMap.put(En_CaseLink.YT, portalConfig.data().getCaseLinkConfig().getLinkYouTrack());
+        linkMap.put(En_CaseLink.UITS, portalConfig.data().getCaseLinkConfig().getLinkUits());
         return ok(linkMap);
     }
 
@@ -92,6 +95,15 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
         return youtrackService.getIssueInfo(ytId);
+    }
+
+    @Override
+    public Result<UitsIssueInfo> getUitsIssueInfo(AuthToken authToken, Long uitsId) {
+        boolean isShowOnlyPublic = isShowOnlyPublicLinks(authToken);
+        if (isShowOnlyPublic && En_CaseLink.UITS.isForcePrivacy()) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+        return uitsService.getIssueInfo(uitsId);
     }
 
     @Override

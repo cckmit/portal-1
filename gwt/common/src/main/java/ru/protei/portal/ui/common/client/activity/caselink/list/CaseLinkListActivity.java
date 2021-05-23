@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_BundleType;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.UitsIssueInfo;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.NumberUtils;
@@ -28,8 +29,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
-import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
+import static ru.protei.portal.core.model.dict.En_CaseLink.*;
 
 /**
  * Активность списка линков
@@ -121,6 +121,9 @@ public abstract class CaseLinkListActivity
                 break;
             case YT:
                 addYtLink( caseLink );
+                break;
+            case UITS:
+                addUitsLink( caseLink );
         }
     }
 
@@ -198,6 +201,27 @@ public abstract class CaseLinkListActivity
         );
     }
 
+    private void addUitsLink( CaseLink caseLink ) {
+        Long uitsRemoteId = NumberUtils.parseLong(caseLink.getRemoteId());
+        if (uitsRemoteId == null) {
+            showError(lang.issueLinkIncorrectUitsNumberFormat());
+            return;
+        }
+
+        caseLinkProvider.getUitsLinkInfo(uitsRemoteId, new FluentCallback<UitsIssueInfo>()
+                .withError(throwable -> showError(lang.issueLinkIncorrectUitsCaseNotFound(uitsRemoteId)))
+                .withSuccess(requestInfo -> {
+                    if (requestInfo == null) {
+                        showError(lang.issueLinkIncorrectUitsCaseNotFound(uitsRemoteId));
+                        return;
+                    }
+
+                    caseLink.setUitsIssueInfo(requestInfo);
+                    createLinkAndAddToParent(caseLink);
+                })
+        );
+    }
+
     private void createLinkAndAddToParent(CaseLink value) {
         if (bundleTypeToCaseLink.containsValue(value)) {
             fireEvent(new NotifyEvents.Show(lang.errCaseLinkAlreadyAdded(), NotifyEvents.NotifyType.ERROR));
@@ -241,6 +265,11 @@ public abstract class CaseLinkListActivity
             itemWidget.setNumber(linkId);
             itemWidget.setName(value.getYouTrackInfo().getSummary());
             itemWidget.setState(value.getYouTrackInfo().getState());
+        } else if (Objects.equals(value.getType(), UITS) && value.getUitsIssueInfo() != null) {
+            linkId = value.getRemoteId();
+            itemWidget.setNumber(lang.uitsPrefix() + linkId);
+            itemWidget.setName(value.getUitsIssueInfo().getSummary());
+            itemWidget.setState(value.getUitsIssueInfo().getState());
         } else {
             itemWidget.setName(value.getRemoteId());
             itemWidget.setNumber(lang.errCaseLinkNotFound());

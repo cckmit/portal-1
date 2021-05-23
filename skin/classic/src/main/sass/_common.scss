@@ -3971,6 +3971,16 @@ table {
   font-size: 10px;
 }
 
+.type-selector-item.type-selector-uits,
+.type-selector-item.type-selector-uits:hover,
+.type-selector-item.type-selector-uits:active,
+.type-selector-item.type-selector-uits:focus {
+  background-color: #6fbb2a;
+  border: 1px solid #4cca4f;
+  color: #ffffff;
+  font-size: 9px;
+}
+
 .dropdown-menu {
   .type-selector-item {
     display: block;

@@ -1798,6 +1798,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueLinkIncorrectCrmNumberFormat();
 
+    String issueLinkIncorrectUitsNumberFormat();
+
+    String issueLinkIncorrectUitsCaseNotFound(long p0);
+
     String issueLinkIncorrectCrmCaseNotFound( long p0 );
 
     String issueLinkIncorrectYouTrackCaseNotFound( String p0 );
@@ -3523,4 +3527,10 @@ public interface Lang extends Messages, ContactItemLang {
     String deliveryFilterCompany();
 
     String deliveryFilterManager();
+
+    String caseLinkUits();
+
+    String caseLinkUitsShort();
+
+    String uitsPrefix();
 }

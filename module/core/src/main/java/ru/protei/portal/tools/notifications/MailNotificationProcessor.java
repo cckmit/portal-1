@@ -56,8 +56,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.partitioningBy;
 import static ru.protei.portal.config.PortalConfigData.*;
 import static ru.protei.portal.core.event.ReservedIpReleaseRemainingEvent.*;
-import static ru.protei.portal.core.model.dict.En_CaseLink.CRM;
-import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
+import static ru.protei.portal.core.model.dict.En_CaseLink.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
@@ -178,6 +177,10 @@ public class MailNotificationProcessor {
             Long crmNumber = link.getCaseInfo().getCaseNumber();
             if (crmNumber == null) return EMPTY_LINK;
             return new LinkData( String.format( crmCaseUrl, crmNumber ), String.valueOf( crmNumber ) );
+        }
+        if (UITS.equals( type )) {
+            String remoteId = link.getRemoteId();
+            return new LinkData( config.data().getCaseLinkConfig().getLinkUits().replace("%id%", remoteId), remoteId );
         }
 
         return EMPTY_LINK;
