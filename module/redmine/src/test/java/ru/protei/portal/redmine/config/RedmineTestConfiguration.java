@@ -33,6 +33,8 @@ import ru.protei.portal.redmine.service.*;
 import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
+import ru.protei.portal.core.service.UitsService;
+import ru.protei.portal.core.service.UitsServiceImpl;
 
 import static org.mockito.Mockito.mock;
 
@@ -188,6 +190,11 @@ public class RedmineTestConfiguration {
     @Bean
     public YtDtoFieldsMapper getYtDtoFieldsMapper() {
         return new YtDtoFieldsMapperImpl();
+    }
+
+    @Bean
+    public UitsService getUitsService() {
+        return new UitsServiceImpl();
     }
 
     @Bean

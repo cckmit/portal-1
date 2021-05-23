@@ -75,6 +75,8 @@ import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
+import ru.protei.portal.core.service.UitsService;
+import ru.protei.portal.core.service.UitsServiceImpl;
 
 import java.util.concurrent.Executor;
 
@@ -130,6 +132,11 @@ public class ServiceTestsConfiguration {
     @Bean
     public YoutrackService getYoutrackService() {
         return new YoutrackServiceImpl();
+    }
+
+    @Bean
+    public UitsService getUitsService() {
+        return new UitsServiceImpl();
     }
 
     /* SERVICES */

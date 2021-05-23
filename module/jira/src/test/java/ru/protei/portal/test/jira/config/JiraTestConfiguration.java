@@ -49,6 +49,8 @@ import ru.protei.portal.test.jira.mock.JiraStatusMapEntryDAO_ImplMock;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
+import ru.protei.portal.core.service.UitsService;
+import ru.protei.portal.core.service.UitsServiceImpl;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -395,6 +397,11 @@ public class JiraTestConfiguration {
     @Bean
     public YtDtoFieldsMapper getYtDtoFieldsMapper() {
         return new YtDtoFieldsMapperImpl();
+    }
+
+    @Bean
+    public UitsService getUitsService() {
+        return new UitsServiceImpl();
     }
 
     @Bean

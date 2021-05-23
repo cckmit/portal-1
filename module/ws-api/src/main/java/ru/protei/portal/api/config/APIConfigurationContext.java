@@ -35,6 +35,8 @@ import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
+import ru.protei.portal.core.service.UitsService;
+import ru.protei.portal.core.service.UitsServiceImpl;
 
 import java.util.List;
 
@@ -155,6 +157,11 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     @Bean
     public YtDtoFieldsMapper getYtDtoFieldsMapper() {
         return new YtDtoFieldsMapperImpl();
+    }
+
+    @Bean
+    public UitsService getUitsService() {
+        return new UitsServiceImpl();
     }
 
     @Bean
