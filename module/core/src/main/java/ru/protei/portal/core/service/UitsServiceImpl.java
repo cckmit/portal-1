@@ -1,30 +1,24 @@
 package ru.protei.portal.core.service;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.client.uits.UitsDealStageMapping;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.UitsIssueInfo;
-import ru.protei.portal.core.model.helper.StringUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 import static ru.protei.portal.api.struct.Result.error;
 
@@ -43,112 +37,44 @@ public class UitsServiceImpl implements UitsService {
     @Override
     public Result<UitsIssueInfo> getIssueInfo(Long issueId) {
         if (issueId == null) {
-            log.warn("getUitsIssueInfo(): Can't get UITS issue info. Argument issueId is mandatory");
+            log.warn("getIssueInfo(): Can't get UITS issue info. issueId is mandatory");
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        String resultStr;
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
+        map.add("id", String.valueOf(issueId));
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, new HttpHeaders());
+        RestTemplate restTemplate = new RestTemplate();
 
+        String url = "https://support.uits.spb.ru/rest/347/djueym3pkassk34f/crm.deal.get?";
+        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root;
         try {
-            resultStr = getUitsCrmDeal(issueId);
+            root = mapper.readTree(response.getBody());
         } catch (IOException e) {
-            return Result.error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
         }
-
-        if (StringUtils.isEmpty(resultStr)){
-            return Result.error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
-        UitsIssueInfo uitsIssueInfo;
-        try {
-            uitsIssueInfo = convertToUitsIssueInfo(resultStr);
-        } catch (JSONException e) {
-            return Result.error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
-        if (uitsIssueInfo == null){
-            return Result.error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
-        return Result.ok(uitsIssueInfo);
+        return Result.ok(convertToUitsIssueInfo(root));
     }
 
-    private UitsIssueInfo convertToUitsIssueInfo(String dealJson) throws JSONException {
+    private UitsIssueInfo convertToUitsIssueInfo(JsonNode json) {
 
-        JSONObject json;
-        try {
-            json = new JSONObject(dealJson);
-        } catch (JSONException e) {
-            log.error("Failed to parse UitsCrmDeal result json", e);
-            throw e;
-        }
-
-        JSONObject result = json.getJSONObject(RESULT);
+        JsonNode result = json.get(RESULT);
 
         if (result == null){
-            log.error("Failed to parse UitsCrmDeal json: result is null");
+            log.error("Failed to parse UITS json: result field is null");
             return null;
         }
 
-        UitsIssueInfo uitsIssueInfo = new UitsIssueInfo();
-        String id = result.getString(ID);
-        String title = result.getString(TITLE);
-        String additionalInfo = result.getString(ADDITIONAL_INFO);
-        String stageId = result.getString(STAGE_ID);
-        Long stateId = UitsDealStageMapping.toCaseState(stageId);
+        String id = result.get(ID).asText();
+        String summary = result.get(TITLE).asText();
+        String description = result.get(ADDITIONAL_INFO).asText();
+        String stageId = result.get(STAGE_ID).asText();
+        Long caseStateId = UitsDealStageMapping.toCaseState(stageId);
+        CaseState caseState = caseStateId == null ? null : caseStateDAO.get(caseStateId);
 
-        uitsIssueInfo.setId(id);
-        uitsIssueInfo.setSummary(title);
-        uitsIssueInfo.setDescription(additionalInfo);
-        uitsIssueInfo.setState(stateId == null ? null : caseStateDAO.get(stateId));
-
-        return uitsIssueInfo;
-    }
-
-    private String getUitsCrmDeal(Long issueId) throws IOException {
-        String result = "";
-        log.info("getUitsCrmDeal by issue id: {}", issueId);
-
-        HttpClient httpclient = HttpClients.createDefault();
-        HttpPost httppost = new HttpPost("https://support.uits.spb.ru/rest/347/djueym3pkassk34f/crm.deal.get?");
-
-        List<NameValuePair> params = new ArrayList<>(1);
-        params.add(new BasicNameValuePair("id", String.valueOf(issueId)));
-        httppost.setEntity(new UrlEncodedFormEntity(params, StandardCharsets.UTF_8));
-
-        HttpResponse response;
-        try {
-            response = httpclient.execute(httppost);
-        } catch (IOException e) {
-            log.error("Failed to execute getUitsCrmDeal request", e);
-            throw e;
-        }
-
-        if (response == null){
-            log.error("Failed to get UitsCrmDeal, HTTP response is null");
-            return null;
-        }
-
-        InputStream inputStream;
-        try {
-            inputStream = response.getEntity().getContent();
-        } catch (IOException e) {
-            log.error("Failed to get UitsCrmDeal content", e);
-            throw e;
-        }
-
-        if (inputStream == null){
-            log.error("Failed to get UitsCrmDeal, content is null");
-            return null;
-        }
-
-        try {
-            result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            log.error("Failed to get UitsCrmDeal string from InputStream", e);
-            throw e;
-        }
-
-        return result;
+        return new UitsIssueInfo(id, summary, description, caseState);
     }
 }

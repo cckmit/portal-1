@@ -4,6 +4,16 @@ import java.io.Serializable;
 
 public class UitsIssueInfo implements Serializable {
 
+    public UitsIssueInfo() {
+    }
+
+    public UitsIssueInfo(String id, String summary, String description, CaseState state) {
+        this.id = id;
+        this.summary = summary;
+        this.description = description;
+        this.state = state;
+    }
+
     private String id;
     private String summary;
     private String description;
