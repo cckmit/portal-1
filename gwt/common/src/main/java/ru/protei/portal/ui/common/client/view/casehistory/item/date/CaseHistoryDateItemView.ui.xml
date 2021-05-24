@@ -1,7 +1,0 @@
-<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-
-    <g:HTMLPanel ui:field="root" tag="span">
-        <span ui:field="date" class="case-history-state-item"/>
-    </g:HTMLPanel>
-</ui:UiBinder>

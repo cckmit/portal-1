@@ -178,21 +178,37 @@ public class DeliveryServiceImpl implements DeliveryService {
         // update kits
 
         if (meta.getStateId() != oldMeta.getStateId()) {
-            Result<Long> resultState = changeStateHistory(token, meta.getId(), oldMeta.getId(), caseStateDAO.get(oldMeta.getStateId()).getInfo(),
+            Result<Long> resultState = changeStateHistory(token, meta.getId(), oldMeta.getStateId(), caseStateDAO.get(oldMeta.getStateId()).getInfo(),
                                                           meta.getStateId(), caseStateDAO.get(meta.getStateId()).getInfo());
             if (resultState.isError()) {
                 log.error("State message for the delivery {} not saved!", meta.getId());
             }
         }
 
-        if (departureIsChanged(meta.getDepartureDate(), oldMeta.getDepartureDate())) {
-            Result<Long> resultDate = changeDateHistory(token, meta.getId(), oldMeta.getDepartureDate(), meta.getDepartureDate());
-            if (resultDate.isError()) {
-                log.error("Date message for the delivery {} not saved!", meta.getId());
-            }
+        Date oldDate = oldMeta.getDepartureDate();
+        Date newDate = meta.getDepartureDate();
+        Result<Long> resultDate = ok();
+
+        if (departureDateAdded(oldDate, newDate)) {
+            resultDate = addDateHistory(token, meta.getId(), meta.getDepartureDate());
         }
 
-        return getDelivery(token,  caseObject.getId());
+        if (departureDateChanged(oldDate, newDate)) {
+            resultDate = changeDateHistory(token, meta.getId(), oldMeta.getDepartureDate(), meta.getDepartureDate());
+        }
+
+        if (departureDateRemoved(oldDate, newDate)) {
+            resultDate = removeDateHistory(token, meta.getId(), oldMeta.getDepartureDate());
+        }
+
+        if (resultDate.isError()) {
+            log.error("Delivery date message with oldDate = {}, new Date = {} for delivery {} not saved!",
+                       oldDate, newDate, meta.getName());
+        } else {
+            log.info("Delivery date for delivery {} changed from {} to {}", meta.getName(), oldDate, newDate);
+        }
+
+        return getDelivery(token, caseObject.getId());
     }
 
     @Override
@@ -288,8 +304,16 @@ public class DeliveryServiceImpl implements DeliveryService {
         return caseObject;
     }
 
-    private boolean departureIsChanged(Date date, Date oldDate) {
-        return (date != null) && (oldDate == null || date.getTime() != oldDate.getTime());
+    private boolean departureDateAdded(Date oldDate, Date newDate) {
+        return oldDate == null && newDate != null;
+    }
+
+    private boolean departureDateChanged(Date oldDate, Date newDate) {
+        return oldDate != null && newDate != null && oldDate.getTime() != newDate.getTime();
+    }
+
+    private boolean departureDateRemoved(Date oldDate, Date newDate) {
+        return oldDate != null && newDate == null;
     }
 
     private Result<Long> addStateHistory(AuthToken authToken, Long deliveryId, Long stateId, String stateName) {
@@ -300,9 +324,19 @@ public class DeliveryServiceImpl implements DeliveryService {
         return historyService.createHistory(token, deliveryId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
     }
 
+    private Result<Long> addDateHistory(AuthToken token, Long deliveryId, Date date) {
+        return historyService.createHistory(token, deliveryId, En_HistoryAction.ADD, En_HistoryType.DATE,
+                                            null, null, deliveryId, DEPARTURE_DATE_FORMAT.format(date));
+    }
+
     private Result<Long> changeDateHistory(AuthToken token, Long deliveryId, Date oldDate, Date newDate) {
         return historyService.createHistory(token, deliveryId, En_HistoryAction.CHANGE, En_HistoryType.DATE, null,
                                             oldDate != null ? DEPARTURE_DATE_FORMAT.format(oldDate) : null, deliveryId,
                                             newDate != null ? DEPARTURE_DATE_FORMAT.format(newDate) : null);
+    }
+
+    private Result<Long> removeDateHistory(AuthToken token, Long deliveryId, Date oldDate) {
+        return historyService.createHistory(token, deliveryId, En_HistoryAction.REMOVE, En_HistoryType.DATE,
+                                            null, DEPARTURE_DATE_FORMAT.format(oldDate), deliveryId, null);
     }
 }

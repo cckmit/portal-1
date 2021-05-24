@@ -22,7 +22,6 @@ import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItem;
 import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItemsContainer;
 import ru.protei.portal.ui.common.client.view.casehistory.item.casestate.CaseHistoryStateItemView;
-import ru.protei.portal.ui.common.client.view.casehistory.item.date.CaseHistoryDateItemView;
 import ru.protei.portal.ui.common.client.view.casehistory.item.importance.CaseHistoryImportanceItemView;
 import ru.protei.portal.ui.common.client.view.casehistory.item.simple.CaseHistorySimpleItemView;
 import ru.protei.portal.ui.common.client.view.casehistory.item.tag.CaseHistoryTagItemView;
@@ -142,29 +141,19 @@ public abstract class CaseHistoryItemListActivity implements AbstractCaseHistory
         }
 
         if (En_HistoryAction.CHANGE.equals(history.getAction())) {
-            if (En_HistoryType.DATE.equals(history.getType())) {
-                historyItem.oldValueContainer().add(makeDateItem(
-                        history.getOldValue()
-                ));
+            historyItem.oldValueContainer().add(makeItem(
+                    history.getType(),
+                    history.getOldValue(),
+                    history.getOldColor(),
+                    makeLink(clazz, history.getOldId())
+            ));
 
-                historyItem.newValueContainer().add(makeDateItem(
-                        history.getNewValue()
-                ));
-            } else {
-                historyItem.oldValueContainer().add(makeItem(
-                        history.getType(),
-                        history.getOldValue(),
-                        history.getOldColor(),
-                        makeLink(clazz, history.getOldId())
-                ));
-
-                historyItem.newValueContainer().add(makeItem(
-                        history.getType(),
-                        history.getNewValue(),
-                        history.getNewColor(),
-                        makeLink(clazz, history.getNewId())
-                ));
-            }
+            historyItem.newValueContainer().add(makeItem(
+                    history.getType(),
+                    history.getNewValue(),
+                    history.getNewColor(),
+                    makeLink(clazz, history.getNewId())
+            ));
         }
 
         if (En_HistoryAction.REMOVE.equals(history.getAction())) {
@@ -183,10 +172,10 @@ public abstract class CaseHistoryItemListActivity implements AbstractCaseHistory
         return LinkUtils.isLinkNeeded(clazz) ? LinkUtils.makePreviewLink(clazz, id) : null;
     }
 
-    private Widget makeItem(En_HistoryType historyType, String name, String color, String link) {
+    private Widget makeItem(En_HistoryType historyType, String value, String color, String link) {
         if (En_HistoryType.CASE_STATE.equals(historyType)) {
             CaseHistoryStateItemView caseHistoryStateItemView = caseHistoryStateItemViewProvider.get();
-            caseHistoryStateItemView.setName(name);
+            caseHistoryStateItemView.setName(value);
             caseHistoryStateItemView.setColor(color);
 
             return caseHistoryStateItemView;
@@ -194,7 +183,7 @@ public abstract class CaseHistoryItemListActivity implements AbstractCaseHistory
 
         if (En_HistoryType.CASE_IMPORTANCE.equals(historyType)) {
             CaseHistoryImportanceItemView caseHistoryImportanceItemView = caseHistoryImportanceItemViewProvider.get();
-            caseHistoryImportanceItemView.setName(name);
+            caseHistoryImportanceItemView.setName(value);
             caseHistoryImportanceItemView.setColor(color);
 
             return caseHistoryImportanceItemView;
@@ -202,7 +191,7 @@ public abstract class CaseHistoryItemListActivity implements AbstractCaseHistory
 
         if (En_HistoryType.TAG.equals(historyType)) {
             CaseHistoryTagItemView caseHistoryTagItemView = caseHistoryTagItemViewProvider.get();
-            caseHistoryTagItemView.setName(name);
+            caseHistoryTagItemView.setName(value);
             caseHistoryTagItemView.setColor(color);
 
             return caseHistoryTagItemView;
@@ -210,19 +199,19 @@ public abstract class CaseHistoryItemListActivity implements AbstractCaseHistory
 
         if (En_HistoryType.CASE_MANAGER.equals(historyType) || En_HistoryType.PLAN.equals(historyType)) {
             CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
-            caseHistorySimpleItemView.setLink(transliteration(name), link);
+            caseHistorySimpleItemView.setLink(transliteration(value), link);
 
             return caseHistorySimpleItemView;
         }
 
+        if (En_HistoryType.DATE.equals(historyType)) {
+            CaseHistorySimpleItemView caseHistoryDateItemView = caseHistorySimpleItemViewProvider.get();
+            caseHistoryDateItemView.setLink(value, null);
+
+            return caseHistoryDateItemView;
+        }
+
         return null;
-    }
-
-    private Widget makeDateItem(String date) {
-        CaseHistoryDateItemView caseHistoryDateItemView = caseHistoryDateItemViewProvider.get();
-        caseHistoryDateItemView.setDate(date);
-
-        return caseHistoryDateItemView;
     }
 
     private String transliteration(String name) {
@@ -242,8 +231,6 @@ public abstract class CaseHistoryItemListActivity implements AbstractCaseHistory
     private Provider<CaseHistoryTagItemView> caseHistoryTagItemViewProvider;
     @Inject
     private Provider<CaseHistorySimpleItemView> caseHistorySimpleItemViewProvider;
-    @Inject
-    private Provider<CaseHistoryDateItemView> caseHistoryDateItemViewProvider;
 
     @Inject
     private CaseLinkProvider caseLinkProvider;

@@ -26,6 +26,7 @@ import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDesc
 import java.util.List;
 import java.util.function.Consumer;
 
+import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
 
 public abstract class DeliveryEditActivity implements Activity, AbstractDeliveryEditActivity,
@@ -125,6 +126,8 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         nameAndDescriptionView.setDescription(delivery.getDescription());
         view.updateKitByProject(delivery.getProject().getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE);
         view.kits().setValue(delivery.getKits());
+        view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
+
         renderMarkupText(delivery.getDescription(), En_TextMarkup.MARKDOWN, html -> nameAndDescriptionView.setDescription(html));
         fireEvent(new CommentAndHistoryEvents.Show(view.getItemsContainer(), delivery.getId(),
                                                    En_CaseType.DELIVERY, true, delivery.getCreatorId()));

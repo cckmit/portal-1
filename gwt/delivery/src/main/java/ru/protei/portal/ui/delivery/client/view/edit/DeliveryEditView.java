@@ -70,6 +70,11 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         return multiTabWidget.getContainer();
     }
 
+    @Override
+    public MultiTabWidget<En_CommentOrHistoryType> getMultiTabWidget() {
+        return multiTabWidget;
+    }
+
     @UiHandler("backButton")
     public void onCancelClicked(ClickEvent event) {
         if (activity != null) {
