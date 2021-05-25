@@ -138,7 +138,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         if (departureDate != null) {
             Result<Long> resultDate = addDateHistory(token, delivery.getId(), departureDate);
             if (resultDate.isError()) {
-                log.error("Delivery date message with oldDate = {}, new Date = {} for delivery {} not saved!",
+                log.error("Departure date message with oldDate={}, newDate={} for delivery {} not saved!",
                            null, departureDate, delivery.getName());
             }
         }
@@ -211,7 +211,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         if (resultDate.isError()) {
-            log.error("Delivery date message with oldDate = {}, new Date = {} for delivery {} not saved!",
+            log.error("Departure date message with oldDate={}, newDate={} for delivery {} not saved!",
                        oldDate, newDate, meta.getName());
         }
 
