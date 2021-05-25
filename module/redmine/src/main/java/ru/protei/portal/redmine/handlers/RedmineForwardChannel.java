@@ -223,7 +223,7 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
         Date latestSynchronizedDate = getLatestSynchronizedDate(latestHistoryDate, latestCommentDate, issue.getCreatedOn());
         logger.info("Last sync date {}", latestSynchronizedDate);
 
-        List<Journal> latestJournals = selectLatestsJournals( issue.getJournals(), latestSynchronizedDate, endpoint.getDefaultUserId() );
+        List<Journal> latestJournals = selectLatestJournals( issue.getJournals(), latestSynchronizedDate, endpoint.getDefaultUserId() );
         logger.debug("Got {} journals after {}", latestJournals.size(), latestSynchronizedDate);
 
         //Synchronize comments, status, priority, name, info
@@ -312,13 +312,13 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
     }
 
 
-    private List<Journal> selectLatestsJournals( Collection<Journal> journals, Date latestCreated, Integer defaultUserId ) {
+    private List<Journal> selectLatestJournals(Collection<Journal> journals, Date latestCreated, Integer defaultUserId) {
         return journals.stream()
-                .filter( Objects::nonNull)
+                .filter(Objects::nonNull).peek(journal -> logger.debug("Redmine user: lastname = {}, id = {}", journal.getUser().getLastName(), journal.getUser().getId()))
                 .filter(journal -> !isTechUser(defaultUserId, journal.getUser()))
                 .filter(journal -> journal.getCreatedOn() != null && journal.getCreatedOn().compareTo(latestCreated) > 0)
                 .sorted( Comparator.comparing( Journal::getCreatedOn))
-                .collect( Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     private Date getLatestSynchronizedDate(Date latestHistoryDate, Date latestCommentDate, Date createdOnDate) {
