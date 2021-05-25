@@ -134,6 +134,15 @@ public class DeliveryServiceImpl implements DeliveryService {
             log.error("State message for the delivery {} not saved!", caseId);
         }
 
+        Date departureDate = delivery.getDepartureDate();
+        if (departureDateAdded(null, departureDate)) {
+            Result<Long> resultDate = addDateHistory(token, delivery.getId(), departureDate);
+            if (resultDate.isError()) {
+                log.error("Delivery date message with oldDate = {}, new Date = {} for delivery {} not saved!",
+                           null, departureDate, delivery.getName());
+            }
+        }
+
         return ok(deliveryDAO.get(delivery.getId()));
     }
 
@@ -204,8 +213,6 @@ public class DeliveryServiceImpl implements DeliveryService {
         if (resultDate.isError()) {
             log.error("Delivery date message with oldDate = {}, new Date = {} for delivery {} not saved!",
                        oldDate, newDate, meta.getName());
-        } else {
-            log.info("Delivery date for delivery {} changed from {} to {}", meta.getName(), oldDate, newDate);
         }
 
         return getDelivery(token, caseObject.getId());
