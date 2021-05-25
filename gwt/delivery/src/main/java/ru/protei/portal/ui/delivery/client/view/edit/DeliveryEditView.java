@@ -8,14 +8,21 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.lang.En_CommentOrHistoryTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
 import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryEditView;
 import ru.protei.portal.ui.delivery.client.widget.kit.view.list.DeliveryKitList;
 
+import java.util.Arrays;
 import java.util.List;
+
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.COMMENT;
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
 
 /**
  * Вид редактирования Поставки
@@ -25,6 +32,11 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+
+        multiTabWidget.setTabToNameRenderer(type -> commentOrHistoryTypeLang.getName(type));
+        multiTabWidget.addTabs(Arrays.asList(COMMENT, HISTORY));
+        multiTabWidget.setOnTabClickHandler(selectedTabs -> activity.onSelectedTabsChanged(selectedTabs));
+
         ensureDebugIds();
     }
 
@@ -51,6 +63,16 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     @Override
     public HasWidgets getMetaContainer() {
         return metaContainer;
+    }
+
+    @Override
+    public HasWidgets getItemsContainer() {
+        return multiTabWidget.getContainer();
+    }
+
+    @Override
+    public MultiTabWidget<En_CommentOrHistoryType> getMultiTabWidget() {
+        return multiTabWidget;
     }
 
     @UiHandler("backButton")
@@ -94,6 +116,10 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     Button nameAndDescriptionEditButton;
     @UiField
     Lang lang;
+    @UiField
+    MultiTabWidget<En_CommentOrHistoryType> multiTabWidget;
+    @Inject
+    En_CommentOrHistoryTypeLang commentOrHistoryTypeLang;
 
     private AbstractDeliveryEditActivity activity;
 

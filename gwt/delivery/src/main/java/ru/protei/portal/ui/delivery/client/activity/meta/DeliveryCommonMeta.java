@@ -56,14 +56,12 @@ public class DeliveryCommonMeta implements AbstractDeliveryCommonMeta {
 
     @Override
     public void onDepartureDateChanged() {
-        view.setDepartureDateValid(
-                isDepartureDateFieldValid(view.isDepartureDateEmpty(), view.departureDate().getValue())
-        );
+        view.setDepartureDateValid(isDepartureDateFieldValid());
     }
 
-    private boolean isDepartureDateFieldValid(boolean isEmptyDeadlineField, Date date) {
-        if (date == null) {
-            return isEmptyDeadlineField;
+    public boolean isDepartureDateFieldValid() {
+        if (view.departureDate().getValue() == null) {
+            return view.isDepartureDateEmpty();
         }
 
         return true;
