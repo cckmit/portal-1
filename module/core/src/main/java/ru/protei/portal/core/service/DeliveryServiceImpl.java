@@ -135,7 +135,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         Date departureDate = delivery.getDepartureDate();
-        if (departureDateAdded(null, departureDate)) {
+        if (departureDate != null) {
             Result<Long> resultDate = addDateHistory(token, delivery.getId(), departureDate);
             if (resultDate.isError()) {
                 log.error("Delivery date message with oldDate = {}, new Date = {} for delivery {} not saved!",
