@@ -106,6 +106,9 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
     @Override
     public void onDepartureDateChanged() {
         super.onDepartureDateChanged();
+        if (!isDepartureDateFieldValid()) {
+            return;
+        }
         delivery.setDepartureDate(deliveryMetaView.departureDate().getValue());
         onCaseMetaChanged(delivery);
     }
