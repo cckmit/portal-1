@@ -6,22 +6,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseFilterType;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ContactDataAccess;
-import ru.protei.portal.core.model.dict.En_ReportType;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.query.WorkerEntryQuery;
+import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;

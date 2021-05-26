@@ -3,7 +3,6 @@ package ru.protei.portal.redmine.service;
 import com.taskadapter.redmineapi.bean.Journal;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.redmine.utils.CachedPersonMapper;
 import ru.protei.portal.redmine.utils.HttpInputSource;
 
@@ -49,8 +48,6 @@ public interface CommonService {
 
     Result<Long>  mergeExtAppData( ExternalCaseAppData appData );
 
-    Result<List<CaseComment>> getCaseComments( CaseCommentQuery caseCommentQuery );
-
     Result<RedminePriorityMapEntry> getByRedminePriorityId( Integer priorityId, long priorityMapId );
     Result<RedminePriorityMapEntry> getByPortalPriorityId( Integer impLevel, long priorityMapId );
 
@@ -62,4 +59,7 @@ public interface CommonService {
     Result<Boolean> updateUpdatedOn( RedmineEndpoint endpoint );
 
     List<Platform> getPlatforms(Long companyId);
+
+    Result<Date> getLatestHistoryDate(Long caseObjectId);
+    Result<Date> getLatestCommentDate(Long caseObjectId);
 }

@@ -67,7 +67,7 @@ public interface PortalBaseDAO<T> extends JdbcDAO<Long,T> {
      * @param <V>
      * @return
      */
-    <V> V getMaxValue(String field, Class<V> type, String cond, Object... args);
+    <V> V getMaxValue(String field, Class<V> type, String join, String cond, Object... args);
 
     /**
      * возвращает значение ID для объекта

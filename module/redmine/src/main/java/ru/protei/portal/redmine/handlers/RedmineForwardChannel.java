@@ -14,7 +14,6 @@ import ru.protei.portal.core.model.dict.En_ExtAppType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.redmine.enums.RedmineChangeType;
@@ -219,12 +218,13 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
         logger.trace( "issue(): {}", issue );
         CachedPersonMapper personMapper = commonService.getPersonMapper(endpoint);
 
-        List<CaseComment> caseComments = commonService.getCaseComments( new CaseCommentQuery( object.getId() ) ).getData();
-        Date latestCreated = findLatestSynchronizedCommentDate(caseComments, issue.getCreatedOn());
-        logger.info("Last comment was synced on {}", latestCreated);
+        Date latestHistoryDate = commonService.getLatestHistoryDate(object.getId()).getData();
+        Date latestCommentDate = commonService.getLatestCommentDate(object.getId()).getData();
+        Date latestSynchronizedDate = getLatestSynchronizedDate(latestHistoryDate, latestCommentDate, issue.getCreatedOn());
+        logger.info("Last sync date {}", latestSynchronizedDate);
 
-        List<Journal> latestJournals = selectLatestsJournals( issue.getJournals(), latestCreated, endpoint.getDefaultUserId() );
-        logger.debug("Got {} journals after {}", latestJournals.size(), latestCreated);
+        List<Journal> latestJournals = selectLatestJournals( issue.getJournals(), latestSynchronizedDate, endpoint.getDefaultUserId() );
+        logger.debug("Got {} journals after {}", latestJournals.size(), latestSynchronizedDate);
 
         //Synchronize comments, status, priority, name, info
         for (Journal journal : latestJournals) {
@@ -312,21 +312,24 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
     }
 
 
-    private List<Journal> selectLatestsJournals( Collection<Journal> journals, Date latestCreated, Integer defaultUserId ) {
+    private List<Journal> selectLatestJournals(Collection<Journal> journals, Date latestCreated, Integer defaultUserId) {
         return journals.stream()
-                .filter( Objects::nonNull)
+                .filter(Objects::nonNull)
                 .filter(journal -> !isTechUser(defaultUserId, journal.getUser()))
                 .filter(journal -> journal.getCreatedOn() != null && journal.getCreatedOn().compareTo(latestCreated) > 0)
-                .sorted( Comparator.comparing( Journal::getCreatedOn))
-                .collect( Collectors.toList());
+                .sorted(Comparator.comparing( Journal::getCreatedOn))
+                .collect(Collectors.toList());
     }
 
-    private Date findLatestSynchronizedCommentDate( List<CaseComment> caseComments, Date createdOnDate) {
-        return stream(caseComments)
-                .filter(comment -> "redmine".equals( comment.getAuthor().getCreator() ))
-                .max( Comparator.comparing( CaseComment::getCreated))
-                .map(CaseComment::getCreated)
-                .orElse(createdOnDate);
+    private Date getLatestSynchronizedDate(Date latestHistoryDate, Date latestCommentDate, Date createdOnDate) {
+        if (latestHistoryDate != null && latestCommentDate != null) {
+            return latestHistoryDate.after(latestCommentDate) ? latestHistoryDate : latestCommentDate;
+        }
+        if (latestHistoryDate == null) {
+            return latestCommentDate.after(createdOnDate) ? latestCommentDate : createdOnDate;
+        } else {
+            return latestHistoryDate.after(createdOnDate) ? latestHistoryDate : createdOnDate;
+        }
     }
 
     private CaseObject buildCaseObject( Issue issue, Person contactPerson, final long companyId, final long priorityMapId, final long statusMapId ) {

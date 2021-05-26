@@ -18,10 +18,10 @@ public class History implements Serializable {
     @JdbcColumn(name = "initiator_id")
     private Long initiatorId;
 
-    @JdbcJoinedColumn( localColumn = "initiator_id", table = "person", remoteColumn = "id", mappedColumn = "displayShortName", sqlTableAlias = "person_short_name" )
+    @JdbcJoinedColumn( localColumn = "initiator_id", table = "person", remoteColumn = "id", mappedColumn = "displayShortName", sqlTableAlias = "person" )
     private String initiatorShortName;
 
-    @JdbcJoinedColumn( localColumn = "initiator_id", table = "person", remoteColumn = "id", mappedColumn = "displayName", sqlTableAlias = "person_full_name" )
+    @JdbcJoinedColumn( localColumn = "initiator_id", table = "person", remoteColumn = "id", mappedColumn = "displayName", sqlTableAlias = "person" )
     private String initiatorFullName;
 
     @JdbcColumn(name = "date")
