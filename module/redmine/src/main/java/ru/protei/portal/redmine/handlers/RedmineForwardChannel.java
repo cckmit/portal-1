@@ -314,24 +314,22 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
 
     private List<Journal> selectLatestJournals(Collection<Journal> journals, Date latestCreated, Integer defaultUserId) {
         return journals.stream()
-                .filter(Objects::nonNull).peek(journal -> logger.debug("Redmine user: lastname = {}, id = {}", journal.getUser().getLastName(), journal.getUser().getId()))
+                .filter(Objects::nonNull)
                 .filter(journal -> !isTechUser(defaultUserId, journal.getUser()))
                 .filter(journal -> journal.getCreatedOn() != null && journal.getCreatedOn().compareTo(latestCreated) > 0)
-                .sorted( Comparator.comparing( Journal::getCreatedOn))
+                .sorted(Comparator.comparing( Journal::getCreatedOn))
                 .collect(Collectors.toList());
     }
 
     private Date getLatestSynchronizedDate(Date latestHistoryDate, Date latestCommentDate, Date createdOnDate) {
-        if (latestHistoryDate == null && latestCommentDate == null) {
-            return createdOnDate;
+        if (latestHistoryDate != null && latestCommentDate != null) {
+            return latestHistoryDate.after(latestCommentDate) ? latestHistoryDate : latestCommentDate;
         }
         if (latestHistoryDate == null) {
             return latestCommentDate.after(createdOnDate) ? latestCommentDate : createdOnDate;
-        }
-        if (latestCommentDate == null) {
+        } else {
             return latestHistoryDate.after(createdOnDate) ? latestHistoryDate : createdOnDate;
         }
-        return latestHistoryDate.after(latestCommentDate) ? latestHistoryDate : latestCommentDate;
     }
 
     private CaseObject buildCaseObject( Issue issue, Person contactPerson, final long companyId, final long priorityMapId, final long statusMapId ) {
