@@ -6,7 +6,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_DeliveryFilterType;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.DeliveryQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -40,10 +39,6 @@ public interface AbstractDeliveryFilterParamView extends IsWidget {
     HasVisibility productsVisibility();
 
     void resetFilter( DateIntervalWithType dateModified );
-
-    void presetCompany(Company company);
-
-    void presetManagerCompany(Company company);
 
     void fillFilterFields(DeliveryQuery DeliveryQuery, SelectorsParams selectorsParams);
 

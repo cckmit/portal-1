@@ -23,41 +23,30 @@ public class DeliverySqlBuilder {
                 args.add( query.getId() );
             }
 
-//            if (isNotEmpty(query.getCompanyIds())) {
-//                condition.append(" and initiator_company in " + makeInArg(query.getCompanyIds(), false));
-//            }
+            //компания это delivery.project.case_object.initiator_company
+            if (isNotEmpty(query.getCompanyIds())) {
+                condition
+                        .append(" and (CO_PR.initiator_company IN ")
+                        .append(makeInArg(query.getCompanyIds()))
+                        .append(")");
+            }
 
-//            if (isNotEmpty(query.getManagerIds())) {
-//                List<Long> managerIds = new ArrayList<>(query.getManagerIds());
-//                boolean isWithoutManager = managerIds.remove(CrmConstants.Employee.UNDEFINED);
-//
-//                if (!isWithoutManager) {
-//                    condition
-//                            .append(" and manager IN ")
-//                            .append(makeInArg(managerIds, false));
-//                } else if (managerIds.isEmpty()) {
-//                    condition.append(" and (manager IS NULL or (SELECT person.sex FROM person WHERE person.id = manager) = ?)");
-//                    args.add(En_Gender.UNDEFINED.getCode());
-//                } else {
-//                    condition
-//                            .append(" and (manager IN ")
-//                            .append(makeInArg(managerIds, false))
-//                            .append(" or manager IS NULL or (SELECT person.sex FROM person WHERE person.id = manager) = ?)");
-//                    args.add(En_Gender.UNDEFINED.getCode());
-//                }
-//            }
-//
-//            if (isNotEmpty(query.getProductIds())) {
-//                if (query.getProductIds().remove(CrmConstants.Product.UNDEFINED)) {
-//                    condition.append(" and (product_id is null");
-//                    if (!query.getProductIds().isEmpty()) {
-//                        condition.append(" or product_id in " + makeInArg(query.getProductIds(), false));
-//                    }
-//                    condition.append(")");
-//                } else {
-//                    condition.append(" and product_id in " + makeInArg(query.getProductIds(), false));
-//                }
-//            }
+            // менеджер это delivery.project.case_object.MANAGER
+            if (isNotEmpty(query.getManagerIds())) {
+                condition
+                        .append(" and (CO_PR.MANAGER IN ")
+                        .append(makeInArg(query.getManagerIds()))
+                        .append(")");
+            }
+
+            // продукт это delivery.project.project_to_product.product_id
+            if (isNotEmpty(query.getProductIds())) {
+                condition
+                        .append(" and PRJ.ID IN")
+                        .append(" (SELECT project_id from project_to_product where product_id IN ")
+                        .append(makeInArg(query.getProductIds()))
+                        .append(")");
+            }
 
             Interval deliveryInterval = makeInterval(query.getDepartureDateRange());
 

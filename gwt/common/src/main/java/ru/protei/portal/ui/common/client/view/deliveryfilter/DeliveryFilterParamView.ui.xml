@@ -47,7 +47,7 @@
                                                   header="{lang.deliveryFilterCompany}"
                                                   addStyleNames="form-group col-md-4 resize-md-12"/>
 
-            <person:PersonMultiSelector ui:field="managers"
+            <person:EmployeeMultiSelector ui:field="managers"
                                         header="{lang.deliveryFilterManager}"
                                         addStyleNames="form-group col-md-4 resize-md-12"
                                         hasNullValue="true"/>

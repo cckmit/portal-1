@@ -4,16 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.DeliveryDAO;
 import ru.protei.portal.core.model.ent.Delivery;
-import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.DeliveryQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
-import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
-import static java.lang.Boolean.TRUE;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 
 /**
  * DAO для поставок
@@ -22,6 +19,10 @@ public class DeliveryDAO_Impl extends PortalBaseJdbcDAO<Delivery> implements Del
 
     @Autowired
     DeliverySqlBuilder deliverySqlBuilder;
+
+    public static final String LEFT_JOIN_PROJECT_CASE_OBJECT =
+            " LEFT JOIN project PRJ ON delivery.project_id = PRJ.ID" +
+                    " LEFT JOIN case_object CO_PR on CO_PR.ID= PRJ.ID";
 
     @Override
     @SqlConditionBuilder
@@ -48,25 +49,11 @@ public class DeliveryDAO_Impl extends PortalBaseJdbcDAO<Delivery> implements Del
         parameters.withLimit(query.getLimit());
         parameters.withSort(TypeConverters.createSort( query ));
 
-//        if (query.getPlanId() != null) {
-//            parameters.withDistinct(false);
-//            parameters.withJoins(LEFT_JOIN_PLAN_ORDER);
-//        } else {
-//            String joins = "";
-//            if (isSearchAtComments(query)) {
-//                joins += LEFT_JOIN_CASE_COMMENT;
-//            }
-//            if (isFilterByTagNames(query)) {
-//                joins += LEFT_JOIN_CASE_TAG;
-//            }
-//            if (TRUE.equals(query.isCheckImportanceHistory())) {
-//                joins += LEFT_JOIN_HISTORY;
-//            }
-//            if (!joins.equals("")) {
-//                parameters.withDistinct(true);
-//                parameters.withJoins(joins);
-//            }
-//        }
+        if (isNotEmpty(query.getCompanyIds())
+                || isNotEmpty(query.getManagerIds())
+                || isNotEmpty(query.getProductIds())) {
+            parameters.withJoins(LEFT_JOIN_PROJECT_CASE_OBJECT);
+        }
 
         return parameters;
     }

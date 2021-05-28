@@ -12,10 +12,14 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.DeliveryQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.*;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryFilterModel;
 import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryFilterParamView;
@@ -24,23 +28,23 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.deliverystate.DeliveryStatesOptionList;
-import ru.protei.portal.ui.common.client.widget.issuestate.IssueStatesOptionList;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextService.makeAlternativeSearchString;
-import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.fromDateRange;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
@@ -54,8 +58,6 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
         search.getElement().setPropertyString("placeholder", lang.search());
         sortDir.setValue(false);
         fillDateRanges(dateDepartureRange);
-        managers.setPersonModel( managersModel );
-        managers.setNullItem(() -> new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
         products.setTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
     }
 
@@ -138,20 +140,6 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
         if (isAttached()) {
             onFilterChanged();
         }
-    }
-
-    @Override
-    public void presetCompany(Company company) {
-        HashSet<EntityOption> companyIds = new HashSet<>();
-        companyIds.add(toEntityOption(company));
-        companies.setValue(companyIds);
-    }
-
-    @Override
-    public void presetManagerCompany(Company company) {
-        HashSet<EntityOption> managerCompanies = new HashSet<>();
-        managerCompanies.add(toEntityOption(company));
-        updateManagers(managerCompanies);
     }
 
     @Override
@@ -249,7 +237,9 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
     }
 
     @UiHandler("companies")
-    public void onCompaniesSelected(ValueChangeEvent<Set<EntityOption>> event) { onFilterChanged(); }
+    public void onCompaniesSelected(ValueChangeEvent<Set<EntityOption>> event) {
+        onFilterChanged();
+    }
 
     @UiHandler("managers")
     public void onManagersSelected(ValueChangeEvent<Set<PersonShortView>> event) {
@@ -397,14 +387,6 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
         }
     }
 
-    private void updateManagers(Set<EntityOption> managersCompanies) {
-        Set<Long> companyIds = toSet( managersCompanies, entityOption -> entityOption.getId() );
-        managersModel.updateCompanies( managers, companyIds );
-        if (isEmpty( companyIds )) {
-            managers.setValue( null );
-        }
-    }
-
     private static Set< Long > getProductsIdList(Set<ProductShortView> productSet) {
 
         if ( isEmpty(productSet) ) {
@@ -445,7 +427,6 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
     @Inject
     @UiField
     Lang lang;
-
     @UiField
     CleanableSearchBox search;
     @Inject
@@ -464,7 +445,7 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
     CompanyMultiSelector companies;
     @Inject
     @UiField(provided = true)
-    PersonMultiSelector managers;
+    EmployeeMultiSelector managers;
     @UiField
     LabelElement labelSortBy;
     @UiField
@@ -476,11 +457,8 @@ public class DeliveryFilterParamView extends Composite implements AbstractDelive
     DivElement sortByContainer;
     @UiField
     DivElement stateContainer;
-
     @Inject
     PolicyService policyService;
-    @Inject
-    PersonModel managersModel;
 
     private Timer timer = null;
     private AbstractDeliveryFilterModel model;

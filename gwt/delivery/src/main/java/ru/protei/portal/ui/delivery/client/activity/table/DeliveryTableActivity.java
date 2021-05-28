@@ -7,7 +7,9 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
+import ru.protei.portal.core.model.dict.En_DeliveryFilterType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dto.DeliveryFilterDto;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.query.DeliveryQuery;
@@ -79,14 +81,6 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
                 new ActionBarEvents.Add(lang.buttonCreate(), null, UiConstants.ActionBarIdentity.DELIVERY) :
                 new ActionBarEvents.Clear()
         );
-
-        if(!policyService.hasSystemScopeForPrivilege(En_Privilege.DELIVERY_VIEW)){
-            if (policyService.isSubcontractorCompany()) {
-                filterView.getDeliveryFilterParams().presetManagerCompany(policyService.getProfile().getCompany());
-            } else {
-                filterView.getDeliveryFilterParams().presetCompany(policyService.getProfile().getCompany());
-            }
-        }
 
         this.preScroll = event.preScroll;
 
