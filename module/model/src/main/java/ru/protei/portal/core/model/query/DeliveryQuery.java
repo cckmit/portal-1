@@ -107,7 +107,7 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
 
     @Override
     public List<Long> getAllPersonIds() {
-        return new ArrayList<Long>();
+        return new ArrayList<Long>(emptyIfNull(getManagerIds()));
     }
 
     @Override

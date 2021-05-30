@@ -155,6 +155,7 @@ public class DebugIds {
         String SORT_FIELD_LABEL = "filter-sort-field-label";
         String SORT_DIR_BUTTON = "filter-sort-dir-button";
         String DATE_CREATED_RANGE_CONTAINER = "filter-date-created-range-container";
+        String DATE_DEPARURE_RANGE_CONTAINER = "filter-date-departure-range-container";
         String DATE_MODIFIED_RANGE_CONTAINER = "filter-date-modified-range-container";
         String COMPANY_SELECTOR_ADD_BUTTON = "filter-company-selector-add-button";
         String COMPANY_SELECTOR_CLEAR_BUTTON = "filter-company-selector-clear-button";
@@ -204,6 +205,7 @@ public class DebugIds {
         String PLATFORM_PARAMETERS_SEARCH_CLEAR_BUTTON = "filter-platform-parameters-clear-button";
         String PLATFORM_SERVER_IP_SEARCH_INPUT = "filter-platform-server-ip-search-input";
         String PLATFORM_SERVER_IP_SEARCH_CLEAR_BUTTON = "filter-platform-server-ip-clear-button";
+        String DELIVERY_STATE_LABEL = "filter-delivery-state-label";
 
         String CREATE_BUTTON = "filter-create-button";
         String SAVE_BUTTON = "filter-save-button";

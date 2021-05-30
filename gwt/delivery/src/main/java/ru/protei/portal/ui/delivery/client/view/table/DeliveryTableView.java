@@ -15,6 +15,8 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.deliveryfilter.DeliveryFilterWidget;
+import ru.protei.portal.ui.common.client.widget.deliveryfilter.DeliveryFilterWidgetModel;
 import ru.protei.portal.ui.delivery.client.activity.table.AbstractDeliveryTableActivity;
 import ru.protei.portal.ui.delivery.client.activity.table.AbstractDeliveryTableView;
 import ru.protei.portal.ui.delivery.client.view.table.column.ContactColumn;
@@ -25,20 +27,23 @@ import ru.protei.portal.ui.delivery.client.view.table.column.NumberColumn;
 public class DeliveryTableView extends Composite implements AbstractDeliveryTableView {
 
     @Inject
-    public void init( NumberColumn numberColumn,
-                      InfoColumn infoColumn,
-                      ContactColumn contactColumn,
-                      ManagerColumn managerColumn) {
+    public void init(DeliveryFilterWidgetModel deliveryFilterWidgetModel,
+                     NumberColumn numberColumn,
+                     InfoColumn infoColumn,
+                     ContactColumn contactColumn,
+                     ManagerColumn managerColumn) {
         this.numberColumn = numberColumn;
         this.infoColumn = infoColumn;
         this.contactColumn = contactColumn;
         this.managerColumn = managerColumn;
+        this.filterWidget.onInit(deliveryFilterWidgetModel);
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
     @Override
     public void setActivity(AbstractDeliveryTableActivity activity) {
         this.activity = activity;
+        filterWidget.setOnFilterChangeCallback(activity::onFilterChanged);
         initTable();
     }
 
@@ -51,6 +56,11 @@ public class DeliveryTableView extends Composite implements AbstractDeliveryTabl
     public void clearRecords() {
         table.clearCache();
         table.clearRows();
+    }
+
+    @Override
+    public DeliveryFilterWidget getFilterWidget() {
+        return filterWidget;
     }
 
     @Override
@@ -76,11 +86,6 @@ public class DeliveryTableView extends Composite implements AbstractDeliveryTabl
     @Override
     public HasWidgets getPreviewContainer() {
         return previewContainer;
-    }
-
-    @Override
-    public HTMLPanel getFilterContainer() {
-        return filterContainer;
     }
 
     @Override
@@ -133,6 +138,9 @@ public class DeliveryTableView extends Composite implements AbstractDeliveryTabl
     HTMLPanel previewContainer;
     @UiField
     HTMLPanel filterContainer;
+    @Inject
+    @UiField(provided = true)
+    DeliveryFilterWidget filterWidget;
     @UiField
     HTMLPanel pagerContainer;
 

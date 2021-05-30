@@ -5,9 +5,7 @@ import com.google.inject.Singleton;
 import ru.protei.portal.ui.common.client.activity.actionbar.ActionBarActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemListActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
-import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.CaseCommentItemListActivity;
-import ru.protei.portal.ui.common.client.activity.commenthistory.CommentAndHistoryListActivity;
 import ru.protei.portal.ui.common.client.activity.casehistory.CaseHistoryItemListActivity;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemView;
@@ -21,6 +19,8 @@ import ru.protei.portal.ui.common.client.activity.casetag.taglist.CaseTagListAct
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.CaseTagListSingletonActivity;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.item.AbstractCaseTagItemView;
 import ru.protei.portal.ui.common.client.activity.casetag.tagselector.CaseTagSelectorActivity;
+import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
+import ru.protei.portal.ui.common.client.activity.commenthistory.CommentAndHistoryListActivity;
 import ru.protei.portal.ui.common.client.activity.companydepartment.edit.AbstractCompanyDepartmentEditView;
 import ru.protei.portal.ui.common.client.activity.companydepartment.edit.CompanyDepartmentEditActivity;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.AbstractConfirmDialogView;
@@ -28,9 +28,6 @@ import ru.protei.portal.ui.common.client.activity.confirmdialog.ConfirmDialogAct
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemListView;
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemView;
 import ru.protei.portal.ui.common.client.activity.contactitem.ContactItemActivity;
-import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryFilterParamView;
-import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryFilterWidgetModel;
-import ru.protei.portal.ui.common.client.activity.deliveryfilter.DeliveryFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.errorpage.AbstractErrorPageView;
 import ru.protei.portal.ui.common.client.activity.errorpage.ErrorPageActivity;
@@ -66,7 +63,6 @@ import ru.protei.portal.ui.common.client.view.companydepartment.edit.CompanyDepa
 import ru.protei.portal.ui.common.client.view.confirmdialog.ConfirmDialogView;
 import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
-import ru.protei.portal.ui.common.client.view.deliveryfilter.DeliveryFilterParamView;
 import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
 import ru.protei.portal.ui.common.client.view.errorpage.ErrorPageView;
 import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
@@ -181,10 +177,6 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( IssueFilterWidgetModel.class ).asEagerSingleton();
         bind( AbstractIssueFilterParamView.class ).to( IssueFilterParamView.class );
-
-        bind( AbstractDeliveryFilterWidgetModel.class ).to(DeliveryFilterWidgetModel.class);
-        bind( DeliveryFilterWidgetModel.class ).asEagerSingleton();
-        bind( AbstractDeliveryFilterParamView.class ).to( DeliveryFilterParamView.class );
 
         bind(CaseHistoryItemListActivity.class).asEagerSingleton();
         bind(AbstractCaseCommentItemListActivity.class).to(CaseCommentItemListActivity.class).asEagerSingleton();

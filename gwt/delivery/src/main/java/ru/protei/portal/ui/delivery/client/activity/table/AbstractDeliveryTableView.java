@@ -1,9 +1,9 @@
 package ru.protei.portal.ui.delivery.client.activity.table;
 
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.widget.deliveryfilter.DeliveryFilterWidget;
 
 public interface AbstractDeliveryTableView extends IsWidget {
     void setActivity(AbstractDeliveryTableActivity activity);
@@ -11,6 +11,8 @@ public interface AbstractDeliveryTableView extends IsWidget {
     void setAnimation(TableAnimation animation);
 
     void clearRecords();
+
+    DeliveryFilterWidget getFilterWidget();
 
     void triggerTableLoad();
 
@@ -21,8 +23,6 @@ public interface AbstractDeliveryTableView extends IsWidget {
     void scrollTo(int page);
 
     HasWidgets getPreviewContainer();
-
-    HTMLPanel getFilterContainer();
 
     HasWidgets getPagerContainer();
 
