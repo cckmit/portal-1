@@ -35,6 +35,7 @@ public class PortalConfigData {
     private final CaseLinkConfig caseLinkConfig;
     private final MailNotificationConfig mailNotificationConfig;
     private final YoutrackConfig youtrackConfig;
+    private final UitsConfig uitsConfig;
     private final Enterprise1CConfig enterprise1CConfig;
     private final JiraConfig jiraConfig;
     private final EmployeeConfig employeeConfig;
@@ -62,6 +63,7 @@ public class PortalConfigData {
         caseLinkConfig = new CaseLinkConfig(wrapper);
         mailNotificationConfig = new MailNotificationConfig(wrapper);
         youtrackConfig = new YoutrackConfig(wrapper);
+        uitsConfig = new UitsConfig(wrapper);
         enterprise1CConfig = new Enterprise1CConfig(wrapper);
         jiraConfig = new JiraConfig(wrapper);
         employeeConfig = new EmployeeConfig(wrapper);
@@ -126,6 +128,10 @@ public class PortalConfigData {
 
     public YoutrackConfig youtrack() {
         return youtrackConfig;
+    }
+
+    public UitsConfig uits() {
+        return uitsConfig;
     }
 
     public Enterprise1CConfig enterprise1C() {
@@ -693,6 +699,18 @@ public class PortalConfigData {
 
         public String getCrossProjectLinkYoutrack() {
             return crossProjectLinkYoutrack;
+        }
+    }
+
+    public static class UitsConfig {
+        private final String apiUrl;
+
+        public UitsConfig(PropertiesWrapper properties) {
+            apiUrl = properties.getProperty("uits.api.url");
+        }
+
+        public String getApiUrl() {
+            return apiUrl;
         }
     }
 

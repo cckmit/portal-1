@@ -12,6 +12,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.uits.UitsDealStageMapping;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -33,6 +34,8 @@ public class UitsServiceImpl implements UitsService {
 
     @Autowired
     CaseStateDAO caseStateDAO;
+    @Autowired
+    PortalConfig config;
 
     @Override
     public Result<UitsIssueInfo> getIssueInfo(Long issueId) {
@@ -46,7 +49,7 @@ public class UitsServiceImpl implements UitsService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, new HttpHeaders());
         RestTemplate restTemplate = new RestTemplate();
 
-        String url = "https://support.uits.spb.ru/rest/347/djueym3pkassk34f/crm.deal.get?";
+        String url = config.data().uits().getApiUrl() + "?";
         ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
 
         ObjectMapper mapper = new ObjectMapper();
