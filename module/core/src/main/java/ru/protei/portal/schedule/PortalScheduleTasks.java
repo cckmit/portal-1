@@ -13,4 +13,19 @@ public interface PortalScheduleTasks {
 
     void scheduleEvent( ApplicationEvent projectPauseTimeEvent, Date date  );
 
+    void processPersonCaseFilterMailNotification();
+
+    void processScheduledMailReportsDaily();
+
+    void processScheduledMailReportsWeekly();
+
+    void remindAboutNeedToReleaseIp();
+
+    void remindAboutEmployeeProbationPeriod();
+
+    void notifyAboutContractDates();
+
+    void notifyAboutBirthdays();
+
+    void notifyExpiringTechnicalSupportValidity();
 }

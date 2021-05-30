@@ -12,11 +12,11 @@
 
     <context:component-scan base-package="ru.protei.portal.core.controller" />
     <context:component-scan base-package="ru.protei.portal.ui.common.server.controller" />
+    <context:component-scan base-package="ru.protei.portal.test.api" />
 
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="" />
         <property name="suffix" value="" />
     </bean>
-
 
 </beans>

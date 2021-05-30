@@ -85,9 +85,9 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         scheduler.schedule(this::processScheduledMailReportsWeekly, new CronTrigger( "0 0 5 * * MON"));
 
         scheduleNotificationsAboutPauseTime();
-
     }
 
+    @Override
     public void remindAboutEmployeeProbationPeriod() {
         employeeRegistrationReminderService.notifyAboutProbationPeriod();
         employeeRegistrationReminderService.notifyAboutDevelopmentAgenda();
@@ -114,6 +114,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         );
     }
 
+    @Override
     public void processScheduledMailReportsDaily() {
         if (isNotConfiguredSystemId()) {
             return;
@@ -123,6 +124,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         );
     }
 
+    @Override
     public void processScheduledMailReportsWeekly() {
         if (isNotConfiguredSystemId()) {
             return;
@@ -132,10 +134,12 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         );
     }
 
-    private void notifyAboutContractDates() {
+    @Override
+    public void notifyAboutContractDates() {
         contractReminderService.notifyAboutDates();
     }
 
+    @Override
     public void remindAboutNeedToReleaseIp() {
         log.info("remindAboutNeedToReleaseIp start");
         ipReservationService.notifyOwnersAboutReleaseIp();
@@ -143,6 +147,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         log.info("remindAboutNeedToReleaseIp end");
     }
 
+    @Override
     public void processPersonCaseFilterMailNotification() {
         personCaseFilterService.processMailNotification();
     }
@@ -158,12 +163,14 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         publisherService.publishEvent( new SchedulePauseTimeOnStartupEvent( this ) );
     }
 
-    private void notifyAboutBirthdays() {
+    @Override
+    public void notifyAboutBirthdays() {
         log.info( "notifyAboutBirthdays" );
         employeeService.notifyAboutBirthdays();
     }
 
-    private void notifyExpiringTechnicalSupportValidity() {
+    @Override
+    public void notifyExpiringTechnicalSupportValidity() {
         log.info( "notifyExpiringTechnicalSupportValidity" );
         projectService.notifyExpiringProjectTechnicalSupportValidity(LocalDate.now());
     }

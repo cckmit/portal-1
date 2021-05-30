@@ -296,4 +296,16 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>test-api</id>
+            <dependencies>
+                <dependency>
+                    <groupId>ru.protei</groupId>
+                    <artifactId>portal4.test-api</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>
