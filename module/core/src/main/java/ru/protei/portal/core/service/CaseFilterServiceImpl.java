@@ -203,6 +203,18 @@ public class CaseFilterServiceImpl implements CaseFilterService {
 
     @Override
     @Transactional
+    public Result<CaseFilterDto<DeliveryQuery>> saveDeliveryFilter(AuthToken token, CaseFilterDto<DeliveryQuery> caseFilterDto) {
+        log.debug("saveDeliveryFilter(): caseFilterDto={} ", caseFilterDto);
+
+        if (isNotValid(caseFilterDto)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        return saveCaseFilter(token, caseFilterDto);
+    }
+
+    @Override
+    @Transactional
     public Result<CaseFilterDto<CaseQuery>> saveIssueFilter(AuthToken token, CaseFilterDto<CaseQuery> caseFilterDto) {
         log.debug("saveIssueFilter(): caseFilterDto={} ", caseFilterDto);
 

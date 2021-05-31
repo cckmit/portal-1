@@ -133,6 +133,7 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         controller.updateMeta(delivery, new FluentCallback<Delivery>()
                 .withSuccess(caseMetaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new DeliveryEvents.ChangeDelivery(delivery.getId()));
                     fireEvent(new CommentAndHistoryEvents.Reload());
                     fillView( caseMetaUpdated );
                 }));

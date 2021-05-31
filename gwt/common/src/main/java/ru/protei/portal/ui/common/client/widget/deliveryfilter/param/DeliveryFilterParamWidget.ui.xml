@@ -6,24 +6,13 @@
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:range='urn:import:ru.protei.portal.ui.common.client.widget.typedrangepicker'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
-             xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
-             xmlns:casetag="urn:import:ru.protei.portal.ui.common.client.widget.selector.casetag"
-             xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
-             xmlns:plan="urn:import:ru.protei.portal.ui.common.client.widget.selector.plan.selector"
-             xmlns:issueimportance="urn:import:ru.protei.portal.ui.common.client.widget.issueimportance"
-             xmlns:timeelapsedtypeselector="urn:import:ru.protei.portal.ui.common.client.view.selector"
-             xmlns:worktrigger="urn:import:ru.protei.portal.ui.common.client.widget.selector.worktrigger"
-             xmlns:platform="urn:import:ru.protei.portal.ui.common.client.widget.selector.platform"
+             xmlns:states="urn:import:ru.protei.portal.ui.common.client.widget.deliverystate"
 >
-
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel>
-
+    <g:HTMLPanel styleName="card-body m-t-5 filter-content">
         <div class="row">
-            <div class="form-group col-md-12">
-                <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="m-b-0 m-t-15"/>
-            </div>
+            <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>
         </div>
 
         <div class="row">
@@ -33,28 +22,26 @@
             <div ui:field="sortByContainer" class="form-group col-md-4 resize-md-12">
                 <label ui:field="labelSortBy"><ui:text from="{lang.sortBy}"/></label>
                 <div class="control-group">
-                    <sortfieldselector:SortFieldSelector ui:field="sortField" type="ISSUE" />
+                    <sortfieldselector:SortFieldSelector ui:field="sortField" type="DELIVERY" />
                     <g:ToggleButton ui:field="sortDir" styleName="btn empty btn-white sorting_button"/>
                 </div>
             </div>
 
             <productselector:devunit.DevUnitMultiSelector ui:field="products"
                                                           header="{lang.deliveryFilterProduct}"
-                                                          addStyleNames="form-group col-md-4 resize-md-12"
-                                                          hasNullValue="true"/>
+                                                          addStyleNames="form-group col-md-4 resize-md-12"/>
 
             <companyselector:CompanyMultiSelector ui:field="companies"
                                                   header="{lang.deliveryFilterCompany}"
                                                   addStyleNames="form-group col-md-4 resize-md-12"/>
 
-            <person:PersonMultiSelector ui:field="managers"
-                                        header="{lang.deliveryFilterManager}"
-                                        addStyleNames="form-group col-md-4 resize-md-12"
-                                        hasNullValue="true"/>
+            <person:EmployeeMultiSelector ui:field="managers"
+                                          header="{lang.deliveryManager}"
+                                          addStyleNames="form-group col-md-4 resize-md-12"/>
 
             <div ui:field="stateContainer" class="form-group col-md-8 resize-md-12">
                 <label ui:field="deliveryState"><ui:text from="{lang.deliveryState}"/></label>
-                <issuestate:IssueStatesOptionList ui:field="state"/>
+                <states:DeliveryStatesOptionList ui:field="states"/>
             </div>
         </div>
 

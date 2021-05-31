@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.query.DataQuery;
+import ru.protei.portal.core.model.query.DeliveryQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 /**
@@ -15,7 +16,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
  */
 public interface DeliveryService {
     @Privileged({ En_Privilege.DELIVERY_VIEW })
-    Result<SearchResult<Delivery>> getDeliveries(AuthToken token, DataQuery query);
+    Result<SearchResult<Delivery>> getDeliveries(AuthToken token, DeliveryQuery query);
 
     @Privileged({ En_Privilege.DELIVERY_VIEW })
     Result<Delivery> getDelivery(AuthToken token, Long id);

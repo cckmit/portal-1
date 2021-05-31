@@ -2,8 +2,6 @@ package ru.protei.portal.ui.delivery.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
-import ru.protei.portal.ui.common.client.activity.deliveryfilter.AbstractDeliveryCollapseFilterView;
-import ru.protei.portal.ui.common.client.view.deliveryfilter.DeliveryFilterCollapseView;
 import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateView;
 import ru.protei.portal.ui.delivery.client.activity.create.DeliveryCreateActivity;
 import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryEditView;
@@ -38,8 +36,6 @@ public class DeliveryClientModule extends AbstractGinModule {
         bind(AbstractDeliveryMetaView.class).to(DeliveryMetaView.class).in(Singleton.class);
 
         bind(AbstractDeliveryKitListActivity.class).to(DeliveryKitListActivity.class).asEagerSingleton();
-
-        bind( AbstractDeliveryCollapseFilterView.class ).to(DeliveryFilterCollapseView.class).in(Singleton.class);
     }
 }
 
