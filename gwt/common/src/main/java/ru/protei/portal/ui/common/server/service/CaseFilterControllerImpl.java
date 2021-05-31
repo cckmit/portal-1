@@ -11,10 +11,10 @@ import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.DeliveryQuery;
 import ru.protei.portal.core.model.query.HasFilterQueryIds;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.view.FilterShortView;
-import ru.protei.portal.core.model.view.filterwidget.AbstractFilterShortView;
 import ru.protei.portal.core.service.CaseFilterService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.CaseFilterController;
@@ -91,6 +91,28 @@ public class CaseFilterControllerImpl implements CaseFilterController {
         Result<CaseFilterDto<ProjectQuery>> response = caseFilterService.saveProjectFilter(token, caseFilterDto);
 
         log.info("saveProjectFilter, result: {}", response.getStatus());
+
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+
+        return response.getData();
+    }
+
+    @Override
+    public CaseFilterDto<DeliveryQuery> saveDeliveryFilter(CaseFilterDto<DeliveryQuery> caseFilterDto) throws RequestFailedException {
+        log.info("saveDeliveryFilter, caseFilterDto: {}", caseFilterDto);
+
+        if (caseFilterDto == null || caseFilterDto.getCaseFilter() == null) {
+            log.warn("Not null caseFilter is required");
+            throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Result<CaseFilterDto<DeliveryQuery>> response = caseFilterService.saveDeliveryFilter(token, caseFilterDto);
+
+        log.info("saveDeliveryFilter, result: {}", response.getStatus());
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());

@@ -3,18 +3,17 @@ package ru.protei.portal.ui.delivery.client.view.table.column;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.Delivery;
-import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
-import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 
 /**
  * продукты, наименование, описание, дата отправки
@@ -33,21 +32,24 @@ public class InfoColumn extends ClickColumn<Delivery>{
     }
 
     @Override
-    public void fillColumnValue( Element cell, Delivery value ) {
+    public void fillColumnValue( Element cell, Delivery delivery ) {
+
+        if ( delivery == null ) {
+            return;
+        }
+
         cell.addClassName( "info" );
 
         Element divElement = DOM.createDiv();
 
         Element productElement = DOM.createLabel();
-        //TODO remove stub
-        List<String> ts = Arrays.asList("ProductName1", "ProductName2", "ProductName3");
-        productElement.setInnerText(StringUtils.join(ts,","));
-//        productElement.setInnerText( value == null ? "" : value.getName() == null ? "" : value.getProductName() );
+        ProjectInfo projectInfo = ProjectInfo.fromProject(delivery.getProject());
+        if (projectInfo != null && isNotEmpty(projectInfo.getProducts())){
+            productElement.setInnerText( joining(projectInfo.getProducts(), ", ", ProductShortView::getName) );
+            divElement.appendChild( productElement );
+        }
 
-        productElement.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.DELIVERY.PRODUCT );
-        divElement.appendChild( productElement );
-
-        Date delivered = value == null ? null : value.getDepartureDate();
+        Date delivered = delivery.getDepartureDate();
         if ( delivered != null ) {
             Element groupElement = DOM.createElement( "p" );
             groupElement.addClassName( "text-semimuted pull-right" );
@@ -58,20 +60,17 @@ public class InfoColumn extends ClickColumn<Delivery>{
 
             Element createdElement = DOM.createSpan();
             createdElement.setInnerText( " " + DateFormatter.formatDateTime( delivered ) );
-            createdElement.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.DELIVERY.DELIVERY_DATE );
             groupElement.appendChild( createdElement );
 
             divElement.appendChild( groupElement );
         }
 
         Element nameElement = DOM.createElement( "p" );
-        nameElement.setInnerText( value == null ? "" : value.getName() == null ? "" : value.getName() );
-        nameElement.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.DELIVERY.NAME);
+        nameElement.setInnerText( delivery.getName() == null ? "" : delivery.getName() );
         divElement.appendChild( nameElement );
 
         Element descElement = DOM.createElement( "p" );
-        descElement.setInnerText( value == null ? "" : value.getDescription()== null? "" : value.getDescription() );
-        descElement.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.DELIVERY.DESCRIPTION );
+        descElement.setInnerText( delivery.getDescription()== null? "" : delivery.getDescription() );
         divElement.appendChild( descElement );
 
         cell.appendChild( divElement );

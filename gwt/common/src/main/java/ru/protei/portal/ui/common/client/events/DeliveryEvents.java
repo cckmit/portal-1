@@ -4,7 +4,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
-import ru.protei.portal.core.model.dto.DeliveryFilterDto;
+import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.query.DeliveryQuery;
@@ -17,15 +17,15 @@ public class DeliveryEvents {
         public Show (Boolean preScroll) {
             this.preScroll = preScroll;
         }
-        public Show (DeliveryFilterDto<DeliveryQuery> deliveryFilterDto, Boolean preScroll) {
-            this.deliveryFilterDto = deliveryFilterDto;
+        public Show (CaseFilterDto<DeliveryQuery> CaseFilterDto, Boolean preScroll) {
+            this.CaseFilterDto = CaseFilterDto;
             this.preScroll = preScroll;
         }
 
         @Omit
         public Boolean preScroll = false;
         @Omit
-        public DeliveryFilterDto<DeliveryQuery> deliveryFilterDto;
+        public CaseFilterDto<DeliveryQuery> CaseFilterDto;
     }
 
 
@@ -43,6 +43,13 @@ public class DeliveryEvents {
         }
 
         public Long id;
+    }
+
+    public static class ChangeDelivery {
+        public Long id;
+        public ChangeDelivery(Long deliveryId){
+            id = deliveryId;
+        }
     }
 
     public static class ShowPreview {
@@ -65,18 +72,6 @@ public class DeliveryEvents {
 
         @Name("id")
         public Long deliveryId;
-    }
-
-    public static class ShowConciseTable {
-        public ShowConciseTable() {}
-
-        public ShowConciseTable(HasWidgets parent, Long parentDeliveryId) {
-            this.parent = parent;
-            this.parentDeliveryId = parentDeliveryId;
-        }
-
-        public HasWidgets parent;
-        public Long parentDeliveryId;
     }
 
     public static class EditDeliveryMeta {

@@ -254,8 +254,7 @@ public enum En_SortField {
     /**
      * Серийный номер
      */
-    //TODO fix serial number sort field
-    delivery_serial_number("serial_number"),
+    delivery_departure_date("departure_date"),
     ;
 
     private String fieldName;

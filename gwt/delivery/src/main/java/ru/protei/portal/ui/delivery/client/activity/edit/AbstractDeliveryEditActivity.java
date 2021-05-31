@@ -9,6 +9,9 @@ import java.util.List;
  */
 public interface AbstractDeliveryEditActivity {
     void onBackClicked();
+
+    void onOpenEditViewClicked();
+
     void onNameAndDescriptionEditClicked();
     void onSelectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs);
 }

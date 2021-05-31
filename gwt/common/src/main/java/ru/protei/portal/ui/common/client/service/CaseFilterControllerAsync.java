@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.DeliveryQuery;
 import ru.protei.portal.core.model.query.HasFilterQueryIds;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.view.FilterShortView;
@@ -26,4 +27,6 @@ public interface CaseFilterControllerAsync {
     void saveProjectFilter(CaseFilterDto<ProjectQuery> caseFilterDto, AsyncCallback<CaseFilterDto<ProjectQuery>> async);
 
     void saveIssueFilter(CaseFilterDto<CaseQuery> caseFilterDto, AsyncCallback<CaseFilterDto<CaseQuery>> async);
+
+    void saveDeliveryFilter(CaseFilterDto<DeliveryQuery> caseFilterDto, AsyncCallback<CaseFilterDto<DeliveryQuery>> async);
 }

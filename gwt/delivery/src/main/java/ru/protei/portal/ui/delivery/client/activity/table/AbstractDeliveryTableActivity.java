@@ -9,4 +9,6 @@ import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 public interface AbstractDeliveryTableActivity extends
         ClickColumn.Handler<Delivery>, EditClickColumn.EditHandler<Delivery>,
         InfiniteLoadHandler<Delivery>, InfiniteTableWidget.PagerListener {
+
+    void onFilterChanged();
 }

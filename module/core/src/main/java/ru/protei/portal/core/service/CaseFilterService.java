@@ -1,12 +1,12 @@
 package ru.protei.portal.core.service;
 
-import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.DeliveryQuery;
 import ru.protei.portal.core.model.query.HasFilterQueryIds;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.view.FilterShortView;
@@ -25,6 +25,8 @@ public interface CaseFilterService {
     Result<SelectorsParams> getSelectorsParams( AuthToken token, HasFilterQueryIds filterEntityIds );
 
     Result<CaseFilterDto<ProjectQuery>> saveProjectFilter(AuthToken token, CaseFilterDto<ProjectQuery> caseFilterDto);
+
+    Result<CaseFilterDto<DeliveryQuery>> saveDeliveryFilter(AuthToken token, CaseFilterDto<DeliveryQuery> caseFilterDto);
 
     Result<CaseFilterDto<CaseQuery>> saveIssueFilter(AuthToken token, CaseFilterDto<CaseQuery> caseFilterDto);
 

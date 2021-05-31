@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DataQuery;
+import ru.protei.portal.core.model.query.DeliveryQuery;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -71,8 +72,18 @@ public class DeliveryServiceImpl implements DeliveryService {
     private final Pattern deliverySerialNumber = Pattern.compile(DELIVERY_KIT_SERIAL_NUMBER_PATTERN);
 
     @Override
-    public Result<SearchResult<Delivery>> getDeliveries(AuthToken token, DataQuery query) {
-        SearchResult<Delivery> sr = deliveryDAO.getSearchResultByQuery(query);
+    public Result<SearchResult<Delivery>> getDeliveries(AuthToken token, DeliveryQuery query) {
+        SearchResult<Delivery> sr = deliveryDAO.getSearchResult(query);
+
+        for (Delivery delivery : emptyIfNull(sr.getResults())){
+            if (delivery.getProject() == null){
+                continue;
+            }
+            delivery.getProject().setProducts(new HashSet<>(devUnitDAO.getProjectProducts(delivery.getProject().getId())));
+
+            jdbcManyRelationsHelper.fill(delivery, "kits");
+        }
+
         return ok(sr);
     }
 
