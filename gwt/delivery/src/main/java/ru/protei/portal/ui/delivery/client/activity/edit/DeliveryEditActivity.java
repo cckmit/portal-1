@@ -97,13 +97,14 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
                     requestedNameDescription = false;
 
                     fireEvent( new NotifyEvents.Show( lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS ) );
+                    fireEvent(new DeliveryEvents.ChangeDelivery(changeRequest.getId()));
                     onNameDescriptionChanged();
                 } ) );
     }
 
     @Override
     public void onBackClicked() {
-        fireEvent(new Back());
+        fireEvent(new DeliveryEvents.Show(!isNew(delivery)));
     }
 
     @Override
@@ -176,6 +177,10 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         } else {
             nameContainer.add(nameAndDescriptionView);
         }
+    }
+
+    private boolean isNew(Delivery project) {
+        return project.getId() == null;
     }
 
     @Inject

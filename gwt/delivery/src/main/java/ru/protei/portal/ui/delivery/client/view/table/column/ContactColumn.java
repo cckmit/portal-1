@@ -2,6 +2,7 @@ package ru.protei.portal.ui.delivery.client.view.table.column;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.Label;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.Delivery;

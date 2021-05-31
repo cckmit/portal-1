@@ -9,7 +9,9 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Delivery;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.DeliveryQuery;
+import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -58,14 +60,19 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
         initDetails.parent.add(view.asWidget());
         view.getPagerContainer().add(pagerView.asWidget());
 
-        fireEvent(policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE) ?
-                new ActionBarEvents.Add(CREATE_ACTION, null, UiConstants.ActionBarIdentity.DELIVERY) :
-                new ActionBarEvents.Clear()
-        );
-
+        if (policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE)){
+            fireEvent( new ActionBarEvents.Add(CREATE_ACTION, null, UiConstants.ActionBarIdentity.DELIVERY));
+        }
         this.preScroll = event.preScroll;
 
         loadTable();
+    }
+
+    @Event
+    public void onChangeRow( DeliveryEvents.ChangeDelivery event ) {
+        deliveryService.getDelivery(event.id, new FluentCallback<Delivery>()
+                .withSuccess(delivery -> view.updateRow(delivery))
+        );
     }
 
     @Event

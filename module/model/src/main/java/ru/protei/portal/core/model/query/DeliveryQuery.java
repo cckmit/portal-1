@@ -143,7 +143,6 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
-                id != null ||
                 StringUtils.isNotBlank(name) ||
                 CollectionUtils.isNotEmpty(companyIds) ||
                 CollectionUtils.isNotEmpty(productIds) ||

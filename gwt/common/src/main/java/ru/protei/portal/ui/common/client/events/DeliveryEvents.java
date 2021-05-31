@@ -45,6 +45,13 @@ public class DeliveryEvents {
         public Long id;
     }
 
+    public static class ChangeDelivery {
+        public Long id;
+        public ChangeDelivery(Long deliveryId){
+            id = deliveryId;
+        }
+    }
+
     public static class ShowPreview {
         public ShowPreview (HasWidgets parent, Long id) {
             this.parent = parent;
@@ -65,18 +72,6 @@ public class DeliveryEvents {
 
         @Name("id")
         public Long deliveryId;
-    }
-
-    public static class ShowConciseTable {
-        public ShowConciseTable() {}
-
-        public ShowConciseTable(HasWidgets parent, Long parentDeliveryId) {
-            this.parent = parent;
-            this.parentDeliveryId = parentDeliveryId;
-        }
-
-        public HasWidgets parent;
-        public Long parentDeliveryId;
     }
 
     public static class EditDeliveryMeta {

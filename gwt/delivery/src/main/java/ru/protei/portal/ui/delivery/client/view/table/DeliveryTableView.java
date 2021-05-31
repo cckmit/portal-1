@@ -98,6 +98,12 @@ public class DeliveryTableView extends Composite implements AbstractDeliveryTabl
         columnProvider.removeSelection();
     }
 
+    @Override
+    public void updateRow(Delivery item) {
+        if(item != null)
+            table.updateRow(item);
+    }
+
     private void initTable() {
 
         columnProvider = new ClickColumnProvider<>();

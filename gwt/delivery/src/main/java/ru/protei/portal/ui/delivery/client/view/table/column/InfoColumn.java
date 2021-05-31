@@ -6,7 +6,6 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -15,7 +14,6 @@ import java.util.Date;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
-import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 /**
  * продукты, наименование, описание, дата отправки
@@ -48,7 +46,6 @@ public class InfoColumn extends ClickColumn<Delivery>{
         ProjectInfo projectInfo = ProjectInfo.fromProject(delivery.getProject());
         if (projectInfo != null && isNotEmpty(projectInfo.getProducts())){
             productElement.setInnerText( joining(projectInfo.getProducts(), ", ", ProductShortView::getName) );
-            productElement.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.DELIVERY.PRODUCT );
             divElement.appendChild( productElement );
         }
 
@@ -63,20 +60,17 @@ public class InfoColumn extends ClickColumn<Delivery>{
 
             Element createdElement = DOM.createSpan();
             createdElement.setInnerText( " " + DateFormatter.formatDateTime( delivered ) );
-            createdElement.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.DELIVERY.DELIVERY_DATE );
             groupElement.appendChild( createdElement );
 
             divElement.appendChild( groupElement );
         }
 
         Element nameElement = DOM.createElement( "p" );
-        nameElement.setInnerText( delivery == null ? "" : delivery.getName() == null ? "" : delivery.getName() );
-        nameElement.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.DELIVERY.NAME);
+        nameElement.setInnerText( delivery.getName() == null ? "" : delivery.getName() );
         divElement.appendChild( nameElement );
 
         Element descElement = DOM.createElement( "p" );
-        descElement.setInnerText( delivery == null ? "" : delivery.getDescription()== null? "" : delivery.getDescription() );
-        descElement.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.DELIVERY.DESCRIPTION );
+        descElement.setInnerText( delivery.getDescription()== null? "" : delivery.getDescription() );
         divElement.appendChild( descElement );
 
         cell.appendChild( divElement );

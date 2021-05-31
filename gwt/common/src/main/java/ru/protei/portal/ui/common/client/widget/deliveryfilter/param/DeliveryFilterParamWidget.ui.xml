@@ -29,8 +29,7 @@
 
             <productselector:devunit.DevUnitMultiSelector ui:field="products"
                                                           header="{lang.deliveryFilterProduct}"
-                                                          addStyleNames="form-group col-md-4 resize-md-12"
-                                                          hasNullValue="true"/>
+                                                          addStyleNames="form-group col-md-4 resize-md-12"/>
 
             <companyselector:CompanyMultiSelector ui:field="companies"
                                                   header="{lang.deliveryFilterCompany}"
@@ -38,8 +37,7 @@
 
             <person:EmployeeMultiSelector ui:field="managers"
                                           header="{lang.deliveryManager}"
-                                          addStyleNames="form-group col-md-4 resize-md-12"
-                                          hasNullValue="true"/>
+                                          addStyleNames="form-group col-md-4 resize-md-12"/>
 
             <div ui:field="stateContainer" class="form-group col-md-8 resize-md-12">
                 <label ui:field="deliveryState"><ui:text from="{lang.deliveryState}"/></label>
