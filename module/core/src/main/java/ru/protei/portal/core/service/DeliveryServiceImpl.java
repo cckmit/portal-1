@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.DeliveryQuery;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -140,7 +139,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         long stateId = delivery.getStateId();
-        Result<Long> resultState = addStateHistory(token, deliveryId, stateId, caseStateDAO.get(stateId).getInfo());
+        Result<Long> resultState = addStateHistory(token, deliveryId, stateId, String.valueOf(caseStateDAO.get(stateId).getId()));
         if (resultState.isError()) {
             log.error("State message for the delivery {} not saved!", caseId);
         }
@@ -198,8 +197,9 @@ public class DeliveryServiceImpl implements DeliveryService {
         // update kits
 
         if (meta.getStateId() != oldMeta.getStateId()) {
-            Result<Long> resultState = changeStateHistory(token, meta.getId(), oldMeta.getStateId(), caseStateDAO.get(oldMeta.getStateId()).getInfo(),
-                                                          meta.getStateId(), caseStateDAO.get(meta.getStateId()).getInfo());
+            Result<Long> resultState = changeStateHistory(token, meta.getId(), oldMeta.getStateId(), getStateNameId(oldMeta),
+                                                          meta.getStateId(), getStateNameId(meta));
+
             if (resultState.isError()) {
                 log.error("State message for the delivery {} not saved!", meta.getId());
             }
@@ -335,11 +335,11 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     private Result<Long> addStateHistory(AuthToken authToken, Long deliveryId, Long stateId, String stateName) {
-        return historyService.createHistory(authToken, deliveryId, En_HistoryAction.ADD, En_HistoryType.CASE_STATE, null, null, stateId, stateName);
+        return historyService.createHistory(authToken, deliveryId, En_HistoryAction.ADD, En_HistoryType.DELIVERY_STATE, null, null, stateId, stateName);
     }
 
     private Result<Long> changeStateHistory(AuthToken token, Long deliveryId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
-        return historyService.createHistory(token, deliveryId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
+        return historyService.createHistory(token, deliveryId, En_HistoryAction.CHANGE, En_HistoryType.DELIVERY_STATE, oldStateId, oldStateName, newStateId, newStateName);
     }
 
     private Result<Long> addDateHistory(AuthToken token, Long deliveryId, Date date) {
@@ -356,5 +356,9 @@ public class DeliveryServiceImpl implements DeliveryService {
     private Result<Long> removeDateHistory(AuthToken token, Long deliveryId, Date oldDate) {
         return historyService.createHistory(token, deliveryId, En_HistoryAction.REMOVE, En_HistoryType.DATE,
                                             null, DEPARTURE_DATE_FORMAT.format(oldDate), deliveryId, null);
+    }
+
+    private String getStateNameId(Delivery obj) {
+        return String.valueOf(caseStateDAO.get(obj.getStateId()).getId());
     }
 }

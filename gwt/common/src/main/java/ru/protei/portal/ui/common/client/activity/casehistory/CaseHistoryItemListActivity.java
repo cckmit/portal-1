@@ -17,6 +17,7 @@ import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.CaseHistoryEvents;
+import ru.protei.portal.ui.common.client.lang.DeliveryStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItem;
@@ -115,6 +116,7 @@ public abstract class CaseHistoryItemListActivity implements AbstractCaseHistory
             case CASE_MANAGER: return makeHistoryItem(history, lang.issueManager(), EmployeeShortView.class);
             case CASE_IMPORTANCE: return makeHistoryItem(history, lang.issueImportance(), ImportanceLevel.class);
             case DATE: return makeHistoryItem(history, lang.deliveryDepartureDate(), Delivery.class);
+            case DELIVERY_STATE: return makeHistoryItem(history, lang.issueState(), Delivery.class);
             default: return null;
         }
     }
@@ -211,6 +213,14 @@ public abstract class CaseHistoryItemListActivity implements AbstractCaseHistory
             return caseHistoryDateItemView;
         }
 
+        if (En_HistoryType.DELIVERY_STATE.equals(historyType)) {
+            CaseHistoryStateItemView caseHistoryDeliveryStateItemView = caseHistoryStateItemViewProvider.get();
+            caseHistoryDeliveryStateItemView.setName(deliveryStateLang.getName(new CaseState(Long.parseLong(value))));
+            caseHistoryDeliveryStateItemView.setColor(color);
+
+            return caseHistoryDeliveryStateItemView;
+        }
+
         return null;
     }
 
@@ -239,6 +249,8 @@ public abstract class CaseHistoryItemListActivity implements AbstractCaseHistory
     private PolicyService policyService;
     @Inject
     private Lang lang;
+    @Inject
+    DeliveryStateLang deliveryStateLang;
 
     private FlowPanel historyContainer;
     private final List<CaseHistoryItemsContainer> historyItemsContainers = new LinkedList<>();
