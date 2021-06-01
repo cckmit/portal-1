@@ -215,7 +215,7 @@ public abstract class CaseHistoryItemListActivity implements AbstractCaseHistory
 
         if (En_HistoryType.DELIVERY_STATE.equals(historyType)) {
             CaseHistoryStateItemView caseHistoryDeliveryStateItemView = caseHistoryStateItemViewProvider.get();
-            caseHistoryDeliveryStateItemView.setName(deliveryStateLang.getName(new CaseState(Long.parseLong(value))));
+            caseHistoryDeliveryStateItemView.setName(deliveryStateLang.getStateName(new CaseState(value)));
             caseHistoryDeliveryStateItemView.setColor(color);
 
             return caseHistoryDeliveryStateItemView;

@@ -3,30 +3,26 @@ package ru.protei.portal.ui.common.client.lang;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CaseState;
 
+/**
+ * Названия статусов поставок
+ */
 public class DeliveryStateLang {
-    public String getName(CaseState value) {
-        if (value.getId() == null) {
-            return value.getState();
+
+    public String getStateName(CaseState state) {
+        if (state == null || state.getState() == null) {
+            return lang.errUnknownResult();
         }
-        switch (value.getId().intValue()) {
-            case 39:
-                return lang.deliveryStatePreliminary();
-            case 40:
-                return lang.deliveryStatePreReserve();
-            case 41:
-                return lang.deliveryStateReserve();
-            case 42:
-                return lang.deliveryStateAssembly();
-            case 43:
-                return lang.deliveryStateTest();
-            case 44:
-                return lang.deliveryStateReady();
-            case 45:
-                return lang.deliveryStateSent();
-            case 46:
-                return lang.deliveryStateWork();
-            default:
-                return lang.unknownField();
+
+        switch (state.getState().toLowerCase()) {
+            case "preliminary": return lang.deliveryStatePreliminary();
+            case "pre_reserve": return lang.deliveryStatePreReserve();
+            case "reserve": return lang.deliveryStateReserve();
+            case "assembly": return lang.deliveryStateAssembly();
+            case "test": return lang.deliveryStateTest();
+            case "ready": return lang.deliveryStateReady();
+            case "sent": return lang.deliveryStateSent();
+            case "work": return lang.deliveryStateWork();
+            default: return state.getState();
         }
     }
 

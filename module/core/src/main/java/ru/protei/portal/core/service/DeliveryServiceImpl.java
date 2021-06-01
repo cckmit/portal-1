@@ -139,7 +139,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         long stateId = delivery.getStateId();
-        Result<Long> resultState = addStateHistory(token, deliveryId, stateId, String.valueOf(caseStateDAO.get(stateId).getId()));
+        Result<Long> resultState = addStateHistory(token, deliveryId, stateId, caseStateDAO.get(stateId).getState());
         if (resultState.isError()) {
             log.error("State message for the delivery {} not saved!", caseId);
         }
@@ -197,8 +197,8 @@ public class DeliveryServiceImpl implements DeliveryService {
         // update kits
 
         if (meta.getStateId() != oldMeta.getStateId()) {
-            Result<Long> resultState = changeStateHistory(token, meta.getId(), oldMeta.getStateId(), getStateNameId(oldMeta),
-                                                          meta.getStateId(), getStateNameId(meta));
+            Result<Long> resultState = changeStateHistory(token, meta.getId(), oldMeta.getStateId(), caseStateDAO.get(oldMeta.getStateId()).getState(),
+                                                          meta.getStateId(), caseStateDAO.get(meta.getStateId()).getState());
 
             if (resultState.isError()) {
                 log.error("State message for the delivery {} not saved!", meta.getId());
@@ -356,9 +356,5 @@ public class DeliveryServiceImpl implements DeliveryService {
     private Result<Long> removeDateHistory(AuthToken token, Long deliveryId, Date oldDate) {
         return historyService.createHistory(token, deliveryId, En_HistoryAction.REMOVE, En_HistoryType.DATE,
                                             null, DEPARTURE_DATE_FORMAT.format(oldDate), deliveryId, null);
-    }
-
-    private String getStateNameId(Delivery obj) {
-        return String.valueOf(caseStateDAO.get(obj.getStateId()).getId());
     }
 }

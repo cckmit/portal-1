@@ -60,7 +60,7 @@ public class NumberColumn extends ClickColumn<Delivery> {
         stateElement.addClassName("label");
         CaseState caseState = delivery.getState();
         stateElement.getStyle().setBackgroundColor(caseState == null ? null : caseState.getColor());
-        stateElement.setInnerText(caseState == null ? null : stateLang.getName(caseState));
+        stateElement.setInnerText(caseState == null ? null : stateLang.getStateName(caseState));
 
         divElement.appendChild( stateElement );
 

@@ -33,7 +33,7 @@ public class DeliveryStateFormSelector extends FormPopupSingleSelector<CaseState
     }
 
     public String getStateName(CaseState state) {
-        return deliveryStateLang.getName(state);
+        return deliveryStateLang.getStateName(state);
     }
 
     public void setDefaultValue(String value) {
