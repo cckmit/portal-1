@@ -42,7 +42,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 /**
- * Реализация сервиса управления проектами
+ * Реализация сервиса управления шаблонами
  */
 public class TemplateServiceImpl implements TemplateService {
     public static final String BASE_TEMPLATE_PATH = "notification/email/";
