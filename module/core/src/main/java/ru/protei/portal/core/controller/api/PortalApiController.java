@@ -197,7 +197,7 @@ public class PortalApiController {
 
             CaseObject caseObject = (CaseObject) auditableObject;
 
-            return caseService.updateCaseNameAndDescription(authToken, new CaseNameAndDescriptionChangeRequest(caseObject.getId(), caseObject.getName(), caseObject.getInfo()))
+            return caseService.updateCaseNameAndDescription(authToken, new CaseNameAndDescriptionChangeRequest(caseObject.getId(), caseObject.getName(), caseObject.getInfo()), En_CaseType.CRM_SUPPORT)
                 .flatMap(o -> caseService.updateCaseObjectMeta(authToken, new CaseObjectMeta(caseObject)))
                 .flatMap(o -> caseService.updateCaseObjectMetaNotifiers(authToken, En_CaseType.CRM_SUPPORT, new CaseObjectMetaNotifiers(caseObject)))
                 .flatMap(o -> {

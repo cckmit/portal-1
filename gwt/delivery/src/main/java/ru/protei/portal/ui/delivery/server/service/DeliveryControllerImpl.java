@@ -60,7 +60,7 @@ public class DeliveryControllerImpl implements DeliveryController {
     @Override
     public void updateNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest)  throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
-        checkResult(caseService.updateCaseNameAndDescription(token, changeRequest));
+        checkResult(caseService.updateCaseNameAndDescription(token, changeRequest, En_CaseType.DELIVERY));
     }
 
     @Override

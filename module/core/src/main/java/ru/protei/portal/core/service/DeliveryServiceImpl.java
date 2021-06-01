@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.DeliveryQuery;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -233,13 +232,14 @@ public class DeliveryServiceImpl implements DeliveryService {
     public Result<String> getLastSerialNumber(AuthToken token, boolean isArmyProject) {
         String lastSerialNumber = kitDAO.getLastSerialNumber(isArmyProject);
         if (lastSerialNumber == null) {
-            return ok(isArmyProject? "100.000" : makeFirstCivilNumberOfYear(getCurrentYear()));
-        }
-        if (!isArmyProject) {
-            int serialYear = Integer.parseInt(lastSerialNumber.split("\\.")[1]);
-            int currentYear = getCurrentYear();
-            if (serialYear < currentYear) {
-                return ok(makeFirstCivilNumberOfYear(currentYear));
+            lastSerialNumber = isArmyProject? "100.000" : makeFirstCivilNumberOfYear(getCurrentYear());
+        } else {
+            if (!isArmyProject) {
+                int serialYear = Integer.parseInt(lastSerialNumber.split("\\.")[0]);
+                int currentYear = getCurrentYear();
+                if (serialYear < currentYear) {
+                    lastSerialNumber = makeFirstCivilNumberOfYear(currentYear);
+                }
             }
         }
         log.debug("getLastSerialNumber(): isArmyProject = {}, result = {}", isArmyProject, lastSerialNumber);

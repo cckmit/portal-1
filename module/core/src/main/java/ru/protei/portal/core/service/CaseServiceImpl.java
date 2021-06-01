@@ -351,7 +351,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public Result<CaseNameAndDescriptionChangeRequest> updateCaseNameAndDescription(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest) {
+    public Result<CaseNameAndDescriptionChangeRequest> updateCaseNameAndDescription(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest, En_CaseType caseType) {
         return lockService.doWithLock( CaseObject.class, changeRequest.getId(), LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
             CaseObject oldCaseObject = caseObjectDAO.get(changeRequest.getId());
             if(oldCaseObject == null) {
@@ -402,15 +402,18 @@ public class CaseServiceImpl implements CaseService {
                 }
             }
 
-            return ok(changeRequest)
-                    .publishEvent( new CaseNameAndDescriptionEvent(
-                    this,
-                    changeRequest.getId(),
-                    nameDiff,
-                    infoDiff,
-                    token.getPersonId(),
-                    ServiceModule.GENERAL,
-                    En_ExtAppType.forCode(oldCaseObject.getExtAppType())) );
+            Result<CaseNameAndDescriptionChangeRequest> result = ok(changeRequest);
+            if (caseType == CRM_SUPPORT) {
+                result.publishEvent( new CaseNameAndDescriptionEvent(
+                                this,
+                                changeRequest.getId(),
+                                nameDiff,
+                                infoDiff,
+                                token.getPersonId(),
+                                ServiceModule.GENERAL,
+                                En_ExtAppType.forCode(oldCaseObject.getExtAppType())) );
+            }
+            return result;
         });
     }
 

@@ -39,7 +39,7 @@ public interface CaseService {
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.DELIVERY_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
-    Result<CaseNameAndDescriptionChangeRequest> updateCaseNameAndDescription(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest);
+    Result<CaseNameAndDescriptionChangeRequest> updateCaseNameAndDescription(AuthToken token, CaseNameAndDescriptionChangeRequest changeRequest, En_CaseType caseType);
 
     @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
