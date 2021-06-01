@@ -139,7 +139,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         long stateId = delivery.getStateId();
-        Result<Long> resultState = addStateHistory(token, deliveryId, stateId, caseStateDAO.get(stateId).getInfo());
+        Result<Long> resultState = addStateHistory(token, deliveryId, stateId, caseStateDAO.get(stateId).getState());
         if (resultState.isError()) {
             log.error("State message for the delivery {} not saved!", caseId);
         }
@@ -197,8 +197,9 @@ public class DeliveryServiceImpl implements DeliveryService {
         // update kits
 
         if (meta.getStateId() != oldMeta.getStateId()) {
-            Result<Long> resultState = changeStateHistory(token, meta.getId(), oldMeta.getStateId(), caseStateDAO.get(oldMeta.getStateId()).getInfo(),
-                                                          meta.getStateId(), caseStateDAO.get(meta.getStateId()).getInfo());
+            Result<Long> resultState = changeStateHistory(token, meta.getId(), oldMeta.getStateId(), caseStateDAO.get(oldMeta.getStateId()).getState(),
+                                                          meta.getStateId(), caseStateDAO.get(meta.getStateId()).getState());
+
             if (resultState.isError()) {
                 log.error("State message for the delivery {} not saved!", meta.getId());
             }
@@ -335,11 +336,11 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     private Result<Long> addStateHistory(AuthToken authToken, Long deliveryId, Long stateId, String stateName) {
-        return historyService.createHistory(authToken, deliveryId, En_HistoryAction.ADD, En_HistoryType.CASE_STATE, null, null, stateId, stateName);
+        return historyService.createHistory(authToken, deliveryId, En_HistoryAction.ADD, En_HistoryType.DELIVERY_STATE, null, null, stateId, stateName);
     }
 
     private Result<Long> changeStateHistory(AuthToken token, Long deliveryId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
-        return historyService.createHistory(token, deliveryId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
+        return historyService.createHistory(token, deliveryId, En_HistoryAction.CHANGE, En_HistoryType.DELIVERY_STATE, oldStateId, oldStateName, newStateId, newStateName);
     }
 
     private Result<Long> addDateHistory(AuthToken token, Long deliveryId, Date date) {
