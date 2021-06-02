@@ -10,6 +10,7 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectCreateEvent;
 import ru.protei.portal.core.event.CaseObjectMetaEvent;
+import ru.protei.portal.core.event.DeliveryNameAndDescriptionEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -44,6 +45,7 @@ import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.dict.En_CaseLink.UITS;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
+import static ru.protei.portal.core.model.dict.En_CaseType.DELIVERY;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 
@@ -412,6 +414,14 @@ public class CaseServiceImpl implements CaseService {
                                 token.getPersonId(),
                                 ServiceModule.GENERAL,
                                 En_ExtAppType.forCode(oldCaseObject.getExtAppType())) );
+            }
+            if (caseType == DELIVERY) {
+                result.publishEvent( new DeliveryNameAndDescriptionEvent(
+                        this,
+                        changeRequest.getId(),
+                        nameDiff,
+                        infoDiff,
+                        token.getPersonId()) );
             }
             return result;
         });

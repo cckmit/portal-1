@@ -8,10 +8,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.event.CaseAttachmentEvent;
-import ru.protei.portal.core.event.CaseCommentEvent;
-import ru.protei.portal.core.event.ProjectAttachmentEvent;
-import ru.protei.portal.core.event.ProjectCommentEvent;
+import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -39,8 +36,7 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProject;
 import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProjectPrivateElements;
-import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
-import static ru.protei.portal.core.model.dict.En_CaseType.PROJECT;
+import static ru.protei.portal.core.model.dict.En_CaseType.*;
 import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
@@ -156,6 +152,17 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             );
         }
 
+        if (DELIVERY.equals(caseType)) {
+            okResult.publishEvent(new DeliveryCommentEvent(
+                    this, null, resultData.getCaseComment(), null,
+                    token.getPersonId(), comment.getCaseId())
+            );
+
+            okResult.publishEvent(new DeliveryAttachmentEvent(this, resultData.getAddedAttachments(), resultData.getRemovedAttachments(), comment.getId(),
+                    token.getPersonId(), comment.getCaseId())
+            );
+        }
+
 /*
         if (resultData.getCaseComment() != null) {
             clientEventService.fireEvent( new CaseCommentSavedClientEvent( token.getPersonId(), comment.getCaseId(), resultData.getCaseComment().getId() ) );
@@ -267,6 +274,17 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             );
 
             okResult.publishEvent(new ProjectAttachmentEvent(this, resultData.getAddedAttachments(), resultData.getRemovedAttachments(), comment.getId(),
+                    token.getPersonId(), comment.getCaseId())
+            );
+        }
+
+        if (DELIVERY.equals(caseType)) {
+            okResult.publishEvent(new DeliveryCommentEvent(this,
+                    resultData.getOldCaseComment(), resultData.getCaseComment(), null,
+                    token.getPersonId(), comment.getCaseId())
+            );
+
+            okResult.publishEvent(new DeliveryAttachmentEvent(this, resultData.getAddedAttachments(), resultData.getRemovedAttachments(), comment.getId(),
                     token.getPersonId(), comment.getCaseId())
             );
         }
@@ -419,6 +437,16 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             );
 
             okResult.publishEvent(new ProjectAttachmentEvent(this, Collections.emptyList(), removedAttachments, removedComment.getId(),
+                    token.getPersonId(), caseId)
+            );
+        }
+
+        if (DELIVERY.equals(caseType)) {
+            okResult.publishEvent(new DeliveryCommentEvent(this,
+                    null, null, removedComment, token.getPersonId(), caseId)
+            );
+
+            okResult.publishEvent(new DeliveryAttachmentEvent(this, Collections.emptyList(), removedAttachments, removedComment.getId(),
                     token.getPersonId(), caseId)
             );
         }

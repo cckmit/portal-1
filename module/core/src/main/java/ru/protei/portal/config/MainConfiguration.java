@@ -885,6 +885,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public EventDeliveryAssemblerService getEventDeliveryAssemblerService() {
+        return new EventDeliveryAssemblerServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
     }
@@ -892,6 +897,11 @@ public class MainConfiguration {
     @Bean
     public AssemblerProjectService getAssemblerProjectService() {
         return new AssemblerProjectServiceImpl();
+    }
+
+    @Bean
+    public AssemblerDeliveryService getAssemblerDeliveryService() {
+        return new AssemblerDeliveryServiceImpl();
     }
 
     @Bean

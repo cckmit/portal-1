@@ -129,7 +129,7 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
     }
 
     public boolean isPurchaseDateChanged() {
-        return isEditEvent() && !Objects.equals(oldProjectState.getPauseDate(), newProjectState.getPurchaseDate());
+        return isEditEvent() && !Objects.equals(oldProjectState.getPurchaseDate(), newProjectState.getPurchaseDate());
     }
 
     public boolean isTeamChanged() {
