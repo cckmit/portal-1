@@ -102,6 +102,7 @@
                 <module>module/model</module>
                 <module>module/embeddeddb</module>
                 <module>module/core</module>
+                <module>module/nrpe</module>
                 <module>module/ws-api</module>
             </modules>
         </profile>

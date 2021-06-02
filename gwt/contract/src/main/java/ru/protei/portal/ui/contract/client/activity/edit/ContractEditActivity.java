@@ -220,7 +220,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.dateValidDate().setValue(contract.getDateValid());
         view.dateValidDays().setValue(getDaysBetween(contract.getDateSigning(), contract.getDateValid()));
         view.contractSpecifications().setValue(contract.getContractSpecifications());
-        view.contractParent().setValue(createContractInfoOrNull(contract));
+        view.contractParent().setValue(createContractInfoOrNull(contract.getParentContractId(), contract.getParentContractNumber()));
         view.organization().setValue(createOptionOrNull(contract.getOrganizationId(), contract.getOrganizationName()));
         view.setOrganization(contract.getOrganizationName());
         view.contractor().setValue(contract.getContractor());
@@ -374,8 +374,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     private EntityOption createOptionOrNull(Long id, String name) {
         return id == null ? null : new EntityOption(name, id);
     }
-    private ContractInfo createContractInfoOrNull(Contract contract) {
-        return contract == null ? null : contract.toContactInfo();
+    private ContractInfo createContractInfoOrNull(Long id, String name) {
+        return id == null ? null : new ContractInfo(id, name, null);
     }
 
     private PersonShortView createPersonOrNull(Long id, String name) {
