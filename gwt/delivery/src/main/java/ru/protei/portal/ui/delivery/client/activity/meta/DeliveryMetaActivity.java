@@ -50,7 +50,6 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
 
         fillView( event.delivery );
         fillNotifiersView( metaNotifiers );
-        deliveryMetaView.stateEnable().setEnabled(hasPrivilegesChangeStatus(event.delivery.getState()));
     }
 
     @Override
@@ -141,7 +140,9 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
 
     private void fillView(Delivery delivery) {
         deliveryMetaView.state().setValue(delivery.getState());
+        deliveryMetaView.stateEnable().setEnabled(hasEditPrivileges() && hasPrivilegesChangeStatus(delivery.getState()));
         deliveryMetaView.type().setValue(delivery.getType());
+        deliveryMetaView.typeEnabled().setEnabled(hasEditPrivileges());
 
         ProjectInfo projectInfo = ProjectInfo.fromProject(delivery.getProject());
         deliveryMetaView.project().setValue(projectInfo);
@@ -149,7 +150,7 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         deliveryMetaView.setCustomerType(customerTypeLang.getName(projectInfo.getCustomerType()));
         deliveryMetaView.updateInitiatorModel(projectInfo.getContragent().getId());
         deliveryMetaView.initiator().setValue(delivery.getInitiator());
-        deliveryMetaView.initiatorEnable().setEnabled(true);
+        deliveryMetaView.initiatorEnable().setEnabled(hasEditPrivileges());
         deliveryMetaView.setManager(projectInfo.getManager().getDisplayText());
         deliveryMetaView.setProducts(joining(projectInfo.getProducts(), ", ", ProductShortView::getName));
         deliveryMetaView.updateContractModel(projectInfo.getId());
@@ -160,10 +161,13 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
             deliveryMetaView.contractEnable().setEnabled(true);
         }
         deliveryMetaView.attribute().setValue(delivery.getAttribute());
+        deliveryMetaView.attributeEnabled().setEnabled(hasEditPrivileges());
         deliveryMetaView.contractEnable().setEnabled(delivery.getAttribute() == En_DeliveryAttribute.DELIVERY);
         deliveryMetaView.setContractCompany(contract != null ? contract.getOrganizationName() : null);
         deliveryMetaView.departureDate().setValue(delivery.getDepartureDate());
+        deliveryMetaView.departureDateEnabled().setEnabled(hasEditPrivileges());
         deliveryMetaView.setDepartureDateValid(true);
+        deliveryMetaView.subscribersEnabled().setEnabled(hasEditPrivileges());
     }
 
     private void fillNotifiersView(CaseObjectMetaNotifiers caseMetaNotifiers) {
@@ -177,6 +181,10 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
     private boolean hasPrivilegesChangeStatus(CaseState caseState) {
         return !Objects.equals(caseState.getId(), (long)En_DeliveryState.PRELIMINARY.getId())
                 || policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CHANGE_PRELIMINARY_STATUS);
+    }
+
+    private boolean hasEditPrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
     }
 
     @Inject
