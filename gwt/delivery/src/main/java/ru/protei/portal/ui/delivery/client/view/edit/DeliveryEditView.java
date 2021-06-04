@@ -104,13 +104,13 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     }
 
     @Override
-    public HasEnabled refreshSerialNumberEnabled() {
-        return kits.getRefreshSerialNumberButton();
+    public HasEnabled refreshKitsSerialNumberEnabled() {
+        return kits.getRefreshKitsSerialNumberButton();
     }
 
     @Override
-    public void setAddButtonEnabled(boolean isAddButtonEnabled) {
-        kits.setAddButtonEnabled(isAddButtonEnabled);
+    public void setKitsAddButtonEnabled(boolean isKitsAddButtonEnabled) {
+        kits.setKitsAddButtonEnabled(isKitsAddButtonEnabled);
     }
 
     @UiHandler("showEditViewButton")

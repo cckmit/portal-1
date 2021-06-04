@@ -148,8 +148,8 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     private void fillView(Delivery delivery) {
         nameAndDescriptionView.setName(delivery.getName());
         nameAndDescriptionView.setDescription(delivery.getDescription());
-        view.setAddButtonEnabled(!isReadOnly());
-        view.refreshSerialNumberEnabled().setEnabled(!isReadOnly());
+        view.setKitsAddButtonEnabled(!isReadOnly());
+        view.refreshKitsSerialNumberEnabled().setEnabled(!isReadOnly());
         view.updateKitByProject(delivery.getProject().getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE);
         view.kits().setValue(delivery.getKits());
         view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));

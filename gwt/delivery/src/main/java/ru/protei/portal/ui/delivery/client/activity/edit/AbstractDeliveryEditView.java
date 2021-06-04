@@ -34,7 +34,7 @@ public interface AbstractDeliveryEditView extends IsWidget {
 
     HasVisibility nameAndDescriptionEditButtonVisibility();
 
-    HasEnabled refreshSerialNumberEnabled();
+    HasEnabled refreshKitsSerialNumberEnabled();
 
-    void setAddButtonEnabled(boolean isAddButtonEnabled);
+    void setKitsAddButtonEnabled(boolean isKitsAddButtonEnabled);
 }

@@ -171,7 +171,7 @@ public class DeliveryKitList extends Composite
     }
 
     private void refreshMultiKitsAllow() {
-        add.setEnabled(isAddButtonEnabled && isArmyProject);
+        add.setEnabled(isKitsAddButtonEnabled && isArmyProject);
         if (!isArmyProject) {
             int count = 1;
             List<DeliveryKitItem> toRemove = new ArrayList<>();
@@ -230,12 +230,12 @@ public class DeliveryKitList extends Composite
         }
     }
 
-    public Button getRefreshSerialNumberButton() {
+    public Button getRefreshKitsSerialNumberButton() {
         return refreshSerialNumber;
     }
 
-    public void setAddButtonEnabled(boolean isAddButtonEnabled) {
-        this.isAddButtonEnabled = isAddButtonEnabled;
+    public void setKitsAddButtonEnabled(boolean isKitsAddButtonEnabled) {
+        this.isKitsAddButtonEnabled = isKitsAddButtonEnabled;
     }
 
     @UiField
@@ -262,7 +262,7 @@ public class DeliveryKitList extends Composite
     private Integer lastSerialNumberPrefix;
     private Integer lastSerialNumberPostfix;
     private boolean isArmyProject = false;
-    private boolean isAddButtonEnabled = false;
+    private boolean isKitsAddButtonEnabled = false;
 
     private int minimumKitNumber = 1;
     private final Consumer<String> lastSerialNumberCallback =
