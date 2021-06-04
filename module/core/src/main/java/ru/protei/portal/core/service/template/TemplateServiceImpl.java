@@ -566,6 +566,119 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
+    public PreparedTemplate createEmailDeliverySubject(AssembledDeliveryEvent event, Person initiathor, EnumLangUtil enumLangUtil) {
+        Delivery delivery = event.getNewDeliveryState();
+        Map<String, Object> templateModel = new HashMap<>(makeTemplateModelUtils(enumLangUtil));
+
+        templateModel.put( "author", initiathor );
+        templateModel.put( "number", delivery.getNumber() );
+        templateModel.put( "caseState", delivery.getState());
+        templateModel.put( "name", delivery.getName() );
+
+        PreparedTemplate template = new PreparedTemplate( "notification/email/delivery.subject.%s.ftl" );
+        template.setModel( templateModel );
+        template.setTemplateConfiguration( templateConfiguration );
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate createEMailDeliveryBody(
+            AssembledDeliveryEvent event,
+            List<CaseComment> comments,
+            Collection<String> recipients,
+            String crmDeliveryUrl,
+            EnumLangUtil enumLangUtil) {
+
+        Delivery oldDeliveryState = event.getOldDeliveryState();
+        Delivery newDeliveryState = event.getNewDeliveryState();
+
+        Map<String, Object> templateModel = new HashMap<>(makeTemplateModelUtils(enumLangUtil));
+
+        templateModel.put("EnumLangUtil", enumLangUtil);
+        templateModel.put("TimeFormatter", new WorkTimeFormatter(true));
+        templateModel.put("TextUtils", new TextUtils());
+
+        templateModel.put("creator", newDeliveryState.getCreator().getDisplayShortName());
+        templateModel.put("created", newDeliveryState.getCreated());
+        templateModel.put("isCreated", event.isCreateEvent());
+        templateModel.put("recipients", recipients);
+
+        templateModel.put("linkToDelivery", crmDeliveryUrl);
+        templateModel.put("deliveryId", String.valueOf(event.getDeliveryId()));
+
+        templateModel.put("numberChanged", event.isNumberChanged());
+        templateModel.put("oldNumber", HtmlUtils.htmlEscape(getNullOrElse(oldDeliveryState, Delivery::getNumber)));
+        templateModel.put("newNumber", HtmlUtils.htmlEscape(newDeliveryState.getNumber()));
+
+        templateModel.put("nameChanged", event.isNameChanged());
+        templateModel.put("oldName", HtmlUtils.htmlEscape(getNullOrElse(oldDeliveryState, Delivery::getName)));
+        templateModel.put("newName", HtmlUtils.htmlEscape(newDeliveryState.getName()));
+
+        templateModel.put("descriptionChanged", event.isDescriptionChanged());
+        templateModel.put("oldDescription", HtmlUtils.htmlEscape(getNullOrElse(oldDeliveryState, Delivery::getDescription)));
+        templateModel.put("newDescription", HtmlUtils.htmlEscape(newDeliveryState.getDescription()));
+
+        templateModel.put("stateChanged", event.isStateChanged());
+        templateModel.put("oldState", getNullOrElse(oldDeliveryState, Delivery::getState));
+        templateModel.put("newState", newDeliveryState.getState());
+
+        templateModel.put("typeChanged", event.isTypeChanged());
+        templateModel.put("oldType", getNullOrElse(oldDeliveryState, Delivery::getType));
+        templateModel.put("newType", newDeliveryState.getType());
+
+//        templateModel.put("companyChanged", event.isCompanyChanged());
+//        templateModel.put("oldCompany", getNullOrElse(getNullOrElse(oldDeliveryState, Project::getCustomer), Company::getCname));
+//        templateModel.put("newCompany", newDeliveryState.getCustomer().getCname());
+
+        //TODO
+        templateModel.put("companyChanged", false);
+        templateModel.put("oldCompany", "company stub");
+        templateModel.put("newCompany", "company stub");
+
+//        final DiffCollectionResult<DevUnit> productDiffs = event.getProductDiffs();
+//        templateModel.put("productSameEntries", productDiffs.getSameEntries());
+//        templateModel.put("productAddedEntries", productDiffs.getAddedEntries());
+//        templateModel.put("productRemovedEntries", productDiffs.getRemovedEntries());
+//        Arrays.asList("p1","p2")
+
+        //TODO
+        templateModel.put("productSameEntries", new ArrayList<DevUnit>());
+        templateModel.put("productAddedEntries", new ArrayList<DevUnit>());
+        templateModel.put("productRemovedEntries", new ArrayList<DevUnit>());
+
+        templateModel.put("departureDateChanged", event.isDepartureDateChanged());
+        templateModel.put("oldDepartureDate", getNullOrElse(oldDeliveryState, Delivery::getDepartureDate));
+        templateModel.put("newDepartureDate", newDeliveryState.getDepartureDate());
+
+//        templateModel.putAll(
+//                buildAttachmentModelKeys(
+//                        attachments,
+//                        event.getAddedAttachments(),
+//                        event.getRemovedAttachments())
+//        );
+
+        templateModel.put( "caseComment",
+                getCommentsModelKeys(
+                        comments,
+                        event.getAddedCaseComments(),
+                        event.getChangedCaseComments(),
+                        event.getRemovedCaseComments(),
+                        En_TextMarkup.MARKDOWN));
+
+        templateModel.put( "caseComment",
+                getProjectCommentsModelKeys(
+                        comments, event.getAddedCaseComments(), event.getChangedCaseComments(),
+                        event.getRemovedCaseComments(), event.getCommentToAttachmentDiffs(), event.getExistingAttachments(), En_TextMarkup.MARKDOWN)
+        );
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/delivery.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+
+        return template;
+    }
+
+    @Override
     public PreparedTemplate getRoomReservationNotificationSubject(RoomReservation roomReservation, RoomReservationNotificationEvent.Action action) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("is_created", action == RoomReservationNotificationEvent.Action.CREATED);

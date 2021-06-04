@@ -5,16 +5,10 @@ import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Delivery;
-import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.lang.DeliveryStateLang;
 import ru.protei.portal.ui.common.client.lang.En_DeliveryTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-
-import java.util.Comparator;
-import java.util.Optional;
-
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 /**
  *  серийный номер первого комплекта, тип поставки, статус поставки
@@ -48,7 +42,7 @@ public class NumberColumn extends ClickColumn<Delivery> {
 
         com.google.gwt.dom.client.Element numberElement = DOM.createElement( "p" );
         numberElement.addClassName( "number-size" );
-        numberElement.setInnerText(getFirstKitSerialNumber(delivery));
+        numberElement.setInnerText(delivery.getNumber());
         divElement.appendChild( numberElement );
 
         com.google.gwt.dom.client.Element typeElement = DOM.createElement( "p" );
@@ -65,16 +59,6 @@ public class NumberColumn extends ClickColumn<Delivery> {
         divElement.appendChild( stateElement );
 
         cell.appendChild( divElement );
-    }
-
-    private String getFirstKitSerialNumber(Delivery delivery) {
-
-        if ( delivery == null ) {
-            return lang.valueNotSet();
-        }
-
-        Optional<Kit> first = stream(delivery.getKits()).min(Comparator.comparing(Kit::getSerialNumber));
-        return first.isPresent() ? first.get().getSerialNumber() : lang.valueNotSet();
     }
 
     private Lang lang;

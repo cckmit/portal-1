@@ -223,6 +223,7 @@ public class PortalConfigData {
         private final String crmCaseUrl;
         private final String crmProjectUrl;
         private final String contractUrl;
+        private final String deliveryUrl;
         private final String crmDocumentPreviewUrl;
         private final String crmEmployeeRegistrationUrl;
         private final String crmReservedIpsUrl;
@@ -242,6 +243,7 @@ public class PortalConfigData {
             crmCaseUrl = properties.getProperty( "crm.case.url", "#issues/issue:id=%d;" );
             crmProjectUrl = properties.getProperty("crm.project.url", "#project_preview:id=%d");
             contractUrl = properties.getProperty( "crm.contract.url", "#contracts/contract:id=%d;" );
+            deliveryUrl = properties.getProperty( "crm.delivery.url", "#deliveries/delivery:id=%d" );
             crmDocumentPreviewUrl = properties.getProperty( "crm.document.url.preview", "#doc_preview:id=%d");
             crmEmployeeRegistrationUrl = properties.getProperty( "crm.employee_registration.url");
             crmReservedIpsUrl = properties.getProperty("crm.reserved_ips.url", "#reserved_ips");
@@ -267,6 +269,10 @@ public class PortalConfigData {
 
         public String getContractUrl() {
             return contractUrl;
+        }
+
+        public String getDeliveryUrl() {
+            return deliveryUrl;
         }
 
         public String getCrmDocumentPreviewUrl() {

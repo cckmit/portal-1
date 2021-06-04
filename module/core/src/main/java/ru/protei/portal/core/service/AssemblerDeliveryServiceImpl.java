@@ -57,13 +57,14 @@ public class AssemblerDeliveryServiceImpl implements AssemblerDeliveryService {
             return;
         }
 
-        fillInitiator(sourceEvent)
-                .flatMap(this::fillDelivery)
+        fillDelivery(sourceEvent)
+                .flatMap(this::fillInitiator)
                 .flatMap(this::fillComments)
                 .flatMap(this::fillAttachments)
                 .ifOk(filledEvent -> publisherService.publishEvent(filledEvent));
     }
 
+    //контактное лицо
     private Result<AssembledDeliveryEvent> fillInitiator(AssembledDeliveryEvent event) {
         if (event.getInitiator() != null) {
             return ok(event);
@@ -81,9 +82,10 @@ public class AssemblerDeliveryServiceImpl implements AssemblerDeliveryService {
             return ok(event);
         }
 
+        //проверить что заполнен менеджер проекта, инициатор "контактное лицо" и ответственный project.caseObject.manager
         Delivery delivery = deliveryDAO.get(event.getDeliveryId());
         jdbcManyRelationsHelper.fillAll(delivery);
-        delivery.setProject(projectDAO.get(delivery.getProjectId()));
+//        delivery.setProject(projectDAO.get(delivery.getProjectId()));
 
         event.setNewDeliveryState(delivery);
 

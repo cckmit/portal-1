@@ -3,11 +3,13 @@ package ru.protei.portal.core.event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.lang.System.currentTimeMillis;
@@ -19,14 +21,19 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
     private DiffResult<String> name = new DiffResult<>();
     private DiffResult<String> info = new DiffResult<>();
     private Long projectId;
+    private Project project;
+    private Long managerId;// "ответственный"
+    private Person manager;
     private Long deliveryId;
+    private Long initiatorId; //"инициатор рассылки - тот кто внес изменения"
     private Person initiator;
-    private Long initiatorId;
+    private Long contactPersonId; //"контактное лицо"
+    private Person contactPerson;
     private boolean isCreateEvent;
     private DiffCollectionResult<CaseComment> comments = new DiffCollectionResult<>();
+    private DiffCollectionResult <Attachment> attachments = new DiffCollectionResult<>();
 
     private Map<Long, DiffCollectionResult<Attachment>> commentToAttachmentDiffs = new HashMap<>();
-    private List<Attachment> existingAttachments;
 
     private long lastUpdated;
 
@@ -81,6 +88,10 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
         attachmentDiffCollectionResult.putRemovedEntries(event.getRemovedAttachments());
     }
 
+    public boolean isNumberChanged() {
+        return isEditEvent() && !Objects.equals(oldDeliveryState.getNumber(), newDeliveryState.getNumber());
+    }
+
     public boolean isNameChanged() {
         return isEditEvent() && !Objects.equals(oldDeliveryState.getName(), newDeliveryState.getName());
     }
@@ -95,6 +106,10 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
 
     public boolean isStateChanged() {
         return isEditEvent() && !Objects.equals(oldDeliveryState.getStateId(), newDeliveryState.getStateId());
+    }
+
+    public boolean isTypeChanged() {
+        return isEditEvent() && !Objects.equals(oldDeliveryState.getType(), newDeliveryState.getType());
     }
 
     public boolean isAttributeChanged() {
@@ -179,7 +194,27 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
         return initiator == null ? initiatorId : initiator.getId();
     }
 
-//    public Person getCreator() {
+    public Long getManagerId() {
+        return managerId;
+    }
+
+    public Long getContactPersonId() {
+        return contactPersonId;
+    }
+
+    public Person getContactPerson() {
+        return contactPerson;
+    }
+
+    public void setContactPerson(Person contactPerson) {
+        this.contactPerson = contactPerson;
+    }
+
+    public void setContactPersonId(Long contactPersonId) {
+        this.contactPersonId = contactPersonId;
+    }
+
+    //    public Person getCreator() {
 //        return newDeliveryState.getCreator();
 //    }
 
@@ -208,7 +243,9 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
     }
 
     public boolean isAttachmentsFilled() {
-        return existingAttachments != null;
+        synchronized (attachments){
+            return attachments.hasSameEntries();
+        }
     }
 
     public boolean isDeliveryFilled() {
@@ -246,12 +283,34 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
         comments.putSameEntries(existingComments);
     }
 
-    public void setExistingAttachments(List<Attachment> existingAttachments) {
-        this.existingAttachments = existingAttachments;
+    public Collection<Attachment> getAddedAttachments() {
+        return attachments.getAddedEntries();
     }
 
     public List<Attachment> getExistingAttachments() {
-        return existingAttachments;
+        attachments = synchronizeExists( attachments, Attachment::getId );
+        return attachments.getSameEntries();
+    }
+
+    public void setExistingAttachments( List<Attachment> existingAttachments ) {
+        attachments.putSameEntries( existingAttachments );
+    }
+
+    public Collection<Attachment> getRemovedAttachments() {
+        return attachments.getRemovedEntries();
+    }
+
+    // Убрать из существующих элементов добавленные и удаленные
+    private <T> DiffCollectionResult<T> synchronizeExists(DiffCollectionResult<T> diff, Function<T, Object> getId) {
+        log.info( "synchronizeExists(): before +{} -{} {} ", toList( diff.getAddedEntries(), getId ), toList( diff.getRemovedEntries(), getId ), toList( diff.getSameEntries(), getId ) );
+        if (diff.hasSameEntries()){
+            synchronized (diff) {
+                diff.getSameEntries().removeAll( emptyIfNull( diff.getAddedEntries() ) );
+                diff.getSameEntries().removeAll( emptyIfNull( diff.getRemovedEntries() ) );
+            }
+        }
+        log.info( "synchronizeExists(): after +{} -{} {} ", toList( diff.getAddedEntries(), getId ), toList( diff.getRemovedEntries(), getId ), toList( diff.getSameEntries(), getId ) );
+        return diff;
     }
 
     public Map<Long, DiffCollectionResult<Attachment>> getCommentToAttachmentDiffs() {
@@ -271,4 +330,16 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
     }
 
     private static final Logger log = LoggerFactory.getLogger(AssembledDeliveryEvent.class);
+
+    //TODO
+    public boolean isDeliveryChanged() {
+        return isNameChanged()
+                || isDescriptionChanged()
+                || isStateChanged()
+//                || isCompanyChanged()
+//                || isProductChanged()
+                || isDepartureDateChanged()
+                || isCommentsChanged()
+                || isAttachmentChanged();
+    }
 }

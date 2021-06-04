@@ -2,6 +2,7 @@ package ru.protei.portal.core.utils;
 
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.CaseState;
 
 import java.time.DayOfWeek;
 import java.util.Locale;
@@ -334,5 +335,67 @@ public class EnumLangUtil {
             case SATURDAY: return localizedLang.get("saturday");
         }
         return "";
+    }
+
+    public String deliveryTypeLang(En_DeliveryType deliveryType, String langCode) {
+        if (deliveryType == null) {
+            return "";
+        }
+        if (localizedLang == null) {
+            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
+        }
+        switch (deliveryType) {
+            case UPGRADE:
+                return localizedLang.get("deliveryTypeUpgrade");
+            case UPGRADE_HW:
+                return localizedLang.get("deliveryTypeUpgradeHW");
+            case UPGRADE_SW:
+                return localizedLang.get("deliveryTypeUpgradeSW");
+            case REPLACEMENT_HW:
+                return localizedLang.get("deliveryTypeReplacementHW");
+            case BUGFIX:
+                return localizedLang.get("deliveryTypeBugfix");
+            case NEW_VERSION:
+                return localizedLang.get("deliveryTypeNewVersion");
+            case NEW_VERSION_SW:
+                return localizedLang.get("deliveryTypeNewVersionSW");
+            case NEW_DELIVERY:
+                return localizedLang.get("deliveryTypeNewDelivery");
+            case TRIAL_OPERATION:
+                return localizedLang.get("deliveryTypeTrialOperation");
+            case DELIVERY:
+                return localizedLang.get("deliveryTypeDelivery");
+            case SUPPORT:
+                return localizedLang.get("deliveryTypeSupport");
+        }
+        return deliveryType.toString();
+    }
+
+    public String deliveryStateLang(CaseState caseState, String langCode) {
+        if (caseState == null) {
+            return "";
+        }
+        if (localizedLang == null) {
+            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
+        }
+        switch (caseState.getId().intValue()) {
+            case 39:
+                return localizedLang.get("deliveryStatePreliminary");
+            case 40:
+                return localizedLang.get("deliveryStatePreReserve");
+            case 41:
+                return localizedLang.get("deliveryStateReserve");
+            case 42:
+                return localizedLang.get("deliveryStateAssembly");
+            case 43:
+                return localizedLang.get("deliveryStateTest");
+            case 44:
+                return localizedLang.get("deliveryStateReady");
+            case 45:
+                return localizedLang.get("deliveryStateSent");
+            case 46:
+                return localizedLang.get("deliveryStateWork");
+        }
+        return caseState.getState();
     }
 }
