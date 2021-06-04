@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.*;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.LangUtil;
@@ -548,7 +549,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("sla", event.getSlaDiffs());
 
         templateModel.put( "caseComments",
-                getProjectCommentsModelKeys(
+                getCommentsAttachesModelKeys(
                         comments, event.getAddedCaseComments(), event.getChangedCaseComments(),
                         event.getRemovedCaseComments(), event.getCommentToAttachmentDiffs(), event.getExistingAttachments(), En_TextMarkup.MARKDOWN)
         );
@@ -626,14 +627,21 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldType", getNullOrElse(oldDeliveryState, Delivery::getType));
         templateModel.put("newType", newDeliveryState.getType());
 
-//        templateModel.put("companyChanged", event.isCompanyChanged());
-//        templateModel.put("oldCompany", getNullOrElse(getNullOrElse(oldDeliveryState, Project::getCustomer), Company::getCname));
-//        templateModel.put("newCompany", newDeliveryState.getCustomer().getCname());
+        templateModel.put("projectChanged", event.isProjectChanged());
+        templateModel.put("oldProject", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getProject(), Project::getName)));
+        templateModel.put("newProject", getNullOrElse(newDeliveryState.getProject(), Project::getName));
 
-        //TODO
-        templateModel.put("companyChanged", false);
-        templateModel.put("oldCompany", "company stub");
-        templateModel.put("newCompany", "company stub");
+        templateModel.put("managerChanged", event.isProjectChanged());
+        templateModel.put("oldManager", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getProject(), Project::getManagerName)));
+        templateModel.put("newManager", getNullOrElse(newDeliveryState.getProject(), Project::getManagerName));
+
+        templateModel.put("attributeChanged", event.isAttributeChanged());
+        templateModel.put("oldAttribute", getNullOrElse(oldDeliveryState, Delivery::getAttribute));
+        templateModel.put("newAttribute", newDeliveryState.getAttribute());
+
+        templateModel.put("contractChanged", event.isContractChanged());
+        templateModel.put("oldContract", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getContract(), Contract::getNumber)));
+        templateModel.put("newContract", getNullOrElse(newDeliveryState.getContract(), Contract::getNumber));
 
 //        final DiffCollectionResult<DevUnit> productDiffs = event.getProductDiffs();
 //        templateModel.put("productSameEntries", productDiffs.getSameEntries());
@@ -650,25 +658,23 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldDepartureDate", getNullOrElse(oldDeliveryState, Delivery::getDepartureDate));
         templateModel.put("newDepartureDate", newDeliveryState.getDepartureDate());
 
-//        templateModel.putAll(
-//                buildAttachmentModelKeys(
-//                        attachments,
-//                        event.getAddedAttachments(),
-//                        event.getRemovedAttachments())
-//        );
+        templateModel.put("companyChanged", event.isProjectChanged());
+        templateModel.put("oldCompany", getNullOrElse(oldDeliveryState, del -> getNullOrElse(del.getProject(), prj -> getNullOrElse(prj.getCustomer(), Company::getCname))));
+        templateModel.put("newCompany", getNullOrElse(newDeliveryState.getProject(), prj -> getNullOrElse(prj.getCustomer(), Company::getCname)));
+
+        templateModel.put("contactPersonChanged", event.isInitiatorChanged());
+        templateModel.put("oldContactPerson", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getInitiator(), PersonShortView::getDisplayName)));
+        templateModel.put("newContactPerson", getNullOrElse(newDeliveryState.getInitiator(), PersonShortView::getDisplayName));
 
         templateModel.put( "caseComment",
-                getCommentsModelKeys(
+                getCommentsAttachesModelKeys(
                         comments,
                         event.getAddedCaseComments(),
                         event.getChangedCaseComments(),
                         event.getRemovedCaseComments(),
-                        En_TextMarkup.MARKDOWN));
-
-        templateModel.put( "caseComment",
-                getProjectCommentsModelKeys(
-                        comments, event.getAddedCaseComments(), event.getChangedCaseComments(),
-                        event.getRemovedCaseComments(), event.getCommentToAttachmentDiffs(), event.getExistingAttachments(), En_TextMarkup.MARKDOWN)
+                        event.getCommentToAttachmentDiffs(),
+                        event.getExistingAttachments(),
+                        En_TextMarkup.MARKDOWN)
         );
 
         PreparedTemplate template = new PreparedTemplate("notification/email/delivery.body.%s.ftl");
@@ -1139,8 +1145,8 @@ public class TemplateServiceImpl implements TemplateService {
                 .collect( toList() );
     }
 
-    private List<Map<String, Object>> getProjectCommentsModelKeys(List<CaseComment> comments, List<CaseComment> added, List<CaseComment> changed, List<CaseComment> removed,
-                                                                  Map<Long, DiffCollectionResult<Attachment>> commentToAttachmentDiffs, List<Attachment> existingAttachments, En_TextMarkup textMarkup) {
+    private List<Map<String, Object>> getCommentsAttachesModelKeys(List<CaseComment> comments, List<CaseComment> added, List<CaseComment> changed, List<CaseComment> removed,
+                                                                   Map<Long, DiffCollectionResult<Attachment>> commentToAttachmentDiffs, List<Attachment> existingAttachments, En_TextMarkup textMarkup) {
         return comments.stream()
                 .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
                 .map(comment -> {

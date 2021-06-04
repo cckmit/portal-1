@@ -398,4 +398,22 @@ public class EnumLangUtil {
         }
         return caseState.getState();
     }
+
+    public String deliveryAttributeLang(En_DeliveryAttribute deliveryAttribute, String langCode) {
+        if (deliveryAttribute == null) {
+            return "";
+        }
+        if (localizedLang == null) {
+            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
+        }
+        switch (deliveryAttribute) {
+            case DELIVERY:
+                return localizedLang.get("deliveryAttributeDelivery");
+            case TEST:
+                return localizedLang.get("deliveryAttributeTest");
+            case PILOT_ZONE:
+                return localizedLang.get("deliveryAttributePilotZone");
+        }
+        return deliveryAttribute.toString();
+    }
 }

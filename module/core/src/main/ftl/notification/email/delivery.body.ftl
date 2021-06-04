@@ -11,9 +11,14 @@
 <@set name="_deliveryDescription" value="${deliveryDescription}"/>
 <@set name="_deliveryState" value="${deliveryState}"/>
 <@set name="_deliveryType" value="${deliveryType}"/>
+<@set name="_deliveryProject" value="${deliveryProject}"/>
+<@set name="_deliveryManager" value="${deliveryManager}"/>
+<@set name="_deliveryAttribute" value="${deliveryAttribute}"/>
+<@set name="_deliveryContract" value="${deliveryContract}"/>
 <@set name="_deliveryCompany" value="${deliveryCompany}"/>
 <@set name="_deliveryProduct" value="${deliveryProducts}"/>
 <@set name="_deliveryDepartureDate" value="${deliveryDepartureDate}"/>
+<@set name="_deliveryContactPerson" value="${deliveryContactPerson}"/>
 <@set name="_updated" value="${updated_just_now}"/>
 <@set name="_attachments" value="${attachments}"/>
 
@@ -187,19 +192,70 @@
                 </td>
             </tr>
 
-<#--COMPANY-->
+<#--PROJECT-->
             <tr>
                 <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                    ${_deliveryCompany}
+                    ${_deliveryProject}
                 </td>
                 <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                    <#if companyChanged>
+                    <#if projectChanged>
                     <@changeTo
-                    old="${oldCompany!'?'}"
-                    new="${newCompany}"
+                    old="${oldProject!'?'}"
+                    new="${newProject}"
                     />
                     <#else>
-                    ${newCompany}
+                    ${newProject}
+                </#if>
+                </td>
+            </tr>
+
+<#--MANAGER-->
+            <tr>
+                <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                    ${_deliveryManager}
+                </td>
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                    <#if managerChanged>
+                    <@changeTo
+                    old="${oldManager!'?'}"
+                    new="${newManager}"
+                    />
+                    <#else>
+                    ${newManager}
+                </#if>
+                </td>
+            </tr>
+
+<#--ATTRIBUTE-->
+            <tr>
+                <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                    ${_deliveryAttribute}
+                </td>
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                    <#if attributeChanged>
+                    <@changeTo
+                    old="${EnumLangUtil.deliveryAttributeLang(oldAttribute, lang)!'?'}"
+                    new="${EnumLangUtil.deliveryAttributeLang(newAttribute, lang)}"
+                    />
+                    <#else>
+                    ${EnumLangUtil.deliveryAttributeLang(newAttribute, lang)}
+                </#if>
+                </td>
+            </tr>
+
+<#--CONTRACT-->
+            <tr>
+                <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                    ${_deliveryContract}
+                </td>
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                    <#if contractChanged>
+                    <@changeTo
+                    old="${oldContract!'?'}"
+                    new="${newContract}"
+                    />
+                    <#else>
+                    ${newContract}
                 </#if>
                 </td>
             </tr>
@@ -244,6 +300,40 @@
                 </#if>
                 </td>
             </tr>
+
+<#--COMPANY-->
+            <tr>
+                <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                    ${_deliveryCompany}
+                </td>
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                    <#if companyChanged>
+                    <@changeTo
+                    old="${oldCompany!'?'}"
+                    new="${newCompany}"
+                    />
+                    <#else>
+                    ${newCompany}
+                </#if>
+                </td>
+            </tr>
+
+<#--CONTACT PERSON-->
+    <tr>
+        <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+            ${_deliveryContactPerson}
+        </td>
+        <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+            <#if contactPersonChanged>
+            <@changeTo
+            old="${oldContactPerson!'?'}"
+            new="${newContactPerson}"
+            />
+            <#else>
+            ${newContactPerson}
+        </#if>
+        </td>
+    </tr>
 
         </tbody>
     </table>
