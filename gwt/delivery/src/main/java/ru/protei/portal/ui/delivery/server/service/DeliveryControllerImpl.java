@@ -52,6 +52,22 @@ public class DeliveryControllerImpl implements DeliveryController {
     }
 
     @Override
+    public long removeDelivery(Long id) throws RequestFailedException {
+        log.info("removeDelivery(): id={}", id);
+
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+
+        Result<Long> response = deliveryService.removeDelivery(token, id);
+        log.info("removeDelivery(): id={}, result={}", id, response.isOk() ? "ok" : response.getStatus());
+
+        if (response.isOk()) {
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
     public String getLastSerialNumber(boolean isArmyProject) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
         return checkResultAndGetData(deliveryService.getLastSerialNumber(token, isArmyProject));

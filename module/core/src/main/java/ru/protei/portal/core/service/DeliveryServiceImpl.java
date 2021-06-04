@@ -67,6 +67,8 @@ public class DeliveryServiceImpl implements DeliveryService {
     HistoryService historyService;
     @Autowired
     CaseStateDAO caseStateDAO;
+    @Autowired
+    CaseLinkService caseLinkService;
 
     private final Pattern deliverySerialNumber = Pattern.compile(DELIVERY_KIT_SERIAL_NUMBER_PATTERN);
 
@@ -154,6 +156,24 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         return ok(deliveryDAO.get(delivery.getId()));
+    }
+
+    @Override
+    @Transactional
+    public Result<Long> removeDelivery(AuthToken token, Long deliveryId) {
+        Delivery delivery = deliveryDAO.get(deliveryId);
+        CaseObject caseObject = caseObjectDAO.get(deliveryId);
+        if (delivery == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        caseObject.setDeleted(true);
+
+        if (!caseObjectDAO.partialMerge(caseObject, "deleted")) {
+            return error(En_ResultStatus.NOT_UPDATED, "Delivery was not removed");
+        }
+
+        return ok(deliveryId);
     }
 
     @Override

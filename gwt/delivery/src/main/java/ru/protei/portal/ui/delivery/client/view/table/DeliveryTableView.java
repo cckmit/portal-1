@@ -12,8 +12,10 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.deliveryfilter.DeliveryFilterWidget;
 import ru.protei.portal.ui.common.client.widget.deliveryfilter.DeliveryFilterWidgetModel;
@@ -23,6 +25,9 @@ import ru.protei.portal.ui.delivery.client.view.table.column.ContactColumn;
 import ru.protei.portal.ui.delivery.client.view.table.column.InfoColumn;
 import ru.protei.portal.ui.delivery.client.view.table.column.ManagerColumn;
 import ru.protei.portal.ui.delivery.client.view.table.column.NumberColumn;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DeliveryTableView extends Composite implements AbstractDeliveryTableView {
 
@@ -107,29 +112,32 @@ public class DeliveryTableView extends Composite implements AbstractDeliveryTabl
     private void initTable() {
 
         columnProvider = new ClickColumnProvider<>();
-
-        table.addColumn(numberColumn.header, numberColumn.values);
-        numberColumn.setHandler( activity );
-        numberColumn.setColumnProvider( columnProvider );
-
+        table.addColumn( numberColumn.header, numberColumn.values );
         table.addColumn( infoColumn.header, infoColumn.values );
-        infoColumn.setHandler( activity );
-        infoColumn.setColumnProvider( columnProvider );
-
         table.addColumn( contactColumn.header, contactColumn.values );
-        contactColumn.setHandler( activity );
-        contactColumn.setColumnProvider( columnProvider );
-
         table.addColumn( managerColumn.header, managerColumn.values );
-        managerColumn.setHandler( activity );
-        managerColumn.setColumnProvider( columnProvider );
-
-        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT));
         table.addColumn(editClickColumn.header, editClickColumn.values);
+        table.addColumn(removeClickColumn.header, removeClickColumn.values);
+
         editClickColumn.setActionHandler(activity);
         editClickColumn.setEditHandler(activity);
-        editClickColumn.setHandler(activity);
-        editClickColumn.setColumnProvider(columnProvider);
+        removeClickColumn.setActionHandler(activity);
+        removeClickColumn.setRemoveHandler(activity);
+
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT));
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_REMOVE));
+
+        columns.add(numberColumn);
+        columns.add(infoColumn);
+        columns.add(contactColumn);
+        columns.add(managerColumn);
+        columns.add(editClickColumn);
+        columns.add(removeClickColumn);
+
+        columns.forEach(clickColumn -> {
+            clickColumn.setHandler(activity);
+            clickColumn.setColumnProvider(columnProvider);
+        });
 
         table.setLoadHandler(activity);
     }
@@ -158,10 +166,14 @@ public class DeliveryTableView extends Composite implements AbstractDeliveryTabl
     @Inject
     private EditClickColumn<Delivery> editClickColumn;
     @Inject
+    RemoveClickColumn<Delivery> removeClickColumn;
+    @Inject
     private PolicyService policyService;
 
     private ClickColumnProvider<Delivery> columnProvider = new ClickColumnProvider<>();
     private AbstractDeliveryTableActivity activity;
+
+    List<ClickColumn<Delivery>> columns = new ArrayList<>();
 
     private static TableViewUiBinder ourUiBinder = GWT.create(TableViewUiBinder.class);
     interface TableViewUiBinder extends UiBinder<HTMLPanel, DeliveryTableView> {}

@@ -29,6 +29,8 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
 
     private List<Long> stateIds;
 
+    private Integer deleted;
+
     public String getName() {
         return name;
     }
@@ -59,6 +61,14 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
         this.departureDateRange = departureDateRange;
     }
 
+    public Integer getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Integer deleted) {
+        this.deleted = deleted;
+    }
+
     public DeliveryQuery() {}
 
     public DeliveryQuery(Long id) {
@@ -76,6 +86,7 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
         setCompanyIds(query.getCompanyIds());
         setProductIds(query.getProductIds());
         setManagerIds(query.getManagerIds());
+        setDeleted(query.getDeleted());
     }
 
     public Set<Long> getProductIds() {
@@ -148,7 +159,8 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
                 CollectionUtils.isNotEmpty(productIds) ||
                 CollectionUtils.isNotEmpty(managerIds) ||
                 CollectionUtils.isNotEmpty(stateIds) ||
-                departureDateRange != null;
+                departureDateRange != null ||
+                deleted != null;
     }
 
     @Override
@@ -165,6 +177,7 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
                 ", sortDir=" + sortDir +
                 ", limit=" + limit +
                 ", offset=" + offset +
+                ", deleted=" + deleted +
                 '}';
     }
 
@@ -178,11 +191,12 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
                 Objects.equals(companyIds, caseQuery.companyIds) &&
                 Objects.equals(productIds, caseQuery.productIds) &&
                 Objects.equals(managerIds, caseQuery.managerIds) &&
-                Objects.equals(departureDateRange, caseQuery.departureDateRange);
+                Objects.equals(departureDateRange, caseQuery.departureDateRange) &&
+                Objects.equals(deleted, caseQuery.deleted);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, companyIds, productIds, managerIds, departureDateRange);
+        return Objects.hash(id, name, companyIds, productIds, managerIds, departureDateRange, deleted);
     }
 }

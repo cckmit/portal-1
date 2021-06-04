@@ -3490,6 +3490,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String deliveryFilterRemoveSuccessed();
 
+    String deliveryRemoveConfirmMessage(String deliveryName);
+
+    String deliveryRemoveSucceeded();
+
     String backToDeliveries();
 
     String selectDeliveryCustomerInitiator();

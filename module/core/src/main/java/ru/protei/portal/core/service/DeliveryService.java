@@ -25,6 +25,10 @@ public interface DeliveryService {
     @Auditable( En_AuditType.DELIVERY_CREATE )
     Result<Delivery> createDelivery(AuthToken token, Delivery delivery);
 
+    @Privileged({ En_Privilege.DELIVERY_REMOVE })
+    @Auditable( En_AuditType.DELIVERY_REMOVE )
+    Result<Long> removeDelivery(AuthToken token, Long projectId);
+
     @Privileged({ En_Privilege.DELIVERY_EDIT })
     @Auditable( En_AuditType.DELIVERY_MODIFY )
     Result<Delivery> updateMeta(AuthToken token, Delivery meta);
