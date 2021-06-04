@@ -98,6 +98,21 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         }
     }
 
+    @Override
+    public HasVisibility nameAndDescriptionEditButtonVisibility() {
+        return nameAndDescriptionEditButton;
+    }
+
+    @Override
+    public HasEnabled refreshKitsSerialNumberEnabled() {
+        return kits.getRefreshKitsSerialNumberButton();
+    }
+
+    @Override
+    public void setKitsAddButtonEnabled(boolean isKitsAddButtonEnabled) {
+        kits.setKitsAddButtonEnabled(isKitsAddButtonEnabled);
+    }
+
     @UiHandler("showEditViewButton")
     public void onShowEditViewModeButtonClick(ClickEvent event) {
         if (activity != null) {
