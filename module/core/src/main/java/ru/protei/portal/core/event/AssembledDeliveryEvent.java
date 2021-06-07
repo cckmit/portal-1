@@ -20,15 +20,9 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
     private Delivery newDeliveryState;
     private DiffResult<String> name = new DiffResult<>();
     private DiffResult<String> info = new DiffResult<>();
-    private Long projectId;
-    private Project project;
-    private Long managerId;// "ответственный"
-    private Person manager;
     private Long deliveryId;
-    private Long initiatorId; //"инициатор рассылки - тот кто внес изменения"
+    private Long initiatorId;//кто инициировал рассылку
     private Person initiator;
-    private Long contactPersonId; //"контактное лицо"
-    private Person contactPerson;
     private boolean isCreateEvent;
     private DiffCollectionResult<CaseComment> comments = new DiffCollectionResult<>();
     private DiffCollectionResult <Attachment> attachments = new DiffCollectionResult<>();
@@ -128,26 +122,6 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
         return isEditEvent() && !Objects.equals(oldDeliveryState.getProjectId(), newDeliveryState.getProjectId());
     }
 
-    public boolean isCommentsChanged() {
-        if (isNotEmpty(comments.getAddedEntries())) {
-            return true;
-        }
-
-        if (isNotEmpty(comments.getChangedEntries())) {
-            return true;
-        }
-
-        if (isNotEmpty(comments.getRemovedEntries())) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean isAttachmentChanged() {
-        return !commentToAttachmentDiffs.isEmpty();
-    }
-
     public DiffCollectionResult<DevUnit> getProductDiffs() {
         if (isEditEvent()) {
             return diffCollection(
@@ -165,10 +139,6 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
 
     public Delivery getOldDeliveryState() {
         return oldDeliveryState;
-    }
-
-    public void setOldDeliveryState(Delivery oldDeliveryState) {
-        this.oldDeliveryState = oldDeliveryState;
     }
 
     public Delivery getNewDeliveryState() {
@@ -199,26 +169,6 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
         return initiator == null ? initiatorId : initiator.getId();
     }
 
-    public Long getManagerId() {
-        return managerId;
-    }
-
-    public Long getContactPersonId() {
-        return contactPersonId;
-    }
-
-    public Person getContactPerson() {
-        return contactPerson;
-    }
-
-    public void setContactPerson(Person contactPerson) {
-        this.contactPerson = contactPerson;
-    }
-
-    public void setContactPersonId(Long contactPersonId) {
-        this.contactPersonId = contactPersonId;
-    }
-
     public boolean isDeliveryNameFilled() {
         synchronized (name) {
             return name.hasNewState();
@@ -233,10 +183,6 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
 
     public Long getDeliveryId() {
         return deliveryId;
-    }
-
-    public Long getProjectId() {
-        return projectId;
     }
 
     public boolean isCaseCommentsFilled() {
@@ -301,7 +247,6 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
         return attachments.getRemovedEntries();
     }
 
-    // Убрать из существующих элементов добавленные и удаленные
     private <T> DiffCollectionResult<T> synchronizeExists(DiffCollectionResult<T> diff, Function<T, Object> getId) {
         log.info( "synchronizeExists(): before +{} -{} {} ", toList( diff.getAddedEntries(), getId ), toList( diff.getRemovedEntries(), getId ), toList( diff.getSameEntries(), getId ) );
         if (diff.hasSameEntries()){
@@ -331,16 +276,4 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
     }
 
     private static final Logger log = LoggerFactory.getLogger(AssembledDeliveryEvent.class);
-
-    //TODO
-    public boolean isDeliveryChanged() {
-        return isNameChanged()
-                || isDescriptionChanged()
-                || isStateChanged()
-//                || isCompanyChanged()
-//                || isProductChanged()
-                || isDepartureDateChanged()
-                || isCommentsChanged()
-                || isAttachmentChanged();
-    }
 }

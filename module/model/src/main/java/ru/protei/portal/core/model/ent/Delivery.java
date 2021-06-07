@@ -145,12 +145,6 @@ public class Delivery extends AuditableObject {
     @JdbcOneToMany( localColumn = ID, remoteColumn = Kit.Columns.DELIVERY_ID )
     private List<Kit> kits;
 
-    //TODO мапить через sql вью
-    public String getNumber() {
-        Optional<Kit> first = stream(kits).min(Comparator.comparing(Kit::getSerialNumber));
-        return first.isPresent() ? first.get().getSerialNumber() : "";
-    }
-
     public Delivery() {}
 
     public Delivery(Long id) {
@@ -317,6 +311,11 @@ public class Delivery extends AuditableObject {
 
     public void setKits(List<Kit> kits) {
         this.kits = kits;
+    }
+
+    public String getNumber() {
+        Optional<Kit> first = stream(kits).min(Comparator.comparing(Kit::getSerialNumber));
+        return first.isPresent() ? first.get().getSerialNumber() : "";
     }
 
     public interface Columns {

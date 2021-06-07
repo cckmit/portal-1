@@ -98,9 +98,6 @@ public class MailNotificationProcessor {
     // -----------------------
     @EventListener
     public void onDeliveryChanged(AssembledDeliveryEvent event){
-        if (!isSendDeliveryNotification(event)) {
-            return;
-        }
 
         Set<NotificationEntry> recipients = subscriptionService.subscribers(event);
         List<ReplaceLoginWithUsernameInfo<CaseComment>> commentReplacementInfoList = caseCommentService.replaceLoginWithUsername(event.getAllComments()).getData();
@@ -1539,18 +1536,6 @@ public class MailNotificationProcessor {
                 || assembledCaseEvent.getInfo().hasDifferences()
                 || assembledCaseEvent.isProductChanged()
                 || assembledCaseEvent.isPublicLinksChanged();
-    }
-
-    private boolean isSendDeliveryNotification(AssembledDeliveryEvent event) {
-        if (!event.isEditEvent()) {
-            return true;
-        }
-
-        if (event.isDeliveryChanged()) {
-            return true;
-        }
-
-        return false;
     }
 
     private boolean isSendProjectNotification(AssembledProjectEvent event) {

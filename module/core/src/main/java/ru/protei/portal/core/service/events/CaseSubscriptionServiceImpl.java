@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -109,7 +110,15 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     public Set<NotificationEntry> subscribers(AssembledDeliveryEvent event) {
         Set<NotificationEntry> result = new HashSet<>();
         appendNotifiers(event.getDeliveryId(), result);
-        result.addAll(subscribers(Arrays.asList(event.getInitiatorId(), event.getManagerId())));
+        Project project = event.getNewDeliveryState().getProject();
+
+        //инициатор оповещения
+        Long initiatorId = event.getInitiatorId();
+        //ответственный
+        Long managerId = project == null ? null : project.getManagerId();
+        //контактное лицо
+        Long contactPersonId = event.getNewDeliveryState().getInitiatorId();
+        result.addAll(subscribers(Arrays.asList(initiatorId, managerId, contactPersonId )));
         log.info( "Delivery subscribers: {}", join( result, NotificationEntry::getAddress, ",") );
         return result;
     }
