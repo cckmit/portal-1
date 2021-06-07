@@ -24,6 +24,7 @@ public class YoutrackConstansMapping {
             case "Отменен":
                 return CrmConstants.State.CANCELED;
             case "Verified":
+            case "Done, Verified":
                 return CrmConstants.State.VERIFIED;
             default:
                 return CrmConstants.State.ACTIVE;
