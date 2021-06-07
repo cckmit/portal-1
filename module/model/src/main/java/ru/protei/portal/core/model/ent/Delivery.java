@@ -141,7 +141,7 @@ public class Delivery extends AuditableObject {
     @JdbcOneToMany( localColumn = ID, remoteColumn = Kit.Columns.DELIVERY_ID )
     private List<Kit> kits;
 
-@JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = Columns.DELETED, table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS)
+    @JdbcJoinedColumn(localColumn = ID, remoteColumn = ID, mappedColumn = CaseObject.Columns.DELETED, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private boolean deleted;
 
     public Delivery() {}
@@ -310,7 +310,6 @@ public class Delivery extends AuditableObject {
 
     public interface Columns {
         String ID = "id";
-        String DELETED = CaseObject.Columns.DELETED;
     }
 
     public boolean isDeleted() {

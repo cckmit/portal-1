@@ -26,9 +26,6 @@ import ru.protei.portal.ui.delivery.client.view.table.column.InfoColumn;
 import ru.protei.portal.ui.delivery.client.view.table.column.ManagerColumn;
 import ru.protei.portal.ui.delivery.client.view.table.column.NumberColumn;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class DeliveryTableView extends Composite implements AbstractDeliveryTableView {
 
     @Inject
@@ -110,15 +107,6 @@ public class DeliveryTableView extends Composite implements AbstractDeliveryTabl
     }
 
     private void initTable() {
-
-        columnProvider = new ClickColumnProvider<>();
-        table.addColumn( numberColumn.header, numberColumn.values );
-        table.addColumn( infoColumn.header, infoColumn.values );
-        table.addColumn( contactColumn.header, contactColumn.values );
-        table.addColumn( managerColumn.header, managerColumn.values );
-        table.addColumn(editClickColumn.header, editClickColumn.values);
-        table.addColumn(removeClickColumn.header, removeClickColumn.values);
-
         editClickColumn.setActionHandler(activity);
         editClickColumn.setEditHandler(activity);
         removeClickColumn.setActionHandler(activity);
@@ -127,19 +115,21 @@ public class DeliveryTableView extends Composite implements AbstractDeliveryTabl
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT));
         removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_REMOVE));
 
-        columns.add(numberColumn);
-        columns.add(infoColumn);
-        columns.add(contactColumn);
-        columns.add(managerColumn);
-        columns.add(editClickColumn);
-        columns.add(removeClickColumn);
-
-        columns.forEach(clickColumn -> {
-            clickColumn.setHandler(activity);
-            clickColumn.setColumnProvider(columnProvider);
-        });
+        columnProvider = new ClickColumnProvider<>();
+        setupColumn(numberColumn);
+        setupColumn(infoColumn);
+        setupColumn(contactColumn);
+        setupColumn(managerColumn);
+        setupColumn(editClickColumn);
+        setupColumn(removeClickColumn);
 
         table.setLoadHandler(activity);
+    }
+
+    private void setupColumn(ClickColumn<Delivery> clickColumn) {
+        table.addColumn(clickColumn.header, clickColumn.values);
+        clickColumn.setHandler(activity);
+        clickColumn.setColumnProvider(columnProvider);
     }
 
     @UiField
@@ -172,8 +162,6 @@ public class DeliveryTableView extends Composite implements AbstractDeliveryTabl
 
     private ClickColumnProvider<Delivery> columnProvider = new ClickColumnProvider<>();
     private AbstractDeliveryTableActivity activity;
-
-    List<ClickColumn<Delivery>> columns = new ArrayList<>();
 
     private static TableViewUiBinder ourUiBinder = GWT.create(TableViewUiBinder.class);
     interface TableViewUiBinder extends UiBinder<HTMLPanel, DeliveryTableView> {}

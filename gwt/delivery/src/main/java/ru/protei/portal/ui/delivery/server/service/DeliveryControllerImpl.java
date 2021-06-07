@@ -23,15 +23,14 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import javax.servlet.http.HttpServletRequest;
 
 import static ru.protei.portal.ui.common.server.ServiceUtils.*;
+import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
 
 @Service("DeliveryController")
 public class DeliveryControllerImpl implements DeliveryController {
 
     @Override
     public SearchResult<Delivery> getDeliveries(DeliveryQuery query) throws RequestFailedException {
-        log.info("getDeliveries(): query={}", query);
         Result<SearchResult<Delivery>> result = deliveryService.getDeliveries(getAuthToken(sessionService, httpRequest), query);
-        log.info("getDeliveries(): result={}", result);
         return checkResultAndGetData(result);
     }
 
@@ -44,7 +43,6 @@ public class DeliveryControllerImpl implements DeliveryController {
     @Override
     public Delivery saveDelivery(Delivery delivery) throws RequestFailedException {
         if (delivery == null) {
-            log.warn("null delivery in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
@@ -53,18 +51,8 @@ public class DeliveryControllerImpl implements DeliveryController {
 
     @Override
     public long removeDelivery(Long id) throws RequestFailedException {
-        log.info("removeDelivery(): id={}", id);
-
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-
-        Result<Long> response = deliveryService.removeDelivery(token, id);
-        log.info("removeDelivery(): id={}, result={}", id, response.isOk() ? "ok" : response.getStatus());
-
-        if (response.isOk()) {
-            return response.getData();
-        }
-
-        throw new RequestFailedException(response.getStatus());
+        return checkResultAndGetData(deliveryService.removeDelivery(token, id));
     }
 
     @Override
