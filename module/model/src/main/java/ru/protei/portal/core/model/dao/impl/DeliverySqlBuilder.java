@@ -76,6 +76,10 @@ public class DeliverySqlBuilder {
                         .append( ")" );
                 args.addAll( searchCondition.getSqlParameters() );
             }
+
+            if (query.getDeleted() != null) {
+                condition.append(" and CO.deleted = ").append(query.getDeleted());
+            }
         });
     }
 }

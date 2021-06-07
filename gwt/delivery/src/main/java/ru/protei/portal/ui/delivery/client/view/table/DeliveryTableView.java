@@ -12,8 +12,10 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.deliveryfilter.DeliveryFilterWidget;
 import ru.protei.portal.ui.common.client.widget.deliveryfilter.DeliveryFilterWidgetModel;
@@ -105,33 +107,29 @@ public class DeliveryTableView extends Composite implements AbstractDeliveryTabl
     }
 
     private void initTable() {
-
-        columnProvider = new ClickColumnProvider<>();
-
-        table.addColumn(numberColumn.header, numberColumn.values);
-        numberColumn.setHandler( activity );
-        numberColumn.setColumnProvider( columnProvider );
-
-        table.addColumn( infoColumn.header, infoColumn.values );
-        infoColumn.setHandler( activity );
-        infoColumn.setColumnProvider( columnProvider );
-
-        table.addColumn( contactColumn.header, contactColumn.values );
-        contactColumn.setHandler( activity );
-        contactColumn.setColumnProvider( columnProvider );
-
-        table.addColumn( managerColumn.header, managerColumn.values );
-        managerColumn.setHandler( activity );
-        managerColumn.setColumnProvider( columnProvider );
-
-        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT));
-        table.addColumn(editClickColumn.header, editClickColumn.values);
         editClickColumn.setActionHandler(activity);
         editClickColumn.setEditHandler(activity);
-        editClickColumn.setHandler(activity);
-        editClickColumn.setColumnProvider(columnProvider);
+        removeClickColumn.setActionHandler(activity);
+        removeClickColumn.setRemoveHandler(activity);
+
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT));
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_REMOVE));
+
+        columnProvider = new ClickColumnProvider<>();
+        setupColumn(numberColumn);
+        setupColumn(infoColumn);
+        setupColumn(contactColumn);
+        setupColumn(managerColumn);
+        setupColumn(editClickColumn);
+        setupColumn(removeClickColumn);
 
         table.setLoadHandler(activity);
+    }
+
+    private void setupColumn(ClickColumn<Delivery> clickColumn) {
+        table.addColumn(clickColumn.header, clickColumn.values);
+        clickColumn.setHandler(activity);
+        clickColumn.setColumnProvider(columnProvider);
     }
 
     @UiField
@@ -157,6 +155,8 @@ public class DeliveryTableView extends Composite implements AbstractDeliveryTabl
 
     @Inject
     private EditClickColumn<Delivery> editClickColumn;
+    @Inject
+    RemoveClickColumn<Delivery> removeClickColumn;
     @Inject
     private PolicyService policyService;
 

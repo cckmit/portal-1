@@ -158,6 +158,19 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     @Transactional
+    public Result<Long> removeDelivery(AuthToken token, Long deliveryId) {
+        CaseObject caseObject = new CaseObject(deliveryId);
+        caseObject.setDeleted(true);
+
+        if (!caseObjectDAO.partialMerge(caseObject, CaseObject.Columns.DELETED)) {
+            return error(En_ResultStatus.NOT_UPDATED, "Delivery was not removed");
+        }
+
+        return ok(deliveryId);
+    }
+
+    @Override
+    @Transactional
     public Result<Delivery> updateMeta(AuthToken token, Delivery meta) {
         if (meta.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);

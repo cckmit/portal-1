@@ -16,6 +16,8 @@ public interface DeliveryControllerAsync {
 
     void saveDelivery(Delivery delivery, AsyncCallback<Delivery> async);
 
+    void removeDelivery(Long id, AsyncCallback<Long> async);
+
     void getLastSerialNumber(boolean isArmyProject, AsyncCallback<String> async);
 
     void updateNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest, AsyncCallback<Void> callback);

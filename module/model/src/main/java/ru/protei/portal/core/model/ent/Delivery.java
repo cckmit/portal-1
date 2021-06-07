@@ -141,6 +141,9 @@ public class Delivery extends AuditableObject {
     @JdbcOneToMany( localColumn = ID, remoteColumn = Kit.Columns.DELIVERY_ID )
     private List<Kit> kits;
 
+    @JdbcJoinedColumn(localColumn = ID, remoteColumn = ID, mappedColumn = CaseObject.Columns.DELETED, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
+    private boolean deleted;
+
     public Delivery() {}
 
     public Delivery(Long id) {
@@ -309,6 +312,14 @@ public class Delivery extends AuditableObject {
         String ID = "id";
     }
 
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     @Override
     public boolean equals( Object o ) {
         if ( this == o ) return true;
@@ -343,6 +354,7 @@ public class Delivery extends AuditableObject {
                 ", contractId=" + contractId +
                 ", contract=" + contract +
                 ", attribute=" + attribute +
+                ", deleted=" + deleted +
                 '}';
     }
 }
