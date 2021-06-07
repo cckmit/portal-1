@@ -54,7 +54,6 @@ public class DeliveryServiceImpl implements DeliveryService {
     PersonDAO personDAO;
     @Autowired
     CaseObjectMetaNotifiersDAO caseObjectMetaNotifiersDAO;
-
     @Autowired
     DeliveryDAO deliveryDAO;
     @Autowired
@@ -180,6 +179,7 @@ public class DeliveryServiceImpl implements DeliveryService {
             return error(En_ResultStatus.DELIVERY_FORBIDDEN_CHANGE_PROJECT);
         }
 
+        oldMeta.getProject().setProducts(new HashSet<>(devUnitDAO.getProjectProducts(oldMeta.getProject().getId())));
         jdbcManyRelationsHelper.fillAll( oldMeta );
 
         CaseObject caseObject = caseObjectDAO.get(meta.getId());

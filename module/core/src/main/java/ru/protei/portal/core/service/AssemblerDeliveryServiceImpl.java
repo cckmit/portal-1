@@ -8,20 +8,22 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AssembledDeliveryEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.service.events.EventPublisherService;
-import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.*;
 
 public class AssemblerDeliveryServiceImpl implements AssemblerDeliveryService {
     private static final Logger log = LoggerFactory.getLogger(AssemblerDeliveryServiceImpl.class);
@@ -29,25 +31,21 @@ public class AssemblerDeliveryServiceImpl implements AssemblerDeliveryService {
     @Autowired
     PersonDAO personDAO;
     @Autowired
-    DeliveryDAO deliveryDAO;
-    @Autowired
     CaseObjectDAO caseObjectDAO;
+    @Autowired
+    DeliveryDAO deliveryDAO;
     @Autowired
     CaseCommentDAO caseCommentDAO;
     @Autowired
-    CaseLinkDAO caseLinkDAO;
-    @Autowired
     ProjectDAO projectDAO;
     @Autowired
-    DevUnitDAO devUnitDAO;
-    @Autowired
     AttachmentDAO attachmentDAO;
-    @Autowired
-    PortalScheduleTasks scheduledTasksService;
     @Autowired
     EventPublisherService publisherService;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    DevUnitDAO devUnitDAO;
 
     @Async(BACKGROUND_TASKS)
     @Override
@@ -58,10 +56,29 @@ public class AssemblerDeliveryServiceImpl implements AssemblerDeliveryService {
         }
 
         fillDelivery(sourceEvent)
+                .flatMap(this::fillDeliveryNameAndDescription)
+                .flatMap(this::fillKits)
                 .flatMap(this::fillInitiator)
                 .flatMap(this::fillComments)
                 .flatMap(this::fillAttachments)
                 .ifOk(filledEvent -> publisherService.publishEvent(filledEvent));
+    }
+
+    private Result<AssembledDeliveryEvent> fillDeliveryNameAndDescription(AssembledDeliveryEvent e) {
+        if (e.isDeliveryNameFilled() && e.isDeliveryInfoFilled()) {
+            log.info("fillDeliveryNameAndDescription(): DeliveryId={} Delivery Name and Description is already filled.", e.getDeliveryId());
+            return ok(e);
+        }
+
+        log.info("fillDeliveryNameAndDescription(): DeliveryId={} Try to fill Delivery Name and Description.", e.getDeliveryId());
+
+        CaseObject caseObject = caseObjectDAO.partialGet(e.getDeliveryId(), CASE_NAME, INFO);
+
+        e.getName().setNewState(caseObject.getName());
+        e.getInfo().setNewState(caseObject.getInfo());
+
+        log.info("fillDeliveryNameAndDescription(): DeliveryId={} Delivery Name and Description is successfully filled.", e.getDeliveryId());
+        return ok(e);
     }
 
     //контактное лицо
@@ -77,15 +94,20 @@ public class AssemblerDeliveryServiceImpl implements AssemblerDeliveryService {
         return ok(event);
     }
 
+    private Result<AssembledDeliveryEvent> fillKits(AssembledDeliveryEvent event) {
+
+        jdbcManyRelationsHelper.fill( event.getNewDeliveryState(), "kits" );
+        return ok(event);
+    }
+
     private Result<AssembledDeliveryEvent> fillDelivery(AssembledDeliveryEvent event) {
         if (event.isDeliveryFilled()) {
             return ok(event);
         }
 
-        //проверить что заполнен менеджер проекта, инициатор "контактное лицо" и ответственный project.caseObject.manager
         Delivery delivery = deliveryDAO.get(event.getDeliveryId());
         jdbcManyRelationsHelper.fillAll(delivery);
-//        delivery.setProject(projectDAO.get(delivery.getProjectId()));
+        delivery.getProject().setProducts(new HashSet<>(devUnitDAO.getProjectProducts(delivery.getProject().getId())));
 
         event.setNewDeliveryState(delivery);
 

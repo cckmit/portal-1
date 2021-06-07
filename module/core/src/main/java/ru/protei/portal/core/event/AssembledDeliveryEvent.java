@@ -148,15 +148,20 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
         return !commentToAttachmentDiffs.isEmpty();
     }
 
-//    public DiffCollectionResult<DevUnit> getProductDiffs() {
-//        if (!isEditEvent()) {
-//            DiffCollectionResult<DevUnit> diffCollectionResult = new DiffCollectionResult<>();
-//            diffCollectionResult.putSameEntries(newDeliveryState.getProducts());
-//            return diffCollectionResult;
-//        }
-//
-//        return diffCollection(oldDeliveryState.getProducts(), newDeliveryState.getProducts());
-//    }
+    public DiffCollectionResult<DevUnit> getProductDiffs() {
+        if (isEditEvent()) {
+            return diffCollection(
+                    oldDeliveryState.getProject()==null ? null : oldDeliveryState.getProject().getProducts(),
+                    newDeliveryState.getProject()==null ? null : newDeliveryState.getProject().getProducts());
+        }
+
+        DiffCollectionResult<DevUnit> diffCollectionResult = new DiffCollectionResult<>();
+        if (newDeliveryState.getProject() == null){
+            return diffCollectionResult;
+        }
+        diffCollectionResult.putSameEntries(newDeliveryState.getProject().getProducts());
+        return diffCollectionResult;
+    }
 
     public Delivery getOldDeliveryState() {
         return oldDeliveryState;
@@ -214,17 +219,13 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
         this.contactPersonId = contactPersonId;
     }
 
-    //    public Person getCreator() {
-//        return newDeliveryState.getCreator();
-//    }
-
-    public boolean isCaseNameFilled() {
+    public boolean isDeliveryNameFilled() {
         synchronized (name) {
             return name.hasNewState();
         }
     }
 
-    public boolean isCaseInfoFilled() {
+    public boolean isDeliveryInfoFilled() {
         synchronized (info) {
             return info.hasNewState();
         }

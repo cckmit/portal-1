@@ -401,7 +401,7 @@ public class EnumLangUtil {
 
     public String deliveryAttributeLang(En_DeliveryAttribute deliveryAttribute, String langCode) {
         if (deliveryAttribute == null) {
-            return "";
+            return null;
         }
         if (localizedLang == null) {
             localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));

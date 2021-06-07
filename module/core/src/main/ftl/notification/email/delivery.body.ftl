@@ -39,9 +39,8 @@
     </#if>
     </#macro>
 
-    <#macro diffHTML old, new>
-    ${TextUtils.diffHTML(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}
-    </#macro>
+    <#macro diff old, new>${TextUtils.diff(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}</#macro>
+    <#macro diffHTML old, new>${TextUtils.diffHTML(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}</#macro>
 
 <html>
     <head>
@@ -131,12 +130,12 @@
                 </td>
                 <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                     <#if nameChanged>
-                    <@changeTo
-                    old="${oldName!'?'}"
-                    new="${newName}"
+                    <@diff
+                    old="${oldName!''}"
+                    new="${newName!''}"
                     />
                     <#else>
-                    ${newName}
+                    ${newName!''}
                 </#if>
                 </td>
             </tr>
@@ -146,14 +145,14 @@
                 <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                     ${_deliveryDescription}
                 </td>
-                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                <td class="markdown" style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                     <#if descriptionChanged>
-                    <@changeTo
-                    old="${oldDescription!'?'}"
-                    new="${newDescription}"
+                    <@diffHTML
+                    old="${(oldDescription)!''}"
+                    new="${(newDescription)!''}"
                     />
                     <#else>
-                    ${newDescription}
+                    ${newDescription!''}
                 </#if>
                 </td>
             </tr>
@@ -201,10 +200,10 @@
                     <#if projectChanged>
                     <@changeTo
                     old="${oldProject!'?'}"
-                    new="${newProject}"
+                    new="${newProject!'?'}"
                     />
                     <#else>
-                    ${newProject}
+                    ${newProject!'?'}
                 </#if>
                 </td>
             </tr>
@@ -235,10 +234,10 @@
                     <#if attributeChanged>
                     <@changeTo
                     old="${EnumLangUtil.deliveryAttributeLang(oldAttribute, lang)!'?'}"
-                    new="${EnumLangUtil.deliveryAttributeLang(newAttribute, lang)}"
+                    new="${EnumLangUtil.deliveryAttributeLang(newAttribute, lang)!''}"
                     />
                     <#else>
-                    ${EnumLangUtil.deliveryAttributeLang(newAttribute, lang)}
+                    ${EnumLangUtil.deliveryAttributeLang(newAttribute, lang)!''}
                 </#if>
                 </td>
             </tr>
@@ -252,10 +251,10 @@
                     <#if contractChanged>
                     <@changeTo
                     old="${oldContract!'?'}"
-                    new="${newContract}"
+                    new="${newContract!''}"
                     />
                     <#else>
-                    ${newContract}
+                    ${newContract!''}
                 </#if>
                 </td>
             </tr>
@@ -310,30 +309,30 @@
                     <#if companyChanged>
                     <@changeTo
                     old="${oldCompany!'?'}"
-                    new="${newCompany}"
+                    new="${newCompany!'?'}"
                     />
                     <#else>
-                    ${newCompany}
+                    ${newCompany!'?'}
                 </#if>
                 </td>
             </tr>
 
 <#--CONTACT PERSON-->
-    <tr>
-        <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-            ${_deliveryContactPerson}
-        </td>
-        <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-            <#if contactPersonChanged>
-            <@changeTo
-            old="${oldContactPerson!'?'}"
-            new="${newContactPerson}"
-            />
-            <#else>
-            ${newContactPerson}
-        </#if>
-        </td>
-    </tr>
+            <tr>
+                <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                    ${_deliveryContactPerson}
+                </td>
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                    <#if contactPersonChanged>
+                    <@changeTo
+                    old="${oldContactPerson!'?'}"
+                    new="${newContactPerson!''}"
+                    />
+                    <#else>
+                    ${newContactPerson!''}
+                </#if>
+                </td>
+            </tr>
 
         </tbody>
     </table>

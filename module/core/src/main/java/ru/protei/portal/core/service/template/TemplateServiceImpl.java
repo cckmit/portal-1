@@ -608,16 +608,16 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("deliveryId", String.valueOf(event.getDeliveryId()));
 
         templateModel.put("numberChanged", event.isNumberChanged());
-        templateModel.put("oldNumber", HtmlUtils.htmlEscape(getNullOrElse(oldDeliveryState, Delivery::getNumber)));
-        templateModel.put("newNumber", HtmlUtils.htmlEscape(newDeliveryState.getNumber()));
+        templateModel.put("oldNumber", getNullOrElse(oldDeliveryState, Delivery::getNumber));
+        templateModel.put("newNumber", newDeliveryState.getNumber());
 
-        templateModel.put("nameChanged", event.isNameChanged());
-        templateModel.put("oldName", HtmlUtils.htmlEscape(getNullOrElse(oldDeliveryState, Delivery::getName)));
-        templateModel.put("newName", HtmlUtils.htmlEscape(newDeliveryState.getName()));
+        templateModel.put("nameChanged", event.getName().hasDifferences());
+        templateModel.put("oldName", HtmlUtils.htmlEscape(event.getName().getInitialState()));
+        templateModel.put("newName", HtmlUtils.htmlEscape(event.getName().getNewState()));
 
-        templateModel.put("descriptionChanged", event.isDescriptionChanged());
-        templateModel.put("oldDescription", HtmlUtils.htmlEscape(getNullOrElse(oldDeliveryState, Delivery::getDescription)));
-        templateModel.put("newDescription", HtmlUtils.htmlEscape(newDeliveryState.getDescription()));
+        templateModel.put("descriptionChanged", event.getInfo().hasDifferences());
+        templateModel.put("oldDescription", event.getInfo().getInitialState() == null ? null : escapeTextAndRenderHTML( event.getInfo().getInitialState(), En_TextMarkup.MARKDOWN ) );
+        templateModel.put("newDescription", escapeTextAndRenderHTML( event.getInfo().getNewState(), En_TextMarkup.MARKDOWN ) );
 
         templateModel.put("stateChanged", event.isStateChanged());
         templateModel.put("oldState", getNullOrElse(oldDeliveryState, Delivery::getState));
@@ -643,16 +643,10 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldContract", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getContract(), Contract::getNumber)));
         templateModel.put("newContract", getNullOrElse(newDeliveryState.getContract(), Contract::getNumber));
 
-//        final DiffCollectionResult<DevUnit> productDiffs = event.getProductDiffs();
-//        templateModel.put("productSameEntries", productDiffs.getSameEntries());
-//        templateModel.put("productAddedEntries", productDiffs.getAddedEntries());
-//        templateModel.put("productRemovedEntries", productDiffs.getRemovedEntries());
-//        Arrays.asList("p1","p2")
-
-        //TODO
-        templateModel.put("productSameEntries", new ArrayList<DevUnit>());
-        templateModel.put("productAddedEntries", new ArrayList<DevUnit>());
-        templateModel.put("productRemovedEntries", new ArrayList<DevUnit>());
+        final DiffCollectionResult<DevUnit> productDiffs = event.getProductDiffs();
+        templateModel.put("productSameEntries", productDiffs.getSameEntries());
+        templateModel.put("productAddedEntries", productDiffs.getAddedEntries());
+        templateModel.put("productRemovedEntries", productDiffs.getRemovedEntries());
 
         templateModel.put("departureDateChanged", event.isDepartureDateChanged());
         templateModel.put("oldDepartureDate", getNullOrElse(oldDeliveryState, Delivery::getDepartureDate));
