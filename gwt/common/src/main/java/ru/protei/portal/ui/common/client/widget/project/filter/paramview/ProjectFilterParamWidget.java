@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.project.filter.paramview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -20,6 +21,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
@@ -53,6 +55,7 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
         initWidget(ourUiBinder.createAndBindUi(this));
         sortField.setType( ModuleType.PROJECT );
         fillDateRanges(commentCreationRange);
+        ensureDebugIds();
     }
 
     @Override
@@ -301,6 +304,20 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
                 .filter(direction ->
                         stream(directionIds).anyMatch(id -> id.equals(direction.getId())))
                 .collect(Collectors.toSet());
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        regions.ensureDebugId(DebugIds.PROJECT_FILTER.REGION_SELECTOR);
+        headManagers.ensureDebugId(DebugIds.PROJECT_FILTER.HEAD_MANAGER_SELECTOR);
+        caseMembers.ensureDebugId(DebugIds.PROJECT_FILTER.TEAM_SELECTOR);
+        initiatorCompanies.ensureDebugId(DebugIds.PROJECT_FILTER.COMPANY_SELECTOR);
+        products.setAddEnsureDebugId(DebugIds.PROJECT_FILTER.PRODUCT_SELECTOR);
+        commentCreationRange.setEnsureDebugId(DebugIds.PROJECT_FILTER.COMMENT_DATE_RANGE);
+        sortField.setEnsureDebugId(DebugIds.PROJECT_FILTER.SORT_FIELD_SELECTOR);
     }
 
     @Inject

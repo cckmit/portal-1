@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.project.client.view.widget.selector.ProjectRoleFormSelector;
 import ru.protei.portal.ui.project.client.view.widget.team.AbstractTeamSelector;
@@ -51,6 +52,7 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
         this.model = model;
         role.setValue(model.role);
         members.setValue(model.members, false);
+        members.setAddEnsureDebugId(DebugIds.PROJECT.TEAM_MEMBER_ADD_BUTTON + model.role.toString().toLowerCase());
         fireRoleChanged(null, model.role);
     }
 

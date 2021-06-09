@@ -310,6 +310,21 @@ public class DebugIds {
         String BLOCKED = "issue-state-blocked";
     }
 
+    public interface PROJECT_STATE {
+        String DEFAULT = "project-state-";
+        String UNKNOWN = "project-state-unknown";
+        String PAUSED = "project-state-paused";
+        String MARKETING = "project-state-marketing";
+        String PRESALE = "project-state-presale";
+        String PROJECTING = "project-state-projecting";
+        String DEVELOPMENT = "project-state-development";
+        String DEPLOYMENT = "project-state-deployment";
+        String TESTING = "project-state-testing";
+        String SUPPORT = "project-state-support";
+        String FINISHED = "project-state-finished";
+        String CANCELED = "project-state-canceled";
+    }
+
     public interface ISSUE {
         String BACK_BUTTON = "issue-back-button";
         String SHOW_EDIT_BUTTON = "issue-show-edit-button";
@@ -514,6 +529,7 @@ public class DebugIds {
         String PLAN_SELECTOR_CLEAR_BUTTON = "project-plan-selector-clear-button";
         String PLAN_SELECTOR_ITEM_CONTAINER = "project-plan-selector-item-container";
         String PLAN_SELECTOR_LABEL = "project-plan-selector-label";
+        String TEAM_MEMBER_ADD_BUTTON = "project-add-team-member-";
 
         String SAVE_BUTTON = "project-save-button";
         String CANCEL_BUTTON = "project-cancel-button";
@@ -540,6 +556,16 @@ public class DebugIds {
         String WORK_COMPLETION_DATE = "project-preview-work-completion-date";
         String PURCHASE_DATE = "project-preview-purchase-date";
         String SLA_INPUT = "project-preview-sla-input";
+    }
+
+    public interface PROJECT_FILTER {
+        String REGION_SELECTOR = "project-filter-region-selector";
+        String HEAD_MANAGER_SELECTOR = "project-filter-head-manager-selector";
+        String TEAM_SELECTOR = "project-filter-team-selector";
+        String COMPANY_SELECTOR = "project-filter-company-selector";
+        String PRODUCT_SELECTOR = "project-filter-product-selector";
+        String COMMENT_DATE_RANGE = "project-filter-comment-date-range";
+        String SORT_FIELD_SELECTOR = "project-filter-sort-field-selector";
     }
 
     public interface COMPANY_TABLE {

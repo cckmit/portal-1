@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.widget.selector.project.state;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.test.client.DebugIdsHelper;
 import ru.protei.portal.ui.common.client.lang.ProjectStateLang;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.region.ProjectStateBtnGroupModel;
@@ -38,6 +39,8 @@ public class ProjectStateBtnGroupMulti extends ToggleBtnGroupMulti<CaseState> im
                     null,
                     state.getColor()
             );
+
+            setEnsureDebugId(state, DebugIdsHelper.PROJECT_STATE.byId(state.getId()));
         }
     }
 
