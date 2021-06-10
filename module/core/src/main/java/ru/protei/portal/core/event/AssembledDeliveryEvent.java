@@ -271,5 +271,23 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
         return isCreateEvent;
     }
 
+    public boolean isPublicCommentsChanged() {
+        List<CaseComment> allEntries = new ArrayList<>();
+        allEntries.addAll(emptyIfNull(comments.getAddedEntries()));
+        allEntries.addAll(emptyIfNull(comments.getRemovedEntries()));
+        allEntries.addAll(emptyIfNull(comments.getChangedEntries()).stream().map(DiffResult::getNewState).collect(Collectors.toList()));
+
+        return allEntries.stream().anyMatch(comment -> !comment.isPrivateComment());
+    }
+
+    public boolean isPublicAttachmentsChanged() {
+        List<Attachment> allEntries = new ArrayList<>();
+        allEntries.addAll(emptyIfNull(attachments.getAddedEntries()));
+        allEntries.addAll(emptyIfNull(attachments.getRemovedEntries()));
+        allEntries.addAll(emptyIfNull(attachments.getChangedEntries()).stream().map(DiffResult::getNewState).collect(Collectors.toList()));
+
+        return allEntries.stream().anyMatch(attachment -> !attachment.isPrivate());
+    }
+
     private static final Logger log = LoggerFactory.getLogger(AssembledDeliveryEvent.class);
 }

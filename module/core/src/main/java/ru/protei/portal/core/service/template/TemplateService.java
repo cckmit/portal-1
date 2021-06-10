@@ -71,7 +71,7 @@ public interface TemplateService {
 
     PreparedTemplate createEmailDeliverySubject(AssembledDeliveryEvent event, Person currentPerson, EnumLangUtil enumLangUtil);
 
-    PreparedTemplate createEMailDeliveryBody(
+    PreparedTemplate createEmailDeliveryBody(
             AssembledDeliveryEvent event,
             List<CaseComment> comments,
             Collection<String> recipients,

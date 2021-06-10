@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.ent.Delivery.Columns.KITS;
+import static ru.protei.portal.core.model.ent.Delivery.Columns.SUBSCRIBERS;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.DELIVERY_KIT_SERIAL_NUMBER_PATTERN;
@@ -81,7 +83,7 @@ public class DeliveryServiceImpl implements DeliveryService {
             }
             delivery.getProject().setProducts(new HashSet<>(devUnitDAO.getProjectProducts(delivery.getProject().getId())));
 
-            jdbcManyRelationsHelper.fill(delivery, "kits");
+            jdbcManyRelationsHelper.fill(delivery, KITS);
         }
 
         return ok(sr);
@@ -123,7 +125,7 @@ public class DeliveryServiceImpl implements DeliveryService {
             kit.setModified(now);
         });
 
-        jdbcManyRelationsHelper.persist(delivery, "kits");
+        jdbcManyRelationsHelper.persist(delivery, KITS);
 
         if(isNotEmpty(caseObject.getNotifiers())){
             caseNotifierDAO.persistBatch(
@@ -252,8 +254,8 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     private Delivery getDelivery(Long id) {
         Delivery delivery = deliveryDAO.get(id);
-        jdbcManyRelationsHelper.fill(delivery, "kits");
-        jdbcManyRelationsHelper.fill(delivery, "subscribers");
+        jdbcManyRelationsHelper.fill(delivery, KITS);
+        jdbcManyRelationsHelper.fill(delivery, SUBSCRIBERS);
         delivery.getProject().setProducts(new HashSet<>(devUnitDAO.getProjectProducts(delivery.getProject().getId())));
         return delivery;
     }

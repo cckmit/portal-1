@@ -584,7 +584,7 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate createEMailDeliveryBody(
+    public PreparedTemplate createEmailDeliveryBody(
             AssembledDeliveryEvent event,
             List<CaseComment> comments,
             Collection<String> recipients,

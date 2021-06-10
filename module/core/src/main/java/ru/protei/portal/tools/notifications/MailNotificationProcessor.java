@@ -98,13 +98,16 @@ public class MailNotificationProcessor {
     // -----------------------
     @EventListener
     public void onDeliveryChanged(AssembledDeliveryEvent event){
+        if (!isSendDeliveryNotification(event)) {
+            return;
+        }
 
         Set<NotificationEntry> recipients = subscriptionService.subscribers(event);
         List<ReplaceLoginWithUsernameInfo<CaseComment>> commentReplacementInfoList = caseCommentService.replaceLoginWithUsername(event.getAllComments()).getData();
         recipients.addAll(collectCommentNotifiers(event, commentReplacementInfoList, true));
         Set<String> addresses = recipients.stream().map(NotificationEntry::getAddress).collect(Collectors.toSet());
 
-        PreparedTemplate bodyTemplate = templateService.createEMailDeliveryBody(
+        PreparedTemplate bodyTemplate = templateService.createEmailDeliveryBody(
                 event,
                 commentReplacementInfoList.stream().map(ReplaceLoginWithUsernameInfo::getObject).collect(Collectors.toList()),
                 addresses,
@@ -1570,6 +1573,35 @@ public class MailNotificationProcessor {
                 || event.isLinksChanged();
     }
 
+    private boolean isSendDeliveryNotification(AssembledDeliveryEvent event) {
+        if (!event.isEditEvent()) {
+            return true;
+        }
+
+        if (isDeliveryChanged(event)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isDeliveryChanged(AssembledDeliveryEvent event) {
+        return event.isNameChanged()
+                || event.isDescriptionChanged()
+                || event.isStateChanged()
+                || event.isDepartureDateChanged()
+                || event.isAttachmentsFilled()
+                || event.isPublicCommentsChanged()
+                || event.isPublicAttachmentsChanged()
+                || event.isTypeChanged()
+                || event.isAttributeChanged()
+                || event.isInitiatorChanged()
+                || event.isProjectChanged()
+                || event.isStateChanged()
+                || event.isContractChanged();
+    }
+
+
     private boolean isSendEmployeeRegistrationNotification(AssembledEmployeeRegistrationEvent event) {
         if (!event.isEditEvent()) {
             return true;
@@ -1600,8 +1632,8 @@ public class MailNotificationProcessor {
     }
 
     private String makeCrmDeliveryUrl( String crmUrl, Long deliveryId ) {
-        String crmProjectUrl = crmUrl + config.data().getMailNotificationConfig().getDeliveryUrl();
-        return String.format( crmProjectUrl, deliveryId );
+        String crmDeliveryUrl = crmUrl + config.data().getMailNotificationConfig().getDeliveryUrl();
+        return String.format( crmDeliveryUrl, deliveryId );
     }
 
     private Collection<NotificationEntry> collectCommentNotifiers(HasCaseComments hasCaseComments, List<ReplaceLoginWithUsernameInfo<CaseComment>> commentToLoginList, boolean isPrivateCase) {

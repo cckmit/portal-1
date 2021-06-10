@@ -314,12 +314,13 @@ public class Delivery extends AuditableObject {
     }
 
     public String getNumber() {
-        Optional<Kit> first = stream(kits).min(Comparator.comparing(Kit::getSerialNumber));
-        return first.isPresent() ? first.get().getSerialNumber() : "";
+        return stream(kits).min(Comparator.comparing(Kit::getSerialNumber)).map(Kit::getSerialNumber).orElse("");
     }
 
     public interface Columns {
         String ID = "id";
+        String KITS = "kits";
+        String SUBSCRIBERS = "subscribers";
     }
 
     @Override
