@@ -42,7 +42,6 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        ensureDebugIds();
         name.getElement().setAttribute("placeholder", lang.selectContractContractor());
         root.setTitle(lang.contractContractorOrganizationHint());
         prepareSearchDialog(dialogDetailsSearchView);
@@ -115,11 +114,6 @@ abstract public class ContractorWidget extends Composite implements HasValue<Con
 
     public void setEnsureDebugId( String debugId ) {
         button.ensureDebugId(debugId);
-    }
-
-    private void ensureDebugIds() {
-        name.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.CONTRACTOR.NAME);
-        button.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.CONTRACTOR.SEARCH_BUTTON);
     }
 
     private void prepareSearchDialog(AbstractDialogDetailsView dialog) {

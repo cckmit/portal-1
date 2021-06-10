@@ -938,16 +938,21 @@ public class DebugIds {
         String TYPE_SELECTOR = "contract-type-selector";
         String STATE_SELECTOR = "contract-state-selector";
         String PARENT_SELECTOR = "contract-parent-selector";
+        String DELIVERY_NUMBER_INPUT = "contract-delivery-number-input";
         String DESCRIPTION_INPUT = "contract-description-input";
         String DATE_SIGNING_CONTAINER = "contract-date-signing-container";
         String DATE_VALID_CONTAINER = "contract-date-valid-container";
         String COST_WITH_CURRENCY_CONTAINER = "contract-cost-with-currency-container";
+        String CURRENCY_SELECTOR = "contract-currency-selector";
+        String VAT_SELECTOR = "contract-vat-selector";
         String PROJECT_SELECTOR = "contract-project-selector";
         String DIRECTION_INPUT = "contract-direction-input";
         String ORGANIZATION_SELECTOR = "contract-organization-selector";
         String CURATOR_SELECTOR = "contract-curator-selector";
         String MANAGER_SELECTOR = "contract-manager-selector";
         String MANAGER_FIELD = "contract-manager-field";
+        String DATE_VALID_DAYS_INPUT = "contract-date-valid-days-input";
+        String DATE_VALID_DATE_SELECTOR = "contract-date-valid-date-selector";
         String CONTRACTOR_SELECTOR = "contract-contractor-selector";
         String ADD_DATES_BUTTON = "contract-add-dates-button";
         String ADD_SPECIFICATIONS_BUTTON = "contract-add-specifications-button";
@@ -981,22 +986,40 @@ public class DebugIds {
             String ITEM = "contract-date-item";
             String TYPE_BUTTON = "contract-date-item-type-button";
             String DATE_CONTAINER = "contract-date-item-date-container";
+            String CALENDAR_DAY = "contract-date-item-calendar-day";
             String COMMENT_INPUT = "contract-date-item-comment-input";
             String NOTIFY_LABEL = "contract-date-item-notify-label";
             String NOTIFY_SWITCHER = "contract-date-item-notify-switcher";
             String REMOVE_BUTTON = "contract-date-item-remove-button";
         }
 
+        interface PAYMENT {
+            String COST_TYPE_SELECTOR = "contract-payment-type-selector";
+            String MONEY_PERCENT_INPUT = "contract-payment-money-percent-input";
+
+        }
+
+        interface COST_WITH_CURRENCY {
+            String MONEY_AMOUNT_INPUT = "contract-payment-money-amount-input";
+            String CURRENCY_SELECTOR = "contract-payment-currency-selector";
+        }
+
         interface SPECIFICATION_ITEM {
             String ITEM = "contract-specification-item";
             String CLAUSE_INPUT = "contract-specification-item-clause-input";
             String TEXT_INPUT = "contract-specification-item-text-input";
+            String QUANTITY_INPUT = "contract-specification-quantity-input";
             String REMOVE_BUTTON = "contract-specification-item-remove-button";
         }
 
         interface CONTRACTOR {
-            String NAME = "contract-contractor-name";
+            String INN_INPUT = "contract-contractor-inn-input";
+            String KPP_INPUT = "contract-contractor-kpp-input";
+            String NAME_INPUT = "contract-contractor-name-input";
+            String FULL_NAME_INPUT = "contract-contractor-full-name-input";
+            String COUNTRY_SELECTOR = "contract-contractor-country-selector";
             String SEARCH_BUTTON = "contract-contractor-search-button";
+            String CONTRACTOR_SEARCH_SELECTOR = "contract-contractor-search-selector";
         }
 
         interface PROJECT {
@@ -1219,5 +1242,10 @@ public class DebugIds {
             String NAME = "delivery-item-name-input";
             String REMOVE_BUTTON = "delivery-item-remove-button";
         }
+    }
+
+    public interface CONFIRM_DIALOG {
+        String OK_BUTTON = "confirm-dialog-ok-button";
+        String CANCEL_BUTTON = "confirm-dialog-cancel-button";
     }
 }

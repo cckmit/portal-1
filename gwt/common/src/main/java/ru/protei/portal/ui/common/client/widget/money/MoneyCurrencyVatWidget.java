@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.money;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -15,6 +16,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.currency.CurrencyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.vat.VatButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableMoneyBox;
@@ -34,6 +36,7 @@ public class MoneyCurrencyVatWidget extends Composite implements HasValue<MoneyW
         initWidget(ourUiBinder.createAndBindUi(this));
         initValidation();
         setVatOptions(defaultVatOptions);
+        ensureDebugIds();
     }
 
     @Override
@@ -125,6 +128,15 @@ public class MoneyCurrencyVatWidget extends Composite implements HasValue<MoneyW
     public void onVatChanged(ValueChangeEvent<Long> event) {
         MoneyWithCurrencyWithVat value = getValue();
         ValueChangeEvent.fire(this, value);
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        currency.setEnsureDebugId(DebugIds.CONTRACT.CURRENCY_SELECTOR);
+        vat.setEnsureDebugId(DebugIds.CONTRACT.VAT_SELECTOR);
     }
 
     @UiField

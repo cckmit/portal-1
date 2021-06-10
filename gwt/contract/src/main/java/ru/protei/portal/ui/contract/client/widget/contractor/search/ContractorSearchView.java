@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.contract.client.widget.contractor.search;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -16,6 +17,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.ent.ContractorCountry;
 import ru.protei.portal.core.model.util.ContractorUtils;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.contractor.contractor.ContractorSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contractor.country.ContractorCountrySelector;
@@ -41,6 +43,7 @@ public class ContractorSearchView extends Composite implements AbstractContracto
         contractorName.setNotNull(false);
         contractorFullName.setNotNull(false);
         contractorCountry.setValidation(false);
+        ensureDebugIds();
     }
 
     @Override
@@ -146,6 +149,20 @@ public class ContractorSearchView extends Composite implements AbstractContracto
             descriptionFullName.setInnerText(contractor.getFullName());
             descriptionCountry.setInnerText(contractor.getCountry());
         }
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        contractorInn.ensureDebugId(DebugIds.CONTRACT.CONTRACTOR.INN_INPUT);
+        contractorKPP.ensureDebugId(DebugIds.CONTRACT.CONTRACTOR.KPP_INPUT);
+        contractorName.ensureDebugId(DebugIds.CONTRACT.CONTRACTOR.NAME_INPUT);
+        contractorFullName.ensureDebugId(DebugIds.CONTRACT.CONTRACTOR.FULL_NAME_INPUT);
+        contractorCountry.ensureDebugId(DebugIds.CONTRACT.CONTRACTOR.COUNTRY_SELECTOR);
+        search.ensureDebugId(DebugIds.CONTRACT.CONTRACTOR.SEARCH_BUTTON);
+        contractor.ensureDebugId(DebugIds.CONTRACT.CONTRACTOR.CONTRACTOR_SEARCH_SELECTOR);
     }
 
     @UiField
