@@ -32,7 +32,6 @@ public class EventDeliveryAssemblerServiceImpl implements EventDeliveryAssembler
         log.info("onDeliveryUpdateEvent(): deliveryId:{}", event.getDeliveryId());
         AssembledDeliveryEvent assembledDeliveryEvent = getAssembledDeliveryEvent(event);
         assembledDeliveryEvent.attachUpdateEvent(event);
-        publishAndClear(makeEventKey(event));
     }
 
     @Override
