@@ -3430,19 +3430,19 @@ public interface Lang extends Messages, ContactItemLang {
 
     String deliveryStatePreliminary();
 
-    String deliveryStatePreReserve();
+    String deliveryStateReservation();
 
-    String deliveryStateReserve();
+    String deliveryStateReserved();
 
     String deliveryStateAssembly();
 
-    String deliveryStateTest();
+    String deliveryStateTesting();
 
     String deliveryStateReady();
 
     String deliveryStateSent();
 
-    String deliveryStateWork();
+    String deliveryStateWorks();
 
     String deliveryAttributeDelivery();
 

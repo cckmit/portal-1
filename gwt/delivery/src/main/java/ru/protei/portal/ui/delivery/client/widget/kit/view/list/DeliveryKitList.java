@@ -13,10 +13,10 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.helper.NumberUtils;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.delivery.client.widget.kit.activity.AbstractDeliveryKitListActivity;
@@ -70,10 +70,11 @@ public class DeliveryKitList extends Composite
         value = new ArrayList<>();
         resetSerialNumber();
         activity.getLastSerialNumber(isArmyProject, lastSerialNumberCallback);
+        activity.getCaseState(CrmConstants.State.PRELIMINARY, caseState -> preliminaryCaseState = caseState);
     }
 
     @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<Kit>> handler ) {
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<Kit>> handler) {
         return addHandler( handler, ValueChangeEvent.getType() );
     }
 
@@ -139,14 +140,13 @@ public class DeliveryKitList extends Composite
 
     private void addEmptyItem() {
         Kit kit = new Kit();
-        kit.setState(new CaseState((long) En_DeliveryState.PRELIMINARY.getId()));
-        kit.setStateId((long)En_DeliveryState.PRELIMINARY.getId());
+        kit.setState(preliminaryCaseState);
         value.add(kit);
         makeItemAndFillValue(kit);
         refresh();
     }
 
-    private void makeItemAndFillValue(final Kit value ) {
+    private void makeItemAndFillValue(final Kit value) {
         DeliveryKitItem itemWidget = itemFactory.get();
         itemWidget.setValue( value );
         itemWidget.addCloseHandler(event -> {
@@ -255,6 +255,7 @@ public class DeliveryKitList extends Composite
     private Integer lastSerialNumberPrefix;
     private Integer lastSerialNumberPostfix;
     private boolean isArmyProject = false;
+    private CaseState preliminaryCaseState = new CaseState(CrmConstants.State.PRELIMINARY);
 
     private int minimumKitNumber = 1;
     private final Consumer<String> lastSerialNumberCallback =

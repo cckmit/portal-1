@@ -50,6 +50,7 @@ public class DeliveryTableView extends Composite implements AbstractDeliveryTabl
     @Override
     public void setAnimation(TableAnimation animation) {
         animation.setContainers(tableContainer, previewContainer, filterContainer);
+        animation.setStyles("col-md-12", "col-md-9", "col-md-3", "col-md-3", "col-md-9");
     }
 
     @Override

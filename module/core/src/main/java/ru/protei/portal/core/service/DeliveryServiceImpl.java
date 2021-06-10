@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DeliveryQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -108,40 +109,49 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         Date now = new Date();
-        CaseObject caseObject = createCaseObject(null, delivery, token.getPersonId(), now, now);
-        Long caseId = caseObjectDAO.persist(caseObject);
-        if (caseId == null) {
-            log.warn("createDelivery(): caseObject not created. delivery={}", caseId);
+        CaseObject deliveryCaseObject = createDeliveryCaseObject(null, delivery, token.getPersonId(), now, now);
+        Long deliveryCaseId = caseObjectDAO.persist(deliveryCaseObject);
+        if (deliveryCaseId == null) {
+            log.warn("createDelivery(): case object not created, delivery={}", delivery);
             throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
-        delivery.setId(caseId);
+        delivery.setId(deliveryCaseId);
         Long deliveryId = deliveryDAO.persist(delivery);
         if (deliveryId == null) {
-            log.warn("createDelivery(): delivery not created. delivery={}", deliveryId);
+            log.warn("createDelivery(): delivery not created, delivery={}", delivery);
             throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
         stream(delivery.getKits()).forEach(kit -> {
-            kit.setCreated(now);
-            kit.setModified(now);
+            CaseObject kitCaseObject = createKitCaseObject(null, kit, token.getPersonId(), now, now);
+            Long kitCaseObjectId = caseObjectDAO.persist(kitCaseObject);
+            if (kitCaseObjectId == null) {
+                log.warn("createDelivery(): case object not created, kit={}", kit);
+                throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
+            }
+            kit.setId(kitCaseObjectId);
+            kit.setDeliveryId(deliveryId);
+            Long kitId = kitDAO.persist(kit);
+            if (kitId == null) {
+                log.warn("createDelivery(): kit not created, kit={}", kit);
+                throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
+            }
         });
 
-        jdbcManyRelationsHelper.persist(delivery, "kits");
-
-        if(isNotEmpty(caseObject.getNotifiers())){
+        if(isNotEmpty(deliveryCaseObject.getNotifiers())){
             caseNotifierDAO.persistBatch(
-                    caseObject.getNotifiers()
+                    deliveryCaseObject.getNotifiers()
                             .stream()
-                            .map(person -> new CaseNotifier(caseId, person.getId()))
+                            .map(person -> new CaseNotifier(deliveryCaseId, person.getId()))
                             .collect(Collectors.toList()));
 
-            jdbcManyRelationsHelper.fill(caseObject.getNotifiers(), Person.Fields.CONTACT_ITEMS);
+            jdbcManyRelationsHelper.fill(deliveryCaseObject.getNotifiers(), Person.Fields.CONTACT_ITEMS);
         }
 
         long stateId = delivery.getStateId();
         Result<Long> resultState = addStateHistory(token, deliveryId, stateId, caseStateDAO.get(stateId).getState());
         if (resultState.isError()) {
-            log.error("State message for the delivery {} not saved!", caseId);
+            log.error("State message for the delivery {} not saved!", deliveryCaseId);
         }
 
         Date departureDate = delivery.getDepartureDate();
@@ -181,7 +191,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         CaseObject caseObject = caseObjectDAO.get(meta.getId());
-        caseObject = createCaseObject(caseObject, meta, null, null, new Date());
+        caseObject = createDeliveryCaseObject(caseObject, meta, null, null, new Date());
         boolean isUpdated = caseObjectDAO.merge(caseObject);
         if (!isUpdated) {
             log.info("Failed to update issue meta data {} at db", caseObject.getId());
@@ -265,7 +275,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         Long stateId = delivery.getStateId();
         if (stateId == null) {
             return false;
-        } else if (isNew && En_DeliveryState.PRELIMINARY.getId() != stateId) {
+        } else if (isNew && CrmConstants.State.PRELIMINARY != stateId) {
             return false;
         }
         if (delivery.getType() == null) {
@@ -295,13 +305,13 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     private boolean isForbiddenToChangeState(AuthToken token, Long oldState, Long newState) {
-        return Objects.equals(oldState, (long)En_DeliveryState.PRELIMINARY.getId())
+        return Objects.equals(oldState, CrmConstants.State.PRELIMINARY)
                 && !Objects.equals(oldState, newState)
                 && !policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CHANGE_PRELIMINARY_STATUS, token.getRoles());
     }
 
-    private CaseObject createCaseObject(CaseObject caseObject, Delivery delivery, Long creatorId,
-                                        Date created, Date modified) {
+    private CaseObject createDeliveryCaseObject(CaseObject caseObject, Delivery delivery, Long creatorId,
+                                                Date created, Date modified) {
         if (caseObject == null){
             caseObject = new CaseObject();
             caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.DELIVERY));
@@ -319,6 +329,26 @@ public class DeliveryServiceImpl implements DeliveryService {
         caseObject.setStateId(delivery.getStateId());
         caseObject.setInitiatorId(delivery.getInitiatorId());
         caseObject.setNotifiers(delivery.getSubscribers());
+
+        return caseObject;
+    }
+
+    private CaseObject createKitCaseObject(CaseObject caseObject, Kit kit, Long creatorId,
+                                                Date created, Date modified) {
+        if (caseObject == null){
+            caseObject = new CaseObject();
+            caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.KIT));
+            caseObject.setType(En_CaseType.KIT);
+            caseObject.setCreated(created);
+            caseObject.setModified(created);
+            caseObject.setCreatorId(creatorId);
+        } else {
+            caseObject.setModified(modified);
+        }
+
+        caseObject.setId(kit.getId());
+        caseObject.setName(StringUtils.emptyIfNull(kit.getName()));
+        caseObject.setStateId(kit.getStateId());
 
         return caseObject;
     }

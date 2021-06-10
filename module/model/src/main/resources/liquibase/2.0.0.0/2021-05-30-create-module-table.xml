@@ -1,0 +1,198 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create-module-table" author="turik">
+        <createTable tableName="module">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="serial_number" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="kit_id" type="BIGINT"/>
+            <column name="parent_module_id" type="BIGINT"/>
+            <column name="hw_manager_id" type="BIGINT"/>
+            <column name="qc_manager_id" type="BIGINT"/>
+            <column name="departure_date" type="DATETIME"/>
+            <column name="build_date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-module-type-table" author="turik">
+        <createTable tableName="module_type">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="type" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="info" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-module-id-foreign-key" author="turik">
+        <addForeignKeyConstraint baseTableName="module"
+                                 baseColumnNames="id"
+                                 constraintName="module_id_to_case_object_fk"
+                                 referencedTableName="case_object"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="add-module-type-id-foreign-key" author="turik">
+        <addForeignKeyConstraint baseTableName="module"
+                                 baseColumnNames="type_id"
+                                 constraintName="module_type_id_to_module_type_fk"
+                                 referencedTableName="module_type"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="NO ACTION"/>
+    </changeSet>
+
+    <changeSet id="add-module-kit-id-foreign-key" author="turik">
+        <addForeignKeyConstraint baseTableName="module"
+                                 baseColumnNames="kit_id"
+                                 constraintName="module_kit_id_to_kit_fk"
+                                 referencedTableName="kit"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="add-module-parent-module-id-foreign-key" author="turik">
+        <addForeignKeyConstraint baseTableName="module"
+                                 baseColumnNames="parent_module_id"
+                                 constraintName="module_parent_module_id_to_module_fk"
+                                 referencedTableName="module"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="add-module-hw-manager-id-foreign-key" author="turik">
+        <addForeignKeyConstraint baseTableName="module"
+                                 baseColumnNames="hw_manager_id"
+                                 constraintName="module_hw_manager_id_to_person_fk"
+                                 referencedTableName="person"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="NO ACTION"/>
+    </changeSet>
+
+    <changeSet id="add-module-qc-manager-id-foreign-key" author="turik">
+        <addForeignKeyConstraint baseTableName="module"
+                                 baseColumnNames="qc_manager_id"
+                                 constraintName="module_qc_manager_id_to_person_fk"
+                                 referencedTableName="person"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="NO ACTION"/>
+    </changeSet>
+
+    <changeSet id="add-module-serial-number-unique-constraint" author="turik">
+        <addUniqueConstraint tableName="module" columnNames="serial_number" constraintName="serial_number_unique"/>
+    </changeSet>
+
+    <changeSet id="add-module-case-type" author="turik">
+        <insert tableName="case_type">
+            <column name="id" value="16"/>
+            <column name="CT_CODE" value="module"/>
+            <column name="CT_INFO" value="Модуль"/>
+            <column name="NEXT_ID" value="1"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="add-module-states" author="turik">
+        <insert tableName="case_state">
+            <column name="id" value="47"/>
+            <column name="STATE" value="setup"/>
+            <column name="color" value="#3f5fbd"/>
+            <column name="INFO" value="setup"/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="48"/>
+            <column name="STATE" value="packaging"/>
+            <column name="color" value="#4caf50"/>
+            <column name="INFO" value="packaging"/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="49"/>
+            <column name="STATE" value="repair"/>
+            <column name="color" value="#ef5350"/>
+            <column name="INFO" value="repair"/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="50"/>
+            <column name="STATE" value="write-off"/>
+            <column name="color" value="#88027b"/>
+            <column name="INFO" value="write-off"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="add-module-case-state-matrix" author="turik">
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="16"/>
+            <column name="CASE_STATE" value="39"/>
+            <column name="view_order" value="1"/>
+            <column name="info" value="Предварительный"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="16"/>
+            <column name="CASE_STATE" value="40"/>
+            <column name="view_order" value="2"/>
+            <column name="info" value="Резервирование"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="16"/>
+            <column name="CASE_STATE" value="42"/>
+            <column name="view_order" value="3"/>
+            <column name="info" value="Сборка"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="16"/>
+            <column name="CASE_STATE" value="28"/>
+            <column name="view_order" value="4"/>
+            <column name="info" value="Тестирование"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="16"/>
+            <column name="CASE_STATE" value="47"/>
+            <column name="view_order" value="5"/>
+            <column name="info" value="Настройка"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="16"/>
+            <column name="CASE_STATE" value="48"/>
+            <column name="view_order" value="6"/>
+            <column name="info" value="Упаковка"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="16"/>
+            <column name="CASE_STATE" value="45"/>
+            <column name="view_order" value="7"/>
+            <column name="info" value="Отправка"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="16"/>
+            <column name="CASE_STATE" value="49"/>
+            <column name="view_order" value="8"/>
+            <column name="info" value="Ремонт"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="16"/>
+            <column name="CASE_STATE" value="50"/>
+            <column name="view_order" value="9"/>
+            <column name="info" value="Списание"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="16"/>
+            <column name="CASE_STATE" value="4"/>
+            <column name="view_order" value="10"/>
+            <column name="info" value="Пауза"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

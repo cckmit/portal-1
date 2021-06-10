@@ -209,7 +209,6 @@ public class CrmConstants {
         long CUST_PENDING = 34;
         long CLOSED = 3;
         long IGNORED = 10;
-        long REQUEST_TO_PARTNER = 37;
         long SOLVED_NOT_A_PROBLEM = 7;
         long SOLVED_FIXED = 8;
         long SOLVED_DUPLICATED = 9;
@@ -218,6 +217,7 @@ public class CrmConstants {
         long UNKNOWN = 22;
         long PRESALE = 24;
         long FINISHED = 32;
+        long PRELIMINARY = 39;
     }
 
     public interface Department {

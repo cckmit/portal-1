@@ -6,7 +6,6 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
-import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dto.ProjectInfo;
@@ -15,6 +14,7 @@ import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.struct.ContractInfo;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -175,7 +175,7 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
     }
 
     private boolean hasPrivilegesChangeStatus(CaseState caseState) {
-        return !Objects.equals(caseState.getId(), (long)En_DeliveryState.PRELIMINARY.getId())
+        return !Objects.equals(caseState.getId(), CrmConstants.State.PRELIMINARY)
                 || policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CHANGE_PRELIMINARY_STATUS);
     }
 
