@@ -308,6 +308,14 @@ public class DebugIds {
         String CUST_REQUEST = "issue-state-cust-request";
         String REQUEST_TO_PARTNER = "issue-state-request-to-partner";
         String BLOCKED = "issue-state-blocked";
+        String DELIVERY_PRELIMINARY = "issue-state-delivery-preliminary";
+        String DELIVERY_PRE_RESERVE = "issue-state-delivery-pre_reserve";
+        String DELIVERY_RESERVE = "issue-state-delivery-reserve";
+        String DELIVERY_ASSEMBLY = "issue-state-delivery-assembly";
+        String DELIVERY_TEST = "issue-state-delivery-test";
+        String DELIVERY_READY = "issue-state-delivery-ready";
+        String DELIVERY_SENT = "issue-state-delivery-sent";
+        String DELIVERY_WORK = "issue-state-delivery-work";
     }
 
     public interface ISSUE {
