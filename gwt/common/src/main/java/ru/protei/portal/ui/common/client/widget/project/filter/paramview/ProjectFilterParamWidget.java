@@ -311,11 +311,11 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
             return;
         }
 
-        regions.ensureDebugId(DebugIds.PROJECT_FILTER.REGION_SELECTOR);
-        headManagers.ensureDebugId(DebugIds.PROJECT_FILTER.HEAD_MANAGER_SELECTOR);
-        caseMembers.ensureDebugId(DebugIds.PROJECT_FILTER.TEAM_SELECTOR);
-        initiatorCompanies.ensureDebugId(DebugIds.PROJECT_FILTER.COMPANY_SELECTOR);
-        products.setAddEnsureDebugId(DebugIds.PROJECT_FILTER.PRODUCT_SELECTOR);
+        regions.ensureDebugId(DebugIds.PROJECT_FILTER.REGION_SELECTOR_ITEM_CONTAINER);
+        headManagers.ensureDebugId(DebugIds.PROJECT_FILTER.HEAD_MANAGER_SELECTOR_ITEM_CONTAINER);
+        caseMembers.ensureDebugId(DebugIds.PROJECT_FILTER.TEAM_SELECTOR_ITEM_CONTAINER);
+        initiatorCompanies.ensureDebugId(DebugIds.PROJECT_FILTER.COMPANY_SELECTOR_ITEM_CONTAINER);
+        products.setAddEnsureDebugId(DebugIds.PROJECT_FILTER.PRODUCT_SELECTOR_ITEM_CONTAINER);
         commentCreationRange.setEnsureDebugId(DebugIds.PROJECT_FILTER.COMMENT_DATE_RANGE);
         sortField.setEnsureDebugId(DebugIds.PROJECT_FILTER.SORT_FIELD_SELECTOR);
     }

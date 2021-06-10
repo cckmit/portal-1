@@ -559,11 +559,11 @@ public class DebugIds {
     }
 
     public interface PROJECT_FILTER {
-        String REGION_SELECTOR = "project-filter-region-selector";
-        String HEAD_MANAGER_SELECTOR = "project-filter-head-manager-selector";
-        String TEAM_SELECTOR = "project-filter-team-selector";
-        String COMPANY_SELECTOR = "project-filter-company-selector";
-        String PRODUCT_SELECTOR = "project-filter-product-selector";
+        String REGION_SELECTOR_ITEM_CONTAINER = "project-filter-region-selector-item-container";
+        String HEAD_MANAGER_SELECTOR_ITEM_CONTAINER = "project-filter-head-manager-selector-item-container";
+        String TEAM_SELECTOR_ITEM_CONTAINER = "project-filter-team-selector-item-container";
+        String COMPANY_SELECTOR_ITEM_CONTAINER = "project-filter-company-selector-item-container";
+        String PRODUCT_SELECTOR_ITEM_CONTAINER = "project-filter-product-selector-item-container";
         String COMMENT_DATE_RANGE = "project-filter-comment-date-range";
         String SORT_FIELD_SELECTOR = "project-filter-sort-field-selector";
     }
