@@ -5,7 +5,6 @@
 <@set name="_createdBy" value="${created_by}"/>
 <@set name="_you" value="${you}"/>
 <@set name="_notification_footer" value="${notification_footer}"/>
-<@set name="_deliveryId" value="${deliveryId}"/>
 <@set name="_deliveryNumber" value="${deliveryNumber}"/>
 <@set name="_deliveryName" value="${deliveryName}"/>
 <@set name="_deliveryDescription" value="${deliveryDescription}"/>
@@ -98,29 +97,12 @@
         <table>
             <tbody>
 
-<#--ID-->
-            <tr>
-                <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                    ${_deliveryId}
-                </td>
-                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;"><b><a href="${linkToDelivery}">${deliveryId}</a></b></td>
-            </tr>
-
-<#--NUMBER-->
+<#--SERIAL NUMBER-->
             <tr>
                 <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                     ${_deliveryNumber}
                 </td>
-                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                    <#if numberChanged>
-                    <@changeTo
-                    old="${oldNumber!'?'}"
-                    new="${newNumber}"
-                    />
-                    <#else>
-                    ${newNumber}
-                </#if>
-                </td>
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;"><b><a href="${linkToDelivery}">${serialNumber}</a></b></td>
             </tr>
 
 <#--NAME-->

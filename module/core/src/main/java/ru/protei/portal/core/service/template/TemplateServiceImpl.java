@@ -574,7 +574,8 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "author", initiathor );
         templateModel.put( "number", delivery.getNumber() );
         templateModel.put( "caseState", delivery.getState());
-        templateModel.put( "name", delivery.getName() );
+        String nameTrimmed = org.apache.commons.lang3.StringUtils.abbreviate(delivery.getName(), 0, 50);
+        templateModel.put( "name", nameTrimmed );
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/delivery.subject.%s.ftl" );
         template.setModel( templateModel );
@@ -606,10 +607,7 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("linkToDelivery", crmDeliveryUrl);
         templateModel.put("deliveryId", String.valueOf(event.getDeliveryId()));
-
-        templateModel.put("numberChanged", event.isNumberChanged());
-        templateModel.put("oldNumber", getNullOrElse(oldDeliveryState, Delivery::getNumber));
-        templateModel.put("newNumber", newDeliveryState.getNumber());
+        templateModel.put("serialNumber", newDeliveryState.getNumber());
 
         templateModel.put("nameChanged", event.getName().hasDifferences());
         templateModel.put("oldName", HtmlUtils.htmlEscape(event.getName().getInitialState()));

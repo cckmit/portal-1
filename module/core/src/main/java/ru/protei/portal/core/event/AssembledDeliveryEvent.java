@@ -82,10 +82,6 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
         attachmentDiffCollectionResult.putRemovedEntries(event.getRemovedAttachments());
     }
 
-    public boolean isNumberChanged() {
-        return isEditEvent() && !Objects.equals(oldDeliveryState.getNumber(), newDeliveryState.getNumber());
-    }
-
     public boolean isNameChanged() {
         return isEditEvent() && !Objects.equals(oldDeliveryState.getName(), newDeliveryState.getName());
     }
