@@ -24,7 +24,7 @@ public class DeliveryStatesOptionList extends OptionList<CaseState> implements S
     public void fillOptions(List<CaseState> states) {
         clearOptions();
         states.forEach(state -> {
-            addOption(lang.getName(state), state, "inline m-r-5", state.getInfo(), state.getColor());
+            addOption(lang.getStateName(state), state, "inline m-r-5", state.getInfo(), state.getColor());
             setEnsureDebugId(state, DebugIdsHelper.ISSUE_STATE.byId(state.getId()));
         });
     }

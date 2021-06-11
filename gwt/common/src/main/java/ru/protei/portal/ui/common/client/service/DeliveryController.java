@@ -19,6 +19,8 @@ public interface DeliveryController extends RemoteService {
 
     Delivery saveDelivery(Delivery delivery) throws RequestFailedException;
 
+    long removeDelivery(Long id) throws RequestFailedException;
+
     String getLastSerialNumber(boolean isArmyProject) throws RequestFailedException;
 
     void updateNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest) throws RequestFailedException;

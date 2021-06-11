@@ -4,7 +4,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
@@ -19,11 +18,13 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDescriptionButtonsView;
 import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDescriptionEditView;
 import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDescriptionView;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
@@ -48,7 +49,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     @Event
     public void onShow( DeliveryEvents.ShowPreview event ) {
         HasWidgets container = event.parent;
-        if (!policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW)) {
+        if (!hasAccess()) {
             fireEvent(new ErrorPageEvents.ShowForbidden(container));
             return;
         }
@@ -59,7 +60,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
 
     @Event(Type.FILL_CONTENT)
     public void onShow(DeliveryEvents.Edit event) {
-        if (!hasPrivileges()) {
+        if (!hasAccess()) {
             fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
@@ -67,6 +68,11 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         Window.scrollTo(0, 0);
         viewModeIsPreview(false);
         requestDelivery(event.id, initDetails.parent);
+    }
+
+    @Event
+    public void onAuthSuccess(AuthEvents.Success event) {
+        this.authProfile = event.profile;
     }
 
     @Override
@@ -116,6 +122,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     public void onNameAndDescriptionEditClicked() {
         nameAndDescriptionEditView.name().setValue(delivery.getName());
         nameAndDescriptionEditView.description().setValue(delivery.getDescription());
+        view.nameAndDescriptionEditButtonVisibility().setVisible(false);
         changeRequest = new CaseNameAndDescriptionChangeRequest(delivery.getId(), delivery.getName(), delivery.getDescription());
         switchNameDescriptionToEdit(true);
     }
@@ -141,13 +148,20 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     private void fillView(Delivery delivery) {
         nameAndDescriptionView.setName(delivery.getName());
         nameAndDescriptionView.setDescription(delivery.getDescription());
+        view.setKitsAddButtonEnabled(!isReadOnly());
+        view.refreshKitsSerialNumberEnabled().setEnabled(!isReadOnly());
         view.updateKitByProject(delivery.getProject().getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE);
         view.kits().setValue(delivery.getKits());
         view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
+        view.nameAndDescriptionEditButtonVisibility().setVisible(!isReadOnly() && isSelfDelivery(delivery));
 
         renderMarkupText(delivery.getDescription(), En_TextMarkup.MARKDOWN, html -> nameAndDescriptionView.setDescription(html));
         fireEvent(new CommentAndHistoryEvents.Show(view.getItemsContainer(), delivery.getId(),
                                                    En_CaseType.DELIVERY, true, delivery.getCreatorId()));
+    }
+
+    private boolean isSelfDelivery(Delivery delivery) {
+        return Objects.equals(delivery.getCreatorId(), authProfile.getId());
     }
 
     private void showMeta(Delivery delivery) {
@@ -165,8 +179,12 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         container.add(view.asWidget());
     }
 
-    private boolean hasPrivileges() {
-        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
+    private boolean hasAccess() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW);
+    }
+
+    private boolean isReadOnly() {
+        return !policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
     }
 
     private void renderMarkupText(String text, En_TextMarkup markup, Consumer<String> consumer ) {
@@ -216,6 +234,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     @ContextAware
     Delivery delivery;
 
+    private Profile authProfile;
     private AppEvents.InitDetails initDetails;
     private boolean requestedNameDescription;
     private CaseNameAndDescriptionChangeRequest changeRequest;

@@ -147,6 +147,7 @@ public class HistoryServiceImpl implements HistoryService {
                 .collect(Collectors.toMap(History::getType, Arrays::asList, CollectionUtils::mergeLists));
 
         fillCaseStateHistoriesWithColors(typeToHistories.get(En_HistoryType.CASE_STATE));
+        fillCaseStateHistoriesWithColors(typeToHistories.get(En_HistoryType.DELIVERY_STATE));
         fillImportanceHistoriesWithColors(typeToHistories.get(En_HistoryType.CASE_IMPORTANCE));
         fillTagHistoriesWithColors(typeToHistories.get(En_HistoryType.TAG));
 

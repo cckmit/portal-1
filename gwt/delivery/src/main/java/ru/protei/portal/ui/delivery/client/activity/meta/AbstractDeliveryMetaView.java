@@ -29,6 +29,8 @@ public interface AbstractDeliveryMetaView extends IsWidget {
 
     HasValue<En_DeliveryType> type();
 
+    HasEnabled typeEnabled();
+
     HasValue<ProjectInfo> project();
 
     HasEnabled projectEnabled();
@@ -49,6 +51,8 @@ public interface AbstractDeliveryMetaView extends IsWidget {
 
     HasValue<En_DeliveryAttribute> attribute();
 
+    HasEnabled attributeEnabled();
+
     HasValue<ContractInfo> contract();
 
     HasEnabled contractEnable();
@@ -61,6 +65,8 @@ public interface AbstractDeliveryMetaView extends IsWidget {
 
     HasValue<Date> departureDate();
 
+    HasEnabled departureDateEnabled();
+
     boolean isDepartureDateEmpty();
 
     void setDepartureDateValid(boolean isValid);
@@ -68,4 +74,6 @@ public interface AbstractDeliveryMetaView extends IsWidget {
     void setSubscribers(Set<Person> persons);
 
     Set<Person> getSubscribers();
+
+    HasEnabled subscribersEnabled();
 }

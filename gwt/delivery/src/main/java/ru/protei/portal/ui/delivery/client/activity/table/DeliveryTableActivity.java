@@ -9,9 +9,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Delivery;
-import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.DeliveryQuery;
-import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -104,6 +102,16 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
     }
 
     @Override
+    public void onRemoveClicked(Delivery value) {
+        if (value == null) {
+            return;
+        }
+
+        fireEvent(new ConfirmDialogEvents.Show(lang.deliveryRemoveConfirmMessage(value.getName()),
+                                               removeAction(value.getId())));
+    }
+
+    @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Delivery>> asyncCallback) {
         boolean isFirstChunk = offset == 0;
 
@@ -173,6 +181,15 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
         animation.closeDetails();
         view.clearRecords();
         view.triggerTableLoad();
+    }
+
+    private Runnable removeAction(Long id) {
+        return () -> deliveryService.removeDelivery(id, new FluentCallback<Long>()
+                .withSuccess(result -> {
+                    fireEvent(new NotifyEvents.Show(lang.deliveryRemoveSucceeded(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new DeliveryEvents.Show(false));
+                })
+        );
     }
 
     @Inject

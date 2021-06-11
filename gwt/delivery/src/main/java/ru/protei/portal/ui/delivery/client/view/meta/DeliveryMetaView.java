@@ -86,6 +86,11 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     }
 
     @Override
+    public HasEnabled typeEnabled() {
+        return type;
+    }
+
+    @Override
     public HasValue<ProjectInfo> project() {
         return projectWidget;
     }
@@ -136,6 +141,11 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     }
 
     @Override
+    public HasEnabled attributeEnabled() {
+        return attribute;
+    }
+
+    @Override
     public HasValue<ContractInfo> contract() {
         return contract;
     }
@@ -166,6 +176,11 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     }
 
     @Override
+    public HasEnabled departureDateEnabled() {
+        return departureDate;
+    }
+
+    @Override
     public boolean isDepartureDateEmpty() {
         return HelperFunc.isEmpty(departureDate.getInputValue());
     }
@@ -183,6 +198,11 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     @Override
     public Set<Person> getSubscribers() {
         return subscribers.getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet());
+    }
+
+    @Override
+    public HasEnabled subscribersEnabled() {
+        return subscribers;
     }
 
     @UiHandler("projectWidget")

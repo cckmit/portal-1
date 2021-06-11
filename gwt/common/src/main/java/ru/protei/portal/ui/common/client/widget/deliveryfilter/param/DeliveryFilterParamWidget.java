@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.DeliveryQuery;
@@ -91,6 +92,7 @@ public class DeliveryFilterParamWidget extends Composite implements FilterParamV
         query.setManagerIds(getManagersIdList(managers.getValue()));
         query.setDepartureDateRange(toDateRange(dateDepartureRange.getValue()));
         query.setStateIds(nullIfEmpty(toList(states.getValue(), CaseState::getId)));
+        query.setDeleted(CaseObject.NOT_DELETED);
 
         return query;
     }
