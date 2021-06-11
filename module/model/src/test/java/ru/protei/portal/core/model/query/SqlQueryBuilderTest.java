@@ -8,10 +8,7 @@ import ru.protei.portal.core.model.util.sqlcondition.SortField;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 import ru.protei.winter.jdbc.JdbcSort;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static ru.protei.portal.core.model.dict.En_SortDir.DESC;
@@ -764,11 +761,13 @@ public class SqlQueryBuilderTest {
         if (expectedSort == sortOrder) return true;
         if (expectedSort.getParams() == sortOrder.getParams()) return true;
         assertEquals( "expected equals size", size( expectedSort.getParams() ), size( sortOrder.getParams() ));
-        for (int i = 0; i < size( expectedSort.getParams() ); i++) {
-            JdbcSort.DescriptionParam expectedParam = expectedSort.getDescriptionParams().get( i );
-            JdbcSort.DescriptionParam orderParam = sortOrder.getDescriptionParams().get( i );
+        for (Map.Entry<String, JdbcSort.DescriptionParam> entry : expectedSort.getParams().entrySet()) {
 
-            assertEquals( expectedParam.paramName, orderParam.paramName );
+            String expectedSortFieldName = entry.getKey();
+
+            JdbcSort.DescriptionParam expectedParam = expectedSort.getParams().get( expectedSortFieldName );
+            JdbcSort.DescriptionParam orderParam = sortOrder.getParams().get(expectedSortFieldName);
+
             assertEquals( expectedParam.direction, orderParam.direction );
             assertEquals( expectedParam.mode, orderParam.mode );
         }

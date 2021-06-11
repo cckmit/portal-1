@@ -123,7 +123,7 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
             return error;
         }
         CaseState state = view.state().getValue();
-         if (!Objects.equals(CrmConstants.State.PRELIMINARY, state.getId().intValue())) {
+         if (!Objects.equals(CrmConstants.State.PRELIMINARY, state.getId())) {
             return lang.deliveryValidationInvalidStateAtCreate();
         }
         if (!view.kitsValidate().isValid()) {
