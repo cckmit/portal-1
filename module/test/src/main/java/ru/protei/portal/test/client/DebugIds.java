@@ -309,7 +309,7 @@ public class DebugIds {
         String REQUEST_TO_PARTNER = "issue-state-request-to-partner";
         String BLOCKED = "issue-state-blocked";
         String DELIVERY_PRELIMINARY = "issue-state-delivery-preliminary";
-        String DELIVERY_PRE_RESERVE = "issue-state-delivery-pre_reserve";
+        String DELIVERY_PRE_RESERVE = "issue-state-delivery-pre-reserve";
         String DELIVERY_RESERVE = "issue-state-delivery-reserve";
         String DELIVERY_ASSEMBLY = "issue-state-delivery-assembly";
         String DELIVERY_TEST = "issue-state-delivery-test";

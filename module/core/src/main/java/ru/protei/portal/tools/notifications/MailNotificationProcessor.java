@@ -109,7 +109,7 @@ public class MailNotificationProcessor {
 
         PreparedTemplate bodyTemplate = templateService.createEmailDeliveryBody(
                 event,
-                commentReplacementInfoList.stream().map(ReplaceLoginWithUsernameInfo::getObject).collect(Collectors.toList()),
+                selectPublicComments(commentReplacementInfoList.stream().map(ReplaceLoginWithUsernameInfo::getObject).collect(Collectors.toList())),
                 addresses,
                 makeCrmDeliveryUrl(config.data().getMailNotificationConfig().getCrmUrlInternal(), event.getDeliveryId()),
                 new EnumLangUtil(lang)
@@ -1591,8 +1591,8 @@ public class MailNotificationProcessor {
                 || event.isStateChanged()
                 || event.isDepartureDateChanged()
                 || event.isAttachmentsFilled()
-                || event.isPublicCommentsChanged()
-                || event.isPublicAttachmentsChanged()
+                || event.isCommentsChanged()
+                || event.isAttachmentsChanged()
                 || event.isTypeChanged()
                 || event.isAttributeChanged()
                 || event.isInitiatorChanged()

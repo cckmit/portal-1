@@ -87,7 +87,10 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
     }
 
     public boolean isDepartureDateChanged() {
-        return isEditEvent() && !Objects.equals(oldDeliveryState.getDepartureDate().getTime(), newDeliveryState.getDepartureDate().getTime());
+        return isEditEvent() &&
+                !Objects.equals(
+                        oldDeliveryState.getDepartureDate() == null ? null : oldDeliveryState.getDepartureDate().getTime(),
+                        newDeliveryState.getDepartureDate() == null ? null : newDeliveryState.getDepartureDate().getTime());
     }
 
     public boolean isDescriptionChanged() {
@@ -271,7 +274,7 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
         return isCreateEvent;
     }
 
-    public boolean isPublicCommentsChanged() {
+    public boolean isCommentsChanged() {
         List<CaseComment> allEntries = new ArrayList<>();
         allEntries.addAll(emptyIfNull(comments.getAddedEntries()));
         allEntries.addAll(emptyIfNull(comments.getRemovedEntries()));
@@ -280,7 +283,7 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
         return allEntries.stream().anyMatch(comment -> !comment.isPrivateComment());
     }
 
-    public boolean isPublicAttachmentsChanged() {
+    public boolean isAttachmentsChanged() {
         List<Attachment> allEntries = new ArrayList<>();
         allEntries.addAll(emptyIfNull(attachments.getAddedEntries()));
         allEntries.addAll(emptyIfNull(attachments.getRemovedEntries()));
