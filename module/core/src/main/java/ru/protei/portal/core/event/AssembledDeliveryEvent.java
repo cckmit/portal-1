@@ -87,7 +87,7 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
     }
 
     public boolean isDepartureDateChanged() {
-        return isEditEvent() && !Objects.equals(oldDeliveryState.getDepartureDate(), newDeliveryState.getDepartureDate());
+        return isEditEvent() && !Objects.equals(oldDeliveryState.getDepartureDate().getTime(), newDeliveryState.getDepartureDate().getTime());
     }
 
     public boolean isDescriptionChanged() {
