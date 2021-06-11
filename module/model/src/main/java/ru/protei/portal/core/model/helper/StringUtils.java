@@ -1,10 +1,7 @@
 package ru.protei.portal.core.model.helper;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 

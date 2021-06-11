@@ -34,7 +34,7 @@ public class DeliveryEvents {
         public Create() {}
     }
 
-    @Url( value = "delivery_edit")
+    @Url( value = "delivery")
     public static class Edit {
         public Edit() {}
 

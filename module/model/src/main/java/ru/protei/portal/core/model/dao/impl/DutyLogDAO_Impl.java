@@ -19,7 +19,10 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 import ru.protei.winter.jdbc.JdbcSort;
 import ru.protei.winter.jdbc.annotations.EnumType;
 
+import java.util.LinkedHashMap;
+
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
+import static ru.protei.portal.core.utils.TypeConverters.toWinter;
 import static ru.protei.winter.jdbc.JdbcHelper.makeSqlStringCollection;
 
 public class DutyLogDAO_Impl extends PortalBaseJdbcDAO<DutyLog> implements DutyLogDAO {
@@ -81,9 +84,11 @@ public class DutyLogDAO_Impl extends PortalBaseJdbcDAO<DutyLog> implements DutyL
         if (query.getSortField() == En_SortField.duty_log_date_from) {
             sort = TypeConverters.createSort(query);
         } else {
-            sort = new JdbcSort(
-                    new JdbcSort.DescriptionParam(query.getSortField().getFieldName(), TypeConverters.toWinter(query.getSortDir()), null),
-                    new JdbcSort.DescriptionParam(En_SortField.duty_log_date_from.getFieldName(), TypeConverters.toWinter(En_SortDir.ASC), null));
+
+            LinkedHashMap<String, JdbcSort.DescriptionParam> params = new LinkedHashMap<>();
+            params.put(query.getSortField().getFieldName(), new JdbcSort.DescriptionParam(toWinter(query.getSortDir()), null));
+            params.put(En_SortField.duty_log_date_from.getFieldName(), new JdbcSort.DescriptionParam(toWinter(En_SortDir.ASC), null));
+            sort = new JdbcSort(params);
         }
         parameters.withSort(sort);
 

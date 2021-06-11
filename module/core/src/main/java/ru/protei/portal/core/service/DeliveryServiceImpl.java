@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.event.DeliveryCreateEvent;
+import ru.protei.portal.core.event.DeliveryUpdateEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -24,6 +26,8 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.ent.Delivery.Columns.KITS;
+import static ru.protei.portal.core.model.ent.Delivery.Columns.SUBSCRIBERS;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.DELIVERY_KIT_SERIAL_NUMBER_PATTERN;
@@ -52,7 +56,6 @@ public class DeliveryServiceImpl implements DeliveryService {
     PersonDAO personDAO;
     @Autowired
     CaseObjectMetaNotifiersDAO caseObjectMetaNotifiersDAO;
-
     @Autowired
     DeliveryDAO deliveryDAO;
     @Autowired
@@ -80,7 +83,7 @@ public class DeliveryServiceImpl implements DeliveryService {
             }
             delivery.getProject().setProducts(new HashSet<>(devUnitDAO.getProjectProducts(delivery.getProject().getId())));
 
-            jdbcManyRelationsHelper.fill(delivery, "kits");
+            jdbcManyRelationsHelper.fill(delivery, KITS);
         }
 
         return ok(sr);
@@ -88,11 +91,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public Result<Delivery> getDelivery(AuthToken token, Long id) {
-        Delivery delivery = deliveryDAO.get(id);
-        jdbcManyRelationsHelper.fill(delivery, "kits");
-        jdbcManyRelationsHelper.fill(delivery, "subscribers");
-        delivery.getProject().setProducts(new HashSet<>(devUnitDAO.getProjectProducts(delivery.getProject().getId())));
-        return ok(delivery);
+        return ok(getDelivery(id));
     }
 
     @Override
@@ -126,7 +125,7 @@ public class DeliveryServiceImpl implements DeliveryService {
             kit.setModified(now);
         });
 
-        jdbcManyRelationsHelper.persist(delivery, "kits");
+        jdbcManyRelationsHelper.persist(delivery, KITS);
 
         if(isNotEmpty(caseObject.getNotifiers())){
             caseNotifierDAO.persistBatch(
@@ -153,7 +152,9 @@ public class DeliveryServiceImpl implements DeliveryService {
             }
         }
 
-        return ok(deliveryDAO.get(delivery.getId()));
+        DeliveryCreateEvent deliveryCreateEvent = new DeliveryCreateEvent(this, token.getPersonId(), delivery.getId());
+
+        return ok(deliveryDAO.get(delivery.getId()), Collections.singletonList(deliveryCreateEvent));
     }
 
     @Override
@@ -192,6 +193,9 @@ public class DeliveryServiceImpl implements DeliveryService {
         if (!Objects.equals(oldMeta.getProjectId(), meta.getProjectId())) {
             return error(En_ResultStatus.DELIVERY_FORBIDDEN_CHANGE_PROJECT);
         }
+
+        oldMeta.getProject().setProducts(new HashSet<>(devUnitDAO.getProjectProducts(oldMeta.getProject().getId())));
+        jdbcManyRelationsHelper.fillAll( oldMeta );
 
         CaseObject caseObject = caseObjectDAO.get(meta.getId());
         caseObject = createCaseObject(caseObject, meta, null, null, new Date());
@@ -239,7 +243,9 @@ public class DeliveryServiceImpl implements DeliveryService {
                        oldDate, newDate, meta.getName());
         }
 
-        return getDelivery(token, caseObject.getId());
+        DeliveryUpdateEvent deliveryUpdateEvent = new DeliveryUpdateEvent(this, oldMeta, meta, token.getPersonId());
+
+        return ok(getDelivery(caseObject.getId()), Collections.singletonList(deliveryUpdateEvent));
     }
 
     @Override
@@ -258,6 +264,14 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
         log.debug("getLastSerialNumber(): isArmyProject = {}, result = {}", isArmyProject, lastSerialNumber);
         return ok(lastSerialNumber);
+    }
+
+    private Delivery getDelivery(Long id) {
+        Delivery delivery = deliveryDAO.get(id);
+        jdbcManyRelationsHelper.fill(delivery, KITS);
+        jdbcManyRelationsHelper.fill(delivery, SUBSCRIBERS);
+        delivery.getProject().setProducts(new HashSet<>(devUnitDAO.getProjectProducts(delivery.getProject().getId())));
+        return delivery;
     }
 
     private int getCurrentYear() {

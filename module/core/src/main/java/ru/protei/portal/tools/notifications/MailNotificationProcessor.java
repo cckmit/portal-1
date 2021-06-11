@@ -93,6 +93,45 @@ public class MailNotificationProcessor {
     @Autowired
     Lang lang;
 
+    // -----------------------
+    // Delivery notifications
+    // -----------------------
+    @EventListener
+    public void onDeliveryChanged(AssembledDeliveryEvent event){
+        if (!isSendDeliveryNotification(event)) {
+            return;
+        }
+
+        Set<NotificationEntry> recipients = subscriptionService.subscribers(event);
+        List<ReplaceLoginWithUsernameInfo<CaseComment>> commentReplacementInfoList = caseCommentService.replaceLoginWithUsername(event.getAllComments()).getData();
+        recipients.addAll(collectCommentNotifiers(event, commentReplacementInfoList, true));
+        Set<String> addresses = recipients.stream().map(NotificationEntry::getAddress).collect(Collectors.toSet());
+
+        PreparedTemplate bodyTemplate = templateService.createEmailDeliveryBody(
+                event,
+                selectPublicComments(commentReplacementInfoList.stream().map(ReplaceLoginWithUsernameInfo::getObject).collect(Collectors.toList())),
+                addresses,
+                makeCrmDeliveryUrl(config.data().getMailNotificationConfig().getCrmUrlInternal(), event.getDeliveryId()),
+                new EnumLangUtil(lang)
+        );
+
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for delivery | delivery.id={}", event.getNewDeliveryState().getId());
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.createEmailDeliverySubject(
+                event,
+                event.getInitiator(),
+                new EnumLangUtil(lang));
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for delivery | delivery.id={}", event.getNewDeliveryState().getId());
+            return;
+        }
+
+        sendMailToRecipients(recipients, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
+    }
+
     // ------------------------
     // CaseObject notifications
     // ------------------------
@@ -1502,7 +1541,6 @@ public class MailNotificationProcessor {
                 || assembledCaseEvent.isPublicLinksChanged();
     }
 
-
     private boolean isSendProjectNotification(AssembledProjectEvent event) {
         if (!event.isEditEvent()) {
             return true;
@@ -1535,6 +1573,35 @@ public class MailNotificationProcessor {
                 || event.isLinksChanged();
     }
 
+    private boolean isSendDeliveryNotification(AssembledDeliveryEvent event) {
+        if (!event.isEditEvent()) {
+            return true;
+        }
+
+        if (isDeliveryChanged(event)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isDeliveryChanged(AssembledDeliveryEvent event) {
+        return event.isNameChanged()
+                || event.isDescriptionChanged()
+                || event.isStateChanged()
+                || event.isDepartureDateChanged()
+                || event.isAttachmentsFilled()
+                || event.isCommentsChanged()
+                || event.isAttachmentsChanged()
+                || event.isTypeChanged()
+                || event.isAttributeChanged()
+                || event.isInitiatorChanged()
+                || event.isProjectChanged()
+                || event.isStateChanged()
+                || event.isContractChanged();
+    }
+
+
     private boolean isSendEmployeeRegistrationNotification(AssembledEmployeeRegistrationEvent event) {
         if (!event.isEditEvent()) {
             return true;
@@ -1562,6 +1629,11 @@ public class MailNotificationProcessor {
     private String makeCrmProjectUrl( String crmUrl, Long projectId ) {
         String crmProjectUrl = crmUrl + config.data().getMailNotificationConfig().getCrmProjectUrl();
         return String.format( crmProjectUrl, projectId );
+    }
+
+    private String makeCrmDeliveryUrl( String crmUrl, Long deliveryId ) {
+        String crmDeliveryUrl = crmUrl + config.data().getMailNotificationConfig().getDeliveryUrl();
+        return String.format( crmDeliveryUrl, deliveryId );
     }
 
     private Collection<NotificationEntry> collectCommentNotifiers(HasCaseComments hasCaseComments, List<ReplaceLoginWithUsernameInfo<CaseComment>> commentToLoginList, boolean isPrivateCase) {

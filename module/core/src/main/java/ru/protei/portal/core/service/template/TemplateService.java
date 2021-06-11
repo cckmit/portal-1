@@ -69,6 +69,15 @@ public interface TemplateService {
 
     PreparedTemplate getMailProjectBody(AssembledProjectEvent event, List<CaseComment> comments, Collection<String> recipients, DiffCollectionResult<LinkData> links, String crmProjectUrl, EnumLangUtil roleTypeLang);
 
+    PreparedTemplate createEmailDeliverySubject(AssembledDeliveryEvent event, Person currentPerson, EnumLangUtil enumLangUtil);
+
+    PreparedTemplate createEmailDeliveryBody(
+            AssembledDeliveryEvent event,
+            List<CaseComment> comments,
+            Collection<String> recipients,
+            String crmProjectUrl,
+            EnumLangUtil enumLangUtil);
+
     PreparedTemplate getRoomReservationNotificationSubject(RoomReservation roomReservation, RoomReservationNotificationEvent.Action action);
 
     PreparedTemplate getRoomReservationNotificationBody(RoomReservation roomReservation, RoomReservationNotificationEvent.Action action, Collection<String> recipients);

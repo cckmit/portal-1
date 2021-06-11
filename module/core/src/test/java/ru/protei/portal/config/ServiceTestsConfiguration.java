@@ -244,6 +244,11 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
+    public EventDeliveryAssemblerService getDeliveryPublisherService() {
+        return new EventDeliveryAssemblerServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
         return new AssemblerServiceStub();
     }
@@ -251,6 +256,11 @@ public class ServiceTestsConfiguration {
     @Bean
     public AssemblerProjectService getAssemblerProjectService() {
         return new AssemblerProjectServiceStub();
+    }
+
+    @Bean
+    public AssemblerDeliveryService getAssemblerDeliveryService() {
+        return new AssemblerDeliveryServiceStub();
     }
 
     @Bean

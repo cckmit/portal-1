@@ -3,7 +3,6 @@ package ru.protei.portal.core.report.caseobjects;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.jetbrains.annotations.NotNull;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.ent.*;
@@ -232,8 +231,8 @@ public class ExcelReportWriter implements
         return Arrays.stream(intervals).anyMatch(interval -> isDateInRange(date, interval));
     }
 
-    private boolean isDateInRange(@NotNull Date date, Interval dateRange) {
-        if (dateRange == null) {
+    private boolean isDateInRange(Date date, Interval dateRange) {
+        if (date == null || dateRange == null) {
             return false;
         }
 

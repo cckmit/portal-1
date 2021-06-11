@@ -360,6 +360,32 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public EventDeliveryAssemblerService getDeliveryPublisherService() {
+        return new EventDeliveryAssemblerServiceImpl();
+    }
+
+    @Bean
+    public AssemblerDeliveryService getAssemblerDeliveryService() {
+        return new AssemblerDeliveryServiceImpl();
+    }
+
+    @Bean
+    public DeliveryDAO getDeliveryDAO() {
+        return new DeliveryDAO_Impl();
+    }
+
+    @Bean
+    public DeliverySqlBuilder deliverySqlBuilder() {
+        return new DeliverySqlBuilder();
+    }
+
+    @Bean
+    @Lazy
+    public DeliveryService getDeliveryService() {
+        return new DeliveryServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
     }

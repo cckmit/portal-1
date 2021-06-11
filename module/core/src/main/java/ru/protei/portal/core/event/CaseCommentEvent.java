@@ -11,7 +11,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 /**
  * Created by michael on 04.05.17.
  */
-public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEvent/*, de.novanic.eventservice.client.event.Event*/ {
+public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEvent {
 
     private Long caseObjectId;
     private CaseComment newCaseComment;

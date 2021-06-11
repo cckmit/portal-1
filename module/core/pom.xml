@@ -115,6 +115,8 @@
                         <argument>notification/email/education.request.create.body.ftl</argument>
                         <argument>notification/email/education.request.approve.body.ftl</argument>
                         <argument>notification/email/education.request.decline.body.ftl</argument>
+                        <argument>notification/email/delivery.subject.ftl</argument>
+                        <argument>notification/email/delivery.body.ftl</argument>
                     </arguments>
                 </configuration>
             </plugin>

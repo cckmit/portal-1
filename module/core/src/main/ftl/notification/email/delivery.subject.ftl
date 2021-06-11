@@ -1,0 +1,1 @@
+${delivery}<#noparse> ${number} [${TranslitUtils.transliterate(author.displayName, lang)!'?'}] ${EnumLangUtil.deliveryStateLang(caseState, lang)} ${name}</#noparse>

@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.*;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.LangUtil;
@@ -42,7 +43,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 /**
- * Реализация сервиса управления проектами
+ * Реализация сервиса управления шаблонами
  */
 public class TemplateServiceImpl implements TemplateService {
     public static final String BASE_TEMPLATE_PATH = "notification/email/";
@@ -548,7 +549,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("sla", event.getSlaDiffs());
 
         templateModel.put( "caseComments",
-                getProjectCommentsModelKeys(
+                getCommentsAttachesModelKeys(
                         comments, event.getAddedCaseComments(), event.getChangedCaseComments(),
                         event.getRemovedCaseComments(), event.getCommentToAttachmentDiffs(), event.getExistingAttachments(), En_TextMarkup.MARKDOWN)
         );
@@ -559,6 +560,116 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("removedLinks", links == null ? null : links.getRemovedEntries());
 
         PreparedTemplate template = new PreparedTemplate("notification/email/project.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate createEmailDeliverySubject(AssembledDeliveryEvent event, Person initiathor, EnumLangUtil enumLangUtil) {
+        Delivery delivery = event.getNewDeliveryState();
+        Map<String, Object> templateModel = new HashMap<>(makeTemplateModelUtils(enumLangUtil));
+
+        templateModel.put( "author", initiathor );
+        templateModel.put( "number", delivery.getNumber() );
+        templateModel.put( "caseState", delivery.getState());
+        String nameTrimmed = org.apache.commons.lang3.StringUtils.abbreviate(delivery.getName(), 0, 50);
+        templateModel.put( "name", nameTrimmed );
+
+        PreparedTemplate template = new PreparedTemplate( "notification/email/delivery.subject.%s.ftl" );
+        template.setModel( templateModel );
+        template.setTemplateConfiguration( templateConfiguration );
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate createEmailDeliveryBody(
+            AssembledDeliveryEvent event,
+            List<CaseComment> comments,
+            Collection<String> recipients,
+            String crmDeliveryUrl,
+            EnumLangUtil enumLangUtil) {
+
+        Delivery oldDeliveryState = event.getOldDeliveryState();
+        Delivery newDeliveryState = event.getNewDeliveryState();
+
+        Map<String, Object> templateModel = new HashMap<>(makeTemplateModelUtils(enumLangUtil));
+
+        templateModel.put("EnumLangUtil", enumLangUtil);
+        templateModel.put("TimeFormatter", new WorkTimeFormatter(true));
+        templateModel.put("TextUtils", new TextUtils());
+
+        templateModel.put("creator", newDeliveryState.getCreator().getDisplayShortName());
+        templateModel.put("created", newDeliveryState.getCreated());
+        templateModel.put("isCreated", event.isCreateEvent());
+        templateModel.put("recipients", recipients);
+
+        templateModel.put("linkToDelivery", crmDeliveryUrl);
+        templateModel.put("deliveryId", String.valueOf(event.getDeliveryId()));
+        templateModel.put("serialNumber", newDeliveryState.getNumber());
+
+        templateModel.put("nameChanged", event.getName().hasDifferences());
+        templateModel.put("oldName", HtmlUtils.htmlEscape(event.getName().getInitialState()));
+        templateModel.put("newName", HtmlUtils.htmlEscape(event.getName().getNewState()));
+
+        templateModel.put("descriptionChanged", event.getInfo().hasDifferences());
+        templateModel.put("oldDescription", event.getInfo().getInitialState() == null ? null : escapeTextAndRenderHTML( event.getInfo().getInitialState(), En_TextMarkup.MARKDOWN ) );
+        templateModel.put("newDescription", escapeTextAndRenderHTML( event.getInfo().getNewState(), En_TextMarkup.MARKDOWN ) );
+
+        templateModel.put("stateChanged", event.isStateChanged());
+        templateModel.put("oldState", getNullOrElse(oldDeliveryState, Delivery::getState));
+        templateModel.put("newState", newDeliveryState.getState());
+
+        templateModel.put("typeChanged", event.isTypeChanged());
+        templateModel.put("oldType", getNullOrElse(oldDeliveryState, Delivery::getType));
+        templateModel.put("newType", newDeliveryState.getType());
+
+        templateModel.put("projectChanged", event.isProjectChanged());
+        templateModel.put("oldProject", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getProject(), Project::getName)));
+        templateModel.put("newProject", getNullOrElse(newDeliveryState.getProject(), Project::getName));
+
+        templateModel.put("managerChanged", event.isProjectChanged());
+        templateModel.put("oldManager", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getProject(), Project::getManagerName)));
+        templateModel.put("newManager", getNullOrElse(newDeliveryState.getProject(), Project::getManagerName));
+
+        templateModel.put("attributeChanged", event.isAttributeChanged());
+        templateModel.put("oldAttribute", getNullOrElse(oldDeliveryState, Delivery::getAttribute));
+        templateModel.put("newAttribute", newDeliveryState.getAttribute());
+
+        templateModel.put("contractChanged", event.isContractChanged());
+        templateModel.put("oldContract", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getContract(), Contract::getNumber)));
+        templateModel.put("newContract", getNullOrElse(newDeliveryState.getContract(), Contract::getNumber));
+
+        final DiffCollectionResult<DevUnit> productDiffs = event.getProductDiffs();
+        templateModel.put("productSameEntries", productDiffs.getSameEntries());
+        templateModel.put("productAddedEntries", productDiffs.getAddedEntries());
+        templateModel.put("productRemovedEntries", productDiffs.getRemovedEntries());
+
+        templateModel.put("departureDateChanged", event.isDepartureDateChanged());
+        templateModel.put("oldDepartureDate", getNullOrElse(oldDeliveryState, Delivery::getDepartureDate));
+        templateModel.put("newDepartureDate", newDeliveryState.getDepartureDate());
+
+        templateModel.put("companyChanged", event.isProjectChanged());
+        templateModel.put("oldCompany", getNullOrElse(oldDeliveryState, del -> getNullOrElse(del.getProject(), prj -> getNullOrElse(prj.getCustomer(), Company::getCname))));
+        templateModel.put("newCompany", getNullOrElse(newDeliveryState.getProject(), prj -> getNullOrElse(prj.getCustomer(), Company::getCname)));
+
+        templateModel.put("contactPersonChanged", event.isInitiatorChanged());
+        templateModel.put("oldContactPerson", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getInitiator(), PersonShortView::getDisplayName)));
+        templateModel.put("newContactPerson", getNullOrElse(newDeliveryState.getInitiator(), PersonShortView::getDisplayName));
+
+        templateModel.put( "caseComment",
+                getCommentsAttachesModelKeys(
+                        comments,
+                        event.getAddedCaseComments(),
+                        event.getChangedCaseComments(),
+                        event.getRemovedCaseComments(),
+                        event.getCommentToAttachmentDiffs(),
+                        event.getExistingAttachments(),
+                        En_TextMarkup.MARKDOWN)
+        );
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/delivery.body.%s.ftl");
         template.setModel(templateModel);
         template.setTemplateConfiguration(templateConfiguration);
 
@@ -1026,8 +1137,8 @@ public class TemplateServiceImpl implements TemplateService {
                 .collect( toList() );
     }
 
-    private List<Map<String, Object>> getProjectCommentsModelKeys(List<CaseComment> comments, List<CaseComment> added, List<CaseComment> changed, List<CaseComment> removed,
-                                                                  Map<Long, DiffCollectionResult<Attachment>> commentToAttachmentDiffs, List<Attachment> existingAttachments, En_TextMarkup textMarkup) {
+    private List<Map<String, Object>> getCommentsAttachesModelKeys(List<CaseComment> comments, List<CaseComment> added, List<CaseComment> changed, List<CaseComment> removed,
+                                                                   Map<Long, DiffCollectionResult<Attachment>> commentToAttachmentDiffs, List<Attachment> existingAttachments, En_TextMarkup textMarkup) {
         return comments.stream()
                 .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
                 .map(comment -> {
