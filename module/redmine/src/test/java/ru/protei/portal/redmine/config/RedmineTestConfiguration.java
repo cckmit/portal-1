@@ -16,6 +16,9 @@ import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.controller.cloud.FileController;
+import ru.protei.portal.core.model.dao.DeliveryDAO;
+import ru.protei.portal.core.model.dao.impl.DeliveryDAO_Impl;
+import ru.protei.portal.core.model.dao.impl.DeliverySqlBuilder;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
@@ -160,6 +163,32 @@ public class RedmineTestConfiguration {
     @Bean
     public EventProjectAssemblerService getProjectPublisherService() {
         return new EventProjectAssemblerServiceImpl();
+    }
+
+    @Bean
+    public EventDeliveryAssemblerService getDeliveryPublisherService() {
+        return new EventDeliveryAssemblerServiceImpl();
+    }
+
+    @Bean
+    public AssemblerDeliveryService getAssemblerDeliveryService() {
+        return new AssemblerDeliveryServiceImpl();
+    }
+
+    @Bean
+    public DeliveryDAO getDeliveryDAO() {
+        return new DeliveryDAO_Impl();
+    }
+
+    @Bean
+    public DeliverySqlBuilder deliverySqlBuilder() {
+        return new DeliverySqlBuilder();
+    }
+
+    @Bean
+    @Lazy
+    public DeliveryService getDeliveryService() {
+        return new DeliveryServiceImpl();
     }
 
     @Bean
