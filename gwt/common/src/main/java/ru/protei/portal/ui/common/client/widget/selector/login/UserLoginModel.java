@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.ent.UserLoginShortView;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -15,6 +16,7 @@ import ru.protei.portal.ui.common.client.selector.LoadingHandler;
 import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHandler;
 import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheWithFirstElements;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Collections;
@@ -82,13 +84,19 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
             companyIds.add(initiatorCompanyId);
         }
 
-        accountQuery.setCompanyIds(companyIds);
+        companyService.getSingleHomeCompanies(new FluentCallback<List<EntityOption>>()
+                      .withSuccess(companies -> {
+                          companies.forEach(company -> companyIds.add(company.getId()));
+                          accountQuery.setCompanyIds(companyIds);
+                      }));
 
         return accountQuery;
     }
 
     @Inject
     AccountControllerAsync accountService;
+    @Inject
+    CompanyControllerAsync companyService;
 
     @Inject
     Lang lang;
