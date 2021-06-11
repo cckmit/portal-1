@@ -573,13 +573,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     public String validateMultiSelectorsTotalCount() {
-        if (managerCompanies.getValue().size() > 50) {
+        if (managerCompanies.getValue().size() > 100) {
             setManagerCompaniesErrorStyle(true);
             return lang.errTooMuchCompanies();
         } else {
             setManagerCompaniesErrorStyle(false);
         }
-        if (companies.getValue().size() > 50){
+        if (companies.getValue().size() > 100){
             setCompaniesErrorStyle(true);
             return lang.errTooMuchCompanies();
         } else {
