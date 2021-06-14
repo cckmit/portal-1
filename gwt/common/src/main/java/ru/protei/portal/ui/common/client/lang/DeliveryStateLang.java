@@ -15,13 +15,13 @@ public class DeliveryStateLang {
 
         switch (state.getState().toLowerCase()) {
             case "preliminary": return lang.deliveryStatePreliminary();
-            case "pre_reserve": return lang.deliveryStatePreReserve();
-            case "reserve": return lang.deliveryStateReserve();
+            case "reservation": return lang.deliveryStateReservation();
+            case "reserved": return lang.deliveryStateReserved();
             case "assembly": return lang.deliveryStateAssembly();
-            case "test": return lang.deliveryStateTest();
+            case "testing": return lang.deliveryStateTesting();
             case "ready": return lang.deliveryStateReady();
             case "sent": return lang.deliveryStateSent();
-            case "work": return lang.deliveryStateWork();
+            case "works": return lang.deliveryStateWorks();
             default: return state.getState();
         }
     }

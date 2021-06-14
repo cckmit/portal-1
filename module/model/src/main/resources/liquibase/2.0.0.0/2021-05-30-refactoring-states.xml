@@ -1,0 +1,39 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="remove-delivery-state-test" author="turik">
+        <sql>
+            update case_object set state = 28 where state = 43;
+            update history set old_id = 28 where old_id = 43 and value_type = 3;
+            update history set new_id = 28 where new_id = 43 and value_type = 3;
+            update case_state_matrix set case_state = 28 where case_state = 43;
+            delete from case_state where id = 43;
+        </sql>
+    </changeSet>
+
+    <changeSet id="update-case-state-info" author="turik">
+        <sql>
+            update case_state set info = 'preliminary' where id = 39;
+            update case_state set state = 'reservation', info = 'reservation' where id = 40;
+            update case_state set state = 'reserved', info = 'reserved' where id = 41;
+            update case_state set info = 'assembly' where id = 42;
+            update case_state set info = 'ready' where id = 44;
+            update case_state set info = 'sent' where id = 45;
+            update case_state set state = 'works', info = 'works' where id = 46;
+        </sql>
+    </changeSet>
+    <changeSet id="update-history-value" author="turik">
+        <sql>
+            update history set old_value = 'reservation' where old_id = 40 and value_type = 7;
+            update history set new_value = 'reservation' where new_id = 40 and value_type = 7;
+            update history set old_value = 'reserved' where old_id = 41 and value_type = 7;
+            update history set new_value = 'reserved' where new_id = 41 and value_type = 7;
+            update history set old_value = 'works' where old_id = 46 and value_type = 7;
+            update history set new_value = 'works' where new_id = 46 and value_type = 7;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

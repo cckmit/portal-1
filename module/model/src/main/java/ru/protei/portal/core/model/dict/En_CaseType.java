@@ -20,6 +20,8 @@ public enum En_CaseType implements HasId {
     CONTRACT(12, "contract"),
     SF_PLATFORM(13, "sf-platform"),
     DELIVERY(14, "delivery"),
+    KIT(15, "kit"),
+    MODULE(16, "module"),
     ;
 
     En_CaseType (int id, String code) {

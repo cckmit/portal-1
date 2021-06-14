@@ -6,36 +6,54 @@ import ru.protei.winter.jdbc.annotations.*;
 import java.util.Date;
 import java.util.Objects;
 
-import static ru.protei.portal.core.model.ent.Delivery.*;
+import static ru.protei.portal.core.model.ent.Kit.Columns.DELIVERY_ID;
 import static ru.protei.portal.core.model.ent.Kit.Columns.ID;
 
 @JdbcEntity(table = "kit")
 public class Kit extends AuditableObject {
     public static final String AUDIT_TYPE = "Kit";
+    public static final String CASE_OBJECT_TABLE = "case_object";
+    public static final String CASE_OBJECT_ALIAS = "CO";
 
     /**
      * Идентификатор
      */
-    @JdbcId(name = ID, idInsertMode = IdInsertMode.AUTO)
+    @JdbcId(name = ID, idInsertMode = IdInsertMode.EXPLICIT)
     private Long id;
-
-    /**
-     * Идентификатор поставки
-     */
-    @JdbcColumn(name = "delivery_id")
-    private Long deliveryId;
 
     /**
      * Дата создания
      */
-    @JdbcColumn(name = "created")
+    @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.CREATED, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Date created;
+
+    /**
+     * Создатель
+     */
+    @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.CREATOR, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
+    private Long creatorId;
 
     /**
      * Дата изменения
      */
-    @JdbcColumn(name = "modified")
+    @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.MODIFIED, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Date modified;
+
+    /**
+     * Название
+     */
+    @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.CASE_NAME, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
+    private String name;
+
+    /**
+     * Идентификатор поставки
+     */
+    @JdbcColumn(name = DELIVERY_ID)
+    private Long deliveryId;
 
     /**
      * Серийный номер
@@ -44,23 +62,15 @@ public class Kit extends AuditableObject {
     private String serialNumber;
 
     /**
-     * Название
+     * Статус комплекта
      */
-    @JdbcColumn(name = "name")
-    private String name;
-
-    /**
-     * Идентификатор статуса
-     */
-    @JdbcColumn(name = "state")
-    @JdbcEnumerated(EnumType.ID)
+    @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID, mappedColumn = CaseObject.Columns.STATE,
+            table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long stateId;
 
-    /**
-     * Статус
-     */
     @JdbcJoinedObject(joinPath = {
-            @JdbcJoinPath(localColumn = "state", remoteColumn = "id", table = "case_state", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = CaseObject.Columns.STATE, remoteColumn = "id", table = "case_state", sqlTableAlias = CASE_OBJECT_ALIAS),
     })
     private CaseState state;
 
@@ -98,6 +108,14 @@ public class Kit extends AuditableObject {
 
     public void setCreated(Date created) {
         this.created = created;
+    }
+
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
     }
 
     public Date getModified() {
@@ -138,6 +156,9 @@ public class Kit extends AuditableObject {
 
     public void setState(CaseState state) {
         this.state = state;
+        if (state != null) {
+            this.stateId = state.getId();
+        }
     }
 
     @Override
@@ -157,11 +178,12 @@ public class Kit extends AuditableObject {
     public String toString() {
         return "Kit{" +
                 "id=" + id +
-                ", deliveryId=" + deliveryId +
                 ", created=" + created +
+                ", creatorId=" + creatorId +
                 ", modified=" + modified +
-                ", serialNumber='" + serialNumber + '\'' +
                 ", name='" + name + '\'' +
+                ", deliveryId=" + deliveryId +
+                ", serialNumber='" + serialNumber + '\'' +
                 ", stateId=" + stateId +
                 ", state=" + state +
                 '}';
