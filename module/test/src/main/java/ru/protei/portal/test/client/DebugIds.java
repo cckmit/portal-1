@@ -538,6 +538,7 @@ public class DebugIds {
         String PLAN_SELECTOR_ITEM_CONTAINER = "project-plan-selector-item-container";
         String PLAN_SELECTOR_LABEL = "project-plan-selector-label";
 
+        String TEAM_MEMBER_ROLE = "project-team-member-role-";
         String TEAM_MEMBER_ROLE_SELECTOR = "project-team-member-role-selector";
         String TEAM_MEMBER_SELECTOR = "project-team-member-selector";
         String TEAM_MEMBER_ADD_BUTTON = "project-team-member-add-button";

@@ -50,8 +50,6 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
         if (model == null) {
             return;
         }
-        String role = model.role.toString().replaceAll("_", "-").toLowerCase();
-        this.root.getElement().setClassName(root.getElement().getClassName() + " " + role);
         this.model = model;
         this.role.setValue(model.role);
         members.setValue(model.members, false);
@@ -122,6 +120,7 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
             return;
         }
 
+        root.ensureDebugId(DebugIds.PROJECT.TEAM_MEMBER_ROLE + model.role.toString().replaceAll("_", "-").toLowerCase());
         role.ensureDebugId(DebugIds.PROJECT.TEAM_MEMBER_ROLE_SELECTOR);
         members.ensureDebugId(DebugIds.PROJECT.TEAM_MEMBER_SELECTOR);
         members.setAddEnsureDebugId(DebugIds.PROJECT.TEAM_MEMBER_ADD_BUTTON);
