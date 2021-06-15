@@ -33,8 +33,8 @@ public interface AttachmentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.SF_PLATFORM, requireAll = {En_Privilege.SITE_FOLDER_VIEW, En_Privilege.SITE_FOLDER_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAny = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAny = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
+            @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
     })
     @Auditable( En_AuditType.ATTACHMENT_REMOVE )
     Result<Long> removeAttachmentEverywhere( AuthToken token, En_CaseType caseType, Long attachmentId);
@@ -45,8 +45,8 @@ public interface AttachmentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.SF_PLATFORM, requireAll = {En_Privilege.SITE_FOLDER_VIEW, En_Privilege.SITE_FOLDER_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAny = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAny = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
+            @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
     })
     @Auditable( En_AuditType.ATTACHMENT_REMOVE )
     Result<Long> removeAttachment( AuthToken token, En_CaseType caseType, Long id);
