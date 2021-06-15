@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_AdminState;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.UserLoginShortView;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
@@ -19,17 +21,25 @@ import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLoginShortView>, Activity {
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        this.personCompanyId = event.profile.getCompany().getId();
+        Company personCompany = event.profile.getCompany();
+
+        this.personCompanyIds.clear();
+        this.personCompanyIds.add(personCompany.getId());
+        if (En_CompanyCategory.HOME.equals(personCompany.getCategory())) {
+            companyService.getSingleHomeCompanies(new FluentCallback<List<EntityOption>>()
+                    .withSuccess(companies -> {
+                        this.personCompanyIds.addAll(companies.stream().map(EntityOption::getId).collect(Collectors.toSet()));
+                    }));
+        }
 
         cache.clearCache();
-        cache.setLoadHandler(makeLoadHandler(makeQuery(null, personCompanyId, initiatorCompanyId)));
+        cache.setLoadHandler(makeLoadHandler(makeQuery(null, personCompanyIds, initiatorCompanyId)));
     }
 
     @Override
@@ -42,7 +52,7 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
         cache.setIgnoreFirstElements(StringUtils.isNotBlank(searchString));
 
         cache.clearCache();
-        cache.setLoadHandler(makeLoadHandler(makeQuery(searchString, personCompanyId, initiatorCompanyId)));
+        cache.setLoadHandler(makeLoadHandler(makeQuery(searchString, personCompanyIds, initiatorCompanyId)));
     }
 
     public void setPersonFirstId(Long personId) {
@@ -50,7 +60,7 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
             return;
         }
 
-        UserLoginShortViewQuery accountQuery = makeQuery(null, personCompanyId, initiatorCompanyId);
+        UserLoginShortViewQuery accountQuery = makeQuery(null, personCompanyIds, initiatorCompanyId);
         accountQuery.setPersonIds(new HashSet<>(Collections.singleton(personId)));
 
         accountService.getUserLoginShortViewList(accountQuery, new FluentCallback<List<UserLoginShortView>>()
@@ -73,22 +83,18 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
         };
     }
 
-    private UserLoginShortViewQuery makeQuery(String searchString, Long personCompanyId, Long initiatorCompanyId) {
+    private UserLoginShortViewQuery makeQuery(final String searchString, final Set<Long> personCompanyIds, final Long initiatorCompanyId) {
         UserLoginShortViewQuery accountQuery = new UserLoginShortViewQuery();
         accountQuery.setSearchString(searchString);
         accountQuery.setAdminState(En_AdminState.UNLOCKED);
 
         HashSet<Long> companyIds = new HashSet<>();
-        companyIds.add(personCompanyId);
+        companyIds.addAll(personCompanyIds);
         if (initiatorCompanyId != null) {
             companyIds.add(initiatorCompanyId);
         }
 
-        companyService.getSingleHomeCompanies(new FluentCallback<List<EntityOption>>()
-                      .withSuccess(companies -> {
-                          companies.forEach(company -> companyIds.add(company.getId()));
-                          accountQuery.setCompanyIds(companyIds);
-                      }));
+        accountQuery.setCompanyIds(companyIds);
 
         return accountQuery;
     }
@@ -101,7 +107,7 @@ public abstract class UserLoginModel implements AsyncSearchSelectorModel<UserLog
     @Inject
     Lang lang;
 
-    private Long personCompanyId;
+    private Set<Long> personCompanyIds = new HashSet<>();
     private Long initiatorCompanyId;
 
     private SelectorDataCacheWithFirstElements<UserLoginShortView> cache = new SelectorDataCacheWithFirstElements<>();
