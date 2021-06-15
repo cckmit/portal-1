@@ -77,6 +77,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         searchByCommentsWarning.setText(
                 lang.searchByCommentsUnavailable(CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS));
         products.setTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
+        commentAuthors.setFilter(personView -> true);
     }
 
     @Override
