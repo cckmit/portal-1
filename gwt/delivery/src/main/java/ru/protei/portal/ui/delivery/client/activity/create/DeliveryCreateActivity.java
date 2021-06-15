@@ -6,10 +6,10 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
-import ru.protei.portal.core.model.dict.En_DeliveryState;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Delivery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.DeliveryEvents;
@@ -78,7 +78,7 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
     private void prepare() {
         view.name().setValue(null);
         view.description().setValue(null);
-        fillStateSelector((long)En_DeliveryState.PRELIMINARY.getId());
+        fillStateSelector(CrmConstants.State.PRELIMINARY);
         view.type().setValue(null);
 
         view.project().setValue(null);
@@ -123,7 +123,7 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
             return error;
         }
         CaseState state = view.state().getValue();
-         if (!Objects.equals(En_DeliveryState.PRELIMINARY.getId(), state.getId().intValue())) {
+         if (!Objects.equals(CrmConstants.State.PRELIMINARY, state.getId())) {
             return lang.deliveryValidationInvalidStateAtCreate();
         }
         if (!view.kitsValidate().isValid()) {

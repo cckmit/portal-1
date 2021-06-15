@@ -93,5 +93,8 @@
   <include file="2021-04-22-add-created-from-1c-column-to-person_absence-table.xml" relativeToChangelogFile="true"/>
   <include file="2021-04-26-create-delivery-kit-tables.xml" relativeToChangelogFile="true"/>
   <include file="2021-05-18-add-delivery-data.xml" relativeToChangelogFile="true"/>
-
+  <include file="2021-06-08-modify-kit-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-06-03-modify-delivery-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-05-30-refactoring-states.xml" relativeToChangelogFile="true"/>
+  <include file="2021-05-30-create-module-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

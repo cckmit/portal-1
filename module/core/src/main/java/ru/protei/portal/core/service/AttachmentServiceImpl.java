@@ -6,6 +6,7 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
+import ru.protei.portal.core.event.DeliveryAttachmentEvent;
 import ru.protei.portal.core.event.ProjectAttachmentEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
@@ -19,6 +20,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
+import ru.protei.portal.core.service.events.EventDeliveryAssemblerService;
 import ru.protei.portal.core.service.events.EventProjectAssemblerService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -55,6 +57,9 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Autowired
     EventProjectAssemblerService projectPublisherService;
+
+    @Autowired
+    EventDeliveryAssemblerService deliveryPublisherService;
 
     @Autowired
     AuthService authService;
@@ -111,6 +116,11 @@ public class AttachmentServiceImpl implements AttachmentService {
 
                 if (En_CaseType.PROJECT.equals(caseType)) {
                     projectPublisherService.onProjectAttachmentEvent(new ProjectAttachmentEvent(this, Collections.emptyList(),
+                            Collections.singletonList(attachment), caseAttachment.getCommentId(), token.getPersonId(), caseAttachment.getCaseId()));
+                }
+
+                if (En_CaseType.DELIVERY.equals(caseType)) {
+                    deliveryPublisherService.onDeliveryAttachmentEvent(new DeliveryAttachmentEvent(this, Collections.emptyList(),
                             Collections.singletonList(attachment), caseAttachment.getCommentId(), token.getPersonId(), caseAttachment.getCaseId()));
                 }
 

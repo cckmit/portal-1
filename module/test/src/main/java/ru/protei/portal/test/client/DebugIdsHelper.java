@@ -117,6 +117,30 @@ public class DebugIdsHelper {
             if (id == 38) {
                 return DebugIds.ISSUE_STATE.BLOCKED;
             }
+            if (id == 39) {
+                return DebugIds.ISSUE_STATE.DELIVERY_PRELIMINARY;
+            }
+            if (id == 40) {
+                return DebugIds.ISSUE_STATE.DELIVERY_PRE_RESERVE;
+            }
+            if (id == 41) {
+                return DebugIds.ISSUE_STATE.DELIVERY_RESERVE;
+            }
+            if (id == 42) {
+                return DebugIds.ISSUE_STATE.DELIVERY_ASSEMBLY;
+            }
+            if (id == 43) {
+                return DebugIds.ISSUE_STATE.DELIVERY_TEST;
+            }
+            if (id == 44) {
+                return DebugIds.ISSUE_STATE.DELIVERY_READY;
+            }
+            if (id == 45) {
+                return DebugIds.ISSUE_STATE.DELIVERY_SENT;
+            }
+            if (id == 46) {
+                return DebugIds.ISSUE_STATE.DELIVERY_WORK;
+            }
             return DebugIds.ISSUE_STATE.DEFAULT + id;
         }
     }

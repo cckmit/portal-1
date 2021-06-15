@@ -1,0 +1,52 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-kit-case-type" author="turik">
+        <insert tableName="case_type">
+            <column name="id" value="15"/>
+            <column name="CT_CODE" value="kit"/>
+            <column name="CT_INFO" value="Комплект"/>
+            <column name="NEXT_ID" value="1"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="create-kits-case-object" author="turik">
+        <sql>
+            insert into case_object (CASE_TYPE, CASENO, CREATED, MODIFIED, CASE_NAME, STATE)
+                select 15, id, created, modified, IFNULL(name,''), state from kit;
+            update kit k
+                inner join case_object co on k.id = co.CASENO and co.CASE_TYPE=15
+                set k.id = co.id;
+            update case_type set NEXT_ID = ((select max(CASENO) from case_object where CASE_TYPE=15)+1) where id = 15;
+        </sql>
+    </changeSet>
+
+    <changeSet id="add-kit-id-foreign-key" author="turik">
+        <addForeignKeyConstraint baseTableName="kit"
+                                 baseColumnNames="id"
+                                 constraintName="kit_id_to_case_object_fk"
+                                 referencedTableName="case_object"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="drop-created-kit-column" author="turik">
+        <dropColumn tableName="kit" columnName="created"/>
+    </changeSet>
+
+    <changeSet id="drop-modified-kit-column" author="turik">
+        <dropColumn tableName="kit" columnName="modified"/>
+    </changeSet>
+
+    <changeSet id="drop-name-kit-column" author="turik">
+        <dropColumn tableName="kit" columnName="name"/>
+    </changeSet>
+
+    <changeSet id="drop-state-kit-column" author="turik">
+        <dropColumn tableName="kit" columnName="state"/>
+    </changeSet>
+
+</databaseChangeLog>

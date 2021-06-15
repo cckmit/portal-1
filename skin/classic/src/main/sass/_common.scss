@@ -820,6 +820,17 @@ label.bordered:after {
   }
 }
 
+.short-table-view {
+  .deliveries {
+    .contacts {
+      display: none;
+    }
+    .manager {
+      display: none;
+    }
+  }
+}
+
 .deliveries {
   table {
     tbody {
@@ -856,7 +867,7 @@ label.bordered:after {
       }
     }
     .number {
-      width: 10%;
+      width: 15%;
       text-align: center;
       .number-size {
         font-size: 22px;
@@ -865,6 +876,7 @@ label.bordered:after {
     .delivery-type {
       font-size: 13px;
       font-weight: bold;
+      white-space: nowrap;
     }
     .contacts {
       width: 15%;

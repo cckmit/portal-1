@@ -7,11 +7,10 @@ import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static ru.protei.portal.core.model.ent.Delivery.Columns.ID;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 /**
  * Информация о поставке
@@ -42,6 +41,11 @@ public class Delivery extends AuditableObject {
     @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID,
             mappedColumn = CaseObject.Columns.CREATOR, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long creatorId;
+
+    @JdbcJoinedObject(joinPath = {
+            @JdbcJoinPath(localColumn = ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = CaseObject.Columns.CREATOR, remoteColumn = "id", table = "person")})
+    private Person creator;
 
     /**
      * Дата изменения
@@ -184,6 +188,10 @@ public class Delivery extends AuditableObject {
         return modified;
     }
 
+    public Person getCreator() {
+        return creator;
+    }
+
     public void setModified(Date modified) {
         this.modified = modified;
     }
@@ -308,8 +316,14 @@ public class Delivery extends AuditableObject {
         this.kits = kits;
     }
 
+    public String getNumber() {
+        return stream(kits).min(Comparator.comparing(Kit::getSerialNumber)).map(Kit::getSerialNumber).orElse("");
+    }
+
     public interface Columns {
         String ID = "id";
+        String KITS = "kits";
+        String SUBSCRIBERS = "subscribers";
     }
 
     public boolean isDeleted() {
