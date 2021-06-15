@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.project.client.view.widget.team.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -49,10 +50,12 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
         if (model == null) {
             return;
         }
+        String role = model.role.toString().replaceAll("_", "-").toLowerCase();
+        this.root.getElement().setClassName(root.getElement().getClassName() + " " + role);
         this.model = model;
-        role.setValue(model.role);
+        this.role.setValue(model.role);
         members.setValue(model.members, false);
-        members.setAddEnsureDebugId(DebugIds.PROJECT.TEAM_MEMBER_ADD_BUTTON + model.role.toString().toLowerCase());
+        ensureDebugIds();
         fireRoleChanged(null, model.role);
     }
 
@@ -114,6 +117,20 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
         }
     }
 
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        role.ensureDebugId(DebugIds.PROJECT.TEAM_MEMBER_ROLE_SELECTOR);
+        members.ensureDebugId(DebugIds.PROJECT.TEAM_MEMBER_SELECTOR);
+        members.setAddEnsureDebugId(DebugIds.PROJECT.TEAM_MEMBER_ADD_BUTTON);
+        members.setClearEnsureDebugId(DebugIds.PROJECT.TEAM_MEMBER_CLEAR_BUTTON);
+        members.setItemContainerEnsureDebugId(DebugIds.PROJECT.TEAM_MEMBER_ITEM_CONTAINER);
+    }
+
+    @UiField
+    HTMLPanel root;
     @Inject
     @UiField(provided = true)
     ProjectRoleFormSelector role;

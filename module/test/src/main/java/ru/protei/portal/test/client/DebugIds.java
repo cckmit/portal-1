@@ -537,7 +537,12 @@ public class DebugIds {
         String PLAN_SELECTOR_CLEAR_BUTTON = "project-plan-selector-clear-button";
         String PLAN_SELECTOR_ITEM_CONTAINER = "project-plan-selector-item-container";
         String PLAN_SELECTOR_LABEL = "project-plan-selector-label";
-        String TEAM_MEMBER_ADD_BUTTON = "project-add-team-member-";
+
+        String TEAM_MEMBER_ROLE_SELECTOR = "project-team-member-role-selector";
+        String TEAM_MEMBER_SELECTOR = "project-team-member-selector";
+        String TEAM_MEMBER_ADD_BUTTON = "project-team-member-add-button";
+        String TEAM_MEMBER_CLEAR_BUTTON = "project-team-member-clear-button";
+        String TEAM_MEMBER_ITEM_CONTAINER = "project-team-member-item-container";
 
         String SAVE_BUTTON = "project-save-button";
         String CANCEL_BUTTON = "project-cancel-button";
@@ -567,13 +572,40 @@ public class DebugIds {
     }
 
     public interface PROJECT_FILTER {
-        String REGION_SELECTOR_ITEM_CONTAINER = "project-filter-region-selector-item-container";
-        String HEAD_MANAGER_SELECTOR_ITEM_CONTAINER = "project-filter-head-manager-selector-item-container";
-        String TEAM_SELECTOR_ITEM_CONTAINER = "project-filter-team-selector-item-container";
-        String COMPANY_SELECTOR_ITEM_CONTAINER = "project-filter-company-selector-item-container";
-        String PRODUCT_SELECTOR_ITEM_CONTAINER = "project-filter-product-selector-item-container";
+        String DIRECTION_SELECTOR = "project-filter-direction-selector";
+        String DIRECTION_ADD_BUTTON = "project-filter-direction-add-button";
+        String DIRECTION_CLEAR_BUTTON = "project-filter-direction-clear-button";
+        String DIRECTION_ITEM_CONTAINER = "project-filter-direction-item-container";
+
+        String REGION_SELECTOR = "project-filter-region-selector";
+        String REGION_ADD_BUTTON = "project-filter-region-add-button";
+        String REGION_CLEAR_BUTTON = "project-filter-region-clear-button";
+        String REGION_ITEM_CONTAINER = "project-filter-region-item-container";
+
+        String HEAD_MANAGER_SELECTOR = "project-filter-head-manager-selector";
+        String HEAD_MANAGER_ADD_BUTTON = "project-filter-head-manager-add-button";
+        String HEAD_MANAGER_CLEAR_BUTTON = "project-filter-head-manager-clear-button";
+        String HEAD_MANAGER_ITEM_CONTAINER = "project-filter-head-manager-item-container";
+
+        String TEAM_MEMBER_SELECTOR = "project-filter-team-member-selector";
+        String TEAM_MEMBER_ADD_BUTTON = "project-filter-team-member-add-button";
+        String TEAM_MEMBER_CLEAR_BUTTON = "project-filter-team-member-clear-button";
+        String TEAM_MEMBER_ITEM_CONTAINER = "project-filter-team-member-item-container";
+
+        String INITIATOR_COMPANY_SELECTOR = "project-filter-initiator-company-selector";
+        String INITIATOR_COMPANY_ADD_BUTTON = "project-filter-initiator-company-add-button";
+        String INITIATOR_COMPANY_CLEAR_BUTTON = "project-filter-initiator-company-clear-button";
+        String INITIATOR_COMPANY_ITEM_CONTAINER = "project-filter-initiator-company-item-container";
+
+        String PRODUCT_SELECTOR = "project-filter-product-selector";
+        String PRODUCT_ADD_BUTTON = "project-filter-product-add-button";
+        String PRODUCT_CLEAR_BUTTON = "project-filter-product-clear-button";
+        String PRODUCT_ITEM_CONTAINER = "project-filter-product-item-container";
+
         String COMMENT_DATE_RANGE = "project-filter-comment-date-range";
         String SORT_FIELD_SELECTOR = "project-filter-sort-field-selector";
+        String SORT_DIRECTION_BUTTON = "project-filter-sort-direction-button";
+        String ONLY_MINE_PROJECTS = "project-filter-only-mine-projects-checkbox";
     }
 
     public interface COMPANY_TABLE {
