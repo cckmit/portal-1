@@ -319,11 +319,14 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         type.ensureDebugId(DebugIds.CONTRACT.TYPE_SELECTOR);
         state.setEnsureDebugId(DebugIds.CONTRACT.STATE_SELECTOR);
         contractParent.setEnsureDebugId(DebugIds.CONTRACT.PARENT_SELECTOR);
+        deliveryNumber.ensureDebugId(DebugIds.CONTRACT.DELIVERY_NUMBER_INPUT);
         descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DESCRIPTION);
         description.ensureDebugId(DebugIds.CONTRACT.DESCRIPTION_INPUT);
         dateSigningLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DATE_SIGNING);
         dateSigning.setEnsureDebugId(DebugIds.CONTRACT.DATE_SIGNING_CONTAINER);
         dateValidLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DATE_VALID);
+        dateValidDays.ensureDebugId(DebugIds.CONTRACT.DATE_VALID_DAYS_INPUT);
+        dateValidDate.ensureDebugId(DebugIds.CONTRACT.DATE_VALID_DATE_SELECTOR);
         costWithCurrencyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.COST_WITH_CURRENCY);
         costWithCurrency.setEnsureDebugId(DebugIds.CONTRACT.COST_WITH_CURRENCY_CONTAINER);
         projectWidget.setEnsureDebugId(DebugIds.CONTRACT.PROJECT_SELECTOR);

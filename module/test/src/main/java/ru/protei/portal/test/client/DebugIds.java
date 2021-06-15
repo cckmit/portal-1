@@ -318,6 +318,21 @@ public class DebugIds {
         String DELIVERY_WORK = "issue-state-delivery-work";
     }
 
+    public interface PROJECT_STATE {
+        String DEFAULT = "project-state-";
+        String UNKNOWN = "project-state-unknown";
+        String PAUSED = "project-state-paused";
+        String MARKETING = "project-state-marketing";
+        String PRESALE = "project-state-presale";
+        String PROJECTING = "project-state-projecting";
+        String DEVELOPMENT = "project-state-development";
+        String DEPLOYMENT = "project-state-deployment";
+        String TESTING = "project-state-testing";
+        String SUPPORT = "project-state-support";
+        String FINISHED = "project-state-finished";
+        String CANCELED = "project-state-canceled";
+    }
+
     public interface ISSUE {
         String BACK_BUTTON = "issue-back-button";
         String SHOW_EDIT_BUTTON = "issue-show-edit-button";
@@ -523,6 +538,13 @@ public class DebugIds {
         String PLAN_SELECTOR_ITEM_CONTAINER = "project-plan-selector-item-container";
         String PLAN_SELECTOR_LABEL = "project-plan-selector-label";
 
+        String TEAM_MEMBER_ROLE = "project-team-member-role-";
+        String TEAM_MEMBER_ROLE_SELECTOR = "project-team-member-role-selector";
+        String TEAM_MEMBER_SELECTOR = "project-team-member-selector";
+        String TEAM_MEMBER_ADD_BUTTON = "project-team-member-add-button";
+        String TEAM_MEMBER_CLEAR_BUTTON = "project-team-member-clear-button";
+        String TEAM_MEMBER_ITEM_CONTAINER = "project-team-member-item-container";
+
         String SAVE_BUTTON = "project-save-button";
         String CANCEL_BUTTON = "project-cancel-button";
     }
@@ -548,6 +570,43 @@ public class DebugIds {
         String WORK_COMPLETION_DATE = "project-preview-work-completion-date";
         String PURCHASE_DATE = "project-preview-purchase-date";
         String SLA_INPUT = "project-preview-sla-input";
+    }
+
+    public interface PROJECT_FILTER {
+        String DIRECTION_SELECTOR = "project-filter-direction-selector";
+        String DIRECTION_ADD_BUTTON = "project-filter-direction-add-button";
+        String DIRECTION_CLEAR_BUTTON = "project-filter-direction-clear-button";
+        String DIRECTION_ITEM_CONTAINER = "project-filter-direction-item-container";
+
+        String REGION_SELECTOR = "project-filter-region-selector";
+        String REGION_ADD_BUTTON = "project-filter-region-add-button";
+        String REGION_CLEAR_BUTTON = "project-filter-region-clear-button";
+        String REGION_ITEM_CONTAINER = "project-filter-region-item-container";
+
+        String HEAD_MANAGER_SELECTOR = "project-filter-head-manager-selector";
+        String HEAD_MANAGER_ADD_BUTTON = "project-filter-head-manager-add-button";
+        String HEAD_MANAGER_CLEAR_BUTTON = "project-filter-head-manager-clear-button";
+        String HEAD_MANAGER_ITEM_CONTAINER = "project-filter-head-manager-item-container";
+
+        String TEAM_MEMBER_SELECTOR = "project-filter-team-member-selector";
+        String TEAM_MEMBER_ADD_BUTTON = "project-filter-team-member-add-button";
+        String TEAM_MEMBER_CLEAR_BUTTON = "project-filter-team-member-clear-button";
+        String TEAM_MEMBER_ITEM_CONTAINER = "project-filter-team-member-item-container";
+
+        String INITIATOR_COMPANY_SELECTOR = "project-filter-initiator-company-selector";
+        String INITIATOR_COMPANY_ADD_BUTTON = "project-filter-initiator-company-add-button";
+        String INITIATOR_COMPANY_CLEAR_BUTTON = "project-filter-initiator-company-clear-button";
+        String INITIATOR_COMPANY_ITEM_CONTAINER = "project-filter-initiator-company-item-container";
+
+        String PRODUCT_SELECTOR = "project-filter-product-selector";
+        String PRODUCT_ADD_BUTTON = "project-filter-product-add-button";
+        String PRODUCT_CLEAR_BUTTON = "project-filter-product-clear-button";
+        String PRODUCT_ITEM_CONTAINER = "project-filter-product-item-container";
+
+        String COMMENT_DATE_RANGE = "project-filter-comment-date-range";
+        String SORT_FIELD_SELECTOR = "project-filter-sort-field-selector";
+        String SORT_DIRECTION_BUTTON = "project-filter-sort-direction-button";
+        String ONLY_MINE_PROJECTS = "project-filter-only-mine-projects-checkbox";
     }
 
     public interface COMPANY_TABLE {
@@ -920,16 +979,21 @@ public class DebugIds {
         String TYPE_SELECTOR = "contract-type-selector";
         String STATE_SELECTOR = "contract-state-selector";
         String PARENT_SELECTOR = "contract-parent-selector";
+        String DELIVERY_NUMBER_INPUT = "contract-delivery-number-input";
         String DESCRIPTION_INPUT = "contract-description-input";
         String DATE_SIGNING_CONTAINER = "contract-date-signing-container";
         String DATE_VALID_CONTAINER = "contract-date-valid-container";
         String COST_WITH_CURRENCY_CONTAINER = "contract-cost-with-currency-container";
+        String CURRENCY_SELECTOR = "contract-currency-selector";
+        String VAT_SELECTOR = "contract-vat-selector";
         String PROJECT_SELECTOR = "contract-project-selector";
         String DIRECTION_INPUT = "contract-direction-input";
         String ORGANIZATION_SELECTOR = "contract-organization-selector";
         String CURATOR_SELECTOR = "contract-curator-selector";
         String MANAGER_SELECTOR = "contract-manager-selector";
         String MANAGER_FIELD = "contract-manager-field";
+        String DATE_VALID_DAYS_INPUT = "contract-date-valid-days-input";
+        String DATE_VALID_DATE_SELECTOR = "contract-date-valid-date-selector";
         String CONTRACTOR_SELECTOR = "contract-contractor-selector";
         String ADD_DATES_BUTTON = "contract-add-dates-button";
         String ADD_SPECIFICATIONS_BUTTON = "contract-add-specifications-button";
@@ -963,22 +1027,40 @@ public class DebugIds {
             String ITEM = "contract-date-item";
             String TYPE_BUTTON = "contract-date-item-type-button";
             String DATE_CONTAINER = "contract-date-item-date-container";
+            String CALENDAR_DAY = "contract-date-item-calendar-day";
             String COMMENT_INPUT = "contract-date-item-comment-input";
             String NOTIFY_LABEL = "contract-date-item-notify-label";
             String NOTIFY_SWITCHER = "contract-date-item-notify-switcher";
             String REMOVE_BUTTON = "contract-date-item-remove-button";
         }
 
+        interface PAYMENT {
+            String COST_TYPE_SELECTOR = "contract-payment-type-selector";
+            String MONEY_PERCENT_INPUT = "contract-payment-money-percent-input";
+
+        }
+
+        interface COST_WITH_CURRENCY {
+            String MONEY_AMOUNT_INPUT = "contract-payment-money-amount-input";
+            String CURRENCY_SELECTOR = "contract-payment-currency-selector";
+        }
+
         interface SPECIFICATION_ITEM {
             String ITEM = "contract-specification-item";
             String CLAUSE_INPUT = "contract-specification-item-clause-input";
             String TEXT_INPUT = "contract-specification-item-text-input";
+            String QUANTITY_INPUT = "contract-specification-quantity-input";
             String REMOVE_BUTTON = "contract-specification-item-remove-button";
         }
 
         interface CONTRACTOR {
-            String NAME = "contract-contractor-name";
+            String INN_INPUT = "contract-contractor-inn-input";
+            String KPP_INPUT = "contract-contractor-kpp-input";
+            String NAME_INPUT = "contract-contractor-name-input";
+            String FULL_NAME_INPUT = "contract-contractor-full-name-input";
+            String COUNTRY_SELECTOR = "contract-contractor-country-selector";
             String SEARCH_BUTTON = "contract-contractor-search-button";
+            String CONTRACTOR_SEARCH_SELECTOR = "contract-contractor-search-selector";
         }
 
         interface PROJECT {
@@ -1201,5 +1283,10 @@ public class DebugIds {
             String NAME = "delivery-item-name-input";
             String REMOVE_BUTTON = "delivery-item-remove-button";
         }
+    }
+
+    public interface CONFIRM_DIALOG {
+        String OK_BUTTON = "confirm-dialog-ok-button";
+        String CANCEL_BUTTON = "confirm-dialog-cancel-button";
     }
 }

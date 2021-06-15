@@ -187,4 +187,43 @@ public class DebugIdsHelper {
             return DebugIds.PRIVACY_TYPE.DEFAULT + type;
         }
     }
+
+    public static final class PROJECT_STATE {
+        public static String byId(long id) {
+            if (id == 4) {
+                return DebugIds.PROJECT_STATE.PAUSED;
+            }
+            if (id == 22) {
+                return DebugIds.PROJECT_STATE.UNKNOWN;
+            }
+            if (id == 23) {
+                return DebugIds.PROJECT_STATE.MARKETING;
+            }
+            if (id == 24) {
+                return DebugIds.PROJECT_STATE.PRESALE;
+            }
+            if (id == 25) {
+                return DebugIds.PROJECT_STATE.PROJECTING;
+            }
+            if (id == 26) {
+                return DebugIds.PROJECT_STATE.DEVELOPMENT;
+            }
+            if (id == 27) {
+                return DebugIds.PROJECT_STATE.DEPLOYMENT;
+            }
+            if (id == 28) {
+                return DebugIds.PROJECT_STATE.TESTING;
+            }
+            if (id == 29) {
+                return DebugIds.PROJECT_STATE.SUPPORT;
+            }
+            if (id == 32) {
+                return DebugIds.PROJECT_STATE.FINISHED;
+            }
+            if (id == 33) {
+                return DebugIds.PROJECT_STATE.CANCELED;
+            }
+            return DebugIds.PROJECT_STATE.DEFAULT + id;
+        }
+    }
 }

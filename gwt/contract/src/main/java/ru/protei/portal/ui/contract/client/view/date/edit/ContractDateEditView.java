@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.contract.client.view.date.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -24,7 +25,6 @@ import ru.protei.portal.ui.contract.client.activity.date.edit.AbstractContractDa
 import ru.protei.portal.ui.contract.client.widget.selector.ContractDatesTypeSelector;
 
 import java.util.Date;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
@@ -147,11 +147,18 @@ public class ContractDateEditView extends Composite implements AbstractContractD
     }
 
     private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
         root.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.DATE_ITEM.ITEM);
         type.setEnsureDebugId(DebugIds.CONTRACT.DATE_ITEM.TYPE_BUTTON);
         date.getElement().getFirstChildElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.DATE_ITEM.DATE_CONTAINER);
         comment.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.DATE_ITEM.COMMENT_INPUT);
         notify.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.DATE_ITEM.NOTIFY_SWITCHER);
+        calendarDay.ensureDebugId(DebugIds.CONTRACT.DATE_ITEM.CALENDAR_DAY);
+        costType.ensureDebugId(DebugIds.CONTRACT.PAYMENT.COST_TYPE_SELECTOR);
+        moneyPercent.ensureDebugId(DebugIds.CONTRACT.PAYMENT.MONEY_PERCENT_INPUT);
     }
 
     @UiField

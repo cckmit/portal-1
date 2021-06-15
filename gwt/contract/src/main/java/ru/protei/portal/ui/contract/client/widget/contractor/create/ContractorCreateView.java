@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.contract.client.widget.contractor.create;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -12,6 +13,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.ContractorCountry;
 import ru.protei.portal.core.model.util.ContractorUtils;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.contractor.country.ContractorCountrySelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
@@ -28,6 +30,7 @@ public class ContractorCreateView extends Composite implements AbstractContracto
         contractorFullName.setRegexp(CONTRACTOR_FULL_NAME);
         contractorCountry.setValidation(true);
         contractorCountry.setValue(null);
+        ensureDebugIds();
     }
 
     @Override
@@ -97,6 +100,18 @@ public class ContractorCreateView extends Composite implements AbstractContracto
         if (contractorInn.isValid()) {
             contractorInn.setValid( ContractorUtils.checkInn(contractorInn.getValue()));
         }
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        contractorInn.ensureDebugId(DebugIds.CONTRACT.CONTRACTOR.INN_INPUT);
+        contractorKpp.ensureDebugId(DebugIds.CONTRACT.CONTRACTOR.KPP_INPUT);
+        contractorName.ensureDebugId(DebugIds.CONTRACT.CONTRACTOR.NAME_INPUT);
+        contractorFullName.ensureDebugId(DebugIds.CONTRACT.CONTRACTOR.FULL_NAME_INPUT);
+        contractorCountry.setEnsureDebugId(DebugIds.CONTRACT.CONTRACTOR.COUNTRY_SELECTOR);
     }
 
     @UiField
