@@ -5,7 +5,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="project-team-selector-item">
+    <g:HTMLPanel ui:field="root" styleName="project-team-selector-item">
         <div class="row">
             <div class="col-md-4">
                 <role:ProjectRoleFormSelector ui:field="role" header="{lang.projectTeamRole}" mandatory="false"/>

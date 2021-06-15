@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.project.client.view.widget.team.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -12,6 +13,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.project.client.view.widget.selector.ProjectRoleFormSelector;
 import ru.protei.portal.ui.project.client.view.widget.team.AbstractTeamSelector;
@@ -49,8 +51,9 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
             return;
         }
         this.model = model;
-        role.setValue(model.role);
+        this.role.setValue(model.role);
         members.setValue(model.members, false);
+        ensureDebugIds();
         fireRoleChanged(null, model.role);
     }
 
@@ -112,6 +115,21 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
         }
     }
 
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        root.ensureDebugId(DebugIds.PROJECT.TEAM_MEMBER_ROLE + model.role.toString().replaceAll("_", "-").toLowerCase());
+        role.ensureDebugId(DebugIds.PROJECT.TEAM_MEMBER_ROLE_SELECTOR);
+        members.ensureDebugId(DebugIds.PROJECT.TEAM_MEMBER_SELECTOR);
+        members.setAddEnsureDebugId(DebugIds.PROJECT.TEAM_MEMBER_ADD_BUTTON);
+        members.setClearEnsureDebugId(DebugIds.PROJECT.TEAM_MEMBER_CLEAR_BUTTON);
+        members.setItemContainerEnsureDebugId(DebugIds.PROJECT.TEAM_MEMBER_ITEM_CONTAINER);
+    }
+
+    @UiField
+    HTMLPanel root;
     @Inject
     @UiField(provided = true)
     ProjectRoleFormSelector role;

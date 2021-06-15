@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.project.filter.paramview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -20,6 +21,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
@@ -53,6 +55,7 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
         initWidget(ourUiBinder.createAndBindUi(this));
         sortField.setType( ModuleType.PROJECT );
         fillDateRanges(commentCreationRange);
+        ensureDebugIds();
     }
 
     @Override
@@ -60,7 +63,7 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
         sortField.setValue( En_SortField.project_name );
         sortDir.setValue( true );
         search.setValue( "" );
-        direction.setValue( new HashSet<>() );
+        directions.setValue( new HashSet<>() );
         states.setValue( new HashSet<>() );
         regions.setValue(new HashSet<>());
         headManagers.setValue(new HashSet<>());
@@ -88,7 +91,7 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
         query.setRegionIds(toSet(regions.getValue(), EntityOption::getId));
         query.setHeadManagerIds(toSet(headManagers.getValue(), PersonShortView::getId));
         query.setCaseMemberIds(toSet(caseMembers.getValue(), PersonShortView::getId));
-        query.setDirectionIds(toSet(direction.getValue(), ProductDirectionInfo::getId));
+        query.setDirectionIds(toSet(directions.getValue(), ProductDirectionInfo::getId));
         query.setSortField(sortField.getValue());
         query.setSortDir(sortDir.getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         if(onlyMineProjects.getValue() != null && onlyMineProjects.getValue()) {
@@ -129,7 +132,7 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
         if (emptyIfNull(query.getDirectionIds()).contains(CrmConstants.Product.UNDEFINED)) {
             directions.add(new ProductDirectionInfo(CrmConstants.Product.UNDEFINED, lang.productDirectionNotSpecified()));
         }
-        direction.setValue(directions);
+        this.directions.setValue(directions);
 
         sortField.setValue(query.getSortField());
         sortDir.setValue(query.getSortDir() == En_SortDir.ASC);
@@ -177,7 +180,7 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
         onFilterChanged();
     }
 
-    @UiHandler( "direction" )
+    @UiHandler("directions")
     public void onDirectionSelected( ValueChangeEvent<Set<ProductDirectionInfo>> event ) {
         onFilterChanged();
     }
@@ -303,6 +306,47 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
                 .collect(Collectors.toSet());
     }
 
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        directions.ensureDebugId(DebugIds.PROJECT_FILTER.DIRECTION_SELECTOR);
+        directions.setAddEnsureDebugId(DebugIds.PROJECT_FILTER.DIRECTION_ADD_BUTTON);
+        directions.setClearEnsureDebugId(DebugIds.PROJECT_FILTER.DIRECTION_CLEAR_BUTTON);
+        directions.setItemContainerEnsureDebugId(DebugIds.PROJECT_FILTER.DIRECTION_ITEM_CONTAINER);
+
+        regions.ensureDebugId(DebugIds.PROJECT_FILTER.REGION_SELECTOR);
+        regions.setAddEnsureDebugId(DebugIds.PROJECT_FILTER.REGION_ADD_BUTTON);
+        regions.setClearEnsureDebugId(DebugIds.PROJECT_FILTER.REGION_CLEAR_BUTTON);
+        regions.setItemContainerEnsureDebugId(DebugIds.PROJECT_FILTER.REGION_ITEM_CONTAINER);
+
+        headManagers.ensureDebugId(DebugIds.PROJECT_FILTER.HEAD_MANAGER_SELECTOR);
+        headManagers.setAddEnsureDebugId(DebugIds.PROJECT_FILTER.HEAD_MANAGER_ADD_BUTTON);
+        headManagers.setClearEnsureDebugId(DebugIds.PROJECT_FILTER.HEAD_MANAGER_CLEAR_BUTTON);
+        headManagers.setItemContainerEnsureDebugId(DebugIds.PROJECT_FILTER.HEAD_MANAGER_ITEM_CONTAINER);
+
+        caseMembers.ensureDebugId(DebugIds.PROJECT_FILTER.TEAM_MEMBER_SELECTOR);
+        caseMembers.setAddEnsureDebugId(DebugIds.PROJECT_FILTER.TEAM_MEMBER_ADD_BUTTON);
+        caseMembers.setClearEnsureDebugId(DebugIds.PROJECT_FILTER.TEAM_MEMBER_CLEAR_BUTTON);
+        caseMembers.setItemContainerEnsureDebugId(DebugIds.PROJECT_FILTER.TEAM_MEMBER_ITEM_CONTAINER);
+
+        initiatorCompanies.ensureDebugId(DebugIds.PROJECT_FILTER.INITIATOR_COMPANY_SELECTOR);
+        initiatorCompanies.setAddEnsureDebugId(DebugIds.PROJECT_FILTER.INITIATOR_COMPANY_ADD_BUTTON);
+        initiatorCompanies.setClearEnsureDebugId(DebugIds.PROJECT_FILTER.INITIATOR_COMPANY_CLEAR_BUTTON);
+        initiatorCompanies.setItemContainerEnsureDebugId(DebugIds.PROJECT_FILTER.INITIATOR_COMPANY_ITEM_CONTAINER);
+
+        products.ensureDebugId(DebugIds.PROJECT_FILTER.PRODUCT_SELECTOR);
+        products.setAddEnsureDebugId(DebugIds.PROJECT_FILTER.PRODUCT_ADD_BUTTON);
+        products.setClearEnsureDebugId(DebugIds.PROJECT_FILTER.PRODUCT_CLEAR_BUTTON);
+        products.setItemContainerEnsureDebugId(DebugIds.PROJECT_FILTER.PRODUCT_ITEM_CONTAINER);
+
+        commentCreationRange.setEnsureDebugId(DebugIds.PROJECT_FILTER.COMMENT_DATE_RANGE);
+        sortField.setEnsureDebugId(DebugIds.PROJECT_FILTER.SORT_FIELD_SELECTOR);
+        sortDir.ensureDebugId(DebugIds.PROJECT_FILTER.SORT_DIRECTION_BUTTON);
+        onlyMineProjects.ensureDebugId(DebugIds.PROJECT_FILTER.ONLY_MINE_PROJECTS);
+    }
+
     @Inject
     @UiField( provided = true )
     SortFieldSelector sortField;
@@ -335,7 +379,7 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
 
     @Inject
     @UiField( provided = true )
-    ProductDirectionMultiSelector direction;
+    ProductDirectionMultiSelector directions;
 
     @Inject
     @UiField( provided = true )

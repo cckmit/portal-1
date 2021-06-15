@@ -1,10 +1,10 @@
 package ru.protei.portal.ui.common.client.view.confirmdialog;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.ParagraphElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -12,6 +12,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.AbstractConfirmDialogActivity;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.AbstractConfirmDialogView;
 
@@ -25,8 +26,18 @@ public class ConfirmDialogView extends PopupPanel implements AbstractConfirmDial
         setGlassEnabled( true );
         setGlassStyleName( "confirm-overlay" );
         setAutoHideEnabled( false );
+        ensureDebugIds();
 
         resizeHandler = resizeEvent -> getElement().getStyle().setLeft((Window.getClientWidth() / 3.0), Style.Unit.PX);
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        confirmButton.ensureDebugId(DebugIds.CONFIRM_DIALOG.OK_BUTTON);
+        cancelButton.ensureDebugId(DebugIds.CONFIRM_DIALOG.CANCEL_BUTTON);
     }
 
     @Override

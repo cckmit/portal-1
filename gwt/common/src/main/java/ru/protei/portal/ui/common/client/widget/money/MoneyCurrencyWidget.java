@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.money;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -12,14 +13,16 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
-import org.apache.poi.ss.formula.functions.T;
 import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.core.model.struct.MoneyWithCurrency;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.currency.CurrencyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableMoneyBox;
 
 import java.util.function.Function;
+
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 public class MoneyCurrencyWidget extends Composite implements HasValue<MoneyWithCurrency>, HasEnabled {
 
@@ -27,6 +30,7 @@ public class MoneyCurrencyWidget extends Composite implements HasValue<MoneyWith
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
         initValidation();
+        ensureDebugIds();
     }
 
     @Override
@@ -53,6 +57,16 @@ public class MoneyCurrencyWidget extends Composite implements HasValue<MoneyWith
             ValueChangeEvent.fire(this, value);
         }
     }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        money.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.COST_WITH_CURRENCY.MONEY_AMOUNT_INPUT);
+        currency.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.COST_WITH_CURRENCY.CURRENCY_SELECTOR);
+    }
+
 
     @Override
     public boolean isEnabled() {
