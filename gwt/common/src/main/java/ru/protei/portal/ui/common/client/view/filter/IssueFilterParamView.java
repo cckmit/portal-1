@@ -70,7 +70,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         dateModifiedRange.setHeader(lang.updated());
         initiators.setPersonModel( initiatorsModel );
         managersModel.setIsFired(null);
-        managersModel.setIsPeople(true);
         managers.setPersonModel(managersModel);
         managers.setNullItem(() -> new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
         creators.setAsyncSearchModel(creatorsModel);
