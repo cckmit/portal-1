@@ -81,6 +81,7 @@
 
             <person:EmployeeMultiSelector ui:field="commentAuthors"
                                           header="{lang.reportTypeCaseTimeElapsedWorkAutor}"
+                                          firedEmployeesVisible="true"
                                           addStyleNames="form-group col-md-4 resize-md-12"/>
 
             <timeelapsedtypeselector:ElapsedTimeTypeMultiSelector ui:field="timeElapsedTypes"

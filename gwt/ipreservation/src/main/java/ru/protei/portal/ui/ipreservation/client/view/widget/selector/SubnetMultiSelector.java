@@ -24,7 +24,7 @@ public class SubnetMultiSelector extends InputPopupMultiSelector<SubnetOption>{
 
     public void setShowAll(boolean value) {
         if (value) {
-            setFilter(subnetOption -> true);
+            setFilter(null);
         }
     }
 }

@@ -93,7 +93,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
         if (!isVisible) {
             setFilter(personShortView -> !personShortView.isFired());
         } else {
-            setFilter(personShortView -> true);
+            setFilter(null);
         }
     }
 

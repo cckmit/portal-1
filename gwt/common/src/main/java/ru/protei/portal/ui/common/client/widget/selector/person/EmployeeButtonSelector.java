@@ -25,7 +25,7 @@ public class EmployeeButtonSelector extends ButtonPopupSingleSelector<PersonShor
 
     public void setFiredEmployeesVisible(boolean firedEmployeesVisible) {
         if (firedEmployeesVisible) {
-            setFilter(personView -> true);
+            setFilter(null);
         }
     }
 
