@@ -218,6 +218,7 @@ public class CrmConstants {
         long PRESALE = 24;
         long FINISHED = 32;
         long PRELIMINARY = 39;
+        long COMMERCIAL_NEGOTIATIONS = 51;
     }
 
     public interface Department {

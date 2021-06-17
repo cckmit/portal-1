@@ -1,0 +1,25 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-commercial-negotiations-state-to-case_state" author="turik">
+        <insert tableName="case_state">
+            <column name="ID" value="51" />
+            <column name="STATE" value="commercial negotiations" />
+            <column name="color" value="#133aadcf"/>
+            <column name="INFO" value="Доработка находится на коммерческом согласовании у менеджера проекта." />
+        </insert>
+    </changeSet>
+
+    <changeSet id="add-commercial-negotiations-state-to-case_state_matrix" author="turik">
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="4" />
+            <column name="CASE_STATE" value="51" />
+            <column name="view_order" value="4" />
+            <column name="info" value="Коммерческое согласование" />
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

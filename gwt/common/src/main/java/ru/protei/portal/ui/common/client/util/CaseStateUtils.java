@@ -27,6 +27,7 @@ public class CaseStateUtils {
         activeStateIds.add(CrmConstants.State.CUST_PENDING);
         activeStateIds.add(CrmConstants.State.TEST_CUST);
         activeStateIds.add(CrmConstants.State.DEVELOPMENT);
+        activeStateIds.add(CrmConstants.State.COMMERCIAL_NEGOTIATIONS);
 
         newStateIds = new ArrayList<>(3);
         newStateIds.add(CrmConstants.State.CREATED);

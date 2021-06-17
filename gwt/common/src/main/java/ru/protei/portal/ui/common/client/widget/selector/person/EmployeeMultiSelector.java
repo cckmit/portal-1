@@ -38,7 +38,7 @@ public class EmployeeMultiSelector
 
     public void setFiredEmployeesVisible(boolean firedEmployeesVisible) {
         if (firedEmployeesVisible) {
-            setFilter(personView -> true);
+            setFilter(null);
         }
     }
 
