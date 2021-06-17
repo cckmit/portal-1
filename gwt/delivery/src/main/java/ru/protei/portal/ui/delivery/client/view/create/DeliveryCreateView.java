@@ -132,6 +132,16 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
         return meta.getSubscribers();
     }
 
+    @Override
+    public HasEnabled refreshKitsSerialNumberEnabled() {
+        return kits.getRefreshKitsSerialNumberButton();
+    }
+
+    @Override
+    public void setKitsAddButtonEnabled(boolean isKitsAddButtonEnabled) {
+        kits.setKitsAddButtonEnabled(isKitsAddButtonEnabled);
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {

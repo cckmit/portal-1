@@ -88,8 +88,14 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         view.departureDate().setValue(null);
         view.setDepartureDateValid(true);
         view.setSubscribers(Collections.emptySet());
+        view.setKitsAddButtonEnabled(hasEditPrivileges());
+        view.refreshKitsSerialNumberEnabled().setEnabled(hasEditPrivileges());
 
         view.kitsClear();
+    }
+
+    private boolean hasEditPrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
     }
 
     private Delivery fillDto() {

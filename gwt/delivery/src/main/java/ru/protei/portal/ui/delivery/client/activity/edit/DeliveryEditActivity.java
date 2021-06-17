@@ -148,12 +148,12 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     private void fillView(Delivery delivery) {
         nameAndDescriptionView.setName(delivery.getName());
         nameAndDescriptionView.setDescription(delivery.getDescription());
-        view.setKitsAddButtonEnabled(!isReadOnly());
-        view.refreshKitsSerialNumberEnabled().setEnabled(!isReadOnly());
+        view.setKitsAddButtonEnabled(hasEditPrivileges());
+        view.refreshKitsSerialNumberEnabled().setEnabled(hasEditPrivileges());
         view.updateKitByProject(delivery.getProject().getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE);
         view.kits().setValue(delivery.getKits());
         view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
-        view.nameAndDescriptionEditButtonVisibility().setVisible(!isReadOnly() && isSelfDelivery(delivery));
+        view.nameAndDescriptionEditButtonVisibility().setVisible(hasEditPrivileges() && isSelfDelivery(delivery));
 
         renderMarkupText(delivery.getDescription(), En_TextMarkup.MARKDOWN, html -> nameAndDescriptionView.setDescription(html));
         fireEvent(new CommentAndHistoryEvents.Show(view.getItemsContainer(), delivery.getId(),
@@ -183,8 +183,8 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW);
     }
 
-    private boolean isReadOnly() {
-        return !policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
+    private boolean hasEditPrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
     }
 
     private void renderMarkupText(String text, En_TextMarkup markup, Consumer<String> consumer ) {
