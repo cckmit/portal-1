@@ -60,4 +60,8 @@ public interface AbstractDeliveryCreateView extends IsWidget {
     void setSubscribers(Set<Person> persons);
 
     Set<Person> getSubscribers();
+
+    HasEnabled refreshKitsSerialNumberEnabled();
+
+    void setKitsAddButtonEnabled(boolean isKitsAddButtonEnabled);
 }
