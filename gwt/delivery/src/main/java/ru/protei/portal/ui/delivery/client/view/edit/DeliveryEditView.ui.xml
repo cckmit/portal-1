@@ -2,6 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:widgets="urn:import:ru.protei.portal.ui.delivery.client.widget"
              xmlns:tab='urn:import:ru.protei.portal.ui.common.client.widget.tab'
+             xmlns:quickview='urn:import:ru.protei.portal.ui.common.client.widget.quickview'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -22,20 +23,18 @@
                                   title="{lang.editNameAndDescription}">
                             <i class="fa fa-pencil-alt"/>
                         </g:Button>
+                        <g:Button ui:field="addKitsButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
+                                  title="{lang.addDeliveryKits}">
+                            <i class="fa fa-plus"/>
+                        </g:Button>
                     </div>
                 </div>
 
                 <g:HTMLPanel ui:field="nameContainer"/>
-                <g:HTMLPanel ui:field="kitsContainer">
-                    <div class="form-group form-group-default col-md-12">
-                        <label class="fade"><ui:text from="{lang.deliveryKits}"/></label>
-                        <widgets:kit.view.list.DeliveryKitList ui:field="kits" addStyleNames="row"/>
-                    </div>
-                </g:HTMLPanel>
 
                 <div class="row">
                     <div class="form-group col-md-12">
-                        <tab:multi.MultiTabWidget ui:field="multiTabWidget" styleName="issue-info-tab-widget"/>
+                        <tab:multi.MultiTabWidget ui:field="multiTabWidget" styleName="delivery-info-tab-widget"/>
                     </div>
                 </div>
             </div>
@@ -43,5 +42,14 @@
                 <g:HTMLPanel ui:field="metaContainer"/>
             </div>
         </div>
+
+        <quickview:QuickView ui:field="quickview">
+            <g:HTMLPanel ui:field="kitsContainer">
+                <div class="form-group form-group-default col-md-12">
+                    <label class="fade"><ui:text from="{lang.deliveryKits}"/></label>
+                    <widgets:kit.view.list.DeliveryKitList ui:field="kits" addStyleNames="row"/>
+                </div>
+            </g:HTMLPanel>
+        </quickview:QuickView>
     </g:HTMLPanel>
 </ui:UiBinder>

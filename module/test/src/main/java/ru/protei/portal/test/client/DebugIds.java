@@ -1281,6 +1281,7 @@ public class DebugIds {
             String SERIAL_NUMBER = "delivery-item-serial-number-input";
             String STATE = "delivery-item-state-input";
             String NAME = "delivery-item-name-input";
+            String ADD_BUTTON = "delivery-item-add-button";
             String REMOVE_BUTTON = "delivery-item-remove-button";
         }
     }

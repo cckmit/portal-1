@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.En_CommentOrHistoryTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.quickview.QuickView;
 import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
 import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryEditView;
@@ -113,6 +114,21 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         kits.setKitsAddButtonEnabled(isKitsAddButtonEnabled);
     }
 
+    @Override
+    public HasWidgets quickview() {
+        return quickview;
+    }
+
+    @Override
+    public void showQuickview(boolean isShow) {
+        quickview.show(isShow);
+    }
+
+    @Override
+    public HasVisibility addKitsButton() {
+        return addKitsButton;
+    }
+
     @UiHandler("showEditViewButton")
     public void onShowEditViewModeButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -134,6 +150,13 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         }
     }
 
+    @UiHandler({"addKitsButton"})
+    public void onCreateKitButtonClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onCreateKitButtonClicked();
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -143,6 +166,7 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         backButton.ensureDebugId(DebugIds.DELIVERY.BACK_BUTTON);
         showEditViewButton.ensureDebugId(DebugIds.DELIVERY.SHOW_EDIT_BUTTON);
         nameAndDescriptionEditButton.ensureDebugId(DebugIds.DELIVERY.NAME_AND_DESCRIPTION_EDIT_BUTTON);
+        addKitsButton.ensureDebugId(DebugIds.DELIVERY.KIT.ADD_BUTTON);
     }
 
     @UiField
@@ -163,9 +187,13 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     @UiField
     Button nameAndDescriptionEditButton;
     @UiField
+    Button addKitsButton;
+    @UiField
     Lang lang;
     @UiField
     MultiTabWidget<En_CommentOrHistoryType> multiTabWidget;
+    @UiField
+    QuickView quickview;
     @Inject
     En_CommentOrHistoryTypeLang commentOrHistoryTypeLang;
 

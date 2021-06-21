@@ -128,6 +128,18 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     }
 
     @Override
+    public void onCreateKitButtonClicked() {
+        view.showQuickview(false);
+
+        if (!hasAccess()) {
+            fireEvent(new ErrorPageEvents.ShowForbidden(view.quickview()));
+            return;
+        }
+
+        view.showQuickview(true);
+    }
+
+    @Override
     public void onSelectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
         saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
         fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));
@@ -150,7 +162,10 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         nameAndDescriptionView.setDescription(delivery.getDescription());
         view.setKitsAddButtonEnabled(hasEditPrivileges());
         view.refreshKitsSerialNumberEnabled().setEnabled(hasEditPrivileges());
-        view.updateKitByProject(delivery.getProject().getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE);
+
+        boolean isArmyProject = delivery.getProject().getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE;
+        view.updateKitByProject(isArmyProject);
+        view.addKitsButton().setVisible(isArmyProject);
         view.kits().setValue(delivery.getKits());
         view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
         view.nameAndDescriptionEditButtonVisibility().setVisible(hasEditPrivileges() && isSelfDelivery(delivery));

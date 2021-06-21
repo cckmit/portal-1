@@ -19,7 +19,7 @@ import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.delivery.state.DeliveryStateFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.module.ModuleStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.DELIVERY_KIT_SERIAL_NUMBER_PATTERN;
@@ -146,7 +146,7 @@ public class DeliveryKitItem
     ValidableTextBox serialNumber;
     @Inject
     @UiField(provided = true)
-    DeliveryStateFormSelector state;
+    ModuleStateFormSelector state;
     @UiField
     ValidableTextBox name;
 

@@ -37,4 +37,10 @@ public interface AbstractDeliveryEditView extends IsWidget {
     HasEnabled refreshKitsSerialNumberEnabled();
 
     void setKitsAddButtonEnabled(boolean isKitsAddButtonEnabled);
+
+    HasWidgets quickview();
+
+    void showQuickview(boolean isShow);
+
+    HasVisibility addKitsButton();
 }

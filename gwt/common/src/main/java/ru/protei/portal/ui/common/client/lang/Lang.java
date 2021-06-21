@@ -3418,6 +3418,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String deliverySubscribers();
 
+    String addDeliveryKits();
+
     String deliveryKits();
 
     String deliveryKitSerialNumber();
@@ -3537,4 +3539,24 @@ public interface Lang extends Messages, ContactItemLang {
     String caseLinkUitsShort();
 
     String uitsPrefix();
+
+    String moduleStatePreliminary();
+
+    String moduleStateReservation();
+
+    String moduleStateAssembly();
+
+    String moduleStateSetup();
+
+    String moduleStateTesting();
+
+    String moduleStatePackaging();
+
+    String moduleStateSent();
+
+    String moduleStateRepair();
+
+    String moduleStateWriteOff();
+
+    String moduleStatePaused();
 }
