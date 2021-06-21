@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.delivery.client.activity.edit;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
@@ -11,7 +12,9 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -146,6 +149,8 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     }
 
     private void fillView(Delivery delivery) {
+        view.setCreatedBy(lang.createBy(delivery.getCreator() == null ? "" : transliteration(delivery.getCreator().getDisplayShortName()),
+                DateFormatter.formatDateTime(delivery.getCreated())));
         nameAndDescriptionView.setName(delivery.getName());
         nameAndDescriptionView.setDescription(delivery.getDescription());
         view.setKitsAddButtonEnabled(hasEditPrivileges());
@@ -209,6 +214,10 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
 
     private boolean isNew(Delivery project) {
         return project.getId() == null;
+    }
+
+    private String transliteration(String input) {
+        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     @Inject

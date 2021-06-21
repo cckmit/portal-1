@@ -31,6 +31,10 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
 
     private Integer deleted;
 
+    private Boolean isMilitary;
+
+    private List<String> serialNumbers;
+
     public String getName() {
         return name;
     }
@@ -87,6 +91,8 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
         setProductIds(query.getProductIds());
         setManagerIds(query.getManagerIds());
         setDeleted(query.getDeleted());
+        setMilitary(query.getMilitary());
+        setSerialNumbers(query.getSerialNumbers());
     }
 
     public Set<Long> getProductIds() {
@@ -109,6 +115,22 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
 
     public void setManagerIds(List<Long> managerIds) {
         this.managerIds = managerIds;
+    }
+
+    public Boolean getMilitary() {
+        return isMilitary;
+    }
+
+    public void setMilitary(Boolean military) {
+        isMilitary = military;
+    }
+
+    public List<String> getSerialNumbers() {
+        return serialNumbers;
+    }
+
+    public void setSerialNumbers(List<String> serialNumber) {
+        this.serialNumbers = serialNumber;
     }
 
     @Override
@@ -160,24 +182,29 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
                 CollectionUtils.isNotEmpty(managerIds) ||
                 CollectionUtils.isNotEmpty(stateIds) ||
                 departureDateRange != null ||
-                deleted != null;
+                deleted != null ||
+                isMilitary != null ||
+                CollectionUtils.isNotEmpty(serialNumbers);
     }
 
     @Override
     public String toString() {
         return "DeliveryQuery{" +
-                "id=" + id +
-                ", name=" + name +
+                "searchString='" + searchString + '\'' +
+                ", sortField=" + sortField +
+                ", sortDir=" + sortDir +
+                ", limit=" + limit +
+                ", offset=" + offset +
+                ", id=" + id +
+                ", name='" + name + '\'' +
                 ", departureDateRange=" + departureDateRange +
                 ", companyIds=" + companyIds +
                 ", productIds=" + productIds +
                 ", managerIds=" + managerIds +
                 ", stateIds=" + stateIds +
-                ", sortField=" + sortField +
-                ", sortDir=" + sortDir +
-                ", limit=" + limit +
-                ", offset=" + offset +
                 ", deleted=" + deleted +
+                ", isMilitary=" + isMilitary +
+                ", serialNumbers=" + serialNumbers +
                 '}';
     }
 

@@ -7,6 +7,7 @@
              xmlns:range='urn:import:ru.protei.portal.ui.common.client.widget.typedrangepicker'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:states="urn:import:ru.protei.portal.ui.common.client.widget.deliverystate"
+             xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -38,6 +39,10 @@
             <person:EmployeeMultiSelector ui:field="managers"
                                           header="{lang.deliveryManager}"
                                           addStyleNames="form-group col-md-4 resize-md-12"/>
+            <div class="form-group col-md-4 resize-md-12">
+                <label><ui:text from="{lang.deliveryMilitary}"/></label>
+                <threestate:ThreeStateButton ui:field="military"/>
+            </div>
 
             <div ui:field="stateContainer" class="form-group col-md-8 resize-md-12">
                 <label ui:field="deliveryState"><ui:text from="{lang.deliveryState}"/></label>

@@ -13,13 +13,11 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_DateIntervalType;
-import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.SelectorsParams;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.DeliveryQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -27,6 +25,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.DeliveryFilterUtils;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.deliverystate.DeliveryStatesOptionList;
 import ru.protei.portal.ui.common.client.widget.filterwidget.FilterParamView;
@@ -36,6 +35,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSel
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 
@@ -49,6 +49,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.AlternativeKeyboardLayoutTextService.makeAlternativeSearchString;
+import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.searchCaseNumber;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.fromDateRange;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
 
@@ -70,9 +71,10 @@ public class DeliveryFilterParamWidget extends Composite implements FilterParamV
         products.setValue(null);
         states.setValue(null);
         dateDepartureRange.setValue(null);
-        sortField.setValue(En_SortField.delivery_departure_date);
-        sortDir.setValue(true);
+        sortField.setValue(En_SortField.delivery_creation_date);
+        sortDir.setValue(false);
         search.setValue("");
+        military.setValue(null);
 
         if (isAttached()) {
             onFilterChanged();
@@ -83,6 +85,10 @@ public class DeliveryFilterParamWidget extends Composite implements FilterParamV
     public DeliveryQuery getQuery() {
         DeliveryQuery query = new DeliveryQuery();
         String searchString = search.getValue();
+        query.setSerialNumbers(DeliveryFilterUtils.searchSerialNumber(searchString));
+        if (CollectionUtils.isNotEmpty(query.getSerialNumbers())) {
+            return query;
+        }
         query.setSearchString(isBlank(searchString) ? null : searchString);
         query.setAlternativeSearchString( makeAlternativeSearchString( searchString));
         query.setSortField(sortField.getValue());
@@ -93,6 +99,7 @@ public class DeliveryFilterParamWidget extends Composite implements FilterParamV
         query.setDepartureDateRange(toDateRange(dateDepartureRange.getValue()));
         query.setStateIds(nullIfEmpty(toList(states.getValue(), CaseState::getId)));
         query.setDeleted(CaseObject.NOT_DELETED);
+        query.setMilitary(military.getValue());
 
         return query;
     }
@@ -101,7 +108,7 @@ public class DeliveryFilterParamWidget extends Composite implements FilterParamV
     public void fillFilterFields(DeliveryQuery deliveryQuery, SelectorsParams filter) {
         search.setValue(deliveryQuery.getSearchString());
         sortDir.setValue(deliveryQuery.getSortDir() == null ? null : deliveryQuery.getSortDir().equals(En_SortDir.ASC));
-        sortField.setValue(deliveryQuery.getSortField() == null ? En_SortField.delivery_departure_date : deliveryQuery.getSortField());
+        sortField.setValue(deliveryQuery.getSortField() == null ? En_SortField.delivery_creation_date : deliveryQuery.getSortField());
         dateDepartureRange.setValue(fromDateRange(deliveryQuery.getDepartureDateRange()));
         states.setValue(toSet(deliveryQuery.getStateIds(), id -> new CaseState(id)));
 
@@ -121,6 +128,8 @@ public class DeliveryFilterParamWidget extends Composite implements FilterParamV
         }
         productsShortView.addAll(emptyIfNull(filter.getProductShortViews()));
         products.setValue(productsShortView);
+
+        military.setValue(deliveryQuery.getMilitary());
 
         if (validate()) {
             onFilterChanged();
@@ -183,6 +192,11 @@ public class DeliveryFilterParamWidget extends Composite implements FilterParamV
         onFilterChanged();
     }
 
+    @UiHandler("military")
+    public void onMilitaryChanged(ValueChangeEvent<Boolean> event) {
+        onFilterChanged();
+    }
+
     private Set<PersonShortView> applyPersons(List<PersonShortView> personShortViews, List<Long> personIds) {
         return stream(personShortViews)
                 .filter(personShortView ->
@@ -220,7 +234,10 @@ public class DeliveryFilterParamWidget extends Composite implements FilterParamV
         managers.setItemContainerEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_ITEM_CONTAINER);
         managers.setLabelEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_LABEL);
         labelSortBy.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.SORT_FIELD_LABEL);
-        deliveryState.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.FILTER.DELIVERY_STATE_LABEL);
+        deliveryState.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DELIVERY.FILTER.STATE_LABEL);
+        military.setYesEnsureDebugId(DebugIds.DELIVERY.FILTER.MILITARY_YES);
+        military.setNotDefinedEnsureDebugId(DebugIds.DELIVERY.FILTER.MILITARY_ANY);
+        military.setNoEnsureDebugId(DebugIds.DELIVERY.FILTER.MILITARY_NO);
     }
 
 
@@ -322,6 +339,8 @@ public class DeliveryFilterParamWidget extends Composite implements FilterParamV
     DivElement sortByContainer;
     @UiField
     DivElement stateContainer;
+    @UiField
+    ThreeStateButton military;
 
     private Timer timer = null;
     private Consumer<Boolean> validateCallback;

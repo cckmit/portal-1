@@ -3537,4 +3537,6 @@ public interface Lang extends Messages, ContactItemLang {
     String caseLinkUitsShort();
 
     String uitsPrefix();
+
+    String deliveryMilitary();
 }

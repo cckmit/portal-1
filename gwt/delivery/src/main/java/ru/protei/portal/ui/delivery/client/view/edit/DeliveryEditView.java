@@ -2,6 +2,7 @@ package ru.protei.portal.ui.delivery.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -134,6 +135,11 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         }
     }
 
+    @Override
+    public void setCreatedBy(String value) {
+        this.createdBy.setInnerHTML( value );
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -166,6 +172,8 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     Lang lang;
     @UiField
     MultiTabWidget<En_CommentOrHistoryType> multiTabWidget;
+    @UiField
+    Element createdBy;
     @Inject
     En_CommentOrHistoryTypeLang commentOrHistoryTypeLang;
 

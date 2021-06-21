@@ -37,4 +37,6 @@ public interface AbstractDeliveryEditView extends IsWidget {
     HasEnabled refreshKitsSerialNumberEnabled();
 
     void setKitsAddButtonEnabled(boolean isKitsAddButtonEnabled);
+
+    void setCreatedBy(String value);
 }

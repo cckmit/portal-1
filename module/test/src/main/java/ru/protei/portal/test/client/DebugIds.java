@@ -205,7 +205,6 @@ public class DebugIds {
         String PLATFORM_PARAMETERS_SEARCH_CLEAR_BUTTON = "filter-platform-parameters-clear-button";
         String PLATFORM_SERVER_IP_SEARCH_INPUT = "filter-platform-server-ip-search-input";
         String PLATFORM_SERVER_IP_SEARCH_CLEAR_BUTTON = "filter-platform-server-ip-clear-button";
-        String DELIVERY_STATE_LABEL = "filter-delivery-state-label";
 
         String CREATE_BUTTON = "filter-create-button";
         String SAVE_BUTTON = "filter-save-button";
@@ -1282,6 +1281,13 @@ public class DebugIds {
             String STATE = "delivery-item-state-input";
             String NAME = "delivery-item-name-input";
             String REMOVE_BUTTON = "delivery-item-remove-button";
+        }
+
+        interface FILTER {
+            String MILITARY_YES = "delivery-filter-military-yes";
+            String MILITARY_ANY = "delivery-filter-military-any";
+            String MILITARY_NO = "delivery-filter-military-no";
+            String STATE_LABEL = "delivery-filter-state-label";
         }
     }
 
