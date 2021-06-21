@@ -97,7 +97,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     public Person findEmployeeByParameters(String firstname, String lastname, Date birthday) {
         SqlCondition sql = new SqlCondition().build((condition, args) -> {
             condition.append("person.company_id in (select companyId from company_group_home)");
-            condition.append(" and person.firstname=? and person.lastname=?");
+            condition.append(" and person.firstname=? and person.lastname=? and person.isdeleted=0");
             args.add(firstname);
             args.add(lastname);
             if (birthday != null) {
