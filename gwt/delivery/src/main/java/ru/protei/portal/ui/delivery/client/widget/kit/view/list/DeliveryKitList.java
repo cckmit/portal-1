@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import static java.lang.Integer.parseInt;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HAS_ERROR;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
@@ -69,7 +70,9 @@ public class DeliveryKitList extends Composite
         modelToView.clear();
         value = new ArrayList<>();
         resetSerialNumber();
-        activity.getLastSerialNumber(isArmyProject, lastSerialNumberCallback);
+        if (!isAddKitsFormOpened) {
+            activity.getLastSerialNumber(isArmyProject, lastSerialNumberCallback);
+        }
         activity.getCaseState(CrmConstants.State.PRELIMINARY, caseState -> preliminaryCaseState = caseState);
     }
 
@@ -97,7 +100,9 @@ public class DeliveryKitList extends Composite
 
     @UiHandler( "refreshSerialNumber" )
     public void onRefreshSerialNumberClicked( ClickEvent event ) {
-        activity.getLastSerialNumber(isArmyProject, lastSerialNumberCallback);
+        if (!isAddKitsFormOpened) {
+            activity.getLastSerialNumber(isArmyProject, lastSerialNumberCallback);
+        }
     }
 
     public void setEnsureDebugId(String debugId) {
@@ -108,7 +113,9 @@ public class DeliveryKitList extends Composite
 
     public void setArmyProject(boolean armyProject) {
         isArmyProject = armyProject;
-        activity.getLastSerialNumber(isArmyProject, lastSerialNumberCallback);
+        if (!isAddKitsFormOpened) {
+            activity.getLastSerialNumber(isArmyProject, lastSerialNumberCallback);
+        }
         refreshMultiKitsAllow();
     }
 
@@ -151,7 +158,9 @@ public class DeliveryKitList extends Composite
         itemWidget.setValue( value );
         itemWidget.addCloseHandler(event -> {
             remove(event.getTarget());
-            refresh();
+            if (!isAddKitsFormOpened) {
+                refresh();
+            }
         });
 
         modelToView.put( itemWidget, value );
@@ -216,8 +225,24 @@ public class DeliveryKitList extends Composite
             return;
         }
 
-        int prefix = isArmyProject ? lastSerialNumberPrefix + 1 : lastSerialNumberPrefix;
-        int count = isArmyProject ? 1 : lastSerialNumberPostfix + 1;
+        Integer prefix = null;
+        Integer count = null;
+        int lastItemIndex = value.size() - 1;
+
+        if (isAddKitsFormOpened && value.get(lastItemIndex).getSerialNumber() == null) {
+            String serialNumber = value.get(lastItemIndex - 1).getSerialNumber();
+            if (serialNumber != null) {
+                String[] sn = serialNumber.split("\\.");
+                prefix = parseInt(sn[0]);
+                count = isArmyProject ? 2 : parseInt(sn[1]) + 1;
+            }
+        }
+
+        if (prefix == null || count == null) {
+            prefix = isArmyProject ? lastSerialNumberPrefix + 1 : lastSerialNumberPrefix;
+            count = isArmyProject ? 1 : lastSerialNumberPostfix + 1;
+        }
+
         for (Widget widget : container) {
             DeliveryKitItem item = (DeliveryKitItem) widget;
             if (modelToView.get(item).getId() == null) {
@@ -236,6 +261,10 @@ public class DeliveryKitList extends Composite
 
     public void setKitsAddButtonEnabled(boolean isKitsAddButtonEnabled) {
         this.isKitsAddButtonEnabled = isKitsAddButtonEnabled;
+    }
+
+    public void setAddKitsFormOpened(boolean addKitsFormOpened) {
+        isAddKitsFormOpened = addKitsFormOpened;
     }
 
     @UiField
@@ -263,6 +292,7 @@ public class DeliveryKitList extends Composite
     private Integer lastSerialNumberPostfix;
     private boolean isArmyProject = false;
     private boolean isKitsAddButtonEnabled = false;
+    private boolean isAddKitsFormOpened = false;
     private CaseState preliminaryCaseState = new CaseState(CrmConstants.State.PRELIMINARY);
 
     private int minimumKitNumber = 1;

@@ -129,6 +129,11 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         return addKitsButton;
     }
 
+    @Override
+    public void setAddKitsFormOpened(boolean addKitsFormOpened) {
+        kits.setAddKitsFormOpened(addKitsFormOpened);
+    }
+
     @UiHandler("showEditViewButton")
     public void onShowEditViewModeButtonClick(ClickEvent event) {
         if (activity != null) {

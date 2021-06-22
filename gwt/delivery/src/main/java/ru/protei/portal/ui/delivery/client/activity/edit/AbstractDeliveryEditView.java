@@ -43,4 +43,6 @@ public interface AbstractDeliveryEditView extends IsWidget {
     void showQuickview(boolean isShow);
 
     HasVisibility addKitsButton();
+
+    void setAddKitsFormOpened(boolean editKitsFormOpened);
 }
