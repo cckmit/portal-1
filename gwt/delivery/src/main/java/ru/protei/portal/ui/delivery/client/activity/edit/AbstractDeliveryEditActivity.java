@@ -14,7 +14,7 @@ public interface AbstractDeliveryEditActivity {
 
     void onNameAndDescriptionEditClicked();
 
-    void onCreateKitButtonClicked();
+    void onAddKitsButtonClicked();
 
     void onSelectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs);
 }

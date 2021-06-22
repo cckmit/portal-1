@@ -128,7 +128,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     }
 
     @Override
-    public void onCreateKitButtonClicked() {
+    public void onAddKitsButtonClicked() {
         view.showQuickview(false);
 
         if (!hasAccess()) {

@@ -151,9 +151,9 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     }
 
     @UiHandler({"addKitsButton"})
-    public void onCreateKitButtonClicked(ClickEvent event) {
+    public void onAddKitsButtonClicked(ClickEvent event) {
         if (activity != null) {
-            activity.onCreateKitButtonClicked();
+            activity.onAddKitsButtonClicked();
         }
     }
 
