@@ -74,6 +74,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         kind.setValue(true);
         dateSigningRange.setValue(null);
         dateValidRange.setValue(null);
+        deliveryNumber.setValue(null);
     }
 
     @Override
