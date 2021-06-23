@@ -28,6 +28,7 @@ import ru.protei.portal.ui.common.client.widget.selector.contract.ContractModel;
 import ru.protei.portal.ui.common.client.widget.selector.delivery.attribute.DeliveryAttributeFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.delivery.state.DeliveryStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.delivery.type.DeliveryTypeFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
@@ -65,6 +66,8 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
         this.commonActivity = activity;
         state.addValueChangeHandler(event -> activity.onStateChange());
         type.addValueChangeHandler(event -> activity.onTypeChange());
+        hwManager.addValueChangeHandler(event -> activity.onHwManagerChange());
+        qcManager.addValueChangeHandler(event -> activity.onQcManagerChange());
         customerInitiator.addValueChangeHandler(event -> activity.onInitiatorChange());
         contract.addValueChangeHandler(event -> activity.onContractChanged());
         subscribers.addValueChangeHandler(event -> activity.onCaseMetaNotifiersChanged());
@@ -205,6 +208,16 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
         return subscribers;
     }
 
+    @Override
+    public HasValue<PersonShortView> hwManager() {
+        return hwManager;
+    }
+
+    @Override
+    public HasValue<PersonShortView> qcManager() {
+        return qcManager;
+    }
+
     @UiHandler("projectWidget")
     public void onProjectWidgetChanged(ValueChangeEvent<ProjectInfo> event) {
         commonActivity.onProjectChanged();
@@ -275,6 +288,12 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     @Inject
     @UiField( provided = true )
     EmployeeMultiSelector subscribers;
+    @Inject
+    @UiField(provided = true)
+    EmployeeFormSelector hwManager;
+    @Inject
+    @UiField(provided = true)
+    EmployeeFormSelector qcManager;
     @Inject
     @UiField
     Lang lang;

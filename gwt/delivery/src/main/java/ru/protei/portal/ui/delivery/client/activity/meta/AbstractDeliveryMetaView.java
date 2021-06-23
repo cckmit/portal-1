@@ -76,4 +76,8 @@ public interface AbstractDeliveryMetaView extends IsWidget {
     Set<Person> getSubscribers();
 
     HasEnabled subscribersEnabled();
+
+    HasValue<PersonShortView> hwManager();
+
+    HasValue<PersonShortView> qcManager();
 }

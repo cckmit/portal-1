@@ -40,8 +40,8 @@
                                           header="{lang.deliveryManager}"
                                           addStyleNames="form-group col-md-4 resize-md-12"/>
             <div class="form-group col-md-4 resize-md-12">
-                <label><ui:text from="{lang.deliveryMilitary}"/></label>
-                <threestate:ThreeStateButton ui:field="military"/>
+                <label><ui:text from="{lang.deliveryKind}"/></label>
+                <threestate:ThreeStateButton ui:field="military" yesText="{lang.deliveryMilitary}" noText="{lang.deliveryCivil}" notDefinedText="{lang.deliveryNotDefined}"/>
             </div>
 
             <div ui:field="stateContainer" class="form-group col-md-8 resize-md-12">

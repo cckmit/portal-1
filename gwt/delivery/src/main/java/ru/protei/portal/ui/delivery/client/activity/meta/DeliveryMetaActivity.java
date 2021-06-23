@@ -80,6 +80,22 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
     }
 
     @Override
+    public void onHwManagerChange() {
+        PersonShortView hwManager = deliveryMetaView.hwManager().getValue();
+        delivery.setHwManagerId(hwManager.getId());
+        delivery.setHwManager(hwManager);
+        onCaseMetaChanged(delivery);
+    }
+
+    @Override
+    public void onQcManagerChange() {
+        PersonShortView qcManager = deliveryMetaView.qcManager().getValue();
+        delivery.setQcManagerId(qcManager.getId());
+        delivery.setQcManager(qcManager);
+        onCaseMetaChanged(delivery);
+    }
+
+    @Override
     public void onInitiatorChange() {
         PersonShortView initiator = deliveryMetaView.initiator().getValue();
         delivery.setInitiatorId(initiator.getId());
@@ -93,12 +109,14 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
 
         delivery.setAttribute(deliveryMetaView.attribute().getValue());
         delivery.setContractId(deliveryMetaView.contract().getValue() != null ? deliveryMetaView.contract().getValue().getId() : null);
+        delivery.setContract(Contract.fromContractInfo(deliveryMetaView.contract().getValue()));
         onCaseMetaChanged(delivery);
     }
 
     @Override
     public void onContractChanged() {
         delivery.setContractId(deliveryMetaView.contract().getValue() != null ? deliveryMetaView.contract().getValue().getId() : null);
+        delivery.setContract(Contract.fromContractInfo(deliveryMetaView.contract().getValue()));
         onCaseMetaChanged(delivery);
     }
 
@@ -143,6 +161,8 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         deliveryMetaView.stateEnable().setEnabled(hasEditPrivileges() && hasPrivilegesChangeStatus(delivery.getState()));
         deliveryMetaView.type().setValue(delivery.getType());
         deliveryMetaView.typeEnabled().setEnabled(hasEditPrivileges());
+        deliveryMetaView.hwManager().setValue(delivery.getHwManager());
+        deliveryMetaView.qcManager().setValue(delivery.getQcManager());
 
         ProjectInfo projectInfo = ProjectInfo.fromProject(delivery.getProject());
         deliveryMetaView.project().setValue(projectInfo);
@@ -156,7 +176,7 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         deliveryMetaView.updateContractModel(projectInfo.getId());
 
         Contract contract = delivery.getContract();
-        deliveryMetaView.contract().setValue(contract != null ? new ContractInfo(delivery.getContract().getId(), contract.getNumber(), contract.getOrganizationName() ) : null);
+        deliveryMetaView.contract().setValue(contract != null ? new ContractInfo(delivery.getContract().getId(), contract.getNumber(), contract.getOrganizationName()) : null);
         if (En_DeliveryAttribute.DELIVERY.equals(delivery.getAttribute())) {
             deliveryMetaView.contractEnable().setEnabled(true);
         }

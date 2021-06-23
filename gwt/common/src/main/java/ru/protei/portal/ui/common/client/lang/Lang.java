@@ -3538,5 +3538,17 @@ public interface Lang extends Messages, ContactItemLang {
 
     String uitsPrefix();
 
+    String deliveryKind();
+
+    String deliveryHwManager();
+
+    String deliveryQcManager();
+
+    String deliveryDepartureInfo();
+
     String deliveryMilitary();
+
+    String deliveryCivil();
+
+    String deliveryNotDefined();
 }
