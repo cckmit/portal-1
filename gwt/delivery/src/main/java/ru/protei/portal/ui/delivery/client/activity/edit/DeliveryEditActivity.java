@@ -10,13 +10,17 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.Delivery;
+import ru.protei.portal.core.model.ent.Kit;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.DeliveryStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDescriptionButtonsView;
@@ -128,9 +132,23 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     }
 
     @Override
+    public void onSearchKitChanged() {
+        final String searchPattern = view.searchKitPattern().getValue().trim();
+        view.setKitFilter(StringUtils.isEmpty(searchPattern) ? null : makeKitFilter(searchPattern));
+    }
+
+    @Override
     public void onSelectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
         saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
         fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));
+    }
+
+    private Selector.SelectorFilter<Kit> makeKitFilter(String searchPattern) {
+        String upperCaseSearchPattern = searchPattern.toUpperCase();
+        return kit -> kit != null &&
+                (kit.getSerialNumber().toUpperCase().contains(upperCaseSearchPattern)
+                        || kit.getName().toUpperCase().contains(upperCaseSearchPattern)
+                        || stateLang.getStateName(kit.getState()).toUpperCase().contains(upperCaseSearchPattern));
     }
 
     private void requestDelivery(Long id, HasWidgets container) {
@@ -148,10 +166,8 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     private void fillView(Delivery delivery) {
         nameAndDescriptionView.setName(delivery.getName());
         nameAndDescriptionView.setDescription(delivery.getDescription());
-        view.setKitsAddButtonEnabled(hasEditPrivileges());
-        view.refreshKitsSerialNumberEnabled().setEnabled(hasEditPrivileges());
-        view.updateKitByProject(delivery.getProject().getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE);
-        view.kits().setValue(delivery.getKits());
+        view.fillKits(delivery.getKits());
+        view.searchKitPattern().setValue(null);
         view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
         view.nameAndDescriptionEditButtonVisibility().setVisible(hasEditPrivileges() && isSelfDelivery(delivery));
 
@@ -213,6 +229,8 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
 
     @Inject
     private Lang lang;
+    @Inject
+    private DeliveryStateLang stateLang;
     @Inject
     private AbstractDeliveryEditView view;
     @Inject

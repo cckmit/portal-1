@@ -14,4 +14,6 @@ public interface AbstractDeliveryEditActivity {
 
     void onNameAndDescriptionEditClicked();
     void onSelectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs);
+
+    void onSearchKitChanged();
 }

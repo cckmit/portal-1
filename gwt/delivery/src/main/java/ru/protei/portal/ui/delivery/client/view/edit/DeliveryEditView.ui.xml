@@ -2,6 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:widgets="urn:import:ru.protei.portal.ui.delivery.client.widget"
              xmlns:tab='urn:import:ru.protei.portal.ui.common.client.widget.tab'
+             xmlns:kits='urn:import:ru.protei.portal.ui.common.client.widget.delivery.optionlist.kit'
+             xmlns:searchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -26,12 +28,11 @@
                 </div>
 
                 <g:HTMLPanel ui:field="nameContainer"/>
-                <g:HTMLPanel ui:field="kitsContainer">
-                    <div class="form-group form-group-default col-md-12">
-                        <label class="fade"><ui:text from="{lang.deliveryKits}"/></label>
-                        <widgets:kit.view.list.DeliveryKitList ui:field="kits" addStyleNames="row"/>
-                    </div>
-                </g:HTMLPanel>
+                <div class="form-group form-group-default col-md-12">
+                    <label class="fade"><ui:text from="{lang.deliveryKits}"/></label>
+                    <searchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group kits-search"/>
+                    <kits:KitOptionList ui:field="kits"/>
+                </div>
 
                 <div class="row">
                     <div class="form-group col-md-12">

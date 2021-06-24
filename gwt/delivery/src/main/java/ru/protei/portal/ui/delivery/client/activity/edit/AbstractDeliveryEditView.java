@@ -3,6 +3,7 @@ package ru.protei.portal.ui.delivery.client.activity.edit;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.core.model.ent.Kit;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
 
 import java.util.List;
@@ -16,10 +17,6 @@ public interface AbstractDeliveryEditView extends IsWidget {
 
     HasWidgets getNameContainer();
 
-    HasValue<List<Kit>> kits();
-
-    void updateKitByProject(boolean isArmyProject);
-
     HasWidgets getMetaContainer();
 
     HasWidgets getItemsContainer();
@@ -32,9 +29,11 @@ public interface AbstractDeliveryEditView extends IsWidget {
 
     void setPreviewStyles(boolean isPreview);
 
+    void fillKits(List<Kit> kitSet);
+
+    HasValue<String> searchKitPattern();
+
+    void setKitFilter(Selector.SelectorFilter<Kit> filter);
+
     HasVisibility nameAndDescriptionEditButtonVisibility();
-
-    HasEnabled refreshKitsSerialNumberEnabled();
-
-    void setKitsAddButtonEnabled(boolean isKitsAddButtonEnabled);
 }

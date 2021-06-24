@@ -889,6 +889,56 @@ label.bordered:after {
   }
 }
 
+.delivery-item {
+  padding: 8px;
+  line-height: 1.42857143;
+  vertical-align: middle;
+  border-top: 1px solid #ddd;
+  background-color: white;
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+
+  span.checkbox {
+    margin: 0;
+  }
+
+  .delivery-number {
+    padding-right: 1em;
+    padding-left: 1em;
+  }
+  .delivery-status {
+    margin-top: 0.2em;
+    height: 1.5em;
+  }
+  .delivery-name {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 .6em .3em 1em;
+  }
+}
+
+.delivery-item:hover {
+  background-color: #f6f7f8;
+  cursor: pointer;
+}
+
+.form-group-default .kits-search {
+  margin-top: 1em;
+
+  input.form-control {
+    padding-left: 1em;
+    border: 1px solid #dcdcdc;
+    min-height: 35px;
+  }
+
+  .cleanable-search-icon {
+    top: -2px;
+  }
+}
+
 .companies {
   table {
     tbody {
