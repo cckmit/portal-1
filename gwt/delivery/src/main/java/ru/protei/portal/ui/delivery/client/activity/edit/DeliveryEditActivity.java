@@ -130,7 +130,6 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     @Override
     public void onAddKitsButtonClicked() {
         view.showQuickview(false);
-        view.setAddKitsFormOpened(false);
 
         if (!hasAccess()) {
             fireEvent(new ErrorPageEvents.ShowForbidden(view.quickview()));
@@ -138,7 +137,6 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         }
 
         view.showQuickview(true);
-        view.setAddKitsFormOpened(true);
     }
 
     @Override

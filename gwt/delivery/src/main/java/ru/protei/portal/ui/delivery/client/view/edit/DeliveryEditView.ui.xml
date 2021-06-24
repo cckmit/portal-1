@@ -47,7 +47,8 @@
             <g:HTMLPanel ui:field="kitsContainer">
                 <div class="form-group form-group-default col-md-12">
                     <label class="fade"><ui:text from="{lang.deliveryKits}"/></label>
-                    <widgets:kit.view.list.DeliveryKitList ui:field="kits" addStyleNames="row"/>
+                    <widgets:kit.view.list.DeliveryKitList ui:field="kits" addStyleNames="row"
+                                                           addKitsForm="true"/>
                 </div>
             </g:HTMLPanel>
         </quickview:QuickView>
