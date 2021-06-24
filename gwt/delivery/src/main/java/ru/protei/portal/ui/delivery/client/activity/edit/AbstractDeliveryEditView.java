@@ -7,6 +7,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Абстракция вида карточки редактирования Поставки
@@ -34,6 +35,8 @@ public interface AbstractDeliveryEditView extends IsWidget {
     HasValue<String> searchKitPattern();
 
     void setKitFilter(Selector.SelectorFilter<Kit> filter);
+
+    Set<Kit> getSelectedKits();
 
     HasVisibility nameAndDescriptionEditButtonVisibility();
 }

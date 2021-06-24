@@ -11,6 +11,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.events.EditEvent;
 import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.lang.En_CommentOrHistoryTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -23,6 +24,7 @@ import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryEditVie
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.COMMENT;
 import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
@@ -107,6 +109,11 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     }
 
     @Override
+    public Set<Kit> getSelectedKits() {
+        return kits.getValue();
+    }
+
+    @Override
     public HasVisibility nameAndDescriptionEditButtonVisibility() {
         return nameAndDescriptionEditButton;
     }
@@ -136,6 +143,13 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     public void onSearchChanged(InputEvent event) {
         if ( activity != null ) {
             activity.onSearchKitChanged();
+        }
+    }
+
+    @UiHandler("kits")
+    public void onKitEditClicked(EditEvent event) {
+        if ( activity != null ) {
+            activity.onKitEditClicked(event.id, event.text);
         }
     }
 

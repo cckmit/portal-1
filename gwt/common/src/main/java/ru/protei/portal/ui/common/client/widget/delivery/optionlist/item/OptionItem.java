@@ -12,16 +12,16 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.ui.*;
-import ru.protei.portal.ui.common.client.widget.selector.event.HasRemoveHandlers;
-import ru.protei.portal.ui.common.client.widget.selector.event.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.selector.event.RemoveHandler;
+import ru.protei.portal.ui.common.client.events.EditEvent;
+import ru.protei.portal.ui.common.client.events.EditHandler;
+import ru.protei.portal.ui.common.client.events.HasEditHandlers;
 
 /**
  * Однострочный элемент списка с серийным номером, статусом, именем и кнопкой редактирования
  */
 public class OptionItem
         extends Composite
-        implements HasValue<Boolean>, HasEnabled, HasRemoveHandlers
+        implements HasValue<Boolean>, HasEnabled, HasEditHandlers
 {
     public OptionItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -53,8 +53,8 @@ public class OptionItem
     }
 
     @Override
-    public HandlerRegistration addRemoveHandler(RemoveHandler handler) {
-        return addHandler(handler, RemoveEvent.getType());
+    public HandlerRegistration addEditHandler(EditHandler handler) {
+        return addHandler(handler, EditEvent.getType());
     }
 
     @Override
@@ -97,7 +97,7 @@ public class OptionItem
     @UiHandler("edit")
     public void onEditClicked(ClickEvent event) {
         event.preventDefault();
-        RemoveEvent.fire(this);
+        EditEvent.fire(this, null, null);
     }
 
     public void setEnsureDebugId(String debugId) {

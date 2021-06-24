@@ -138,6 +138,11 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     }
 
     @Override
+    public void onKitEditClicked(Long kitId, String kitName) {
+        fireEvent(new NotifyEvents.Show("Kit name clicked: " + kitName, NotifyEvents.NotifyType.SUCCESS));
+    }
+
+    @Override
     public void onSelectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
         saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
         fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));

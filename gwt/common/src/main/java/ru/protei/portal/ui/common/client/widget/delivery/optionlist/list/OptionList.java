@@ -10,6 +10,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.core.model.marker.HasLongId;
+import ru.protei.portal.ui.common.client.events.EditEvent;
+import ru.protei.portal.ui.common.client.events.EditHandler;
+import ru.protei.portal.ui.common.client.events.HasEditHandlers;
 import ru.protei.portal.ui.common.client.widget.delivery.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
@@ -22,10 +26,9 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 /**
  * Список чекбоксов с информацией и кнопкой
  */
-public class OptionList<T>
+public class OptionList<T extends HasLongId>
         extends Composite
-        implements HasValue<Set<T>>, ValueChangeHandler<Boolean>, HasEnabled, SelectorWithModel<T>
-{
+        implements HasValue<Set<T>>, ValueChangeHandler<Boolean>, HasEnabled, SelectorWithModel<T>, HasEditHandlers {
     public OptionList() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
@@ -79,6 +82,8 @@ public class OptionList<T>
         itemView.setValue( selected.contains( value ) );
         itemView.setEnabled( isEnabled );
 
+        itemView.addEditHandler(event -> EditEvent.fire(OptionList.this, value.getId(), name));
+
         if (isMandatoryOption(value)) {
             makeOptionMandatory(itemView);
             selected.add(value);
@@ -89,31 +94,15 @@ public class OptionList<T>
         container.add( itemView.asWidget() );
     }
 
-//    public void addOption(String name, String info, String text, T value, String styleName) {
-//        addOption(name, info, text, value, styleName, null, null);
-//    }
-//
-//    public void addOption( String name, T value ) {
-//        addOption( name, value, null );
-//    }
-//
-//    public void addOption(String name, T value, String styleName, String title) {
-//        addOption(name, null, null, value, styleName, title, null);
-//    }
-//
-//    public void addOption( String name, T value, String styleName ) {
-//        addOption( name, null, null, value, styleName );
-//    }
-//
-//    public void addOption(String name, T value, String styleName, String title, String color) {
-//        addOption(name, null, null, value, styleName, title, color);
-//    }
+    public void addOption( String name, T value ) {
+        addOption( null, null, null, name, value );
+    }
 
     @Override
     public void fillOptions(List<T> options) {
         clearOptions();
         for (T option : options) {
-//            addOption(option.toString(), option);
+            addOption(option.toString(), option);
         }
     }
 
@@ -177,6 +166,11 @@ public class OptionList<T>
     public void setEnabled(boolean enabled) {
         isEnabled = enabled;
         itemViewToModel.forEach((k, v) -> k.setEnabled(isEnabled));
+    }
+
+    @Override
+    public HandlerRegistration addEditHandler(EditHandler handler) {
+        return addHandler(handler, EditEvent.getType());
     }
 
     public void setFilter(Selector.SelectorFilter filter) {
