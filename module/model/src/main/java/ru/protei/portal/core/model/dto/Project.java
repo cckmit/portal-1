@@ -119,6 +119,11 @@ public class Project extends AuditableObject {
 
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = Columns.MANAGER, remoteColumn = "id", table = "person")}, mappedColumn = "displayName")
+    private String managerFullName;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
             @JdbcJoinPath(localColumn = Columns.MANAGER, remoteColumn = "id", table = "person"),
             @JdbcJoinPath(localColumn = "company_id", remoteColumn = "id", table = "company")
     }, mappedColumn = "cname")
@@ -381,6 +386,10 @@ public class Project extends AuditableObject {
 
     public void setManagerName(String managerName) {
         this.managerName = managerName;
+    }
+
+    public String getManagerFullName() {
+        return managerFullName;
     }
 
     public String getManagerCompanyName() {

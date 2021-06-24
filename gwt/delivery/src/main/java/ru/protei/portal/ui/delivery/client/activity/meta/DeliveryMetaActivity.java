@@ -171,7 +171,7 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         deliveryMetaView.updateInitiatorModel(projectInfo.getContragent().getId());
         deliveryMetaView.initiator().setValue(delivery.getInitiator());
         deliveryMetaView.initiatorEnable().setEnabled(hasEditPrivileges());
-        deliveryMetaView.setManager(projectInfo.getManager().getDisplayText());
+        deliveryMetaView.setManager(delivery.getProject().getManagerFullName());
         deliveryMetaView.setProducts(joining(projectInfo.getProducts(), ", ", ProductShortView::getName));
         deliveryMetaView.updateContractModel(projectInfo.getId());
 

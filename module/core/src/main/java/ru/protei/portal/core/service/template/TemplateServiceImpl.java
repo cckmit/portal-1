@@ -630,8 +630,8 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("newProject", getNullOrElse(newDeliveryState.getProject(), Project::getName));
 
         templateModel.put("managerChanged", event.isProjectChanged());
-        templateModel.put("oldManager", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getProject(), Project::getManagerName)));
-        templateModel.put("newManager", getNullOrElse(newDeliveryState.getProject(), Project::getManagerName));
+        templateModel.put("oldManager", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getProject(), Project::getManagerFullName)));
+        templateModel.put("newManager", getNullOrElse(newDeliveryState.getProject(), Project::getManagerFullName));
 
         templateModel.put("attributeChanged", event.isAttributeChanged());
         templateModel.put("oldAttribute", getNullOrElse(oldDeliveryState, Delivery::getAttribute));
