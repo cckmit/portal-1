@@ -470,8 +470,8 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
-    public JiraWikiMarkupRenderer getJiraWikiMarkupRenderer() {
-        return new JiraWikiMarkupRendererImpl();
+    public JiraWikiMarkupRenderer getJiraWikiMarkupRenderer(PortalConfig config) {
+        return new JiraWikiMarkupRendererImpl(config);
     }
 
     @Bean
