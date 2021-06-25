@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Список комплектов
  */
-public class KitOptionList extends OptionList<Kit> {
+public class KitList extends OptionList<Kit> {
 
     @Inject
     public void init(DeliveryStateLang stateLang) {this.stateLang = stateLang;}

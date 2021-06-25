@@ -29,7 +29,9 @@ import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDesc
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
@@ -140,6 +142,11 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     @Override
     public void onKitEditClicked(Long kitId, String kitName) {
         fireEvent(new NotifyEvents.Show("Kit name clicked: " + kitName, NotifyEvents.NotifyType.SUCCESS));
+    }
+
+    @Override
+    public void onRemoveKitsButtonClicked(Set<Kit> toBeRemoved) {
+        fireEvent(new NotifyEvents.Show("Kits to be deleted: " + StringUtils.join(toBeRemoved, Kit::getSerialNumber,","), NotifyEvents.NotifyType.SUCCESS));
     }
 
     @Override

@@ -16,7 +16,7 @@ import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.lang.En_CommentOrHistoryTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.delivery.optionlist.kit.KitOptionList;
+import ru.protei.portal.ui.common.client.widget.delivery.optionlist.kit.KitList;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
 import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryEditActivity;
@@ -132,6 +132,13 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         }
     }
 
+    @UiHandler("removeKitsButton")
+    public void onRemoveKitsButtonClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onRemoveKitsButtonClicked(kits.getValue());
+        }
+    }
+
     @UiHandler({"nameAndDescriptionEditButton"})
     public void onNameAndDescriptionEditButtonClicked(ClickEvent event) {
         if (activity != null) {
@@ -170,13 +177,15 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     CleanableSearchBox search;
     @Inject
     @UiField(provided = true)
-    KitOptionList kits;
+    KitList kits;
     @UiField
     HTMLPanel metaContainer;
     @UiField
     Button backButton;
     @UiField
     Button showEditViewButton;
+    @UiField
+    Button removeKitsButton;
     @UiField
     Button nameAndDescriptionEditButton;
     @UiField
