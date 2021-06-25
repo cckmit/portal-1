@@ -11,15 +11,21 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.events.EditEvent;
+import ru.protei.portal.ui.common.client.events.InputEvent;
+import ru.protei.portal.ui.common.client.events.clone.CloneEvent;
 import ru.protei.portal.ui.common.client.lang.En_CommentOrHistoryTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.delivery.optionlist.kit.KitList;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
 import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryEditView;
-import ru.protei.portal.ui.delivery.client.widget.kit.view.list.DeliveryKitList;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.COMMENT;
 import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
@@ -48,16 +54,6 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     @Override
     public HasWidgets getNameContainer() {
         return nameContainer;
-    }
-
-    @Override
-    public HasValue<List<Kit>> kits() {
-        return kits;
-    }
-
-    @Override
-    public void updateKitByProject(boolean isArmyProject) {
-        kits.setArmyProject(isArmyProject);
     }
 
     @Override
@@ -99,18 +95,28 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     }
 
     @Override
+    public void fillKits(List<Kit> kitSet) {
+        kits.fillOptions(kitSet);
+    }
+
+    @Override
+    public HasValue<String> searchKitPattern() {
+        return search;
+    }
+
+    @Override
+    public void setKitFilter(Selector.SelectorFilter<Kit> filter) {
+        kits.refreshValueByFilter(filter);
+    }
+
+    @Override
+    public Set<Kit> getSelectedKits() {
+        return kits.getValue();
+    }
+
+    @Override
     public HasVisibility nameAndDescriptionEditButtonVisibility() {
         return nameAndDescriptionEditButton;
-    }
-
-    @Override
-    public HasEnabled refreshKitsSerialNumberEnabled() {
-        return kits.getRefreshKitsSerialNumberButton();
-    }
-
-    @Override
-    public void setKitsAddButtonEnabled(boolean isKitsAddButtonEnabled) {
-        kits.setKitsAddButtonEnabled(isKitsAddButtonEnabled);
     }
 
     @UiHandler("showEditViewButton")
@@ -127,6 +133,13 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         }
     }
 
+    @UiHandler("removeKitsButton")
+    public void onRemoveKitsButtonClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onRemoveKitsButtonClicked(kits.getValue());
+        }
+    }
+
     @UiHandler({"nameAndDescriptionEditButton"})
     public void onNameAndDescriptionEditButtonClicked(ClickEvent event) {
         if (activity != null) {
@@ -134,12 +147,31 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         }
     }
 
+    @UiHandler("search")
+    public void onSearchChanged(InputEvent event) {
+        if ( activity != null ) {
+            activity.onSearchKitChanged();
+        }
+    }
+
+    @UiHandler("kits")
+    public void onKitEditClicked(EditEvent event) {
+        if ( activity != null ) {
+            activity.onKitEditClicked(event.id, event.text);
+        }
+    }
+
+    @UiHandler("kits")
+    public void onKitCloneClicked(CloneEvent event) {
+        if ( activity != null ) {
+            activity.onKitCloneClicked(event.id);
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        kits.setEnsureDebugId(DebugIds.DELIVERY.KITS);
-
         backButton.ensureDebugId(DebugIds.DELIVERY.BACK_BUTTON);
         showEditViewButton.ensureDebugId(DebugIds.DELIVERY.SHOW_EDIT_BUTTON);
         nameAndDescriptionEditButton.ensureDebugId(DebugIds.DELIVERY.NAME_AND_DESCRIPTION_EDIT_BUTTON);
@@ -150,16 +182,18 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     @UiField
     HTMLPanel nameContainer;
     @UiField
-    HTMLPanel kitsContainer;
+    CleanableSearchBox search;
     @Inject
     @UiField(provided = true)
-    DeliveryKitList kits;
+    KitList kits;
     @UiField
     HTMLPanel metaContainer;
     @UiField
     Button backButton;
     @UiField
     Button showEditViewButton;
+    @UiField
+    Button removeKitsButton;
     @UiField
     Button nameAndDescriptionEditButton;
     @UiField

@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.marker.HasLongId;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -10,7 +11,7 @@ import static ru.protei.portal.core.model.ent.Kit.Columns.DELIVERY_ID;
 import static ru.protei.portal.core.model.ent.Kit.Columns.ID;
 
 @JdbcEntity(table = "kit")
-public class Kit extends AuditableObject {
+public class Kit extends AuditableObject implements HasLongId {
     public static final String AUDIT_TYPE = "Kit";
     public static final String CASE_OBJECT_TABLE = "case_object";
     public static final String CASE_OBJECT_ALIAS = "CO";

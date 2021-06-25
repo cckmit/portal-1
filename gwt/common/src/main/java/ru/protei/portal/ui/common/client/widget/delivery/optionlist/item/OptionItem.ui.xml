@@ -1,0 +1,14 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="delivery-item">
+        <g:CheckBox ui:field="checkbox" styleName="checkbox"/>
+        <span ui:field="number" class="delivery-number"/>
+        <span ui:field="status" class="label delivery-status"/>
+        <span ui:field="name" class="delivery-name"/>
+        <g:Anchor ui:field="clone" href="#" title="{lang.buttonCopy}" styleName="delivery-clone-btn far fa-lg fa-copy"/>
+    </g:HTMLPanel>
+</ui:UiBinder>
