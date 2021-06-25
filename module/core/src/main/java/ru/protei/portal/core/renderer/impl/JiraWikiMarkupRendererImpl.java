@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
 import ru.protei.portal.core.renderer.impl.markup.custom.userlink.UserLinkRendererComponent;
@@ -41,6 +40,56 @@ import java.util.regex.Pattern;
 
 public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
 
+    public JiraWikiMarkupRendererImpl(PortalConfig config) {
+        // Order does matter! Components will be executed one by one. Components may conflict with each other.
+        // special NewLineRendererComponent
+        List<RendererComponent> renderComponents = new ArrayList<>();
+        renderComponents.add(new BackslashEscapeRendererComponent());
+        renderComponents.add(new LinkRendererComponent(makeLinkResolver()));
+        renderComponents.add(new UrlRendererComponent(makeLinkResolver()));
+        renderComponents.add(new UserLinkRendererComponent());
+        renderComponents.add(new EmbeddedImageRendererComponent());
+        renderComponents.add(new EmbeddedUnembeddableRendererComponent());
+        renderComponents.add(new EmbeddedObjectRendererComponent());
+        renderComponents.add(PhraseRendererComponent.getDefaultRenderer("citation"));
+        renderComponents.add(PhraseRendererComponent.getDefaultRenderer("strong"));
+        renderComponents.add(PhraseRendererComponent.getDefaultRenderer("superscript"));
+        renderComponents.add(PhraseRendererComponent.getDefaultRenderer("subscript"));
+        renderComponents.add(PhraseRendererComponent.getDefaultRenderer("emphasis"));
+        renderComponents.add(PhraseRendererComponent.getDefaultRenderer("deleted"));
+        renderComponents.add(PhraseRendererComponent.getDefaultRenderer("inserted"));
+        renderComponents.add(PhraseRendererComponent.getDefaultRenderer("monospaced"));
+        renderComponents.add(new ForceNewLineRendererComponent());
+        V2SubRenderer macroSubRenderer = new V2SubRenderer(new V2Renderer(renderComponents));
+        MacroRendererComponent macroRendererComponent = new MacroRendererComponent(new CustomMacroManager(macroSubRenderer), macroSubRenderer);
+
+        List<RendererComponent> renderComponentsAfterMacro = new ArrayList<>(renderComponents);
+        renderComponentsAfterMacro.add(macroRendererComponent);
+        renderComponentsAfterMacro.add(new DashRendererComponent());
+        renderComponentsAfterMacro.add(new NewLineRendererComponent());
+
+        List<BlockRenderer> blockRendererList = new ArrayList<>();
+        blockRendererList.add(new TableBlockRenderer());
+        blockRendererList.add(new HeadingBlockRenderer());
+        blockRendererList.add(new BlockquoteBlockRenderer());
+        blockRendererList.add(new ListBlockRenderer());
+        blockRendererList.add(new HorizontalRuleBlockRenderer());
+        BlockRendererComponent blockRendererComponent = new BlockRendererComponent(
+                new V2SubRenderer(new V2Renderer(renderComponents)),
+                blockRendererList);
+
+        List<RendererComponent> renderComponentsAfterBlock = new ArrayList<>(renderComponentsAfterMacro);
+        renderComponentsAfterBlock.add(blockRendererComponent);
+
+        subRenderer = new V2SubRenderer(new V2Renderer(renderComponentsAfterBlock));
+        rendererFacade = new V2RendererFacade();
+        rendererFacade.setRenderer(new V2Renderer(renderComponentsAfterBlock));
+
+        iconManager = new JiraIconManager();
+
+        renderContext = makeRenderContext(config, subRenderer, iconManager);
+    }
+
     @Override
     public String plain2html(String text) {
         return plain2html(text, true);
@@ -56,10 +105,9 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
     }
 
     private String doConvert(String text, boolean renderIcons) {
-        RenderContext context = makeRenderContext(renderIcons);
-        V2RendererFacade renderer = getRendererFacade();
-        String content = renderer.convertWikiToXHtml(context, text);
-        return restoreContentFromContentStore(context, content);
+        RenderContext renderContext = getRenderContext(renderIcons);
+        String content = rendererFacade.convertWikiToXHtml(renderContext, text);
+        return restoreContentFromContentStore(renderContext, content);
     }
 
     private String restoreContentFromContentStore(RenderContext context, String content) {
@@ -83,89 +131,29 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
         }
         if (obj instanceof Renderable) {
             StringBuffer sb = new StringBuffer();
-            ((Renderable) obj).render(getSubRenderer(), context, sb);
+            ((Renderable) obj).render(subRenderer, context, sb);
             return sb.toString();
         }
         return "";
     }
 
-    private List<RendererComponent> getComponents() {
-        if (CollectionUtils.isNotEmpty(components)) {
-            return components;
-        }
-        // Order does matter! Components will be executed one by one. Components may conflict with each other.
-        components = new ArrayList<>();
-        components.add(new BackslashEscapeRendererComponent());
-        components.add(new LinkRendererComponent(makeLinkResolver()));
-        components.add(new UrlRendererComponent(makeLinkResolver()));
-        components.add(new UserLinkRendererComponent());
-        components.add(new EmbeddedImageRendererComponent());
-        components.add(new EmbeddedUnembeddableRendererComponent());
-        components.add(new EmbeddedObjectRendererComponent());
-        components.add(PhraseRendererComponent.getDefaultRenderer("citation"));
-        components.add(PhraseRendererComponent.getDefaultRenderer("strong"));
-        components.add(PhraseRendererComponent.getDefaultRenderer("superscript"));
-        components.add(PhraseRendererComponent.getDefaultRenderer("subscript"));
-        components.add(PhraseRendererComponent.getDefaultRenderer("emphasis"));
-        components.add(PhraseRendererComponent.getDefaultRenderer("deleted"));
-        components.add(PhraseRendererComponent.getDefaultRenderer("inserted"));
-        components.add(PhraseRendererComponent.getDefaultRenderer("monospaced"));
-        components.add(new ForceNewLineRendererComponent());
-        components.add(new MacroRendererComponent(getMacroManager(), getSubRenderer()));
-        components.add(new DashRendererComponent());
-        components.add(new NewLineRendererComponent());
-        List<BlockRenderer> blockRendererList = new ArrayList<>();
-        blockRendererList.add(new TableBlockRenderer());
-        blockRendererList.add(new HeadingBlockRenderer());
-        blockRendererList.add(new BlockquoteBlockRenderer());
-        blockRendererList.add(new ListBlockRenderer());
-        blockRendererList.add(new HorizontalRuleBlockRenderer());
-        components.add(new BlockRendererComponent(getSubRenderer(), blockRendererList));
-        return components;
+    private RenderContext getRenderContext(boolean renderIcons) {
+        iconManager.setRenderIcons(renderIcons);
+        return renderContext;
     }
 
-    private Renderer getRenderer() {
-        if (renderer != null) {
-            return renderer;
-        }
-        return renderer = new V2Renderer(getComponents());
-    }
-
-    private V2SubRenderer getSubRenderer() {
-        if (subRenderer != null) {
-            return subRenderer;
-        }
-        return subRenderer = new V2SubRenderer(getRenderer());
-    }
-
-    private V2RendererFacade getRendererFacade() {
-        if (rendererFacade != null) {
-            return rendererFacade;
-        }
-        rendererFacade = new V2RendererFacade();
-        rendererFacade.setRenderer(getRenderer());
-        return rendererFacade;
-    }
-
-    private CustomMacroManager getMacroManager() {
-        if (macroManager != null) {
-            return macroManager;
-        }
-        return this.macroManager = new CustomMacroManager(getSubRenderer());
-    }
-
-    private RenderContext makeRenderContext(boolean renderIcons) {
+    private RenderContext makeRenderContext(PortalConfig config, SubRenderer subRenderer, IconManager iconManager) {
         RenderContext renderContext = new RenderContext();
         renderContext.setSiteRoot(config.data().getCommonConfig().getCrmUrlCurrent());
         renderContext.setImagePath(renderContext.getSiteRoot() + "images");
-        renderContext.setLinkRenderer(new V2LinkRenderer(getSubRenderer(), makeIconManager(renderIcons), makeRendererConfiguration()));
-        renderContext.setEmbeddedResourceRenderer(new DefaultEmbeddedResourceRenderer(makeRendererAttachmentManager()));
+        renderContext.setLinkRenderer(new V2LinkRenderer(subRenderer, iconManager, makeRendererConfiguration(config)));
+        renderContext.setEmbeddedResourceRenderer(new DefaultEmbeddedResourceRenderer(makeRendererAttachmentManager(config)));
         renderContext.setCharacterEncoding(CHARACTER_ENCODING);
         renderContext.setRenderingForWysiwyg(false);
         return renderContext;
     }
 
-    private RendererAttachmentManager makeRendererAttachmentManager() {
+    private RendererAttachmentManager makeRendererAttachmentManager(PortalConfig config) {
         return new RendererAttachmentManager() {
             private final String DOWNLOAD_PATH = config.data().getCommonConfig().getCrmUrlFiles() + "springApi/files/";
             @Override
@@ -210,26 +198,34 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
         };
     }
 
-    private IconManager makeIconManager(boolean renderIcons) {
-        return new IconManager() {
-            @Override
-            public Icon getLinkDecoration(String s) {
-                int size = renderIcons ? 10 : 0;
-                switch (s) {
-                    case "mailto": return Icon.makeRenderIcon("mail_small.png", 1, size, size);
-                    case "external": return Icon.makeRenderIcon("link_small.png", 1, size, size);
-                }
-                return null;
+    static class JiraIconManager implements IconManager {
+        private boolean renderIcons;
+
+        public boolean isRenderIcons() {
+            return renderIcons;
+        }
+
+        public void setRenderIcons(boolean renderIcons) {
+            this.renderIcons = renderIcons;
+        }
+
+        @Override
+        public Icon getLinkDecoration(String s) {
+            int size = isRenderIcons() ? 10 : 0;
+            switch (s) {
+                case "mailto": return Icon.makeRenderIcon("mail_small.png", 1, size, size);
+                case "external": return Icon.makeRenderIcon("link_small.png", 1, size, size);
             }
-            /* Following methods dont matter without EmoticonRendererComponent */
-            @Override
-            public Icon getEmoticon(String s) { return null; }
-            @Override
-            public String[] getEmoticonSymbols() { return new String[0]; }
-        };
+            return null;
+        }
+        /* Following methods dont matter without EmoticonRendererComponent */
+        @Override
+        public Icon getEmoticon(String s) { return null; }
+        @Override
+        public String[] getEmoticonSymbols() { return new String[0]; }
     }
 
-    private RendererConfiguration makeRendererConfiguration() {
+    private RendererConfiguration makeRendererConfiguration(PortalConfig config) {
         return new RendererConfiguration() {
             @Override
             public String getWebAppContextPath() {
@@ -246,12 +242,11 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
 
     @Autowired
     private AttachmentService attachmentService;
-    @Autowired
-    private PortalConfig config;
-    private List<RendererComponent> components;
-    private Renderer renderer;
+
+    private final V2RendererFacade rendererFacade;
     private V2SubRenderer subRenderer;
-    private V2RendererFacade rendererFacade;
-    private CustomMacroManager macroManager;
+    private final JiraIconManager iconManager;
+    private final RenderContext renderContext;
+
     private static final String CHARACTER_ENCODING = StandardCharsets.UTF_8.name();
 }

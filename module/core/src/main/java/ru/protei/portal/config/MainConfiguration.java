@@ -1146,8 +1146,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public JiraWikiMarkupRenderer getJiraWikiMarkupRenderer() {
-        return new JiraWikiMarkupRendererImpl();
+    public JiraWikiMarkupRenderer getJiraWikiMarkupRenderer(PortalConfig config) {
+        return new JiraWikiMarkupRendererImpl(config);
     }
 
     @Bean ExternalLinksHtml getExternalLinksHtml() {
