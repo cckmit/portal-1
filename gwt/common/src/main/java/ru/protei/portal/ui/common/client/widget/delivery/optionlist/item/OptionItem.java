@@ -15,13 +15,16 @@ import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.common.client.events.EditEvent;
 import ru.protei.portal.ui.common.client.events.EditHandler;
 import ru.protei.portal.ui.common.client.events.HasEditHandlers;
+import ru.protei.portal.ui.common.client.events.clone.CloneEvent;
+import ru.protei.portal.ui.common.client.events.clone.CloneHandler;
+import ru.protei.portal.ui.common.client.events.clone.HasCloneHandlers;
 
 /**
- * Однострочный элемент списка с серийным номером, статусом, именем и кнопкой редактирования
+ * Однострочный кликабельный элемент с серийным номером, статусом, именем, кнопкой клонировать и возможностью выделения
  */
 public class OptionItem
         extends Composite
-        implements HasValue<Boolean>, HasEnabled, HasEditHandlers
+        implements HasValue<Boolean>, HasEnabled, HasEditHandlers, HasCloneHandlers
 {
     public OptionItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -50,11 +53,6 @@ public class OptionItem
 
     public void setItemEditable( boolean isItemEditable ) {
         clone.setVisible(isItemEditable);
-    }
-
-    @Override
-    public HandlerRegistration addEditHandler(EditHandler handler) {
-        return addHandler(handler, EditEvent.getType());
     }
 
     @Override
@@ -88,6 +86,16 @@ public class OptionItem
         return addHandler( handler, ValueChangeEvent.getType() );
     }
 
+    @Override
+    public HandlerRegistration addCloneHandler(CloneHandler handler) {
+        return addHandler(handler, CloneEvent.getType());
+    }
+
+    @Override
+    public HandlerRegistration addEditHandler(EditHandler handler) {
+        return addHandler(handler, EditEvent.getType());
+    }
+
     @UiHandler( "checkbox" )
     public void onCheckboxClicked( ValueChangeEvent<Boolean> event ) {
         ValueChangeEvent.fire( this, event.getValue() );
@@ -97,7 +105,7 @@ public class OptionItem
     @UiHandler("clone")
     public void onCloneClicked(ClickEvent event) {
         event.preventDefault();
-        EditEvent.fire(this, null, null);
+        CloneEvent.fire(this, null);
     }
 
     public void setEnsureDebugId(String debugId) {
@@ -119,10 +127,7 @@ public class OptionItem
             if (Event.ONCLICK != event.getTypeInt()) {
                 return;
             }
-            if (!checkbox.isEnabled()) {
-                return;
-            }
-            checkbox.setValue(!checkbox.getValue(), true);
+            EditEvent.fire(OptionItem.this, null, null);
         }
     };
 
@@ -138,6 +143,7 @@ public class OptionItem
     Anchor clone;
 
     private static OptionItemUiBinder ourUiBinder = GWT.create( OptionItemUiBinder.class );
+
     interface OptionItemUiBinder extends UiBinder< HTMLPanel, OptionItem > {}
 
 }

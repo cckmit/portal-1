@@ -22,4 +22,6 @@ public interface AbstractDeliveryEditActivity {
     void onKitEditClicked(Long kitId, String kitName);
 
     void onRemoveKitsButtonClicked(Set<Kit> value);
+
+    void onKitCloneClicked(Long kitId);
 }

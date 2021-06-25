@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.EditEvent;
 import ru.protei.portal.ui.common.client.events.InputEvent;
+import ru.protei.portal.ui.common.client.events.clone.CloneEvent;
 import ru.protei.portal.ui.common.client.lang.En_CommentOrHistoryTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
@@ -157,6 +158,13 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     public void onKitEditClicked(EditEvent event) {
         if ( activity != null ) {
             activity.onKitEditClicked(event.id, event.text);
+        }
+    }
+
+    @UiHandler("kits")
+    public void onKitCloneClicked(CloneEvent event) {
+        if ( activity != null ) {
+            activity.onKitCloneClicked(event.id);
         }
     }
 

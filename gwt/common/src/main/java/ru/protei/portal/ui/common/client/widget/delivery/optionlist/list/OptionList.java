@@ -14,6 +14,9 @@ import ru.protei.portal.core.model.marker.HasLongId;
 import ru.protei.portal.ui.common.client.events.EditEvent;
 import ru.protei.portal.ui.common.client.events.EditHandler;
 import ru.protei.portal.ui.common.client.events.HasEditHandlers;
+import ru.protei.portal.ui.common.client.events.clone.CloneEvent;
+import ru.protei.portal.ui.common.client.events.clone.CloneHandler;
+import ru.protei.portal.ui.common.client.events.clone.HasCloneHandlers;
 import ru.protei.portal.ui.common.client.widget.delivery.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
@@ -28,7 +31,12 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
  */
 public class OptionList<T extends HasLongId>
         extends Composite
-        implements HasValue<Set<T>>, ValueChangeHandler<Boolean>, HasEnabled, SelectorWithModel<T>, HasEditHandlers {
+        implements HasValue<Set<T>>,
+        ValueChangeHandler<Boolean>,
+        HasEnabled, SelectorWithModel<T>,
+        HasEditHandlers,
+        HasCloneHandlers
+{
     public OptionList() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
@@ -83,6 +91,8 @@ public class OptionList<T extends HasLongId>
         itemView.setEnabled( isEnabled );
 
         itemView.addEditHandler(event -> EditEvent.fire(OptionList.this, value.getId(), name));
+
+        itemView.addCloneHandler(event -> CloneEvent.fire(OptionList.this, value.getId()));
 
         if (isMandatoryOption(value)) {
             makeOptionMandatory(itemView);
@@ -158,6 +168,16 @@ public class OptionList<T extends HasLongId>
     }
 
     @Override
+    public HandlerRegistration addCloneHandler(CloneHandler handler) {
+        return addHandler(handler, CloneEvent.getType());
+    }
+
+    @Override
+    public HandlerRegistration addEditHandler(EditHandler handler) {
+        return addHandler(handler, EditEvent.getType());
+    }
+
+    @Override
     public boolean isEnabled() {
         return isEnabled;
     }
@@ -166,11 +186,6 @@ public class OptionList<T extends HasLongId>
     public void setEnabled(boolean enabled) {
         isEnabled = enabled;
         itemViewToModel.forEach((k, v) -> k.setEnabled(isEnabled));
-    }
-
-    @Override
-    public HandlerRegistration addEditHandler(EditHandler handler) {
-        return addHandler(handler, EditEvent.getType());
     }
 
     public void setFilter(Selector.SelectorFilter filter) {
