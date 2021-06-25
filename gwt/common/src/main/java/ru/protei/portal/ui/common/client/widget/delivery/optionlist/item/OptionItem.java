@@ -49,7 +49,7 @@ public class OptionItem
     }
 
     public void setItemEditable( boolean isItemEditable ) {
-        edit.setVisible(isItemEditable);
+        clone.setVisible(isItemEditable);
     }
 
     @Override
@@ -94,8 +94,8 @@ public class OptionItem
         checkbox.setFormValue( event.getValue().toString());
     }
 
-    @UiHandler("edit")
-    public void onEditClicked(ClickEvent event) {
+    @UiHandler("clone")
+    public void onCloneClicked(ClickEvent event) {
         event.preventDefault();
         EditEvent.fire(this, null, null);
     }
@@ -135,7 +135,7 @@ public class OptionItem
     @UiField
     SpanElement name;
     @UiField
-    Anchor edit;
+    Anchor clone;
 
     private static OptionItemUiBinder ourUiBinder = GWT.create( OptionItemUiBinder.class );
     interface OptionItemUiBinder extends UiBinder< HTMLPanel, OptionItem > {}

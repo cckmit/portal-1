@@ -918,11 +918,20 @@ label.bordered:after {
     white-space: nowrap;
     padding: 0 .6em .3em 1em;
   }
+
+  .delivery-clone-btn {
+    visibility: hidden;
+    padding-top: 5px;
+  }
 }
 
 .delivery-item:hover {
   background-color: #f6f7f8;
   cursor: pointer;
+
+  .delivery-clone-btn {
+    visibility: visible;
+  }
 }
 
 .form-group-default .kits-search {

@@ -9,6 +9,6 @@
         <span ui:field="number" class="delivery-number"/>
         <span ui:field="status" class="label delivery-status"/>
         <span ui:field="name" class="delivery-name"/>
-        <g:Anchor ui:field="edit" href="#" title="{lang.edit}" styleName="far fa-edit fa-lg"/>
+        <g:Anchor ui:field="clone" href="#" title="{lang.buttonCopy}" styleName="delivery-clone-btn far fa-lg fa-copy"/>
     </g:HTMLPanel>
 </ui:UiBinder>
