@@ -497,6 +497,8 @@ public class Project extends AuditableObject {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", stateId=" + stateId +
+                ", stateName='" + stateName + '\'' +
+                ", stateColor='" + stateColor + '\'' +
                 ", customerType=" + customerType +
                 ", customer=" + customer +
                 ", created=" + created +
@@ -507,8 +509,8 @@ public class Project extends AuditableObject {
                 ", creator=" + creator +
                 ", managerId=" + managerId +
                 ", managerName='" + managerName + '\'' +
+                ", managerFullName='" + managerFullName + '\'' +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
-                ", platforms=" + platforms +
                 ", technicalSupportValidity=" + technicalSupportValidity +
                 ", workCompletionDate=" + workCompletionDate +
                 ", purchaseDate=" + purchaseDate +
@@ -523,6 +525,7 @@ public class Project extends AuditableObject {
                 ", contracts=" + contracts +
                 ", productDirections=" + productDirections +
                 ", products=" + products +
+                ", platforms=" + platforms +
                 '}';
     }
 

@@ -82,7 +82,7 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
     @Override
     public void onHwManagerChange() {
         PersonShortView hwManager = deliveryMetaView.hwManager().getValue();
-        delivery.setHwManagerId(hwManager.getId());
+        delivery.setHwManagerId(hwManager == null ? null : hwManager.getId());
         delivery.setHwManager(hwManager);
         onCaseMetaChanged(delivery);
     }
@@ -90,7 +90,7 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
     @Override
     public void onQcManagerChange() {
         PersonShortView qcManager = deliveryMetaView.qcManager().getValue();
-        delivery.setQcManagerId(qcManager.getId());
+        delivery.setQcManagerId(qcManager == null ? null : qcManager.getId());
         delivery.setQcManager(qcManager);
         onCaseMetaChanged(delivery);
     }
@@ -98,7 +98,7 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
     @Override
     public void onInitiatorChange() {
         PersonShortView initiator = deliveryMetaView.initiator().getValue();
-        delivery.setInitiatorId(initiator.getId());
+        delivery.setInitiatorId(initiator == null ? null : initiator.getId());
         delivery.setInitiator(initiator);
         onCaseMetaChanged(delivery);
     }

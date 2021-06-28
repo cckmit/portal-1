@@ -86,7 +86,7 @@ public class ProjectList
         itemView.setName(value.getName());
         itemView.setProducts(value.getProducts() == null ? "" : value.getProducts().stream().map(product -> product.getName()).collect(Collectors.joining(", ")));
         itemView.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
-        itemView.setManagers(value.getManager() == null ? "" : value.getManager().getDisplayText());
+        itemView.setManagers(value.getManager() == null ? "" : value.getManager().getName());
         itemView.addValueChangeHandler(this);
         itemView.setValue(selected != null && selected.equals(value));
 

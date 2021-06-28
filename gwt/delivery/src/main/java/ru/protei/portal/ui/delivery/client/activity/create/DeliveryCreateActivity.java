@@ -80,6 +80,8 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         view.description().setValue(null);
         fillStateSelector(CrmConstants.State.PRELIMINARY);
         view.type().setValue(null);
+        view.hwManager().setValue(null);
+        view.qcManager().setValue(null);
 
         view.project().setValue(null);
         commonMeta.clearProjectSpecificFields();
@@ -88,9 +90,9 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         view.departureDate().setValue(null);
         view.setDepartureDateValid(true);
         view.setSubscribers(Collections.emptySet());
+
         view.setKitsAddButtonEnabled(hasEditPrivileges());
         view.refreshKitsSerialNumberEnabled().setEnabled(hasEditPrivileges());
-
         view.kitsClear();
     }
 
@@ -103,15 +105,16 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         delivery.setName(view.name().getValue());
         delivery.setDescription(view.description().getValue());
         delivery.setProjectId(view.project().getValue().getId());
-        delivery.setInitiatorId(view.initiator().getValue() != null ? view.initiator().getValue().getId() : null);
+        delivery.setInitiatorId(view.initiator().getValue() == null ? null : view.initiator().getValue().getId());
         delivery.setAttribute(view.attribute().getValue());
         delivery.setStateId(view.state().getValue().getId());
         delivery.setType(view.type().getValue());
-        delivery.setContractId(view.contract().getValue() != null? view.contract().getValue().getId() : null);
+        delivery.setContractId(view.contract().getValue() == null ? null : view.contract().getValue().getId());
         delivery.setDepartureDate(view.departureDate().getValue());
         delivery.setSubscribers(view.getSubscribers());
         delivery.setKits(view.kits().getValue());
-
+        delivery.setHwManagerId(view.hwManager().getValue() == null ? null : view.hwManager().getValue().getId());
+        delivery.setQcManagerId(view.qcManager().getValue() == null ? null : view.qcManager().getValue().getId());
         return delivery;
     }
 

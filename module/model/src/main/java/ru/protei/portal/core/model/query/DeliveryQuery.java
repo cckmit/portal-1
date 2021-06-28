@@ -219,11 +219,12 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
                 Objects.equals(productIds, caseQuery.productIds) &&
                 Objects.equals(managerIds, caseQuery.managerIds) &&
                 Objects.equals(departureDateRange, caseQuery.departureDateRange) &&
-                Objects.equals(deleted, caseQuery.deleted);
+                Objects.equals(deleted, caseQuery.deleted) &&
+                Objects.equals(isMilitary, caseQuery.isMilitary);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, companyIds, productIds, managerIds, departureDateRange, deleted);
+        return Objects.hash(id, name, companyIds, productIds, managerIds, departureDateRange, deleted, isMilitary);
     }
 }

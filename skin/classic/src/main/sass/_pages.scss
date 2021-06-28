@@ -229,3 +229,8 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
 .page-sidebar .sidebar-menu .menu-items {
   height: calc(100% - 20px);
 }
+
+.form-group-default.required:after, .tag-name-container:after, .tag-color-container:after {
+  right: 10px;
+  top: 2px;
+}

@@ -52,10 +52,10 @@
                     <validablefield:ValidableTextBox ui:field="manager" styleName="form-control"
                                                      enabled="false" notNull="false"/>
                 </div>
-                <person:EmployeeFormSelector ui:field="hwManager" defaultValue="{lang.selectIssueManager}"
-                                             header="{lang.deliveryHwManager}"/>
-                <person:EmployeeFormSelector ui:field="qcManager" defaultValue="{lang.selectIssueManager}"
-                                             header="{lang.deliveryQcManager}"/>
+                <person:EmployeeFormSelector ui:field="hwManager" header="{lang.deliveryHwManager}"
+                                             hasNullValue="true" defaultValue="{lang.selectIssueManager}"/>
+                <person:EmployeeFormSelector ui:field="qcManager" header="{lang.deliveryQcManager}"
+                                             hasNullValue="true" defaultValue="{lang.selectIssueManager}"/>
             </div>
 
             <div class="form-group m-t-10 m-b-0">
