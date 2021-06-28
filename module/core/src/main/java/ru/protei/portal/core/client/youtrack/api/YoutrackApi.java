@@ -23,6 +23,8 @@ public interface YoutrackApi {
 
     Result<List<YtIssue>> getIssueIdsByQuery(String query);
 
+    Result<List<YtIssue>> getIssueByQuery(String query);
+
     Result<List<YtActivityItem>> getIssueCustomFieldActivityItems(String issueId);
 
     Result<YtEnumBundleElement> createCompany (YtEnumBundleElement company);

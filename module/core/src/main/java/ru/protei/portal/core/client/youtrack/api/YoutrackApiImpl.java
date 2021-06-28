@@ -108,6 +108,16 @@ public class YoutrackApiImpl implements YoutrackApi {
     }
 
     @Override
+    public Result<List<YtIssue>> getIssueByQuery(String query) {
+        return read(new YoutrackRequest<>(YtIssue[].class)
+                .url(new YoutrackUrlProvider(getBaseUrl()).issues())
+                .query(query)
+                .fillSimpleFields()
+                .fillYtFields(YtIssueComment.class, YtIssueAttachment.class, YtUser.class, YtIssueCustomField.class))
+                .map(Arrays::asList);
+    }
+
+    @Override
     public Result<List<YtActivityItem>> getIssueCustomFieldActivityItems(String issueId) {
         return read(new YoutrackRequest<>(YtActivityItem[].class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).issueActivities(issueId))
