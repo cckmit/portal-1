@@ -322,14 +322,16 @@ public class RedmineForwardChannel implements ForwardChannelEventHandler {
     }
 
     private Date getLatestSynchronizedDate(Date latestHistoryDate, Date latestCommentDate, Date createdOnDate) {
-        if (latestHistoryDate != null && latestCommentDate != null) {
-            return latestHistoryDate.after(latestCommentDate) ? latestHistoryDate : latestCommentDate;
+        if (latestHistoryDate == null && latestCommentDate == null) {
+            return createdOnDate;
         }
         if (latestHistoryDate == null) {
             return latestCommentDate.after(createdOnDate) ? latestCommentDate : createdOnDate;
-        } else {
+        }
+        if (latestCommentDate == null) {
             return latestHistoryDate.after(createdOnDate) ? latestHistoryDate : createdOnDate;
         }
+        return latestHistoryDate.after(latestCommentDate) ? latestHistoryDate : latestCommentDate;
     }
 
     private CaseObject buildCaseObject( Issue issue, Person contactPerson, final long companyId, final long priorityMapId, final long statusMapId ) {
