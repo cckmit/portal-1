@@ -15,13 +15,12 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 import ru.protei.portal.core.model.youtrack.dto.activity.YtActivityCategory;
 import ru.protei.portal.core.model.youtrack.dto.activity.YtActivityItem;
+import ru.protei.portal.core.model.youtrack.dto.activity.singlevalue.YtWorkItemDurationActivityItem;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtEnumBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtIssueCustomField;
 import ru.protei.portal.core.model.youtrack.dto.filterfield.YtFilterField;
-import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
-import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueAttachment;
-import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
+import ru.protei.portal.core.model.youtrack.dto.issue.*;
 import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 
@@ -108,13 +107,37 @@ public class YoutrackApiImpl implements YoutrackApi {
     }
 
     @Override
-    public Result<List<YtIssue>> getIssueByQuery(String query) {
+    public Result<List<YtIssue>> getIssueReportByQuery(String query) {
         return read(new YoutrackRequest<>(YtIssue[].class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).issues())
                 .query(query)
                 .fillSimpleFields()
-                .fillYtFields(YtIssueComment.class, YtIssueAttachment.class, YtUser.class, YtIssueCustomField.class))
+                .fillYtFields(YtUser.class, YtIssueCustomField.class, DurationValue.class, WorkItemType.class, IssueWorkItem.class))
                 .map(Arrays::asList);
+    }
+
+    @Override
+    public Result<List<YtActivityItem>> getActivitiesByQuery(String query) {
+        return read(new YoutrackRequest<>(YtActivityItem[].class)
+                .url(new YoutrackUrlProvider(getBaseUrl()).activities())
+                .query(query)
+                .params(new HashMap<String, String>() {{
+                    put("$top", "10");
+                    put("categories", YtActivityCategory.WorkItemDurationCategory.getCategoryId());
+                }})
+                .fillSimpleFields()
+                .fillYtFields(YtWorkItemDurationActivityItem.class, YtUser.class, DurationValue.class)
+//                .fillYtFields(YtFilterField.class, YtBundleElement.class, YtUser.class, YtSingleValueActivityItem.class, YtFilterField.class, YtIssueCustomField.class, DurationValue.class, WorkItemType.class, IssueWorkItem.class)
+        ).map(Arrays::asList);
+    }
+
+    @Override
+    public Result<List<IssueTimeTracking>> getWorkItem(String ytIssueId) {
+        return read(new YoutrackRequest<>(IssueTimeTracking[].class)
+                    .url(new YoutrackUrlProvider(getBaseUrl()).workItem(ytIssueId))
+//                    .fillSimpleFields()
+//                    .fillYtFields(IssueWorkItem.class/*, YtUser.class, WorkItemType.class, DurationValue.class*/)
+            ).map(Arrays::asList);
     }
 
     @Override

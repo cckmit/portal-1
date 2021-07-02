@@ -12,6 +12,8 @@ public abstract class YtActivityItem extends YtDto {
     public Long timestamp;
     public YtUser author;
     public YtFilterField field;
+//    public YtIssue target;
+//
     // public abstract removed;
     // public abstract added;
 }

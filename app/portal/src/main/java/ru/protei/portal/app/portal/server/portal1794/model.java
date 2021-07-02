@@ -10,19 +10,36 @@ public class model {
         Integer spentTime;
     }
 
-
-
     enum WorkType {
-        Bug,            // баги
-        Product,        // продуктовое развитие
-        Customer,       // доработки для заказчика
-        Tech,           // улучшение эксплуатационных свойств
-        Environment,    // Инфраструктура
-        Etc,            // Разное
-        Unknown;        // неопределено
+        BUG,            // баги
+        PRODUCT,        // продуктовое развитие
+        CUSTOMER,       // доработки для заказчика
+        TECH,           // улучшение эксплуатационных свойств
+        ENVIRONMENT,    // Инфраструктура
+        ETC,            // Разное
+        UNKNOWN;        // неопределенно
     }
 
+    enum YTCustomField {
+        Type("Type"),
+        State("State"),
+        Customer("Заказчик"),
+        Assignee("Assignee"),
+        spentTime("Затраченное время"),
+        PortalProject("Проекты CRM"),
+        changeWorkType("Классификатор задач"),
+        changeWorkBase("Основание для доработки");
 
+        String name;
+
+        YTCustomField(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
 
     static class WorkTimeItem {
         String customer;
@@ -40,6 +57,14 @@ public class model {
         String nma;
         Integer spentTime;
         Integer planTime;
+    }
+
+    static class YTReportIssue {
+        Person person;
+        Long contractTime;
+        Long guaranteeTime;
+        Long niokrTime;
+        Long nma;
     }
 }
 

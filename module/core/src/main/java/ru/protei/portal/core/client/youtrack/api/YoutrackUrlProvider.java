@@ -10,9 +10,13 @@ class YoutrackUrlProvider {
 
     public String issue(String issueId) { return baseUrl + "/issues/" + issueId; }
 
+    public String workItem(String issueId) { return baseUrl + "/issues/" + issueId + "/timeTracking"; }
+
     public String issueAttachments(String issueId) { return baseUrl + "/issues/" + issueId + "/attachments"; }
 
     public String issueAttachment(String issueId, String attachmentId) { return baseUrl + "/issues/" + issueId + "/attachments/" + attachmentId; }
+
+    public String activities() { return baseUrl + "/activities"; }
 
     public String issueActivities(String issueId) { return baseUrl + "/issues/" + issueId + "/activities"; }
 
