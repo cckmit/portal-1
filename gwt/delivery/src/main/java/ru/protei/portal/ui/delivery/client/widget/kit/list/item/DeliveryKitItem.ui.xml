@@ -1,0 +1,45 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+             xmlns:module="urn:import:ru.protei.portal.ui.common.client.widget.selector.module">
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel ui:field="root" styleName="form-group">
+        <div class="row">
+            <div class="col-md-11">
+                <div class="form-group-attached">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group form-group-default">
+                                <label class="fade"><ui:text from="{lang.deliveryKitSerialNumber}"/></label>
+                                <validablefield:ValidableTextBox ui:field="serialNumber" styleName="form-control"
+                                                                 enabled="false" notNull="false"/>
+                            </div>
+                        </div>
+                        <module:ModuleStateFormSelector ui:field="state" validation="false"
+                                                        header="{lang.deliveryState}"
+                                                        styleName="col-md-4"/>
+                        <div class="col-md-5">
+                            <div class="form-group form-group-default">
+                                <label class="fade"><ui:text from="{lang.deliveryKitName}"/></label>
+                                <validablefield:ValidableTextBox ui:field="name" styleName="form-control"
+                                                                 notNull="false"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-1">
+                <g:Button ui:field="remove" styleName="btn btn-danger pull-right">
+                    <i class="fa fa-trash"/>
+                </g:Button>
+            </div>
+        </div>
+
+        <div class="row">
+            <small class="dn-msg"><span ui:field="msg" class="text-danger"/> </small>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

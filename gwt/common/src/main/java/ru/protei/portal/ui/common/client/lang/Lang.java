@@ -3418,7 +3418,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String deliverySubscribers();
 
-    String addDeliveryKits();
+    String deliveryKitsAddHeader();
 
     String deliveryKits();
 
@@ -3559,4 +3559,6 @@ public interface Lang extends Messages, ContactItemLang {
     String moduleStateWriteOff();
 
     String moduleStatePaused();
+
+    String errKitSerialNumberNotMatchDeliveryNumber();
 }

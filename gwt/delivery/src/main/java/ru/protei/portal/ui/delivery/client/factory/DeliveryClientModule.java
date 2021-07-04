@@ -4,8 +4,10 @@ import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateView;
 import ru.protei.portal.ui.delivery.client.activity.create.DeliveryCreateActivity;
-import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryEditView;
-import ru.protei.portal.ui.delivery.client.activity.edit.DeliveryEditActivity;
+import ru.protei.portal.ui.delivery.client.activity.edit.*;
+import ru.protei.portal.ui.delivery.client.activity.kit.create.AbstractDeliveryKitCreateActivity;
+import ru.protei.portal.ui.delivery.client.activity.kit.create.AbstractDeliveryKitCreateView;
+import ru.protei.portal.ui.delivery.client.activity.kit.create.DeliveryKitCreateActivity;
 import ru.protei.portal.ui.delivery.client.activity.meta.AbstractDeliveryMetaView;
 import ru.protei.portal.ui.delivery.client.activity.meta.DeliveryMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.page.DeliveryPage;
@@ -15,8 +17,7 @@ import ru.protei.portal.ui.delivery.client.view.create.DeliveryCreateView;
 import ru.protei.portal.ui.delivery.client.view.edit.DeliveryEditView;
 import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
 import ru.protei.portal.ui.delivery.client.view.table.DeliveryTableView;
-import ru.protei.portal.ui.delivery.client.widget.kit.activity.AbstractDeliveryKitListActivity;
-import ru.protei.portal.ui.delivery.client.widget.kit.activity.DeliveryKitListActivity;
+import ru.protei.portal.ui.delivery.client.view.kit.create.DeliveryKitCreateView;
 
 public class DeliveryClientModule extends AbstractGinModule {
     @Override
@@ -35,7 +36,8 @@ public class DeliveryClientModule extends AbstractGinModule {
         bind(AbstractDeliveryEditView.class).to(DeliveryEditView.class).in(Singleton.class);
         bind(AbstractDeliveryMetaView.class).to(DeliveryMetaView.class).in(Singleton.class);
 
-        bind(AbstractDeliveryKitListActivity.class).to(DeliveryKitListActivity.class).asEagerSingleton();
+        bind(DeliveryKitCreateActivity.class).asEagerSingleton();
+        bind(AbstractDeliveryKitCreateView.class).to(DeliveryKitCreateView.class).in(Singleton.class);
     }
 }
 

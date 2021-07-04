@@ -24,7 +24,7 @@
                             <i class="fa fa-pencil-alt"/>
                         </g:Button>
                         <g:Button ui:field="addKitsButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
-                                  title="{lang.addDeliveryKits}">
+                                  title="{lang.deliveryKitsAddHeader}">
                             <i class="fa fa-plus"/>
                         </g:Button>
                     </div>
@@ -42,15 +42,5 @@
                 <g:HTMLPanel ui:field="metaContainer"/>
             </div>
         </div>
-
-        <quickview:QuickView ui:field="quickview">
-            <g:HTMLPanel ui:field="kitsContainer">
-                <div class="form-group form-group-default col-md-12">
-                    <label class="fade"><ui:text from="{lang.deliveryKits}"/></label>
-                    <widgets:kit.view.list.DeliveryKitList ui:field="kits" addStyleNames="row"
-                                                           addKitsForm="true"/>
-                </div>
-            </g:HTMLPanel>
-        </quickview:QuickView>
     </g:HTMLPanel>
 </ui:UiBinder>

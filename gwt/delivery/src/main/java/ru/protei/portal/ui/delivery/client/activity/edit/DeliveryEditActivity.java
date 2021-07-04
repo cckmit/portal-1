@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
@@ -129,14 +130,10 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
 
     @Override
     public void onAddKitsButtonClicked() {
-        view.showQuickview(false);
-
-        if (!hasAccess()) {
-            fireEvent(new ErrorPageEvents.ShowForbidden(view.quickview()));
+        if (delivery == null || delivery.getProject() == null) {
             return;
         }
-
-        view.showQuickview(true);
+        fireEvent(new KitEvents.Create(delivery.getId(), isMilitaryProject(delivery.getProject())));
     }
 
     @Override
@@ -160,23 +157,24 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     private void fillView(Delivery delivery) {
         nameAndDescriptionView.setName(delivery.getName());
         nameAndDescriptionView.setDescription(delivery.getDescription());
-        view.setKitsAddButtonEnabled(hasEditPrivileges());
-        view.refreshKitsSerialNumberEnabled().setEnabled(hasEditPrivileges());
 
-        boolean isArmyProject = delivery.getProject().getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE;
-        view.updateKitByProject(isArmyProject);
-        view.addKitsButton().setVisible(isArmyProject);
-        view.kits().setValue(delivery.getKits());
         view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
-        view.nameAndDescriptionEditButtonVisibility().setVisible(hasEditPrivileges() && isSelfDelivery(delivery));
+
+        view.nameAndDescriptionEditButtonVisibility().setVisible(hasEditPrivileges() && isSelfDelivery(delivery.getCreatorId()));
+        view.addKitsButtonVisibility().setVisible(hasEditPrivileges() && isMilitaryProject(delivery.getProject()));
 
         renderMarkupText(delivery.getDescription(), En_TextMarkup.MARKDOWN, html -> nameAndDescriptionView.setDescription(html));
+
         fireEvent(new CommentAndHistoryEvents.Show(view.getItemsContainer(), delivery.getId(),
                                                    En_CaseType.DELIVERY, true, delivery.getCreatorId()));
     }
 
-    private boolean isSelfDelivery(Delivery delivery) {
-        return Objects.equals(delivery.getCreatorId(), authProfile.getId());
+    private boolean isSelfDelivery(Long creatorId) {
+        return Objects.equals(creatorId, authProfile.getId());
+    }
+
+    private boolean isMilitaryProject(Project project) {
+        return project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE;
     }
 
     private void showMeta(Delivery delivery) {

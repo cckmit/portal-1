@@ -12,21 +12,17 @@ import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateActivity;
 import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateView;
 import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
 import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDescriptionEditView;
-import ru.protei.portal.ui.delivery.client.widget.kit.view.list.DeliveryKitList;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -56,26 +52,6 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
 
     @Override
     public HasValue<String> description() { return nameDescription.description(); }
-
-    @Override
-    public HasValue<List<Kit>> kits() {
-        return kits;
-    }
-
-    @Override
-    public void kitsClear() {
-        kits.prepare();
-    }
-
-    @Override
-    public void updateKitByProject(boolean isArmyProject) {
-        kits.setArmyProject(isArmyProject);
-    }
-
-    @Override
-    public HasValidable kitsValidate() {
-        return kits;
-    }
 
     @Override
     public DeliveryMetaView getMetaView() {
@@ -133,13 +109,8 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     }
 
     @Override
-    public HasEnabled refreshKitsSerialNumberEnabled() {
-        return kits.getRefreshKitsSerialNumberButton();
-    }
-
-    @Override
-    public void setKitsAddButtonEnabled(boolean isKitsAddButtonEnabled) {
-        kits.setKitsAddButtonEnabled(isKitsAddButtonEnabled);
+    public HasWidgets getKitsContainer() {
+        return kitsContainer;
     }
 
     @UiHandler("saveButton")
@@ -149,7 +120,7 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
         }
     }
 
-    @UiHandler({"cancelButton", "backButton"})
+    @UiHandler({"cancelButton"})
     public void onCancelClicked(ClickEvent event) {
         if (activity != null) {
             activity.onCancelClicked();
@@ -160,9 +131,7 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        kits.setEnsureDebugId(DebugIds.DELIVERY.KITS);
-
-        backButton.ensureDebugId(DebugIds.DELIVERY.BACK_BUTTON);
+        kitsContainer.ensureDebugId(DebugIds.DELIVERY.KITS);
         saveButton.ensureDebugId(DebugIds.DELIVERY.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.DELIVERY.CANCEL_BUTTON);
     }
@@ -174,13 +143,10 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
     DeliveryNameDescriptionEditView nameDescription;
     @Inject
     @UiField(provided = true)
-    DeliveryKitList kits;
-    @Inject
-    @UiField(provided = true)
     DeliveryMetaView meta;
-
     @UiField
-    Button backButton;
+    HTMLPanel kitsContainer;
+
     @UiField
     Button saveButton;
     @UiField

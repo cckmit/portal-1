@@ -8,19 +8,10 @@
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
         <div class="card-body row no-margin">
             <div class="col-lg-8 order-last order-lg-first p-l-25 p-r-5">
-                <div class="btn-toolbar flex-wrap">
-                    <div class="btn-group form-group">
-                        <g:Button ui:field="backButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
-                                  title="{lang.backToDeliveries}">
-                            <i class="fa fa-arrow-left"/>
-                        </g:Button>
-                    </div>
-                </div>
                 <view:namedescription.DeliveryNameDescriptionEditView ui:field="nameDescription"/>
                 <div class="form-group form-group-default col-md-12">
                     <label class="fade"><ui:text from="{lang.deliveryKits}"/></label>
-                    <widgets:kit.view.list.DeliveryKitList ui:field="kits" addStyleNames="row"
-                                                           addKitsForm="false"/>
+                    <g:HTMLPanel ui:field="kitsContainer"/>
                 </div>
             </div>
             <div class="col-lg-4">

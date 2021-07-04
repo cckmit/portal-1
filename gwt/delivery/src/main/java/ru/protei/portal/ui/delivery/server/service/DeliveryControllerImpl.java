@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.Delivery;
+import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.query.DeliveryQuery;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.service.CaseService;
@@ -21,6 +22,8 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.List;
 
 import static ru.protei.portal.ui.common.server.ServiceUtils.*;
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
@@ -56,11 +59,16 @@ public class DeliveryControllerImpl implements DeliveryController {
     }
 
     @Override
-    public String getLastSerialNumber(boolean isArmyProject) throws RequestFailedException {
+    public String getLastSerialNumber(boolean isMilitaryNumbering) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        return checkResultAndGetData(deliveryService.getLastSerialNumber(token, isArmyProject));
+        return checkResultAndGetData(deliveryService.getLastSerialNumber(token, isMilitaryNumbering));
     }
 
+    @Override
+    public String getLastSerialNumber(Long deliveryId) throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(deliveryService.getLastSerialNumber(token, deliveryId));
+    }
     @Override
     public void updateNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest)  throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
@@ -79,6 +87,11 @@ public class DeliveryControllerImpl implements DeliveryController {
         return checkResultAndGetData(caseService.updateCaseObjectMetaNotifiers(token, En_CaseType.DELIVERY, caseMetaNotifiers));
     }
 
+    @Override
+    public List<Kit> createKits(List<Kit> kits, Long deliveryId) throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(deliveryService.createKits(token, kits, deliveryId));
+    }
 
     @Autowired
     DeliveryService deliveryService;

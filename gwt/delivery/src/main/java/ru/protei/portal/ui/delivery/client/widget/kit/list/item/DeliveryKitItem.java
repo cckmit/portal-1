@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.widget.kit.view.item;
+package ru.protei.portal.ui.delivery.client.widget.kit.list.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
@@ -9,7 +9,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.TakesValue;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -30,8 +29,7 @@ import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 public class DeliveryKitItem
         extends Composite
         implements TakesValue<Kit>,
-        HasCloseHandlers<DeliveryKitItem>,
-        HasValueChangeHandlers<DeliveryKitItem>
+        HasCloseHandlers<DeliveryKitItem>
 {
     @Inject
     public void onInit() {
@@ -59,13 +57,8 @@ public class DeliveryKitItem
     }
 
     @Override
-    public HandlerRegistration addCloseHandler(CloseHandler<DeliveryKitItem> handler ) {
+    public HandlerRegistration addCloseHandler(CloseHandler<DeliveryKitItem> handler) {
         return addHandler( handler, CloseEvent.getType() );
-    }
-
-    @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<DeliveryKitItem> handler) {
-        return addHandler(handler, ValueChangeEvent.getType());
     }
 
     @UiHandler( "remove" )
@@ -77,20 +70,17 @@ public class DeliveryKitItem
     @UiHandler( "serialNumber" )
     public void onChangeSerialNumber(ValueChangeEvent<String> event) {
         value.setSerialNumber(serialNumber.getValue());
-        changeTimer.schedule(50);
     }
 
     @UiHandler( "state" )
     public void onChangeState(ValueChangeEvent<CaseState> event) {
         value.setState(state.getValue());
         value.setStateId(state.getValue().getId());
-        changeTimer.schedule(50);
     }
 
     @UiHandler( "name" )
     public void onChangeName(ValueChangeEvent<String> event) {
         value.setName(name.getValue());
-        changeTimer.schedule(50);
     }
 
     public void setSerialNumber(String value) {
@@ -119,6 +109,10 @@ public class DeliveryKitItem
         return remove;
     }
 
+    public HasEnabled stateEnabled() {
+        return state;
+    }
+
     private void markBoxAsError(boolean isError) {
         if (isError) {
             root.addStyleName(HAS_ERROR);
@@ -132,15 +126,8 @@ public class DeliveryKitItem
         serialNumber.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.DELIVERY.KIT.SERIAL_NUMBER);
         state.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.DELIVERY.KIT.STATE);
         name.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.DELIVERY.KIT.NAME);
-        remove.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.CONTRACT.SPECIFICATION_ITEM.REMOVE_BUTTON);
+        remove.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.DELIVERY.KIT.REMOVE_BUTTON);
     }
-
-    Timer changeTimer = new Timer(){
-        @Override
-        public void run() {
-            ValueChangeEvent.fire(DeliveryKitItem.this, DeliveryKitItem.this);
-        }
-    };
 
     @UiField
     ValidableTextBox serialNumber;
