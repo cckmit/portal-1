@@ -132,6 +132,8 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         showEditViewButton.ensureDebugId(DebugIds.DELIVERY.SHOW_EDIT_BUTTON);
         nameAndDescriptionEditButton.ensureDebugId(DebugIds.DELIVERY.EDIT_NAME_AND_DESCRIPTION_BUTTON);
         addKitsButton.ensureDebugId(DebugIds.DELIVERY.ADD_KITS_BUTTON);
+        multiTabWidget.setTabNameDebugId(COMMENT, DebugIds.DELIVERY.TAB_COMMENT);
+        multiTabWidget.setTabNameDebugId(HISTORY, DebugIds.DELIVERY.TAB_HISTORY);
     }
 
     @UiField

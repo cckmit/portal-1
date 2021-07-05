@@ -98,8 +98,9 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
                     dialogView.saveButtonEnabled().setEnabled(true);
                     defaultErrorHandler.accept(throwable);
                 })
-                .withSuccess(id -> {
+                .withSuccess(list -> {
                     dialogView.saveButtonEnabled().setEnabled(true);
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     dialogView.hidePopup();
                 }));
     }

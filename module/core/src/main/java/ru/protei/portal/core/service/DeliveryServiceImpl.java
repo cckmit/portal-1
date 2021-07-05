@@ -10,6 +10,7 @@ import ru.protei.portal.core.event.DeliveryUpdateEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DeliveryQuery;
@@ -103,11 +104,15 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     @Transactional
     public Result<Delivery> createDelivery(AuthToken token, Delivery delivery) {
+        if (delivery == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         if (!isValid(delivery, true)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        if (!kitDAO.isAvailableSerialNumbers(stream(delivery.getKits())
+        if (kitDAO.isExistAnySerialNumbers(stream(delivery.getKits())
                 .map(Kit::getSerialNumber).collect(Collectors.toList()))) {
             return error(En_ResultStatus.NOT_AVAILABLE_DELIVERY_KIT_SERIAL_NUMBER);
         }
@@ -188,7 +193,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     @Transactional
     public Result<Delivery> updateMeta(AuthToken token, Delivery meta) {
-        if (meta.getId() == null) {
+        if (meta == null || meta.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -301,7 +306,6 @@ public class DeliveryServiceImpl implements DeliveryService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        kits.forEach(kit -> kit.setDeliveryId(deliveryId));
         if (!kits.stream().allMatch(this::isValid)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
@@ -310,23 +314,23 @@ public class DeliveryServiceImpl implements DeliveryService {
         if (delivery == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
-        jdbcManyRelationsHelper.fill(delivery, KITS);
 
-        if (delivery.getProject() == null || delivery.getProject().getCustomerType() != En_CustomerType.MINISTRY_OF_DEFENCE) {
+        if (isNotAvailableAdding(delivery.getProject())) {
             return error(En_ResultStatus.NOT_AVAILABLE);
         }
 
-        String deliveryNumber = delivery.getNumber() == null ? null : delivery.getNumber().substring(0,3);
-        if (!kits.stream().allMatch(kit -> Objects.equals(kit.getSerialNumber().substring(0,3), deliveryNumber))) {
+        jdbcManyRelationsHelper.fill(delivery, KITS);
+        if (isKitSerialNumberNotMatchDeliveryNumber(kits, delivery.getNumber())) {
             return error(En_ResultStatus.KIT_SERIAL_NUMBER_NOT_MATCH_DELIVERY_NUMBER);
         }
 
-        if (!kitDAO.isAvailableSerialNumbers(kits.stream()
+        if (kitDAO.isExistAnySerialNumbers(kits.stream()
                 .map(Kit::getSerialNumber).collect(Collectors.toList()))) {
             return error(En_ResultStatus.NOT_AVAILABLE_DELIVERY_KIT_SERIAL_NUMBER);
         }
 
         Date now = new Date();
+        kits.forEach(kit -> kit.setDeliveryId(deliveryId));
         return lockService.doWithLock(Delivery.class, deliveryId, LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
 
             kits.forEach(kit -> {
@@ -365,9 +369,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     private boolean isValid(Delivery delivery, boolean isNew) {
-        if (delivery == null) {
-            return false;
-        }
+
         if (isNew && delivery.getId() != null) {
             return false;
         }
@@ -394,7 +396,6 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     private boolean isValid(Kit kit) {
         return kit != null &&
-                kit.getDeliveryId() != null &&
                 kit.getStateId() != null &&
                 StringUtils.isNotBlank(kit.getSerialNumber()) &&
                 deliverySerialNumber.matcher(kit.getSerialNumber()).matches();
@@ -404,6 +405,15 @@ public class DeliveryServiceImpl implements DeliveryService {
         return Objects.equals(oldState, CrmConstants.State.PRELIMINARY)
                 && !Objects.equals(oldState, newState)
                 && !policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CHANGE_PRELIMINARY_STATUS, token.getRoles());
+    }
+
+    private boolean isNotAvailableAdding(Project project) {
+        return project == null || project.getCustomerType() != En_CustomerType.MINISTRY_OF_DEFENCE;
+    }
+
+    private boolean isKitSerialNumberNotMatchDeliveryNumber(List<Kit> kits, String deliveryNumber) {
+        String deliveryNumberPrefix = StringUtils.isBlank(deliveryNumber) ? null : deliveryNumber.substring(0,3);
+        return !kits.stream().allMatch(kit -> Objects.equals(kit.getSerialNumber().substring(0,3), deliveryNumberPrefix));
     }
 
     private CaseObject createDeliveryCaseObject(CaseObject caseObject, Delivery delivery, Long creatorId,

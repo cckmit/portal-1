@@ -33,19 +33,16 @@ public class KitDAO_Impl extends PortalBaseJdbcDAO<Kit> implements KitDAO {
     @Override
     public String getLastSerialNumber(Long deliveryId) {
         try {
-            return getMaxValue("serial_number", String.class, null, "delivery_id = ?", deliveryId);
+            return getMaxValue("serial_number", String.class, "delivery_id = ?", deliveryId);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
     }
 
     @Override
-    public boolean isAvailableSerialNumbers(List<String> serialNumbers) {
-        String sql ="select count(serial_number) from kit " +
-                "where serial_number in " + HelperFunc.makeInArg(serialNumbers, true) + ";";
-
+    public boolean isExistAnySerialNumbers(List<String> serialNumbers) {
         try {
-            return jdbcTemplate.queryForObject( sql, Integer.class ) == 0;
+            return getObjectsCount("serial_number in " + HelperFunc.makeInArg(serialNumbers, true), null) > 0;
         } catch (EmptyResultDataAccessException e) {
             return false;
         }
