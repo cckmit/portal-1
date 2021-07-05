@@ -11,7 +11,6 @@ import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
 
-import java.util.Date;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
@@ -77,7 +76,7 @@ public class DeliveryCommonMeta implements AbstractDeliveryCommonMeta {
         view.initiator().setValue(null);
         view.updateInitiatorModel(projectInfo.getContragent().getId());
         view.initiatorEnable().setEnabled(true);
-        view.setManager(projectInfo.getManager().getDisplayText());
+        view.setManager(projectInfo.getManager().getDisplayName());
         view.setProducts(joining(projectInfo.getProducts(), ", ", ProductShortView::getName));
         view.contract().setValue(null);
         view.setContractCompany(null);

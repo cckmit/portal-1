@@ -252,9 +252,15 @@ public enum En_SortField {
     delivery_case_name("CO.CASE_NAME"),
 
     /**
-     * Серийный номер
+     * Дата отправки поставки
      */
     delivery_departure_date("departure_date"),
+
+    /**
+     * Дата создания поставки
+     */
+    delivery_creation_date("CO.created"),
+
     ;
 
     private String fieldName;

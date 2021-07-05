@@ -41,7 +41,7 @@ public class PersonShortView implements Serializable, HasLongId {
         this(null, id);
     }
 
-    public PersonShortView(String name, Long id, boolean isFired ) {
+    public PersonShortView(String name, Long id, boolean isFired) {
         this.name = name;
         this.id = id;
         this.isFired = isFired;
@@ -49,6 +49,11 @@ public class PersonShortView implements Serializable, HasLongId {
 
     public PersonShortView(String name, Long id) {
         this(name, id, false);
+    }
+
+    public PersonShortView(String name, String fullName, Long id) {
+        this(name, id, false);
+        this.displayName = fullName;
     }
 
     public PersonShortView(EntityOption entityOption) {

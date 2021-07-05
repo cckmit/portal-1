@@ -9,6 +9,8 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.*;
 
+import static ru.protei.portal.core.model.ent.Delivery.Columns.HW_MANAGER;
+import static ru.protei.portal.core.model.ent.Delivery.Columns.QC_MANAGER;
 import static ru.protei.portal.core.model.ent.Delivery.Columns.ID;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
@@ -147,6 +149,24 @@ public class Delivery extends AuditableObject {
 
     @JdbcJoinedColumn(localColumn = ID, remoteColumn = ID, mappedColumn = CaseObject.Columns.DELETED, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private boolean deleted;
+
+    /**
+     * Ответственный АО
+     */
+    @JdbcColumn(name = HW_MANAGER)
+    private Long hwManagerId;
+
+    @JdbcJoinedObject(localColumn = HW_MANAGER, remoteColumn = "id")
+    private PersonShortView hwManager;
+
+    /**
+     * Ответственный КК
+     */
+    @JdbcColumn(name = QC_MANAGER)
+    private Long qcManagerId;
+
+    @JdbcJoinedObject(localColumn = QC_MANAGER, remoteColumn = "id")
+    private PersonShortView qcManager;
 
     public Delivery() {}
 
@@ -320,10 +340,44 @@ public class Delivery extends AuditableObject {
         return stream(kits).min(Comparator.comparing(Kit::getSerialNumber)).map(Kit::getSerialNumber).orElse("");
     }
 
+    public Long getHwManagerId() {
+        return hwManagerId;
+    }
+
+    public void setHwManagerId(Long hwManagerId) {
+        this.hwManagerId = hwManagerId;
+    }
+
+    public PersonShortView getHwManager() {
+        return hwManager;
+    }
+
+    public void setHwManager(PersonShortView hwManager) {
+        this.hwManager = hwManager;
+    }
+
+    public Long getQcManagerId() {
+        return qcManagerId;
+    }
+
+    public void setQcManagerId(Long qcManagerId) {
+        this.qcManagerId = qcManagerId;
+    }
+
+    public PersonShortView getQcManager() {
+        return qcManager;
+    }
+
+    public void setQcManager(PersonShortView qcManager) {
+        this.qcManager = qcManager;
+    }
+
     public interface Columns {
         String ID = "id";
         String KITS = "kits";
         String SUBSCRIBERS = "subscribers";
+        String HW_MANAGER = "hw_manager_id";
+        String QC_MANAGER = "qc_manager_id";
     }
 
     public boolean isDeleted() {
@@ -355,20 +409,30 @@ public class Delivery extends AuditableObject {
     public String toString() {
         return "Delivery{" +
                 "id=" + id +
+                ", created=" + created +
+                ", creatorId=" + creatorId +
+                ", creator=" + creator +
+                ", modified=" + modified +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", projectId=" + projectId +
+                ", project=" + project +
+                ", initiatorId=" + initiatorId +
+                ", initiator=" + initiator +
+                ", attribute=" + attribute +
                 ", stateId=" + stateId +
                 ", state=" + state +
-                ", created=" + created +
-                ", modified=" + modified +
-                ", projectId=" + projectId +
-                ", departureDate=" + departureDate +
                 ", type=" + type +
-                ", initiatorId=" + initiatorId +
+                ", departureDate=" + departureDate +
                 ", contractId=" + contractId +
                 ", contract=" + contract +
-                ", attribute=" + attribute +
+                ", subscribers=" + subscribers +
+                ", kits=" + kits +
                 ", deleted=" + deleted +
+                ", hwManagerId=" + hwManagerId +
+                ", hwManager=" + hwManager +
+                ", qcManagerId=" + qcManagerId +
+                ", qcManager=" + qcManager +
                 '}';
     }
 }

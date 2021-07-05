@@ -27,6 +27,8 @@
                     </div>
                 </div>
 
+                <small ui:field="createdBy" class="pull-right text-right"/>
+
                 <g:HTMLPanel ui:field="nameContainer"/>
 
                 <g:HTMLPanel ui:field="kitsContainer">

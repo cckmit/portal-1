@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dto;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 
 import java.io.Serializable;
@@ -41,7 +42,7 @@ public class ProjectInfo implements Serializable {
 
     private String managerCompany;
 
-    private EntityOption manager;
+    private PersonShortView manager;
 
     private EntityOption contragent;
 
@@ -53,7 +54,7 @@ public class ProjectInfo implements Serializable {
     }
 
     public ProjectInfo(Long id, String name, Date created, En_CustomerType customerType, EntityOption region,
-                       Set<EntityOption> productDirection, String managerCompany, EntityOption manager,
+                       Set<EntityOption> productDirection, String managerCompany, PersonShortView manager,
                        EntityOption contragent, Set<ProductShortView> products, Date technicalSupportValidity) {
         this.id = id;
         this.name = name;
@@ -96,7 +97,7 @@ public class ProjectInfo implements Serializable {
         return managerCompany;
     }
 
-    public EntityOption getManager() {
+    public PersonShortView getManager() {
         return manager;
     }
 
@@ -128,7 +129,7 @@ public class ProjectInfo implements Serializable {
                 CollectionUtils.isEmpty(project.getLocations()) ? null : EntityOption.fromLocation(project.getLocations().get(0).getLocation()),
                 new HashSet<>(emptyIfNull(project.getProductDirectionEntityOptionList())),
                 project.getManagerCompanyName(),
-                project.getManagerId() == null || project.getManagerName() == null ? null : new EntityOption(project.getManagerName(), project.getManagerId()),
+                project.getManagerId() == null || project.getManagerName() == null ? null : new PersonShortView(project.getManagerName(), project.getManagerFullName(), project.getManagerId()),
                 project.getCustomer() == null ? null : new EntityOption(project.getCustomer().getCname(), project.getCustomer().getId()),
                 project.getProducts() == null ? null : project.getProducts().stream().map(ProductShortView::fromProduct).collect(Collectors.toSet()),
                 project.getTechnicalSupportValidity());

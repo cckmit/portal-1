@@ -64,4 +64,8 @@ public interface AbstractDeliveryCreateView extends IsWidget {
     HasEnabled refreshKitsSerialNumberEnabled();
 
     void setKitsAddButtonEnabled(boolean isKitsAddButtonEnabled);
+
+    HasValue<PersonShortView> hwManager();
+
+    HasValue<PersonShortView> qcManager();
 }

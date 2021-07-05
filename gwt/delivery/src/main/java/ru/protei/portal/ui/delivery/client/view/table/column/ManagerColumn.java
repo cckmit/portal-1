@@ -35,7 +35,7 @@ public class ManagerColumn extends ClickColumn<Delivery> {
         com.google.gwt.dom.client.Element divElement = DOM.createDiv();
 
         ProjectInfo projectInfo = ProjectInfo.fromProject(delivery.getProject());
-        String manager = projectInfo == null || projectInfo.getManager() == null ? null : projectInfo.getManager().getDisplayText();
+        String manager = projectInfo == null || projectInfo.getManager() == null ? null : projectInfo.getManager().getName();
 
         com.google.gwt.dom.client.Element managerElement = DOM.createElement( "p" );
         managerElement.setInnerText( manager == null ? "" : manager );

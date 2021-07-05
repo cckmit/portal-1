@@ -192,7 +192,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             return;
         }
         view.setDirections(joining(project.getProductDirection(), ", ", EntityOption::getDisplayText));
-        view.setProjectManager(project.getManager() == null ? "" : project.getManager().getDisplayText());
+        view.setProjectManager(project.getManager() == null ? "" : project.getManager().getName());
     }
 
     private void clearProjectSpecificFields() {

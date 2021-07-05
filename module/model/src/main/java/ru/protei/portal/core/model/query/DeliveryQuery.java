@@ -5,10 +5,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.DateRange;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
@@ -30,6 +27,10 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
     private List<Long> stateIds;
 
     private Integer deleted;
+
+    private Boolean isMilitary;
+
+    private List<String> serialNumbers;
 
     public String getName() {
         return name;
@@ -87,6 +88,8 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
         setProductIds(query.getProductIds());
         setManagerIds(query.getManagerIds());
         setDeleted(query.getDeleted());
+        setMilitary(query.getMilitary());
+        setSerialNumbers(query.getSerialNumbers());
     }
 
     public Set<Long> getProductIds() {
@@ -109,6 +112,22 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
 
     public void setManagerIds(List<Long> managerIds) {
         this.managerIds = managerIds;
+    }
+
+    public Boolean getMilitary() {
+        return isMilitary;
+    }
+
+    public void setMilitary(Boolean military) {
+        isMilitary = military;
+    }
+
+    public List<String> getSerialNumbers() {
+        return serialNumbers;
+    }
+
+    public void setSerialNumbers(List<String> serialNumber) {
+        this.serialNumbers = serialNumber;
     }
 
     @Override
@@ -160,24 +179,29 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
                 CollectionUtils.isNotEmpty(managerIds) ||
                 CollectionUtils.isNotEmpty(stateIds) ||
                 departureDateRange != null ||
-                deleted != null;
+                deleted != null ||
+                isMilitary != null ||
+                CollectionUtils.isNotEmpty(serialNumbers);
     }
 
     @Override
     public String toString() {
         return "DeliveryQuery{" +
-                "id=" + id +
-                ", name=" + name +
+                "searchString='" + searchString + '\'' +
+                ", sortField=" + sortField +
+                ", sortDir=" + sortDir +
+                ", limit=" + limit +
+                ", offset=" + offset +
+                ", id=" + id +
+                ", name='" + name + '\'' +
                 ", departureDateRange=" + departureDateRange +
                 ", companyIds=" + companyIds +
                 ", productIds=" + productIds +
                 ", managerIds=" + managerIds +
                 ", stateIds=" + stateIds +
-                ", sortField=" + sortField +
-                ", sortDir=" + sortDir +
-                ", limit=" + limit +
-                ", offset=" + offset +
                 ", deleted=" + deleted +
+                ", isMilitary=" + isMilitary +
+                ", serialNumbers=" + serialNumbers +
                 '}';
     }
 
@@ -192,11 +216,12 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
                 Objects.equals(productIds, caseQuery.productIds) &&
                 Objects.equals(managerIds, caseQuery.managerIds) &&
                 Objects.equals(departureDateRange, caseQuery.departureDateRange) &&
-                Objects.equals(deleted, caseQuery.deleted);
+                Objects.equals(deleted, caseQuery.deleted) &&
+                Objects.equals(isMilitary, caseQuery.isMilitary);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, companyIds, productIds, managerIds, departureDateRange, deleted);
+        return Objects.hash(id, name, companyIds, productIds, managerIds, departureDateRange, deleted, isMilitary);
     }
 }
