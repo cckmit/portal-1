@@ -245,6 +245,8 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
         customerInitiator.ensureDebugId(DebugIds.DELIVERY.CUSTOMER_INITIATOR);
         contractCompany.ensureDebugId(DebugIds.DELIVERY.CONTRACT_COMPANY);
         manager.ensureDebugId(DebugIds.DELIVERY.MANAGER);
+        hwManager.ensureLabelDebugId(DebugIds.DELIVERY.HW_MANAGER);
+        qcManager.ensureLabelDebugId(DebugIds.DELIVERY.QC_MANAGER);
         attribute.ensureDebugId(DebugIds.DELIVERY.ATTRIBUTE);
         contract.ensureDebugId(DebugIds.DELIVERY.CONTRACT);
         products.ensureDebugId(DebugIds.DELIVERY.PRODUCTS);
