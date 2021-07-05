@@ -33,5 +33,5 @@ public interface DeliveryController extends RemoteService {
 
     CaseObjectMetaNotifiers updateMetaNotifiers(CaseObjectMetaNotifiers caseMetaNotifiers) throws RequestFailedException;
 
-    List<Kit> createKits(List<Kit> kits, Long deliveryId) throws RequestFailedException;
+    List<Kit> addKits(List<Kit> kits, Long deliveryId) throws RequestFailedException;
 }

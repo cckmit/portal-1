@@ -296,7 +296,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     @Transactional
-    public Result<List<Kit>> createKits(AuthToken token, List<Kit> kits, Long deliveryId) {
+    public Result<List<Kit>> addKits(AuthToken token, List<Kit> kits, Long deliveryId) {
         if (isEmpty(kits) || deliveryId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -327,7 +327,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         Date now = new Date();
-        return lockService.doWithLock(Kit.class, deliveryId, LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
+        return lockService.doWithLock(Delivery.class, deliveryId, LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
 
             kits.forEach(kit -> {
                 CaseObject kitCaseObject = createKitCaseObject(null, kit, token.getPersonId(), now, now);

@@ -41,5 +41,5 @@ public interface DeliveryService {
 
     @Privileged(requireAny = { En_Privilege.DELIVERY_CREATE, En_Privilege.DELIVERY_EDIT })
     @Auditable( En_AuditType.KIT_CREATE )
-    Result<List<Kit>> createKits(AuthToken token, List<Kit> kits, Long deliveryId);
+    Result<List<Kit>> addKits(AuthToken token, List<Kit> kits, Long deliveryId);
 }

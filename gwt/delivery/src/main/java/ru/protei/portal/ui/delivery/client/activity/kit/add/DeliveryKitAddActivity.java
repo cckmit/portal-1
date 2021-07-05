@@ -1,11 +1,10 @@
-package ru.protei.portal.ui.delivery.client.activity.kit.create;
+package ru.protei.portal.ui.delivery.client.activity.kit.add;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
@@ -24,7 +23,7 @@ import java.util.function.Consumer;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.XL_MODAL;
 
-public abstract class DeliveryKitCreateActivity implements Activity, AbstractDeliveryKitCreateActivity,
+public abstract class DeliveryKitAddActivity implements Activity, AbstractDeliveryKitAddActivity,
         AbstractDeliveryKitListActivity, AbstractDialogDetailsActivity {
 
     @Inject
@@ -94,7 +93,7 @@ public abstract class DeliveryKitCreateActivity implements Activity, AbstractDel
 
     private void create(List<Kit> kits) {
         dialogView.saveButtonEnabled().setEnabled(false);
-        deliveryController.createKits(kits, deliveryId, new FluentCallback<List<Kit>>()
+        deliveryController.addKits(kits, deliveryId, new FluentCallback<List<Kit>>()
                 .withError(throwable -> {
                     dialogView.saveButtonEnabled().setEnabled(true);
                     defaultErrorHandler.accept(throwable);
@@ -106,7 +105,7 @@ public abstract class DeliveryKitCreateActivity implements Activity, AbstractDel
     }
 
     @Inject
-    private AbstractDeliveryKitCreateView view;
+    private AbstractDeliveryKitAddView view;
     @Inject
     private DeliveryKitList kitList;
     @Inject

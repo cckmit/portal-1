@@ -30,5 +30,5 @@ public interface DeliveryControllerAsync {
 
     void updateMetaNotifiers(CaseObjectMetaNotifiers caseMetaNotifiers, AsyncCallback<CaseObjectMetaNotifiers> async);
 
-    void createKits(List<Kit> kits, Long deliveryId, AsyncCallback<List<Kit>> async);
+    void addKits(List<Kit> kits, Long deliveryId, AsyncCallback<List<Kit>> async);
 }

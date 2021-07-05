@@ -2,18 +2,16 @@ package ru.protei.portal.ui.delivery.client.view.kit.create;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.delivery.client.activity.kit.create.AbstractDeliveryKitCreateActivity;
-import ru.protei.portal.ui.delivery.client.activity.kit.create.AbstractDeliveryKitCreateView;
+import ru.protei.portal.ui.delivery.client.activity.kit.add.AbstractDeliveryKitAddActivity;
+import ru.protei.portal.ui.delivery.client.activity.kit.add.AbstractDeliveryKitAddView;
 
-public class DeliveryKitCreateView extends Composite implements AbstractDeliveryKitCreateView {
+public class DeliveryKitAddView extends Composite implements AbstractDeliveryKitAddView {
 
     @Inject
     public void onInit() {
@@ -22,7 +20,7 @@ public class DeliveryKitCreateView extends Composite implements AbstractDelivery
     }
 
     @Override
-    public void setActivity(AbstractDeliveryKitCreateActivity activity) {
+    public void setActivity(AbstractDeliveryKitAddActivity activity) {
         this.activity = activity;
     }
 
@@ -46,8 +44,8 @@ public class DeliveryKitCreateView extends Composite implements AbstractDelivery
     @Inject
     Lang lang;
 
-    private AbstractDeliveryKitCreateActivity activity;
+    private AbstractDeliveryKitAddActivity activity;
 
-    interface ViewUiBinder extends UiBinder<HTMLPanel, DeliveryKitCreateView> {}
-    private static DeliveryKitCreateView.ViewUiBinder ourUiBinder = GWT.create(DeliveryKitCreateView.ViewUiBinder.class);
+    interface ViewUiBinder extends UiBinder<HTMLPanel, DeliveryKitAddView> {}
+    private static DeliveryKitAddView.ViewUiBinder ourUiBinder = GWT.create(DeliveryKitAddView.ViewUiBinder.class);
 }

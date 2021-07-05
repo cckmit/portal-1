@@ -88,9 +88,9 @@ public class DeliveryControllerImpl implements DeliveryController {
     }
 
     @Override
-    public List<Kit> createKits(List<Kit> kits, Long deliveryId) throws RequestFailedException {
+    public List<Kit> addKits(List<Kit> kits, Long deliveryId) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        return checkResultAndGetData(deliveryService.createKits(token, kits, deliveryId));
+        return checkResultAndGetData(deliveryService.addKits(token, kits, deliveryId));
     }
 
     @Autowired

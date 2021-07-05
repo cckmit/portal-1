@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.delivery.client.widget.kit.list;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -31,8 +32,7 @@ public class DeliveryKitList extends Composite implements TakesValue<List<Kit>>,
 
     public DeliveryKitList() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        addButton.ensureDebugId(DebugIds.DELIVERY.KIT.ADD_BUTTON);
-        refreshSerialNumberButton.ensureDebugId(DebugIds.DELIVERY.KIT.REFRESH_BUTTON);
+        ensureDebugIds();
     }
 
     @Override
@@ -218,6 +218,15 @@ public class DeliveryKitList extends Composite implements TakesValue<List<Kit>>,
         }
     }
 
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        addButton.ensureDebugId(DebugIds.DELIVERY.KIT.ADD_BUTTON);
+        refreshSerialNumberButton.ensureDebugId(DebugIds.DELIVERY.KIT.REFRESH_BUTTON);
+    }
+
     @UiField
     HTMLPanel root;
     @UiField
@@ -246,7 +255,7 @@ public class DeliveryKitList extends Composite implements TakesValue<List<Kit>>,
 
     private CaseState preliminaryCaseState = new CaseState(CrmConstants.State.PRELIMINARY);
 
-    private int minimumKitsNumber = 1;
+    private final int minimumKitsNumber = 1;
     private final Consumer<String> lastSerialNumberCallback =
             ((Consumer<String>)this::parseLastSerialNumber).andThen(ignore -> refreshSerialNumbers());
 
