@@ -56,6 +56,11 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     }
 
     @Event
+    public void onAuthSuccess(AuthEvents.Success event) {
+        this.authProfile = event.profile;
+    }
+
+    @Event
     public void onShow( DeliveryEvents.ShowPreview event ) {
         HasWidgets container = event.parent;
         if (!hasAccess()) {
@@ -80,8 +85,12 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     }
 
     @Event
-    public void onAuthSuccess(AuthEvents.Success event) {
-        this.authProfile = event.profile;
+    public void onKitsAdded(KitEvents.Added event) {
+        if (delivery == null || !Objects.equals(delivery.getId(), event.deliveryId)) {
+            return;
+        }
+        delivery.setKits(event.kits);
+        view.fillKits(event.kits);
     }
 
     @Override
@@ -162,7 +171,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         if (delivery == null || delivery.getProject() == null) {
             return;
         }
-        fireEvent(new KitEvents.Create(delivery.getId(), isMilitaryProject(delivery.getProject())));
+        fireEvent(new KitEvents.Add(delivery.getId(), delivery.getStateId()));
     }
 
     @Override
@@ -183,7 +192,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         controller.getDelivery(id, new FluentCallback<Delivery>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
                 .withSuccess(delivery -> {
-                    DeliveryEditActivity.this.delivery = delivery;
+                    this.delivery = delivery;
                     switchNameDescriptionToEdit(false);
                     fillView(delivery);
                     showMeta(delivery);

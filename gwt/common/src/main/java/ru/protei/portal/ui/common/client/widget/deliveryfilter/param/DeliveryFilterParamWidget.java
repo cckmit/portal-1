@@ -84,6 +84,7 @@ public class DeliveryFilterParamWidget extends Composite implements FilterParamV
     @Override
     public DeliveryQuery getQuery() {
         DeliveryQuery query = new DeliveryQuery();
+        query.setDeleted(CaseObject.NOT_DELETED);
         String searchString = search.getValue();
         query.setSerialNumbers(DeliveryFilterUtils.searchSerialNumber(searchString));
         if (CollectionUtils.isNotEmpty(query.getSerialNumbers())) {
@@ -98,7 +99,6 @@ public class DeliveryFilterParamWidget extends Composite implements FilterParamV
         query.setManagerIds(getManagersIdList(managers.getValue()));
         query.setDepartureDateRange(toDateRange(dateDepartureRange.getValue()));
         query.setStateIds(nullIfEmpty(toList(states.getValue(), CaseState::getId)));
-        query.setDeleted(CaseObject.NOT_DELETED);
         query.setMilitary(military.getValue());
 
         return query;
