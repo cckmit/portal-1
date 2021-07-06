@@ -315,6 +315,11 @@ public class DeliveryServiceImpl implements DeliveryService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
+        if (delivery.getStateId() == CrmConstants.State.PRELIMINARY &&
+                kits.stream().allMatch(kit -> kit.getStateId() != CrmConstants.State.PRELIMINARY)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
         if (isNotAvailableAdding(delivery.getProject())) {
             return error(En_ResultStatus.NOT_AVAILABLE);
         }
@@ -391,7 +396,10 @@ public class DeliveryServiceImpl implements DeliveryService {
         if (isEmpty(delivery.getKits())) {
             return false;
         }
-        return stream(delivery.getKits()).allMatch(this::isValid);
+        if (isNew && delivery.getKits().stream().anyMatch(kit -> kit.getStateId() != CrmConstants.State.PRELIMINARY)) {
+            return false;
+        }
+        return delivery.getKits().stream().allMatch(this::isValid);
     }
 
     private boolean isValid(Kit kit) {
