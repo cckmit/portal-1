@@ -315,6 +315,10 @@ public class DeliveryServiceImpl implements DeliveryService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
+        if (isInvalidKitStates(kits, delivery.getStateId())) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
         if (isNotAvailableAdding(delivery.getProject())) {
             return error(En_ResultStatus.NOT_AVAILABLE);
         }
@@ -391,7 +395,10 @@ public class DeliveryServiceImpl implements DeliveryService {
         if (isEmpty(delivery.getKits())) {
             return false;
         }
-        return stream(delivery.getKits()).allMatch(this::isValid);
+        if (isNew && delivery.getKits().stream().anyMatch(kit -> kit.getStateId() != CrmConstants.State.PRELIMINARY)) {
+            return false;
+        }
+        return delivery.getKits().stream().allMatch(this::isValid);
     }
 
     private boolean isValid(Kit kit) {
@@ -401,9 +408,9 @@ public class DeliveryServiceImpl implements DeliveryService {
                 deliverySerialNumber.matcher(kit.getSerialNumber()).matches();
     }
 
-    private boolean isForbiddenToChangeState(AuthToken token, Long oldState, Long newState) {
-        return Objects.equals(oldState, CrmConstants.State.PRELIMINARY)
-                && !Objects.equals(oldState, newState)
+    private boolean isForbiddenToChangeState(AuthToken token, long oldState, long newState) {
+        return oldState == CrmConstants.State.PRELIMINARY
+                && oldState != newState
                 && !policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CHANGE_PRELIMINARY_STATUS, token.getRoles());
     }
 
@@ -414,6 +421,11 @@ public class DeliveryServiceImpl implements DeliveryService {
     private boolean isKitSerialNumberNotMatchDeliveryNumber(List<Kit> kits, String deliveryNumber) {
         String deliveryNumberPrefix = StringUtils.isBlank(deliveryNumber) ? null : deliveryNumber.substring(0,3);
         return !kits.stream().allMatch(kit -> Objects.equals(kit.getSerialNumber().substring(0,3), deliveryNumberPrefix));
+    }
+
+    private boolean isInvalidKitStates(List<Kit> kits, long deliveryStateId) {
+        return deliveryStateId == CrmConstants.State.PRELIMINARY &&
+                kits.stream().anyMatch(kit -> kit.getStateId() != CrmConstants.State.PRELIMINARY);
     }
 
     private CaseObject createDeliveryCaseObject(CaseObject caseObject, Delivery delivery, Long creatorId,

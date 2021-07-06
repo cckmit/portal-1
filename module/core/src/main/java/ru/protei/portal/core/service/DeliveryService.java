@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.ent.Kit;
-import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.DeliveryQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
 

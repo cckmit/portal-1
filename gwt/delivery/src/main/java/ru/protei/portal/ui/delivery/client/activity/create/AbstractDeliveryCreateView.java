@@ -8,15 +8,12 @@ import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 /**

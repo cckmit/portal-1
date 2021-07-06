@@ -125,6 +125,32 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         return addKitsButton;
     }
 
+    @Override
+    public void setCreatedBy(String value) {
+        this.createdBy.setInnerHTML( value );
+    }
+
+    @UiHandler("search")
+    public void onSearchChanged(InputEvent event) {
+        if ( activity != null ) {
+            activity.onSearchKitChanged();
+        }
+    }
+
+    @UiHandler("kits")
+    public void onKitEditClicked(EditEvent event) {
+        if ( activity != null ) {
+            activity.onKitEditClicked(event.id, event.text);
+        }
+    }
+
+    @UiHandler("kits")
+    public void onKitCloneClicked(CloneEvent event) {
+        if ( activity != null ) {
+            activity.onKitCloneClicked(event.id);
+        }
+    }
+
     @UiHandler("showEditViewButton")
     public void onShowEditViewModeButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -153,32 +179,6 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         }
     }
 
-    @Override
-    public void setCreatedBy(String value) {
-        this.createdBy.setInnerHTML( value );
-    }
-
-    @UiHandler("search")
-    public void onSearchChanged(InputEvent event) {
-        if ( activity != null ) {
-            activity.onSearchKitChanged();
-        }
-    }
-
-    @UiHandler("kits")
-    public void onKitEditClicked(EditEvent event) {
-        if ( activity != null ) {
-            activity.onKitEditClicked(event.id, event.text);
-        }
-    }
-
-    @UiHandler("kits")
-    public void onKitCloneClicked(CloneEvent event) {
-        if ( activity != null ) {
-            activity.onKitCloneClicked(event.id);
-        }
-    }
-
     @UiHandler({"addKitsButton"})
     public void onAddKitsButtonClicked(ClickEvent event) {
         if (activity != null) {
@@ -190,7 +190,6 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-
         backButton.ensureDebugId(DebugIds.DELIVERY.BACK_BUTTON);
         showEditViewButton.ensureDebugId(DebugIds.DELIVERY.SHOW_EDIT_BUTTON);
         nameAndDescriptionEditButton.ensureDebugId(DebugIds.DELIVERY.EDIT_NAME_AND_DESCRIPTION_BUTTON);
