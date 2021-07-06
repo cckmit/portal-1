@@ -37,7 +37,7 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
     }
 
     @Event
-    public void onShow(KitEvents.Create event) {
+    public void onShow(KitEvents.Add event) {
 
         if (!hasEditPrivileges()) {
             return;
@@ -46,7 +46,7 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
         this.deliveryId = event.deliveryId;
 
         kitList.clear();
-        kitList.updateSerialNumbering(event.isMilitaryNumbering);
+        kitList.updateSerialNumbering(true);
 
         dialogView.showPopup();
     }
@@ -101,6 +101,7 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
                 .withSuccess(list -> {
                     dialogView.saveButtonEnabled().setEnabled(true);
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new KitEvents.Added(list, deliveryId));
                     dialogView.hidePopup();
                 }));
     }

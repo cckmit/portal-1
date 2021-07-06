@@ -2,7 +2,7 @@ package ru.protei.portal.ui.common.client.widget.delivery.optionlist.kit;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Kit;
-import ru.protei.portal.ui.common.client.lang.DeliveryStateLang;
+import ru.protei.portal.ui.common.client.lang.ModuleStateLang;
 import ru.protei.portal.ui.common.client.widget.delivery.optionlist.list.OptionList;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 public class KitList extends OptionList<Kit> {
 
     @Inject
-    public void init(DeliveryStateLang stateLang) {this.stateLang = stateLang;}
+    public void init(ModuleStateLang stateLang) {this.stateLang = stateLang;}
 
     @Override
     protected void onUnload() {
@@ -35,5 +35,5 @@ public class KitList extends OptionList<Kit> {
         } );
     }
 
-    private DeliveryStateLang stateLang;
+    private ModuleStateLang stateLang;
 }

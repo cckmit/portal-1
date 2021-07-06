@@ -1,15 +1,25 @@
 package ru.protei.portal.ui.common.client.events;
 
-import com.google.gwt.user.client.ui.HasWidgets;
+import ru.protei.portal.core.model.ent.Kit;
+
+import java.util.List;
 
 public class KitEvents {
 
-    public static class Create {
-        public Create(Long deliveryId, boolean isMilitaryNumbering) {
+    public static class Add {
+        public Add(Long deliveryId) {
             this.deliveryId = deliveryId;
-            this.isMilitaryNumbering = isMilitaryNumbering;
         }
         public Long deliveryId;
-        public boolean isMilitaryNumbering;
     }
+
+    public static class Added {
+        public Added(List<Kit> kits, Long deliveryId) {
+            this.kits = kits;
+            this.deliveryId = deliveryId;
+        }
+        public Long deliveryId;
+        public List<Kit> kits;
+    }
+
 }
