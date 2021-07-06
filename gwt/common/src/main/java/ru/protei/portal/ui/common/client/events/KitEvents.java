@@ -7,10 +7,12 @@ import java.util.List;
 public class KitEvents {
 
     public static class Add {
-        public Add(Long deliveryId) {
+        public Add(long deliveryId, long stateId) {
             this.deliveryId = deliveryId;
+            this.stateId = stateId;
         }
-        public Long deliveryId;
+        public long deliveryId;
+        public long stateId;
     }
 
     public static class Added {

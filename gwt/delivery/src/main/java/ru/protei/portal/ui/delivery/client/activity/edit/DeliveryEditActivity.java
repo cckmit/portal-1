@@ -171,7 +171,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         if (delivery == null || delivery.getProject() == null) {
             return;
         }
-        fireEvent(new KitEvents.Add(delivery.getId()));
+        fireEvent(new KitEvents.Add(delivery.getId(), delivery.getStateId()));
     }
 
     @Override

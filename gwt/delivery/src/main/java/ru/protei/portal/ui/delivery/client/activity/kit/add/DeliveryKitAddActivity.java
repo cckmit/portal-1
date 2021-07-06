@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Kit;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -46,6 +47,7 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
         this.deliveryId = event.deliveryId;
 
         kitList.clear();
+        kitList.setAllowChangingState(event.stateId != CrmConstants.State.PRELIMINARY);
         kitList.updateSerialNumbering(true);
 
         dialogView.showPopup();

@@ -84,6 +84,10 @@ public class DeliveryKitList extends Composite implements TakesValue<List<Kit>>,
         this.isAddMode = isAddMode;
     }
 
+    public void setAllowChangingState(boolean isAllow) {
+        this.isAllowChangingState = isAllow;
+    }
+
     public void setError(boolean isError, String error) {
         markBoxAsError(isError);
 
@@ -127,7 +131,7 @@ public class DeliveryKitList extends Composite implements TakesValue<List<Kit>>,
     private void makeItemAndFillValue(final Kit value) {
         DeliveryKitItem itemWidget = itemFactory.get();
         itemWidget.setValue(value);
-        itemWidget.stateEnabled().setEnabled(isAddMode);
+        itemWidget.stateEnabled().setEnabled(isAddMode && isAllowChangingState);
         itemWidget.addCloseHandler(event -> {
             remove(event.getTarget());
             refresh();
@@ -250,6 +254,7 @@ public class DeliveryKitList extends Composite implements TakesValue<List<Kit>>,
 
     private boolean isMilitaryNumbering = false;
     private boolean isAddMode = false;
+    private boolean isAllowChangingState = false;
     private Integer lastSerialNumberPrefix;
     private Integer lastSerialNumberPostfix;
 
