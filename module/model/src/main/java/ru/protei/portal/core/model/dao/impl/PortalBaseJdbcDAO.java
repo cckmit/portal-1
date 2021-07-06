@@ -185,6 +185,10 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         return handled;
     }
 
+    public <V> V getMaxValue (String field, Class<V> type, String cond, Object...args) {
+        return getMaxValue(field, type, null, cond, args);
+    }
+
     public <V> V getMaxValue (String field, Class<V> type, String join, String cond, Object...args) {
 
         String query = "select max(" + field + ") from " + getTableName();
