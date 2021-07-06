@@ -10,6 +10,7 @@ import ru.protei.portal.core.event.DeliveryUpdateEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DeliveryQuery;
@@ -17,11 +18,14 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.winter.core.utils.services.lock.LockService;
+import ru.protei.winter.core.utils.services.lock.LockStrategy;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -71,6 +75,8 @@ public class DeliveryServiceImpl implements DeliveryService {
     HistoryService historyService;
     @Autowired
     CaseStateDAO caseStateDAO;
+    @Autowired
+    private LockService lockService;
 
     private final Pattern deliverySerialNumber = Pattern.compile(DELIVERY_KIT_SERIAL_NUMBER_PATTERN);
 
@@ -98,13 +104,17 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     @Transactional
     public Result<Delivery> createDelivery(AuthToken token, Delivery delivery) {
+        if (delivery == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         if (!isValid(delivery, true)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        if (!kitDAO.isAvailableSerialNumbers(stream(delivery.getKits())
+        if (kitDAO.isExistAnySerialNumbers(stream(delivery.getKits())
                 .map(Kit::getSerialNumber).collect(Collectors.toList()))) {
-            return error(En_ResultStatus.DELIVERY_KIT_SERIAL_NUMBER_NOT_AVAILABLE);
+            return error(En_ResultStatus.NOT_AVAILABLE_DELIVERY_KIT_SERIAL_NUMBER);
         }
 
         Date now = new Date();
@@ -121,7 +131,7 @@ public class DeliveryServiceImpl implements DeliveryService {
             throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
-        stream(delivery.getKits()).forEach(kit -> {
+        delivery.getKits().forEach(kit -> {
             CaseObject kitCaseObject = createKitCaseObject(null, kit, token.getPersonId(), now, now);
             Long kitCaseObjectId = caseObjectDAO.persist(kitCaseObject);
             if (kitCaseObjectId == null) {
@@ -183,7 +193,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     @Transactional
     public Result<Delivery> updateMeta(AuthToken token, Delivery meta) {
-        if (meta.getId() == null) {
+        if (meta == null || meta.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -259,12 +269,12 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
-    public Result<String> getLastSerialNumber(AuthToken token, boolean isArmyProject) {
-        String lastSerialNumber = kitDAO.getLastSerialNumber(isArmyProject);
+    public Result<String> getLastSerialNumber(AuthToken token, boolean isMilitaryNumbering) {
+        String lastSerialNumber = kitDAO.getLastSerialNumber(isMilitaryNumbering);
         if (lastSerialNumber == null) {
-            lastSerialNumber = isArmyProject? "100.000" : makeFirstCivilNumberOfYear(getCurrentYear());
+            lastSerialNumber = isMilitaryNumbering? "100.000" : makeFirstCivilNumberOfYear(getCurrentYear());
         } else {
-            if (!isArmyProject) {
+            if (!isMilitaryNumbering) {
                 int serialYear = Integer.parseInt(lastSerialNumber.split("\\.")[0]);
                 int currentYear = getCurrentYear();
                 if (serialYear < currentYear) {
@@ -272,8 +282,74 @@ public class DeliveryServiceImpl implements DeliveryService {
                 }
             }
         }
-        log.debug("getLastSerialNumber(): isArmyProject = {}, result = {}", isArmyProject, lastSerialNumber);
+        log.debug("getLastSerialNumber(): isMilitaryNumbering = {}, result = {}", isMilitaryNumbering, lastSerialNumber);
         return ok(lastSerialNumber);
+    }
+
+    @Override
+    public Result<String> getLastSerialNumber(AuthToken token, Long deliveryId) {
+        if (deliveryId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        String lastSerialNumber = kitDAO.getLastSerialNumber(deliveryId);
+        if (lastSerialNumber == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+        log.debug("getLastSerialNumber(): deliveryId = {}, result = {}", deliveryId, lastSerialNumber);
+        return ok(lastSerialNumber);
+    }
+
+    @Override
+    @Transactional
+    public Result<List<Kit>> addKits(AuthToken token, List<Kit> kits, Long deliveryId) {
+        if (isEmpty(kits) || deliveryId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!kits.stream().allMatch(this::isValid)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        Delivery delivery = deliveryDAO.get(deliveryId);
+        if (delivery == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (isNotAvailableAdding(delivery.getProject())) {
+            return error(En_ResultStatus.NOT_AVAILABLE);
+        }
+
+        jdbcManyRelationsHelper.fill(delivery, KITS);
+        if (isKitSerialNumberNotMatchDeliveryNumber(kits, delivery.getNumber())) {
+            return error(En_ResultStatus.KIT_SERIAL_NUMBER_NOT_MATCH_DELIVERY_NUMBER);
+        }
+
+        if (kitDAO.isExistAnySerialNumbers(kits.stream()
+                .map(Kit::getSerialNumber).collect(Collectors.toList()))) {
+            return error(En_ResultStatus.NOT_AVAILABLE_DELIVERY_KIT_SERIAL_NUMBER);
+        }
+
+        Date now = new Date();
+        kits.forEach(kit -> kit.setDeliveryId(deliveryId));
+        return lockService.doWithLock(Delivery.class, deliveryId, LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
+
+            kits.forEach(kit -> {
+                CaseObject kitCaseObject = createKitCaseObject(null, kit, token.getPersonId(), now, now);
+                Long kitCaseObjectId = caseObjectDAO.persist(kitCaseObject);
+                if (kitCaseObjectId == null) {
+                    log.warn("createKits(): case object not created, kit={}", kit);
+                    throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
+                }
+                kit.setId(kitCaseObjectId);
+                Long kitId = kitDAO.persist(kit);
+                if (kitId == null) {
+                    log.warn("createKits(): kit not created, kit={}", kit);
+                    throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
+                }
+            });
+
+            return ok(kitDAO.listByDeliveryId(deliveryId));
+        });
     }
 
     private Delivery getDelivery(Long id) {
@@ -293,16 +369,14 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     private boolean isValid(Delivery delivery, boolean isNew) {
+
         if (isNew && delivery.getId() != null) {
             return false;
         }
         if (isBlank(delivery.getName())) {
             return false;
         }
-        Long stateId = delivery.getStateId();
-        if (stateId == null) {
-            return false;
-        } else if (isNew && CrmConstants.State.PRELIMINARY != stateId) {
+        if (isNew && CrmConstants.State.PRELIMINARY != delivery.getStateId()) {
             return false;
         }
         if (delivery.getType() == null) {
@@ -311,30 +385,35 @@ public class DeliveryServiceImpl implements DeliveryService {
         if (delivery.getProjectId() == null) {
             return false;
         }
-        En_DeliveryAttribute attribute = delivery.getAttribute();
-        if (En_DeliveryAttribute.DELIVERY == attribute && delivery.getContractId() == null) {
+        if (En_DeliveryAttribute.DELIVERY == delivery.getAttribute() && delivery.getContractId() == null) {
             return false;
         }
-
         if (isEmpty(delivery.getKits())) {
             return false;
-        } else {
-            for (Kit kit : delivery.getKits()) {
-                if (StringUtils.isEmpty(kit.getSerialNumber())
-                        || !deliverySerialNumber.matcher(kit.getSerialNumber()).matches()
-                        || kit.getStateId() == null) {
-                    return false;
-                }
-            }
         }
+        return stream(delivery.getKits()).allMatch(this::isValid);
+    }
 
-        return true;
+    private boolean isValid(Kit kit) {
+        return kit != null &&
+                kit.getStateId() != null &&
+                StringUtils.isNotBlank(kit.getSerialNumber()) &&
+                deliverySerialNumber.matcher(kit.getSerialNumber()).matches();
     }
 
     private boolean isForbiddenToChangeState(AuthToken token, Long oldState, Long newState) {
         return Objects.equals(oldState, CrmConstants.State.PRELIMINARY)
                 && !Objects.equals(oldState, newState)
                 && !policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CHANGE_PRELIMINARY_STATUS, token.getRoles());
+    }
+
+    private boolean isNotAvailableAdding(Project project) {
+        return project == null || project.getCustomerType() != En_CustomerType.MINISTRY_OF_DEFENCE;
+    }
+
+    private boolean isKitSerialNumberNotMatchDeliveryNumber(List<Kit> kits, String deliveryNumber) {
+        String deliveryNumberPrefix = StringUtils.isBlank(deliveryNumber) ? null : deliveryNumber.substring(0,3);
+        return !kits.stream().allMatch(kit -> Objects.equals(kit.getSerialNumber().substring(0,3), deliveryNumberPrefix));
     }
 
     private CaseObject createDeliveryCaseObject(CaseObject caseObject, Delivery delivery, Long creatorId,

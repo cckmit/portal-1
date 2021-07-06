@@ -3,15 +3,15 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="root">
+    <g:HTMLPanel ui:field="root" styleName="row">
         <div class="form-group col-md-12">
-            <div class="pull-right">
-                <g:Button ui:field="refreshSerialNumber" styleName="btn btn-xs btn-info" text="{lang.deliveryButtonRefreshSerialNumber}"/>
-                <g:Button ui:field="add" styleName="btn btn-xs btn-info" text="{lang.buttonAdd}"/>
+            <div class="text-right">
+                <g:Button ui:field="refreshSerialNumberButton" styleName="btn btn-xs btn-info" text="{lang.deliveryButtonRefreshSerialNumber}"/>
+                <g:Button ui:field="addButton" styleName="btn btn-xs btn-info" text="{lang.buttonAdd}"/>
             </div>
         </div>
         <div class="form-group col-md-12">
-            <small class="dn-msg"><span ui:field="msg" class="text-danger"/> </small>
+            <small class="dn-msg"><span ui:field="msg" class="text-danger"/></small>
         </div>
         <g:FlowPanel ui:field="container" styleName="form-group col-md-12"/>
     </g:HTMLPanel>

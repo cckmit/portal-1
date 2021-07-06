@@ -2,6 +2,7 @@ package ru.protei.portal.ui.delivery.client.activity.create;
 
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
@@ -31,14 +32,6 @@ public interface AbstractDeliveryCreateView extends IsWidget {
 
     HasValue<String> description();
 
-    HasValue<List<Kit>> kits();
-
-    void kitsClear();
-
-    void updateKitByProject(boolean isArmyProject);
-
-    HasValidable kitsValidate();
-
     DeliveryMetaView  getMetaView();
 
     HasValue<CaseState> state();
@@ -61,11 +54,9 @@ public interface AbstractDeliveryCreateView extends IsWidget {
 
     Set<Person> getSubscribers();
 
-    HasEnabled refreshKitsSerialNumberEnabled();
-
-    void setKitsAddButtonEnabled(boolean isKitsAddButtonEnabled);
-
     HasValue<PersonShortView> hwManager();
 
     HasValue<PersonShortView> qcManager();
+
+    HasWidgets getKitsContainer();
 }

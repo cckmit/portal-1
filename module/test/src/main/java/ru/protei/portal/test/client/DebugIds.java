@@ -1256,9 +1256,9 @@ public class DebugIds {
         String NAME = "delivery-name";
         String DESCRIPTION = "delivery-description";
         String KITS = "delivery-kits";
-        String STATE_SELECTOR = "delivery-kits-state-selector";
-        String TYPE_SELECTOR = "delivery-kits-type-selector";
-        String PROJECT_WIDGET = "delivery-kits-project-widget";
+        String STATE_SELECTOR = "delivery-state-selector";
+        String TYPE_SELECTOR = "delivery-type-selector";
+        String PROJECT_WIDGET = "delivery-project-widget";
         String CUSTOMER_TYPE = "delivery-customer-type";
         String CUSTOMER_COMPANY = "delivery-customer-company";
         String CUSTOMER_INITIATOR = "delivery-customer-initiator-selector";
@@ -1275,14 +1275,19 @@ public class DebugIds {
         String SHOW_EDIT_BUTTON = "delivery-show-edit-button";
         String SAVE_BUTTON = "delivery-save-button";
         String CANCEL_BUTTON = "delivery-cancel-button";
-        String NAME_AND_DESCRIPTION_EDIT_BUTTON = "delivery-name-and-description-edit-button";
+        String EDIT_NAME_AND_DESCRIPTION_BUTTON = "delivery-edit-name-and-desc-button";
+        String ADD_KITS_BUTTON = "delivery-add-kits-button";
+        String TAB_COMMENT = "delivery-tab-comments";
+        String TAB_HISTORY = "delivery-tab-history";
 
         interface KIT {
-            String ITEM = "delivery-item";
-            String SERIAL_NUMBER = "delivery-item-serial-number-input";
-            String STATE = "delivery-item-state-input";
-            String NAME = "delivery-item-name-input";
-            String REMOVE_BUTTON = "delivery-item-remove-button";
+            String ITEM = "kit-item";
+            String SERIAL_NUMBER = "kit-item-serial-number-input";
+            String STATE = "kit-item-state-selector";
+            String NAME = "kit-item-name-input";
+            String ADD_BUTTON = "kit-item-add-button";
+            String REFRESH_BUTTON = "kit-item-refresh-button";
+            String REMOVE_BUTTON = "kit-item-remove-button";
         }
 
         interface FILTER {

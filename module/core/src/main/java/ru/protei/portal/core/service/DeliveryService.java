@@ -7,9 +7,12 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Delivery;
+import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.DeliveryQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
+
+import java.util.List;
 
 /**
  * Сервис управления Поставками
@@ -33,5 +36,10 @@ public interface DeliveryService {
     @Auditable( En_AuditType.DELIVERY_MODIFY )
     Result<Delivery> updateMeta(AuthToken token, Delivery meta);
 
-    Result<String> getLastSerialNumber(AuthToken token, boolean isArmyProject);
+    Result<String> getLastSerialNumber(AuthToken token, boolean isMilitaryNumbering);
+    Result<String> getLastSerialNumber(AuthToken token, Long deliveryId);
+
+    @Privileged({ En_Privilege.DELIVERY_EDIT })
+    @Auditable( En_AuditType.KIT_CREATE )
+    Result<List<Kit>> addKits(AuthToken token, List<Kit> kits, Long deliveryId);
 }

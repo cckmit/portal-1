@@ -23,7 +23,6 @@ import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
 import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryEditView;
-import ru.protei.portal.ui.delivery.client.widget.kit.view.list.DeliveryKitList;
 
 import java.util.Arrays;
 import java.util.List;
@@ -121,6 +120,11 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         return nameAndDescriptionEditButton;
     }
 
+    @Override
+    public HasVisibility addKitsButtonVisibility() {
+        return addKitsButton;
+    }
+
     @UiHandler("showEditViewButton")
     public void onShowEditViewModeButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -175,13 +179,24 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         }
     }
 
+    @UiHandler({"addKitsButton"})
+    public void onAddKitsButtonClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onAddKitsButtonClicked();
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
+
         backButton.ensureDebugId(DebugIds.DELIVERY.BACK_BUTTON);
         showEditViewButton.ensureDebugId(DebugIds.DELIVERY.SHOW_EDIT_BUTTON);
-        nameAndDescriptionEditButton.ensureDebugId(DebugIds.DELIVERY.NAME_AND_DESCRIPTION_EDIT_BUTTON);
+        nameAndDescriptionEditButton.ensureDebugId(DebugIds.DELIVERY.EDIT_NAME_AND_DESCRIPTION_BUTTON);
+        addKitsButton.ensureDebugId(DebugIds.DELIVERY.ADD_KITS_BUTTON);
+        multiTabWidget.setTabNameDebugId(COMMENT, DebugIds.DELIVERY.TAB_COMMENT);
+        multiTabWidget.setTabNameDebugId(HISTORY, DebugIds.DELIVERY.TAB_HISTORY);
     }
 
     @UiField
@@ -203,6 +218,8 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     Button removeKitsButton;
     @UiField
     Button nameAndDescriptionEditButton;
+    @UiField
+    Button addKitsButton;
     @UiField
     Lang lang;
     @UiField

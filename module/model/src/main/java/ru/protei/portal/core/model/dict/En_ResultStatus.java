@@ -356,7 +356,12 @@ public enum En_ResultStatus {
     /**
      * Поставки, серийный номер занят
      */
-    DELIVERY_KIT_SERIAL_NUMBER_NOT_AVAILABLE,
+    NOT_AVAILABLE_DELIVERY_KIT_SERIAL_NUMBER,
+
+    /**
+     * Поставки, серийный номер комплекта не соответствует номеру поставки
+     */
+    KIT_SERIAL_NUMBER_NOT_MATCH_DELIVERY_NUMBER,
 
     /**
      * Поставки, нет прав менять статус
