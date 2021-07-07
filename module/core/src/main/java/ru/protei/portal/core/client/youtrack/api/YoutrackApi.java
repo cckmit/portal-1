@@ -2,12 +2,15 @@ package ru.protei.portal.core.client.youtrack.api;
 
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
+import ru.protei.portal.core.model.youtrack.dto.activity.YtActivityCategory;
 import ru.protei.portal.core.model.youtrack.dto.activity.YtActivityItem;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtEnumBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.issue.IssueTimeTracking;
+import ru.protei.portal.core.model.youtrack.dto.issue.IssueWorkItem;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
 import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
 
+import java.util.Date;
 import java.util.List;
 
 public interface YoutrackApi {
@@ -26,7 +29,9 @@ public interface YoutrackApi {
 
     Result<List<YtIssue>> getIssueReportByQuery(String query);
 
-    Result<List<YtActivityItem>> getActivitiesByQuery(String query);
+    Result<List<YtActivityItem>> getActivities(Date start, Date end, Long offset, Long limit, YtActivityCategory categories);
+
+    Result<List<IssueWorkItem>> getWorkItems(Date start, Date end, Long offset, Long limit);
 
     Result<List<IssueTimeTracking>> getWorkItem(String ytIssueId);
 

@@ -12,6 +12,8 @@ class YoutrackUrlProvider {
 
     public String workItem(String issueId) { return baseUrl + "/issues/" + issueId + "/timeTracking"; }
 
+    public String workItems() { return baseUrl + "/workItems"; }
+
     public String issueAttachments(String issueId) { return baseUrl + "/issues/" + issueId + "/attachments"; }
 
     public String issueAttachment(String issueId, String attachmentId) { return baseUrl + "/issues/" + issueId + "/attachments/" + attachmentId; }

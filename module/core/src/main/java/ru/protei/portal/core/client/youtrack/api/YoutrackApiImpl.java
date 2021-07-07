@@ -117,17 +117,35 @@ public class YoutrackApiImpl implements YoutrackApi {
     }
 
     @Override
-    public Result<List<YtActivityItem>> getActivitiesByQuery(String query) {
+    public Result<List<YtActivityItem>> getActivities(Date start, Date end, Long offset, Long limit, YtActivityCategory category) {
         return read(new YoutrackRequest<>(YtActivityItem[].class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).activities())
-                .query(query)
                 .params(new HashMap<String, String>() {{
-                    put("$top", "10");
-                    put("categories", YtActivityCategory.WorkItemDurationCategory.getCategoryId());
+                    put("start", String.valueOf(start.getTime()));
+                    put("end", String.valueOf(end.getTime()));
+                    put("categories", category.getCategoryId());
+                    put("$skip", offset.toString());
+                    put("$top", limit.toString());
+                    put("author", "porubov");
                 }})
                 .fillSimpleFields()
-                .fillYtFields(YtWorkItemDurationActivityItem.class, YtUser.class, DurationValue.class)
-//                .fillYtFields(YtFilterField.class, YtBundleElement.class, YtUser.class, YtSingleValueActivityItem.class, YtFilterField.class, YtIssueCustomField.class, DurationValue.class, WorkItemType.class, IssueWorkItem.class)
+                .fillYtFields(YtWorkItemDurationActivityItem.class, IssueWorkItem.class, YtUser.class, DurationValue.class, YtIssue.class, YtIssueCustomField.class)
+        ).map(Arrays::asList);
+    }
+
+    @Override
+    public Result<List<IssueWorkItem>> getWorkItems(Date start, Date end, Long offset, Long limit) {
+        return read(new YoutrackRequest<>(IssueWorkItem[].class)
+                .url(new YoutrackUrlProvider(getBaseUrl()).workItems())
+                .params(new HashMap<String, String>() {{
+                    put("start", String.valueOf(start.getTime()));
+                    put("end", String.valueOf(end.getTime()));
+                    put("$skip", offset.toString());
+                    put("$top", limit.toString());
+                    put("author", "porubov");
+                }})
+                .fillSimpleFields()
+                .fillYtFields(YtWorkItemDurationActivityItem.class, IssueWorkItem.class, YtUser.class, DurationValue.class, YtIssue.class, YtIssueCustomField.class)
         ).map(Arrays::asList);
     }
 

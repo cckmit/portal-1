@@ -20,6 +20,7 @@ public class YtWorkItemDurationActivityItem extends YtSimpleValueActivityItem {
                 ", field=" + field +
                 ", author=" + author +
                 ", timestamp=" + timestamp +
+                ", target=" + target +
                 '}';
     }
 }

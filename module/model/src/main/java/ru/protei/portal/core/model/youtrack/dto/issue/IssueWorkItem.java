@@ -4,6 +4,8 @@ import ru.protei.portal.core.model.youtrack.annotation.YtEntityName;
 import ru.protei.portal.core.model.youtrack.dto.YtDto;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 
+import java.util.Date;
+
 /**
  * https://www.jetbrains.com/help/youtrack/standalone/api-entity-Issue.html
  */
@@ -15,10 +17,11 @@ public class IssueWorkItem extends YtDto {
     public String text;
     public String textPreview;
     public WorkItemType type;
-    public Long created;
-    public Long updated;
+    public Date created;
+    public Date updated;
     public DurationValue duration;
-    public Long date;
+    public Date date;
+    public YtIssue issue;
 
     @Override
     public String toString() {
