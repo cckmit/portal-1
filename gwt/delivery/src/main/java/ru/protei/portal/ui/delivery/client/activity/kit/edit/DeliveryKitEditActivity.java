@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.activity.kit.add;
+package ru.protei.portal.ui.delivery.client.activity.kit.edit;
 
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.inject.Inject;
@@ -12,7 +12,8 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.events.KitEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
@@ -26,27 +27,39 @@ import java.util.function.Consumer;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.XL_MODAL;
 
-public abstract class DeliveryKitAddActivity implements Activity, AbstractDeliveryKitAddActivity,
+public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliveryKitEditActivity,
         AbstractDeliveryKitListActivity, AbstractDialogDetailsActivity {
 
     @Inject
     public void onInit() {
+        ensureDebugIds();
+        view.setActivity(this);
         kitList.setActivity(this);
         kitList.setAddMode(true);
+        view.getKitsContainer().clear();
+        view.getKitsContainer().add(kitList.asWidget());
         prepareDialog(dialogView);
     }
 
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        kitList.ensureDebugId(DebugIds.DELIVERY.KITS);
+    }
+
     @Event
-    public void onShow(KitEvents.Add event) {
+    public void onShow(KitEvents.Edit event) {
 
         if (!hasEditPrivileges()) {
             return;
         }
 
-        this.deliveryId = event.deliveryId;
+        this.kitId = event.kitId;
 
         kitList.clear();
-        kitList.setAllowChangingState(event.stateId != CrmConstants.State.PRELIMINARY);
+//        kitList.setAllowChangingState(event.stateId != CrmConstants.State.PRELIMINARY);
         kitList.updateSerialNumbering(true);
 
         dialogView.showPopup();
@@ -54,7 +67,7 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
 
     @Override
     public void getLastSerialNumber(Consumer<String> success) {
-        deliveryController.getLastSerialNumber(deliveryId, new FluentCallback<String>()
+        deliveryController.getLastSerialNumber(kitId, new FluentCallback<String>()
                 .withError(defaultErrorHandler)
                 .withSuccess(success));
     }
@@ -83,8 +96,7 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
     private void prepareDialog(AbstractDialogDetailsView dialog) {
         dialog.setActivity(this);
         dialog.addStyleName(XL_MODAL);
-        dialog.getBodyContainer().clear();
-        dialog.getBodyContainer().add(kitList.asWidget());
+        dialog.getBodyContainer().add(view.asWidget());
         dialog.setHeader(lang.deliveryKitsAddHeader());
         dialog.removeButtonVisibility().setVisible(false);
     }
@@ -95,7 +107,7 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
 
     private void create(List<Kit> kits) {
         dialogView.saveButtonEnabled().setEnabled(false);
-        deliveryController.addKits(kits, deliveryId, new FluentCallback<List<Kit>>()
+        deliveryController.addKits(kits, kitId, new FluentCallback<List<Kit>>()
                 .withError(throwable -> {
                     dialogView.saveButtonEnabled().setEnabled(true);
                     defaultErrorHandler.accept(throwable);
@@ -103,11 +115,13 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
                 .withSuccess(list -> {
                     dialogView.saveButtonEnabled().setEnabled(true);
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new KitEvents.Added(list, deliveryId));
+                    fireEvent(new KitEvents.Added(list, kitId));
                     dialogView.hidePopup();
                 }));
     }
 
+    @Inject
+    private AbstractDeliveryKitEditView view;
     @Inject
     private DeliveryKitList kitList;
     @Inject
@@ -123,5 +137,5 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
     @Inject
     Lang lang;
 
-    private Long deliveryId;
+    private Long kitId;
 }

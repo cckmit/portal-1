@@ -24,4 +24,10 @@ public class KitEvents {
         public List<Kit> kits;
     }
 
+    public static class Edit {
+        public Edit(long kitId) {
+            this.kitId = kitId;
+        }
+        public long kitId;
+    }
 }
