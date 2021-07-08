@@ -145,6 +145,10 @@ public class DeliveryServiceImpl implements DeliveryService {
                 log.warn("createDelivery(): kit not created, kit={}", kit);
                 throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
             }
+            Result<Long> resultState = addStateHistory(token, kitCaseObjectId, kit.getStateId(), caseStateDAO.get(kit.getStateId()).getState());
+            if (resultState.isError()) {
+                log.error("State for the kit {} not saved!", kitCaseObjectId);
+            }
         });
 
         if(isNotEmpty(deliveryCaseObject.getNotifiers())){
@@ -535,8 +539,8 @@ public class DeliveryServiceImpl implements DeliveryService {
         return oldDate != null && newDate == null;
     }
 
-    private Result<Long> addStateHistory(AuthToken authToken, Long deliveryId, Long stateId, String stateName) {
-        return historyService.createHistory(authToken, deliveryId, En_HistoryAction.ADD, En_HistoryType.DELIVERY_STATE, null, null, stateId, stateName);
+    private Result<Long> addStateHistory(AuthToken authToken, Long caseObjectId, Long stateId, String stateName) {
+        return historyService.createHistory(authToken, caseObjectId, En_HistoryAction.ADD, En_HistoryType.DELIVERY_STATE, null, null, stateId, stateName);
     }
 
     private Result<Long> changeStateHistory(AuthToken token, Long deliveryId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {

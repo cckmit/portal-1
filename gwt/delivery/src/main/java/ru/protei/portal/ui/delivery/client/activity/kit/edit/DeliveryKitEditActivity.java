@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Kit;
@@ -25,6 +26,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import java.util.List;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.XXL_MODAL;
+import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
 
 public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliveryKitEditActivity,
@@ -138,6 +140,10 @@ public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliv
         view.setCreatedBy(lang.createBy(kit.getCreator() == null ? "" : transliteration(kit.getCreator().getDisplayShortName()),
                 DateFormatter.formatDateTime(kit.getCreated())));
         showModules(kit);
+
+        view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
+        fireEvent(new CommentAndHistoryEvents.Show(view.getItemsContainer(), kit.getId(),
+                En_CaseType.DELIVERY, false, kit.getCreatorId()));
     }
 
     private String transliteration(String input) {

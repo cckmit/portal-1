@@ -8,4 +8,6 @@ public interface AbstractDeliveryKitEditActivity {
     void onBackClicked();
 
     void onSelectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs);
+
+    void onSaveClicked();
 }

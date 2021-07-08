@@ -96,8 +96,22 @@ public class DeliveryKitEditView extends Composite implements AbstractDeliveryKi
     }
 
     @UiHandler("backButton")
-    public void onCancelClicked(ClickEvent event) {
+    public void onBackClicked(ClickEvent event) {
         if (activity != null) {
+            activity.onBackClicked();
+        }
+    }
+
+    @UiHandler( "saveButton" )
+    public void onSaveClicked( ClickEvent event ) {
+        if ( activity != null ) {
+            activity.onSaveClicked();
+        }
+    }
+
+    @UiHandler( "cancelButton" )
+    public void onCancelClicked( ClickEvent event ) {
+        if ( activity != null ) {
             activity.onBackClicked();
         }
     }
@@ -106,11 +120,12 @@ public class DeliveryKitEditView extends Composite implements AbstractDeliveryKi
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        backButton.ensureDebugId(DebugIds.DELIVERY.BACK_BUTTON);
-        multiTabWidget.setTabNameDebugId(COMMENT, DebugIds.DELIVERY.TAB_COMMENT);
-        multiTabWidget.setTabNameDebugId(HISTORY, DebugIds.DELIVERY.TAB_HISTORY);
+        backButton.ensureDebugId(DebugIds.DELIVERY.KIT.BACK_BUTTON);
+        multiTabWidget.setTabNameDebugId(HISTORY, DebugIds.DELIVERY.KIT.TAB_HISTORY);
         state.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.DELIVERY.KIT.STATE);
         name.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.DELIVERY.KIT.NAME);
+        saveButton.ensureDebugId(DebugIds.DELIVERY.KIT.SAVE_BUTTON);
+        cancelButton.ensureDebugId(DebugIds.DELIVERY.KIT.CANCEL_BUTTON);
     }
 
     @UiField
@@ -122,6 +137,10 @@ public class DeliveryKitEditView extends Composite implements AbstractDeliveryKi
     ModuleStateFormSelector state;
     @UiField
     ValidableTextBox name;
+    @UiField
+    Button saveButton;
+    @UiField
+    Button cancelButton;
     @UiField
     HTMLPanel modulesContainer;
     @UiField
