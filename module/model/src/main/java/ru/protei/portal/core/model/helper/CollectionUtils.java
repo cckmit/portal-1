@@ -4,10 +4,7 @@ import ru.protei.portal.core.model.marker.HasLongId;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -215,6 +212,10 @@ public class CollectionUtils {
             result.put( keyMapper.apply( next ), valueMapper.apply( next ) );
         }
         return result;
+    }
+
+    public static <K, V> void mergeMap(Map<K, V> map1, Map<K, V> map2, BinaryOperator<V> mergeOperator) {
+        map2.forEach((key2, value2) -> map1.merge(key2, value2, mergeOperator));
     }
 
     public static <T> List<T> singleValueList(T value) {

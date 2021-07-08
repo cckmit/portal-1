@@ -145,7 +145,7 @@ public class YoutrackApiImpl implements YoutrackApi {
                     put("author", "porubov");
                 }})
                 .fillSimpleFields()
-                .fillYtFields(YtWorkItemDurationActivityItem.class, IssueWorkItem.class, YtUser.class, DurationValue.class, YtIssue.class, YtIssueCustomField.class)
+                .fillYtFields(YtWorkItemDurationActivityItem.class, IssueWorkItem.class, YtUser.class, DurationValue.class, YtIssue.class, YtIssueCustomField.class, YtProject.class)
         ).map(Arrays::asList);
     }
 
