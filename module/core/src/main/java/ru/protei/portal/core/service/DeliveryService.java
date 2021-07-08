@@ -41,4 +41,11 @@ public interface DeliveryService {
     @Privileged({ En_Privilege.DELIVERY_EDIT })
     @Auditable( En_AuditType.KIT_CREATE )
     Result<List<Kit>> addKits(AuthToken token, List<Kit> kits, Long deliveryId);
+
+    @Privileged({ En_Privilege.DELIVERY_VIEW })
+    Result<Kit> getKit(AuthToken token, Long kitId);
+
+    @Privileged({ En_Privilege.DELIVERY_EDIT })
+    @Auditable( En_AuditType.KIT_MODIFY )
+    Result<Kit> updateKit(AuthToken token, Kit kit);
 }

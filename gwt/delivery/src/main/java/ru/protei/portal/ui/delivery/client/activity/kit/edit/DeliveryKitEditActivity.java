@@ -1,91 +1,62 @@
 package ru.protei.portal.ui.delivery.client.activity.kit.edit;
 
-import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.ui.Label;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Kit;
-import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
+import ru.protei.portal.ui.common.client.events.CommentAndHistoryEvents;
 import ru.protei.portal.ui.common.client.events.KitEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.delivery.client.widget.kit.list.AbstractDeliveryKitListActivity;
-import ru.protei.portal.ui.delivery.client.widget.kit.list.DeliveryKitList;
 
 import java.util.List;
-import java.util.function.Consumer;
 
-import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.XL_MODAL;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.XXL_MODAL;
+import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
 
 public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliveryKitEditActivity,
-        AbstractDeliveryKitListActivity, AbstractDialogDetailsActivity {
+        AbstractDialogDetailsActivity {
 
     @Inject
     public void onInit() {
-        ensureDebugIds();
         view.setActivity(this);
-        kitList.setActivity(this);
-        kitList.setAddMode(true);
-        view.getKitsContainer().clear();
-        view.getKitsContainer().add(kitList.asWidget());
         prepareDialog(dialogView);
-    }
-
-    private void ensureDebugIds() {
-        if (!DebugInfo.isDebugIdEnabled()) {
-            return;
-        }
-
-        kitList.ensureDebugId(DebugIds.DELIVERY.KITS);
     }
 
     @Event
     public void onShow(KitEvents.Edit event) {
 
-        if (!hasEditPrivileges()) {
+        if (!hasViewAccess()) {
+            fireEvent(new NotifyEvents.Show(lang.errAccessDenied(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
-        this.kitId = event.kitId;
-
-        kitList.clear();
-//        kitList.setAllowChangingState(event.stateId != CrmConstants.State.PRELIMINARY);
-        kitList.updateSerialNumbering(true);
-
-        dialogView.showPopup();
-    }
-
-    @Override
-    public void getLastSerialNumber(Consumer<String> success) {
-        deliveryController.getLastSerialNumber(kitId, new FluentCallback<String>()
-                .withError(defaultErrorHandler)
-                .withSuccess(success));
-    }
-
-    @Override
-    public void getCaseState(Long id, Consumer<CaseState> success) {
-        caseStateController.getCaseStateWithoutCompaniesOmitPrivileges(id, new FluentCallback<CaseState>()
-                .withError(defaultErrorHandler)
-                .withSuccess(success));
+        view.setStateEnabled(hasEditAccess());
+        view.setNameEnabled(hasEditAccess());
+        requestKit(event.kitId);
     }
 
     @Override
     public void onSaveClicked() {
-        if (!kitList.isValid()) {
+        if (kit.getStateId() == null) {
             fireEvent(new NotifyEvents.Show(lang.deliveryValidationInvalidKits(), NotifyEvents.NotifyType.ERROR));
             return;
         }
-        create(kitList.getValue());
+        Kit kit = fillDto();
+        save(kit);
     }
 
     @Override
@@ -93,49 +64,100 @@ public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliv
         dialogView.hidePopup();
     }
 
-    private void prepareDialog(AbstractDialogDetailsView dialog) {
-        dialog.setActivity(this);
-        dialog.addStyleName(XL_MODAL);
-        dialog.getBodyContainer().add(view.asWidget());
-        dialog.setHeader(lang.deliveryKitsAddHeader());
-        dialog.removeButtonVisibility().setVisible(false);
+    @Override
+    public void onBackClicked() {
+        dialogView.hidePopup();
     }
 
-    private boolean hasEditPrivileges() {
+    @Override
+    public void onSelectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
+        saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
+        fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));
+    }
+
+    private void requestKit(Long kitId) {
+        deliveryController.getKit(kitId, new FluentCallback<Kit>()
+                .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
+                .withSuccess(kit -> {
+                    this.kit = kit;
+                    fillView(kit);
+                    dialogView.showPopup();
+                }));
+    }
+
+    private void showModules(Kit kit) {
+        view.getModulesContainer().clear();
+        Label modulesStub = new Label("Modules Tree");
+        view.getModulesContainer().add(modulesStub);
+    }
+
+    private void prepareDialog(AbstractDialogDetailsView dialog) {
+        dialog.setActivity(this);
+        dialog.addStyleName(XXL_MODAL);
+        dialog.getBodyContainer().add(view.asWidget());
+        dialog.removeButtonVisibility().setVisible(false);
+        dialog.saveButtonVisibility().setVisible(false);
+        dialog.cancelButtonVisibility().setVisible(false);
+        dialog.setCloseVisible(false);
+    }
+
+    private boolean hasEditAccess() {
         return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
     }
 
-    private void create(List<Kit> kits) {
-        dialogView.saveButtonEnabled().setEnabled(false);
-        deliveryController.addKits(kits, kitId, new FluentCallback<List<Kit>>()
+    private boolean hasViewAccess() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW);
+    }
+
+    private Kit fillDto() {
+        kit.setName(view.name().getValue());
+        kit.setState(view.state().getValue());
+        return kit;
+    }
+
+    private void save(final Kit kit) {
+        view.saveButtonEnabled().setEnabled(false);
+        deliveryController.updateKit(kit, new FluentCallback<Void>()
                 .withError(throwable -> {
-                    dialogView.saveButtonEnabled().setEnabled(true);
+                    view.saveButtonEnabled().setEnabled(true);
                     defaultErrorHandler.accept(throwable);
                 })
                 .withSuccess(list -> {
-                    dialogView.saveButtonEnabled().setEnabled(true);
+                    view.saveButtonEnabled().setEnabled(true);
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new KitEvents.Added(list, kitId));
+                    fireEvent(new KitEvents.Changed(kit.getDeliveryId()));
                     dialogView.hidePopup();
                 }));
+    }
+
+    private void fillView(Kit kit) {
+
+        view.setSerialNumber(kit.getSerialNumber());
+        view.state().setValue(kit.getState());
+        view.name().setValue(kit.getName());
+        view.setCreatedBy(lang.createBy(kit.getCreator() == null ? "" : transliteration(kit.getCreator().getDisplayShortName()),
+                DateFormatter.formatDateTime(kit.getCreated())));
+        showModules(kit);
+    }
+
+    private String transliteration(String input) {
+        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     @Inject
     private AbstractDeliveryKitEditView view;
     @Inject
-    private DeliveryKitList kitList;
-    @Inject
     PolicyService policyService;
     @Inject
     private DefaultErrorHandler defaultErrorHandler;
-    @Inject
-    private CaseStateControllerAsync caseStateController;
     @Inject
     private DeliveryControllerAsync deliveryController;
     @Inject
     AbstractDialogDetailsView dialogView;
     @Inject
+    LocalStorageService localStorageService;
+    @Inject
     Lang lang;
 
-    private Long kitId;
+    private Kit kit;
 }

@@ -4984,6 +4984,24 @@ table {
   }
 }
 
+@media (min-width: 1450px) {
+
+  .modal {
+    .modal-dialog {
+      max-width: 1400px !important;
+    }
+
+    .modal-xxl {
+      width: 1400px !important;
+
+      .resize-lg-6 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+      }
+    }
+  }
+}
+
 .favorite-icon {
   &.fas {
     color: gold;

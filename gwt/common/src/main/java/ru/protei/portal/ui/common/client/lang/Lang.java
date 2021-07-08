@@ -3577,4 +3577,6 @@ public interface Lang extends Messages, ContactItemLang {
     String moduleStatePaused();
 
     String errKitSerialNumberNotMatchDeliveryNumber();
+
+    String deliveryKit();
 }

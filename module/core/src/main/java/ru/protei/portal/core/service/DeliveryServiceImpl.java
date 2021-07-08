@@ -356,6 +356,58 @@ public class DeliveryServiceImpl implements DeliveryService {
         });
     }
 
+    @Override
+    public Result<Kit> getKit(AuthToken token, Long kitId) {
+
+        Kit kit = kitDAO.get(kitId);
+//        jdbcManyRelationsHelper.fill(kit, MODULES);
+        return ok(kit);
+    }
+
+    @Override
+    @Transactional
+    public Result<Kit> updateKit(AuthToken token, Kit kit) {
+        if (kit == null || kit.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!isValid(kit)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        Kit oldKit = kitDAO.get(kit.getId());
+        if (oldKit == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        CaseObject caseObject = caseObjectDAO.get(kit.getId());
+        boolean isUpdated = caseObjectDAO.merge(caseObject);
+        if (!isUpdated) {
+            log.info("Failed to update issue meta data {} at db", caseObject.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        isUpdated = kitDAO.merge(kit);
+        if (!isUpdated) {
+            log.warn("updateKit(): kit not updated = {}",  caseObject.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        // update kits history
+
+        if (!Objects.equals(kit.getStateId(), oldKit.getStateId())) {
+            Result<Long> resultState = changeStateHistory(token, kit.getId(), oldKit.getStateId(), caseStateDAO.get(oldKit.getStateId()).getState(),
+                    kit.getStateId(), caseStateDAO.get(kit.getStateId()).getState());
+
+            if (resultState.isError()) {
+                log.error("State message for the kit {} not saved!", kit.getId());
+            }
+        }
+
+        return ok(kit);
+    }
+
+
     private Delivery getDelivery(Long id) {
         Delivery delivery = deliveryDAO.get(id);
         jdbcManyRelationsHelper.fill(delivery, KITS);

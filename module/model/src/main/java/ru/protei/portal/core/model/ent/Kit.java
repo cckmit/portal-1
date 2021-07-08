@@ -75,6 +75,11 @@ public class Kit extends AuditableObject implements HasLongId {
     })
     private CaseState state;
 
+    @JdbcJoinedObject(joinPath = {
+            @JdbcJoinPath(localColumn = ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = CaseObject.Columns.CREATOR, remoteColumn = "id", table = "person")})
+    private Person creator;
+
     public Kit() {}
 
     public Kit(Long id) {
@@ -155,6 +160,10 @@ public class Kit extends AuditableObject implements HasLongId {
         return state;
     }
 
+    public Person getCreator() {
+        return creator;
+    }
+
     public void setState(CaseState state) {
         this.state = state;
         if (state != null) {
@@ -187,6 +196,7 @@ public class Kit extends AuditableObject implements HasLongId {
                 ", serialNumber='" + serialNumber + '\'' +
                 ", stateId=" + stateId +
                 ", state=" + state +
+                ", creator=" + creator +
                 '}';
     }
 

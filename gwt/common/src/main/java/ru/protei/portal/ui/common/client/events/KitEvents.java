@@ -24,6 +24,13 @@ public class KitEvents {
         public List<Kit> kits;
     }
 
+    public static class Changed {
+        public Changed(Long deliveryId) {
+            this.deliveryId = deliveryId;
+        }
+        public Long deliveryId;
+    }
+
     public static class Edit {
         public Edit(long kitId) {
             this.kitId = kitId;

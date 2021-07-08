@@ -93,6 +93,20 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         view.fillKits(event.kits);
     }
 
+    @Event
+    public void onKitChanged(KitEvents.Changed event) {
+        if (delivery == null || !Objects.equals(delivery.getId(), event.deliveryId)) {
+            return;
+        }
+
+        controller.getDelivery(event.deliveryId, new FluentCallback<Delivery>()
+                .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
+                .withSuccess(delivery -> {
+                    this.delivery = delivery;
+                    view.fillKits(delivery.getKits());
+                }));
+    }
+
     @Override
     public void onNameDescriptionChanged() {
         delivery.setName(changeRequest.getName());
@@ -154,9 +168,6 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     @Override
     public void onKitEditClicked(Long kitId, String kitName) {
         fireEvent(new KitEvents.Edit(kitId));
-
-        //TODO remove
-        fireEvent(new NotifyEvents.Show("Kit name edit clicked: " + kitName, NotifyEvents.NotifyType.SUCCESS));
     }
 
     @Override
