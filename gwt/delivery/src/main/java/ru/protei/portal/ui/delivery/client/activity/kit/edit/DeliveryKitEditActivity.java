@@ -22,11 +22,11 @@ import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import java.util.Collections;
 import java.util.List;
 
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.XL_MODAL;
-import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
-import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
 
 public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliveryKitEditActivity,
         AbstractDialogDetailsActivity {
@@ -67,7 +67,6 @@ public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliv
 
     @Override
     public void onSelectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
-        saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
         fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));
     }
 
@@ -126,7 +125,7 @@ public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliv
         view.setCreatedBy(lang.createBy(kit.getCreator() == null ? "" : transliteration(kit.getCreator().getDisplayShortName()),
                 DateFormatter.formatDateTime(kit.getCreated())));
 
-        view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
+        view.getMultiTabWidget().selectTabs(Collections.singletonList(HISTORY));
         fireEvent(new CommentAndHistoryEvents.Show(view.getItemsContainer(), kit.getId(),
                 En_CaseType.DELIVERY, false, kit.getCreatorId()));
     }
