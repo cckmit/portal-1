@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.equipment.client.activity.page;
+package ru.protei.portal.ui.document.client.activity.page;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -13,7 +13,6 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
@@ -25,14 +24,15 @@ public abstract class EquipmentPage
 
     @PostConstruct
     public void onInit() {
+        CATEGORY = lang.documentation();
         ТAB = lang.classifier();
     }
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.EQUIPMENT_VIEW ) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.EQUIPMENT, ТAB, DebugIds.SIDEBAR_MENU.EQUIPMENT ) );
-            fireEvent( new AppEvents.InitPage( new EquipmentEvents.Show( false ) ) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.EQUIPMENT, ТAB, DebugIds.SIDEBAR_MENU.EQUIPMENT ).withParent( CATEGORY ) );
+            fireEvent( new AppEvents.InitPage( show ) );
         }
     }
 
@@ -58,7 +58,7 @@ public abstract class EquipmentPage
         }
 
         fireSelectTab();
-        fireEvent( new EquipmentEvents.Show( false ) );
+        fireEvent( show );
     }
 
     private void fireSelectTab() {
@@ -75,6 +75,9 @@ public abstract class EquipmentPage
     @Inject
     PolicyService policyService;
 
+    private String CATEGORY;
     private String ТAB;
+
+    private EquipmentEvents.Show show = new EquipmentEvents.Show( false );
 }
 

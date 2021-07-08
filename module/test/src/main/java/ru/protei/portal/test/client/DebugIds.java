@@ -120,6 +120,7 @@ public class DebugIds {
         String ROOM_RESERVATION_CALENDAR = "sidebar-menu-room-reservation-calendar";
         String ROOM_RESERVATION_TABLE = "sidebar-menu-room-reservation-table";
         String DUTY_LOG = "sidebar-menu-duty-log";
+        String DOCUMENTATION = "sidebar-menu-documentation";
     }
 
     public interface SELECTOR {

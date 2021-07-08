@@ -8,12 +8,8 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.ActionBarEvents;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.DocumentEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
@@ -22,14 +18,15 @@ public abstract class DocumentPage implements Activity {
 
     @PostConstruct
     public void onInit() {
+        CATEGORY = lang.documentation();
         TAB = lang.document();
     }
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
         if (event.profile.hasPrivilegeFor(En_Privilege.DOCUMENT_VIEW)) {
-            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.DOCUMENT, TAB, DebugIds.SIDEBAR_MENU.DOCUMENT));
-            fireEvent(new AppEvents.InitPage(new DocumentEvents.Show(false)));
+            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.DOCUMENT, TAB, DebugIds.SIDEBAR_MENU.DOCUMENT).withParent(CATEGORY));
+            fireEvent(new AppEvents.InitPage(show));
         }
     }
 
@@ -55,7 +52,7 @@ public abstract class DocumentPage implements Activity {
         }
 
         fireSelectTab();
-        fireEvent(new DocumentEvents.Show(false));
+        fireEvent(show);
     }
 
     private void fireSelectTab() {
@@ -72,5 +69,8 @@ public abstract class DocumentPage implements Activity {
     @Inject
     PolicyService policyService;
 
+    private String CATEGORY;
     private String TAB;
+
+    private DocumentEvents.Show show = new DocumentEvents.Show(false);
 }
