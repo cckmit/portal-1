@@ -148,7 +148,6 @@ public class UiConstants {
         String LINK_DISABLE = "link-disabled";
         String WIDE_MODAL = "modal-lg";
         String XL_MODAL = "modal-xl";
-        String XXL_MODAL = "modal-xxl";
         String FAVORITES = "favorites";
         String FAVORITE_ICON = "favorite-icon";
     }

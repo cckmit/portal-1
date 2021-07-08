@@ -385,6 +385,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         CaseObject caseObject = caseObjectDAO.get(kit.getId());
+        caseObject = createKitCaseObject(caseObject, kit, null, null, new Date());
         boolean isUpdated = caseObjectDAO.merge(caseObject);
         if (!isUpdated) {
             log.info("Failed to update issue meta data {} at db", caseObject.getId());
@@ -398,7 +399,6 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         // update kits history
-
         if (!Objects.equals(kit.getStateId(), oldKit.getStateId())) {
             Result<Long> resultState = changeStateHistory(token, kit.getId(), oldKit.getStateId(), caseStateDAO.get(oldKit.getStateId()).getState(),
                     kit.getStateId(), caseStateDAO.get(kit.getStateId()).getState());

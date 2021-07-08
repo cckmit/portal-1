@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.delivery.client.activity.kit.edit;
 
 import com.google.gwt.i18n.client.LocaleInfo;
-import com.google.gwt.user.client.ui.Label;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -25,7 +24,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
 
-import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.XXL_MODAL;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.XL_MODAL;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
 
@@ -67,11 +66,6 @@ public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliv
     }
 
     @Override
-    public void onBackClicked() {
-        dialogView.hidePopup();
-    }
-
-    @Override
     public void onSelectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
         saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
         fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));
@@ -87,19 +81,11 @@ public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliv
                 }));
     }
 
-    private void showModules(Kit kit) {
-        view.getModulesContainer().clear();
-        Label modulesStub = new Label("Modules Tree");
-        view.getModulesContainer().add(modulesStub);
-    }
-
     private void prepareDialog(AbstractDialogDetailsView dialog) {
         dialog.setActivity(this);
-        dialog.addStyleName(XXL_MODAL);
+        dialog.addStyleName(XL_MODAL);
         dialog.getBodyContainer().add(view.asWidget());
         dialog.removeButtonVisibility().setVisible(false);
-        dialog.saveButtonVisibility().setVisible(false);
-        dialog.cancelButtonVisibility().setVisible(false);
         dialog.setCloseVisible(false);
     }
 
@@ -118,14 +104,14 @@ public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliv
     }
 
     private void save(final Kit kit) {
-        view.saveButtonEnabled().setEnabled(false);
+        dialogView.saveButtonEnabled().setEnabled(false);
         deliveryController.updateKit(kit, new FluentCallback<Void>()
                 .withError(throwable -> {
-                    view.saveButtonEnabled().setEnabled(true);
+                    dialogView.saveButtonEnabled().setEnabled(true);
                     defaultErrorHandler.accept(throwable);
                 })
                 .withSuccess(list -> {
-                    view.saveButtonEnabled().setEnabled(true);
+                    dialogView.saveButtonEnabled().setEnabled(true);
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new KitEvents.Changed(kit.getDeliveryId()));
                     dialogView.hidePopup();
@@ -139,7 +125,6 @@ public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliv
         view.name().setValue(kit.getName());
         view.setCreatedBy(lang.createBy(kit.getCreator() == null ? "" : transliteration(kit.getCreator().getDisplayShortName()),
                 DateFormatter.formatDateTime(kit.getCreated())));
-        showModules(kit);
 
         view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
         fireEvent(new CommentAndHistoryEvents.Show(view.getItemsContainer(), kit.getId(),

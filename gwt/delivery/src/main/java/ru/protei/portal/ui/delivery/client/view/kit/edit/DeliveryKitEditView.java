@@ -4,12 +4,12 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.HeadingElement;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.TakesValue;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.core.model.ent.CaseState;
@@ -23,7 +23,6 @@ import ru.protei.portal.ui.delivery.client.activity.kit.edit.AbstractDeliveryKit
 import ru.protei.portal.ui.delivery.client.activity.kit.edit.AbstractDeliveryKitEditView;
 
 import static java.util.Collections.singletonList;
-import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.COMMENT;
 import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
@@ -43,11 +42,6 @@ public class DeliveryKitEditView extends Composite implements AbstractDeliveryKi
     @Override
     public void setActivity(AbstractDeliveryKitEditActivity activity) {
         this.activity = activity;
-    }
-
-    @Override
-    public HasWidgets getModulesContainer() {
-        return modulesContainer;
     }
 
     @Override
@@ -90,42 +84,13 @@ public class DeliveryKitEditView extends Composite implements AbstractDeliveryKi
         return name;
     }
 
-    @Override
-    public HasEnabled saveButtonEnabled() {
-        return null;
-    }
-
-    @UiHandler("backButton")
-    public void onBackClicked(ClickEvent event) {
-        if (activity != null) {
-            activity.onBackClicked();
-        }
-    }
-
-    @UiHandler( "saveButton" )
-    public void onSaveClicked( ClickEvent event ) {
-        if ( activity != null ) {
-            activity.onSaveClicked();
-        }
-    }
-
-    @UiHandler( "cancelButton" )
-    public void onCancelClicked( ClickEvent event ) {
-        if ( activity != null ) {
-            activity.onBackClicked();
-        }
-    }
-
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        backButton.ensureDebugId(DebugIds.DELIVERY.KIT.BACK_BUTTON);
         multiTabWidget.setTabNameDebugId(HISTORY, DebugIds.DELIVERY.KIT.TAB_HISTORY);
         state.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.DELIVERY.KIT.STATE);
         name.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.DELIVERY.KIT.NAME);
-        saveButton.ensureDebugId(DebugIds.DELIVERY.KIT.SAVE_BUTTON);
-        cancelButton.ensureDebugId(DebugIds.DELIVERY.KIT.CANCEL_BUTTON);
     }
 
     @UiField
@@ -137,14 +102,6 @@ public class DeliveryKitEditView extends Composite implements AbstractDeliveryKi
     ModuleStateFormSelector state;
     @UiField
     ValidableTextBox name;
-    @UiField
-    Button saveButton;
-    @UiField
-    Button cancelButton;
-    @UiField
-    HTMLPanel modulesContainer;
-    @UiField
-    Button backButton;
     @UiField
     Element createdBy;
     @UiField

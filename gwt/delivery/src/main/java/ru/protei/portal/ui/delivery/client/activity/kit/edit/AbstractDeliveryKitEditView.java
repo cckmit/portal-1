@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.delivery.client.activity.kit.edit;
 
 import com.google.gwt.user.client.TakesValue;
-import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
@@ -11,8 +10,6 @@ import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
 public interface AbstractDeliveryKitEditView extends IsWidget {
 
     void setActivity(AbstractDeliveryKitEditActivity activity);
-
-    HasWidgets getModulesContainer();
 
     void setCreatedBy(String value);
 
@@ -29,6 +26,4 @@ public interface AbstractDeliveryKitEditView extends IsWidget {
     TakesValue<CaseState> state();
 
     TakesValue<String> name();
-
-    HasEnabled saveButtonEnabled();
 }
