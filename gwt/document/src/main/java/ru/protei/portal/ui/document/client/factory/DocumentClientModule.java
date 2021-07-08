@@ -8,6 +8,9 @@ import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditVie
 import ru.protei.portal.ui.document.client.activity.edit.DocumentEditActivity;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterView;
 import ru.protei.portal.ui.document.client.activity.page.DocumentPage;
+import ru.protei.portal.ui.document.client.activity.page.DocumentTypePage;
+import ru.protei.portal.ui.document.client.activity.page.DocumentationPage;
+import ru.protei.portal.ui.document.client.activity.page.EquipmentPage;
 import ru.protei.portal.ui.document.client.activity.preview.AbstractDocumentPreviewView;
 import ru.protei.portal.ui.document.client.activity.preview.DocumentPreviewActivity;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableView;
@@ -22,7 +25,10 @@ import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeMod
 public class DocumentClientModule extends AbstractGinModule {
     @Override
     protected void configure() {
+        bind(DocumentationPage.class).asEagerSingleton();
         bind(DocumentPage.class).asEagerSingleton();
+        bind(DocumentTypePage.class).asEagerSingleton();
+        bind(EquipmentPage.class).asEagerSingleton();
 
         bind(DocumentTableActivity.class).asEagerSingleton();
         bind(AbstractDocumentTableView.class).to(DocumentTableView.class).in(Singleton.class);
