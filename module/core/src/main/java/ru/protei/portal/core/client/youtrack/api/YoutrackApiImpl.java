@@ -142,7 +142,7 @@ public class YoutrackApiImpl implements YoutrackApi {
                     put("end", String.valueOf(end.getTime()));
                     put("$skip", offset.toString());
                     put("$top", limit.toString());
-                    put("author", "porubov");
+//                    put("author", "porubov");
                 }})
                 .fillSimpleFields()
                 .fillYtFields(YtWorkItemDurationActivityItem.class, IssueWorkItem.class, YtUser.class, DurationValue.class, YtIssue.class, YtIssueCustomField.class, YtProject.class)

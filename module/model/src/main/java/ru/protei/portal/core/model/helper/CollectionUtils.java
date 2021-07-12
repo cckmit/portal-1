@@ -214,8 +214,9 @@ public class CollectionUtils {
         return result;
     }
 
-    public static <K, V> void mergeMap(Map<K, V> map1, Map<K, V> map2, BinaryOperator<V> mergeOperator) {
+    public static <K, V> Map<K, V> mergeMap(Map<K, V> map1, Map<K, V> map2, BinaryOperator<V> mergeOperator) {
         map2.forEach((key2, value2) -> map1.merge(key2, value2, mergeOperator));
+        return map1;
     }
 
     public static <T> List<T> singleValueList(T value) {
