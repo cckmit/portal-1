@@ -47,6 +47,11 @@ public abstract class DutyLogTableActivity
 
     @Event
     public void onShow(DutyLogEvents.Show event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.DUTY_LOG_VIEW)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden(init.parent));
+            return;
+        }
+
         view.clearRecords();
 
         init.parent.clear();
