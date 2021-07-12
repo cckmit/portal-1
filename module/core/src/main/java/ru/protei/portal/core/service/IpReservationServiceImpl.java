@@ -356,7 +356,7 @@ public class IpReservationServiceImpl implements IpReservationService {
                 freeIpInfoStream = freeIpInfoStream.filter(makeNRPETest(nrpeNonAvailableIps, ipInfoIterator));
             }
 
-            reservedIps = freeIpInfoStream
+            List<ReservedIp> reservations = freeIpInfoStream
                     .limit(reservedIpRequest.getNumber())
                     .map(ipInfo -> {
                         ReservedIp reservedIp = ReservedIp.createByTemplate(templateIp);
@@ -365,11 +365,20 @@ public class IpReservationServiceImpl implements IpReservationService {
                         return reservedIp;
                     }).collect(Collectors.toList());
 
-            if (ipInfoIterator.getStatus() == OK) {
-                reservedIpDAO.persistBatch(reservedIps);
-            } else {
+            if (ipInfoIterator.getStatus() != OK) {
                 return error(ipInfoIterator.getStatus());
             }
+
+            reservedIps.addAll(stream(reservations)
+                    .map(reservedIp -> {
+                        Long id = reservedIpDAO.persist(reservedIp);
+                        if (id == null) {
+                            throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
+                        }
+                        return id;
+                    })
+                    .map(this::getReservedIp)
+                    .collect(Collectors.toList()));
         }
 
         Result<List<ReservedIp>> result = ok(reservedIps)
