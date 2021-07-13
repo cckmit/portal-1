@@ -18,13 +18,14 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.app.portal.server.portal1794.PORTAL1794.WorkType.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 public class PORTAL1794 {
     static PersonDAO personDAO;
     static ContractDAO contractDAO;
-    static Map<String, Set<String>> memoCustomerToContract = new HashMap<>();
+    static Map<String, List<WorkTypeAndValue>> memoCustomerToContract = new HashMap<>();
 
     public static void main(String[] args) {
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(
@@ -169,6 +170,7 @@ public class PORTAL1794 {
     static Person createTempPerson(String email) {
         Person person = new Person();
         person.setLogins(Collections.singletonList(email));
+        person.setLogins(Collections.singletonList("CLASSIFICATION ERROR - " + email));
         return person;
     }
 
@@ -176,18 +178,21 @@ public class PORTAL1794 {
                              HashMap<String, ReportDTO> map, YtReportItem item2) {
         ReportDTO reportDTO = map.compute(item2.person.getLogins().get(0),
                 (key, value) -> value != null ? value : new ReportDTO(item2.person));
-        WorkTypeAndValue workTypeAndValue = selectWorkType(invertResearchesMap, invertSoftMap, item2.customer, item2.project);
-        Map<String, Long> spentTimeMap = createSpentTimeMap(item2.spentTime, workTypeAndValue.value);
-        switch(workTypeAndValue.workType) {
-            case NIOKR: mergeSpentTimeMap(reportDTO.niokrSpentTime, spentTimeMap); break;
-            case NMA: mergeSpentTimeMap(reportDTO.nmaSpentTime, spentTimeMap); break;
-            case CONTRACT: mergeSpentTimeMap(reportDTO.contractSpentTime, spentTimeMap); break;
-        }
-        reportDTO.issueSpentTime.merge( item2.issue, new PnpTime(item2.spentTime), PnpTime::sum);
-        processedWorkTypes.compute(workTypeAndValue.workType, (k, v) -> {
-            if (v == null) v = new HashSet<>();
-            v.addAll(workTypeAndValue.value);
-            return v;
+        List<WorkTypeAndValue> workTypeAndValueList = makeWorkType(invertResearchesMap, invertSoftMap, item2.customer, item2.project);
+        workTypeAndValueList.forEach(workTypeAndValue -> {
+            Map<String, Long> spentTimeMap = createSpentTimeMap(item2.spentTime, workTypeAndValue.value);
+            switch(workTypeAndValue.workType) {
+                case NIOKR: mergeSpentTimeMap(reportDTO.niokrSpentTime, spentTimeMap); break;
+                case NMA: mergeSpentTimeMap(reportDTO.nmaSpentTime, spentTimeMap); break;
+                case CONTRACT: mergeSpentTimeMap(reportDTO.contractSpentTime, spentTimeMap); break;
+                case GUARANTEE: mergeSpentTimeMap(reportDTO.guaranteeSpentTime, spentTimeMap); break;
+            }
+            reportDTO.issueSpentTime.merge( item2.issue, new PnpTime(item2.spentTime), PnpTime::sum);
+            processedWorkTypes.compute(workTypeAndValue.workType, (k, v) -> {
+                if (v == null) v = new HashSet<>();
+                v.addAll(workTypeAndValue.value);
+                return v;
+            });
         });
     }
 
@@ -212,43 +217,50 @@ public class PORTAL1794 {
         }
     }
 
-    static WorkTypeAndValue selectWorkType(Map<String, List<String>> invertResearchesMap, Map<String, List<String>> invertSoftMap,
-                                   String customer, String project) {
+    static List<WorkTypeAndValue> makeWorkType(Map<String, List<String>> invertResearchesMap, Map<String, List<String>> invertSoftMap,
+                                         String customer, String project) {
         if (isHomeCompany(customer)) {
             List<String> strings = invertResearchesMap.get(project);
             if (strings != null) {
-                return new WorkTypeAndValue(WorkType.NIOKR, strings);
+                return Collections.singletonList(new WorkTypeAndValue(NIOKR, strings));
             }
             strings = invertSoftMap.get(project);
             if (strings != null) {
-                return new WorkTypeAndValue(WorkType.NMA, strings);
+                return Collections.singletonList(new WorkTypeAndValue(NMA, strings));
             }
             ArrayList<String> value = new ArrayList<>();
-            value.add(project);
-            return new WorkTypeAndValue(WorkType.NIOKR, value);
+            value.add("CLASSIFICATION ERROR - " + project);
+            return Collections.singletonList(new WorkTypeAndValue(NIOKR, value));
         } else {
-            return new WorkTypeAndValue(WorkType.CONTRACT, new ArrayList<>(getContracts(customer)));
+            return getContractsAndGuarantee(customer);
         }
     }
 
-    static Set<String> getContracts(String customer) {
+    static List<WorkTypeAndValue> getContractsAndGuarantee(String customer) {
         return memoCustomerToContract.compute(customer, (k, v) -> {
             if (v != null) {
                 return v;
             }
             List<Contract> contracts = contractDAO.getByCustomerName(customer);
             if (contracts.isEmpty()) {
-                return createContractListFromCustomer(customer);
+                return Collections.singletonList(createContractListFromCustomer(customer));
             } else {
-                return contracts.stream().map(Contract::getNumber).collect(Collectors.toSet());
+                Date now = new Date();
+                Map<WorkType, List<String>> m = contracts.stream()
+                        .collect(Collectors.groupingBy(contract -> contractGuaranteeClassifier(contract, now), Collectors.mapping(Contract::getNumber, Collectors.toList())));
+                return m.entrySet().stream().map(entry -> new WorkTypeAndValue(entry.getKey(), entry.getValue())).collect(Collectors.toList());
             }
         });
     }
 
-    static Set<String> createContractListFromCustomer(String customer) {
-        Set<String> set = new HashSet<>();
-        set.add(customer);
-        return set;
+    static WorkType contractGuaranteeClassifier(Contract contract, Date now) {
+        return contract.getDateValid() == null || contract.getDateValid().after(now) ? CONTRACT : GUARANTEE;
+    }
+
+    static WorkTypeAndValue createContractListFromCustomer(String customer) {
+        List<String> list = new ArrayList<>();
+        list.add("CLASSIFICATION ERROR - " + customer);
+        return new WorkTypeAndValue(CONTRACT, list);
     }
 
     static void mergeCollectedItems(HashMap<String, ReportDTO> map1, HashMap<String, ReportDTO> map2) {
@@ -256,6 +268,7 @@ public class PORTAL1794 {
             mergeSpentTimeMap(value1.niokrSpentTime, value2.niokrSpentTime);
             mergeSpentTimeMap(value1.nmaSpentTime, value2.nmaSpentTime);
             mergeSpentTimeMap(value1.contractSpentTime, value2.contractSpentTime);
+            mergeSpentTimeMap(value1.guaranteeSpentTime, value2.guaranteeSpentTime);
             mergeMap(value1.issueSpentTime, value2.issueSpentTime, PnpTime::sum);
             return value1;
         });
@@ -278,7 +291,7 @@ public class PORTAL1794 {
     }
 
     enum WorkType {
-        NIOKR, NMA, CONTRACT
+        NIOKR, NMA, CONTRACT, GUARANTEE
     }
 
     static class PnpTime {
@@ -309,6 +322,8 @@ public class PORTAL1794 {
         Map<String, Long> nmaSpentTime;
         // Map<Project, Map<CONTRACT, SpentTime>>
         Map<String, Long> contractSpentTime;
+        // Map<Project, Map<GUARANTEE, SpentTime>>
+        Map<String, Long> guaranteeSpentTime;
 
         public ReportDTO(Person person) {
             this.person = person;
@@ -316,15 +331,18 @@ public class PORTAL1794 {
             this.niokrSpentTime = new HashMap<>();
             this.nmaSpentTime = new HashMap<>();
             this.contractSpentTime = new HashMap<>();
+            this.guaranteeSpentTime = new HashMap<>();
         }
 
         @Override
         public String toString() {
             return "ReportDTO{" +
                     "person=" + person +
+                    ", issueSpentTime=" + issueSpentTime +
                     ", niokrSpentTime=" + niokrSpentTime +
                     ", nmaSpentTime=" + nmaSpentTime +
                     ", contractSpentTime=" + contractSpentTime +
+                    ", guaranteeSpentTime=" + guaranteeSpentTime +
                     '}';
         }
     }
