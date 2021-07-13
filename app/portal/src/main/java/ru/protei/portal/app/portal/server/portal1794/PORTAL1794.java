@@ -101,6 +101,8 @@ public class PORTAL1794 {
                     new Date(2021-1900, Calendar.JULY, 1),
                     0L, 2000L
             );
+
+            HashMap<WorkType, Set<String>> processedWorkTypes = new HashMap<>();
             HashMap<String, ReportDTO> data = result.map(issueWorkItems ->
                     stream(issueWorkItems).map(issueWorkItem -> {
                         PersonQuery query = new PersonQuery();
@@ -120,7 +122,7 @@ public class PORTAL1794 {
                                 issueWorkItem.duration.minutes.longValue(),
                                 issueWorkItem.issue.project.shortName
                         );
-                    }).collect(HashMap::new, (k, v) -> collectItems(invertResearchesMap, invertSoftMap, k, v), PORTAL1794::mergeCollectedItems))
+                    }).collect(HashMap::new, (k, v) -> collectItems(processedWorkTypes, invertResearchesMap, invertSoftMap, k, v), PORTAL1794::mergeCollectedItems))
                 .getData();
 
             // вывод для по людям отработанное время, сравнения с отчетом для YT
@@ -141,18 +143,18 @@ public class PORTAL1794 {
                 sb.append(employee).append(" = ");
                 sb.append("NIOKR : ");
                 values.niokrSpentTime.forEach((k, v) -> {
-                    sb.append(k).append(" = ");
-                    v.forEach((k1, v1) -> sb.append(k1).append(" = ").append(v1).append("; "));
+                    sb.append(k).append(" = ").append(v).append("; ");
+//                    v.forEach((k1, v1) -> sb.append(k1).append(" = ").append(v1).append("; "));
                 });
                 sb.append("NMA : ");
                 values.nmaSpentTime.forEach((k, v) -> {
-                    sb.append(k).append(" = ");
-                    v.forEach((k1, v1) -> sb.append(k1).append(" = ").append(v1).append("; "));
+                    sb.append(k).append(" = ").append(v).append("; ");
+//                    v.forEach((k1, v1) -> sb.append(k1).append(" = ").append(v1).append("; "));
                 });
                 sb.append("CONTRACT : ");
                 values.contractSpentTime.forEach((k, v) -> {
-                    sb.append(k).append(" = ");
-                    v.forEach((k1, v1) -> sb.append(k1).append(" = ").append(v1).append("; "));
+                    sb.append(k).append(" = ").append(v).append("; ");
+//                    v.forEach((k1, v1) -> sb.append(k1).append(" = ").append(v1).append("; "));
                 });
                 System.out.println(sb);
             });
@@ -178,22 +180,27 @@ public class PORTAL1794 {
         return person;
     }
 
-    static void collectItems(Map<String, List<String>> invertResearchesMap, Map<String, List<String>> invertSoftMap,
+    static void collectItems(HashMap<WorkType, Set<String>> processedWorkTypes, Map<String, List<String>> invertResearchesMap, Map<String, List<String>> invertSoftMap,
                              HashMap<String, ReportDTO> map, YtReportItem item2) {
         ReportDTO reportDTO = map.compute(item2.person.getLogins().get(0),
                 (key, value) -> value != null ? value : new ReportDTO(item2.person));
         WorkTypeAndValue workTypeAndValue = selectWorkType(invertResearchesMap, invertSoftMap, item2.customer, item2.project);
         Map<String, Long> spentTimeMap = createSpentTimeMap(item2.spentTime, workTypeAndValue.value);
         switch(workTypeAndValue.workType) {
-            case NIOKR: addSpentTime(item2.project, reportDTO.niokrSpentTime, spentTimeMap); break;
-            case NMA: addSpentTime(item2.project, reportDTO.nmaSpentTime, spentTimeMap); break;
-            case CONTRACT: addSpentTime(item2.project, reportDTO.contractSpentTime, spentTimeMap); break;
+            case NIOKR: mergeSpentTimeMap(reportDTO.niokrSpentTime, spentTimeMap); break;
+            case NMA: mergeSpentTimeMap(reportDTO.nmaSpentTime, spentTimeMap); break;
+            case CONTRACT: mergeSpentTimeMap(reportDTO.contractSpentTime, spentTimeMap); break;
         }
         reportDTO.issueSpentTime.merge( item2.issue, new PnpTime(item2.spentTime), PnpTime::sum);
+        processedWorkTypes.compute(workTypeAndValue.workType, (k, v) -> {
+            if (v == null) v = new HashSet<>();
+            v.addAll(workTypeAndValue.value);
+            return v;
+        });
     }
 
-    static void addSpentTime(String project, Map<String, Map<String, Long>> map, Map<String, Long> spentTimeMap) {
-        map.merge(project, spentTimeMap, (m1, m2) -> mergeMap(m1, m2, Long::sum));
+    static Map<String, Long> mergeSpentTimeMap(Map<String, Long> map1, Map<String, Long> map2) {
+        return mergeMap(map1, map2, Long::sum);
     }
 
     static Map<String, Long> createSpentTimeMap(Long spentTime, List<String> values) {
@@ -250,16 +257,12 @@ public class PORTAL1794 {
 
     static void mergeCollectedItems(HashMap<String, ReportDTO> map1, HashMap<String, ReportDTO> map2) {
         mergeMap(map1, map2, (value1, value2) -> {
-            mergeSpentTime(value1.niokrSpentTime, value2.niokrSpentTime);
-            mergeSpentTime(value1.nmaSpentTime, value2.nmaSpentTime);
-            mergeSpentTime(value1.contractSpentTime, value2.contractSpentTime);
+            mergeSpentTimeMap(value1.niokrSpentTime, value2.niokrSpentTime);
+            mergeSpentTimeMap(value1.nmaSpentTime, value2.nmaSpentTime);
+            mergeSpentTimeMap(value1.contractSpentTime, value2.contractSpentTime);
             mergeMap(value1.issueSpentTime, value2.issueSpentTime, PnpTime::sum);
             return value1;
         });
-    }
-
-    static void mergeSpentTime(Map<String, Map<String, Long>> map1, Map<String, Map<String, Long>> map2) {
-        mergeMap(map1, map2, (m1, m2) -> mergeMap(m1, m2, Long::sum));
     }
 
     static class YtReportItem {
@@ -305,11 +308,11 @@ public class PORTAL1794 {
         Person person;
         Map<String, PnpTime> issueSpentTime;
         // Map<Project, Map<NIOKR, SpentTime>>
-        Map<String, Map<String, Long>> niokrSpentTime;
+        Map<String, Long> niokrSpentTime;
         // Map<Project, Map<NMA, SpentTime>>
-        Map<String, Map<String, Long>> nmaSpentTime;
+        Map<String, Long> nmaSpentTime;
         // Map<Project, Map<CONTRACT, SpentTime>>
-        Map<String, Map<String, Long>> contractSpentTime;
+        Map<String, Long> contractSpentTime;
 
         public ReportDTO(Person person) {
             this.person = person;
