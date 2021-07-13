@@ -3,10 +3,10 @@ package ru.protei.portal.core.model.dao.impl;
 import org.apache.commons.lang3.StringUtils;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.ContractDAO;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.query.ContractApiQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.Interval;
@@ -59,6 +59,18 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
         contract.setId(contractId);
         contract.setRefKey(refKey);
         return partialMerge(contract, "ref_key");
+    }
+
+    @Override
+    public List<Contract> getByCustomerName(String customerName) {
+        JdbcQueryParameters parameters = new JdbcQueryParameters();
+        parameters.withCondition("company.cname = ? and co_project.CASE_TYPE = " + En_CaseType.PROJECT.getId(), customerName)
+                .withJoins("inner join case_object co_contract on contract.id = co_contract.id " +
+                        "   inner join case_object co_project on co_project.ID = contract.project_id" +
+                        "   inner join company on company.id = co_project.initiator_company")
+                .withDistinct(true);
+
+        return getList(parameters);
     }
 
     private JdbcQueryParameters buildJdbcQueryParameters(ContractQuery query) {

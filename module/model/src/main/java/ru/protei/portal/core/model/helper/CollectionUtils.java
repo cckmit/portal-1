@@ -219,6 +219,20 @@ public class CollectionUtils {
         return map1;
     }
 
+    public static <K, V> Map<V, List<K>> inverseMap(Map<K, List<V>> map) {
+        Map<V, List<K>> inverseMap = new HashMap<>();
+        map.forEach((k, v) -> {
+            v.forEach(value -> {
+                inverseMap.compute(value, (k2, v2) -> {
+                    if (v2 == null) v2 = new ArrayList<>();
+                    v2.add(k);
+                    return v2;
+                });
+            });
+        });
+        return inverseMap;
+    }
+
     public static <T> List<T> singleValueList(T value) {
         List<T> list = new ArrayList<>();
         list.add(value);

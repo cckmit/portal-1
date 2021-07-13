@@ -4,7 +4,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
+import ru.protei.portal.core.model.dao.ContractDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtSingleEnumIssueCustomField;
@@ -14,19 +16,23 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.mergeMap;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 public class PORTAL1794 {
+    static PersonDAO personDAO;
+    static ContractDAO contractDAO;
+    static Map<String, Set<String>> memoCustomerToContract = new HashMap<>();
 
     public static void main(String[] args) {
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(
                 CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class);
 
         YoutrackApi api = ctx.getBean(YoutrackApi.class);
-        PersonDAO personDAO = ctx.getBean(PersonDAO.class);
+        personDAO = ctx.getBean(PersonDAO.class);
+        contractDAO = ctx.getBean(ContractDAO.class);
 
         Map<String, List<String>> niokrs = new HashMap<>();
         niokrs.put("Программа автоматического детектирования и распознавания автомобильных регистрационных знаков", Arrays.asList("EREQUESTS"));
@@ -88,14 +94,7 @@ public class PORTAL1794 {
         Map<String, List<String>> invertSoftMap = inverseMap(nmas);
 
         try {
-//            String query = String.format(" work date: %s .. %s work author: porubov", dateToYtString(new Date(2021-1900, Calendar.JUNE, 28)), dateToYtString(new Date(2021-1900, Calendar.JUNE, 28)));
-//            String query = "";
-//            Result<List< YtActivityItem >> activities = api.getActivities(
-//                    new Date(2021-1900, Calendar.JUNE, 1),
-//                    new Date(2021-1900, Calendar.JUNE, 30),
-//                    0L, 1000L,
-//                    YtActivityCategory.WorkItemDurationCategory
-//                    );
+            long start = System.currentTimeMillis();
             Result<List<IssueWorkItem>> result = api.getWorkItems(
                     new Date(2021-1900, Calendar.JUNE, 20),
                     new Date(2021-1900, Calendar.JULY, 1),
@@ -104,39 +103,15 @@ public class PORTAL1794 {
 
             HashMap<WorkType, Set<String>> processedWorkTypes = new HashMap<>();
             HashMap<String, ReportDTO> data = result.map(issueWorkItems ->
-                    stream(issueWorkItems).map(issueWorkItem -> {
-                        PersonQuery query = new PersonQuery();
-                        String email = issueWorkItem.author.email;
-                        Person person = null;
-                        if (isNotEmpty(email)) {
-                            query.setEmail(email);
-                            List<Person> persons = personDAO.getPersons(query);
-                            if (persons.size() == 1) {
-                                person = persons.get(0);
-                                person.setLogins(Collections.singletonList(email));
-                            }
-                        }
-                        return new YtReportItem(person != null ? person : createTempPerson(email),
-                                issueWorkItem.issue.idReadable,
-                                getCustomerName(issueWorkItem.issue),
-                                issueWorkItem.duration.minutes.longValue(),
-                                issueWorkItem.issue.project.shortName
-                        );
-                    }).collect(HashMap::new, (k, v) -> collectItems(processedWorkTypes, invertResearchesMap, invertSoftMap, k, v), PORTAL1794::mergeCollectedItems))
+                    stream(issueWorkItems)
+                            .map(PORTAL1794::makeYtReportItem)
+                            .collect(HashMap::new,
+                                    (k, v) -> collectItems(processedWorkTypes, invertResearchesMap, invertSoftMap, k, v),
+                                    PORTAL1794::mergeCollectedItems))
                 .getData();
 
-            // вывод для по людям отработанное время, сравнения с отчетом для YT
-/*            data.forEach((k, v) -> {
-                System.out.println("employee = " + k);
-                v.issueSpentTime.entrySet().stream()
-                        .sorted(Map.Entry.comparingByKey((String o1, String o2) -> {
-                            String[] split1 = o1.split("-");
-                            String[] split2 = o2.split("-");
-                            int comp1 = split1[0].compareTo(split2[0]);
-                            return comp1 != 0 ? comp1 : Integer.valueOf(split1[1]).compareTo(Integer.valueOf(split2[1]));
-                        }))
-                        .forEach(e2 -> System.out.println(e2.getKey() + ";" + e2.getValue().minutes));
-            });*/
+            System.out.println("time = " + (System.currentTimeMillis() - start));
+
             // вывод как должно выглядеть в отчете
             data.forEach((employee, values) -> {
                 StringBuilder sb = new StringBuilder();
@@ -144,17 +119,14 @@ public class PORTAL1794 {
                 sb.append("NIOKR : ");
                 values.niokrSpentTime.forEach((k, v) -> {
                     sb.append(k).append(" = ").append(v).append("; ");
-//                    v.forEach((k1, v1) -> sb.append(k1).append(" = ").append(v1).append("; "));
                 });
                 sb.append("NMA : ");
                 values.nmaSpentTime.forEach((k, v) -> {
                     sb.append(k).append(" = ").append(v).append("; ");
-//                    v.forEach((k1, v1) -> sb.append(k1).append(" = ").append(v1).append("; "));
                 });
                 sb.append("CONTRACT : ");
                 values.contractSpentTime.forEach((k, v) -> {
                     sb.append(k).append(" = ").append(v).append("; ");
-//                    v.forEach((k1, v1) -> sb.append(k1).append(" = ").append(v1).append("; "));
                 });
                 System.out.println(sb);
             });
@@ -164,6 +136,26 @@ public class PORTAL1794 {
         } finally {
             ctx.destroy();
         }
+    }
+
+    static YtReportItem makeYtReportItem(IssueWorkItem issueWorkItem) {
+        PersonQuery query = new PersonQuery();
+        String email = issueWorkItem.author.email;
+        Person person = null;
+        if (isNotEmpty(email)) {
+            query.setEmail(email);
+            List<Person> persons = personDAO.getPersons(query);
+            if (persons.size() == 1) {
+                person = persons.get(0);
+                person.setLogins(Collections.singletonList(email));
+            }
+        }
+        return new YtReportItem(person != null ? person : createTempPerson(email),
+                issueWorkItem.issue.idReadable,
+                getCustomerName(issueWorkItem.issue),
+                issueWorkItem.duration.minutes.longValue(),
+                issueWorkItem.issue.project.shortName
+        );
     }
 
     static String getCustomerName(YtIssue issue) {
@@ -199,15 +191,15 @@ public class PORTAL1794 {
         });
     }
 
-    static Map<String, Long> mergeSpentTimeMap(Map<String, Long> map1, Map<String, Long> map2) {
-        return mergeMap(map1, map2, Long::sum);
-    }
-
     static Map<String, Long> createSpentTimeMap(Long spentTime, List<String> values) {
         Map<String, Long> map = new HashMap<>();
         Long calcSpentTime = spentTime / values.size(); // Ошибки округления
         values.forEach(v -> map.put(v, calcSpentTime));
         return map;
+    }
+
+    static Map<String, Long> mergeSpentTimeMap(Map<String, Long> map1, Map<String, Long> map2) {
+        return mergeMap(map1, map2, Long::sum);
     }
 
     static class WorkTypeAndValue {
@@ -235,24 +227,28 @@ public class PORTAL1794 {
             value.add(project);
             return new WorkTypeAndValue(WorkType.NIOKR, value);
         } else {
-            ArrayList<String> value = new ArrayList<>();
-            value.add(project);
-            return new WorkTypeAndValue(WorkType.CONTRACT, value);
+            return new WorkTypeAndValue(WorkType.CONTRACT, new ArrayList<>(getContracts(customer)));
         }
     }
 
-    static <K, V> Map<V, List<K>> inverseMap(Map<K, List<V>> map) {
-        Map<V, List<K>> inverseMap = new HashMap<>();
-        map.forEach((k, v) -> {
-            v.forEach(value -> {
-                inverseMap.compute(value, (k2, v2) -> {
-                    if (v2 == null) v2 = new ArrayList<>();
-                    v2.add(k);
-                    return v2;
-                });
-            });
+    static Set<String> getContracts(String customer) {
+        return memoCustomerToContract.compute(customer, (k, v) -> {
+            if (v != null) {
+                return v;
+            }
+            List<Contract> contracts = contractDAO.getByCustomerName(customer);
+            if (contracts.isEmpty()) {
+                return createContractListFromCustomer(customer);
+            } else {
+                return contracts.stream().map(Contract::getNumber).collect(Collectors.toSet());
+            }
         });
-        return inverseMap;
+    }
+
+    static Set<String> createContractListFromCustomer(String customer) {
+        Set<String> set = new HashSet<>();
+        set.add(customer);
+        return set;
     }
 
     static void mergeCollectedItems(HashMap<String, ReportDTO> map1, HashMap<String, ReportDTO> map2) {
