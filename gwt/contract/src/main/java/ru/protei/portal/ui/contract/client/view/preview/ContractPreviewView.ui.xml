@@ -18,67 +18,94 @@
                         <span ui:field="description"/>
                     </div>
 
-                    <h5><ui:text from="{lang.contractContractor}"/></h5>
+                    <h5>
+                        <label ui:field="contractorLabel"><ui:text from="{lang.contractContractor}"/></label>
+                    </h5>
                     <span ui:field="contractor"/>
 
-                    <h5><ui:text from="{lang.contractCommonHeader}"/></h5>
+                    <h5>
+                        <label ui:field="contractCommonHeaderLabel"><ui:text from="{lang.contractCommonHeader}"/></label>
+                    </h5>
 
                     <div class="small">
-                        <b><ui:text from="{lang.contractDateSigning}: "/></b>
+                        <b>
+                           <label ui:field="dateSigningLabel"><ui:text from="{lang.contractDateSigning}: "/></label>
+                        </b>
                         <span ui:field="dateSigning"/>
                     </div>
                     <div class="small">
-                        <b><ui:text from="{lang.contractDateValid}: "/></b>
+                        <b>
+                           <label ui:field="dateValidLabel"><ui:text from="{lang.contractDateValid}: "/></label>
+                        </b>
                         <span ui:field="dateValid"/>
                     </div>
 
                     <div class="small">
+                        <b>
+                           <label ui:field="directionsLabel"><ui:text from="{lang.contractDirection}: "/></label>
+                        </b>
                         <b><ui:text from="{lang.contractDirection}: "/></b>
                         <span ui:field="directions"/>
                     </div>
 
                     <div class="small">
-                        <b><ui:text from="{lang.contractDeliveryNumber}: "/></b>
+                        <b>
+                           <label ui:field="deliveryNumberLabel"><ui:text from="{lang.contractDeliveryNumber}: "/></label>
+                        </b>
                         <span ui:field="deliveryNumber"/>
                     </div>
 
                     <div class="small">
-                        <b><ui:text from="{lang.contractParent}: "/></b>
+                        <b>
+                           <label ui:field="contractParentLabel"><ui:text from="{lang.contractParent}: "/></label>
+                        </b>
                         <span ui:field="contractParent"/>
                     </div>
 
                     <div class="small">
-                        <b><ui:text from="{lang.contractChild}: "/></b>
+                        <b>
+                           <label ui:field="contractChildLabel"><ui:text from="{lang.contractChild}: "/></label>
+                        </b>
                         <span ui:field="contractChild"/>
                     </div>
 
-                    <h5><ui:text from="{lang.tags}"/></h5>
+                    <h5><label ui:field="tagsLabel"><ui:text from="{lang.tags}"/></label></h5>
                     <g:HTMLPanel ui:field="tagsContainer" styleName="clearfix"/>
 
-                    <h5><ui:text from="{lang.contractWorkGroup}"/></h5>
+                    <h5><label ui:field="workGroupLabel"><ui:text from="{lang.contractWorkGroup}"/></label></h5>
 
                     <div class="small">
-                        <b><ui:text from="{lang.contractOrganization}: "/></b>
+                        <b>
+                           <label ui:field="organizationLabel"><ui:text from="{lang.contractOrganization}: "/></label>
+                        </b>
                         <span ui:field="organization"/>
                     </div>
 
                     <div class="small">
-                        <b><ui:text from="{lang.contractProject}: "/></b>
+                        <b>
+                           <label ui:field="projectLabel"><ui:text from="{lang.contractProject}: "/></label>
+                        </b>
                         <g:Anchor ui:field="project" href="#" target="_blank"/>
                     </div>
 
                     <div class="small">
-                        <b><ui:text from="{lang.contractCurator}: "/></b>
+                        <b>
+                           <label ui:field="curatorLabel"><ui:text from="{lang.contractCurator}: "/></label>
+                        </b>
                         <span ui:field="curator"/>
                     </div>
 
                     <div class="small">
-                        <b><ui:text from="{lang.contractProjectManager}: "/></b>
+                        <b>
+                           <label ui:field="projectManagerLabel"><ui:text from="{lang.contractProjectManager}: "/></label>
+                        </b>
                         <span ui:field="projectManager"/>
                     </div>
 
                     <div class="small">
-                        <b><ui:text from="{lang.contractContractSignManager}: "/></b>
+                        <b>
+                           <label ui:field="contractSignManagerLabel"><ui:text from="{lang.contractContractSignManager}: "/></label>
+                        </b>
                         <span ui:field="contractSignManager"/>
                     </div>
 
