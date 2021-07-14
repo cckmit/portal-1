@@ -11,6 +11,7 @@ import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
 
+import java.util.Date;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
@@ -59,11 +60,12 @@ public class DeliveryCommonMeta implements AbstractDeliveryCommonMeta {
     }
 
     public boolean isDepartureDateFieldValid() {
-        if (view.departureDate().getValue() == null) {
+        Date departureDate = view.departureDate().getValue();
+        if ( departureDate == null) {
             return view.isDepartureDateEmpty();
         }
 
-        return true;
+        return departureDate.getTime() > System.currentTimeMillis();
     }
 
     private void fillProjectSpecificFields(ProjectInfo projectInfo) {
