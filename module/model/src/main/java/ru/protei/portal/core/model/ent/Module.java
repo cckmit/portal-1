@@ -1,10 +1,13 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 
+import static ru.protei.portal.core.model.ent.Delivery.Columns.HW_MANAGER;
+import static ru.protei.portal.core.model.ent.Delivery.Columns.QC_MANAGER;
 import static ru.protei.portal.core.model.ent.Module.Columns.ID;
 
 
@@ -49,6 +52,13 @@ public class Module extends AuditableObject {
     private String name;
 
     /**
+     * Описание
+     */
+    @JdbcJoinedColumn(localColumn = Delivery.Columns.ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.INFO, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
+    private String description;
+
+    /**
      * Статус модуля
      */
     @JdbcJoinedColumn(localColumn = Module.Columns.ID, remoteColumn = CaseObject.Columns.ID, mappedColumn = CaseObject.Columns.STATE,
@@ -73,15 +83,43 @@ public class Module extends AuditableObject {
     @JdbcColumn(name = "parent_module_id")
     private Long parentModuleId;
 
-    @JdbcColumn(name = "hw_manager_id")
+    /**
+     * Заказчик
+     */
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "company")}, mappedColumn = "cname")
+    private Company customerName;
+
+    /**
+     * Менеджер
+     */
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = Project.Columns.MANAGER, remoteColumn = "id", table = "person")}, mappedColumn = "displayShortName")
+    private String managerName;
+
+    /**
+     * Ответственный АО
+     */
+    @JdbcColumn(name = HW_MANAGER)
     private Long hwManagerId;
 
-    @JdbcColumn(name = "qc_manager_id")
+    /**
+     * Ответственный КК
+     */
+    @JdbcColumn(name = QC_MANAGER)
     private Long qcManagerId;
 
+    /**
+     * Дата отправки
+     */
     @JdbcColumn(name = "departure_date")
     private Date departureDate;
 
+    /**
+     * Дата сборки
+     */
     @JdbcColumn(name = "build_date")
     private Date buildDate;
 
