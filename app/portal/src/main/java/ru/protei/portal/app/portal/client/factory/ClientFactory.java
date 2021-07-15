@@ -39,7 +39,7 @@ import ru.protei.portal.ui.plan.client.factory.PlanClientModule;
         EmployeeClientModule.class, EmployeeRegistrationClientModule.class,
         CompanyClientModule.class, ContactClientModule.class, ProductClientModule.class,
         ProjectClientModule.class, RegionClientModule.class, SiteFolderClientModule.class,
-        DutyLogClientModule.class, EquipmentClientModule.class, DocumentClientModule.class, DocumentTypeClientModule.class, ContractClientModule.class,
+        DutyLogClientModule.class, DocumentClientModule.class, DocumentTypeClientModule.class, EquipmentClientModule.class, ContractClientModule.class,
         IpReservationClientModule.class, RoomReservationClientModule.class, EducationClientModule.class,
         RoleClientModule.class, AccountClientModule.class,
         AbsenceClientModule.class, CommonClientModule.class, DeliveryClientModule.class
