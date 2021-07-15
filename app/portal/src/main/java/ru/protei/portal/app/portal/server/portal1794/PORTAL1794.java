@@ -6,9 +6,7 @@ import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.model.dao.ContractDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtSingleEnumIssueCustomField;
 import ru.protei.portal.core.model.youtrack.dto.issue.IssueWorkItem;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
@@ -16,16 +14,13 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-import static ru.protei.portal.app.portal.server.portal1794.PORTAL1794.WorkType.*;
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.inverseMap;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class PORTAL1794 {
     static PersonDAO personDAO;
     static ContractDAO contractDAO;
-    static Map<String, List<WorkTypeAndValue>> memoCustomerToContract = new HashMap<>();
 
     public static void main(String[] args) {
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(
@@ -102,13 +97,15 @@ public class PORTAL1794 {
                     0L, 2000L
             );
 
-            HashMap<WorkType, Set<String>> processedWorkTypes = new HashMap<>();
-            HashMap<String, ReportDTO> data = result.map(issueWorkItems ->
+            Collector1794 collector = new Collector1794(
+                invertResearchesMap,
+                invertSoftMap,
+                contractDAO::getByCustomerName
+            );
+            Map<String, ReportDTO> data = result.map(issueWorkItems ->
                     stream(issueWorkItems)
                             .map(PORTAL1794::makeYtReportItem)
-                            .collect(HashMap::new,
-                                    (k, v) -> collectItems(processedWorkTypes, invertResearchesMap, invertSoftMap, k, v),
-                                    PORTAL1794::mergeCollectedItems))
+                            .collect(collector))
                 .getData();
 
             System.out.println("time = " + (System.currentTimeMillis() - start));
@@ -140,18 +137,8 @@ public class PORTAL1794 {
     }
 
     static YtReportItem makeYtReportItem(IssueWorkItem issueWorkItem) {
-        PersonQuery query = new PersonQuery();
-        String email = issueWorkItem.author.email;
-        Person person = null;
-        if (isNotEmpty(email)) {
-            query.setEmail(email);
-            List<Person> persons = personDAO.getPersons(query);
-            if (persons.size() == 1) {
-                person = persons.get(0);
-                person.setLogins(Collections.singletonList(email));
-            }
-        }
-        return new YtReportItem(person != null ? person : createTempPerson(email),
+        return new YtReportItem(
+                issueWorkItem.author.email,
                 issueWorkItem.issue.idReadable,
                 getCustomerName(issueWorkItem.issue),
                 issueWorkItem.duration.minutes.longValue(),
@@ -174,119 +161,39 @@ public class PORTAL1794 {
         return person;
     }
 
-    static void collectItems(HashMap<WorkType, Set<String>> processedWorkTypes, Map<String, List<String>> invertResearchesMap, Map<String, List<String>> invertSoftMap,
-                             HashMap<String, ReportDTO> map, YtReportItem item2) {
-        ReportDTO reportDTO = map.compute(item2.person.getLogins().get(0),
-                (key, value) -> value != null ? value : new ReportDTO(item2.person));
-        List<WorkTypeAndValue> workTypeAndValueList = makeWorkType(invertResearchesMap, invertSoftMap, item2.customer, item2.project);
-        workTypeAndValueList.forEach(workTypeAndValue -> {
-            Map<String, Long> spentTimeMap = createSpentTimeMap(item2.spentTime, workTypeAndValue.value);
-            switch(workTypeAndValue.workType) {
-                case NIOKR: mergeSpentTimeMap(reportDTO.niokrSpentTime, spentTimeMap); break;
-                case NMA: mergeSpentTimeMap(reportDTO.nmaSpentTime, spentTimeMap); break;
-                case CONTRACT: mergeSpentTimeMap(reportDTO.contractSpentTime, spentTimeMap); break;
-                case GUARANTEE: mergeSpentTimeMap(reportDTO.guaranteeSpentTime, spentTimeMap); break;
-            }
-            reportDTO.issueSpentTime.merge( item2.issue, new PnpTime(item2.spentTime), PnpTime::sum);
-            processedWorkTypes.compute(workTypeAndValue.workType, (k, v) -> {
-                if (v == null) v = new HashSet<>();
-                v.addAll(workTypeAndValue.value);
-                return v;
-            });
-        });
-    }
-
-    static Map<String, Long> createSpentTimeMap(Long spentTime, List<String> values) {
-        Map<String, Long> map = new HashMap<>();
-        Long calcSpentTime = spentTime / values.size(); // Ошибки округления
-        values.forEach(v -> map.put(v, calcSpentTime));
-        return map;
-    }
-
-    static Map<String, Long> mergeSpentTimeMap(Map<String, Long> map1, Map<String, Long> map2) {
-        return mergeMap(map1, map2, Long::sum);
-    }
-
-    static class WorkTypeAndValue {
-        WorkType workType;
-        List<String> value;
-
-        public WorkTypeAndValue(WorkType workType, List<String> value) {
-            this.workType = workType;
-            this.value = value;
-        }
-    }
-
-    static List<WorkTypeAndValue> makeWorkType(Map<String, List<String>> invertResearchesMap, Map<String, List<String>> invertSoftMap,
-                                         String customer, String project) {
-        if (isHomeCompany(customer)) {
-            List<String> strings = invertResearchesMap.get(project);
-            if (strings != null) {
-                return Collections.singletonList(new WorkTypeAndValue(NIOKR, strings));
-            }
-            strings = invertSoftMap.get(project);
-            if (strings != null) {
-                return Collections.singletonList(new WorkTypeAndValue(NMA, strings));
-            }
-            ArrayList<String> value = new ArrayList<>();
-            value.add("CLASSIFICATION ERROR - " + project);
-            return Collections.singletonList(new WorkTypeAndValue(NIOKR, value));
-        } else {
-            return getContractsAndGuarantee(customer);
-        }
-    }
-
-    static List<WorkTypeAndValue> getContractsAndGuarantee(String customer) {
-        return memoCustomerToContract.compute(customer, (k, v) -> {
-            if (v != null) {
-                return v;
-            }
-            List<Contract> contracts = contractDAO.getByCustomerName(customer);
-            if (contracts.isEmpty()) {
-                return Collections.singletonList(createContractListFromCustomer(customer));
-            } else {
-                Date now = new Date();
-                Map<WorkType, List<String>> m = contracts.stream()
-                        .collect(Collectors.groupingBy(contract -> contractGuaranteeClassifier(contract, now), Collectors.mapping(Contract::getNumber, Collectors.toList())));
-                return m.entrySet().stream().map(entry -> new WorkTypeAndValue(entry.getKey(), entry.getValue())).collect(Collectors.toList());
-            }
-        });
-    }
-
-    static WorkType contractGuaranteeClassifier(Contract contract, Date now) {
-        return contract.getDateValid() == null || contract.getDateValid().after(now) ? CONTRACT : GUARANTEE;
-    }
-
-    static WorkTypeAndValue createContractListFromCustomer(String customer) {
-        List<String> list = new ArrayList<>();
-        list.add("CLASSIFICATION ERROR - " + customer);
-        return new WorkTypeAndValue(CONTRACT, list);
-    }
-
-    static void mergeCollectedItems(HashMap<String, ReportDTO> map1, HashMap<String, ReportDTO> map2) {
-        mergeMap(map1, map2, (value1, value2) -> {
-            mergeSpentTimeMap(value1.niokrSpentTime, value2.niokrSpentTime);
-            mergeSpentTimeMap(value1.nmaSpentTime, value2.nmaSpentTime);
-            mergeSpentTimeMap(value1.contractSpentTime, value2.contractSpentTime);
-            mergeSpentTimeMap(value1.guaranteeSpentTime, value2.guaranteeSpentTime);
-            mergeMap(value1.issueSpentTime, value2.issueSpentTime, PnpTime::sum);
-            return value1;
-        });
-    }
-
     static class YtReportItem {
-        Person person;
-        String issue;
-        String customer;
-        Long spentTime;
-        String project;
+        final String email;
+        final String issue;
+        final String customer;
+        final Long spentTime;
+        final String project;
 
-        public YtReportItem(Person person, String issue, String customer, Long spentTime, String project) {
-            this.person = person;
+        public YtReportItem(String email, String issue, String customer, Long spentTime, String project) {
+            this.email = email;
             this.issue = issue;
             this.customer = customer;
             this.spentTime = spentTime;
             this.project = project;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public String getIssue() {
+            return issue;
+        }
+
+        public String getCustomer() {
+            return customer;
+        }
+
+        public Long getSpentTime() {
+            return spentTime;
+        }
+
+        public String getProject() {
+            return project;
         }
     }
 
@@ -294,39 +201,38 @@ public class PORTAL1794 {
         NIOKR, NMA, CONTRACT, GUARANTEE
     }
 
-    static class PnpTime {
+    static class RepresentTime {
         final Long minutes;
         final String represent;
 
-        PnpTime(Long minutes) {
+        public RepresentTime(Long minutes) {
             this.minutes = minutes;
             this.represent = makeRepresent(this.minutes);
         }
 
-        PnpTime sum(PnpTime pnpTime) {
-            return new PnpTime(this.minutes + pnpTime.minutes);
+        public RepresentTime sum(RepresentTime other) {
+            return new RepresentTime(this.minutes + other.minutes);
         }
 
-        String makeRepresent(Long minutes) {
+        private String makeRepresent(Long minutes) {
             long h = minutes / 60;
             return String.format("%s ч. %s m.", h, minutes - h*60);
         }
     }
 
     static class ReportDTO {
-        Person person;
-        Map<String, PnpTime> issueSpentTime;
+        // список обработанных YtWorkItems для статистики / дебага
+        final Map<String, RepresentTime> issueSpentTime;
         // Map<Project, Map<NIOKR, SpentTime>>
-        Map<String, Long> niokrSpentTime;
+        final Map<String, Long> niokrSpentTime;
         // Map<Project, Map<NMA, SpentTime>>
-        Map<String, Long> nmaSpentTime;
+        final Map<String, Long> nmaSpentTime;
         // Map<Project, Map<CONTRACT, SpentTime>>
-        Map<String, Long> contractSpentTime;
+        final Map<String, Long> contractSpentTime;
         // Map<Project, Map<GUARANTEE, SpentTime>>
-        Map<String, Long> guaranteeSpentTime;
+        final Map<String, Long> guaranteeSpentTime;
 
-        public ReportDTO(Person person) {
-            this.person = person;
+        public ReportDTO() {
             this.issueSpentTime = new HashMap<>();
             this.niokrSpentTime = new HashMap<>();
             this.nmaSpentTime = new HashMap<>();
@@ -334,10 +240,29 @@ public class PORTAL1794 {
             this.guaranteeSpentTime = new HashMap<>();
         }
 
+        public Map<String, RepresentTime> getIssueSpentTime() {
+            return issueSpentTime;
+        }
+
+        public Map<String, Long> getNiokrSpentTime() {
+            return niokrSpentTime;
+        }
+
+        public Map<String, Long> getNmaSpentTime() {
+            return nmaSpentTime;
+        }
+
+        public Map<String, Long> getContractSpentTime() {
+            return contractSpentTime;
+        }
+
+        public Map<String, Long> getGuaranteeSpentTime() {
+            return guaranteeSpentTime;
+        }
+
         @Override
         public String toString() {
             return "ReportDTO{" +
-                    "person=" + person +
                     ", issueSpentTime=" + issueSpentTime +
                     ", niokrSpentTime=" + niokrSpentTime +
                     ", nmaSpentTime=" + nmaSpentTime +
