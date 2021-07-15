@@ -1,12 +1,13 @@
 package ru.protei.portal.app.portal.server.portal1794;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.model.dao.ContractDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtSingleEnumIssueCustomField;
 import ru.protei.portal.core.model.youtrack.dto.issue.IssueWorkItem;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
@@ -17,18 +18,17 @@ import java.util.*;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.inverseMap;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 public class PORTAL1794 {
-    static PersonDAO personDAO;
-    static ContractDAO contractDAO;
 
     public static void main(String[] args) {
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(
                 CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class);
 
         YoutrackApi api = ctx.getBean(YoutrackApi.class);
-        personDAO = ctx.getBean(PersonDAO.class);
-        contractDAO = ctx.getBean(ContractDAO.class);
+        PersonDAO personDAO = ctx.getBean(PersonDAO.class);
+        ContractDAO contractDAO = ctx.getBean(ContractDAO.class);
 
         Map<String, List<String>> niokrs = new HashMap<>();
         niokrs.put("Программа автоматического детектирования и распознавания автомобильных регистрационных знаков", Arrays.asList("EREQUESTS"));
@@ -91,22 +91,25 @@ public class PORTAL1794 {
 
         try {
             long start = System.currentTimeMillis();
-            Result<List<IssueWorkItem>> result = api.getWorkItems(
-                    new Date(2021-1900, Calendar.JUNE, 20),
-                    new Date(2021-1900, Calendar.JULY, 1),
-                    0L, 2000L
+
+            Iterator1794 iterator1794 = new Iterator1794((offset, limit) ->
+                    api.getWorkItems(new Date(2021 - 1900, Calendar.JUNE, 20), new Date(2021 - 1900, Calendar.JULY, 1), offset, limit),
+                    100);
+
+            Collector1794 collector1794 = new Collector1794(
+                    invertResearchesMap,
+                    invertSoftMap,
+                    contractDAO::getByCustomerName,
+                    email -> getPersonByEmail(email, personDAO)
             );
 
-            Collector1794 collector = new Collector1794(
-                invertResearchesMap,
-                invertSoftMap,
-                contractDAO::getByCustomerName
-            );
-            Map<String, ReportDTO> data = result.map(issueWorkItems ->
-                    stream(issueWorkItems)
-                            .map(PORTAL1794::makeYtReportItem)
-                            .collect(collector))
-                .getData();
+            Map<String, ReportDTO> data = stream(iterator1794)
+                    .map(PORTAL1794::makeYtReportItem)
+                    .collect(collector1794);
+
+            if (iterator1794.getStatus() != En_ResultStatus.OK) {
+                System.out.println("error = " + iterator1794.getStatus());
+            }
 
             System.out.println("time = " + (System.currentTimeMillis() - start));
 
@@ -127,6 +130,11 @@ public class PORTAL1794 {
                     sb.append(k).append(" = ").append(v).append("; ");
                 });
                 System.out.println(sb);
+                sb.append("GARANT : ");
+                values.getGuaranteeSpentTime().forEach((k, v) -> {
+                    sb.append(k).append(" = ").append(v).append("; ");
+                });
+                System.out.println(sb);
             });
 
         } catch (Throwable t) {
@@ -134,6 +142,20 @@ public class PORTAL1794 {
         } finally {
             ctx.destroy();
         }
+    }
+
+    static Person getPersonByEmail(String email, PersonDAO personDAO) {
+        PersonQuery query = new PersonQuery();
+        Person person = null;
+        if (isNotEmpty(email)) {
+            query.setEmail(email);
+            List<Person> persons = personDAO.getPersons(query);
+            if (persons.size() == 1) {
+                person = persons.get(0);
+                person.setLogins(Collections.singletonList(email));
+            }
+        }
+        return person != null ? person : createTempPerson(email);
     }
 
     static YtReportItem makeYtReportItem(IssueWorkItem issueWorkItem) {
@@ -221,16 +243,17 @@ public class PORTAL1794 {
     }
 
     static class ReportDTO {
+        private Person person;        
         // список обработанных YtWorkItems для статистики / дебага
-        final Map<String, RepresentTime> issueSpentTime;
+        final private Map<String, RepresentTime> issueSpentTime;
         // Map<Project, Map<NIOKR, SpentTime>>
-        final Map<String, Long> niokrSpentTime;
+        final private Map<String, Long> niokrSpentTime;
         // Map<Project, Map<NMA, SpentTime>>
-        final Map<String, Long> nmaSpentTime;
+        final private Map<String, Long> nmaSpentTime;
         // Map<Project, Map<CONTRACT, SpentTime>>
-        final Map<String, Long> contractSpentTime;
+        final private  Map<String, Long> contractSpentTime;
         // Map<Project, Map<GUARANTEE, SpentTime>>
-        final Map<String, Long> guaranteeSpentTime;
+        final private Map<String, Long> guaranteeSpentTime;
 
         public ReportDTO() {
             this.issueSpentTime = new HashMap<>();
@@ -260,21 +283,9 @@ public class PORTAL1794 {
             return guaranteeSpentTime;
         }
 
-        @Override
-        public String toString() {
-            return "ReportDTO{" +
-                    ", issueSpentTime=" + issueSpentTime +
-                    ", niokrSpentTime=" + niokrSpentTime +
-                    ", nmaSpentTime=" + nmaSpentTime +
-                    ", contractSpentTime=" + contractSpentTime +
-                    ", guaranteeSpentTime=" + guaranteeSpentTime +
-                    '}';
+        public void setPerson(Person person) {
+            this.person = person;
         }
-    }
-
-    static Set<String> homeCompany = new HashSet<>(Arrays.asList(null, "НТЦ Протей", "Нет заказчика", "Протей СТ"));
-    static boolean isHomeCompany(String company) {
-        return homeCompany.contains(company);
     }
 
     static model.WorkType makeWorkType(String workType, String type, String workBase) {

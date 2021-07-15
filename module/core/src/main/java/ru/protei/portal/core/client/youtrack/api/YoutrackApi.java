@@ -31,7 +31,7 @@ public interface YoutrackApi {
 
     Result<List<YtActivityItem>> getActivities(Date start, Date end, Long offset, Long limit, YtActivityCategory categories);
 
-    Result<List<IssueWorkItem>> getWorkItems(Date start, Date end, Long offset, Long limit);
+    Result<List<IssueWorkItem>> getWorkItems(Date start, Date end, int offset, int limit);
 
     Result<List<IssueTimeTracking>> getWorkItem(String ytIssueId);
 

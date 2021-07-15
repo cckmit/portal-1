@@ -1,6 +1,7 @@
 package ru.protei.portal.app.portal.server.portal1794;
 
 import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.ent.Person;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -23,11 +24,14 @@ public class Collector1794 implements Collector<
     private final Map<String, List<String>> invertResearchesMap;
     private final Map<String, List<String>> invertSoftMap;
     private final Function<String, List<Contract>> getContractsByCustomer;
+    private final Function<String, Person> getPersonByEmail;
 
-    public Collector1794(Map<String, List<String>> invertResearchesMap, Map<String, List<String>> invertSoftMap, Function<String, List<Contract>> getContractsByCustomer) {
+    public Collector1794(Map<String, List<String>> invertResearchesMap, Map<String, List<String>> invertSoftMap,
+                         Function<String, List<Contract>> getContractsByCustomer, Function<String, Person> getPersonByEmail) {
         this.invertResearchesMap = invertResearchesMap;
         this.invertSoftMap = invertSoftMap;
         this.getContractsByCustomer = getContractsByCustomer;
+        this.getPersonByEmail = getPersonByEmail;
     }
 
     @Override
@@ -47,7 +51,7 @@ public class Collector1794 implements Collector<
                              PORTAL1794.YtReportItem ytReportItem) {
         PORTAL1794.ReportDTO reportDTO = accumulator.compute(ytReportItem.getEmail(), (email, dto) -> dto != null ? dto : new PORTAL1794.ReportDTO());
         List<WorkTypeAndValue> workTypeAndValueList = makeWorkType(invertResearchesMap, invertSoftMap, ytReportItem.getCustomer(), ytReportItem.getProject());
-        workTypeAndValueList.forEach(workTypeAndValue -> {
+        for (WorkTypeAndValue workTypeAndValue : workTypeAndValueList) {
             Map<String, Long> spentTimeMap = createSpentTimeMap(ytReportItem.getSpentTime(), workTypeAndValue.getValue());
             switch(workTypeAndValue.getWorkType()) {
                 case NIOKR: mergeSpentTimeMap(reportDTO.getNiokrSpentTime(), spentTimeMap); break;
@@ -63,7 +67,7 @@ public class Collector1794 implements Collector<
                 value.addAll(workTypeAndValue.getValue());
                 return value;
             });
-        });
+        }
     }
 
     static private Map<String, Long> createSpentTimeMap(Long spentTime, List<String> values) {
@@ -148,12 +152,15 @@ public class Collector1794 implements Collector<
 
     @Override
     public Function<Map<String, PORTAL1794.ReportDTO>, Map<String, PORTAL1794.ReportDTO>> finisher() {
-        return Function.identity();
+        return map -> {
+            map.forEach((email, reportDTO) -> reportDTO.setPerson(getPersonByEmail.apply(email)));
+            return map;
+        };
     }
 
     @Override
     public Set<Characteristics> characteristics() {
-        return Collections.singleton(Characteristics.IDENTITY_FINISH);
+        return new HashSet<>();
     }
 
     static class WorkTypeAndValue {
