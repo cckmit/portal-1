@@ -1,0 +1,16 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:kits='urn:import:ru.protei.portal.ui.common.client.widget.delivery.optionlist.kit'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="p-3">
+        <div class="row">
+            <kits:KitList ui:field="kits" styleName="col-md-3">
+            </kits:KitList>
+            <g:HTMLPanel ui:field="modulesContainer" styleName="col-md-3">
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="moduleEditContainer" styleName="col-md-6"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

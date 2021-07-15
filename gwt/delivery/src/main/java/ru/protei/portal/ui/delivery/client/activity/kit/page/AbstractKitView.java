@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.activity.kit.table;
+package ru.protei.portal.ui.delivery.client.activity.kit.page;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -11,7 +11,7 @@ public interface AbstractKitView extends IsWidget {
 
     void fillKits(List<Kit> kitSet);
 
-    HasWidgets getModuleTableContainer();
+    HasWidgets getModulesContainer();
 
     HasWidgets getModuleEditContainer();
 }

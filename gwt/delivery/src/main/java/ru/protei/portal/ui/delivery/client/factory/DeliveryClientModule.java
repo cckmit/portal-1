@@ -7,8 +7,8 @@ import ru.protei.portal.ui.delivery.client.activity.create.DeliveryCreateActivit
 import ru.protei.portal.ui.delivery.client.activity.edit.*;
 import ru.protei.portal.ui.delivery.client.activity.kit.add.AbstractDeliveryKitAddView;
 import ru.protei.portal.ui.delivery.client.activity.kit.add.DeliveryKitAddActivity;
-import ru.protei.portal.ui.delivery.client.activity.kit.table.AbstractKitView;
-import ru.protei.portal.ui.delivery.client.activity.kit.table.KitActivity;
+import ru.protei.portal.ui.delivery.client.activity.kit.page.AbstractKitView;
+import ru.protei.portal.ui.delivery.client.activity.kit.page.KitActivity;
 import ru.protei.portal.ui.delivery.client.activity.meta.AbstractDeliveryMetaView;
 import ru.protei.portal.ui.delivery.client.activity.meta.DeliveryMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.page.DeliveryPage;
@@ -16,7 +16,7 @@ import ru.protei.portal.ui.delivery.client.activity.table.AbstractDeliveryTableV
 import ru.protei.portal.ui.delivery.client.activity.table.DeliveryTableActivity;
 import ru.protei.portal.ui.delivery.client.view.create.DeliveryCreateView;
 import ru.protei.portal.ui.delivery.client.view.edit.DeliveryEditView;
-import ru.protei.portal.ui.delivery.client.view.kit.table.KitView;
+import ru.protei.portal.ui.delivery.client.view.kit.page.KitView;
 import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
 import ru.protei.portal.ui.delivery.client.view.table.DeliveryTableView;
 import ru.protei.portal.ui.delivery.client.view.kit.add.DeliveryKitAddView;

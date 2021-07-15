@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.activity.kit.table;
+package ru.protei.portal.ui.delivery.client.activity.kit.page;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -14,6 +14,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     @Inject
     public void onInit() {
         view.setActivity(this);
+        moduleView.setActivity(this);
     }
 
     @Event
@@ -41,6 +42,8 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     @Inject
     AbstractKitView view;
+    @Inject
+    AbstractModuleView moduleView;
 
     @Inject
     private DeliveryControllerAsync deliveryService;

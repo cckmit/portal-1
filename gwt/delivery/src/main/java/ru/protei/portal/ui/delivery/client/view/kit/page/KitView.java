@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.view.kit.table;
+package ru.protei.portal.ui.delivery.client.view.kit.page;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -12,8 +12,8 @@ import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.ui.common.client.events.EditEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.delivery.optionlist.kit.KitList;
-import ru.protei.portal.ui.delivery.client.activity.kit.table.AbstractKitActivity;
-import ru.protei.portal.ui.delivery.client.activity.kit.table.AbstractKitView;
+import ru.protei.portal.ui.delivery.client.activity.kit.page.AbstractKitActivity;
+import ru.protei.portal.ui.delivery.client.activity.kit.page.AbstractKitView;
 
 import java.util.List;
 
@@ -36,8 +36,8 @@ public class KitView extends Composite implements AbstractKitView {
 
 
     @Override
-    public HasWidgets getModuleTableContainer() {
-        return moduleTableContainer;
+    public HasWidgets getModulesContainer() {
+        return modulesContainer;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class KitView extends Composite implements AbstractKitView {
     @UiField(provided = true)
     KitList kits;
     @UiField
-    HTMLPanel moduleTableContainer;
+    HTMLPanel modulesContainer;
     @UiField
     HTMLPanel moduleEditContainer;
 

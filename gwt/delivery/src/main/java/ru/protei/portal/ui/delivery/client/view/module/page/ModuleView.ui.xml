@@ -6,11 +6,7 @@
 
     <g:HTMLPanel styleName="p-3">
         <div class="row">
-            <kits:KitList ui:field="kits" styleName="col-md-3">
-            </kits:KitList>
-            <g:HTMLPanel ui:field="moduleTableContainer" styleName="col-md-3">
-            </g:HTMLPanel>
-            <g:HTMLPanel ui:field="moduleEditContainer" styleName="col-md-6"/>
+
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>
