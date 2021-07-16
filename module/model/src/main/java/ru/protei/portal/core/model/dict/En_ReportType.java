@@ -34,6 +34,11 @@ public enum En_ReportType {
      * Отчет по ночным работам
      */
     NIGHT_WORK,
+
+    /**
+     * Отчет по трудозатратам
+     */
+    YT_WORK,
     ;
 
     public static boolean isTimeLimitMandatory(En_ReportType type) {

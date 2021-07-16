@@ -24,7 +24,7 @@ public class ReportYtWorkCollector implements Collector<
         Map<String, ReportYtWorkItem>,
         List<ReportYtWorkItem>> {
 
-    private final Map<En_ReportYtWorkType, Set<String>> processedWorkTypes = new ConcurrentHashMap<>();
+    private final Map<En_ReportYtWorkType, Set<String>> processedWorkTypes;
     private final Map<String, List<WorkTypeAndValue>> memoCustomerToContract = new ConcurrentHashMap<>();
 
     private final Map<String, List<String>> niokrs;
@@ -45,6 +45,11 @@ public class ReportYtWorkCollector implements Collector<
         this.getPersonByEmail = getPersonByEmail;
         this.now = now;
         this.homeCompany = homeCompany;
+        processedWorkTypes = new LinkedHashMap<>();
+        processedWorkTypes.put(NIOKR, new HashSet<>());
+        processedWorkTypes.put(NMA, new HashSet<>());
+        processedWorkTypes.put(CONTRACT, new HashSet<>());
+        processedWorkTypes.put(GUARANTEE, new HashSet<>());
     }
 
     @Override

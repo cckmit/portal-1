@@ -12,7 +12,7 @@ import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.PersonQuery;
-import ru.protei.portal.core.model.query.ReportYtWorkQuery;
+import ru.protei.portal.core.model.query.YtWorkQuery;
 import ru.protei.portal.core.model.struct.ReportYtWorkInfo;
 import ru.protei.portal.core.model.struct.ReportYtWorkItem;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtSingleEnumIssueCustomField;
@@ -114,7 +114,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
     @Override
     public boolean writeReport(OutputStream buffer,
                                Report report,
-                               ReportYtWorkQuery query,
+                               YtWorkQuery query,
                                Predicate<Long> isCancel) throws IOException {
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
@@ -122,7 +122,9 @@ public class ReportYtWorkImpl implements ReportYtWork {
         log.debug("writeReport : reportId={} to process", report.getId());
 
         ReportYtWorkIterator iterator = new ReportYtWorkIterator(
-                (offset, limit) -> api.getWorkItems(query.getFrom(), query.getTo(), offset, limit),
+                (offset, limit) -> api.getWorkItems(
+                        query.getDateRange().getFrom(), query.getDateRange().getTo(),
+                        offset, limit),
                 () -> isCancel.test(report.getId()),
                 config.data().reportConfig().getChunkSize()
         );

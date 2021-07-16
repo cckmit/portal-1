@@ -10,10 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.query.BaseQuery;
-import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.query.ContractQuery;
-import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.util.CaseStateUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -23,6 +20,7 @@ import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContrac
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYtWorkFilterView;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseFilterControllerAsync;
@@ -63,6 +61,7 @@ public abstract class ReportEditActivity implements Activity,
         projectFilterWidget.clearFooterStyles();
 
         contractFilterView.clearFooterStyle();
+        ytWorkFilterView.clearFooterStyle();
         view.fillReportScheduledTypes(asList(En_ReportScheduledType.values()));
     }
 
@@ -76,6 +75,7 @@ public abstract class ReportEditActivity implements Activity,
         issueFilterWidget.resetFilter(null);
         projectFilterWidget.resetFilter();
         contractFilterView.resetFilter();
+        ytWorkFilterView.resetFilter();
         updateCompanyModels(event.profile);
     }
 
@@ -216,6 +216,9 @@ public abstract class ReportEditActivity implements Activity,
                 fillFilter((ContractQuery)query);
                 break;
             }
+            case YT_WORK:
+                fillFilter((YtWorkQuery)query);
+                break;
         }
         view.additionalParams().setValue(additionalParams);
     }
@@ -302,6 +305,10 @@ public abstract class ReportEditActivity implements Activity,
         });
     }
 
+    private void fillFilter(YtWorkQuery query) {
+        ytWorkFilterView.date().setValue(fromDateRange(query.getDateRange()));
+    }
+
     private Set<EntityOption> collectCompanies(Collection<EntityOption> companies, Collection<Long> companyIds) {
         return stream(companies)
                 .filter(company ->
@@ -362,6 +369,9 @@ public abstract class ReportEditActivity implements Activity,
                 ContractQuery query = getContractQuery();
                 return new ReportContractQuery(report, query);
             }
+            case YT_WORK:
+                YtWorkQuery query = getYtWorkQuery();
+                return new ReportYtWorkQuery(report, query);
         }
         throw new IllegalStateException("No switch branch matched for En_ReportType");
     }
@@ -414,6 +424,14 @@ public abstract class ReportEditActivity implements Activity,
                 view.getFilterContainer().add(issueFilterWidget.asWidget());
                 break;
             }
+            case YT_WORK:
+                ytWorkFilterView.resetFilter();
+                view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
+                view.getFilterContainer().clear();
+                view.getFilterContainer().add(ytWorkFilterView.asWidget());
+                view.scheduledTypeContainerVisibility().setVisible(false);
+                view.additionalParamsVisibility().setVisible(false);
+                view.additionalParams().setValue(null);
         }
     }
 
@@ -665,6 +683,12 @@ public abstract class ReportEditActivity implements Activity,
         return query;
     }
 
+    private YtWorkQuery getYtWorkQuery() {
+        YtWorkQuery query = new YtWorkQuery();
+        query.setDateRange(toDateRange(ytWorkFilterView.date().getValue()));
+        return query;
+    }
+
     private void updateCompanyModels(Profile profile) {
         Company userCompany = profile.getCompany();
         subcontractorCompanyModel.setCompanyId(userCompany.getId());
@@ -699,6 +723,8 @@ public abstract class ReportEditActivity implements Activity,
     ProjectFilterWidgetModel projectFilterModel;
     @Inject
     AbstractContractFilterView contractFilterView;
+    @Inject
+    AbstractYtWorkFilterView ytWorkFilterView;
 
     @Inject
     CompanyModel companyModel;

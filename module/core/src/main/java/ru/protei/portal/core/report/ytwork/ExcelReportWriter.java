@@ -5,6 +5,7 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.ListBuilder;
 import ru.protei.portal.core.model.struct.ReportYtWorkItem;
 import ru.protei.portal.core.report.ReportWriter;
@@ -30,8 +31,8 @@ public class ExcelReportWriter implements
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang, Map<En_ReportYtWorkType, Set<String>> processedWorkTypes) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
-        this.formats = getFormats();
         this.processedWorkTypes = processedWorkTypes;
+        this.formats = getFormats();
     }
 
     @Override
@@ -103,7 +104,12 @@ public class ExcelReportWriter implements
     public Object[] getColumnValues(ReportYtWorkItem item) {
         List<Object> values = new ArrayList<>();
 
-        values.add(item.getPerson().getDisplayShortName());
+        Person person = item.getPerson();
+        if (person.getId() != null) {
+            values.add(item.getPerson().getDisplayShortName());
+        } else {
+            values.add(item.getPerson().getLogins().get(0));
+        }
 
         processedWorkTypes.forEach((ytWorkType, strings) -> {
             strings.forEach(value -> {
