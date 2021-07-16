@@ -70,7 +70,7 @@ public class ExcelReportWriter implements
     }
 
     @Override
-    public String[] getColumnNames() {
+    public String[] getLangColumnNames() {
         return new String[] { "ar_employee", "ar_from_time", "ar_till_time", "ar_reason", "ar_comment" };
     }
 

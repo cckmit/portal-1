@@ -89,7 +89,7 @@ public class ExcelReportWriter implements
     }
 
     @Override
-    public String[] getColumnNames() {
+    public String[] getLangColumnNames() {
         return new String[] {
                 "cr_number",
                 "cr_contractor",

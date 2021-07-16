@@ -19,7 +19,6 @@ import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtSingleEnumIs
 import ru.protei.portal.core.model.youtrack.dto.issue.IssueWorkItem;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
 import ru.protei.portal.core.report.ReportWriter;
-import ru.protei.portal.core.utils.EnumLangUtil;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -153,7 +152,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
             }
         }
 
-        try (ReportWriter<ReportYtWorkItem> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang))) {
+        try (ReportWriter<ReportYtWorkItem> writer = new ExcelReportWriter(localizedLang, collector.getProcessedWorkTypes())) {
             int sheetNumber = writer.createSheet();
             writer.write(sheetNumber, data);
             writer.collect(buffer);

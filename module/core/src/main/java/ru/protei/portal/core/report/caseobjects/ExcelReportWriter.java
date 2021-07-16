@@ -117,7 +117,7 @@ public class ExcelReportWriter implements
     }
 
     @Override
-    public String[] getColumnNames() {
+    public String[] getLangColumnNames() {
         return getColumns(
                 isNotRestricted,
                 withDescription,

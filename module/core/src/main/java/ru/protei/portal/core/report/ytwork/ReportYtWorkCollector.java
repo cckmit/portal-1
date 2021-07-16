@@ -175,6 +175,10 @@ public class ReportYtWorkCollector implements Collector<
         return new HashSet<>();
     }
 
+    public Map<En_ReportYtWorkType, Set<String>> getProcessedWorkTypes() {
+        return processedWorkTypes;
+    }
+
     static private class WorkTypeAndValue {
         final En_ReportYtWorkType workType;
         final List<String> value;

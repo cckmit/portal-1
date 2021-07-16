@@ -82,7 +82,7 @@ public class ExcelReportWriter implements
     }
 
     @Override
-    public String[] getColumnNames() {
+    public String[] getLangColumnNames() {
         List<String> columnNames = new ListBuilder<String>()
                 .add("ir_date").add("ir_night_work_time_elapsed_sum")
                 .add("ir_manager").add("ir_caseno").add("ir_customer").add("ir_initiator")

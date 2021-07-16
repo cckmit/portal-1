@@ -26,6 +26,10 @@ public class ReportYtWorkItem {
         this.guaranteeSpentTime = new HashMap<>();
     }
 
+    public Person getPerson() {
+        return person;
+    }
+
     public Map<String, RepresentTime> getIssueSpentTime() {
         return issueSpentTime;
     }

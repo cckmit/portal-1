@@ -32,7 +32,8 @@ public final class JXLSHelper {
 
         public interface Writer<T> {
             int[] getColumnsWidth();
-            String[] getColumnNames();
+            String[] getLangColumnNames();
+            default String[] getColumnNames() { return new String[0];}
             Object[] getColumnValues(T object);
             default CellStyle getCellStyle(Workbook workbook, int columnIndex) {
                 return null;
@@ -55,7 +56,7 @@ public final class JXLSHelper {
         public int createSheet() {
             SXSSFSheet sheet = workbook.createSheet();
             setColumnsWidth(sheet, writer.getColumnsWidth());
-            makeHeader(sheet.createRow(0), defaultHeaderCellStyle, lang, writer.getColumnNames());
+            makeHeader(sheet.createRow(0), defaultHeaderCellStyle, lang, writer.getLangColumnNames(), writer.getColumnNames());
             sheetMap.put(sheetIndex, sheet);
             sheetRowIndexMap.put(sheetIndex, 1);
             return sheetIndex++;
@@ -158,11 +159,17 @@ public final class JXLSHelper {
             }
         }
 
-        private static void makeHeader(Row row, CellStyle style, Lang.LocalizedLang lang, String[] columnNames) {
+        private static void makeHeader(Row row, CellStyle style, Lang.LocalizedLang lang,
+                                       String[] langColumnNames, String[] columnNames) {
             int columnIndex = 0;
-            for (String name : columnNames) {
+            for (String name : langColumnNames) {
                 Cell cell = row.createCell(columnIndex++);
                 cell.setCellValue(lang.get(name));
+                cell.setCellStyle(style);
+            }
+            for (String name : columnNames) {
+                Cell cell = row.createCell(columnIndex++);
+                cell.setCellValue(name);
                 cell.setCellStyle(style);
             }
         }
