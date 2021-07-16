@@ -1004,6 +1004,7 @@ public class DebugIds {
         String ADD_TAG_BUTTON = "contract-add-tag-button";
         String DELIVERY_AND_PAYMENTS_PERIOD_TAB = "contract-delivery-and-payments-period-tab";
         String SPECIFICATION_TAB = "contract-specification-tab";
+        String EXPENDITURE_CONTRACTS_TAB = "expenditure-contracts-tab";
 
         interface LABEL {
             String COMMON_HEADER = "contract-common-header";
@@ -1078,7 +1079,6 @@ public class DebugIds {
         String CONTRACT_TITLE_LABEL = "contract-preview-contract-title-label";
         String CONTRACT_NAME_LABEL = "contract-preview-contract-name-label";
         String CONTRACTOR_LABEL = "contract-preview-contractor-label";
-        String CONTRACT_COMMON_HEADER_LABEL = "contract-preview-common-header-label";
         String DATE_SIGNING_LABEL = "contract-preview-date-signing-label";
         String DATE_VALID_LABEL = "contract-preview-date-valid-label";
         String DIRECTIONS_LABEL = "contract-preview-product-directions-label";
@@ -1086,7 +1086,6 @@ public class DebugIds {
         String RECEIPT_AGREEMENT_LABEL = "contract-preview-receipt-agreement-label";
         String EXPENDITURE_AGREEMENT_LABEL = "contract-preview-expenditure-agreement-label";
         String TAGS_LABEL = "contract-preview-tags-label";
-        String WORK_GROUP_LABEL = "contract-preview-work-group-label";
         String ORGANIZATION_LABEL = "contract-preview-organization-label";
         String PROJECT_LABEL = "contract-preview-project-label";
         String CURATOR_LABEL = "contract-preview-curator-label";

@@ -344,6 +344,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         addTagButton.ensureDebugId(DebugIds.CONTRACT.ADD_TAG_BUTTON);
         tabs.setTabNameDebugId(lang.contractDeliveryAndPaymentsPeriodHeader(), DebugIds.CONTRACT.DELIVERY_AND_PAYMENTS_PERIOD_TAB);
         tabs.setTabNameDebugId(lang.contractSpecificationHeader(), DebugIds.CONTRACT.SPECIFICATION_TAB);
+        tabs.setTabNameDebugId(lang.contractListOfExpenditureHeader(), DebugIds.CONTRACT.EXPENDITURE_CONTRACTS_TAB);
     }
 
 
