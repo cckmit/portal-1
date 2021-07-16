@@ -8,6 +8,7 @@ import ru.protei.portal.ui.delivery.client.activity.edit.*;
 import ru.protei.portal.ui.delivery.client.activity.kit.add.AbstractDeliveryKitAddView;
 import ru.protei.portal.ui.delivery.client.activity.kit.add.DeliveryKitAddActivity;
 import ru.protei.portal.ui.delivery.client.activity.kit.page.AbstractKitView;
+import ru.protei.portal.ui.delivery.client.activity.kit.page.AbstractModuleView;
 import ru.protei.portal.ui.delivery.client.activity.kit.page.KitActivity;
 import ru.protei.portal.ui.delivery.client.activity.meta.AbstractDeliveryMetaView;
 import ru.protei.portal.ui.delivery.client.activity.meta.DeliveryMetaActivity;
@@ -18,6 +19,7 @@ import ru.protei.portal.ui.delivery.client.view.create.DeliveryCreateView;
 import ru.protei.portal.ui.delivery.client.view.edit.DeliveryEditView;
 import ru.protei.portal.ui.delivery.client.view.kit.page.KitView;
 import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
+import ru.protei.portal.ui.delivery.client.view.module.page.ModuleView;
 import ru.protei.portal.ui.delivery.client.view.table.DeliveryTableView;
 import ru.protei.portal.ui.delivery.client.view.kit.add.DeliveryKitAddView;
 
@@ -43,6 +45,7 @@ public class DeliveryClientModule extends AbstractGinModule {
 
         bind(KitActivity.class).asEagerSingleton();
         bind(AbstractKitView.class).to(KitView.class).in(Singleton.class);
+        bind(AbstractModuleView.class).to(ModuleView.class).in(Singleton.class);
     }
 }
 

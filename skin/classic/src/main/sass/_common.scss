@@ -5329,3 +5329,29 @@ div.form-group-default.form-group-default-selectFx:focus {
     padding: 0 15px;
   }
 }
+
+.module-checkbox {
+  width: 46px;
+  padding: 6px 0 0 19px !important;
+}
+
+.module-row {
+  height: 42px;
+  padding: 5px 10px 5px 0;
+  font-size: 14px;
+
+  .checkbox input {
+    width: 18px;
+    height: 18px;
+  }
+
+  .module-state {
+    margin-right: 4px;
+  }
+
+  .manager {
+    color: #121212;
+    opacity: .46;
+    font-size: 11px;
+  }
+}
