@@ -3538,5 +3538,35 @@ public interface Lang extends Messages, ContactItemLang {
 
     String uitsPrefix();
 
+    String absenceEnableSchedule();
+
+    String absenceSchedules();
+
+    String absenceNoScheduleData();
+
+    String absenceCreateSchedule();
+
+    String absenceSelectDay();
+
+    String absenceWeekdays();
+
+    String absenceEveryDay();
+
+    String absenceTimeRangeBegin();
+
+    String absenceTimeRangeEnd();
+
+    String absenceTimeRange(String from, String to);
+
     String kitSearchHint();
+
+    String errorAbsenceHasTimeRangeOverlap();
+
+    String errorAbsenceIncorrectTimeRange();
+
+    String errorAbsenceNeedFeelDays();
+
+    String errorAbsenceNeedFeelTimeRanges();
+
+    String errorAbsenceNeedFeelSchedule();
 }

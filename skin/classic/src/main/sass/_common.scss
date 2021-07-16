@@ -1,24 +1,4 @@
-$bg_light_gray: #f5f5f5;
-
-$danger_color: #d52020;
-
-$info_dark_color: #5481c1;
-$info_color: #42a5f5;
-$info_light_color: #00bcd4;
-
-$success_dark_color: teal;
-
-$purple_color: #9675ce;
-$error_color: #f54646;
-
-$master_color: #626262;
-$success_color: #10cfbd;
-$danger_color: #f55753;
-
-$bg_master: #626262;
-$bg_master_light: #e6e6e6;
-$bg_master_lighter: #f0f0f0;
-$bg_master_lightest: #fafafa;
+@import "colors";
 
 .hide {
   display: none !important
@@ -26,6 +6,10 @@ $bg_master_lightest: #fafafa;
 
 .border-box {
   box-sizing: border-box;
+}
+
+.bg-light-grey {
+  background-color: $bg_light_grey;
 }
 
 .card {
@@ -98,16 +82,27 @@ $bg_master_lightest: #fafafa;
 
   &.btn-down:after,
   &.btn-up-hovering:after {
-    font-family: "Font Awesome 5 Free";
+    font-family: "Font Awesome 6 Pro";
     content: "\f160";
-    font-weight: 900;
+    font-weight: 500;
   }
 
   &.btn-up:after,
   &.btn-down-hovering:after {
-    font-family: "Font Awesome 5 Free";
+    font-family: "Font Awesome 6 Pro";
     content: "\f161";
-    font-weight: 900;
+    font-weight: 500;
+  }
+}
+
+.btn {
+  &.btn-circle-icon {
+    border-radius: 50%;
+    padding: 7px 10px;
+  }
+  &.btn-circle {
+    border-radius: 50%;
+    padding: 8px 9px;
   }
 }
 
@@ -189,7 +184,7 @@ i.ban {
 .dropdown-menu ul > li.user-login-item:hover {
   color: #262626;
   text-decoration: none;
-  background-color: $bg_light_gray;
+  background-color: $bg_light_grey;
   outline-width: 0;
 }
 
@@ -233,7 +228,7 @@ i.ban {
   top: 10px;
   right: 8px;
   font-weight: 600;
-  font-family: "Font Awesome 5 Free";
+  font-family: "Font Awesome 6 Pro";
 }
 
 .local-search-icon:before {
@@ -347,11 +342,11 @@ i.ban {
 
 .cleanable-search .cleanable-search-icon {
   position: absolute;
-  font-weight: 600;
+  font-weight: 500;
   height: 30px;
-  width: 30px;
-  top: 0px;
-  right: 0px;
+  width: 33px;
+  top: 0;
+  right: 0;
   margin-right: 0;
   color: #a5acb5 !important;
 }
@@ -363,7 +358,7 @@ i.ban {
   width: 30px;
   text-align: center;
   line-height: 34px;
-  font-family: "Font Awesome 5 Free";
+  font-family: "Font Awesome 6 Pro";
   z-index: 10;
 }
 
@@ -638,7 +633,7 @@ label.bordered:after {
 }
 
 .table .separator-cell {
-  background-color: $bg_light_gray;
+  background-color: $bg_light_grey;
   font-weight: bold;
 }
 
@@ -1396,7 +1391,7 @@ td.info {
 }
 
 .dropdown-addbutton > button:before {
-  font: normal normal normal 22px/1 Font Awesome 5 Free;
+  font: normal normal normal 22px/1 Font Awesome 6 Pro;
   content: "\002B";
   position: absolute;
   left: 0;
@@ -1406,7 +1401,7 @@ td.info {
 }
 
 .dropdown-addbutton > button:hover, .dropdown-addbutton > button:active {
-  background-color: $bg_light_gray;
+  background-color: $bg_light_grey;
 }
 
 /* issue editing */
@@ -1448,7 +1443,7 @@ td.info {
 }
 
 .icon-partner:before {
-  font-family: "Font Awesome 5 Free", serif;
+  font-family: "Font Awesome 6 Pro", serif;
   content: "\f2b5";
 }
 
@@ -1635,14 +1630,14 @@ a {
 
   &.input-group-addon-down:after,
   &.input-group-addon-down-hovering:after {
-    font-family: "Font Awesome 5 Free", serif;
+    font-family: "Font Awesome 6 Pro", serif;
     content: "\f023";
     font-size: 1.2em;
   }
 
   &.input-group-addon-up:after,
   &.input-group-addon-up-hovering:after {
-    font-family: "Font Awesome 5 Free", serif;
+    font-family: "Font Awesome 6 Pro", serif;
     content: "\f13e";
     font-size: 1.2em;
   }
@@ -1799,7 +1794,7 @@ a {
       cursor: pointer;
 
       &:hover{
-        background-color: $bg_light_gray;
+        background-color: $bg_light_grey;
       }
 
       .case-tag-edit,
@@ -2246,7 +2241,7 @@ a {
 
       &.btn-down:after,
       &.btn-up-hovering:after {
-        font-family: "Font Awesome 5 Free", serif;
+        font-family: "Font Awesome 6 Pro", serif;
         content: "\f024";
         font-size: 1.6em;
         color: $danger_color;
@@ -2255,7 +2250,7 @@ a {
 
       &.btn-up:after,
       &.btn-down-hovering:after {
-        font-family: "Font Awesome 5 Free", serif;
+        font-family: "Font Awesome 6 Pro", serif;
         content: "\f024";
         font-size: 1.6em;
         font-weight: 400;
@@ -2378,7 +2373,7 @@ ul.privileges {
   text-align: center;
   padding-top: 9px;
   font-weight: 900;
-  font-family: "Font Awesome 5 Free";
+  font-family: "Font Awesome 6 Pro";
 }
 
 .btn.privilege-btn.btn-down:after,
@@ -2609,7 +2604,7 @@ div.select2-container {
       }
 
       a.select2-search-choice-close {
-        font-family: "Font Awesome 5 Free";
+        font-family: "Font Awesome 6 Pro";
         display: inline-block;
 
         &:before {
@@ -3866,6 +3861,14 @@ table {
   border-top: none;
 }
 
+.input-group.date {
+  button {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-color: gainsboro;
+    border-left: none;
+  }
+}
 .input-group .input-group-verifiable {
   position: relative;
   -ms-flex: 1 1 auto;
@@ -4368,14 +4371,14 @@ table {
 
     &.password-box_show-btn-up, &.password-box_show-btn-up-hovering {
       &:after{
-        font-family: "Font Awesome 5 Free", serif;
+        font-family: "Font Awesome 6 Pro", serif;
         content: "\f06e";
       }
     }
 
     &.password-box_show-btn-down, &.password-box_show-btn-down-hovering {
       &:after{
-        font-family: "Font Awesome 5 Free", serif;
+        font-family: "Font Awesome 6 Pro", serif;
         content: "\f070";
       }
     }
@@ -5026,7 +5029,7 @@ table {
 
 .accordion {
   .collapse-btn {
-    font-family: "Font Awesome 5 Free", serif;
+    font-family: "Font Awesome 6 Pro", serif;
     font-weight: 900;
   }
 
@@ -5239,7 +5242,7 @@ table {
         left: 4px;
         .fas.fa-history {
           margin-left: 4px;
-          margin-top: 7px
+          margin-top: 13px
         }
       }
     }
@@ -5269,7 +5272,7 @@ table {
 }
 
 li.focusable:focus {
-  background-color: $bg_light_gray;
+  background-color: $bg_light_grey;
 }
 
 div.form-group-default.form-group-default-selectFx:focus {
@@ -5328,4 +5331,71 @@ div.form-group-default.form-group-default-selectFx:focus {
   .user-filter {
     padding: 0 15px;
   }
+}
+
+
+// tooltip
+.with-tooltip {
+  position: relative;
+}
+.with-tooltip::before {
+  background: #000000;
+  border-radius: 5px;
+  color: #FFF;
+  content: attr(data-tooltip);
+  display: inline-block;
+  font-weight: normal;
+  left: 50%;
+  margin-top: -9px;
+  opacity: 0;
+  padding: 5px 8px;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transform: translate(-50%, 0%);
+  white-space: nowrap;
+  width: auto;
+  z-index: 2;
+  -webkit-transition: all .15s ease-out;
+  transition: all .15s ease-out;
+  font-size: .9em;
+
+  .lt-ie9 & {
+    // IE8 requires dimensions to be set to center tooltip, set sensible constraints here
+    margin-left: -110px;
+    margin-top: -41px;
+    // titles that are longer than this will expand to fit but not be centered;
+    min-width: 200px;
+    text-align: center;
+  }
+}
+.with-tooltip:hover:before,
+.with-tooltip:focus:before {
+  opacity: 1;
+  transform: translate(-50%, -100%);
+}
+.with-tooltip:after {
+  border: 10px solid transparent;
+  border-top-color: #000000;
+  content: "";
+  height: 0;
+  left: 50%;
+  margin-left: -10px;
+  margin-top: -10px - 1px;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transform: translate(0, -100%);
+  -webkit-transition: all 0s ease-out 0s;
+  transition: all 0s ease-out 0s;
+  width: 0;
+  z-index: 1;
+}
+.with-tooltip:hover:after,
+.with-tooltip:focus:after {
+  opacity: 1;
+  -webkit-transition: all .15s ease-out .1s;
+  transition: all .15s ease-out .1s;
+  transform: translate(0, 0);
 }

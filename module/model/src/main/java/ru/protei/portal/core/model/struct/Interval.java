@@ -31,6 +31,14 @@ public class Interval implements Serializable {
                 '}';
     }
 
+    public boolean isValid() {
+        return this.from != null && this.to != null && (this.from.getTime() < this.to.getTime() || this.from.getTime() == this.to.getTime());
+    }
+
+    public boolean isEmpty() {
+        return this.from == null && this.to == null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
