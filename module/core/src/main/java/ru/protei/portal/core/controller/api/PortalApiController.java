@@ -26,6 +26,7 @@ import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
@@ -47,6 +48,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.util.CrmConstants.Header.X_REAL_IP;
 import static ru.protei.portal.mapper.ApiProjectToProjectMapper.toProject;
 import static ru.protei.portal.util.AuthUtils.authenticate;
 
@@ -277,6 +279,28 @@ public class PortalApiController {
         return productService.updateState(authToken, productId, state)
                 .ifOk(result -> log.info("updateProductState(): OK"))
                 .ifError(result -> log.warn("updateProductState(): Can't update product state with id={}. {}", productId, result));
+    }
+
+    @GetMapping(value = "/products/getByCompanyProjects")
+    public Result<List<DevUnitInfo>> getProductsByCompanyProjects( HttpServletRequest request, HttpServletResponse response) {
+        log.info( "getProductsByCompanyProjects" );
+
+        return authenticate( request, response, authService, sidGen, log ).flatMap( authToken ->
+                productService.getProductsBySelfCompanyProjects( authToken ) )
+                .ifOk( id -> log.info( "getProductsByCompanyProjects(): OK " ) )
+                .ifError( result -> log.warn( "getProductsByCompanyProjects(): Can`t get products. {}", result ) );
+    }
+
+    @GetMapping(value = "/authorization")
+    public Result<AuthToken> authorization(HttpServletRequest request, HttpServletResponse response,
+                                   @RequestParam("login") String login,
+                                   @RequestParam("password") String password) {
+        log.info( "authorization() login = {}", login );
+
+        return authService.login(sidGen.generateId(), login, password, request.getHeader(X_REAL_IP),
+                request.getHeader(CrmConstants.Header.USER_AGENT) )
+                .ifOk( id -> log.info( "authorization(): OK " ) )
+                .ifError( result -> log.warn( "authorization(): Can`t authenticate. {}", result ) );
     }
 
     @PostMapping(value = "/updateYoutrackCrmNumbers/{youtrackId}", produces = "text/plain;charset=UTF-8")

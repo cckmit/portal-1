@@ -4,12 +4,15 @@ import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
+import ru.protei.winter.jdbc.JdbcHelper;
+import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.*;
 
@@ -69,6 +72,14 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
     public List<DevUnit> getProjectProducts(Long projectId) {
         return getListByCondition("dev_unit.ID IN (SELECT product_id FROM project_to_product WHERE project_id = ?) AND UTYPE_ID != ?",
                 projectId,
+                En_DevUnitType.DIRECTION.getId()
+        );
+    }
+
+    @Override
+    public List<DevUnit> getProjectProducts(List<Long> projectIds) {
+        if (CollectionUtils.isEmpty(projectIds)) return Collections.emptyList();
+        return getListByCondition("dev_unit.ID IN (SELECT product_id FROM project_to_product WHERE project_id IN " + HelperFunc.makeInArg(projectIds) + ") AND UTYPE_ID != ?",
                 En_DevUnitType.DIRECTION.getId()
         );
     }

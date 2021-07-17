@@ -25,6 +25,7 @@ public interface DevUnitDAO extends PortalBaseDAO<DevUnit> {
 
     List<DevUnit> getProjectDirections(Long projectId);
     List<DevUnit> getProjectProducts(Long projectId);
+    List<DevUnit> getProjectProducts(List<Long> projectIds);
 
     @SqlConditionBuilder
     SqlCondition createProductSqlCondition(ProductQuery query);
