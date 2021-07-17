@@ -77,7 +77,7 @@ public class ExcelReportWriter implements
 
     private int[] getColumnsWidth(Map<En_ReportYtWorkType, Set<String>> processedWorkTypes) {
         ListBuilder<Integer> columnsWidthList = new ListBuilder<Integer>()
-                .add(5800);
+                .add(5800).add(5800);
         processedWorkTypes.forEach((ytWorkType, strings) -> {
             strings.forEach(value -> columnsWidthList.add(5800));
         });
@@ -86,7 +86,7 @@ public class ExcelReportWriter implements
 
     @Override
     public String[] getLangColumnNames() {
-        return new String[]{"reportYtWorkPersonName"};
+        return new String[]{"reportYtWorkPersonName", "reportYtWorkAllSpentTime"};
     }
     @Override
     public String[] getColumnNames() {
@@ -111,6 +111,8 @@ public class ExcelReportWriter implements
             values.add(item.getPerson().getLogins().get(0));
         }
 
+        values.add(item.getAllTimeSpent().getRepresent());
+
         processedWorkTypes.forEach((ytWorkType, strings) -> {
             strings.forEach(value -> {
                 Long fieldValue = 0L;
@@ -129,6 +131,7 @@ public class ExcelReportWriter implements
 
     private String[] getFormats() {
         ListBuilder<String> columnsList = new ListBuilder<String>()
+                .add(ExcelFormat.STANDARD)
                 .add(ExcelFormat.STANDARD);
         int count = 0;
         for (Map.Entry<En_ReportYtWorkType, Set<String>> entry : processedWorkTypes.entrySet()) {

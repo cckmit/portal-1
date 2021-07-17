@@ -9,6 +9,8 @@ public class ReportYtWorkItem {
     private Person person;
     // список обработанных YtWorkItems для статистики / дебага
     final private Map<String, RepresentTime> issueSpentTime;
+    // Общее время
+    private RepresentTime allTimeSpent = new RepresentTime(0L);
     // Map<Project, Map<NIOKR, SpentTime>>
     final private Map<String, Long> niokrSpentTime;
     // Map<Project, Map<NMA, SpentTime>>
@@ -54,6 +56,14 @@ public class ReportYtWorkItem {
         this.person = person;
     }
 
+    public RepresentTime getAllTimeSpent() {
+        return allTimeSpent;
+    }
+
+    public void addAllTimeSpent(Long allTimeSpent) {
+        this.allTimeSpent = this.allTimeSpent.sum(new RepresentTime(allTimeSpent));
+    }
+
     static public class RepresentTime {
         final Long minutes;
         final String represent;
@@ -65,6 +75,14 @@ public class ReportYtWorkItem {
 
         public RepresentTime sum(RepresentTime other) {
             return new RepresentTime(this.minutes + other.minutes);
+        }
+
+        public Long getMinutes() {
+            return minutes;
+        }
+
+        public String getRepresent() {
+            return represent;
         }
 
         private String makeRepresent(Long minutes) {

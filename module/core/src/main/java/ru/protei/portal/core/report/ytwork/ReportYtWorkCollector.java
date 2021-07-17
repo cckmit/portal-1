@@ -14,10 +14,12 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static java.util.Collections.*;
 import static java.util.stream.Collectors.*;
 import static ru.protei.portal.core.model.dict.En_ReportYtWorkType.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.mergeMap;
-import static ru.protei.portal.core.model.struct.ReportYtWorkItem.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.struct.ReportYtWorkItem.RepresentTime;
 
 public class ReportYtWorkCollector implements Collector<
         ReportYtWorkInfo,
@@ -34,17 +36,18 @@ public class ReportYtWorkCollector implements Collector<
     private final Date now;
     private final Set<String> homeCompany;
 
-    public ReportYtWorkCollector(Map<String, List<String>> niokrs, Map<String, List<String>> nmas,
+    public ReportYtWorkCollector(Map<String, List<String>> niokrs,
+                                 Map<String, List<String>> nmas,
                                  Function<String, List<Contract>> getContractsByCustomer,
                                  Function<String, Person> getPersonByEmail,
                                  Date now,
                                  Set<String> homeCompany) {
-        this.niokrs = niokrs;
-        this.nmas = nmas;
+        this.niokrs = unmodifiableMap(new HashMap<>(niokrs));
+        this.nmas = unmodifiableMap(new HashMap<>(nmas));
         this.getContractsByCustomer = getContractsByCustomer;
         this.getPersonByEmail = getPersonByEmail;
         this.now = now;
-        this.homeCompany = homeCompany;
+        this.homeCompany = unmodifiableSet(new HashSet<>(homeCompany));
         processedWorkTypes = new LinkedHashMap<>();
         processedWorkTypes.put(NIOKR, new HashSet<>());
         processedWorkTypes.put(NMA, new HashSet<>());
@@ -59,27 +62,24 @@ public class ReportYtWorkCollector implements Collector<
 
     @Override
     public BiConsumer<Map<String, ReportYtWorkItem>, ReportYtWorkInfo> accumulator() {
-        return (accumulator, ytWorkInfo) -> collectItems(processedWorkTypes, niokrs, nmas, accumulator, ytWorkInfo);
+        return this::collectItems;
     }
 
-    private void collectItems(Map<En_ReportYtWorkType, Set<String>> processedWorkTypes,
-                             Map<String, List<String>> niokrs,
-                             Map<String, List<String>> nmas,
-                             Map<String, ReportYtWorkItem> accumulator,
-                             ReportYtWorkInfo ytReportInfo) {
-        ReportYtWorkItem reportYtWorkItem = accumulator.compute(ytReportInfo.getEmail(),
+    private void collectItems(Map<String, ReportYtWorkItem> accumulator, ReportYtWorkInfo ytWorkInfo) {
+        ReportYtWorkItem reportYtWorkItem = accumulator.compute(ytWorkInfo.getEmail(),
                 (email, ytWorkItem) -> ytWorkItem != null ? ytWorkItem : new ReportYtWorkItem());
-        List<WorkTypeAndValue> workTypeAndValueList = makeWorkType(niokrs, nmas, ytReportInfo.getCustomer(), ytReportInfo.getProject());
+        List<WorkTypeAndValue> workTypeAndValueList = makeWorkType(ytWorkInfo.getCustomer(), ytWorkInfo.getProject());
         for (WorkTypeAndValue workTypeAndValue : workTypeAndValueList) {
-            Map<String, Long> spentTimeMap = createSpentTimeMap(ytReportInfo.getSpentTime(), workTypeAndValue.getValue());
+            Map<String, Long> spentTimeMap = createSpentTimeMap(ytWorkInfo.getSpentTime(), workTypeAndValue.getValue());
             switch(workTypeAndValue.getWorkType()) {
                 case NIOKR: mergeSpentTimeMap(reportYtWorkItem.getNiokrSpentTime(), spentTimeMap); break;
                 case NMA: mergeSpentTimeMap(reportYtWorkItem.getNmaSpentTime(), spentTimeMap); break;
                 case CONTRACT: mergeSpentTimeMap(reportYtWorkItem.getContractSpentTime(), spentTimeMap); break;
                 case GUARANTEE: mergeSpentTimeMap(reportYtWorkItem.getGuaranteeSpentTime(), spentTimeMap); break;
             }
-            reportYtWorkItem.getIssueSpentTime().merge(ytReportInfo.getIssue(),new RepresentTime(ytReportInfo.getSpentTime()), RepresentTime::sum);
-            processedWorkTypes.compute(workTypeAndValue.workType, (workType, value) -> {
+            reportYtWorkItem.getIssueSpentTime().merge(ytWorkInfo.getIssue(),new RepresentTime(ytWorkInfo.getSpentTime()), RepresentTime::sum);
+            reportYtWorkItem.addAllTimeSpent(ytWorkInfo.getSpentTime());
+            processedWorkTypes.compute(workTypeAndValue.getWorkType(), (workType, value) -> {
                 if (value == null) {
                     value = new HashSet<>();
                 }
@@ -90,10 +90,8 @@ public class ReportYtWorkCollector implements Collector<
     }
 
     static private Map<String, Long> createSpentTimeMap(Long spentTime, List<String> values) {
-        Map<String, Long> spentTimeMap = new HashMap<>();
-        Long calcSpentTime = spentTime / values.size(); // todo Ошибки округления
-        values.forEach(v -> spentTimeMap.put(v, calcSpentTime));
-        return spentTimeMap;
+        long calcSpentTime = spentTime / values.size(); // todo Ошибки округления
+        return stream(values).collect(toMap(Function.identity(), (v) -> calcSpentTime, Long::sum));
     }
 
     static private Map<String, Long> mergeSpentTimeMap(Map<String, Long> map1, Map<String, Long> map2) {
@@ -104,20 +102,19 @@ public class ReportYtWorkCollector implements Collector<
         return homeCompany.contains(company);
     }
 
-    private List<WorkTypeAndValue> makeWorkType(Map<String, List<String>> invertResearchesMap, Map<String, List<String>> invertSoftMap,
-                                                          String customer, String project) {
+    private List<WorkTypeAndValue> makeWorkType(String customer, String project) {
         if (isHomeCompany(customer)) {
-            List<String> strings = invertResearchesMap.get(project);
+            List<String> strings = niokrs.get(project);
             if (strings != null) {
-                return Collections.singletonList(new WorkTypeAndValue(NIOKR, strings));
+                return singletonList(new WorkTypeAndValue(NIOKR, strings));
             }
-            strings = invertSoftMap.get(project);
+            strings = nmas.get(project);
             if (strings != null) {
-                return Collections.singletonList(new WorkTypeAndValue(NMA, strings));
+                return singletonList(new WorkTypeAndValue(NMA, strings));
             }
             ArrayList<String> value = new ArrayList<>();
             value.add("CLASSIFICATION ERROR - " + project);
-            return Collections.singletonList(new WorkTypeAndValue(NIOKR, value));
+            return singletonList(new WorkTypeAndValue(NIOKR, value));
         } else {
             return getContractsAndGuarantee(customer);
         }
@@ -130,7 +127,7 @@ public class ReportYtWorkCollector implements Collector<
             }
             List<Contract> contracts = getContractsByCustomer.apply(keyCustomer);
             if (contracts.isEmpty()) {
-                return Collections.singletonList(createContractListFromCustomer(keyCustomer));
+                return singletonList(createContractListFromCustomer(keyCustomer));
             } else {
                 Map<En_ReportYtWorkType, List<String>> mapContactGuaranteeToName = contracts.stream()
                         .collect(groupingBy(contract -> contractGuaranteeClassifier(contract, now), mapping(Contract::getNumber, toList())));
@@ -140,13 +137,13 @@ public class ReportYtWorkCollector implements Collector<
         });
     }
 
-    static WorkTypeAndValue createContractListFromCustomer(String customer) {
+    static private WorkTypeAndValue createContractListFromCustomer(String customer) {
         List<String> list = new ArrayList<>();
         list.add("CLASSIFICATION ERROR - " + customer);
         return new WorkTypeAndValue(CONTRACT, list);
     }
 
-    static En_ReportYtWorkType contractGuaranteeClassifier(Contract contract, Date now) {
+    static private En_ReportYtWorkType contractGuaranteeClassifier(Contract contract, Date now) {
         return contract.getDateValid() == null || contract.getDateValid().after(now) ? CONTRACT : GUARANTEE;
     }
 
@@ -155,7 +152,7 @@ public class ReportYtWorkCollector implements Collector<
         return ReportYtWorkCollector::mergeCollectedItems;
     }
 
-    static Map<String, ReportYtWorkItem> mergeCollectedItems(Map<String, ReportYtWorkItem> map1, Map<String, ReportYtWorkItem> map2) {
+    static private Map<String, ReportYtWorkItem> mergeCollectedItems(Map<String, ReportYtWorkItem> map1, Map<String, ReportYtWorkItem> map2) {
         mergeMap(map1, map2, (dto1, dto2) -> {
             mergeSpentTimeMap(dto1.getNiokrSpentTime(), dto2.getNiokrSpentTime());
             mergeSpentTimeMap(dto1.getNmaSpentTime(), dto2.getNmaSpentTime());

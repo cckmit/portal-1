@@ -117,8 +117,6 @@ public class ReportYtWorkImpl implements ReportYtWork {
                                YtWorkQuery query,
                                Predicate<Long> isCancel) throws IOException {
 
-        Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
-
         log.debug("writeReport : reportId={} to process", report.getId());
 
         ReportYtWorkIterator iterator = new ReportYtWorkIterator(
@@ -154,6 +152,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
             }
         }
 
+        Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
         try (ReportWriter<ReportYtWorkItem> writer = new ExcelReportWriter(localizedLang, collector.getProcessedWorkTypes())) {
             int sheetNumber = writer.createSheet();
             writer.write(sheetNumber, data);
