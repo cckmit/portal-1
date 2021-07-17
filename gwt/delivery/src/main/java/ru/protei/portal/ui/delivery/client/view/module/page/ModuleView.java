@@ -36,41 +36,50 @@ public class ModuleView extends Composite implements AbstractModuleView {
 
             @Override
             protected void fillColumnValue(Element cell, Module value) {
-                cell.addClassName("module-checkbox");
-                Element checkBox = new CheckBox().getElement();
-                checkBox.addClassName("checkbox");
-                cell.appendChild(checkBox);
-            }
-        };
-
-        ClickColumn<Module> info = new ClickColumn<Module>() {
-            @Override
-            protected void fillColumnHeader(Element columnHeader) {
-
-            }
-
-            @Override
-            protected void fillColumnValue(Element cell, Module value) {
                 cell.appendChild(makeContent(value));
             }
         };
         table.addColumn(checkbox.header, checkbox.values);
-        table.addColumn(info.header, info.values);
     }
 
     private Node makeContent(Module value) {
         DivElement div = Document.get().createDivElement();
         div.addClassName("module-row");
-        div.appendChild(makePrimaryBlock(value));
-        div.appendChild(makeSpan("", value.getDescription()));
+        if (value.getParentModuleId() != null) {
+            div.addClassName("child-module");
+        }
+        div.appendChild(makeCheckboxBlock());
+        div.appendChild(makeInfoBlock(value));
         return div;
     }
 
-    private Node makePrimaryBlock(Module value) {
+    private Node makeCheckboxBlock() {
+        DivElement div = Document.get().createDivElement();
+        div.addClassName("module-checkbox");
+        Element checkBox = new CheckBox().getElement();
+        div.appendChild(checkBox);
+        return div;
+    }
+
+    private Node makeInfoBlock(Module value) {
+        DivElement div = Document.get().createDivElement();
+        div.addClassName("module-info");
+        div.appendChild(makeTopBlock(value));
+        div.appendChild(makeBottomBlock(value));
+        return div;
+    }
+
+    private Node makeTopBlock(Module value) {
         DivElement div = Document.get().createDivElement();
         div.appendChild(makeIcon(value));
         div.appendChild(makeSpan("bold", value.getSerialNumber()));
         div.appendChild(makeSpan("float-right manager", value.getManagerName()));
+        return div;
+    }
+
+    private Node makeBottomBlock(Module value) {
+        DivElement div = Document.get().createDivElement();
+        div.appendChild(makeSpan("", value.getDescription()));
         return div;
     }
 
@@ -103,14 +112,26 @@ public class ModuleView extends Composite implements AbstractModuleView {
     public void putModules(List<Module> modules) {
         modules.forEach(table::addRow);
 
-//            Module parent = new Module();
-//            parent.setName("DDDDD");
-//            parent.setDescription("FFFFF");
-//        table.addRow(parent);
-//            Module childRow = new Module();
-//            childRow.setName("ddddd");
-//            childRow.setDescription("fffff");
-//            table.addChildRow(parent, childRow);
+        Module parent = new Module();
+        parent.setName("PARENT");
+        parent.setDescription("Parent info");
+        parent.setKitId(123L);
+        parent.setSerialNumber("100.222.333");
+        table.addRow(parent);
+
+        Module parent2 = new Module();
+        parent2.setName("PARENT2");
+        parent2.setDescription("Parent info 2");
+        parent2.setKitId(1232L);
+        parent2.setSerialNumber("100.222.334");
+        table.addRow(parent2);
+
+        Module childRow = new Module();
+        childRow.setName("CHILD");
+        childRow.setDescription("Child info");
+        childRow.setSerialNumber("100.222.337");
+        childRow.setParentModuleId(123L);
+        table.addChildRow(parent, childRow);
 
     }
 

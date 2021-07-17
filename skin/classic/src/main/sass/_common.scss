@@ -5330,28 +5330,26 @@ div.form-group-default.form-group-default-selectFx:focus {
   }
 }
 
-.module-checkbox {
-  width: 46px;
-  padding: 6px 0 0 19px !important;
-}
-
 .module-row {
-  height: 42px;
-  padding: 5px 10px 5px 0;
-  font-size: 14px;
+  display: flex;
 
-  .checkbox input {
-    width: 18px;
-    height: 18px;
+  .module-checkbox {
+    align-self: center;
+    flex: 0 0 40px;
+
+    span {
+      padding-left: 10px;
+    }
+  }
+  .module-info {
+    flex: auto;
+
+    .module-state {
+      padding-right: 5px;
+    }
   }
 
-  .module-state {
-    margin-right: 4px;
-  }
-
-  .manager {
-    color: #121212;
-    opacity: .46;
-    font-size: 11px;
+  &.child-module {
+    padding-left: 15px;
   }
 }
