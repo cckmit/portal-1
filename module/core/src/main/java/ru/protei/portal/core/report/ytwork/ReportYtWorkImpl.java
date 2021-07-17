@@ -171,7 +171,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
         if (isNotEmpty(email)) {
             query.setEmail(email);
             List<Person> persons = personDAO.getPersons(query);
-            if (persons.size() == 1) {
+            if (persons.size() >= 1) {
                 person = persons.get(0);
                 person.setLogins(Collections.singletonList(email));
             }
@@ -187,7 +187,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
 
     private ReportYtWorkInfo makeYtReportItem(IssueWorkItem issueWorkItem) {
         return new ReportYtWorkInfo(
-                issueWorkItem.author.email,
+                issueWorkItem.author.email != null ? issueWorkItem.author.email : issueWorkItem.author.login,
                 issueWorkItem.issue.idReadable,
                 getCustomerName(issueWorkItem.issue),
                 issueWorkItem.duration.minutes.longValue(),
