@@ -22,8 +22,6 @@ public class ModuleServiceImpl implements ModuleService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        return ok(moduleDAO.getListByCondition("kit_id = ?", kitId));
+        return ok(moduleDAO.getListByKitId(kitId));
     }
-
-
 }
