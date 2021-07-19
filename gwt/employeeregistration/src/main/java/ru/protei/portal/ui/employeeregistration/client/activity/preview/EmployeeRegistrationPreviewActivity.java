@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
@@ -96,7 +97,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
     @Override
     public void selectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
         saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
-        fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));
+        fireEvent(new CommentAndHistoryEvents.ShowItems(commentAndHistoryView, selectedTabs));
     }
 
     private void loadDetails(Long id) {
@@ -159,7 +160,9 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
                 .withCaseId(value.getId())
                 .readOnly());
 
-        fireEvent(new CommentAndHistoryEvents.Show(view.getItemsContainer(),
+        view.getItemsContainer().clear();
+        view.getItemsContainer().add(commentAndHistoryView.asWidget());
+        fireEvent(new CommentAndHistoryEvents.Show(commentAndHistoryView,
                 value.getId(),
                 En_CaseType.EMPLOYEE_REGISTRATION,
                 policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
@@ -176,7 +179,8 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
     private PolicyService policyService;
     @Inject
     LocalStorageService localStorageService;
-
+    @Inject
+    private AbstractCommentAndHistoryListView commentAndHistoryView;
     @Inject
     private En_EmployeeEquipmentLang equipmentLang;
     @Inject

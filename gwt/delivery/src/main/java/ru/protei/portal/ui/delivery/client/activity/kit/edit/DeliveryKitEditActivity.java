@@ -1,32 +1,36 @@
 package ru.protei.portal.ui.delivery.client.activity.kit.edit;
 
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.CommentsAndHistories;
+import ru.protei.portal.core.model.ent.History;
 import ru.protei.portal.core.model.ent.Kit;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.common.LocalStorageService;
-import ru.protei.portal.ui.common.client.events.CommentAndHistoryEvents;
 import ru.protei.portal.ui.common.client.events.KitEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
+import ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils;
+import ru.protei.portal.ui.common.client.view.casecomment.list.CommentAndHistoryListView;
+import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItemsContainer;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.XL_MODAL;
+import static ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils.getSortedCommentOrHistoryList;
+import static ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils.transliteration;
 
 public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliveryKitEditActivity,
         AbstractDialogDetailsActivity {
@@ -47,6 +51,7 @@ public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliv
 
         view.setStateEnabled(hasEditAccess());
         view.setNameEnabled(hasEditAccess());
+        dialogView.saveButtonEnabled().setEnabled(hasEditAccess());
         requestKit(event.kitId);
     }
 
@@ -63,11 +68,6 @@ public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliv
     @Override
     public void onCancelClicked() {
         dialogView.hidePopup();
-    }
-
-    @Override
-    public void onSelectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
-        fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));
     }
 
     private void requestKit(Long kitId) {
@@ -125,13 +125,39 @@ public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliv
         view.setCreatedBy(lang.createBy(kit.getCreator() == null ? "" : transliteration(kit.getCreator().getDisplayShortName()),
                 DateFormatter.formatDateTime(kit.getCreated())));
 
-        view.getMultiTabWidget().selectTabs(Collections.singletonList(HISTORY));
-        fireEvent(new CommentAndHistoryEvents.Show(view.getItemsContainer(), kit.getId(),
-                En_CaseType.DELIVERY, false, kit.getCreatorId()));
+        fillHistory();
     }
 
-    private String transliteration(String input) {
-        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
+    private void fillHistory(){
+        view.getItemsContainer().clear();
+        view.getItemsContainer().add(commentAndHistoryView.asWidget());
+        commentAndHistoryView.clearItemsContainer();
+
+        caseCommentController.getCommentsAndHistories(En_CaseType.KIT, kit.getId(), new FluentCallback<CommentsAndHistories>()
+                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
+                .withSuccess(commentsAndHistories -> {
+                    fillHistoryView(commentsAndHistories);
+                })
+        );
+    }
+
+    public void fillHistoryView(CommentsAndHistories commentsAndHistories) {
+
+        List<CommentsAndHistories.CommentOrHistory> commentOrHistoryList
+                = getSortedCommentOrHistoryList(commentsAndHistories.getCommentOrHistoryList());
+
+        List<History> histories = stream(commentOrHistoryList)
+                .filter(o -> o.getHistory() != null)
+                .map(o -> o.getHistory())
+                .collect(Collectors.toList());
+
+        List<CaseHistoryItemsContainer> caseHistoryItemsContainers = CommentOrHistoryUtils.fillView(
+                histories, commentAndHistoryView.commentsAndHistoriesContainer());
+
+        historyItemsContainers.addAll(caseHistoryItemsContainers);
+
+        commentAndHistoryView.setNewCommentHidden(true);
+        historyItemsContainers.forEach(historyItemsContainer -> historyItemsContainer.setVisible(true));
     }
 
     @Inject
@@ -145,9 +171,12 @@ public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliv
     @Inject
     AbstractDialogDetailsView dialogView;
     @Inject
-    LocalStorageService localStorageService;
+    CaseCommentControllerAsync caseCommentController;
     @Inject
     Lang lang;
+    @Inject
+    CommentAndHistoryListView commentAndHistoryView;
 
     private Kit kit;
+    private final List<CaseHistoryItemsContainer> historyItemsContainers = new LinkedList<>();
 }

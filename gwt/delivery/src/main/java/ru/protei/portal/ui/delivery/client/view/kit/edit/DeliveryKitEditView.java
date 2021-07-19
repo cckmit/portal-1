@@ -22,6 +22,8 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.delivery.client.activity.kit.edit.AbstractDeliveryKitEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.kit.edit.AbstractDeliveryKitEditView;
 
+import java.util.Arrays;
+
 import static java.util.Collections.singletonList;
 import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
@@ -34,7 +36,7 @@ public class DeliveryKitEditView extends Composite implements AbstractDeliveryKi
 
         multiTabWidget.setTabToNameRenderer(type -> commentOrHistoryTypeLang.getName(type));
         multiTabWidget.addTabs(singletonList(HISTORY));
-        multiTabWidget.setOnTabClickHandler(selectedTabs -> activity.onSelectedTabsChanged(selectedTabs));
+        multiTabWidget.selectTabs(Arrays.asList(HISTORY));
 
         ensureDebugIds();
     }

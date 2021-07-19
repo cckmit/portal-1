@@ -1,9 +1,9 @@
 package ru.protei.portal.ui.common.client.events;
 
-import com.google.gwt.user.client.ui.HasWidgets;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
+import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
 
 import java.util.List;
 
@@ -16,19 +16,19 @@ public class CommentAndHistoryEvents {
 
         public Show() {}
 
-        public Show(HasWidgets parent, Long caseId, En_CaseType caseType, boolean isModifyEnabled) {
-            this(parent, caseId, caseType, isModifyEnabled, null);
+        public Show(AbstractCommentAndHistoryListView view, Long caseId, En_CaseType caseType, boolean isModifyEnabled) {
+            this(view, caseId, caseType, isModifyEnabled, null);
         }
 
-        public Show(HasWidgets parent, Long caseId, En_CaseType caseType, boolean isModifyEnabled, Long caseCreatorId) {
-            this.parent = parent;
+        public Show(AbstractCommentAndHistoryListView view, Long caseId, En_CaseType caseType, boolean isModifyEnabled, Long caseCreatorId) {
+            this.view = view;
             this.caseId = caseId;
             this.caseType = caseType;
             this.isModifyEnabled = isModifyEnabled;
             this.caseCreatorId = caseCreatorId;
         }
 
-        public HasWidgets parent;
+        public AbstractCommentAndHistoryListView view;
         public En_CaseType caseType;
         public Long caseId;
         public Long caseCreatorId;
@@ -55,10 +55,12 @@ public class CommentAndHistoryEvents {
     }
 
     public static class ShowItems {
-        public ShowItems(List<En_CommentOrHistoryType> typesToShow) {
+        public ShowItems(AbstractCommentAndHistoryListView view, List<En_CommentOrHistoryType> typesToShow) {
+            this.view = view;
             this.typesToShow = typesToShow;
         }
 
+        public AbstractCommentAndHistoryListView view;
         public List<En_CommentOrHistoryType> typesToShow;
     }
 }
