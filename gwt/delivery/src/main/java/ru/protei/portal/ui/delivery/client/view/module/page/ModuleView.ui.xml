@@ -5,9 +5,9 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="p-3">
+    <g:HTMLPanel>
         <div class="row">
-            <table:TableWidget ui:field="table" styleName="table table-hover"/>
+            <table:TableWidget ui:field="table" styleName="table table-hover module-table"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

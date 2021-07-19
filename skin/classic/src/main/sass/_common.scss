@@ -5330,26 +5330,79 @@ div.form-group-default.form-group-default-selectFx:focus {
   }
 }
 
-.module-row {
-  display: flex;
+.module-table {
+  thead {
+    display: none;
+  }
 
-  .module-checkbox {
-    align-self: center;
-    flex: 0 0 40px;
+  tr {
+    td:first-child {
+      width: 50px;
+      input[type="checkbox"] {
+        margin: 8px 0 0 10px;
 
-    span {
-      padding-left: 10px;
+        &:before {
+          position: relative;
+          border-radius: 3px;
+          transition: border .2s linear 0s, color .2s linear 0s;
+          box-sizing: border-box;
+          content: "";
+          display: inline-block;
+          width: 17px;
+          height: 17px;
+          margin-right: 10px;
+          background-color: #fff;
+          border: 1px solid #d0d0d0;
+          right: 2px;
+          bottom: 2px;
+        }
+
+        &:checked:before {
+          border-width: 8.5px;
+        }
+
+        &:checked:after {
+          position: relative;
+          font-family: "Font Awesome 5 Free", serif;
+          font-weight: 900;
+          content: "\F00C";
+          color: #fff;
+          border-radius: 3px;
+          display: inline-block;
+          width: 16px;
+          height: 16px;
+          left: 1.5px;
+          font-size: 11px;
+          bottom: 23px;
+          transition: border .2s linear 0s, color .2s linear 0s;
+        }
+      }
+    }
+
+    td:nth-child(2) {
+      padding-left: 0;
+    }
+
+    &.child-row {
+      td:first-child {
+        padding-left: 28px;
+        padding-right: 0;
+      }
+      td:nth-child(2) {
+        padding-left: 20px;
+      }
     }
   }
-  .module-info {
-    flex: auto;
 
+  .module-row {
     .module-state {
       padding-right: 5px;
     }
-  }
 
-  &.child-module {
-    padding-left: 15px;
+    .manager {
+      color: #121212;
+      opacity: .46;
+      font-size: 11px;
+    }
   }
 }

@@ -13,7 +13,7 @@ public class ModuleDAO_Impl extends PortalBaseJdbcDAO<Module> implements ModuleD
         List<Module> modules = getListByCondition("kit_id = ?", kitId);
 
         if (!modules.isEmpty()) {
-            List<Module> childModules = getListByCondition("parent_module_id in (?)", convertListToStringIds(modules));
+            List<Module> childModules = getListByCondition("parent_module_id in (" + convertListToStringIds(modules) + ")");
             modules.addAll(childModules);
         }
         return modules;
@@ -22,6 +22,6 @@ public class ModuleDAO_Impl extends PortalBaseJdbcDAO<Module> implements ModuleD
     private static String convertListToStringIds(List<Module> modules) {
         return modules.stream()
                 .map(module -> module.getId().toString())
-                .collect(Collectors.joining(","));
+                .collect(Collectors.joining(", "));
     }
 }
