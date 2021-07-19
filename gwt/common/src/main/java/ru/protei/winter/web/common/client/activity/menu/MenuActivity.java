@@ -81,7 +81,6 @@ public abstract class MenuActivity implements Activity, AbstractSectionItemActiv
 
         if (identityToHasSubSections.get(identity)) {
             itemView.toggleSubSection(null);
-            return;
         }
 
         fireEvent(new MenuEvents.Clicked(identity));
