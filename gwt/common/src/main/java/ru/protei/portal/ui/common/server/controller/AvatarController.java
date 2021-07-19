@@ -105,19 +105,19 @@ public class AvatarController {
         query.setEmail(email);
         List<Person> persons = personDAO.getPersons(query);
         if (CollectionUtils.isEmpty(persons)) {
-            showNoPhotoImage(response);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
         Person person = persons.get(0);
         if (person == null || person.getId() == null ) {
-            showNoPhotoImage(response);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
         if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + person.getId() + ".jpg" , response ) ) return;
 
-        showNoPhotoImage(response);
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
     }
 
     @RequestMapping( value = "/avatars/old/{id}" )
