@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.struct;
 
+import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
 import ru.protei.portal.core.model.ent.Person;
 
 import java.util.HashMap;
@@ -7,10 +8,8 @@ import java.util.Map;
 
 public class ReportYtWorkItem {
     private Person person;
-    // список обработанных YtWorkItems для статистики / дебага
-    final private Map<String, RepresentTime> issueSpentTime;
     // Общее время
-    private RepresentTime allTimeSpent = new RepresentTime(0L);
+    private long allTimeSpent = 0L;
     // Map<Project, Map<NIOKR, SpentTime>>
     final private Map<String, Long> niokrSpentTime;
     // Map<Project, Map<NMA, SpentTime>>
@@ -21,7 +20,6 @@ public class ReportYtWorkItem {
     final private Map<String, Long> guaranteeSpentTime;
 
     public ReportYtWorkItem() {
-        this.issueSpentTime = new HashMap<>();
         this.niokrSpentTime = new HashMap<>();
         this.nmaSpentTime = new HashMap<>();
         this.contractSpentTime = new HashMap<>();
@@ -30,10 +28,6 @@ public class ReportYtWorkItem {
 
     public Person getPerson() {
         return person;
-    }
-
-    public Map<String, RepresentTime> getIssueSpentTime() {
-        return issueSpentTime;
     }
 
     public Map<String, Long> getNiokrSpentTime() {
@@ -56,38 +50,21 @@ public class ReportYtWorkItem {
         this.person = person;
     }
 
-    public RepresentTime getAllTimeSpent() {
+    public Long getAllTimeSpent() {
         return allTimeSpent;
     }
 
-    public void addAllTimeSpent(Long allTimeSpent) {
-        this.allTimeSpent = this.allTimeSpent.sum(new RepresentTime(allTimeSpent));
+    public void addAllTimeSpent(long time) {
+        this.allTimeSpent = this.allTimeSpent + time;
     }
 
-    static public class RepresentTime {
-        final Long minutes;
-        final String represent;
-
-        public RepresentTime(Long minutes) {
-            this.minutes = minutes;
-            this.represent = makeRepresent(this.minutes);
-        }
-
-        public RepresentTime sum(RepresentTime other) {
-            return new RepresentTime(this.minutes + other.minutes);
-        }
-
-        public Long getMinutes() {
-            return minutes;
-        }
-
-        public String getRepresent() {
-            return represent;
-        }
-
-        private String makeRepresent(Long minutes) {
-            long h = minutes / 60;
-            return String.format("%s ч. %s m.", h, minutes - h*60);
+    public Map<String, Long> selectSpentTimeMap(En_ReportYtWorkType type) {
+        switch (type) {
+            case NIOKR: return this.getNiokrSpentTime();
+            case NMA: return this.getNmaSpentTime();
+            case CONTRACT: return this.getContractSpentTime();
+            case GUARANTEE: return this.getGuaranteeSpentTime();
+            default: return null;
         }
     }
 }

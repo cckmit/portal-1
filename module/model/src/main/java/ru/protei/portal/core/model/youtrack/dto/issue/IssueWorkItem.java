@@ -4,8 +4,6 @@ import ru.protei.portal.core.model.youtrack.annotation.YtEntityName;
 import ru.protei.portal.core.model.youtrack.dto.YtDto;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 
-import java.util.Date;
-
 /**
  * https://www.jetbrains.com/help/youtrack/standalone/api-entity-Issue.html
  */
@@ -13,14 +11,8 @@ import java.util.Date;
 public class IssueWorkItem extends YtDto {
 
     public YtUser author;
-    public YtUser creator;
-    public String text;
-    public String textPreview;
     public WorkItemType type;
-    public Date created;
-    public Date updated;
     public DurationValue duration;
-    public Date date;
     public YtIssue issue;
 
     @Override
@@ -29,14 +21,8 @@ public class IssueWorkItem extends YtDto {
                 "id='" + id + '\'' +
                 ", $type='" + $type + '\'' +
                 ", author=" + author +
-                ", creator=" + creator +
-                ", text='" + text + '\'' +
-                ", textPreview='" + textPreview + '\'' +
                 ", type=" + type +
-                ", created=" + created +
-                ", updated=" + updated +
                 ", duration=" + duration +
-                ", date=" + date +
                 '}';
     }
 }

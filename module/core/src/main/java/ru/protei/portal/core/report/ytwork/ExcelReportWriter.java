@@ -25,14 +25,16 @@ public class ExcelReportWriter implements
         ReportWriter<ReportYtWorkItem>,
         JXLSHelper.ReportBook.Writer<ReportYtWorkItem> {
 
+    private final Lang.LocalizedLang localizedLang;
     private final JXLSHelper.ReportBook<ReportYtWorkItem> book;
     private final String[] formats;
     private final Map<En_ReportYtWorkType, Set<String>> processedWorkTypes;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang, Map<En_ReportYtWorkType, Set<String>> processedWorkTypes) {
+        this.localizedLang = localizedLang;
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.processedWorkTypes = processedWorkTypes;
-        this.formats = getFormats();
+        this.formats = getFormats(processedWorkTypes);
     }
 
     @Override
@@ -77,16 +79,15 @@ public class ExcelReportWriter implements
 
     private int[] getColumnsWidth(Map<En_ReportYtWorkType, Set<String>> processedWorkTypes) {
         ListBuilder<Integer> columnsWidthList = new ListBuilder<Integer>()
-                .add(5800).add(5800);
-        processedWorkTypes.forEach((ytWorkType, strings) -> {
-            strings.forEach(value -> columnsWidthList.add(5800));
-        });
+                .add(5800).add(5800).add(5800);
+        processedWorkTypes.forEach((ytWorkType, strings) ->
+                strings.forEach(value -> columnsWidthList.add(5800)));
         return toPrimitiveIntegerArray(columnsWidthList.build());
     }
 
     @Override
     public String[] getLangColumnNames() {
-        return new String[]{"reportYtWorkPersonName", "reportYtWorkAllSpentTime"};
+        return new String[]{"reportYtWorkPersonName", "reportYtWorkAllSpentTime", "reportYtWorkAllSpentTime"};
     }
     @Override
     public String[] getColumnNames() {
@@ -110,27 +111,19 @@ public class ExcelReportWriter implements
         } else {
             values.add(item.getPerson().getLogins().get(0));
         }
-
-        values.add(item.getAllTimeSpent().getRepresent());
-
-        processedWorkTypes.forEach((ytWorkType, strings) -> {
-            strings.forEach(value -> {
-                Long fieldValue = 0L;
-                switch (ytWorkType) {
-                    case NIOKR: fieldValue = item.getNiokrSpentTime().getOrDefault(value,0L); break;
-                    case NMA: fieldValue = item.getNmaSpentTime().getOrDefault(value,0L); break;
-                    case CONTRACT: fieldValue = item.getContractSpentTime().getOrDefault(value,0L); break;
-                    case GUARANTEE: fieldValue = item.getGuaranteeSpentTime().getOrDefault(value,0L); break;
-                }
-                values.add(fieldValue);
-            });
-        });
+        long allTimeSpent = item.getAllTimeSpent();
+        long hours = allTimeSpent / 60;
+        values.add(allTimeSpent);
+        values.add(localizedLang.get("reportYtWorkRepresentTime", new Object[]{hours, allTimeSpent - hours*60}));
+        processedWorkTypes.forEach((ytWorkType, strings) ->
+                strings.forEach(value -> values.add(item.selectSpentTimeMap(ytWorkType).getOrDefault(value, 0L))));
 
         return values.toArray();
     }
 
-    private String[] getFormats() {
+    private String[] getFormats(Map<En_ReportYtWorkType, Set<String>> processedWorkTypes) {
         ListBuilder<String> columnsList = new ListBuilder<String>()
+                .add(ExcelFormat.STANDARD)
                 .add(ExcelFormat.STANDARD)
                 .add(ExcelFormat.STANDARD);
         int count = 0;

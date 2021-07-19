@@ -107,33 +107,6 @@ public class YoutrackApiImpl implements YoutrackApi {
     }
 
     @Override
-    public Result<List<YtIssue>> getIssueReportByQuery(String query) {
-        return read(new YoutrackRequest<>(YtIssue[].class)
-                .url(new YoutrackUrlProvider(getBaseUrl()).issues())
-                .query(query)
-                .fillSimpleFields()
-                .fillYtFields(YtUser.class, YtIssueCustomField.class, DurationValue.class, WorkItemType.class, IssueWorkItem.class))
-                .map(Arrays::asList);
-    }
-
-    @Override
-    public Result<List<YtActivityItem>> getActivities(Date start, Date end, Long offset, Long limit, YtActivityCategory category) {
-        return read(new YoutrackRequest<>(YtActivityItem[].class)
-                .url(new YoutrackUrlProvider(getBaseUrl()).activities())
-                .params(new HashMap<String, String>() {{
-                    put("start", String.valueOf(start.getTime()));
-                    put("end", String.valueOf(end.getTime()));
-                    put("categories", category.getCategoryId());
-                    put("$skip", offset.toString());
-                    put("$top", limit.toString());
-                    put("author", "porubov");
-                }})
-                .fillSimpleFields()
-                .fillYtFields(YtWorkItemDurationActivityItem.class, IssueWorkItem.class, YtUser.class, DurationValue.class, YtIssue.class, YtIssueCustomField.class)
-        ).map(Arrays::asList);
-    }
-
-    @Override
     public Result<List<IssueWorkItem>> getWorkItems(Date start, Date end, int offset, int limit) {
         return read(new YoutrackRequest<>(IssueWorkItem[].class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).workItems())
@@ -142,20 +115,10 @@ public class YoutrackApiImpl implements YoutrackApi {
                     put("end", String.valueOf(end.getTime()));
                     put("$skip", String.valueOf(offset));
                     put("$top", String.valueOf(limit));
-//                    put("author", "porubov");
                 }})
                 .fillSimpleFields()
                 .fillYtFields(YtWorkItemDurationActivityItem.class, IssueWorkItem.class, YtUser.class, DurationValue.class, YtIssue.class, YtIssueCustomField.class, YtProject.class)
         ).map(Arrays::asList);
-    }
-
-    @Override
-    public Result<List<IssueTimeTracking>> getWorkItem(String ytIssueId) {
-        return read(new YoutrackRequest<>(IssueTimeTracking[].class)
-                    .url(new YoutrackUrlProvider(getBaseUrl()).workItem(ytIssueId))
-//                    .fillSimpleFields()
-//                    .fillYtFields(IssueWorkItem.class/*, YtUser.class, WorkItemType.class, DurationValue.class*/)
-            ).map(Arrays::asList);
     }
 
     @Override

@@ -19,12 +19,11 @@ import static java.util.stream.Collectors.*;
 import static ru.protei.portal.core.model.dict.En_ReportYtWorkType.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.mergeMap;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
-import static ru.protei.portal.core.model.struct.ReportYtWorkItem.RepresentTime;
 
 public class ReportYtWorkCollector implements Collector<
         ReportYtWorkInfo,
-        Map<String, ReportYtWorkItem>,
-        List<ReportYtWorkItem>> {
+        Map<String, ReportYtWorkItem>,      // email -> processed items
+        List<ReportYtWorkItem>> {           // collected items
 
     private final Map<En_ReportYtWorkType, Set<String>> processedWorkTypes;
     private final Map<String, List<WorkTypeAndValue>> memoCustomerToContract = new ConcurrentHashMap<>();
@@ -49,10 +48,9 @@ public class ReportYtWorkCollector implements Collector<
         this.now = now;
         this.homeCompany = unmodifiableSet(new HashSet<>(homeCompany));
         processedWorkTypes = new LinkedHashMap<>();
-        processedWorkTypes.put(NIOKR, new HashSet<>());
-        processedWorkTypes.put(NMA, new HashSet<>());
-        processedWorkTypes.put(CONTRACT, new HashSet<>());
-        processedWorkTypes.put(GUARANTEE, new HashSet<>());
+        for (En_ReportYtWorkType value : values()) {
+            processedWorkTypes.put(value, new HashSet<>());
+        }
     }
 
     @Override
@@ -71,18 +69,10 @@ public class ReportYtWorkCollector implements Collector<
         List<WorkTypeAndValue> workTypeAndValueList = makeWorkType(ytWorkInfo.getCustomer(), ytWorkInfo.getProject());
         for (WorkTypeAndValue workTypeAndValue : workTypeAndValueList) {
             Map<String, Long> spentTimeMap = createSpentTimeMap(ytWorkInfo.getSpentTime(), workTypeAndValue.getValue());
-            switch(workTypeAndValue.getWorkType()) {
-                case NIOKR: mergeSpentTimeMap(reportYtWorkItem.getNiokrSpentTime(), spentTimeMap); break;
-                case NMA: mergeSpentTimeMap(reportYtWorkItem.getNmaSpentTime(), spentTimeMap); break;
-                case CONTRACT: mergeSpentTimeMap(reportYtWorkItem.getContractSpentTime(), spentTimeMap); break;
-                case GUARANTEE: mergeSpentTimeMap(reportYtWorkItem.getGuaranteeSpentTime(), spentTimeMap); break;
-            }
-            reportYtWorkItem.getIssueSpentTime().merge(ytWorkInfo.getIssue(),new RepresentTime(ytWorkInfo.getSpentTime()), RepresentTime::sum);
+            Map<String, Long> itemMap = reportYtWorkItem.selectSpentTimeMap(workTypeAndValue.getWorkType());
+            mergeSpentTimeMap(itemMap, spentTimeMap);
             reportYtWorkItem.addAllTimeSpent(ytWorkInfo.getSpentTime());
             processedWorkTypes.compute(workTypeAndValue.getWorkType(), (workType, value) -> {
-                if (value == null) {
-                    value = new HashSet<>();
-                }
                 value.addAll(workTypeAndValue.getValue());
                 return value;
             });
@@ -153,13 +143,12 @@ public class ReportYtWorkCollector implements Collector<
     }
 
     static private Map<String, ReportYtWorkItem> mergeCollectedItems(Map<String, ReportYtWorkItem> map1, Map<String, ReportYtWorkItem> map2) {
-        mergeMap(map1, map2, (dto1, dto2) -> {
-            mergeSpentTimeMap(dto1.getNiokrSpentTime(), dto2.getNiokrSpentTime());
-            mergeSpentTimeMap(dto1.getNmaSpentTime(), dto2.getNmaSpentTime());
-            mergeSpentTimeMap(dto1.getContractSpentTime(), dto2.getContractSpentTime());
-            mergeSpentTimeMap(dto1.getGuaranteeSpentTime(), dto2.getGuaranteeSpentTime());
-            mergeMap(dto1.getIssueSpentTime(), dto2.getIssueSpentTime(), RepresentTime::sum);
-            return dto1;
+        mergeMap(map1, map2, (ytWorkItem1, ytWorkItem2) -> {
+            mergeSpentTimeMap(ytWorkItem1.getNiokrSpentTime(), ytWorkItem2.getNiokrSpentTime());
+            mergeSpentTimeMap(ytWorkItem1.getNmaSpentTime(), ytWorkItem2.getNmaSpentTime());
+            mergeSpentTimeMap(ytWorkItem1.getContractSpentTime(), ytWorkItem2.getContractSpentTime());
+            mergeSpentTimeMap(ytWorkItem1.getGuaranteeSpentTime(), ytWorkItem2.getGuaranteeSpentTime());
+            return ytWorkItem1;
         });
         return map1;
     }
@@ -174,7 +163,7 @@ public class ReportYtWorkCollector implements Collector<
 
     @Override
     public Set<Characteristics> characteristics() {
-        return new HashSet<>();
+        return Collections.emptySet();
     }
 
     public Map<En_ReportYtWorkType, Set<String>> getProcessedWorkTypes() {
