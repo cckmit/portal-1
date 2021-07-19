@@ -83,7 +83,7 @@
                     </div>
 
 
-                    <tab:TabWidget styleName="">
+                    <tab:TabWidget styleName="" ui:field="tabs">
                         <tab:pane.TabWidgetPane tabName="{lang.contractDeliveryAndPaymentsPeriodHeader}">
                             <g:HTMLPanel>
                                 <g:HTMLPanel ui:field="dates" styleName="small"/>

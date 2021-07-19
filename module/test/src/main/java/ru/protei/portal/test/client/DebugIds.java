@@ -1000,6 +1000,11 @@ public class DebugIds {
         String SAVE_BUTTON = "contract-save-button";
         String CANCEL_BUTTON = "contract-cancel-button";
         String CONTRACT_SIGN_MANAGER_SELECTOR = "contract-contract-sign-manager-selector";
+        String BACK_BUTTON = "contract-back-button";
+        String ADD_TAG_BUTTON = "contract-add-tag-button";
+        String DELIVERY_AND_PAYMENTS_PERIOD_TAB = "contract-delivery-and-payments-period-tab";
+        String SPECIFICATION_TAB = "contract-specification-tab";
+        String EXPENDITURE_CONTRACTS_TAB = "expenditure-contracts-tab";
 
         interface LABEL {
             String COMMON_HEADER = "contract-common-header";
@@ -1068,6 +1073,24 @@ public class DebugIds {
             String SEARCH_BUTTON = "contract-project-search-button";
             String RESET_BUTTON = "contract-project-reset-button";
         }
+    }
+
+    public interface CONTRACT_PREVIEW {
+        String CONTRACT_TITLE_LABEL = "contract-preview-contract-title-label";
+        String CONTRACT_NAME_LABEL = "contract-preview-contract-name-label";
+        String CONTRACTOR_LABEL = "contract-preview-contractor-label";
+        String DATE_SIGNING_LABEL = "contract-preview-date-signing-label";
+        String DATE_VALID_LABEL = "contract-preview-date-valid-label";
+        String DIRECTIONS_LABEL = "contract-preview-product-directions-label";
+        String DELIVERY_NUMBER_LABEL = "contract-preview-delivery-number-label";
+        String RECEIPT_AGREEMENT_LABEL = "contract-preview-receipt-agreement-label";
+        String EXPENDITURE_AGREEMENT_LABEL = "contract-preview-expenditure-agreement-label";
+        String TAGS_LABEL = "contract-preview-tags-label";
+        String ORGANIZATION_LABEL = "contract-preview-organization-label";
+        String PROJECT_LABEL = "contract-preview-project-label";
+        String CURATOR_LABEL = "contract-preview-curator-label";
+        String PROJECT_MANAGER_LABEL = "contract-preview-project-manager-label";
+        String SIGN_MANAGER_LABEL = "contract-preview-sign-manager-label";
     }
 
     public interface CLEANABLE_SEARCH_BOX {
