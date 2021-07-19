@@ -5,8 +5,9 @@ import com.google.inject.Singleton;
 import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateView;
 import ru.protei.portal.ui.delivery.client.activity.create.DeliveryCreateActivity;
 import ru.protei.portal.ui.delivery.client.activity.edit.*;
-import ru.protei.portal.ui.delivery.client.activity.kit.add.AbstractDeliveryKitAddView;
 import ru.protei.portal.ui.delivery.client.activity.kit.add.DeliveryKitAddActivity;
+import ru.protei.portal.ui.delivery.client.activity.kit.edit.AbstractDeliveryKitEditView;
+import ru.protei.portal.ui.delivery.client.activity.kit.edit.DeliveryKitEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.meta.AbstractDeliveryMetaView;
 import ru.protei.portal.ui.delivery.client.activity.meta.DeliveryMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.page.DeliveryPage;
@@ -14,9 +15,9 @@ import ru.protei.portal.ui.delivery.client.activity.table.AbstractDeliveryTableV
 import ru.protei.portal.ui.delivery.client.activity.table.DeliveryTableActivity;
 import ru.protei.portal.ui.delivery.client.view.create.DeliveryCreateView;
 import ru.protei.portal.ui.delivery.client.view.edit.DeliveryEditView;
+import ru.protei.portal.ui.delivery.client.view.kit.edit.DeliveryKitEditView;
 import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
 import ru.protei.portal.ui.delivery.client.view.table.DeliveryTableView;
-import ru.protei.portal.ui.delivery.client.view.kit.add.DeliveryKitAddView;
 
 public class DeliveryClientModule extends AbstractGinModule {
     @Override
@@ -36,7 +37,8 @@ public class DeliveryClientModule extends AbstractGinModule {
         bind(AbstractDeliveryMetaView.class).to(DeliveryMetaView.class).in(Singleton.class);
 
         bind(DeliveryKitAddActivity.class).asEagerSingleton();
-        bind(AbstractDeliveryKitAddView.class).to(DeliveryKitAddView.class).in(Singleton.class);
+        bind(DeliveryKitEditActivity.class).asEagerSingleton();
+        bind(AbstractDeliveryKitEditView.class).to(DeliveryKitEditView.class).in(Singleton.class);
     }
 }
 

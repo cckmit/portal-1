@@ -1,0 +1,33 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:tab='urn:import:ru.protei.portal.ui.common.client.widget.tab'
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+             xmlns:module="urn:import:ru.protei.portal.ui.common.client.widget.selector.module"
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel>
+
+        <h5 ui:field="serialNumber" class="copy-panel no-margin"/>
+        <small ui:field="createdBy" class="pull-right text-right m-t-5"/>
+
+        <div class="row kit-info">
+            <module:ModuleStateFormSelector ui:field="state" validation="false"
+                                            header="{lang.deliveryState}"
+                                            styleName="col-md-4"/>
+            <div class="col-md-8 p-l-0">
+                <div class="form-group form-group-default">
+                    <label class="fade"><ui:text from="{lang.deliveryKitName}"/></label>
+                    <validablefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="false"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <tab:multi.MultiTabWidget ui:field="multiTabWidget" styleName="issue-info-tab-widget"/>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

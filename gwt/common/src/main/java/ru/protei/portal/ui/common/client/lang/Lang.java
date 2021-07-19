@@ -3579,4 +3579,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errKitSerialNumberNotMatchDeliveryNumber();
 
     String documentation();
+
+    String deliveryKit();
 }

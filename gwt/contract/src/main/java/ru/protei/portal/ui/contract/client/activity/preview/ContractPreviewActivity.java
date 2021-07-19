@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.MoneyRenderer;
 import ru.protei.portal.ui.common.client.events.*;
@@ -130,7 +131,9 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setDeliveryNumber(StringUtils.emptyIfNull(value.getDeliveryNumber()));
 
         fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), En_CaseType.CONTRACT, contractId, true, a -> {}));
-        fireEvent(new CommentAndHistoryEvents.Show(view.getCommentsContainer(), value.getId(), En_CaseType.CONTRACT, true, value.getCreatorId()));
+        view.getCommentsContainer().clear();
+        view.getCommentsContainer().add(commentAndHistoryView.asWidget());
+        fireEvent(new CommentAndHistoryEvents.Show(commentAndHistoryView, value.getId(), En_CaseType.CONTRACT, true, value.getCreatorId()));
     }
 
     private List<Widget> getAllDatesAsWidget(List<ContractDate>  dates) {
@@ -171,7 +174,8 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
     private En_ContractTypeLang typeLang;
     @Inject
     private En_ContractDatesTypeLang datesTypeLang;
-
+    @Inject
+    private AbstractCommentAndHistoryListView commentAndHistoryView;
     @Inject
     private AbstractContractPreviewView view;
     @Inject

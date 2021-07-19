@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
+import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
@@ -255,7 +256,7 @@ public abstract class IssueEditActivity implements
     @Override
     public void selectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
         saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
-        fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));
+        fireEvent(new CommentAndHistoryEvents.ShowItems(commentAndHistoryView, selectedTabs));
     }
 
     @Override
@@ -434,7 +435,9 @@ public abstract class IssueEditActivity implements
     }
 
     private void showCommentsAndHistories(CaseObject issue) {
-        CommentAndHistoryEvents.Show showCommentsAndHistoriesEvent = new CommentAndHistoryEvents.Show( issueInfoWidget.getCommentAndHistoryListContainer(),
+        issueInfoWidget.getCommentAndHistoryListContainer().clear();
+        issueInfoWidget.getCommentAndHistoryListContainer().add(commentAndHistoryView.asWidget());
+        CommentAndHistoryEvents.Show showCommentsAndHistoriesEvent = new CommentAndHistoryEvents.Show(commentAndHistoryView,
                 issue.getId(), En_CaseType.CRM_SUPPORT, hasAccess() && !isReadOnly(), issue.getCreatorId() );
         showCommentsAndHistoriesEvent.isElapsedTimeEnabled = policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW );
         showCommentsAndHistoriesEvent.isPrivateVisible = !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW );
@@ -619,7 +622,8 @@ public abstract class IssueEditActivity implements
     IssueNameDescriptionEditWidget issueNameDescriptionEditWidget;
     @Inject
     IssueInfoWidget issueInfoWidget;
-
+    @Inject
+    private AbstractCommentAndHistoryListView commentAndHistoryView;
     @ContextAware
     CaseObject issue;
 

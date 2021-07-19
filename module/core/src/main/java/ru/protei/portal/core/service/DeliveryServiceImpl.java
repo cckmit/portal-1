@@ -145,6 +145,10 @@ public class DeliveryServiceImpl implements DeliveryService {
                 log.warn("createDelivery(): kit not created, kit={}", kit);
                 throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
             }
+            Result<Long> resultState = addStateHistory(token, kitCaseObjectId, kit.getStateId(), caseStateDAO.get(kit.getStateId()).getState());
+            if (resultState.isError()) {
+                log.error("State for the kit {} not saved!", kitCaseObjectId);
+            }
         });
 
         if(isNotEmpty(deliveryCaseObject.getNotifiers())){
@@ -221,7 +225,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         caseObject = createDeliveryCaseObject(caseObject, meta, null, null, new Date());
         boolean isUpdated = caseObjectDAO.merge(caseObject);
         if (!isUpdated) {
-            log.info("Failed to update issue meta data {} at db", caseObject.getId());
+            log.info("Failed to update delivery meta data {} at db", caseObject.getId());
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
@@ -350,10 +354,73 @@ public class DeliveryServiceImpl implements DeliveryService {
                     log.warn("createKits(): kit not created, kit={}", kit);
                     throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
                 }
+                createKitHistory(token, kit);
             });
 
             return ok(kitDAO.listByDeliveryId(deliveryId));
         });
+    }
+
+    private void createKitHistory(AuthToken token, Kit kit) {
+
+        Result<Long> resultState = addStateHistory(token, kit.getId(), kit.getStateId(), caseStateDAO.get(kit.getStateId()).getState());
+
+        if (resultState.isError()) {
+            log.error("State message for the kit {} not created!", kit.getId());
+        }
+    }
+
+    @Override
+    public Result<Kit> getKit(AuthToken token, Long kitId) {
+
+        Kit kit = kitDAO.get(kitId);
+        return ok(kit);
+    }
+
+    @Override
+    @Transactional
+    public Result<Kit> updateKit(AuthToken token, Kit kit) {
+        if (kit == null || kit.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!isValid(kit)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        Kit oldKit = kitDAO.get(kit.getId());
+        if (oldKit == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        CaseObject caseObject = caseObjectDAO.get(kit.getId());
+        caseObject = createKitCaseObject(caseObject, kit, null, null, new Date());
+        boolean isUpdated = caseObjectDAO.merge(caseObject);
+        if (!isUpdated) {
+            log.info("Failed to update kit meta data {} at db", caseObject.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        isUpdated = kitDAO.merge(kit);
+        if (!isUpdated) {
+            log.warn("updateKit(): kit not updated = {}",  caseObject.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        updateKitHistory(token, kit, oldKit);
+
+        return ok(kit);
+    }
+
+    private void updateKitHistory(AuthToken token, Kit newKit, Kit oldKit) {
+        if (!Objects.equals(newKit.getStateId(), oldKit.getStateId())) {
+            Result<Long> resultState = changeStateHistory(token, newKit.getId(), oldKit.getStateId(), caseStateDAO.get(oldKit.getStateId()).getState(),
+                    newKit.getStateId(), caseStateDAO.get(newKit.getStateId()).getState());
+
+            if (resultState.isError()) {
+                log.error("State message for the kit {} not saved!", newKit.getId());
+            }
+        }
     }
 
     private Delivery getDelivery(Long id) {
@@ -483,12 +550,12 @@ public class DeliveryServiceImpl implements DeliveryService {
         return oldDate != null && newDate == null;
     }
 
-    private Result<Long> addStateHistory(AuthToken authToken, Long deliveryId, Long stateId, String stateName) {
-        return historyService.createHistory(authToken, deliveryId, En_HistoryAction.ADD, En_HistoryType.DELIVERY_STATE, null, null, stateId, stateName);
+    private Result<Long> addStateHistory(AuthToken authToken, Long caseObjectId, Long stateId, String stateName) {
+        return historyService.createHistory(authToken, caseObjectId, En_HistoryAction.ADD, En_HistoryType.DELIVERY_STATE, null, null, stateId, stateName);
     }
 
-    private Result<Long> changeStateHistory(AuthToken token, Long deliveryId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
-        return historyService.createHistory(token, deliveryId, En_HistoryAction.CHANGE, En_HistoryType.DELIVERY_STATE, oldStateId, oldStateName, newStateId, newStateName);
+    private Result<Long> changeStateHistory(AuthToken token, Long caseObjectId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
+        return historyService.createHistory(token, caseObjectId, En_HistoryAction.CHANGE, En_HistoryType.DELIVERY_STATE, oldStateId, oldStateName, newStateId, newStateName);
     }
 
     private Result<Long> addDateHistory(AuthToken token, Long deliveryId, Date date) {
