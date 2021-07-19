@@ -5331,15 +5331,21 @@ div.form-group-default.form-group-default-selectFx:focus {
 }
 
 .module-table {
+  margin-top: 0;
+
   thead {
     display: none;
+  }
+
+  tr:first-child td {
+    border-top: 0;
   }
 
   tr {
     td:first-child {
       width: 50px;
       input[type="checkbox"] {
-        margin: 8px 0 0 10px;
+        margin: 5px 0 0 10px;
 
         &:before {
           position: relative;
@@ -5403,6 +5409,48 @@ div.form-group-default.form-group-default-selectFx:focus {
       color: #121212;
       opacity: .46;
       font-size: 11px;
+    }
+  }
+
+  .table {
+    margin-top: 0;
+  }
+}
+
+.menuclipper {
+  width: 100%;
+  height: 50px;
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, .07);
+
+  .actions {
+    display: flex;
+
+    a {
+      position: relative;
+      text-align: center;
+      font-size: 13px;
+      line-height: 50px;
+      flex: 0 1 25%;
+
+      &:hover {
+        background: none;
+        color: #212121;
+      }
+
+      &:after{
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 35%;
+        width: 1px;
+        height: 30%;
+        background: rgba(0, 0, 0, 0.07);
+      }
+
+      &:last-child:after {
+        display: none
+      }
     }
   }
 }

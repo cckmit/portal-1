@@ -3,6 +3,8 @@ package ru.protei.portal.ui.delivery.client.view.module.page;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
@@ -52,6 +54,16 @@ public class ModuleView extends Composite implements AbstractModuleView {
 
     @UiField
     TableWidget<Module> table;
+    @UiField
+    Anchor addButton;
+    @UiField
+    Anchor copyButton;
+    @UiField
+    Anchor stateButton;
+    @UiField
+    Anchor deleteButton;
+    @UiField
+    Anchor reloadButton;
 
     private AbstractKitActivity activity;
 
