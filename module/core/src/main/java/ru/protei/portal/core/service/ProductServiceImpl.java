@@ -162,8 +162,17 @@ public class ProductServiceImpl implements ProductService {
                 .collect(Collectors.toList());
 
         if (CollectionUtils.isEmpty(projectIds)) return error(En_ResultStatus.NOT_FOUND);
+        List<DevUnit> projectProducts = devUnitDAO.getProjectProducts(projectIds);
+        if (CollectionUtils.isEmpty(projectProducts)) return error(En_ResultStatus.NOT_FOUND);
+        Set<Long> productIds = projectProducts.stream()
+                .map(DevUnit::getId)
+                .collect(Collectors.toSet());
+        List<DevUnit> productChilds = devUnitDAO.getChildren(productIds);
+        if (CollectionUtils.isNotEmpty(productChilds)) {
+            projectProducts.addAll(productChilds);
+        }
 
-        return ok(CollectionUtils.emptyIfNull(devUnitDAO.getProjectProducts(projectIds)).stream()
+        return ok(projectProducts.stream()
                 .map(DevUnitInfo::toInfo)
                 .collect(Collectors.toList()));
     }

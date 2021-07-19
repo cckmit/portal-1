@@ -281,6 +281,10 @@ public class PortalApiController {
                 .ifError(result -> log.warn("updateProductState(): Can't update product state with id={}. {}", productId, result));
     }
 
+    /**
+     * Получение списка продуктов и субпродуктов (в иерархии) для проектов компании-заказчика
+     * @return список DevUnitInfo
+     */
     @GetMapping(value = "/products/getByCompanyProjects")
     public Result<List<DevUnitInfo>> getProductsByCompanyProjects( HttpServletRequest request, HttpServletResponse response) {
         log.info( "getProductsByCompanyProjects" );
