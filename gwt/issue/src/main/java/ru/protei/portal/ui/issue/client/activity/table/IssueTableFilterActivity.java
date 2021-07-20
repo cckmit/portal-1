@@ -87,6 +87,11 @@ public abstract class IssueTableFilterActivity
 
     @Event(Type.FILL_CONTENT)
     public void onShow( IssueEvents.Show event ) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.ISSUE_VIEW)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
+            return;
+        }
+
         applyFilterViewPrivileges();
 
         initDetails.parent.clear();

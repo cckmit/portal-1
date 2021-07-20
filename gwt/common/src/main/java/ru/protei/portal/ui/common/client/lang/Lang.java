@@ -3418,6 +3418,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String deliverySubscribers();
 
+    String deliveryKitsAddHeader();
+
     String deliveryKits();
 
     String deliveryKitSerialNumber();
@@ -3558,7 +3560,45 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceTimeRange(String from, String to);
 
+    String deliveryKind();
+
+    String deliveryHwManager();
+
+    String deliveryQcManager();
+
+    String deliveryDepartureInfo();
+
+    String deliveryMilitary();
+
+    String deliveryCivil();
+
+    String deliveryNotDefined();
+
     String kitSearchHint();
+
+    String moduleStatePreliminary();
+
+    String moduleStateReservation();
+
+    String moduleStateAssembly();
+
+    String moduleStateSetup();
+
+    String moduleStateTesting();
+
+    String moduleStatePackaging();
+
+    String moduleStateSent();
+
+    String moduleStateRepair();
+
+    String moduleStateWriteOff();
+
+    String moduleStatePaused();
+
+    String errKitSerialNumberNotMatchDeliveryNumber();
+
+    String documentation();
 
     String errorAbsenceHasTimeRangeOverlap();
 

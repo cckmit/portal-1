@@ -1598,7 +1598,9 @@ public class MailNotificationProcessor {
                 || event.isInitiatorChanged()
                 || event.isProjectChanged()
                 || event.isStateChanged()
-                || event.isContractChanged();
+                || event.isContractChanged()
+                || event.isHwManagerChanged()
+                || event.isQcManagerChanged();
     }
 
 

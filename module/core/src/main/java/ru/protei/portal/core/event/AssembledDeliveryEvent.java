@@ -41,7 +41,7 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
 
     public void attachUpdateEvent(DeliveryUpdateEvent event) {
         this.lastUpdated = currentTimeMillis();
-        this.oldDeliveryState = event.getOldDeliveryState();
+        this.oldDeliveryState = oldDeliveryState == null ? event.getOldDeliveryState() : oldDeliveryState;
         this.newDeliveryState = event.getNewDeliveryState();
         this.deliveryId = event.getDeliveryId();
         this.initiatorId = event.getPersonId();
@@ -119,6 +119,14 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
 
     public boolean isProjectChanged() {
         return isEditEvent() && !Objects.equals(oldDeliveryState.getProjectId(), newDeliveryState.getProjectId());
+    }
+
+    public boolean isHwManagerChanged() {
+        return isEditEvent() && !Objects.equals(oldDeliveryState.getHwManagerId(), newDeliveryState.getHwManagerId());
+    }
+
+    public boolean isQcManagerChanged() {
+        return isEditEvent() && !Objects.equals(oldDeliveryState.getQcManagerId(), newDeliveryState.getQcManagerId());
     }
 
     public DiffCollectionResult<DevUnit> getProductDiffs() {

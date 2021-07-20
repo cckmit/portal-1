@@ -51,7 +51,8 @@ public class DeliveryDAO_Impl extends PortalBaseJdbcDAO<Delivery> implements Del
 
         if (isNotEmpty(query.getCompanyIds())
                 || isNotEmpty(query.getManagerIds())
-                || isNotEmpty(query.getProductIds())) {
+                || isNotEmpty(query.getProductIds())
+                || query.getMilitary() != null) {
             parameters.withJoins(LEFT_JOIN_PROJECT_CASE_OBJECT);
         }
 

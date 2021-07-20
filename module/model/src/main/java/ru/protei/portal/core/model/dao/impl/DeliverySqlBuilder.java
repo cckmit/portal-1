@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.query.DeliveryQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.Interval;
@@ -21,6 +22,8 @@ public class DeliverySqlBuilder {
             if ( query.getId() != null ) {
                 condition.append( " and delivery.id=?" );
                 args.add( query.getId() );
+            } else if (isNotEmpty(query.getSerialNumbers())) {
+                condition.append(" and delivery.id in ( SELECT k.delivery_id FROM kit k where k.serial_number in " + makeInArg(query.getSerialNumbers(), true) + " )");
             }
 
             //компания это delivery.project.case_object.initiator_company
@@ -79,6 +82,13 @@ public class DeliverySqlBuilder {
 
             if (query.getDeleted() != null) {
                 condition.append(" and CO.deleted = ").append(query.getDeleted());
+            }
+
+            if (query.getMilitary() != null) {
+                condition
+                        .append(" and PRJ.customer_type")
+                        .append(query.getMilitary() ? " = " : " != ")
+                        .append(En_CustomerType.MINISTRY_OF_DEFENCE.getId());
             }
         });
     }

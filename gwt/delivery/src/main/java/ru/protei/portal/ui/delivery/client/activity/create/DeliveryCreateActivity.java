@@ -6,7 +6,9 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
+import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -21,7 +23,9 @@ import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.activity.meta.DeliveryCommonMeta;
+import ru.protei.portal.ui.delivery.client.widget.kit.list.DeliveryKitList;
 import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
+import ru.protei.portal.ui.delivery.client.widget.kit.list.AbstractDeliveryKitListActivity;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -29,15 +33,16 @@ import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 
-public abstract class DeliveryCreateActivity implements Activity, AbstractDeliveryCreateActivity {
+public abstract class DeliveryCreateActivity implements Activity, AbstractDeliveryCreateActivity, AbstractDeliveryKitListActivity {
 
     @Inject
     public void onInit() {
         view.setActivity(this);
 
         DeliveryMetaView metaView = view.getMetaView();
-        commonMeta.setDeliveryMetaView(metaView, view::updateKitByProject);
+        commonMeta.setDeliveryMetaView(metaView, kitList::updateSerialNumbering);
         view.getMetaView().setActivity(commonMeta);
+        kitList.setActivity(this);
     }
 
     @Event
@@ -75,11 +80,31 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         fireEvent(new Back());
     }
 
+    @Override
+    public void getLastSerialNumber(Consumer<String> success) {
+        ProjectInfo projectInfo = view.project().getValue();
+        if (projectInfo == null) {
+            return;
+        }
+        deliveryController.getLastSerialNumber(projectInfo.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE, new FluentCallback<String>()
+                .withError(defaultErrorHandler)
+                .withSuccess(success));
+    }
+
+    @Override
+    public void getCaseState(Long id, Consumer<CaseState> success) {
+        caseStateController.getCaseStateWithoutCompaniesOmitPrivileges(id, new FluentCallback<CaseState>()
+                .withError(defaultErrorHandler)
+                .withSuccess(success));
+    }
+
     private void prepare() {
         view.name().setValue(null);
         view.description().setValue(null);
         fillStateSelector(CrmConstants.State.PRELIMINARY);
         view.type().setValue(null);
+        view.hwManager().setValue(null);
+        view.qcManager().setValue(null);
 
         view.project().setValue(null);
         commonMeta.clearProjectSpecificFields();
@@ -88,14 +113,10 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         view.departureDate().setValue(null);
         view.setDepartureDateValid(true);
         view.setSubscribers(Collections.emptySet());
-        view.setKitsAddButtonEnabled(hasEditPrivileges());
-        view.refreshKitsSerialNumberEnabled().setEnabled(hasEditPrivileges());
 
-        view.kitsClear();
-    }
-
-    private boolean hasEditPrivileges() {
-        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
+        kitList.clear();
+        view.getKitsContainer().clear();
+        view.getKitsContainer().add(kitList.asWidget());
     }
 
     private Delivery fillDto() {
@@ -103,15 +124,16 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
         delivery.setName(view.name().getValue());
         delivery.setDescription(view.description().getValue());
         delivery.setProjectId(view.project().getValue().getId());
-        delivery.setInitiatorId(view.initiator().getValue() != null ? view.initiator().getValue().getId() : null);
+        delivery.setInitiatorId(view.initiator().getValue() == null ? null : view.initiator().getValue().getId());
         delivery.setAttribute(view.attribute().getValue());
         delivery.setStateId(view.state().getValue().getId());
         delivery.setType(view.type().getValue());
-        delivery.setContractId(view.contract().getValue() != null? view.contract().getValue().getId() : null);
+        delivery.setContractId(view.contract().getValue() == null ? null : view.contract().getValue().getId());
         delivery.setDepartureDate(view.departureDate().getValue());
         delivery.setSubscribers(view.getSubscribers());
-        delivery.setKits(view.kits().getValue());
-
+        delivery.setHwManagerId(view.hwManager().getValue() == null ? null : view.hwManager().getValue().getId());
+        delivery.setQcManagerId(view.qcManager().getValue() == null ? null : view.qcManager().getValue().getId());
+        delivery.setKits(kitList.getValue());
         return delivery;
     }
 
@@ -132,7 +154,7 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
          if (!Objects.equals(CrmConstants.State.PRELIMINARY, state.getId())) {
             return lang.deliveryValidationInvalidStateAtCreate();
         }
-        if (!view.kitsValidate().isValid()) {
+        if (!kitList.isValid()) {
             return lang.deliveryValidationInvalidKits();
         }
 
@@ -147,7 +169,7 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
 
     private void save(Delivery delivery, Consumer<Throwable> onFailure, Runnable onSuccess) {
         view.saveEnabled().setEnabled(false);
-        controller.saveDelivery(delivery, new FluentCallback<Delivery>()
+        deliveryController.saveDelivery(delivery, new FluentCallback<Delivery>()
             .withError(throwable -> {
                 view.saveEnabled().setEnabled(true);
                 defaultErrorHandler.accept(throwable);
@@ -165,8 +187,7 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
 
     private void fillStateSelector(Long id) {
         view.state().setValue(new CaseState(id));
-        caseStateController.getCaseStateWithoutCompaniesOmitPrivileges(id, new FluentCallback<CaseState>()
-                .withSuccess(caseState -> view.state().setValue(caseState)));
+        getCaseState(id, caseState -> view.state().setValue(caseState));
     }
 
     @Inject
@@ -176,13 +197,15 @@ public abstract class DeliveryCreateActivity implements Activity, AbstractDelive
     @Inject
     private DeliveryCommonMeta commonMeta;
     @Inject
-    private DeliveryControllerAsync controller;
+    private DeliveryControllerAsync deliveryController;
     @Inject
     private CaseStateControllerAsync caseStateController;
     @Inject
     private PolicyService policyService;
     @Inject
     private DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    private DeliveryKitList kitList;
 
     private AppEvents.InitDetails initDetails;
 }

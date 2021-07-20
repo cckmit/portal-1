@@ -8,7 +8,8 @@ import java.util.List;
  * DAO для Комплектов
  */
 public interface KitDAO extends PortalBaseDAO<Kit> {
+    List<Kit> listByDeliveryId(Long deliveryId);
     String getLastSerialNumber(boolean isArmyProject);
-
-    boolean isAvailableSerialNumbers(List<String> serialNumbers);
+    String getLastSerialNumber(Long deliveryId);
+    boolean isExistAnySerialNumbers(List<String> serialNumbers);
 }

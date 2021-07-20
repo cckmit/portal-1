@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.delivery.client.activity.edit;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
@@ -8,12 +9,15 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.DeliveryStateLang;
@@ -31,7 +35,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
@@ -50,6 +53,11 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     @Event
     public void onInitDetails(AppEvents.InitDetails initDetails) {
         this.initDetails = initDetails;
+    }
+
+    @Event
+    public void onAuthSuccess(AuthEvents.Success event) {
+        this.authProfile = event.profile;
     }
 
     @Event
@@ -77,8 +85,12 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     }
 
     @Event
-    public void onAuthSuccess(AuthEvents.Success event) {
-        this.authProfile = event.profile;
+    public void onKitsAdded(KitEvents.Added event) {
+        if (delivery == null || !Objects.equals(delivery.getId(), event.deliveryId)) {
+            return;
+        }
+        delivery.setKits(event.kits);
+        view.fillKits(event.kits);
     }
 
     @Override
@@ -155,6 +167,14 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     }
 
     @Override
+    public void onAddKitsButtonClicked() {
+        if (delivery == null || delivery.getProject() == null) {
+            return;
+        }
+        fireEvent(new KitEvents.Add(delivery.getId(), delivery.getStateId()));
+    }
+
+    @Override
     public void onSelectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
         saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
         fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));
@@ -172,7 +192,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         controller.getDelivery(id, new FluentCallback<Delivery>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
                 .withSuccess(delivery -> {
-                    DeliveryEditActivity.this.delivery = delivery;
+                    this.delivery = delivery;
                     switchNameDescriptionToEdit(false);
                     fillView(delivery);
                     showMeta(delivery);
@@ -181,20 +201,32 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     }
 
     private void fillView(Delivery delivery) {
+        view.setCreatedBy(lang.createBy(delivery.getCreator() == null ? "" : transliteration(delivery.getCreator().getDisplayShortName()),
+                DateFormatter.formatDateTime(delivery.getCreated())));
+
         nameAndDescriptionView.setName(delivery.getName());
         nameAndDescriptionView.setDescription(delivery.getDescription());
+
         view.fillKits(delivery.getKits());
         view.searchKitPattern().setValue(null);
+
         view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
-        view.nameAndDescriptionEditButtonVisibility().setVisible(hasEditPrivileges() && isSelfDelivery(delivery));
+
+        view.nameAndDescriptionEditButtonVisibility().setVisible(hasEditPrivileges() && isSelfDelivery(delivery.getCreatorId()));
+        view.addKitsButtonVisibility().setVisible(hasEditPrivileges() && isMilitaryProject(delivery.getProject()));
 
         renderMarkupText(delivery.getDescription(), En_TextMarkup.MARKDOWN, html -> nameAndDescriptionView.setDescription(html));
+
         fireEvent(new CommentAndHistoryEvents.Show(view.getItemsContainer(), delivery.getId(),
-                                                   En_CaseType.DELIVERY, true, delivery.getCreatorId()));
+                En_CaseType.DELIVERY, true, delivery.getCreatorId()));
     }
 
-    private boolean isSelfDelivery(Delivery delivery) {
-        return Objects.equals(delivery.getCreatorId(), authProfile.getId());
+    private boolean isSelfDelivery(Long creatorId) {
+        return Objects.equals(creatorId, authProfile.getId());
+    }
+
+    private boolean isMilitaryProject(Project project) {
+        return project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE;
     }
 
     private void showMeta(Delivery delivery) {
@@ -242,6 +274,10 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
 
     private boolean isNew(Delivery project) {
         return project.getId() == null;
+    }
+
+    private String transliteration(String input) {
+        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     @Inject

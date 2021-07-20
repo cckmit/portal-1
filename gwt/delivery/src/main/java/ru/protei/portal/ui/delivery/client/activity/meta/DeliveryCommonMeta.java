@@ -18,9 +18,9 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 
 public class DeliveryCommonMeta implements AbstractDeliveryCommonMeta {
 
-    public void setDeliveryMetaView(DeliveryMetaView view, Consumer<Boolean> isArmyProject) {
+    public void setDeliveryMetaView(DeliveryMetaView view, Consumer<Boolean> isMilitaryNumbering) {
         this.view = view;
-        this.isArmyProject = isArmyProject;
+        this.isMilitaryNumbering = isMilitaryNumbering;
     }
 
     @Override
@@ -60,11 +60,12 @@ public class DeliveryCommonMeta implements AbstractDeliveryCommonMeta {
     }
 
     public boolean isDepartureDateFieldValid() {
-        if (view.departureDate().getValue() == null) {
+        Date departureDate = view.departureDate().getValue();
+        if (departureDate == null) {
             return view.isDepartureDateEmpty();
         }
 
-        return true;
+        return departureDate.getTime() > System.currentTimeMillis();
     }
 
     private void fillProjectSpecificFields(ProjectInfo projectInfo) {
@@ -77,12 +78,12 @@ public class DeliveryCommonMeta implements AbstractDeliveryCommonMeta {
         view.initiator().setValue(null);
         view.updateInitiatorModel(projectInfo.getContragent().getId());
         view.initiatorEnable().setEnabled(true);
-        view.setManager(projectInfo.getManager().getDisplayText());
+        view.setManager(projectInfo.getManager().getDisplayName());
         view.setProducts(joining(projectInfo.getProducts(), ", ", ProductShortView::getName));
         view.contract().setValue(null);
         view.setContractCompany(null);
         view.updateContractModel(projectInfo.getId());
-        isArmyProject.accept(projectInfo.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE);
+        isMilitaryNumbering.accept(projectInfo.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE);
         if (En_DeliveryAttribute.DELIVERY.equals(view.attribute().getValue())) {
             view.contractEnable().setEnabled(true);
         }
@@ -101,7 +102,7 @@ public class DeliveryCommonMeta implements AbstractDeliveryCommonMeta {
         view.contractEnable().setEnabled(false);
         view.setContractCompany(null);
         view.setContractFieldMandatory(false);
-        isArmyProject.accept(false);
+        isMilitaryNumbering.accept(false);
         view.updateContractModel(null);
     }
 
@@ -130,6 +131,6 @@ public class DeliveryCommonMeta implements AbstractDeliveryCommonMeta {
     @Inject
     private Lang lang;
 
-    private Consumer<Boolean> isArmyProject;
+    private Consumer<Boolean> isMilitaryNumbering;
     private DeliveryMetaView view;
 }

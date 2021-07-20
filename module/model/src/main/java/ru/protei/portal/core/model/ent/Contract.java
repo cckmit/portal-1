@@ -177,6 +177,13 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcColumn(name = "delivery_number")
     private String deliveryNumber;
 
+    public Contract() {}
+
+    public Contract(Long id, String number) {
+        this.id = id;
+        this.number = number;
+    }
+
     public String getDeliveryNumber() {
         return deliveryNumber;
     }
@@ -445,6 +452,13 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public void setContractor(Contractor contractor) {
         this.contractor = contractor;
+    }
+
+    public static Contract fromContractInfo(ContractInfo info) {
+        if (info == null) {
+            return null;
+        }
+        return new Contract(info.getId(), info.getNumber());
     }
 
     @Override

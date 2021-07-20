@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.documenttype.client.activity.page;
+package ru.protei.portal.ui.document.client.activity.page;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -21,13 +21,14 @@ public abstract class DocumentTypePage implements Activity {
 
     @PostConstruct
     public void onInit() {
+        CATEGORY = lang.documentation();
         TAB = lang.documentTypes();
     }
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
         if (event.profile.hasPrivilegeFor(En_Privilege.DOCUMENT_TYPE_VIEW)) {
-            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.DOCUMENT_TYPE, TAB, DebugIds.SIDEBAR_MENU.DOCUMENT_TYPE));
+            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.DOCUMENT_TYPE, TAB, DebugIds.SIDEBAR_MENU.DOCUMENT_TYPE).withParent(CATEGORY));
             fireEvent(new AppEvents.InitPage(show));
         }
     }
@@ -61,6 +62,7 @@ public abstract class DocumentTypePage implements Activity {
     @Inject
     PolicyService policyService;
 
+    private String CATEGORY;
     private String TAB;
     private DocumentTypeEvents.Show show = new DocumentTypeEvents.Show();
 }

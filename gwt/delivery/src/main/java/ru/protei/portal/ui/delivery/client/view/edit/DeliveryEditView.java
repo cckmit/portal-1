@@ -2,6 +2,7 @@ package ru.protei.portal.ui.delivery.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -119,6 +120,37 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         return nameAndDescriptionEditButton;
     }
 
+    @Override
+    public HasVisibility addKitsButtonVisibility() {
+        return addKitsButton;
+    }
+
+    @Override
+    public void setCreatedBy(String value) {
+        this.createdBy.setInnerHTML( value );
+    }
+
+    @UiHandler("search")
+    public void onSearchChanged(InputEvent event) {
+        if ( activity != null ) {
+            activity.onSearchKitChanged();
+        }
+    }
+
+    @UiHandler("kits")
+    public void onKitEditClicked(EditEvent event) {
+        if ( activity != null ) {
+            activity.onKitEditClicked(event.id, event.text);
+        }
+    }
+
+    @UiHandler("kits")
+    public void onKitCloneClicked(CloneEvent event) {
+        if ( activity != null ) {
+            activity.onKitCloneClicked(event.id);
+        }
+    }
+
     @UiHandler("showEditViewButton")
     public void onShowEditViewModeButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -147,24 +179,10 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         }
     }
 
-    @UiHandler("search")
-    public void onSearchChanged(InputEvent event) {
-        if ( activity != null ) {
-            activity.onSearchKitChanged();
-        }
-    }
-
-    @UiHandler("kits")
-    public void onKitEditClicked(EditEvent event) {
-        if ( activity != null ) {
-            activity.onKitEditClicked(event.id, event.text);
-        }
-    }
-
-    @UiHandler("kits")
-    public void onKitCloneClicked(CloneEvent event) {
-        if ( activity != null ) {
-            activity.onKitCloneClicked(event.id);
+    @UiHandler({"addKitsButton"})
+    public void onAddKitsButtonClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onAddKitsButtonClicked();
         }
     }
 
@@ -174,7 +192,10 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         }
         backButton.ensureDebugId(DebugIds.DELIVERY.BACK_BUTTON);
         showEditViewButton.ensureDebugId(DebugIds.DELIVERY.SHOW_EDIT_BUTTON);
-        nameAndDescriptionEditButton.ensureDebugId(DebugIds.DELIVERY.NAME_AND_DESCRIPTION_EDIT_BUTTON);
+        nameAndDescriptionEditButton.ensureDebugId(DebugIds.DELIVERY.EDIT_NAME_AND_DESCRIPTION_BUTTON);
+        addKitsButton.ensureDebugId(DebugIds.DELIVERY.ADD_KITS_BUTTON);
+        multiTabWidget.setTabNameDebugId(COMMENT, DebugIds.DELIVERY.TAB_COMMENT);
+        multiTabWidget.setTabNameDebugId(HISTORY, DebugIds.DELIVERY.TAB_HISTORY);
     }
 
     @UiField
@@ -197,9 +218,13 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     @UiField
     Button nameAndDescriptionEditButton;
     @UiField
+    Button addKitsButton;
+    @UiField
     Lang lang;
     @UiField
     MultiTabWidget<En_CommentOrHistoryType> multiTabWidget;
+    @UiField
+    Element createdBy;
     @Inject
     En_CommentOrHistoryTypeLang commentOrHistoryTypeLang;
 

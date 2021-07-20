@@ -5,20 +5,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dao.DevUnitChildRefDAO;
-import ru.protei.portal.core.model.dao.DevUnitDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dao.ProductSubscriptionDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -41,6 +40,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     DevUnitChildRefDAO devUnitChildRefDAO;
+
+    @Autowired
+    ProjectDAO projectDAO;
 
     @Autowired
     PolicyService policyService;
@@ -148,6 +150,31 @@ public class ProductServiceImpl implements ProductService {
                 updateFields( devUnit, product ) ).flatMap( devUnit ->
                 updateProduct( authToken, devUnit ) ).map(
                 DevUnit::getId );
+    }
+
+    @Override
+    public Result<List<DevUnitInfo>> getProductsBySelfCompanyProjects(AuthToken authToken) {
+        ProjectQuery query = new ProjectQuery();
+        query.setDeleted(CaseObject.NOT_DELETED);
+        query.setInitiatorCompanyIds(new HashSet<>(authToken.getCompanyAndChildIds()));
+        List<Long> projectIds = CollectionUtils.emptyIfNull(projectDAO.getProjects(query)).stream()
+                .map(Project::getId)
+                .collect(Collectors.toList());
+
+        if (CollectionUtils.isEmpty(projectIds)) return error(En_ResultStatus.NOT_FOUND);
+        List<DevUnit> projectProducts = devUnitDAO.getProjectProducts(projectIds);
+        if (CollectionUtils.isEmpty(projectProducts)) return error(En_ResultStatus.NOT_FOUND);
+        Set<Long> productIds = projectProducts.stream()
+                .map(DevUnit::getId)
+                .collect(Collectors.toSet());
+        List<DevUnit> productChilds = devUnitDAO.getChildren(productIds);
+        if (CollectionUtils.isNotEmpty(productChilds)) {
+            projectProducts.addAll(productChilds);
+        }
+
+        return ok(projectProducts.stream()
+                .map(DevUnitInfo::toInfo)
+                .collect(Collectors.toList()));
     }
 
     @Override

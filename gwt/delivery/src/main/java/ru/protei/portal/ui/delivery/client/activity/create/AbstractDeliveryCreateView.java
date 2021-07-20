@@ -2,20 +2,18 @@ package ru.protei.portal.ui.delivery.client.activity.create;
 
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -30,14 +28,6 @@ public interface AbstractDeliveryCreateView extends IsWidget {
     HasValue<String> name();
 
     HasValue<String> description();
-
-    HasValue<List<Kit>> kits();
-
-    void kitsClear();
-
-    void updateKitByProject(boolean isArmyProject);
-
-    HasValidable kitsValidate();
 
     DeliveryMetaView  getMetaView();
 
@@ -61,7 +51,9 @@ public interface AbstractDeliveryCreateView extends IsWidget {
 
     Set<Person> getSubscribers();
 
-    HasEnabled refreshKitsSerialNumberEnabled();
+    HasValue<PersonShortView> hwManager();
 
-    void setKitsAddButtonEnabled(boolean isKitsAddButtonEnabled);
+    HasValue<PersonShortView> qcManager();
+
+    HasWidgets getKitsContainer();
 }

@@ -120,6 +120,7 @@ public class DebugIds {
         String ROOM_RESERVATION_CALENDAR = "sidebar-menu-room-reservation-calendar";
         String ROOM_RESERVATION_TABLE = "sidebar-menu-room-reservation-table";
         String DUTY_LOG = "sidebar-menu-duty-log";
+        String DOCUMENTATION = "sidebar-menu-documentation";
     }
 
     public interface SELECTOR {
@@ -205,7 +206,6 @@ public class DebugIds {
         String PLATFORM_PARAMETERS_SEARCH_CLEAR_BUTTON = "filter-platform-parameters-clear-button";
         String PLATFORM_SERVER_IP_SEARCH_INPUT = "filter-platform-server-ip-search-input";
         String PLATFORM_SERVER_IP_SEARCH_CLEAR_BUTTON = "filter-platform-server-ip-clear-button";
-        String DELIVERY_STATE_LABEL = "filter-delivery-state-label";
 
         String CREATE_BUTTON = "filter-create-button";
         String SAVE_BUTTON = "filter-save-button";
@@ -1000,6 +1000,11 @@ public class DebugIds {
         String SAVE_BUTTON = "contract-save-button";
         String CANCEL_BUTTON = "contract-cancel-button";
         String CONTRACT_SIGN_MANAGER_SELECTOR = "contract-contract-sign-manager-selector";
+        String BACK_BUTTON = "contract-back-button";
+        String ADD_TAG_BUTTON = "contract-add-tag-button";
+        String DELIVERY_AND_PAYMENTS_PERIOD_TAB = "contract-delivery-and-payments-period-tab";
+        String SPECIFICATION_TAB = "contract-specification-tab";
+        String EXPENDITURE_CONTRACTS_TAB = "expenditure-contracts-tab";
 
         interface LABEL {
             String COMMON_HEADER = "contract-common-header";
@@ -1068,6 +1073,24 @@ public class DebugIds {
             String SEARCH_BUTTON = "contract-project-search-button";
             String RESET_BUTTON = "contract-project-reset-button";
         }
+    }
+
+    public interface CONTRACT_PREVIEW {
+        String CONTRACT_TITLE_LABEL = "contract-preview-contract-title-label";
+        String CONTRACT_NAME_LABEL = "contract-preview-contract-name-label";
+        String CONTRACTOR_LABEL = "contract-preview-contractor-label";
+        String DATE_SIGNING_LABEL = "contract-preview-date-signing-label";
+        String DATE_VALID_LABEL = "contract-preview-date-valid-label";
+        String DIRECTIONS_LABEL = "contract-preview-product-directions-label";
+        String DELIVERY_NUMBER_LABEL = "contract-preview-delivery-number-label";
+        String RECEIPT_AGREEMENT_LABEL = "contract-preview-receipt-agreement-label";
+        String EXPENDITURE_AGREEMENT_LABEL = "contract-preview-expenditure-agreement-label";
+        String TAGS_LABEL = "contract-preview-tags-label";
+        String ORGANIZATION_LABEL = "contract-preview-organization-label";
+        String PROJECT_LABEL = "contract-preview-project-label";
+        String CURATOR_LABEL = "contract-preview-curator-label";
+        String PROJECT_MANAGER_LABEL = "contract-preview-project-manager-label";
+        String SIGN_MANAGER_LABEL = "contract-preview-sign-manager-label";
     }
 
     public interface CLEANABLE_SEARCH_BOX {
@@ -1257,14 +1280,16 @@ public class DebugIds {
         String NAME = "delivery-name";
         String DESCRIPTION = "delivery-description";
         String KITS = "delivery-kits";
-        String STATE_SELECTOR = "delivery-kits-state-selector";
-        String TYPE_SELECTOR = "delivery-kits-type-selector";
-        String PROJECT_WIDGET = "delivery-kits-project-widget";
+        String STATE_SELECTOR = "delivery-state-selector";
+        String TYPE_SELECTOR = "delivery-type-selector";
+        String PROJECT_WIDGET = "delivery-project-widget";
         String CUSTOMER_TYPE = "delivery-customer-type";
         String CUSTOMER_COMPANY = "delivery-customer-company";
         String CUSTOMER_INITIATOR = "delivery-customer-initiator-selector";
         String CONTRACT_COMPANY = "delivery-contract-company";
         String MANAGER = "delivery-manager";
+        String HW_MANAGER = "delivery-hw-manager-selector";
+        String QC_MANAGER = "delivery-qc-manager-selector";
         String ATTRIBUTE = "delivery-attribute-selector";
         String CONTRACT = "delivery-contract-selector";
         String PRODUCTS = "delivery-products-selector";
@@ -1274,14 +1299,26 @@ public class DebugIds {
         String SHOW_EDIT_BUTTON = "delivery-show-edit-button";
         String SAVE_BUTTON = "delivery-save-button";
         String CANCEL_BUTTON = "delivery-cancel-button";
-        String NAME_AND_DESCRIPTION_EDIT_BUTTON = "delivery-name-and-description-edit-button";
+        String EDIT_NAME_AND_DESCRIPTION_BUTTON = "delivery-edit-name-and-desc-button";
+        String ADD_KITS_BUTTON = "delivery-add-kits-button";
+        String TAB_COMMENT = "delivery-tab-comments";
+        String TAB_HISTORY = "delivery-tab-history";
 
         interface KIT {
-            String ITEM = "delivery-item";
-            String SERIAL_NUMBER = "delivery-item-serial-number-input";
-            String STATE = "delivery-item-state-input";
-            String NAME = "delivery-item-name-input";
-            String REMOVE_BUTTON = "delivery-item-remove-button";
+            String ITEM = "kit-item";
+            String SERIAL_NUMBER = "kit-item-serial-number-input";
+            String STATE = "kit-item-state-selector";
+            String NAME = "kit-item-name-input";
+            String ADD_BUTTON = "kit-item-add-button";
+            String REFRESH_BUTTON = "kit-item-refresh-button";
+            String REMOVE_BUTTON = "kit-item-remove-button";
+        }
+
+        interface FILTER {
+            String MILITARY_YES = "delivery-filter-military-yes";
+            String MILITARY_ANY = "delivery-filter-military-any";
+            String MILITARY_NO = "delivery-filter-military-no";
+            String STATE_LABEL = "delivery-filter-state-label";
         }
     }
 

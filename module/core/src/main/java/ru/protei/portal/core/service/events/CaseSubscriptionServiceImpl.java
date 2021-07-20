@@ -114,11 +114,15 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
 
         //инициатор оповещения
         Long initiatorId = event.getInitiatorId();
-        //ответственный
+        //ответственный менеджер
         Long managerId = project == null ? null : project.getManagerId();
+        //ответственный АО
+        Long hwManagerId = event.getNewDeliveryState().getHwManagerId();
+        //ответственный КК
+        Long qcManagerId = event.getNewDeliveryState().getQcManagerId();
         //контактное лицо
         Long contactPersonId = event.getNewDeliveryState().getInitiatorId();
-        result.addAll(subscribers(Arrays.asList(initiatorId, managerId, contactPersonId )));
+        result.addAll(subscribers(Arrays.asList(initiatorId, managerId, hwManagerId, qcManagerId, contactPersonId)));
         log.info( "Delivery subscribers: {}", join( result, NotificationEntry::getAddress, ",") );
         return result;
     }

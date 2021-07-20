@@ -125,7 +125,7 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
 
     private void fillProjectSpecificFields (ProjectInfo project){
         view.setCompany(project.getContragent() == null ? "" : project.getContragent().getDisplayText());
-        view.setManager(project.getManager() == null ? null : project.getManager().getDisplayText());
+        view.setManager(project.getManager() == null ? null : project.getManager().getName());
         view.setProject(project.getName(), LinkUtils.makePreviewLink(Project.class, project.getId()));
         view.setTechnicalSupportValidity(formatTechnicalSupportValidityOrErrorMsg(project));
         showContacts(project.getContragent() == null ? null : project.getContragent().getId());
@@ -172,7 +172,7 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
         }
 
         if (projectInfo.getManager() != null) {
-            return lang.technicalSupportValidityNotFound(projectInfo.getManager().getDisplayText());
+            return lang.technicalSupportValidityNotFound(projectInfo.getManager().getName());
         }
 
         return "";

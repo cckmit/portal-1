@@ -62,6 +62,8 @@ public class En_PrivilegeEntityLang {
                 return lang.absences();
             case DUTY_LOG:
                 return lang.dutyLog();
+            case DELIVERY:
+                return lang.delivery();
             default:
                 return lang.unknownField();
         }

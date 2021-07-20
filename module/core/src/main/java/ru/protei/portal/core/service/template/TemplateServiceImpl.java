@@ -630,8 +630,8 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("newProject", getNullOrElse(newDeliveryState.getProject(), Project::getName));
 
         templateModel.put("managerChanged", event.isProjectChanged());
-        templateModel.put("oldManager", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getProject(), Project::getManagerName)));
-        templateModel.put("newManager", getNullOrElse(newDeliveryState.getProject(), Project::getManagerName));
+        templateModel.put("oldManager", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getProject(), Project::getManagerFullName)));
+        templateModel.put("newManager", getNullOrElse(newDeliveryState.getProject(), Project::getManagerFullName));
 
         templateModel.put("attributeChanged", event.isAttributeChanged());
         templateModel.put("oldAttribute", getNullOrElse(oldDeliveryState, Delivery::getAttribute));
@@ -639,7 +639,7 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("contractChanged", event.isContractChanged());
         templateModel.put("oldContract", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getContract(), Contract::getNumber)));
-        templateModel.put("newContract", getNullOrElse(newDeliveryState.getContract(), Contract::getNumber));
+        templateModel.put("newContract", getNullOrElse(newDeliveryState, delivery -> getNullOrElse(delivery.getContract(), Contract::getNumber)));
 
         final DiffCollectionResult<DevUnit> productDiffs = event.getProductDiffs();
         templateModel.put("productSameEntries", productDiffs.getSameEntries());
@@ -657,6 +657,14 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("contactPersonChanged", event.isInitiatorChanged());
         templateModel.put("oldContactPerson", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getInitiator(), PersonShortView::getDisplayName)));
         templateModel.put("newContactPerson", getNullOrElse(newDeliveryState.getInitiator(), PersonShortView::getDisplayName));
+
+        templateModel.put("hwManagerChanged", event.isHwManagerChanged());
+        templateModel.put("oldHwManager", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getHwManager(), PersonShortView::getDisplayName)));
+        templateModel.put("newHwManager", getNullOrElse(newDeliveryState.getHwManager(), PersonShortView::getDisplayName));
+
+        templateModel.put("qcManagerChanged", event.isQcManagerChanged());
+        templateModel.put("oldQcManager", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getQcManager(), PersonShortView::getDisplayName)));
+        templateModel.put("newQcManager", getNullOrElse(newDeliveryState.getQcManager(), PersonShortView::getDisplayName));
 
         templateModel.put( "caseComment",
                 getCommentsAttachesModelKeys(

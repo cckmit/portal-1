@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="gwt:property" content="locale=ru">
+
+    <title>PROTEI PORTAL</title>
+    <link rel="icon" href="http://192.168.110.12:8080/portal/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./delivery_files/bootstrap.min.css"><link rel="stylesheet" href="./delivery_files/pages.css"><link rel="stylesheet" href="./delivery_files/modal.css"><link rel="stylesheet" href="./delivery_files/switcher.css"><link rel="stylesheet" href="./delivery_files/select2.css"><link rel="stylesheet" href="./delivery_files/gritter.css"><link rel="stylesheet" href="./delivery_files/markdown.css"><link rel="stylesheet" href="./delivery_files/portal-classic.css"><link rel="stylesheet" href="./delivery_files/pages-icons.css"><link rel="stylesheet" href="./delivery_files/font-awesome.min.css"><link rel="stylesheet" href="./delivery_files/linearicons.css"><link rel="stylesheet" href="./delivery_files/datetimepicker.css"><link rel="stylesheet" href="./delivery_files/table-widget.css"><link rel="stylesheet" href="./delivery_files/pager.css">
+    <style>
+        .secondary-sidebar {
+            background: #fff;
+            width: 280px;
+            padding-right: 20px;
+        }
+        .secondary-sidebar .main-menu > li a {
+            color: #4b4b4b;
+            line-height: 32px;
+        }
+        .secondary-sidebar .main-menu > li a:hover {
+            color: #212121;
+        }
+        .secondary-sidebar .menu-title {
+            color: #757575;
+            text-transform: uppercase;
+        }
+        .secondary-sidebar .menu-controls > a {
+            color: #757575;
+            font-size: 13px;
+        }
+        .secondary-sidebar .menu-controls > a:hover {
+            color: #212121;
+        }
+        .secondary-sidebar .main-menu > li.active {
+            background: #f4f4f4;
+        }
+        .secondary-sidebar .main-menu > li {
+            list-style: none;
+            border-top-right-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+        .secondary-sidebar ul li a > * {
+            display: flex;
+            align-items: center;
+        }
+        .secondary-sidebar ul li a {
+            padding-right: 10px;
+        }
+        .inner-content {
+            margin-left: 280px;
+        }
+        .badge {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .list-view-group-container {
+            padding: 50px 0 0;
+        }
+        .menuclipper {
+            width: 100%;
+        }
+        .menuclipper .menuclipper-menu {
+            display: table;
+            width: 100%;
+        }
+        .menuclipper-menu > li {
+            display: table-cell;
+            padding: 0 15px;
+            white-space: nowrap;
+            width: auto;
+            text-align: center;
+        }
+        .split-view .split-list .actions-wrapper,
+        .split-view .split-details .actions-wrapper{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 50px;
+            z-index: 799;
+            border-bottom: 1px solid rgba(0, 0, 0, .07);
+        }
+        .split-view .split-list .actions-wrapper {
+            background: #fff;
+        }
+        .split-view .split-list .actions {
+            height: 50px;
+            float: left;
+            border: 0;
+            padding-left: 0;
+        }
+        .split-view .split-details .actions {
+            width: auto;
+        }
+        .split-view .split-list .actions li {
+            list-style: none;
+            position: relative;
+        }
+        .split-view .split-list .actions li:hover {
+            background: none;
+        }
+        .split-view .split-list .actions li:hover > a,
+        .split-view .split-details .actions li:hover > a {
+            color: #212121;
+        }
+        .split-view .split-list .actions li:after,
+        .split-view .split-details .actions li:after{
+            content: "";
+            height: 14px;
+            position: absolute;
+            right: 0;
+            top: 18px;
+            width: 1px;
+            background: rgba(0, 0, 0, 0.07);
+        }
+        .split-view .split-list .actions li:last-child:after {
+            display: none
+        }
+        .split-view .split-list .actions li a {
+            font-size: 13.1px;
+            color: #626262;
+            font-weight: 600;
+            padding: 0 13px;
+            line-height: 50px;
+            white-space: nowrap;
+            border: 0;
+            margin: 0;
+            display: inline;
+        }
+        .split-view .split-list .item .checkbox {
+            display: inherit;
+        }
+        .split-view .split-list .item {
+            height: 60px;
+        }
+        .split-view .split-list .item .manager {
+            color: #121212;
+            font-size: 11.1px;
+            position: absolute;
+            right: 20px;
+            top: 7px;
+            opacity: .46;
+        }
+        .split-view .split-list .item .subject {
+            height: 20px;
+            color: inherit;
+            line-height: 20px;
+        }
+        .split-view .split-list .item .body {
+            font-size: 14px;
+            opacity: inherit;
+        }
+        .split-view .split-list .item .inline {
+            width: 260px;
+        }
+    </style>
+</head>
+<body class="fixed-header">
+    <iframe src="javascript:&#39;&#39;" id="__gwt_historyFrame" tabindex="-1" style="position:absolute;width:0;height:0;border:0" src="./delivery_files/saved_resource.html"></iframe>
+    <noscript>
+        <div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
+            Your web browser must have JavaScript enabled
+            in order for this application to display correctly.
+        </div>
+    </noscript>
+
+
+<iframe id="Portal" tabindex="-1" style="position: absolute; width: 0px; height: 0px; border: none; left: -1000px; top: -1000px;" src="./delivery_files/saved_resource(1).html"></iframe><div aria-hidden="true" style="display: none;"></div><div class="full-height" id="gwt-debug-global-container"><div class="page-sidebar" id="gwt-debug-app-sidebar" style="transform: translate3d(0px, 0px, 0px);"><div class="sidebar-header sidebar-closed-header p-l-15"> <a class="gwt-Anchor" id="gwt-debug-app-dashboard-button"><img class="brand" height="32" src="./delivery_files/logo-white-ru.svg"></a> <div class="sidebar-header-controls closed-sidebar-controls"><button type="button" class="fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none" id="gwt-debug-app-fix-closed-sidebar-button" data-toggle-pin="sidebar"><i class="far fs-12"></i></button></div> <div class="sidebar-header-controls"> <button type="button" class="fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none hide" id="gwt-debug-app-fix-opened-sidebar-button" data-toggle-pin="sidebar"><i class="far fs-12"></i></button> </div> </div> <div class="sidebar-menu"> <div class="scroll-wrapper menu-items" style="position: relative;"> <div class="menu-items scroll-content scroll-scrolly_visible m-t-10"><li class="active"><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Доска задач" id="gwt-debug-sidebar-menu-dashboard"><span class="title">Доска задач</span> <span class="arrow hide"></span> <span class="icon-thumbnail bg-complete"> <i class="fa fa-tachometer-alt" id="sidebar-menu-dashboard-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Обращения" id="gwt-debug-sidebar-menu-issue"><span class="title">Обращения</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fa fa-tasks" id="sidebar-menu-issue-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Распределение задач" id="gwt-debug-sidebar-menu-issue-assignment"><span class="title">Распределение задач</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fas fa-table" id="sidebar-menu-issue-assignment-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Планы" id="gwt-debug-sidebar-menu-plan"><span class="title">Планы</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fa fa-list-ol" id="sidebar-menu-plan-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Статусы обращений" id="gwt-debug-sidebar-menu-case-state"><span class="title">Статусы обращений</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fa fa-bookmark " id="sidebar-menu-case-state-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Отчеты" id="gwt-debug-sidebar-menu-issue-reports"><span class="title">Отчеты</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fa fa-file-download" id="sidebar-menu-issue-reports-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Сотрудники" id="gwt-debug-sidebar-menu-employee"><span class="title">Сотрудники</span> <span class="arrow"></span> <span class="icon-thumbnail"> <i class="fa fa-user-circle" id="sidebar-menu-employee-icon"></i> </span></a> <ul class="sub-menu" style="height: 0px; padding: 0px; margin: 0px;"><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Список" id="gwt-debug-sidebar-menu-employee-list"><span class="title">Список</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fas fa-th" id="sidebar-menu-employee-list-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Таблица" id="gwt-debug-sidebar-menu-employee-table"><span class="title">Таблица</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fas fa-th-list" id="sidebar-menu-employee-table-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Руководство" id="gwt-debug-sidebar-menu-employee-top-brass"><span class="title">Руководство</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fas fa-user-tie" id="sidebar-menu-employee-top-brass-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Отсутствия" id="gwt-debug-sidebar-menu-employee-absence"><span class="title">Отсутствия</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fas fa-user-alt-slash" id="sidebar-menu-employee-absence-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Дни рождения" id="gwt-debug-sidebar-menu-employee-birthday"><span class="title">Дни рождения</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fas fa-birthday-cake" id="sidebar-menu-employee-birthday-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Анкеты новых сотрудников" id="gwt-debug-sidebar-menu-employee-registration"><span class="title">Анкеты новых сотрудников</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fa fa-clipboard" id="sidebar-menu-employee-registration-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Компании" id="gwt-debug-sidebar-menu-company"><span class="title">Компании</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fa fa-building" id="sidebar-menu-company-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Контактные лица" id="gwt-debug-sidebar-menu-contact"><span class="title">Контактные лица</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fa fa-address-book" id="sidebar-menu-contact-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Комплексы и Продукты" id="gwt-debug-sidebar-menu-product"><span class="title">Комплексы и Продукты</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fa fa-cubes" id="sidebar-menu-product-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Проекты" id="gwt-debug-sidebar-menu-project"><span class="title">Проекты</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fa fa-archive" id="sidebar-menu-project-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Регионы" id="gwt-debug-sidebar-menu-region"><span class="title">Регионы</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fa fa-globe" id="sidebar-menu-region-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Площадки заказчиков" id="gwt-debug-sidebar-menu-site-folder"><span class="title">Площадки заказчиков</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fa fa-briefcase" id="sidebar-menu-site-folder-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Журнал дежурств" id="gwt-debug-sidebar-menu-duty-log"><span class="title">Журнал дежурств</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fas fa-book-open" id="sidebar-menu-duty-log-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Документация" id="gwt-debug-sidebar-menu-documentation"><span class="title">Документация</span> <span class="arrow"></span> <span class="icon-thumbnail"> <i class="fas fa-file-alt" id="sidebar-menu-documentation-icon"></i> </span></a> <ul class="sub-menu" style="height: 0px; padding: 0px; margin: 0px;"><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Банк документов" id="gwt-debug-sidebar-menu-document"><span class="title">Банк документов</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fa fa-book" id="sidebar-menu-document-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Виды документов" id="gwt-debug-sidebar-menu-document-type"><span class="title">Виды документов</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fa fa-list-alt" id="sidebar-menu-document-type-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Оборудование" id="gwt-debug-sidebar-menu-equipment"><span class="title">Оборудование</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fa fa-server" id="sidebar-menu-equipment-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Договоры" id="gwt-debug-sidebar-menu-contract"><span class="title">Договоры</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fa fa-file-signature" id="sidebar-menu-contract-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Резервирование IP" id="gwt-debug-sidebar-menu-ip-reservation"><span class="title">Резервирование IP</span> <span class="arrow"></span> <span class="icon-thumbnail"> <i class="fa fa-sitemap" id="sidebar-menu-ip-reservation-icon"></i> </span></a> <ul class="sub-menu" style="height: 0px; padding: 0px; margin: 0px;"><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="IP-адреса" id="gwt-debug-sidebar-menu-ip-reservation-reserved-ip"><span class="title">IP-адреса</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fas fa-map-marker" id="sidebar-menu-ip-reservation-reserved-ip-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Подсети" id="gwt-debug-sidebar-menu-ip-reservation-subnet"><span class="title">Подсети</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fas fa-project-diagram" id="sidebar-menu-ip-reservation-subnet-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Резервирование комнат" id="gwt-debug-sidebar-menu-room-reservation"><span class="title">Резервирование комнат</span> <span class="arrow"></span> <span class="icon-thumbnail"> <i class="fas fa-clock" id="sidebar-menu-room-reservation-icon"></i> </span></a> <ul class="sub-menu" style="height: 0px; padding: 0px; margin: 0px;"><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Календарь" id="gwt-debug-sidebar-menu-room-reservation-calendar"><span class="title">Календарь</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fas fa-calendar-day" id="sidebar-menu-room-reservation-calendar-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Общая таблица" id="gwt-debug-sidebar-menu-room-reservation-table"><span class="title">Общая таблица</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fas fa-th-list" id="sidebar-menu-room-reservation-table-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Обучение" id="gwt-debug-sidebar-menu-education"><span class="title">Обучение</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fas fa-graduation-cap" id="sidebar-menu-education-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Роли" id="gwt-debug-sidebar-menu-role"><span class="title">Роли</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fa fa-user" id="sidebar-menu-role-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Учётные записи" id="gwt-debug-sidebar-menu-account"><span class="title">Учётные записи</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fa fa-users-cog" id="sidebar-menu-account-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" title="Новые поставки" id="gwt-debug-sidebar-menu-store-delivery-delivery"><span class="title">Новые поставки</span> <span class="arrow hide"></span> <span class="icon-thumbnail"> <i class="fas fa-truck" id="sidebar-menu-store-delivery-delivery-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li><li class="external">
+    <a href="http://192.168.110.12:8080/portal/#" title="Склад и Поставки" id="gwt-debug-sidebar-menu-store-delivery">
+        <span class="title">Склад и Поставки</span>
+        <span class="arrow"></span>
+        <span class="icon-thumbnail">
+            <i class="fas fa-warehouse" id="debug-sidebar-menu-store-delivery-icon"></i>
+        </span>
+    </a>
+    <ul class="sub-menu" id="gwt-debug-sidebar-menu-store-delivery-submenu" style="padding:0;margin:0;height:0">
+        <li>
+            <a href="https://oldportal.protei.ru/sd/index.jsp" target="_blank" title="Оборудование" id="gwt-debug-sidebar-menu-store-delivery-store">
+                <span class="title">Оборудование</span>
+                <span class="icon-thumbnail">
+                    <i class="fas fa-memory" id="sidebar-menu-store-delivery-store-icon"></i>
+                </span>
+            </a>
+        </li>
+        <li>
+            <a href="https://oldportal.protei.ru/sd/delivery/delivery.jsp" target="_blank" title="Поставки" id="gwt-debug-sidebar-menu-store-delivery-delivery">
+                <span class="title">Поставки</span>
+                <span class="icon-thumbnail">
+                    <i class="fas fa-truck" id="sidebar-menu-store-delivery-delivery-icon"></i>
+                </span>
+            </a>
+        </li>
+        <li>
+            <a href="https://oldportal.protei.ru/sd/store/card_info.jsp" target="_blank" title="Поиск платы" id="gwt-debug-sidebar-menu-store-delivery-card-search">
+                <span class="title">Поиск платы</span>
+                <span class="icon-thumbnail">
+                    <i class="fas fa-search" id="sidebar-menu-store-delivery-card-search-icon"></i>
+                </span>
+            </a>
+        </li>
+    </ul>
+</li><li class="external">
+    <a href="https://youtrack.protei.ru/issues" target="_blank" title="YouTrack" id="gwt-debug-sidebar-menu-youtrack">
+        <span class="title">YouTrack</span>
+        <span class="arrow hide"></span>
+        <span class="icon-thumbnail">
+            <i class="fas fa-list-ul" id="sidebar-menu-youtrack-icon"></i>
+        </span>
+    </a>
+</li><li class="external">
+    <a href="https://youtrack.protei.ru/issues/ACRM" target="_blank" title="Журнал системного администратора" id="gwt-debug-sidebar-menu-youtrack-admin">
+        <span class="title">Журнал системного администратора</span>
+        <span class="arrow hide"></span>
+        <span class="icon-thumbnail">
+            <i class="fas fa-tools" id="sidebar-menu-youtrack-admin-icon"></i>
+        </span>
+    </a>
+</li><li class="external">
+    <a href="https://oldportal.protei.ru/plan/plan_5.html" target="_blank" title="Планы помещений" id="gwt-debug-sidebar-menu-floor-plan">
+        <span class="title">Планы помещений</span>
+        <span class="arrow hide"></span>
+        <span class="icon-thumbnail">
+            <i class="fas fa-search-location" id="sidebar-menu-floor-plan-icon"></i>
+        </span>
+    </a>
+</li><li class="external">
+    <a href="http://192.168.110.12:8080/portal/#" target="_blank" title="Архив" id="gwt-debug-sidebar-menu-archive">
+        <span class="title">Архив</span>
+        <span class="arrow"></span>
+        <span class="icon-thumbnail">
+            <i class="fas fa-file-archive" id="sidebar-menu-archive-icon"></i>
+        </span>
+    </a>
+    <ul class="sub-menu" id="gwt-debug-sidebar-menu-archive-submenu" style="height:0px;padding:0px; margin:0px;">
+        <li>
+            <a href="https://oldportal.protei.ru/bt/index.jsp" target="_blank" title="BugTracking" id="gwt-debug-sidebar-menu-archive-bug-tracking">
+                <span class="title">BugTracking</span>
+                <span class="icon-thumbnail">
+                    <i class="fas fa-bug" id="sidebar-menu-archive-bug-tracking-icon"></i>
+                </span>
+            </a>
+        </li>
+        <li>
+            <a href="https://oldportal.protei.ru/frq/index.jsp" target="_blank" title="Feature Request" id="gwt-debug-sidebar-menu-archive-feature-request">
+                <span class="title">Feature Request</span>
+                <span class="icon-thumbnail">
+                    <i class="fas fa-question-circle" id="sidebar-menu-archive-feature-request-icon"></i>
+                </span>
+            </a>
+        </li>
+        <li>
+            <a href="https://oldportal.protei.ru/crm/index.jsp" target="_blank" title="Техподдержка и маркетинг" id="gwt-debug-sidebar-menu-archive-crm">
+                <span class="title">Техподдержка и маркетинг</span>
+                <span class="icon-thumbnail">
+                    <i class="fas fa-handshake" id="sidebar-menu-archive-crm-icon"></i>
+                </span>
+            </a>
+        </li>
+        <li>
+            <a href="https://oldportal.protei.ru/AdminCRM/session/view_session_admin.jsp" target="_blank" title="Журнал системного администратора" id="gwt-debug-sidebar-menu-archive-admin-crm">
+                <span class="title">Журнал системного администратора</span>
+                <span class="icon-thumbnail">
+                    <i class="fas fa-tools" id="sidebar-menu-archive-admin-crm-icon"></i>
+                </span>
+            </a>
+        </li>
+        <li>
+            <a href="https://oldportal.protei.ru/tzones/index.jsp" target="_blank" title="Администрирование тестовых зон" id="gwt-debug-sidebar-menu-archive-test-zone">
+                <span class="title">Администрирование тестовых зон</span>
+                <span class="icon-thumbnail">
+                    <i class="fas fa-database" id="sidebar-menu-archive-test-zone-icon"></i>
+                </span>
+            </a>
+        </li>
+    </ul>
+</li></div> </div> <div class="clearfix"></div> </div></div> <div class="header"> <a class="btn-link toggle-sidebar hidden-lg-up fas fa-bars" id="gwt-debug-app-toggle-sidebar-button"></a> <div> <div class="brand inline"> <img alt="logo" height="32" src="./delivery_files/logo-blue-ru.svg"> </div> <ul class="no-margin inline no-style p-l-30 p-r-20"><li class="btn m-r-15"><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#" target="_blank" id="gwt-debug-action-bar-create-button"><span class="title">Создать комплект</span> <span class="arrow hide"></span> <span class="icon-thumbnail hide"> <i id="action-bar-create-button-icon"></i> </span></a> <ul class="sub-menu" aria-hidden="true" style="display: none;"></ul></li></ul> </div> <div class="d-flex align-items-center"> <li class="locale-selector m-r-20" id="gwt-debug-app-locale-selector"><a class="gwt-Anchor" href="http://192.168.110.12:8080/portal/#"><img src="./delivery_files/ru.png" style="height: 1em;"> <span></span> <i class="m-l-5 fas fa-angle-down"></i></a><div class="selector-popup" aria-hidden="true" style="display: none;"><div class="dropdown-addbutton hide"> <button type="button" class="gwt-Button" gwt-test-id="selector-popup-add-new-entry-button"></button> </div> <div class="dropdown-searchbox"><div class="cleanable-search input-group"> <div class="input-group-prepend hide"> <span class="input-group-text transparent input-group-text-fix"> <i></i> </span> </div> <input type="text" class="form-control rounded-right-3 rounded-left-3" gwt-test-id="selector-popup-search-input" placeholder="Поиск"> <a class="icon cleanable-search-icon" gwt-test-id="selector-popup-search-action"></a> </div></div> <div class="dropdown-menu full-width show"><ul class="full-width focus-outline-none" gwt-test-id="selector-popup-entry-list-container"><li class="focusable" title="english"><a class="" href="http://192.168.110.12:8080/portal/#"><img class="" src="./delivery_files/en.png"> <i class=""></i> <span>english</span> <link rel="icon"></a></li><li class="focusable" title="русский"><a class="" href="http://192.168.110.12:8080/portal/#"><img class="" src="./delivery_files/ru.png"> <i class=""></i> <span>русский</span> <link rel="icon"></a></li></ul> <div class="text-center" aria-hidden="true" style="display: none;"></div> <div aria-hidden="true" style="display: none;"><i class="fa fa-spinner fa-pulse"></i></div></div></div></li> <div class="pull-left p-r-10 fs-14 d-lg-block d-none"> <div class="username semi-bold" id="gwt-debug-app-user-name-label">Турик Ю.Н.</div> </div> <div class="dropdown pull-right"> <button type="button" class="profile-dropdown-toggle" id="gwt-debug-app-user-panel"><span class="thumbnail-wrapper d32 circular inline"> <img alt="" class="thumbnail-photo" height="32" src="./delivery_files/148.svg" width="32"> </span></button> <div class="gwt-PopupPanel" style="left: 0px; top: 0px; visibility: hidden;"><div class="popupContent"><div class="dropdown-menu dropdown-menu-right profile-dropdown show"><a class="clearfix dropdown-item" href="http://192.168.110.12:8080/portal/#" id="gwt-debug-app-setting-button">Настройки</a> <a class="clearfix dropdown-item" href="http://192.168.110.12:8080/portal/#" title="Вы можете использовать Ctrl+Esc" id="gwt-debug-app-logout-button">Выйти</a> <div class="dropdown-divider"></div> <div class="dropdown-item"> <span class="p-r-10">Помощь</span> <span> <a class="help d-inline p-r-10" href="mailto:portal.support@protei.ru" target="_blank" title="portal.support@protei.ru"> <i class="far fa-envelope" style="font-size: 1.2em"></i> </a> <a class="help d-inline" href="https://mattermost.protei.ru/protei/channels/portal" target="_blank" title="https://mattermost.protei.ru/protei/channels/portal"> <img class="p-b-5" src="./delivery_files/mattermost.png" width="14px"> </a> </span> </div> <div class="dropdown-item">Версия 4.1.278.2</div></div></div></div> </div> </div> </div> <div class="page-container"> <div class="page-content-wrapper full-height"> <div class="content full-height">
+          <!-- START APP -->
+          <!-- START SECONDARY SIDEBAR MENU-->
+          <nav class="secondary-sidebar">
+              <p class="menu-title inline">Комплекты</p>
+              <div class="pull-right menu-controls">
+                  <a href="#" class="p-r-15">
+                      <i class="fas fa-ellipsis-h"></i>
+                  </a>
+                  <a href="#" class="p-r-15">
+                      <i class="fa fa-redo-alt"></i>
+                  </a>
+              </div>
+
+              <ul class="main-menu">
+                  <li class="active">
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: rgb(66, 165, 245);"></i>
+                          <span class="bold">106.001</span>
+                          <span class="p-l-5">Исп.1</span>
+                      </span>
+                          <span class="badge pull-right" style="">15</span>
+                      </a>
+                  </li>
+                  <li class="">
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: rgb(66, 165, 245);"></i>
+                          <span class="bold">106.002</span>
+                          <span class="p-l-5">Исп.1</span>
+                      </span>
+                          <span class="badge pull-right">15</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: rgb(66, 165, 245);"></i>
+                          <span class="bold">106.003</span>
+                          <span class="p-l-5">Исп.1</span>
+                      </span>
+                          <span class="badge pull-right">15</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: rgb(66, 165, 245);"></i>
+                          <span class="bold">106.004</span>
+                          <span class="p-l-5">Исп.1</span>
+                      </span>
+                          <span class="badge pull-right">15</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: #ef5350;"></i>
+                          <span class="bold">106.005</span>
+                          <span class="p-l-5">Исп.1</span>
+                      </span>
+                          <span class="badge pull-right">15</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: #ef5350;"></i>
+                          <span class="bold">106.006</span>
+                          <span class="p-l-5">Исп.1</span>
+                      </span>
+                          <span class="badge pull-right">15</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: #ef5350;"></i>
+                          <span class="bold">106.007</span>
+                          <span class="p-l-5">Исп.1</span>
+                      </span>
+                          <span class="badge pull-right">15</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: #ef5350;"></i>
+                          <span class="bold">106.008</span>
+                          <span class="p-l-5">Исп.1</span>
+                      </span>
+                          <span class="badge pull-right">15</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: #ef5350;"></i>
+                          <span class="bold">106.009</span>
+                          <span class="p-l-5">Исп.1</span>
+                      </span>
+                          <span class="badge pull-right">15</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: #ef5350;"></i>
+                          <span class="bold">106.010</span>
+                          <span class="p-l-5">Исп.1</span>
+                      </span>
+                          <span class="badge pull-right">15</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: #ef5350;"></i>
+                          <span class="bold">106.011</span>
+                          <span class="p-l-5">Исп.2</span>
+                      </span>
+                          <span class="badge pull-right">5</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: #ef5350;"></i>
+                          <span class="bold">106.012</span>
+                          <span class="p-l-5">Исп.2</span>
+                      </span>
+                          <span class="badge pull-right">5</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: #ef5350;"></i>
+                          <span class="bold">106.013</span>
+                          <span class="p-l-5">Исп.2</span>
+                      </span>
+                          <span class="badge pull-right">5</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: #ef5350;"></i>
+                          <span class="bold">106.014</span>
+                          <span class="p-l-5">Исп.2</span>
+                      </span>
+                          <span class="badge pull-right">5</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: #ef5350;"></i>
+                          <span class="bold">106.015</span>
+                          <span class="p-l-5">Исп.2</span>
+                      </span>
+                          <span class="badge pull-right">5</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: #ef5350;"></i>
+                          <span class="bold">106.016</span>
+                          <span class="p-l-5">Исп.2</span>
+                      </span>
+                          <span class="badge pull-right">5</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: #ef5350;"></i>
+                          <span class="bold">106.017</span>
+                          <span class="p-l-5">Исп.2</span>
+                      </span>
+                          <span class="badge pull-right">5</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: #ef5350;"></i>
+                          <span class="bold">106.018</span>
+                          <span class="p-l-5">Исп.2</span>
+                      </span>
+                          <span class="badge pull-right">5</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: #ef5350;"></i>
+                          <span class="bold">106.019</span>
+                          <span class="p-l-5">Исп.2</span>
+                      </span>
+                          <span class="badge pull-right">5</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: #ef5350;"></i>
+                          <span class="bold">106.020</span>
+                          <span class="p-l-5">Исп.2</span>
+                      </span>
+                          <span class="badge pull-right">5</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">
+                      <span class="checkbox no-margin">
+                          <input type="checkbox" value="false" id="gwt-debug-issue-state-created-input" tabindex="0">
+                          <label for="gwt-debug-issue-state-created-input" id="gwt-debug-issue-state-created-label"></label>
+                      </span>
+                          <span class="title p-l-5">
+                          <i class="fas fa-circle" style="color: #ef5350;"></i>
+                          <span class="bold">106.021</span>
+                          <span class="p-l-5">Исп.2</span>
+                      </span>
+                          <span class="badge pull-right">5</span>
+                      </a>
+                  </li>
+              </ul>
+          </nav>
+          <!-- END SECONDARY SIDEBAR MENU -->
+          <div class="inner-content full-height">
+            <div class="split-view">
+              <!-- START SPLIT LIST VIEW -->
+              <div class="split-list">
+                <div data-email="list" class="boreded no-top-border list-view">
+                    <div class="actions-wrapper menuclipper">
+                        <ul class="actions menuclipper-menu no-margin">
+                            <li>
+                                <a href="#">
+                                    <i class="fa fa-plus"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="far fa-clone"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="far fa-circle"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="fa fa-trash-alt"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="fa fa-redo-alt"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- START EMAIL LIST SORTED BY DATE -->
+                    <!-- END EMAIL LIST SORTED BY DATE -->
+                    <div class="list-view-wrapper" data-ios="false">
+                        <div class="list-view-group-container">
+                            <ul class="no-padding">
+                                <li class="item padding-10" data-email-id="1">
+                                    <div class="checkbox no-margin p-l-10">
+                                        <input type="checkbox" value="1" id="emailcheckbox-0-0">
+                                        <label for="emailcheckbox-0-0"></label>
+                                    </div>
+                                    <div class="inline m-l-15">
+                                        <p class="subject no-margin">
+                                            <i class="fas fa-circle" style="color: rgb(66, 165, 245);"></i>
+                                            <span class="bold">106.001.001</span>
+                                        </p>
+                                        <p class="body no-margin">Первый тестовый модуль для комплекта</p>
+                                    </div>
+                                    <div class="manager">Турик Ю.Н.</div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="item padding-10" data-email-id="1">
+                                    <div class="checkbox no-margin p-l-10">
+                                        <input type="checkbox" value="1" id="emailcheckbox-0-0">
+                                        <label for="emailcheckbox-0-0"></label>
+                                    </div>
+                                    <div class="inline m-l-15">
+                                        <p class="subject no-margin">
+                                            <i class="fas fa-circle" style="color: rgb(144, 96, 148);"></i>
+                                            <span class="bold">106.001.002</span>
+                                        </p>
+                                        <p class="body no-margin">КУС в первом исполнении</p>
+                                    </div>
+                                    <div class="manager">Иванова А.В.</div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="item padding-10 p-l-30" data-email-id="1">
+                                    <div class="checkbox no-margin p-l-10">
+                                        <input type="checkbox" value="1" id="emailcheckbox-0-0">
+                                        <label for="emailcheckbox-0-0"></label>
+                                    </div>
+                                    <div class="inline m-l-15">
+                                        <p class="subject no-margin">
+                                            <i class="fas fa-circle" style="color: rgb(144, 96, 148);"></i>
+                                            <span class="bold">106.001.003</span>
+                                        </p>
+                                        <p class="body no-margin">Системный модуль</p>
+                                    </div>
+                                    <div class="manager">Иванова А.В.</div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="item padding-10" data-email-id="1">
+                                    <div class="checkbox no-margin p-l-10">
+                                        <input type="checkbox" value="1" id="emailcheckbox-0-0">
+                                        <label for="emailcheckbox-0-0"></label>
+                                    </div>
+                                    <div class="inline m-l-15">
+                                        <p class="subject no-margin">
+                                            <i class="fas fa-circle" style="color: rgb(144, 96, 148);"></i>
+                                            <span class="bold">106.001.004</span>
+                                        </p>
+                                        <p class="body no-margin">Панель управления "Корунд"</p>
+                                    </div>
+                                    <div class="manager">Иванова А.В.</div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="item padding-10" data-email-id="1">
+                                    <div class="checkbox no-margin p-l-10">
+                                        <input type="checkbox" value="1" id="emailcheckbox-0-0">
+                                        <label for="emailcheckbox-0-0"></label>
+                                    </div>
+                                    <div class="inline m-l-15">
+                                        <p class="subject no-margin">
+                                            <i class="fas fa-circle" style="color: rgb(66, 165, 245);"></i>
+                                            <span class="bold">106.001.005</span>
+                                        </p>
+                                        <p class="body no-margin">Панель управления "Корунд"</p>
+                                    </div>
+                                    <div class="manager">Иванова А.В.</div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="item padding-10" data-email-id="1">
+                                    <div class="checkbox no-margin p-l-10">
+                                        <input type="checkbox" value="1" id="emailcheckbox-0-0">
+                                        <label for="emailcheckbox-0-0"></label>
+                                    </div>
+                                    <div class="inline m-l-15">
+                                        <p class="subject no-margin">
+                                            <i class="fas fa-circle" style="color: rgb(66, 165, 245);"></i>
+                                            <span class="bold">106.001.006</span>
+                                        </p>
+                                        <p class="body no-margin">Панель управления "Корунд"</p>
+                                    </div>
+                                    <div class="manager">Иванова А.В.</div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="item padding-10" data-email-id="1">
+                                    <div class="checkbox no-margin p-l-10">
+                                        <input type="checkbox" value="1" id="emailcheckbox-0-0">
+                                        <label for="emailcheckbox-0-0"></label>
+                                    </div>
+                                    <div class="inline m-l-15">
+                                        <p class="subject no-margin">
+                                            <i class="fas fa-circle" style="color: rgb(66, 165, 245);"></i>
+                                            <span class="bold">106.001.007</span>
+                                        </p>
+                                        <p class="body no-margin">Панель управления "Корунд"</p>
+                                    </div>
+                                    <div class="manager">Иванова А.В.</div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="item padding-10" data-email-id="1">
+                                    <div class="checkbox no-margin p-l-10">
+                                        <input type="checkbox" value="1" id="emailcheckbox-0-0">
+                                        <label for="emailcheckbox-0-0"></label>
+                                    </div>
+                                    <div class="inline m-l-15">
+                                        <p class="subject no-margin">
+                                            <i class="fas fa-circle" style="color: rgb(66, 165, 245);"></i>
+                                            <span class="bold">106.001.008</span>
+                                        </p>
+                                        <p class="body no-margin">Панель управления "Корунд"</p>
+                                    </div>
+                                    <div class="manager">Иванова А.В.</div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="item padding-10" data-email-id="1">
+                                    <div class="checkbox no-margin p-l-10">
+                                        <input type="checkbox" value="1" id="emailcheckbox-0-0">
+                                        <label for="emailcheckbox-0-0"></label>
+                                    </div>
+                                    <div class="inline m-l-15">
+                                        <p class="subject no-margin">
+                                            <i class="fas fa-circle" style="color: #ef5350;"></i>
+                                            <span class="bold">106.001.009</span>
+                                        </p>
+                                        <p class="body no-margin">МУССОН-СЦ с усилителем 2*100 Вт</p>
+                                    </div>
+                                    <div class="manager">Иванова А.В.</div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="item padding-10" data-email-id="1">
+                                    <div class="checkbox no-margin p-l-10">
+                                        <input type="checkbox" value="1" id="emailcheckbox-0-0">
+                                        <label for="emailcheckbox-0-0"></label>
+                                    </div>
+                                    <div class="inline m-l-15">
+                                        <p class="subject no-margin">
+                                            <i class="fas fa-circle" style="color: #ef5350;"></i>
+                                            <span class="bold">106.001.010</span>
+                                        </p>
+                                        <p class="body no-margin">МУССОН-СЦ с усилителем 2*100 Вт</p>
+                                    </div>
+                                    <div class="manager">Иванова А.В.</div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="item padding-10" data-email-id="1">
+                                    <div class="checkbox no-margin p-l-10">
+                                        <input type="checkbox" value="1" id="emailcheckbox-0-0">
+                                        <label for="emailcheckbox-0-0"></label>
+                                    </div>
+                                    <div class="inline m-l-15">
+                                        <p class="subject no-margin">
+                                            <i class="fas fa-circle" style="color: #ef5350;"></i>
+                                            <span class="bold">106.001.011</span>
+                                        </p>
+                                        <p class="body no-margin">Малахит С15ТЛ-О</p>
+                                    </div>
+                                    <div class="manager">Иванова А.В.</div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="item padding-10" data-email-id="1">
+                                    <div class="checkbox no-margin p-l-10">
+                                        <input type="checkbox" value="1" id="emailcheckbox-0-0">
+                                        <label for="emailcheckbox-0-0"></label>
+                                    </div>
+                                    <div class="inline m-l-15">
+                                        <p class="subject no-margin">
+                                            <i class="fas fa-circle" style="color: #ef5350;"></i>
+                                            <span class="bold">106.001.012</span>
+                                        </p>
+                                        <p class="body no-margin">Малахит С15ТЛ-О</p>
+                                    </div>
+                                    <div class="manager">Иванова А.В.</div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="item padding-10" data-email-id="1">
+                                    <div class="checkbox no-margin p-l-10">
+                                        <input type="checkbox" value="1" id="emailcheckbox-0-0">
+                                        <label for="emailcheckbox-0-0"></label>
+                                    </div>
+                                    <div class="inline m-l-15">
+                                        <p class="subject no-margin">
+                                            <i class="fas fa-circle" style="color: #ef5350;"></i>
+                                            <span class="bold">106.001.013</span>
+                                        </p>
+                                        <p class="body no-margin">Второй тестовый модуль для комплекта</p>
+                                    </div>
+                                    <div class="manager">Турик Ю.Н.</div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="item padding-10" data-email-id="1">
+                                    <div class="checkbox no-margin p-l-10">
+                                        <input type="checkbox" value="1" id="emailcheckbox-0-0">
+                                        <label for="emailcheckbox-0-0"></label>
+                                    </div>
+                                    <div class="inline m-l-15">
+                                        <p class="subject no-margin">
+                                            <i class="fas fa-circle" style="color: #ef5350;"></i>
+                                            <span class="bold">106.001.014</span>
+                                        </p>
+                                        <p class="body no-margin">Малахит С15ТЛ-О</p>
+                                    </div>
+                                    <div class="manager">Иванова А.В.</div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="item padding-10" data-email-id="1">
+                                    <div class="checkbox no-margin p-l-10">
+                                        <input type="checkbox" value="1" id="emailcheckbox-0-0">
+                                        <label for="emailcheckbox-0-0"></label>
+                                    </div>
+                                    <div class="inline m-l-15">
+                                        <p class="subject no-margin">
+                                            <i class="fas fa-circle" style="color: #ef5350;"></i>
+                                            <span class="bold">106.001.015</span>
+                                        </p>
+                                        <p class="body no-margin">Малахит С15ТЛ-О</p>
+                                    </div>
+                                    <div class="manager">Иванова А.В.</div>
+                                    <div class="clearfix"></div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <!-- END SPLIT LIST VIEW -->
+              <!-- START SPLIT DETAILS -->
+              <div data-email="opened" class="split-details">
+                <div class="actions-wrapper menuclipper bg-master-lightest">
+                    <ul class="actions menuclipper-menu no-margin p-l-0">
+                      <li class="d-lg-none d-xl-none sm-no-padding">
+                        <a href="http://192.168.110.12:8080/portal/#" class="split-list-toggle"><i class="fa fa-angle-left"></i> All Inboxes</a>
+                      </li>
+                      <li class=""><a href="http://192.168.110.12:8080/portal/#"><i class="fas fa-expand-arrows-alt"></i></a>
+                      </li>
+                      <li class=""><a href="http://192.168.110.12:8080/portal/#"><i class="fas fa-pencil-alt"></i></a>
+                      </li>
+                      <li class=""><a href="http://192.168.110.12:8080/portal/#"><i class="fas fa-link"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+              </div>
+              <!-- END SPLIT DETAILS -->
+              <!-- START COMPOSE BUTTON FOR TABS -->
+              <div class="compose-wrapper d-md-none">
+                <a class="compose-email text-info pull-right m-r-10 m-t-10" href="http://192.168.110.12:8080/portal/email_compose.html"><i class="fa fa-pencil-square-o"></i></a>
+              </div>
+              <!-- END COMPOSE BUTTON -->
+            </div>
+          </div>
+          <!-- END APP -->
+        </div> </div> </div> <div class="gritter-notice-wrapper bottom-notice-right" id="gwt-debug-app-notification-container"></div></div>
+</body></html>

@@ -64,4 +64,7 @@ public interface ProductService {
     @Privileged( En_Privilege.PRODUCT_EDIT )
     @Auditable( En_AuditType.PRODUCT_MODIFY )
     Result<Long> updateProductFromInfo( AuthToken authToken, DevUnitInfo product );
+
+    @Privileged( En_Privilege.PRODUCT_VIEW )
+    Result<List<DevUnitInfo>> getProductsBySelfCompanyProjects(AuthToken authToken);
 }
