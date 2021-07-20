@@ -5,10 +5,10 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel>
-        <div class="row">
+        <div class="row m-0">
             <kits:KitList ui:field="kits" styleName="col-md-3 p-15 m-0">
             </kits:KitList>
-            <g:HTMLPanel ui:field="modulesContainer" styleName="col-md-3 p-0 m-0">
+            <g:HTMLPanel ui:field="modulesContainer" styleName="col-md-3 p-15 m-0">
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="moduleEditContainer" styleName="col-md-6 p-15 m-0"/>
         </div>

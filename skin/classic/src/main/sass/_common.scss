@@ -5332,6 +5332,8 @@ div.form-group-default.form-group-default-selectFx:focus {
 
 .module-table {
   margin-top: 0;
+  overflow: auto;
+  max-height: calc(100vh - 120px);
 
   thead {
     display: none;
@@ -5401,6 +5403,7 @@ div.form-group-default.form-group-default-selectFx:focus {
   }
 
   .module-row {
+    padding-right: 8px;
     .module-state {
       padding-right: 5px;
     }
@@ -5432,6 +5435,7 @@ div.form-group-default.form-group-default-selectFx:focus {
       font-size: 13px;
       line-height: 50px;
       flex: 0 1 25%;
+      cursor: pointer;
 
       &:hover {
         background: none;

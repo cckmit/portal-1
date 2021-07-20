@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.KitEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.service.ModuleControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -36,7 +37,9 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
                             initDetails.parent.clear();
                             initDetails.parent.add(view.asWidget());
                             view.fillKits(delivery.getKits());
-                            fillModules(event.kitId);
+                            if (event.kitId != null) {
+                                fillModules(event.kitId);
+                            }
                         }
                 )
         );
@@ -48,8 +51,16 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
         fillModules(kitId);
     }
 
+    @Override
+    public void onItemClicked(Module module) {
+        fireEvent(new NotifyEvents.Show("Module name edit clicked: " + module.getSerialNumber() + " " + module.getDescription(),
+                NotifyEvents.NotifyType.SUCCESS));
+    }
+
     private void fillModules(Long kitId) {
+        moduleView.clearSelectedRows();
         moduleService.getModulesByKitId(kitId, new FluentCallback<List<Module>>()
+                .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
                 .withSuccess(modules -> {
                     moduleView.putModules(modules);
                 })

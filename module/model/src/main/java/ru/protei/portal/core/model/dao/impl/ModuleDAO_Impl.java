@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.ent.Module;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 public class ModuleDAO_Impl extends PortalBaseJdbcDAO<Module> implements ModuleDAO {
     @Override
     public List<Module> getListByKitId(Long kitId) {
@@ -22,6 +21,6 @@ public class ModuleDAO_Impl extends PortalBaseJdbcDAO<Module> implements ModuleD
     private static String convertListToStringIds(List<Module> modules) {
         return modules.stream()
                 .map(module -> module.getId().toString())
-                .collect(Collectors.joining(", "));
+                .collect(Collectors.joining(","));
     }
 }

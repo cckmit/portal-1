@@ -39,7 +39,7 @@ public class ModuleServiceImpl implements ModuleService {
             for (int i = 0; i < parentModules.size(); i++) {
                 Module parentModule = parentModules.get(i);
                 if (childModule.getParentModuleId().equals(parentModule.getId())) {
-                    parentModules.add(i + 1,childModule);
+                    parentModules.add(i + 1, childModule);
                 }
             }
         }

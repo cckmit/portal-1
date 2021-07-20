@@ -136,6 +136,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonForward();
 
+    String buttonState();
+
     String timeDayLiteral();
 
     String timeHourLiteral();
