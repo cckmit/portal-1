@@ -47,6 +47,9 @@ public class ChunkIterator<T> implements Iterator<T> {
         }
 
         if (listNextIndex == list.size()) {
+            if (list.size() < limit) {
+                return false;
+            }
             offset += limit;
             listNextIndex = 0;
             Result<List<T>> result = getList(offset, limit);
