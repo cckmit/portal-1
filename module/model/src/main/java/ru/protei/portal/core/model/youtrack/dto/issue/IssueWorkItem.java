@@ -4,9 +4,6 @@ import ru.protei.portal.core.model.youtrack.annotation.YtEntityName;
 import ru.protei.portal.core.model.youtrack.dto.YtDto;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 
-/**
- * https://www.jetbrains.com/help/youtrack/standalone/api-entity-Issue.html
- */
 @YtEntityName("IssueWorkItem")
 public class IssueWorkItem extends YtDto {
 

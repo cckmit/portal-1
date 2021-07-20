@@ -1,8 +1,7 @@
-package ru.protei.portal.core.report.ytwork;
+package ru.protei.portal.tools;
 
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.youtrack.dto.issue.IssueWorkItem;
 
 import java.util.Iterator;
 import java.util.List;
@@ -10,18 +9,20 @@ import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
-class ReportYtWorkIterator implements Iterator<IssueWorkItem> {
-    private final BiFunction<Integer, Integer, Result<List<IssueWorkItem>>> getWorkItems;
+import static ru.protei.portal.api.struct.Result.error;
+
+public class ChunkIterator<T> implements Iterator<T> {
+    private final BiFunction<Integer, Integer, Result<List<T>>> getWorkItems;
     private final Supplier<Boolean> isCancel;
     private final int limit;
 
     private int offset;
-    private List<IssueWorkItem> list;
+    private List<T> list;
     private int listNextIndex;
-    private IssueWorkItem next;
+    private T next;
     private En_ResultStatus status = En_ResultStatus.OK;
 
-    public ReportYtWorkIterator(BiFunction<Integer, Integer, Result<List<IssueWorkItem>>> getWorkItems, Supplier<Boolean> isCancel, int limit) {
+    public ChunkIterator(BiFunction<Integer, Integer, Result<List<T>>> getWorkItems, Supplier<Boolean> isCancel, int limit) {
         this.getWorkItems = getWorkItems;
         this.isCancel = isCancel;
         this.limit = limit;
@@ -29,14 +30,10 @@ class ReportYtWorkIterator implements Iterator<IssueWorkItem> {
 
     @Override
     public boolean hasNext() {
-        if (isCancel.get()) {
-            status = En_ResultStatus.CANCELED;
-            return false;
-        }
         if (list == null) {
             offset = 0;
             listNextIndex = 0;
-            Result<List<IssueWorkItem>> result = getList(offset, limit);
+            Result<List<T>> result = getList(offset, limit);
             if (result.isOk()) {
                 list = result.getData();
             } else {
@@ -52,7 +49,7 @@ class ReportYtWorkIterator implements Iterator<IssueWorkItem> {
         if (listNextIndex == list.size()) {
             offset += limit;
             listNextIndex = 0;
-            Result<List<IssueWorkItem>> result = getList(offset, limit);
+            Result<List<T>> result = getList(offset, limit);
             if (result.isOk()) {
                 list = result.getData();
                 if (list.isEmpty()) {
@@ -70,11 +67,11 @@ class ReportYtWorkIterator implements Iterator<IssueWorkItem> {
     }
 
     @Override
-    public IssueWorkItem next() {
+    public T next() {
         if (next == null) {
             throw new NoSuchElementException();
         }
-        IssueWorkItem nextItem = this.next;
+        T nextItem = this.next;
         this.next = null;
         return nextItem;
     }
@@ -83,7 +80,10 @@ class ReportYtWorkIterator implements Iterator<IssueWorkItem> {
         return status;
     }
 
-    private Result<List<IssueWorkItem>> getList(int offset, int limit) {
+    private Result<List<T>> getList(int offset, int limit) {
+        if (isCancel.get()) {
+            return error(En_ResultStatus.CANCELED);
+        }
         return getWorkItems.apply(offset, limit);
     }
 }

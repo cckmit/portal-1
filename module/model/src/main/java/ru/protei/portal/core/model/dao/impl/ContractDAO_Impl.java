@@ -62,12 +62,13 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
     }
 
     @Override
-    public List<Contract> getByCustomerName(String customerName) {
+    public List<Contract> getByCustomerAndProject(String customerName, String projectName) {
         JdbcQueryParameters parameters = new JdbcQueryParameters();
-        parameters.withCondition("company.cname = ? and co_project.CASE_TYPE = " + En_CaseType.PROJECT.getId(), customerName)
-                .withJoins("inner join case_object co_contract on contract.id = co_contract.id " +
+        parameters.withJoins("inner join case_object co_contract on contract.id = co_contract.id " +
                         "   inner join case_object co_project on co_project.ID = contract.project_id" +
                         "   inner join company on company.id = co_project.initiator_company")
+                .withCondition("company.cname = ? and co_project.CASE_TYPE = " + En_CaseType.PROJECT.getId() +
+                                " and co_project.CASE_NAME = ?", customerName, projectName)
                 .withDistinct(true);
 
         return getList(parameters);

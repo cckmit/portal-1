@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtSingleEnumIs
 import ru.protei.portal.core.model.youtrack.dto.issue.IssueWorkItem;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
 import ru.protei.portal.core.report.ReportWriter;
+import ru.protei.portal.tools.ChunkIterator;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -119,7 +120,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
 
         log.debug("writeReport : reportId={} to process", report.getId());
 
-        ReportYtWorkIterator iterator = new ReportYtWorkIterator(
+        ChunkIterator<IssueWorkItem> iterator = new ChunkIterator<>(
                 (offset, limit) -> api.getWorkItems(
                         query.getDateRange().getFrom(), query.getDateRange().getTo(),
                         offset, limit),
@@ -130,7 +131,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 invertNiokrs,
                 invertNmas,
-                contractDAO::getByCustomerName,
+                (name, project) -> contractDAO.getByCustomerAndProject(name, project),
                 this::getPersonByEmail,
                 new Date(),
                 homeCompany

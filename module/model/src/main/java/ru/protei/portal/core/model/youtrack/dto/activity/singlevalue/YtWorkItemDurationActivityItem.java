@@ -3,9 +3,6 @@ package ru.protei.portal.core.model.youtrack.dto.activity.singlevalue;
 import ru.protei.portal.core.model.youtrack.dto.issue.DurationValue;
 import ru.protei.portal.core.model.youtrack.dto.issue.IssueWorkItem;
 
-/**
- * https://www.jetbrains.com/help/youtrack/standalone/api-entity-TextMarkupActivityItem.html
- */
 public class YtWorkItemDurationActivityItem extends YtSimpleValueActivityItem {
 
     public DurationValue removed;
