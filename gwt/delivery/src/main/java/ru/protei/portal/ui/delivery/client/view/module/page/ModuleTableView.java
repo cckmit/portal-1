@@ -13,13 +13,14 @@ import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.delivery.client.activity.kit.page.AbstractKitActivity;
-import ru.protei.portal.ui.delivery.client.activity.kit.page.AbstractModuleView;
+import ru.protei.portal.ui.delivery.client.activity.kit.page.AbstractModuleTableView;
 import ru.protei.portal.ui.delivery.client.view.module.column.ModuleColumn;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-public class ModuleView extends Composite implements AbstractModuleView {
+public class ModuleTableView extends Composite implements AbstractModuleTableView {
 
     @Inject
     public void init() {
@@ -32,7 +33,6 @@ public class ModuleView extends Composite implements AbstractModuleView {
         table.addColumn(infoColumn.header, infoColumn.values);
         infoColumn.setHandler(activity);
         infoColumn.setColumnProvider(columnProvider);
-
         columnProvider.setUseRowHighlighting(false);
     }
 
@@ -59,10 +59,14 @@ public class ModuleView extends Composite implements AbstractModuleView {
     }
 
     @Override
-    public void putModules(List<Module> modules) {
-        modules.forEach(module -> {
-            table.addRow(module, module.getParentModuleId() != null ? "child-row" : null);
-        });
+    public void fillTable(Map<Module, List<Module>> modules) {
+        for (Map.Entry<Module, List<Module>> entry : modules.entrySet()) {
+            Module parentRow = entry.getKey();
+            table.addRow(parentRow);
+
+            List<Module> childRows = entry.getValue();
+            childRows.forEach(row -> table.addChildRow(parentRow, row));
+        }
     }
 
     @UiField
@@ -86,6 +90,6 @@ public class ModuleView extends Composite implements AbstractModuleView {
     private SelectionColumn<Module> selectionColumn = new SelectionColumn<>();
     private ClickColumnProvider<Module> columnProvider = new ClickColumnProvider<>();
 
-    private static ModuleView.ModuleViewUiBinder ourUiBinder = GWT.create(ModuleView.ModuleViewUiBinder.class);
-    interface ModuleViewUiBinder extends UiBinder<HTMLPanel, ModuleView> {}
+    private static ModuleTableView.ModuleViewUiBinder ourUiBinder = GWT.create(ModuleTableView.ModuleViewUiBinder.class);
+    interface ModuleViewUiBinder extends UiBinder<HTMLPanel, ModuleTableView> {}
 }

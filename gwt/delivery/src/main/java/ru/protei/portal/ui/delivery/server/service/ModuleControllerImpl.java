@@ -11,6 +11,7 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
 import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
@@ -28,8 +29,8 @@ public class ModuleControllerImpl implements ModuleController {
     HttpServletRequest httpServletRequest;
 
     @Override
-    public List<Module> getModulesByKitId(Long kitId) throws RequestFailedException {
-        Result<List<Module>> result = moduleService.getModulesByKitId(getAuthToken(sessionService, httpServletRequest), kitId);
+    public Map<Module, List<Module>> getModulesByKitId(Long kitId) throws RequestFailedException {
+        Result<Map<Module, List<Module>>> result = moduleService.getModulesByKitId(getAuthToken(sessionService, httpServletRequest), kitId);
         return checkResultAndGetData(result);
     }
 }

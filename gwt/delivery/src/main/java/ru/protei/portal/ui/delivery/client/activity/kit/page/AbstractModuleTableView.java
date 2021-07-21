@@ -4,12 +4,13 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.Module;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-public interface AbstractModuleView extends IsWidget {
+public interface AbstractModuleTableView extends IsWidget {
     void setActivity(AbstractKitActivity activity);
 
-    void putModules(List<Module> modules);
+    void fillTable(Map<Module, List<Module>> modules);
 
     void clearSelectedRows();
 

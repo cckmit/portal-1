@@ -13,6 +13,7 @@ import ru.protei.portal.ui.common.client.service.ModuleControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
+import java.util.Map;
 
 public abstract class KitActivity implements Activity, AbstractKitActivity {
 
@@ -59,10 +60,10 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     private void fillModules(Long kitId) {
         moduleView.clearSelectedRows();
-        moduleService.getModulesByKitId(kitId, new FluentCallback<List<Module>>()
+        moduleService.getModulesByKitId(kitId, new FluentCallback<Map<Module, List<Module>>>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
                 .withSuccess(modules -> {
-                    moduleView.putModules(modules);
+                    moduleView.fillTable(modules);
                 })
         );
     }
@@ -70,7 +71,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     @Inject
     AbstractKitView view;
     @Inject
-    AbstractModuleView moduleView;
+    AbstractModuleTableView moduleView;
 
     @Inject
     private DeliveryControllerAsync deliveryService;
