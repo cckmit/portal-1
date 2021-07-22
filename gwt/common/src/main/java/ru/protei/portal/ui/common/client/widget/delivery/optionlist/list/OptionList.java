@@ -34,8 +34,7 @@ public class OptionList<T extends HasLongId>
         implements HasValue<Set<T>>,
         ValueChangeHandler<Boolean>,
         HasEnabled, SelectorWithModel<T>,
-        HasEditHandlers,
-        HasCloneHandlers
+        HasEditHandlers
 {
     public OptionList() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -75,24 +74,23 @@ public class OptionList<T extends HasLongId>
         this.header.removeClassName(HIDE);
     }
 
-    public void addOption( String number, String status, String statusColor, String name, T value ) {
+    public void addOption( String number, String status, String statusColor, Integer amount, String name, T value ) {
         if ( filter != null && !filter.isDisplayed( value ) ) {
             return;
         }
 
         OptionItem itemView = itemFactory.get();
         itemView.setNumber( number );
-        itemView.setStatus( status );
+        itemView.setStatusTitle( status );
         itemView.setStatusColor( statusColor );
         itemView.setName( name );
+        itemView.setAmount(amount);
 
         itemView.addValueChangeHandler( this );
         itemView.setValue( selected.contains( value ) );
         itemView.setEnabled( isEnabled );
 
         itemView.addEditHandler(event -> EditEvent.fire(OptionList.this, value.getId(), name));
-
-        itemView.addCloneHandler(event -> CloneEvent.fire(OptionList.this, value.getId()));
 
         if (isMandatoryOption(value)) {
             makeOptionMandatory(itemView);
@@ -105,7 +103,7 @@ public class OptionList<T extends HasLongId>
     }
 
     public void addOption( String name, T value ) {
-        addOption( null, null, null, name, value );
+        addOption( null, null, null, null, name, value );
     }
 
     @Override
@@ -165,11 +163,6 @@ public class OptionList<T extends HasLongId>
     @Override
     public HandlerRegistration addValueChangeHandler( ValueChangeHandler< Set<T> > handler ) {
         return addHandler( handler, ValueChangeEvent.getType() );
-    }
-
-    @Override
-    public HandlerRegistration addCloneHandler(CloneHandler handler) {
-        return addHandler(handler, CloneEvent.getType());
     }
 
     @Override

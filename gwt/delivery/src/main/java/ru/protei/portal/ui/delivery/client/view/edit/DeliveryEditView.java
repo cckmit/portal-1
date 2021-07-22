@@ -144,13 +144,6 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         }
     }
 
-    @UiHandler("kits")
-    public void onKitCloneClicked(CloneEvent event) {
-        if ( activity != null ) {
-            activity.onKitCloneClicked(event.id);
-        }
-    }
-
     @UiHandler("showEditViewButton")
     public void onShowEditViewModeButtonClick(ClickEvent event) {
         if (activity != null) {

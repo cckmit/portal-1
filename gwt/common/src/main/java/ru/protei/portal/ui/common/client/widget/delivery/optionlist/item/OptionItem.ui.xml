@@ -5,10 +5,16 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="delivery-item">
-        <g:CheckBox ui:field="checkbox" styleName="checkbox"/>
-        <span ui:field="number" class="delivery-number"/>
-        <span ui:field="status" class="label delivery-status"/>
-        <span ui:field="name" class="delivery-name"/>
-        <g:Anchor ui:field="clone" href="#" title="{lang.buttonCopy}" styleName="delivery-clone-btn far fa-lg fa-copy"/>
+        <g:CheckBox ui:field="checkbox" styleName="checkbox no-margin"/>
+        <span class="delivery-info title p-l-5">
+            <i ui:field="status" class="fas fa-circle"/>
+            <span ui:field="number" class="bold"/>
+            <span ui:field="name" class="p-l-5"/>
+        </span>
+        <span ui:field="amount" class="badge pull-right"/>
+
+<!--        <span ui:field="number" class="delivery-number"/>-->
+<!--        <span ui:field="status" class="label delivery-status"/>-->
+<!--        <span ui:field="name" class="delivery-name"/>-->
     </g:HTMLPanel>
 </ui:UiBinder>

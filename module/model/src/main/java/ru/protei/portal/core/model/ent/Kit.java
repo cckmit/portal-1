@@ -63,6 +63,11 @@ public class Kit extends AuditableObject implements HasLongId {
     private String serialNumber;
 
     /**
+     * Кол-во модулей первого уровня
+     */
+    private Integer modulesCount;
+
+    /**
      * Статус комплекта
      */
     @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID, mappedColumn = CaseObject.Columns.STATE,
@@ -169,6 +174,14 @@ public class Kit extends AuditableObject implements HasLongId {
         if (state != null) {
             this.stateId = state.getId();
         }
+    }
+
+    public Integer getModulesCount() {
+        return modulesCount;
+    }
+
+    public void setModulesCount(Integer modulesCount) {
+        this.modulesCount = modulesCount;
     }
 
     @Override
