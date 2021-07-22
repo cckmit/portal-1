@@ -33,7 +33,6 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
         table.addColumn(infoColumn.header, infoColumn.values);
         infoColumn.setHandler(activity);
         infoColumn.setColumnProvider(columnProvider);
-        columnProvider.setUseRowHighlighting(false);
     }
 
     @Override
@@ -65,7 +64,10 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
             table.addRow(parentRow);
 
             List<Module> childRows = entry.getValue();
-            childRows.forEach(row -> table.addChildRow(parentRow, row));
+            childRows.forEach(row -> {
+                table.addChildRow(parentRow, row);
+                table.addRowStyle(row, "child-row");
+            });
         }
     }
 

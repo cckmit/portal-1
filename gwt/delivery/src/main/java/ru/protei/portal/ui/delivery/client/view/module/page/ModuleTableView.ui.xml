@@ -6,12 +6,12 @@
 
     <g:HTMLPanel>
         <div class="row">
-            <div class="actions-wrapper menuclipper">
-                <div class="actions menuclipper-menu">
+            <div class="actions-wrapper menu-clipper">
+                <div class="actions menu-clipper-menu">
                     <g:Anchor styleName="" ui:field="addButton" title="{lang.buttonAdd}">
                         <i class="fa fa-plus"/>
                     </g:Anchor>
-                    <g:Anchor styleName="" ui:field="copyButton" title="{lang.buttonCopy}">
+                    <g:Anchor styleName="" ui:field="copyButton" title="{lang.moduleButtonCopy}">
                         <i class="far fa-clone"/>
                     </g:Anchor>
                     <g:Anchor styleName="" ui:field="stateButton" title="{lang.buttonState}">

@@ -26,20 +26,13 @@ public class ClickColumnProvider<T> {
         this.changeSelectionIfSelectedPredicate = changeSelectionIfSelectedPredicate;
     }
 
-    public void setUseRowHighlighting(Boolean isUseRowHighlighting) {
-        this.isUseRowHighlighting = isUseRowHighlighting;
-    }
-
     void setSelectRowHandler(Selection.CanSelectRow.SelectRowHandler<T> selectRowHandler) {
         this.selectRowHandler = selectRowHandler;
     }
 
     void setSelectedValue(T selected) {
         this.selected = selected;
-
-        if (isUseRowHighlighting) {
-            selectRowHandler.setRowSelected(selected, true);
-        }
+        selectRowHandler.setRowSelected( selected, true );
     }
 
     void changeSelection(T row) {
@@ -47,15 +40,9 @@ public class ClickColumnProvider<T> {
             return;
         }
 
-        if (isUseRowHighlighting) {
-            selectRowHandler.setRowSelected(selected, false);
-        }
-
+        selectRowHandler.setRowSelected( selected, false );
         selected = selected != row ? row : null;
-
-        if (isUseRowHighlighting) {
-            selectRowHandler.setRowSelected(selected, true);
-        }
+        selectRowHandler.setRowSelected( selected, true );
     }
 
     private boolean needChangeSelection(T row, T selected) {
@@ -74,7 +61,6 @@ public class ClickColumnProvider<T> {
         return false;
     }
 
-    private Boolean isUseRowHighlighting = true;
     private T selected;
     private Selection.CanSelectRow.SelectRowHandler< T > selectRowHandler;
     private Predicate<T> changeSelectionIfSelectedPredicate;

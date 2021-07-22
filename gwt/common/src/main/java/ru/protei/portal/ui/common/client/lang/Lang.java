@@ -3578,6 +3578,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String moduleStatePaused();
 
+    String moduleButtonCopy();
+
     String errKitSerialNumberNotMatchDeliveryNumber();
 
     String documentation();

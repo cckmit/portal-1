@@ -265,13 +265,35 @@ public class Module extends AuditableObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Module module = (Module) o;
-        return stateId == module.stateId && Objects.equals(id, module.id) && Objects.equals(created, module.created) && Objects.equals(creatorId, module.creatorId) && Objects.equals(modified, module.modified) && Objects.equals(name, module.name) && Objects.equals(description, module.description) && Objects.equals(state, module.state) && Objects.equals(serialNumber, module.serialNumber) && Objects.equals(kitId, module.kitId) && Objects.equals(parentModuleId, module.parentModuleId) && Objects.equals(customerName, module.customerName) && Objects.equals(managerName, module.managerName) && Objects.equals(hwManagerId, module.hwManagerId) && Objects.equals(qcManagerId, module.qcManagerId) && Objects.equals(departureDate, module.departureDate) && Objects.equals(buildDate, module.buildDate);
+        return Objects.equals(id, module.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, created, creatorId, modified, name, description, stateId, state, serialNumber, kitId,
-                parentModuleId, customerName, managerName, hwManagerId, qcManagerId, departureDate, buildDate);
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Module{" +
+                "id=" + id +
+                ", created=" + created +
+                ", creatorId=" + creatorId +
+                ", modified=" + modified +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", stateId=" + stateId +
+                ", state=" + state +
+                ", serialNumber='" + serialNumber + '\'' +
+                ", kitId=" + kitId +
+                ", parentModuleId=" + parentModuleId +
+                ", customerName='" + customerName + '\'' +
+                ", managerName='" + managerName + '\'' +
+                ", hwManagerId=" + hwManagerId +
+                ", qcManagerId=" + qcManagerId +
+                ", departureDate=" + departureDate +
+                ", buildDate=" + buildDate +
+                '}';
     }
 
     public interface Columns {
