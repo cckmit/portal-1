@@ -168,7 +168,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
 
     @Override
     public void onKitEditClicked(Long kitId, String kitName) {
-        fireEvent(new KitEvents.Edit(kitId));
+        fireEvent(new KitEvents.Show(delivery.getId(), kitId));
     }
 
     @Override

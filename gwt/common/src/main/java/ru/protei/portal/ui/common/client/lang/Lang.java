@@ -136,6 +136,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonForward();
 
+    String buttonState();
+
     String timeDayLiteral();
 
     String timeHourLiteral();
@@ -3575,6 +3577,8 @@ public interface Lang extends Messages, ContactItemLang {
     String moduleStateWriteOff();
 
     String moduleStatePaused();
+
+    String moduleButtonCopy();
 
     String errKitSerialNumberNotMatchDeliveryNumber();
 

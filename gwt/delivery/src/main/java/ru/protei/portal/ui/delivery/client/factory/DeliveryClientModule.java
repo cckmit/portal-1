@@ -4,10 +4,14 @@ import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.delivery.client.activity.create.AbstractDeliveryCreateView;
 import ru.protei.portal.ui.delivery.client.activity.create.DeliveryCreateActivity;
-import ru.protei.portal.ui.delivery.client.activity.edit.*;
+import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryEditView;
+import ru.protei.portal.ui.delivery.client.activity.edit.DeliveryEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.kit.add.DeliveryKitAddActivity;
 import ru.protei.portal.ui.delivery.client.activity.kit.edit.AbstractDeliveryKitEditView;
 import ru.protei.portal.ui.delivery.client.activity.kit.edit.DeliveryKitEditActivity;
+import ru.protei.portal.ui.delivery.client.activity.kit.page.AbstractKitView;
+import ru.protei.portal.ui.delivery.client.activity.kit.page.AbstractModuleTableView;
+import ru.protei.portal.ui.delivery.client.activity.kit.page.KitActivity;
 import ru.protei.portal.ui.delivery.client.activity.meta.AbstractDeliveryMetaView;
 import ru.protei.portal.ui.delivery.client.activity.meta.DeliveryMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.page.DeliveryPage;
@@ -16,7 +20,9 @@ import ru.protei.portal.ui.delivery.client.activity.table.DeliveryTableActivity;
 import ru.protei.portal.ui.delivery.client.view.create.DeliveryCreateView;
 import ru.protei.portal.ui.delivery.client.view.edit.DeliveryEditView;
 import ru.protei.portal.ui.delivery.client.view.kit.edit.DeliveryKitEditView;
+import ru.protei.portal.ui.delivery.client.view.kit.page.KitView;
 import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
+import ru.protei.portal.ui.delivery.client.view.module.page.ModuleTableView;
 import ru.protei.portal.ui.delivery.client.view.table.DeliveryTableView;
 
 public class DeliveryClientModule extends AbstractGinModule {
@@ -39,6 +45,10 @@ public class DeliveryClientModule extends AbstractGinModule {
         bind(DeliveryKitAddActivity.class).asEagerSingleton();
         bind(DeliveryKitEditActivity.class).asEagerSingleton();
         bind(AbstractDeliveryKitEditView.class).to(DeliveryKitEditView.class).in(Singleton.class);
+
+        bind(KitActivity.class).asEagerSingleton();
+        bind(AbstractKitView.class).to(KitView.class).in(Singleton.class);
+        bind(AbstractModuleTableView.class).to(ModuleTableView.class).in(Singleton.class);
     }
 }
 
