@@ -10,6 +10,7 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
+import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.Date;
 
@@ -39,6 +40,16 @@ public abstract class RoomReservationPage implements Activity {
         Date d = resetTime(date);
         d.setHours(date.getHours() + 1);
         fireEvent(new RoomReservationEvents.Create(null, d));
+    }
+
+
+    @Event
+    public void onClickSection( SectionEvents.Clicked event ) {
+        if ( !CATEGORY.equals( event.identity ) ) {
+            return;
+        }
+
+        fireEvent(new RoomReservationEvents.Show());
     }
 
     @Inject

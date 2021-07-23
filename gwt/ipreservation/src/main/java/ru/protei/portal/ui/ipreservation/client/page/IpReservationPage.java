@@ -11,6 +11,7 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
+import ru.protei.winter.web.common.client.events.SectionEvents;
 
 /**
  * Активность по работе с вкладкой "Резервирование IP"
@@ -28,6 +29,15 @@ public abstract class IpReservationPage
         if (policyService.hasAnyPrivilegeOf(En_Privilege.RESERVED_IP_VIEW, En_Privilege.SUBNET_VIEW)) {
             fireEvent(new MenuEvents.Add(CATEGORY, UiConstants.TabIcons.IP_RESERVATION, CATEGORY, DebugIds.SIDEBAR_MENU.IP_RESERVATION));
         }
+    }
+
+    @Event
+    public void onClickSection( SectionEvents.Clicked event ) {
+        if ( !CATEGORY.equals( event.identity ) ) {
+            return;
+        }
+
+        fireEvent(new IpReservationEvents.ShowReservedIp());
     }
 
     @Inject

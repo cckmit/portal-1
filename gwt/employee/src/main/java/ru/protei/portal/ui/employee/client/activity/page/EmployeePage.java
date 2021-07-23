@@ -10,7 +10,9 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.winter.web.common.client.events.MenuEvents;
+import ru.protei.winter.web.common.client.events.SectionEvents;
 
 /**
  * Активность по работе с вкладкой "Сотрудники"
@@ -27,6 +29,15 @@ public abstract class EmployeePage implements Activity {
         if ( policyService.hasAnyPrivilegeOf( En_Privilege.EMPLOYEE_VIEW, En_Privilege.ABSENCE_VIEW, En_Privilege.EMPLOYEE_REGISTRATION_VIEW ) ) {
             fireEvent( new MenuEvents.Add( CATEGORY, UiConstants.TabIcons.EMPLOYEE, CATEGORY, DebugIds.SIDEBAR_MENU.EMPLOYEE ) );
         }
+    }
+
+    @Event
+    public void onClickSection( SectionEvents.Clicked event ) {
+        if ( !CATEGORY.equals( event.identity ) ) {
+            return;
+        }
+
+        fireEvent(new EmployeeEvents.Show( ViewType.LIST, false));
     }
 
     @Inject
