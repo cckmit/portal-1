@@ -13,11 +13,8 @@ import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.EditEvent;
-import ru.protei.portal.ui.common.client.events.InputEvent;
-import ru.protei.portal.ui.common.client.events.clone.CloneEvent;
 import ru.protei.portal.ui.common.client.lang.En_CommentOrHistoryTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.delivery.optionlist.kit.KitList;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
@@ -101,16 +98,6 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     }
 
     @Override
-    public HasValue<String> searchKitPattern() {
-        return search;
-    }
-
-    @Override
-    public void setKitFilter(Selector.SelectorFilter<Kit> filter) {
-        kits.refreshValueByFilter(filter);
-    }
-
-    @Override
     public Set<Kit> getSelectedKits() {
         return kits.getValue();
     }
@@ -128,13 +115,6 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     @Override
     public void setCreatedBy(String value) {
         this.createdBy.setInnerHTML( value );
-    }
-
-    @UiHandler("search")
-    public void onSearchChanged(InputEvent event) {
-        if ( activity != null ) {
-            activity.onSearchKitChanged();
-        }
     }
 
     @UiHandler("kits")
@@ -155,13 +135,6 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     public void onCancelClicked(ClickEvent event) {
         if (activity != null) {
             activity.onBackClicked();
-        }
-    }
-
-    @UiHandler("removeKitsButton")
-    public void onRemoveKitsButtonClicked(ClickEvent event) {
-        if (activity != null) {
-            activity.onRemoveKitsButtonClicked(kits.getValue());
         }
     }
 
@@ -195,8 +168,6 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     HTMLPanel root;
     @UiField
     HTMLPanel nameContainer;
-    @UiField
-    CleanableSearchBox search;
     @Inject
     @UiField(provided = true)
     KitList kits;
@@ -206,8 +177,6 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     Button backButton;
     @UiField
     Button showEditViewButton;
-    @UiField
-    Button removeKitsButton;
     @UiField
     Button nameAndDescriptionEditButton;
     @UiField

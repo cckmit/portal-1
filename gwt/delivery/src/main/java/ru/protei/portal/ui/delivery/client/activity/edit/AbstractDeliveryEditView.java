@@ -32,10 +32,6 @@ public interface AbstractDeliveryEditView extends IsWidget {
 
     void fillKits(List<Kit> kitSet);
 
-    HasValue<String> searchKitPattern();
-
-    void setKitFilter(Selector.SelectorFilter<Kit> filter);
-
     Set<Kit> getSelectedKits();
 
     HasVisibility nameAndDescriptionEditButtonVisibility();

@@ -889,6 +889,28 @@ label.bordered:after {
   }
 }
 
+.delivery {
+  nav.secondary-sidebar {
+    width: 100%;
+    position: relative;
+    background: #fff;
+    padding: 0;
+
+    .menu-title {
+      color: #757575;
+      text-transform: uppercase;
+      padding-left: 0;
+    }
+
+    .menu-controls > a {
+      color: #757575;
+      font-size: 13px;
+    }
+  }
+
+
+}
+
 .delivery-item {
   padding: 8px;
   line-height: 1.42857143;

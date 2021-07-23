@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.widget.delivery.optionlist.item;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -16,9 +15,6 @@ import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.common.client.events.EditEvent;
 import ru.protei.portal.ui.common.client.events.EditHandler;
 import ru.protei.portal.ui.common.client.events.HasEditHandlers;
-import ru.protei.portal.ui.common.client.events.clone.CloneEvent;
-import ru.protei.portal.ui.common.client.events.clone.CloneHandler;
-import ru.protei.portal.ui.common.client.events.clone.HasCloneHandlers;
 
 /**
  * Однострочный кликабельный элемент с статусом, номером, именем, количеством подэлементов и возможностью выделения

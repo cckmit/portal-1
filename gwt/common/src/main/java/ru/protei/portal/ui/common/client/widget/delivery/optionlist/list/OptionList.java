@@ -27,7 +27,7 @@ import java.util.*;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 /**
- * Список чекбоксов с информацией и кнопкой
+ * Список комплектов поставки
  */
 public class OptionList<T extends HasLongId>
         extends Composite
@@ -67,11 +67,6 @@ public class OptionList<T extends HasLongId>
 
     public void setSelectorModel( SelectorModel<T> selectorModel ) {
         this.selectorModel = selectorModel;
-    }
-
-    public void setHeader( String header ) {
-        this.header.setInnerText( header == null ? "" : header );
-        this.header.removeClassName(HIDE);
     }
 
     public void addOption( String number, String status, String statusColor, Integer amount, String name, T value ) {
@@ -185,18 +180,6 @@ public class OptionList<T extends HasLongId>
         this.filter = filter;
     }
 
-    public void refreshValueByFilter(Selector.SelectorFilter<T> filter) {
-        this.setFilter(filter);
-        container.clear();
-        for (Map.Entry<OptionItem, T> entry : itemViewToModel.entrySet()) {
-            T t = entry.getValue();
-            OptionItem optionItem = entry.getKey();
-            if (filter == null || filter.isDisplayed(t)) {
-                container.add(optionItem);
-            }
-        }
-    }
-
     public void setEnsureDebugId(T value, String debugId) {
         if (itemToViewModel.containsKey(value)) {
             itemToViewModel.get(value).setEnsureDebugId(debugId);
@@ -223,8 +206,6 @@ public class OptionList<T extends HasLongId>
 
     @UiField
     FlowPanel container;
-    @UiField
-    LabelElement header;
 
     @Inject
     Provider<OptionItem> itemFactory;

@@ -161,12 +161,6 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     }
 
     @Override
-    public void onSearchKitChanged() {
-        final String searchPattern = view.searchKitPattern().getValue().trim();
-        view.setKitFilter(StringUtils.isEmpty(searchPattern) ? null : makeKitFilter(searchPattern));
-    }
-
-    @Override
     public void onKitEditClicked(Long kitId, String kitName) {
         fireEvent(new KitEvents.Show(delivery.getId(), kitId));
     }
@@ -195,14 +189,6 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         fireEvent(new CommentAndHistoryEvents.ShowItems(commentAndHistoryView, selectedTabs));
     }
 
-    private Selector.SelectorFilter<Kit> makeKitFilter(String searchPattern) {
-        String upperCaseSearchPattern = searchPattern.toUpperCase();
-        return kit -> kit != null &&
-                (kit.getSerialNumber().toUpperCase().contains(upperCaseSearchPattern)
-                        || kit.getName().toUpperCase().contains(upperCaseSearchPattern)
-                        || stateLang.getStateName(kit.getState()).toUpperCase().contains(upperCaseSearchPattern));
-    }
-
     private void requestDelivery(Long id, HasWidgets container) {
         controller.getDelivery(id, new FluentCallback<Delivery>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
@@ -223,7 +209,6 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         nameAndDescriptionView.setDescription(delivery.getDescription());
 
         view.fillKits(delivery.getKits());
-        view.searchKitPattern().setValue(null);
 
         view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
 
