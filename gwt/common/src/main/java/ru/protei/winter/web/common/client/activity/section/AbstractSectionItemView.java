@@ -22,7 +22,9 @@ public interface AbstractSectionItemView extends IsWidget {
 
     void setEnsureDebugId(String var1);
 
-    void setSubMenuVisible(boolean var1);
+    void setSubSectionVisible(boolean var1);
+
+    boolean isSubSectionVisible();
 
     HasWidgets getChildContainer();
 
@@ -33,4 +35,5 @@ public interface AbstractSectionItemView extends IsWidget {
     void setHref(String var1);
 
     void addClickHandler();
+
 }
