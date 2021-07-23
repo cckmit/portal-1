@@ -1,22 +1,21 @@
 package ru.protei.portal.ui.common.client.widget.delivery.optionlist.list;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.marker.HasLongId;
 import ru.protei.portal.ui.common.client.events.EditEvent;
 import ru.protei.portal.ui.common.client.events.EditHandler;
 import ru.protei.portal.ui.common.client.events.HasEditHandlers;
-import ru.protei.portal.ui.common.client.events.clone.CloneEvent;
-import ru.protei.portal.ui.common.client.events.clone.CloneHandler;
-import ru.protei.portal.ui.common.client.events.clone.HasCloneHandlers;
 import ru.protei.portal.ui.common.client.widget.delivery.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
@@ -24,7 +23,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 
 import java.util.*;
 
-import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
  * Список комплектов поставки
@@ -85,7 +84,7 @@ public class OptionList<T extends HasLongId>
         itemView.setValue( selected.contains( value ) );
         itemView.setEnabled( isEnabled );
 
-        itemView.addEditHandler(event -> EditEvent.fire(OptionList.this, value.getId(), name));
+        itemView.addEditHandler( event -> onSelectItem(itemView, value, name) );
 
         if (isMandatoryOption(value)) {
             makeOptionMandatory(itemView);
@@ -195,6 +194,19 @@ public class OptionList<T extends HasLongId>
         selected.addAll(mandatoryOptions);
     }
 
+    private void onSelectItem(OptionItem itemView, T value, String name) {
+        unselectItems();
+        itemView.setActive(true);
+        EditEvent.fire(OptionList.this, value.getId(), name);
+    }
+
+    private void unselectItems() {
+        if (isEmpty(itemViewToModel)){
+            return;
+        }
+        itemViewToModel.keySet().forEach(o -> o.setActive(false));
+    }
+
     private void makeOptionMandatory(OptionItem item) {
         item.setEnabled(false);
         item.setValue(true);
@@ -202,6 +214,18 @@ public class OptionList<T extends HasLongId>
 
     private boolean isMandatoryOption(T option) {
         return mandatoryOptions != null && mandatoryOptions.contains(option);
+    }
+
+    protected void makeItemSelected(Long kitId) {
+        if (isEmpty(itemToViewModel)){
+            return;
+        }
+        Map.Entry<T, OptionItem> tOptionItemEntry = itemToViewModel.entrySet().stream()
+                .filter(entry -> Objects.equals(entry.getKey().getId(), kitId)).findAny().orElseGet(null);
+        if (tOptionItemEntry == null){
+            return;
+        }
+        tOptionItemEntry.getValue().setActive(true);
     }
 
     @UiField
@@ -220,7 +244,7 @@ public class OptionList<T extends HasLongId>
     private List<T> mandatoryOptions;
     private SelectorModel<T> selectorModel;
 
-    interface OptionListUiBinder extends UiBinder< HTMLPanel, OptionList > {}
+    interface OptionListUiBinder extends UiBinder< FlowPanel, OptionList > {}
     private static OptionListUiBinder ourUiBinder = GWT.create( OptionListUiBinder.class );
 
 }

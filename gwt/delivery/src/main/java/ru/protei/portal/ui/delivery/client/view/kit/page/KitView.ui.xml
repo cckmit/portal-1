@@ -5,12 +5,23 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel>
-        <div class="row m-0">
-            <kits:KitList ui:field="kits" styleName="col-md-3 p-15 m-0">
-            </kits:KitList>
-            <g:HTMLPanel ui:field="modulesContainer" styleName="col-md-3 p-15 m-0">
-            </g:HTMLPanel>
-            <g:HTMLPanel ui:field="moduleEditContainer" styleName="col-md-6 p-15 m-0"/>
+        <div class="kit row m-0">
+
+            <nav class="col-xs-12 col-md-2 secondary-sidebar">
+                <p class="menu-title inline"><ui:text from="{lang.deliveryKits}"/></p>
+                <div class="pull-right menu-controls">
+                    <a href="#" class="p-r-15">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </a>
+                    <a href="#" class="p-r-15">
+                        <i class="fa fa-redo-alt"></i>
+                    </a>
+                </div>
+                <kits:KitList ui:field="kits"/>
+            </nav>
+
+            <g:HTMLPanel ui:field="modulesContainer" styleName="col-xs-12 col-md-3 p-15 m-0"/>
+            <g:HTMLPanel ui:field="moduleEditContainer" styleName="col-xs-12 col-md-7 p-15 m-0"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

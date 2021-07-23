@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.delivery.optionlist.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -41,6 +42,7 @@ public class OptionItem
     public void setName( String name ) {
         if (name == null) return;
         this.name.setInnerText( name );
+        this.name.setTitle( name );
     }
 
     public void setAmount( Integer amount ) {
@@ -50,10 +52,6 @@ public class OptionItem
 
     public void setStatusColor( String color ) {
         this.status.getStyle().setColor( color );
-    }
-
-    public void setItemEditable( boolean isItemEditable ) {
-        //TODO
     }
 
     @Override
@@ -80,6 +78,10 @@ public class OptionItem
     @Override
     public void setEnabled( boolean enabled ) {
         checkbox.setEnabled( enabled );
+    }
+
+    public void setActive(boolean isActive) {
+        setStyleName(root.getElement(), "active", isActive);
     }
 
     @Override
@@ -111,6 +113,12 @@ public class OptionItem
         Event.setEventListener(status, clickHandler);
         Event.setEventListener(name, clickHandler);
         Event.setEventListener(amount, clickHandler);
+
+        Event.setEventListener(anchor, event -> {
+            if (Event.ONCLICK == event.getTypeInt()) {
+                event.preventDefault();
+            }
+        });
     }
 
     EventListener clickHandler = new EventListener() {
@@ -119,10 +127,15 @@ public class OptionItem
             if (Event.ONCLICK != event.getTypeInt()) {
                 return;
             }
+            event.preventDefault();
             EditEvent.fire(OptionItem.this, null, null);
         }
     };
 
+    @UiField
+    HTMLPanel root;
+    @UiField
+    AnchorElement anchor;
     @UiField
     CheckBox checkbox;
     @UiField

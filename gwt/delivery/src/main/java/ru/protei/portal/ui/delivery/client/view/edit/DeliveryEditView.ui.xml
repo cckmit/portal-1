@@ -33,7 +33,18 @@
 
                 <g:HTMLPanel ui:field="nameContainer"/>
 
-                <kits:KitList ui:field="kits"/>
+                <nav class="secondary-sidebar">
+                    <p class="menu-title inline"><ui:text from="{lang.deliveryKits}"/></p>
+                    <div class="pull-right menu-controls">
+                        <a href="#" class="p-r-15">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </a>
+                        <a href="#" class="p-r-15">
+                            <i class="fa fa-redo-alt"></i>
+                        </a>
+                    </div>
+                    <kits:KitList ui:field="kits"/>
+                </nav>
 
                 <div class="row">
                     <div class="form-group col-md-12">

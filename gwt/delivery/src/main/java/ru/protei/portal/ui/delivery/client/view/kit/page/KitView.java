@@ -45,6 +45,11 @@ public class KitView extends Composite implements AbstractKitView {
         return moduleEditContainer;
     }
 
+    @Override
+    public void makeKitSelected(Long kitId) {
+        kits.makeKitSelected(kitId);
+    }
+
     @UiHandler("kits")
     public void onKitEditClicked(EditEvent event) {
         if ( activity != null ) {

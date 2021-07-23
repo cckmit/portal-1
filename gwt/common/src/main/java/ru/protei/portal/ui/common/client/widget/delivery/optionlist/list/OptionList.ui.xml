@@ -3,16 +3,5 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel tag="nav" styleName="secondary-sidebar">
-        <p class="menu-title inline"><ui:text from="{lang.deliveryKits}"/></p>
-        <div class="pull-right menu-controls">
-            <a href="#" class="p-r-15">
-                <i class="fas fa-ellipsis-h"></i>
-            </a>
-            <a href="#" class="p-r-15">
-                <i class="fa fa-redo-alt"></i>
-            </a>
-        </div>
-        <g:FlowPanel ui:field="container" tag="ul" styleName="main-menu"/>
-    </g:HTMLPanel>
+    <g:FlowPanel ui:field="container" tag="ul" styleName="main-menu"/>
 </ui:UiBinder>

@@ -39,6 +39,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
                             initDetails.parent.add(view.asWidget());
                             view.fillKits(delivery.getKits());
                             if (event.kitId != null) {
+                                view.makeKitSelected(event.kitId);
                                 fillModules(event.kitId);
                             }
                         }

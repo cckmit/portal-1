@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.events;
 
-import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
@@ -10,7 +9,7 @@ import java.util.List;
 
 public class KitEvents {
 
-    @Url( value = "kits", primary = true )
+    @Url( value = "kits" )
     public static class Show {
         public Show () {}
         public Show(Long deliveryId, Long kitId) {

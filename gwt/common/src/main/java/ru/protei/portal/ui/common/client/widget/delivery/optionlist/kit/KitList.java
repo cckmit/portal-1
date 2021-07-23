@@ -37,4 +37,8 @@ public class KitList extends OptionList<Kit> {
     }
 
     private ModuleStateLang stateLang;
+
+    public void makeKitSelected(Long kitId) {
+        super.makeItemSelected(kitId);
+    }
 }
