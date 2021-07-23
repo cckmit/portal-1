@@ -41,7 +41,7 @@ public class ReportYtWorkCollectorTest {
 
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 niokrs, nmas,
-                (name, project) -> new ArrayList<>(),
+                name -> new ArrayList<>(),
                 persons::get,
                 new Date(), homeCompany
         );
@@ -92,7 +92,7 @@ public class ReportYtWorkCollectorTest {
 
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 niokrs, nmas,
-                (name, project) -> new ArrayList<>(),
+                name -> new ArrayList<>(),
                 persons::get,
                 new Date(), homeCompany
         );
@@ -143,15 +143,14 @@ public class ReportYtWorkCollectorTest {
         guarantee.setDateValid(new GregorianCalendar(2021, Calendar.JULY, 18, 0, 0, 0).getTime());
 
         Map<String, List<Contract>> contracts = new HashMap<>();
-        contracts.put(customerCompanyName + "#" + contractProject, Arrays.asList(contract));
-        contracts.put(customerCompanyName + "#" + guaranteeProject, Arrays.asList(guarantee));
+        contracts.put(customerCompanyName, Arrays.asList(contract, guarantee));
 
         ReportYtWorkInfo info1 = new ReportYtWorkInfo(userEmail1, "contractIssue1", customerCompanyName, contractTime, contractProject);
         ReportYtWorkInfo info2 = new ReportYtWorkInfo(userEmail1, "guaranteeIssue1", customerCompanyName, guaranteeTime, guaranteeProject);
 
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 niokrs, nmas,
-                (name, project) -> contracts.get(name + "#" + project),
+                name -> contracts.get(name),
                 persons::get,
                 new GregorianCalendar(2021, Calendar.JULY, 19, 0, 0, 0).getTime(),
                 homeCompany
@@ -169,21 +168,19 @@ public class ReportYtWorkCollectorTest {
         Assert.assertEquals(0, ytWorkItem.getNmaSpentTime().size());
 
         Assert.assertEquals(1, ytWorkItem.getContractSpentTime().size());
-        Assert.assertEquals(contractTime, ytWorkItem.getContractSpentTime().get(contractProject).longValue());
+        Assert.assertEquals(contractTime + guaranteeTime, ytWorkItem.getContractSpentTime().get(contractProject).longValue());
 
-        Assert.assertEquals(1, ytWorkItem.getGuaranteeSpentTime().size());
-        Assert.assertEquals(guaranteeTime, ytWorkItem.getGuaranteeSpentTime().get(guaranteeProject).longValue());
+        Assert.assertEquals(0, ytWorkItem.getGuaranteeSpentTime().size());
     }
 
     @Test
-    public void testContractsReport() {
+    public void testGuarantyReport() {
         Map<String, List<String>> niokrs = new HashMap<>();
         Map<String, List<String>> nmas = new HashMap<>();
 
         String userEmail1 = "user1@protei.ru";
-        long contractTime1 = 30L;
-        long contractTime2 = 36L;
-        long contractTime3 = 43L;
+        long guaranteeTime1 = 30L;
+        long guaranteeTime2 = 43L;
 
         Person user1 = new Person();
         user1.setDisplayName(userEmail1);
@@ -192,53 +189,45 @@ public class ReportYtWorkCollectorTest {
 
         Set<String> homeCompany = new HashSet<>(Arrays.asList(homeCompanyName));
 
-        String contractProject1 = "contractProject1";
-        String contractProject2 = "contractProject2";
+        String guaranteeProject1 = "guaranteeProject1";
 
-        Contract contract1 = new Contract();
-        contract1.setNumber("contract1");
-        contract1.setDateValid(new GregorianCalendar(2021, Calendar.JULY, 20, 1, 0, 0).getTime());
+        Contract guarantee1 = new Contract();
+        guarantee1.setNumber("guarantee1");
+        guarantee1.setDateValid(new GregorianCalendar(2021, Calendar.JULY, 17, 1, 0, 0).getTime());
 
-        Contract contract2 = new Contract();
-        contract2.setNumber("contract2");
-        contract2.setDateValid(new GregorianCalendar(2021, Calendar.JULY, 20, 2, 0, 0).getTime());
-
-        Contract guarantee = new Contract();
-        guarantee.setNumber("guarantee");
-        guarantee.setDateValid(new GregorianCalendar(2021, Calendar.JULY, 18, 3, 0, 0).getTime());
+        Contract guarantee2 = new Contract();
+        guarantee2.setNumber("guarantee2");
+        guarantee2.setDateValid(new GregorianCalendar(2021, Calendar.JULY, 18, 3, 0, 0).getTime());
 
         Map<String, List<Contract>> contracts = new HashMap<>();
-        contracts.put(customerCompanyName + "#" + contractProject1, Arrays.asList(contract1));
-        contracts.put(customerCompanyName + "#" + contractProject2, Arrays.asList(contract2, guarantee));
+        contracts.put(customerCompanyName, Arrays.asList(guarantee1, guarantee2));
 
-        ReportYtWorkInfo info1 = new ReportYtWorkInfo(userEmail1, "contractIssue1", customerCompanyName, contractTime1, contractProject1);
-        ReportYtWorkInfo info2 = new ReportYtWorkInfo(userEmail1, "contractIssue2", customerCompanyName, contractTime2, contractProject2);
-        ReportYtWorkInfo info3 = new ReportYtWorkInfo(userEmail1, "contractIssue3", customerCompanyName, contractTime3, contractProject1);
+        ReportYtWorkInfo info1 = new ReportYtWorkInfo(userEmail1, "guaranteeIssue1", customerCompanyName, guaranteeTime1, guaranteeProject1);
+        ReportYtWorkInfo info3 = new ReportYtWorkInfo(userEmail1, "guaranteeIssue2", customerCompanyName, guaranteeTime2, guaranteeProject1);
 
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 niokrs, nmas,
-                (name, project) -> contracts.get(name + "#" + project),
+                name -> contracts.get(name),
                 persons::get,
                 new GregorianCalendar(2021, Calendar.JULY, 19, 0, 0, 0).getTime(),
                 homeCompany
         );
 
-        List<ReportYtWorkItem> data = Stream.of(info1, info2, info3).collect(collector);
+        List<ReportYtWorkItem> data = Stream.of(info1, info3).collect(collector);
 
         Assert.assertEquals(1, data.size());
         ReportYtWorkItem ytWorkItem = data.get(0);
 
         Assert.assertEquals(userEmail1, ytWorkItem.getPerson().getDisplayName());
-        Assert.assertEquals(contractTime1 + contractTime2 + contractTime3, ytWorkItem.getAllTimeSpent().longValue());
+        Assert.assertEquals(guaranteeTime1 + guaranteeTime2, ytWorkItem.getAllTimeSpent().longValue());
 
         Assert.assertEquals(0, ytWorkItem.getNiokrSpentTime().size());
         Assert.assertEquals(0, ytWorkItem.getNmaSpentTime().size());
+        Assert.assertEquals(0, ytWorkItem.getContractSpentTime().size());
 
-        Assert.assertEquals(2, ytWorkItem.getContractSpentTime().size());
-        Assert.assertEquals(contractTime1 + contractTime3, ytWorkItem.getContractSpentTime().get("contract1").longValue());
-        Assert.assertEquals(contractTime2 , ytWorkItem.getContractSpentTime().get("contract2").longValue());
-
-        Assert.assertEquals(0, ytWorkItem.getGuaranteeSpentTime().size());
+        Assert.assertEquals(2, ytWorkItem.getGuaranteeSpentTime().size());
+        Assert.assertEquals((guaranteeTime1+guaranteeTime2) / 2, ytWorkItem.getGuaranteeSpentTime().get("guarantee1").longValue());
+        Assert.assertEquals((guaranteeTime1+guaranteeTime2) / 2, ytWorkItem.getGuaranteeSpentTime().get("guarantee2").longValue());
     }
 
     @Test
@@ -275,7 +264,7 @@ public class ReportYtWorkCollectorTest {
 
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 niokrs, nmas,
-                (name, project) -> new ArrayList<>(),
+                name -> new ArrayList<>(),
                 persons::get,
                 new Date(), homeCompany
         );

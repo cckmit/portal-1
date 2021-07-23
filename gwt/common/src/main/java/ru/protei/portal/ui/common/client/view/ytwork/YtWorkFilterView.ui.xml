@@ -8,7 +8,7 @@
     <g:HTMLPanel styleName="card card-default no-border card-fixed">
         <div class="card-body">
             <div class="row">
-                <range:TypedSelectorRangePicker ui:field="date" formatValue="dd.MM.yyyy"
+                <range:TypedSelectorRangePicker ui:field="date" formatValue="dd.MM.yyyy HH:mm"
                                                 header="{lang.reportYtWorkDates}"
                                                 addStyleNames="form-group col-md-4 resize-md-12"/>
             </div>

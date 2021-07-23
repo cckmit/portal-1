@@ -26,14 +26,14 @@ public class ReportYtWorkCollector implements Collector<
 
     private final Map<String, List<String>> niokrs;
     private final Map<String, List<String>> nmas;
-    private final BiFunction<String, String, List<Contract>> getContractsByCustomer;
+    private final Function<String, List<Contract>> getContractsByCustomer;
     private final Function<String, Person> getPersonByEmail;
     private final Date now;
     private final Set<String> homeCompany;
 
     public ReportYtWorkCollector(Map<String, List<String>> niokrs,
                                  Map<String, List<String>> nmas,
-                                 BiFunction<String, String, List<Contract>> getContractsByCustomer,
+                                 Function< String, List<Contract>> getContractsByCustomer,
                                  Function<String, Person> getPersonByEmail,
                                  Date now,
                                  Set<String> homeCompany) {
@@ -100,16 +100,16 @@ public class ReportYtWorkCollector implements Collector<
             value.add("CLASSIFICATION ERROR - " + project);
             return new WorkTypeAndValue(NIOKR, value);
         } else {
-            return getContractsAndGuarantee(customer, project);
+            return getContractsAndGuarantee(customer);
         }
     }
 
-    private WorkTypeAndValue getContractsAndGuarantee(String customer, String project) {
-        return memoCustomerToContract.compute(customer + "#" + project, (keyCustomer, workTypeAndValues) -> {
+    private WorkTypeAndValue getContractsAndGuarantee(String customer) {
+        return memoCustomerToContract.compute(customer, (keyCustomer, workTypeAndValues) -> {
             if (workTypeAndValues != null) {
                 return workTypeAndValues;
             }
-            List<Contract> contracts = getContractsByCustomer.apply(customer, project);
+            List<Contract> contracts = getContractsByCustomer.apply(customer);
             if (contracts.isEmpty()) {
                 return createContractListFromCustomer(keyCustomer);
             } else {

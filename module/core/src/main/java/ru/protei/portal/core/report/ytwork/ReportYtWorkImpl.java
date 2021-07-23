@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
+import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.ContractDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.PersonQuery;
@@ -26,6 +28,7 @@ import java.io.OutputStream;
 import java.util.*;
 import java.util.function.Predicate;
 
+import static java.util.stream.Collectors.toSet;
 import static ru.protei.portal.core.model.helper.CollectionUtils.inverseMap;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
@@ -45,11 +48,12 @@ public class ReportYtWorkImpl implements ReportYtWork {
     @Autowired
     ReportDAO reportDAO;
     @Autowired
+    CompanyDAO companyDAO;
+    @Autowired
     YoutrackApi api;
 
     private final Map<String, List<String>> invertNiokrs;
     private final Map<String, List<String>> invertNmas;
-    private final Set<String> homeCompany = new HashSet<>(Arrays.asList(null, "НТЦ Протей", "Нет заказчика", "Протей СТ"));
 
     public ReportYtWorkImpl() {
         Map<String, List<String>> niokrs = new HashMap<>();
@@ -129,12 +133,10 @@ public class ReportYtWorkImpl implements ReportYtWork {
         );
 
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
-                invertNiokrs,
-                invertNmas,
-                (name, project) -> contractDAO.getByCustomerAndProject(name, project),
+                invertNiokrs, invertNmas,
+                name -> contractDAO.getByCustomerAndProject(name),
                 this::getPersonByEmail,
-                new Date(),
-                homeCompany
+                new Date(), makeHomeCompanySet()
         );
 
         List<ReportYtWorkItem> data = stream(iterator)
@@ -165,6 +167,12 @@ public class ReportYtWorkImpl implements ReportYtWork {
         }
     }
 
+    private Set<String> makeHomeCompanySet() {
+        Set<String> homeCompany = companyDAO.getAllHomeCompanies().stream()
+                .map(Company::getCname).collect(toSet());
+        homeCompany.add(null);
+        return homeCompany;
+    }
 
     private Person getPersonByEmail(String email) {
         PersonQuery query = new PersonQuery();
