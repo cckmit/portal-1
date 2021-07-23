@@ -41,6 +41,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.ui.common.client.common.DateFormatter.formatDateTime;
 import static ru.protei.portal.ui.common.client.util.AttachmentUtils.getRemoveErrorHandler;
+import static ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils.getSortedCommentOrHistoryList;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
 
 /**
@@ -49,29 +50,6 @@ import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getComm
 public abstract class CommentAndHistoryListActivity
         implements AbstractCommentAndHistoryListActivity {
 
-    @Inject
-    public void onInit() {
-        view.setActivity( this );
-        view.setFileUploadHandler(new AttachmentUploader.FileUploadHandler() {
-            @Override
-            public void onSuccess(Attachment attachment, PasteInfo pasteInfo) {
-                if (pasteInfo != null && attachment.getMimeType().startsWith("image/")) {
-                    addImageToMessage(pasteInfo.strPosition, attachment);
-                }
-                addTempAttachment(attachment);
-            }
-            @Override
-            public void onError(En_FileUploadStatus status, String details) {
-                if (En_FileUploadStatus.SIZE_EXCEED_ERROR.equals(status)) {
-                    fireEvent(new NotifyEvents.Show(lang.uploadFileSizeExceed() + " (" + details + "Mb)", NotifyEvents.NotifyType.ERROR));
-                }
-                else {
-                    fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
-                }
-            }
-        });
-    }
-
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         this.profile = event.profile;
@@ -79,8 +57,9 @@ public abstract class CommentAndHistoryListActivity
 
     @Event
     public void onShow(CommentAndHistoryEvents.Show event) {
-        event.parent.clear();
-        event.parent.add(view.asWidget());
+        this.view = event.view;
+        this.view.setActivity( this );
+        this.view.setFileUploadHandler(fileUploadhandler);
 
         this.caseType = event.caseType;
         this.caseId = event.caseId;
@@ -223,6 +202,7 @@ public abstract class CommentAndHistoryListActivity
 
     @Event
     public void onShowItems(CommentAndHistoryEvents.ShowItems event) {
+        this.view = event.view;
         displayItems(event.typesToShow);
     }
 
@@ -350,29 +330,6 @@ public abstract class CommentAndHistoryListActivity
 
         flushHistories(histories);
         flushComments(comments);
-    }
-
-    private List<CommentOrHistory> getSortedCommentOrHistoryList(List<CommentOrHistory> commentOrHistoryList) {
-        return commentOrHistoryList
-                .stream()
-                .sorted(this::compareCommentOrHistoryItems)
-                .collect(Collectors.toList());
-    }
-
-    private int compareCommentOrHistoryItems(CommentOrHistory commentOrHistory1, CommentOrHistory commentOrHistory2) {
-        if (commentOrHistory1.getCaseComment() != null && commentOrHistory2.getCaseComment() != null) {
-            return commentOrHistory1.getDate().before(commentOrHistory2.getDate()) ? -1 : 1;
-        }
-
-        if (commentOrHistory1.getHistory() != null && commentOrHistory2.getHistory() != null) {
-            return commentOrHistory1.getDate().before(commentOrHistory2.getDate()) ? -1 : 1;
-        }
-
-        if (formatDateTime(commentOrHistory1.getDate()).equals(formatDateTime(commentOrHistory2.getDate()))) {
-            return commentOrHistory1.getHistory() != null ? -1 : 1;
-        }
-
-        return commentOrHistory1.getDate().before(commentOrHistory2.getDate()) ? -1 : 1;
     }
 
     private void flushHistories(List<History> histories) {
@@ -666,11 +623,29 @@ public abstract class CommentAndHistoryListActivity
         }
     };
 
+    AttachmentUploader.FileUploadHandler fileUploadhandler = new AttachmentUploader.FileUploadHandler() {
+        @Override
+        public void onSuccess(Attachment attachment, PasteInfo pasteInfo) {
+            if (pasteInfo != null && attachment.getMimeType().startsWith("image/")) {
+                addImageToMessage(pasteInfo.strPosition, attachment);
+            }
+            addTempAttachment(attachment);
+        }
+
+        @Override
+        public void onError(En_FileUploadStatus status, String details) {
+            if (En_FileUploadStatus.SIZE_EXCEED_ERROR.equals(status)) {
+                fireEvent(new NotifyEvents.Show(lang.uploadFileSizeExceed() + " (" + details + "Mb)", NotifyEvents.NotifyType.ERROR));
+            } else {
+                fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
+            }
+        }
+    };
+
     @Inject
     Lang lang;
     @Inject
     CaseCommentControllerAsync caseCommentController;
-    @Inject
     AbstractCommentAndHistoryListView view;
     @Inject
     AttachmentControllerAsync attachmentService;

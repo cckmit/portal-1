@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
@@ -166,8 +167,10 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             view.getLinksContainer().clear();
         }
 
+        view.getCommentsContainer().clear();
+        view.getCommentsContainer().add(commentAndHistoryView.asWidget());
         CommentAndHistoryEvents.Show showComments = new CommentAndHistoryEvents.Show(
-            view.getCommentsContainer(),
+            commentAndHistoryView,
             value.getId(),
             En_CaseType.PROJECT,
             canAccessProject(policyService, En_Privilege.PROJECT_EDIT, value.getTeam()),
@@ -224,6 +227,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
     PolicyService policyService;
     @Inject
     CompanyControllerAsync companyService;
+    @Inject
+    private AbstractCommentAndHistoryListView commentAndHistoryView;
 
     private Project project;
 

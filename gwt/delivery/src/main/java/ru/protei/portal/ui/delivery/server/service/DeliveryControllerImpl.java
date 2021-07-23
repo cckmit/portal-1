@@ -93,8 +93,21 @@ public class DeliveryControllerImpl implements DeliveryController {
         return checkResultAndGetData(deliveryService.addKits(token, kits, deliveryId));
     }
 
+    @Override
+    public Kit getKit(long kitId) throws RequestFailedException {
+        Result<Kit> result = deliveryService.getKit(getAuthToken(sessionService, httpRequest), kitId);
+        return checkResultAndGetData(result);
+    }
+
+    @Override
+    public void updateKit(Kit kit) throws RequestFailedException {
+        Result<Kit> result = deliveryService.updateKit(getAuthToken(sessionService, httpRequest), kit);
+        checkResult(result);
+    }
+
     @Autowired
     DeliveryService deliveryService;
+
     @Autowired
     CaseService caseService;
 

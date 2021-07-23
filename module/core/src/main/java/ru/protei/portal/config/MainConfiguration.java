@@ -648,6 +648,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public ModuleDAO getModuleDAO() {
+        return new ModuleDAO_Impl();
+    }
+
+    @Bean
     public YoutrackHttpClient getYoutrackHttpClient() {
         return new YoutrackHttpClientImpl();
     }
@@ -1172,6 +1177,11 @@ public class MainConfiguration {
     @Bean
     public DeliveryService getDeliveryService() {
         return new DeliveryServiceImpl();
+    }
+
+    @Bean
+    public ModuleService getModuleService() {
+        return new ModuleServiceImpl();
     }
 
     /* ASPECT/INTERCEPTORS */

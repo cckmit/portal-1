@@ -227,6 +227,7 @@ public class DeliveryKitList extends Composite implements TakesValue<List<Kit>>,
             return;
         }
 
+        root.ensureDebugId(DebugIds.DELIVERY.KITS);
         addButton.ensureDebugId(DebugIds.DELIVERY.KIT.ADD_BUTTON);
         refreshSerialNumberButton.ensureDebugId(DebugIds.DELIVERY.KIT.REFRESH_BUTTON);
     }

@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.util.TransliterationUtils;
+import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
@@ -93,6 +94,20 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         view.fillKits(event.kits);
     }
 
+    @Event
+    public void onKitChanged(KitEvents.Changed event) {
+        if (delivery == null || !Objects.equals(delivery.getId(), event.deliveryId)) {
+            return;
+        }
+
+        controller.getDelivery(event.deliveryId, new FluentCallback<Delivery>()
+                .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
+                .withSuccess(delivery -> {
+                    this.delivery = delivery;
+                    view.fillKits(delivery.getKits());
+                }));
+    }
+
     @Override
     public void onNameDescriptionChanged() {
         delivery.setName(changeRequest.getName());
@@ -153,7 +168,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
 
     @Override
     public void onKitEditClicked(Long kitId, String kitName) {
-        fireEvent(new NotifyEvents.Show("Kit name edit clicked: " + kitName, NotifyEvents.NotifyType.SUCCESS));
+        fireEvent(new KitEvents.Show(delivery.getId(), kitId));
     }
 
     @Override
@@ -177,7 +192,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     @Override
     public void onSelectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
         saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
-        fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));
+        fireEvent(new CommentAndHistoryEvents.ShowItems(commentAndHistoryView, selectedTabs));
     }
 
     private Selector.SelectorFilter<Kit> makeKitFilter(String searchPattern) {
@@ -217,7 +232,9 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
 
         renderMarkupText(delivery.getDescription(), En_TextMarkup.MARKDOWN, html -> nameAndDescriptionView.setDescription(html));
 
-        fireEvent(new CommentAndHistoryEvents.Show(view.getItemsContainer(), delivery.getId(),
+        view.getItemsContainer().clear();
+        view.getItemsContainer().add(commentAndHistoryView.asWidget());
+        fireEvent(new CommentAndHistoryEvents.Show(commentAndHistoryView, delivery.getId(),
                 En_CaseType.DELIVERY, true, delivery.getCreatorId()));
     }
 
@@ -294,6 +311,8 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     private DeliveryNameDescriptionButtonsView nameAndDescriptionButtonView;
     @Inject
     private DeliveryControllerAsync controller;
+    @Inject
+    private AbstractCommentAndHistoryListView commentAndHistoryView;
 
     @Inject
     PolicyService policyService;

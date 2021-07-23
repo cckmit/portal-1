@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.delivery.client.activity.kit.add;
 
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -7,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -29,11 +31,8 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
 
     @Inject
     public void onInit() {
-        view.setActivity(this);
         kitList.setActivity(this);
         kitList.setAddMode(true);
-        view.getKitsContainer().clear();
-        view.getKitsContainer().add(kitList.asWidget());
         prepareDialog(dialogView);
     }
 
@@ -84,7 +83,8 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
     private void prepareDialog(AbstractDialogDetailsView dialog) {
         dialog.setActivity(this);
         dialog.addStyleName(XL_MODAL);
-        dialog.getBodyContainer().add(view.asWidget());
+        dialog.getBodyContainer().clear();
+        dialog.getBodyContainer().add(kitList.asWidget());
         dialog.setHeader(lang.deliveryKitsAddHeader());
         dialog.removeButtonVisibility().setVisible(false);
     }
@@ -108,8 +108,6 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
                 }));
     }
 
-    @Inject
-    private AbstractDeliveryKitAddView view;
     @Inject
     private DeliveryKitList kitList;
     @Inject
