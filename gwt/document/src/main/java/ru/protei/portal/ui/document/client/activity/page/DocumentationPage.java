@@ -9,8 +9,10 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
+import ru.protei.winter.web.common.client.events.SectionEvents;
 
 public abstract class DocumentationPage implements Activity {
 
@@ -24,6 +26,15 @@ public abstract class DocumentationPage implements Activity {
         if ( policyService.hasAnyPrivilegeOf( En_Privilege.DOCUMENT_VIEW, En_Privilege.DOCUMENT_TYPE_VIEW, En_Privilege.EQUIPMENT_VIEW ) ) {
             fireEvent( new MenuEvents.Add( CATEGORY, UiConstants.TabIcons.DOCUMENTATION, CATEGORY, DebugIds.SIDEBAR_MENU.DOCUMENTATION ) );
         }
+    }
+
+    @Event
+    public void onClickSection( SectionEvents.Clicked event ) {
+        if ( !CATEGORY.equals( event.identity ) ) {
+            return;
+        }
+
+        fireEvent(new DocumentEvents.Show(false));
     }
 
     @Inject
