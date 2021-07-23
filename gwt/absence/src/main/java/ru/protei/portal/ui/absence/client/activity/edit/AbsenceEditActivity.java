@@ -6,9 +6,9 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dto.ScheduleItem;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.PersonAbsence;
-import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.util.ScheduleValidator;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -21,7 +21,6 @@ import ru.protei.portal.ui.common.client.util.DateUtils;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -44,50 +43,20 @@ public abstract class AbsenceEditActivity
     }
 
     @Event
-    public void onShow(AbsenceEvents.Create event) {
-        if (!hasAccessCreate()) {
-            return;
-        }
-        dialogView.setHeader(lang.absenceCreation());
-
-        hideForm();
-        dialogView.showPopup();
-
-        view.contentVisibility().setVisible(true);
-
-        value = new PersonAbsence();
-        value.setPersonId(policyService.getProfile().getId());
-        value.setPersonDisplayName(policyService.getProfile().getFullName());
-        value.setFromTime(DateUtils.setBeginOfDay(new Date()));
-        value.setTillTime(DateUtils.setEndOfDay(new Date()));
-
-        fillView();
-        view.setDateRangeValid(true);
-        view.reasonValidator().setValid(true);
-    }
-
-    @Event
     public void onShow(AbsenceEvents.Edit event) {
-        if (!hasAccessEdit()) {
+        this.event = event;
+        if (event.id == null) {
+            onCreateAbsence(event);
             return;
         }
-        dialogView.setHeader(lang.absenceEditing());
-        this.event = event;
 
-        hideForm();
-        dialogView.showPopup();
-
-        view.contentVisibility().setVisible(true);
-
-        performFillView();
-
-        view.employeeEnabled().setEnabled(false);
-        view.reasonEnabled().setEnabled(false);
+        onEditAbsence(event);
     }
 
     @Override
     public void onReasonChanged() {
         view.enableScheduleEnabled().setEnabled(isEnabledSchedule());
+        onEnableScheduleChanged();
 
         if (!view.reason().getValue().equals(En_AbsenceReason.NIGHT_WORK)) {
             return;
@@ -130,6 +99,48 @@ public abstract class AbsenceEditActivity
         dialogView.hidePopup();
     }
 
+    private void onEditAbsence(AbsenceEvents.Edit event) {
+        if (!hasAccessEdit()) {
+            return;
+        }
+        dialogView.setHeader(lang.absenceEditing());
+
+        showPopup();
+        performFillView();
+
+        view.employeeEnabled().setEnabled(false);
+        view.reasonEnabled().setEnabled(false);
+    }
+
+    private void onCreateAbsence(AbsenceEvents.Edit event) {
+        if (!hasAccessCreate()) {
+            return;
+        }
+        dialogView.setHeader(lang.absenceCreation());
+
+        showPopup();
+        value = new PersonAbsence();
+        value.setPersonId(policyService.getProfile().getId());
+        value.setPersonDisplayName(policyService.getProfile().getFullName());
+        value.setFromTime(DateUtils.setBeginOfDay(new Date()));
+        value.setTillTime(DateUtils.setEndOfDay(new Date()));
+
+        fillView();
+
+        view.setDateRangeValid(true);
+        view.reasonValidator().setValid(true);
+
+        view.employeeEnabled().setEnabled(true);
+        view.reasonEnabled().setEnabled(true);
+    }
+
+    private void showPopup() {
+        hideForm();
+        dialogView.showPopup();
+
+        view.contentVisibility().setVisible(true);
+    }
+
     private boolean isEnabledSchedule() {
         return Objects.equals(view.reason().getValue(), En_AbsenceReason.REMOTE_WORK)
                 || Objects.equals(view.reason().getValue(), En_AbsenceReason.STUDY);
@@ -141,7 +152,7 @@ public abstract class AbsenceEditActivity
         view.comment().setValue(value.getUserComment());
         view.dateRange().setValue(new DateInterval(copyDate(value.getFromTime()), copyDate(value.getTillTime())));
 
-        boolean isScheduleDefined = CollectionUtils.isNotEmpty(value.getScheduleItems());
+        boolean isScheduleDefined = value.getScheduleItems() != null;
         view.enableSchedule().setValue(isScheduleDefined, true);
         view.enableScheduleEnabled().setEnabled(isEnabledSchedule());
         view.scheduleItems().setValue(value.getScheduleItems());
@@ -163,16 +174,18 @@ public abstract class AbsenceEditActivity
             return false;
         }
 
-//        if (isEnabledSchedule())
+        if (isEnabledSchedule() && ScheduleValidator.isValidSchedule(view.scheduleItems().getValue()) != En_ResultStatus.OK) {
+            fireEvent(new NotifyEvents.Show(lang.absenceValidationSchedule(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
         return true;
     }
 
     private void save() {
         enableButtons(false);
         performSave(
-                (throwable) -> {
-                    enableButtons(true);
-                },
+                (throwable) -> enableButtons(true),
                 () -> {
                     enableButtons(true);
                     fireEvent(new AbsenceEvents.Update());
@@ -250,6 +263,7 @@ public abstract class AbsenceEditActivity
         DateInterval dateInterval = view.dateRange().getValue();
         absence.setFromTime(dateInterval.from);
         absence.setTillTime(dateInterval.to);
+        absence.setScheduleItems(view.scheduleItems().getValue());
 
         return absence;
     }

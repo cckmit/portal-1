@@ -4,19 +4,20 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.dto.ScheduleItem;
-import ru.protei.portal.core.model.dict.ScheduleValidationStatus;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.ScheduleValidator;
 import ru.protei.portal.ui.absence.client.widget.schedule.item.ScheduleItemWidget;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.lang.ScheduleValidationStatusLang;
-import ru.protei.portal.ui.common.client.util.DateUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,7 @@ public class ScheduleListWidget
     @Override
     public void setValue(List<ScheduleItem> items, boolean fireEvent) {
         hideError();
-        values = values == null ? new ArrayList<ScheduleItem>() : values;
+        values = items == null ? new ArrayList<>() : items;
         scheduleContainer.clear();
         values.forEach(this::fillItem);
         setVisibilitySchedulePlaceholder();
@@ -59,19 +60,19 @@ public class ScheduleListWidget
         values.add(value);
         fillItem(value);
         setVisibilitySchedulePlaceholder();
-        ScheduleValidationStatus validationStatus = ScheduleValidator.isValidSchedule(values);
-        if (validationStatus == ScheduleValidationStatus.OK) {
+        En_ResultStatus validationStatus = ScheduleValidator.isValidSchedule(values);
+        if (validationStatus == En_ResultStatus.OK) {
             hideError();
             return;
         }
-        showError(ScheduleValidationStatusLang.getValidationMessage(validationStatus, lang));
+        showError(statusLang.getMessage(validationStatus));
     }
 
     private void fillItem(ScheduleItem value) {
         ScheduleItemWidget itemWidget = new ScheduleItemWidget();
         String daysStr = CollectionUtils.emptyIfNull(value.getDaysOfWeek())
                 .stream()
-                .map(day -> DateUtils.getDayOfWeekNameShort(day, lang))
+                .map(day -> weekdays[day])
                 .collect(Collectors.joining(", "));
         itemWidget.setDays(daysStr);
         String timeRangeStr = CollectionUtils.emptyIfNull(value.getTimes())
@@ -91,12 +92,12 @@ public class ScheduleListWidget
     }
 
     private void validate() {
-        ScheduleValidationStatus status = ScheduleValidator.isValidSchedule(values);
-        if (status == ScheduleValidationStatus.OK) {
+        En_ResultStatus status = ScheduleValidator.isValidSchedule(values);
+        if (status == En_ResultStatus.OK) {
             hideError();
             return;
         }
-        showError(ScheduleValidationStatusLang.getValidationMessage(status, lang));
+        showError(statusLang.getMessage(status));
     }
 
     private String formatTimePeriod(Interval interval) {
@@ -130,6 +131,10 @@ public class ScheduleListWidget
     @UiField
     Lang lang;
 
+    @Inject
+    static En_ResultStatusLang statusLang;
+
+    private final String[] weekdays = LocaleInfo.getCurrentLocale().getDateTimeFormatInfo().weekdaysShortStandalone();
     private List<ScheduleItem> values = new ArrayList<>();
 
     interface ScheduleListWidgetBinder extends UiBinder<HTMLPanel, ScheduleListWidget> {}

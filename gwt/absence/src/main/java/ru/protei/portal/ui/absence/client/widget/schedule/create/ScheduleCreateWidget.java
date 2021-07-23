@@ -5,13 +5,13 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.core.model.dict.ScheduleValidationStatus;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.ScheduleValidator;
 import ru.protei.portal.ui.absence.client.widget.timerange.TimeRange;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.lang.ScheduleValidationStatusLang;
 import ru.protei.portal.ui.common.client.util.DateUtils;
 import ru.protei.portal.ui.common.client.widget.togglebtn.item.ToggleButton;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -47,12 +47,12 @@ public class ScheduleCreateWidget
     public void onAddTimeRangeButton(ClickEvent event) {
         TimeRange timeRangeWidget = timeRangeProvider.get();
         timeRangeWidget.addValueChangeHandler(value -> {
-            ScheduleValidationStatus status = ScheduleValidator.isValidIntervals(getTimeRanges());
-            if (status == ScheduleValidationStatus.OK) {
+            En_ResultStatus status = ScheduleValidator.isValidIntervals(getTimeRanges());
+            if (status == En_ResultStatus.OK) {
                 hideError();
                 return;
             }
-            showError(ScheduleValidationStatusLang.getValidationMessage(status, lang));
+            showError(statusLang.getMessage(status));
         });
         timeRangeWidget.setValue(new Interval(DateUtils.setBeginOfDay(new Date()), DateUtils.setEndOfDay(new Date())));
         timeRangeContainer.add(timeRangeWidget);
@@ -91,13 +91,13 @@ public class ScheduleCreateWidget
 
     @UiHandler("applyButton")
     public void onApplyButtonClicked(ClickEvent event) {
-        ScheduleValidationStatus status = ScheduleValidator.isValidScheduleItem(getValue());
-        if (status == ScheduleValidationStatus.OK) {
+        En_ResultStatus status = ScheduleValidator.isValidScheduleItem(getValue());
+        if (status == En_ResultStatus.OK) {
             hideError();
             ApplyEvent.fire(this, getValue());
             return;
         }
-        showError(ScheduleValidationStatusLang.getValidationMessage(status, lang));
+        showError(statusLang.getMessage(status));
     }
 
     @UiHandler("cancelButton")
@@ -172,6 +172,8 @@ public class ScheduleCreateWidget
 
     @Inject
     static Provider<TimeRange> timeRangeProvider;
+    @Inject
+    static En_ResultStatusLang statusLang;
 
     private Map<Integer, ToggleButton> dayToBtnMap = new HashMap<>();
     private List<TimeRange> timeRangeItems = new ArrayList<>();

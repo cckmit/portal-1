@@ -2,17 +2,13 @@ package ru.protei.portal.core.model.dto;
 
 import ru.protei.portal.core.model.struct.Interval;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.List;
 
-public class ScheduleItem {
+public class ScheduleItem implements Serializable {
 
-    private List<Integer> daysOfWeek;
     private List<Interval> times;
-
-    public List<Integer> getDaysOfWeek() {
-        return daysOfWeek;
-    }
+    private List<Integer> daysOfWeek;
 
     public ScheduleItem() {}
 
@@ -20,9 +16,11 @@ public class ScheduleItem {
         this.daysOfWeek = daysOfWeek;
         this.times = times;
     }
+    public List<Integer> getDaysOfWeek() {
+        return daysOfWeek;
+    }
 
     public void setDaysOfWeek(List<Integer> daysOfWeek) {
-        if (this.daysOfWeek == null) daysOfWeek = new ArrayList<>();
         this.daysOfWeek = daysOfWeek;
     }
 
@@ -31,7 +29,6 @@ public class ScheduleItem {
     }
 
     public void setTimes(List<Interval> times) {
-        if (this.times == null) times = new ArrayList<>();
         this.times = times;
     }
 }

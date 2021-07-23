@@ -1,14 +1,20 @@
 package ru.protei.portal.core.model.struct;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
 public class Interval implements Serializable {
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     public Date from;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     public Date to;
 
-    public Interval() { }
+    public Interval() {}
 
     public Interval (Date from, Date to) {
         this.from = from;
@@ -31,10 +37,12 @@ public class Interval implements Serializable {
                 '}';
     }
 
+    @JsonIgnore
     public boolean isValid() {
         return this.from != null && this.to != null && (this.from.getTime() < this.to.getTime() || this.from.getTime() == this.to.getTime());
     }
 
+    @JsonIgnore
     public boolean isEmpty() {
         return this.from == null && this.to == null;
     }

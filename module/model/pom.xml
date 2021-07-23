@@ -326,6 +326,12 @@
             <groupId>de.novanic.gwteventservice</groupId>
             <artifactId>gwteventservice</artifactId>
             <version>${gwteventserviceVersion}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.gwt</groupId>
+                    <artifactId>gwt-servlet</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>

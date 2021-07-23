@@ -371,6 +371,25 @@ public enum En_ResultStatus {
     /**
      * Поставки, запрещено менять проект поставки
      */
-    DELIVERY_FORBIDDEN_CHANGE_PROJECT
-    ;
+    DELIVERY_FORBIDDEN_CHANGE_PROJECT,
+
+    /**
+     * Есть пересечение в расписании
+     */
+    SCHEDULE_HAS_OVERLAP,
+
+    /**
+     * Некорректный период времени (расписание)
+     */
+    SCHEDULE_INCORRECT_TIME_RANGE,
+
+    /**
+     * Нужно заполнить дни (расписание)
+     */
+    SCHEDULE_NEED_FEEL_DAYS,
+
+    /**
+     * Нужно заполнить время (расписание)
+     */
+    SCHEDULE_NEED_FEEL_TIME_RANGES
 }

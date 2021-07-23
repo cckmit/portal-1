@@ -88,7 +88,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
     @Override
     public void onCreateAbsenceButtonClicked() {
-        fireEvent(new AbsenceEvents.Create().withEmployee(this.employee));
+        fireEvent(new AbsenceEvents.Edit().withEmployee(this.employee));
     }
 
     private void fillView(Long employeeId) {

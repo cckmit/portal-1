@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AbsenceNotificationEvent;
 import ru.protei.portal.core.event.EventAction;
-import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.api.ApiAbsence;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
@@ -74,7 +73,6 @@ public class AbsenceServiceImpl implements AbsenceService {
     }
 
     private Result<Long> createAbsence(AuthToken token, PersonAbsence absence) {
-
         if (!validateFields(absence)) {
             return error( En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -104,50 +102,6 @@ public class AbsenceServiceImpl implements AbsenceService {
                         null,
                         newState,
                         null,
-                        getAbsenceNotifiers(newState)));
-    }
-
-    @Override
-    @Transactional
-    public Result<List<Long>> createAbsences(AuthToken token, List<PersonAbsence> absences) {
-
-        for (PersonAbsence absence : absences) {
-            if (!validateFields(absence)) {
-                return error( En_ResultStatus.INCORRECT_PARAMS);
-            }
-
-            if (hasAbsenceIntersections(absence.getPersonId(), absence.getFromTime(), absence.getTillTime(), absence.getId())) {
-                return error(En_ResultStatus.ABSENCE_HAS_INTERSECTIONS);
-            }
-        }
-
-        List<Long> ids = stream(absences).map(absence -> {
-            absence.setCreated(new Date());
-            absence.setCreatorId(token.getPersonId());
-
-            Long absenceId = personAbsenceDAO.persist(absence);
-
-            if (absenceId == null) {
-                throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
-            }
-
-            return absenceId;
-        }).collect(Collectors.toList());
-
-
-        Person initiator = personDAO.get(token.getPersonId());
-        jdbcManyRelationsHelper.fill(initiator, Person.Fields.CONTACT_ITEMS);
-        List<PersonAbsence> multiAddAbsenceList = personAbsenceDAO.getListByKeys(ids);
-        PersonAbsence newState = CollectionUtils.getFirst(multiAddAbsenceList);
-
-        return ok(ids)
-                .publishEvent(new AbsenceNotificationEvent(
-                        this,
-                        EventAction.CREATED,
-                        initiator,
-                        null,
-                        newState,
-                        multiAddAbsenceList,
                         getAbsenceNotifiers(newState)));
     }
 

@@ -17,6 +17,7 @@ import ru.protei.portal.ui.absence.client.view.report.AbsenceReportCreateView;
 import ru.protei.portal.ui.absence.client.widget.schedule.create.ScheduleCreateWidget;
 import ru.protei.portal.ui.absence.client.widget.filter.paramview.AbsenceFilterParamWidget;
 import ru.protei.portal.ui.absence.client.view.table.AbsenceTableView;
+import ru.protei.portal.ui.absence.client.widget.schedule.list.ScheduleListWidget;
 import ru.protei.portal.ui.common.client.widget.selector.absencereason.AbsenceReasonModel;
 
 /**
@@ -42,5 +43,6 @@ public class AbsenceClientModule extends AbstractGinModule {
         bind(AbstractAbsenceFilterParamWidget.class).to(AbsenceFilterParamWidget.class).in(Singleton.class);
 
         requestStaticInjection(ScheduleCreateWidget.class);
+        requestStaticInjection(ScheduleListWidget.class);
     }
 }

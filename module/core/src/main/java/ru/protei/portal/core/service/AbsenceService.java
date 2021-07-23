@@ -26,10 +26,6 @@ public interface AbsenceService {
     @Auditable(En_AuditType.ABSENCE_CREATE)
     Result<Long> createAbsenceFromPortal(AuthToken token, PersonAbsence absence);
 
-    @Privileged(En_Privilege.ABSENCE_CREATE)
-    @Auditable(En_AuditType.ABSENCE_CREATE)
-    Result<List<Long>> createAbsences(AuthToken token, List<PersonAbsence> absence);
-
     @Privileged(En_Privilege.ABSENCE_EDIT)
     @Auditable(En_AuditType.ABSENCE_MODIFY)
     Result<Long> updateAbsence(AuthToken token, PersonAbsence absence);

@@ -13,5 +13,13 @@
             <label><ui:text from="{lang.absenceTimeRangeEnd}"/></label>
             <single:SinglePicker type="TIME" ui:field="to" styleName="" formatValue="HH:mm"/>
         </div>
+<!--        <div class=" col-6">-->
+<!--            <label><ui:text from="{lang.absenceTimeRangeBegin}"/></label>-->
+<!--            <input type="time" ui:field="fromTime"/>-->
+<!--        </div>-->
+<!--        <div class="col-6">-->
+<!--            <label><ui:text from="{lang.absenceTimeRangeEnd}"/></label>-->
+<!--            <input type="time" ui:field="toTime"/>-->
+<!--        </div>-->
     </g:HTMLPanel>
 </ui:UiBinder>

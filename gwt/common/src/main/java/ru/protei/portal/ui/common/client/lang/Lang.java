@@ -2988,6 +2988,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceValidationDateRange();
 
+    String absenceValidationSchedule();
+
     String absenceValidationDateRanges();
 
     String absenceValidationDateRangesIntersection();

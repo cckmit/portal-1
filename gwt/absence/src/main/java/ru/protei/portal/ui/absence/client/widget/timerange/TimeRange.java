@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.absence.client.widget.timerange;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -25,6 +26,9 @@ public class TimeRange extends Composite implements HasValue<Interval> {
     @Override
     public Interval getValue() {
         Interval value = new Interval(from.getValue(), to.getValue());
+//        String fromTime = this.fromTime.getValue();
+//        String toTime = this.toTime.getValue();
+
         return value.isEmpty() ? null : value;
     }
 
@@ -74,6 +78,12 @@ public class TimeRange extends Composite implements HasValue<Interval> {
     @Inject
     @UiField(provided = true)
     SinglePicker to;
+
+//    @UiField
+//    InputElement fromTime;
+
+//    @UiField
+//    InputElement toTime;
 
     interface AbsenceDatesItemBinder extends UiBinder<HTMLPanel, TimeRange> {}
     private static AbsenceDatesItemBinder ourUiBinder = GWT.create(AbsenceDatesItemBinder.class);

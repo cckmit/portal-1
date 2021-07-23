@@ -5399,3 +5399,17 @@ div.form-group-default.form-group-default-selectFx:focus {
   transition: all .15s ease-out .1s;
   transform: translate(0, 0);
 }
+
+input[type="time"] {
+  display: block;
+  background-color: white;
+  border-radius: 3px;
+  border: 1px solid #dcdcdc;
+  padding: 8px 12px;
+  line-height: normal;
+  font-size: 14px;
+  font-weight: 400;
+  vertical-align: middle;
+  min-height: 35px;
+  width: 100%;
+}
