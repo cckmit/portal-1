@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.delivery.client.view.kit.actionmenu;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -9,6 +10,7 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.stringselectpopup.StringSelectPopup;
 import ru.protei.portal.ui.delivery.client.activity.kit.handler.KitActionsHandler;
@@ -40,6 +42,8 @@ public class KitActionsView extends Composite {
                 return;
             }
         });
+
+        ensureDebugIds();
     }
 
     @UiHandler("reloadKitsBtn")
@@ -58,6 +62,14 @@ public class KitActionsView extends Composite {
 
     public void setHandler(KitActionsHandler handler) {
         this.handler = handler;
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        reloadKitsBtn.ensureDebugId(DebugIds.DELIVERY.KIT.RELOAD_BUTTON);
+        kitsActionsBtn.ensureDebugId(DebugIds.DELIVERY.KIT.ACTION_MENU_BUTTON);
     }
 
     private StringSelectPopup popup = new StringSelectPopup();

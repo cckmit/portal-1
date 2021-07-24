@@ -1316,6 +1316,8 @@ public class DebugIds {
             String CANCEL_BUTTON = "kit-item-cancel-button";
             String BACK_BUTTON = "kit-item-back-button";
             String TAB_HISTORY = "kit-item-tab-history";
+            String RELOAD_BUTTON = "kit-reload-button";
+            String ACTION_MENU_BUTTON = "kit-action-menu-button";
         }
 
         interface FILTER {

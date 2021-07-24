@@ -28,6 +28,7 @@ import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
+import ru.protei.portal.ui.delivery.client.activity.kit.handler.KitActionsHandler;
 import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDescriptionButtonsView;
 import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDescriptionEditView;
 import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDescriptionView;
@@ -49,6 +50,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         nameAndDescriptionButtonView.setActivity(this);
         nameAndDescriptionEditView.getButtonContainer().add(nameAndDescriptionButtonView);
         switchNameDescriptionToEdit(false);
+        view.setHandler(kitActionsHandler);
     }
 
     @Event
@@ -281,6 +283,28 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     private String transliteration(String input) {
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
+
+    private KitActionsHandler kitActionsHandler = new KitActionsHandler() {
+        @Override
+        public void onCopy() {
+            fireEvent(new NotifyEvents.Show("On copy Kits clicked", NotifyEvents.NotifyType.SUCCESS));
+        }
+
+        @Override
+        public void onChangeState() {
+            fireEvent(new NotifyEvents.Show("On change state Kits clicked", NotifyEvents.NotifyType.SUCCESS));
+        }
+
+        @Override
+        public void onRemove() {
+            fireEvent(new NotifyEvents.Show("On remove Kits clicked", NotifyEvents.NotifyType.SUCCESS));
+        }
+
+        @Override
+        public void onReload() {
+            fireEvent(new NotifyEvents.Show("On reload Kits clicked", NotifyEvents.NotifyType.SUCCESS));
+        }
+    };
 
     @Inject
     private Lang lang;

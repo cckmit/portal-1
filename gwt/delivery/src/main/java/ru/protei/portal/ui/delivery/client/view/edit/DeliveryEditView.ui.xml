@@ -2,6 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:tab='urn:import:ru.protei.portal.ui.common.client.widget.tab'
              xmlns:kits='urn:import:ru.protei.portal.ui.common.client.widget.delivery.optionlist.kit'
+             xmlns:kitsmenu='urn:import:ru.protei.portal.ui.delivery.client.view.kit.actionmenu'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -34,15 +35,7 @@
                 <g:HTMLPanel ui:field="nameContainer"/>
 
                 <nav class="secondary-sidebar">
-                    <p class="menu-title inline"><ui:text from="{lang.deliveryKits}"/></p>
-                    <div class="pull-right menu-controls">
-                        <a href="#" class="p-r-15">
-                            <i class="fas fa-ellipsis-h"></i>
-                        </a>
-                        <a href="#" class="p-r-15">
-                            <i class="fa fa-redo-alt"></i>
-                        </a>
-                    </div>
+                    <kitsmenu:KitActionsView ui:field="kitsMenu"/>
                     <kits:KitList ui:field="kits"/>
                 </nav>
 

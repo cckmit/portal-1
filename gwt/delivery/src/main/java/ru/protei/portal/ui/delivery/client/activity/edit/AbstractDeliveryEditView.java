@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
+import ru.protei.portal.ui.delivery.client.activity.kit.handler.KitActionsHandler;
 
 import java.util.List;
 import java.util.Set;
@@ -39,4 +40,6 @@ public interface AbstractDeliveryEditView extends IsWidget {
     void setCreatedBy(String value);
 
     HasVisibility addKitsButtonVisibility();
+
+    void setHandler(KitActionsHandler handler);
 }

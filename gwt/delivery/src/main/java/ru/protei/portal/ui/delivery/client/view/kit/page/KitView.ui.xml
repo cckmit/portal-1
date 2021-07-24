@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:kits='urn:import:ru.protei.portal.ui.common.client.widget.delivery.optionlist.kit'
-             xmlns:kitmenu='urn:import:ru.protei.portal.ui.delivery.client.view.kit.actionmenu'
+             xmlns:kitsmenu='urn:import:ru.protei.portal.ui.delivery.client.view.kit.actionmenu'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -10,7 +10,7 @@
         <div class="kit row m-0">
 
             <nav class="col-xs-12 col-md-2 secondary-sidebar">
-                <kitmenu:KitActionsView ui:field="kitsMenu"/>
+                <kitsmenu:KitActionsView ui:field="kitsMenu"/>
                 <kits:KitList ui:field="kits"/>
             </nav>
 

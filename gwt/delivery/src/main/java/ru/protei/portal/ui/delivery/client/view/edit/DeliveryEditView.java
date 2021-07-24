@@ -16,10 +16,11 @@ import ru.protei.portal.ui.common.client.events.EditEvent;
 import ru.protei.portal.ui.common.client.lang.En_CommentOrHistoryTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.delivery.optionlist.kit.KitList;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
 import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryEditView;
+import ru.protei.portal.ui.delivery.client.activity.kit.handler.KitActionsHandler;
+import ru.protei.portal.ui.delivery.client.view.kit.actionmenu.KitActionsView;
 
 import java.util.Arrays;
 import java.util.List;
@@ -117,6 +118,11 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         this.createdBy.setInnerHTML( value );
     }
 
+    @Override
+    public void setHandler(KitActionsHandler handler) {
+        kitsMenu.setHandler(handler);
+    }
+
     @UiHandler("kits")
     public void onKitEditClicked(EditEvent event) {
         if ( activity != null ) {
@@ -171,6 +177,9 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     @Inject
     @UiField(provided = true)
     KitList kits;
+    @Inject
+    @UiField(provided = true)
+    KitActionsView kitsMenu;
     @UiField
     HTMLPanel metaContainer;
     @UiField
