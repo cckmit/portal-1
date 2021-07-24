@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.ui.delivery.client.activity.kit.handler.KitActionsHandler;
 
 import java.util.List;
+import java.util.Set;
 
 public interface AbstractKitView extends IsWidget {
     void setHandler(KitActionsHandler handler);
@@ -21,4 +22,6 @@ public interface AbstractKitView extends IsWidget {
     void makeKitSelected(Long kitId);
 
     void setKitsActionsEnabled(boolean hasEditPrivileges);
+
+    Set<Kit> getKitsSelected();
 }

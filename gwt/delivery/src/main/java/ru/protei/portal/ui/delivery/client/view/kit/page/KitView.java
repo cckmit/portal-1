@@ -18,6 +18,7 @@ import ru.protei.portal.ui.delivery.client.activity.kit.page.AbstractKitView;
 import ru.protei.portal.ui.delivery.client.view.kit.actionmenu.KitActionsView;
 
 import java.util.List;
+import java.util.Set;
 
 public class KitView extends Composite implements AbstractKitView {
 
@@ -60,6 +61,11 @@ public class KitView extends Composite implements AbstractKitView {
     @Override
     public void setKitsActionsEnabled(boolean hasEditPrivileges) {
         kitsMenu.setActionsEnabled(hasEditPrivileges);
+    }
+
+    @Override
+    public Set<Kit> getKitsSelected() {
+        return kits.getValue();
     }
 
     @UiHandler("kits")

@@ -128,6 +128,11 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
         kitsMenu.setActionsEnabled(hasEditPrivileges);
     }
 
+    @Override
+    public Set<Kit> getKitsSelected() {
+        return kits.getValue();
+    }
+
     @UiHandler("kits")
     public void onKitEditClicked(EditEvent event) {
         if ( activity != null ) {

@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Delivery;
+import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -17,6 +18,10 @@ import ru.protei.portal.ui.delivery.client.activity.kit.handler.KitActionsHandle
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public abstract class KitActivity implements Activity, AbstractKitActivity {
 
@@ -86,17 +91,26 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     private KitActionsHandler kitActionsHandler = new KitActionsHandler() {
         @Override
         public void onCopy() {
+            Set<Kit> kitsSelected = view.getKitsSelected();
+            if (kitsSelected != null && kitsSelected.size() > 1){
+                fireEvent(new NotifyEvents.Show("On copy Kits clicked, but more one Kit selected!", NotifyEvents.NotifyType.ERROR));
+                return;
+            }
             fireEvent(new NotifyEvents.Show("On copy Kits clicked", NotifyEvents.NotifyType.SUCCESS));
         }
 
         @Override
         public void onChangeState() {
-            fireEvent(new NotifyEvents.Show("On change state Kits clicked", NotifyEvents.NotifyType.SUCCESS));
+            Set<Kit> kitsSelected = view.getKitsSelected();
+            String selectedNumbers = stream(kitsSelected).map(Kit::getSerialNumber).collect(Collectors.joining(","));
+            fireEvent(new NotifyEvents.Show("On change state Kits clicked, selected kits: " + selectedNumbers, NotifyEvents.NotifyType.SUCCESS));
         }
 
         @Override
         public void onRemove() {
-            fireEvent(new NotifyEvents.Show("On remove Kits clicked", NotifyEvents.NotifyType.SUCCESS));
+            Set<Kit> kitsSelected = view.getKitsSelected();
+            String selectedNumbers = stream(kitsSelected).map(Kit::getSerialNumber).collect(Collectors.joining(","));
+            fireEvent(new NotifyEvents.Show("On remove Kits clicked, selected kits: " + selectedNumbers, NotifyEvents.NotifyType.SUCCESS));
         }
 
         @Override

@@ -44,4 +44,6 @@ public interface AbstractDeliveryEditView extends IsWidget {
     void setHandler(KitActionsHandler handler);
 
     void setKitsActionsEnabled(boolean hasEditPrivileges);
+
+    Set<Kit> getKitsSelected();
 }
