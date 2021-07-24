@@ -4,4 +4,5 @@ public interface KitActionsHandler {
     void onCopy();
     void onChangeState();
     void onRemove();
+    void onReload();
 }

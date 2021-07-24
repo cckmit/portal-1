@@ -91,6 +91,11 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
         public void onRemove() {
             fireEvent(new NotifyEvents.Show("On remove Kits clicked", NotifyEvents.NotifyType.SUCCESS));
         }
+
+        @Override
+        public void onReload() {
+            fireEvent(new NotifyEvents.Show("On reload Kits clicked", NotifyEvents.NotifyType.SUCCESS));
+        }
     };
 
     @Inject
