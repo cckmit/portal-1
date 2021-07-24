@@ -211,6 +211,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         nameAndDescriptionView.setDescription(delivery.getDescription());
 
         view.fillKits(delivery.getKits());
+        view.setKitsActionsEnabled(hasEditPrivileges());
 
         view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
 

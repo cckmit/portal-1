@@ -42,4 +42,6 @@ public interface AbstractDeliveryEditView extends IsWidget {
     HasVisibility addKitsButtonVisibility();
 
     void setHandler(KitActionsHandler handler);
+
+    void setKitsActionsEnabled(boolean hasEditPrivileges);
 }

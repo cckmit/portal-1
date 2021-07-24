@@ -57,6 +57,11 @@ public class KitView extends Composite implements AbstractKitView {
         kits.makeKitSelected(kitId);
     }
 
+    @Override
+    public void setKitsActionsEnabled(boolean hasEditPrivileges) {
+        kitsMenu.setActionsEnabled(hasEditPrivileges);
+    }
+
     @UiHandler("kits")
     public void onKitEditClicked(EditEvent event) {
         if ( activity != null ) {

@@ -19,4 +19,6 @@ public interface AbstractKitView extends IsWidget {
     HasWidgets getModuleEditContainer();
 
     void makeKitSelected(Long kitId);
+
+    void setKitsActionsEnabled(boolean hasEditPrivileges);
 }

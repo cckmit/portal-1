@@ -64,6 +64,11 @@ public class KitActionsView extends Composite {
         this.handler = handler;
     }
 
+    public void setActionsEnabled(boolean isEnabled) {
+        kitsActionsBtn.setEnabled(isEnabled);
+        reloadKitsBtn.setEnabled(isEnabled);
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -81,5 +86,6 @@ public class KitActionsView extends Composite {
     Anchor kitsActionsBtn;
 
     private static KitActionsView.KitViewUiBinder ourUiBinder = GWT.create(KitActionsView.KitViewUiBinder.class);
+
     interface KitViewUiBinder extends UiBinder<HTMLPanel, KitActionsView> {}
 }
