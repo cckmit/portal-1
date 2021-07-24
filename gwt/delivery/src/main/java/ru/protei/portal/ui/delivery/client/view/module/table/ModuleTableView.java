@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.view.module.page;
+package ru.protei.portal.ui.delivery.client.view.module.table;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;

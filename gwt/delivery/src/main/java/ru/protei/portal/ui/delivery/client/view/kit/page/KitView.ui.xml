@@ -10,12 +10,12 @@
             <nav class="col-xs-12 col-md-2 secondary-sidebar">
                 <p class="menu-title inline"><ui:text from="{lang.deliveryKits}"/></p>
                 <div class="pull-right menu-controls">
-                    <a href="#" class="p-r-15">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </a>
-                    <a href="#" class="p-r-15">
-                        <i class="fa fa-redo-alt"></i>
-                    </a>
+                    <g:Anchor ui:field="kitsActionsBtn" href="#" styleName="p-r-15">
+                        <i class="fas fa-ellipsis-h"/>
+                    </g:Anchor>
+                    <g:Anchor ui:field="reloadKitsBtn" title="{lang.buttonReload}" href="#" styleName="p-r-15">
+                        <i class="fa fa-redo-alt"/>
+                    </g:Anchor>
                 </div>
                 <kits:KitList ui:field="kits"/>
             </nav>

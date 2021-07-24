@@ -11,6 +11,7 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.service.ModuleControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.delivery.client.activity.kit.handler.KitActionsHandler;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
         view.setActivity(this);
         moduleView.setActivity(this);
         view.getModulesContainer().add(moduleView.asWidget());
+        view.setHandler(kitActionsHandler);
     }
 
     @Event
@@ -54,6 +56,11 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     }
 
     @Override
+    public void onReloadKitsBtnClicked() {
+        fireEvent(new NotifyEvents.Show("On reload Kits clicked", NotifyEvents.NotifyType.SUCCESS));
+    }
+
+    @Override
     public void onItemClicked(Module module) {
         fireEvent(new NotifyEvents.Show("Module name edit clicked: " + module.getSerialNumber() + " " + module.getDescription(),
                 NotifyEvents.NotifyType.SUCCESS));
@@ -68,6 +75,23 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
                 })
         );
     }
+
+    private KitActionsHandler kitActionsHandler = new KitActionsHandler() {
+        @Override
+        public void onCopy() {
+            fireEvent(new NotifyEvents.Show("On copy Kits clicked", NotifyEvents.NotifyType.SUCCESS));
+        }
+
+        @Override
+        public void onChangeState() {
+            fireEvent(new NotifyEvents.Show("On change state Kits clicked", NotifyEvents.NotifyType.SUCCESS));
+        }
+
+        @Override
+        public void onRemove() {
+            fireEvent(new NotifyEvents.Show("On remove Kits clicked", NotifyEvents.NotifyType.SUCCESS));
+        }
+    };
 
     @Inject
     AbstractKitView view;
