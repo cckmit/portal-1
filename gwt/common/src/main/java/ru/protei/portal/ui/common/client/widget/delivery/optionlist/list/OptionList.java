@@ -129,6 +129,7 @@ public class OptionList<T extends HasLongId>
 
     public void clearOptions() {
         container.clear();
+        selected.clear();
         itemViewToModel.clear();
         itemToViewModel.clear();
         itemToNameModel.clear();

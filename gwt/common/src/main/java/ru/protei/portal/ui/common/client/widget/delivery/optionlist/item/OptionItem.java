@@ -105,26 +105,20 @@ public class OptionItem
     }
 
     private void initClickHandlers() {
-        Event.sinkEvents(number, Event.ONCLICK);
-        Event.sinkEvents(status, Event.ONCLICK);
-        Event.sinkEvents(name, Event.ONCLICK);
-        Event.sinkEvents(amount, Event.ONCLICK);
-        Event.setEventListener(number, clickHandler);
-        Event.setEventListener(status, clickHandler);
-        Event.setEventListener(name, clickHandler);
-        Event.setEventListener(amount, clickHandler);
-
-        Event.setEventListener(anchor, event -> {
-            if (Event.ONCLICK == event.getTypeInt()) {
-                event.preventDefault();
-            }
-        });
+        Event.sinkEvents(anchor, Event.ONCLICK);
+        Event.setEventListener(anchor, clickHandler);
     }
 
     EventListener clickHandler = new EventListener() {
         @Override
         public void onBrowserEvent(Event event) {
+            String tagName = event.getTarget().getTagName();
+
             if (Event.ONCLICK != event.getTypeInt()) {
+                return;
+            }
+
+            if (tagName.equalsIgnoreCase("label") || tagName.equalsIgnoreCase("input")){
                 return;
             }
             event.preventDefault();
