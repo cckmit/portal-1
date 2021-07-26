@@ -22,7 +22,7 @@ import ru.protei.portal.ui.delivery.client.view.edit.DeliveryEditView;
 import ru.protei.portal.ui.delivery.client.view.kit.edit.DeliveryKitEditView;
 import ru.protei.portal.ui.delivery.client.view.kit.page.KitView;
 import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
-import ru.protei.portal.ui.delivery.client.view.module.page.ModuleTableView;
+import ru.protei.portal.ui.delivery.client.view.module.table.ModuleTableView;
 import ru.protei.portal.ui.delivery.client.view.table.DeliveryTableView;
 
 public class DeliveryClientModule extends AbstractGinModule {

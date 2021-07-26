@@ -361,15 +361,6 @@ public class DeliveryServiceImpl implements DeliveryService {
         });
     }
 
-    private void createKitHistory(AuthToken token, Kit kit) {
-
-        Result<Long> resultState = addStateHistory(token, kit.getId(), kit.getStateId(), caseStateDAO.get(kit.getStateId()).getState());
-
-        if (resultState.isError()) {
-            log.error("State message for the kit {} not created!", kit.getId());
-        }
-    }
-
     @Override
     public Result<Kit> getKit(AuthToken token, Long kitId) {
 
@@ -412,6 +403,15 @@ public class DeliveryServiceImpl implements DeliveryService {
         return ok(kit);
     }
 
+    private void createKitHistory(AuthToken token, Kit kit) {
+
+        Result<Long> resultState = addStateHistory(token, kit.getId(), kit.getStateId(), caseStateDAO.get(kit.getStateId()).getState());
+
+        if (resultState.isError()) {
+            log.error("State message for the kit {} not created!", kit.getId());
+        }
+    }
+
     private void updateKitHistory(AuthToken token, Kit newKit, Kit oldKit) {
         if (!Objects.equals(newKit.getStateId(), oldKit.getStateId())) {
             Result<Long> resultState = changeStateHistory(token, newKit.getId(), oldKit.getStateId(), caseStateDAO.get(oldKit.getStateId()).getState(),
@@ -428,7 +428,19 @@ public class DeliveryServiceImpl implements DeliveryService {
         jdbcManyRelationsHelper.fill(delivery, KITS);
         jdbcManyRelationsHelper.fill(delivery, SUBSCRIBERS);
         delivery.getProject().setProducts(new HashSet<>(devUnitDAO.getProjectProducts(delivery.getProject().getId())));
+        fillModulesCount(delivery.getId(), delivery.getKits());
         return delivery;
+    }
+
+    private void fillModulesCount(Long deliveryId, List<Kit> kits) {
+
+        List<Kit> modulesGroupedByKit = kitDAO.getModulesGroupedByKit(deliveryId);
+
+        for (Kit kit : kits){
+            stream(modulesGroupedByKit)
+                    .filter(o -> Objects.equals(o.getId(), kit.getId()))
+                    .findAny().ifPresent(kitShort -> kit.setModulesCount(kitShort.getModulesCount()));
+        }
     }
 
     private int getCurrentYear() {

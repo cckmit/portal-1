@@ -29,6 +29,7 @@ public class KitList extends OptionList<Kit> {
                     kit.getSerialNumber(),
                     stateLang.getStateName(kit.getState()),
                     kit.getState().getColor(),
+                    kit.getModulesCount(),
                     kit.getName(),
                     kit ) ;
 
@@ -36,4 +37,8 @@ public class KitList extends OptionList<Kit> {
     }
 
     private ModuleStateLang stateLang;
+
+    public void makeKitSelected(Long kitId) {
+        super.makeItemSelected(kitId);
+    }
 }

@@ -11,7 +11,7 @@
                     <g:Anchor styleName="" ui:field="addButton" title="{lang.buttonAdd}">
                         <i class="fa fa-plus"/>
                     </g:Anchor>
-                    <g:Anchor styleName="" ui:field="copyButton" title="{lang.moduleButtonCopy}">
+                    <g:Anchor styleName="" ui:field="copyButton" title="{lang.buttonCopy}">
                         <i class="far fa-clone"/>
                     </g:Anchor>
                     <g:Anchor styleName="" ui:field="stateButton" title="{lang.buttonState}">

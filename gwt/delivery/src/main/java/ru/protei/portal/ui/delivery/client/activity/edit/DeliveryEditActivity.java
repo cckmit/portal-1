@@ -25,9 +25,9 @@ import ru.protei.portal.ui.common.client.lang.DeliveryStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
+import ru.protei.portal.ui.delivery.client.activity.kit.handler.KitActionsHandler;
 import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDescriptionButtonsView;
 import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDescriptionEditView;
 import ru.protei.portal.ui.delivery.client.view.namedescription.DeliveryNameDescriptionView;
@@ -36,7 +36,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
 
@@ -49,6 +51,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         nameAndDescriptionButtonView.setActivity(this);
         nameAndDescriptionEditView.getButtonContainer().add(nameAndDescriptionButtonView);
         switchNameDescriptionToEdit(false);
+        view.setKitsActionHandler(kitActionsHandler);
     }
 
     @Event
@@ -161,12 +164,6 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     }
 
     @Override
-    public void onSearchKitChanged() {
-        final String searchPattern = view.searchKitPattern().getValue().trim();
-        view.setKitFilter(StringUtils.isEmpty(searchPattern) ? null : makeKitFilter(searchPattern));
-    }
-
-    @Override
     public void onKitEditClicked(Long kitId, String kitName) {
         fireEvent(new KitEvents.Show(delivery.getId(), kitId));
     }
@@ -195,14 +192,6 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         fireEvent(new CommentAndHistoryEvents.ShowItems(commentAndHistoryView, selectedTabs));
     }
 
-    private Selector.SelectorFilter<Kit> makeKitFilter(String searchPattern) {
-        String upperCaseSearchPattern = searchPattern.toUpperCase();
-        return kit -> kit != null &&
-                (kit.getSerialNumber().toUpperCase().contains(upperCaseSearchPattern)
-                        || kit.getName().toUpperCase().contains(upperCaseSearchPattern)
-                        || stateLang.getStateName(kit.getState()).toUpperCase().contains(upperCaseSearchPattern));
-    }
-
     private void requestDelivery(Long id, HasWidgets container) {
         controller.getDelivery(id, new FluentCallback<Delivery>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
@@ -223,7 +212,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         nameAndDescriptionView.setDescription(delivery.getDescription());
 
         view.fillKits(delivery.getKits());
-        view.searchKitPattern().setValue(null);
+        view.setKitsActionsEnabled(hasEditPrivileges());
 
         view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
 
@@ -296,6 +285,37 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     private String transliteration(String input) {
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
+
+    private KitActionsHandler kitActionsHandler = new KitActionsHandler() {
+        @Override
+        public void onCopy() {
+            Set<Kit> kitsSelected = view.getKitsSelected();
+            if (kitsSelected != null && kitsSelected.size() > 1){
+                fireEvent(new NotifyEvents.Show("On copy Kits clicked, but more one Kit selected!", NotifyEvents.NotifyType.ERROR));
+                return;
+            }
+            fireEvent(new NotifyEvents.Show("On copy Kits clicked", NotifyEvents.NotifyType.SUCCESS));
+        }
+
+        @Override
+        public void onChangeState() {
+            Set<Kit> kitsSelected = view.getKitsSelected();
+            String selectedNumbers = stream(kitsSelected).map(Kit::getSerialNumber).collect(Collectors.joining(","));
+            fireEvent(new NotifyEvents.Show("On change state Kits clicked, selected kits: " + selectedNumbers, NotifyEvents.NotifyType.SUCCESS));
+        }
+
+        @Override
+        public void onRemove() {
+            Set<Kit> kitsSelected = view.getKitsSelected();
+            String selectedNumbers = stream(kitsSelected).map(Kit::getSerialNumber).collect(Collectors.joining(","));
+            fireEvent(new NotifyEvents.Show("On remove Kits clicked, selected kits: " + selectedNumbers, NotifyEvents.NotifyType.SUCCESS));
+        }
+
+        @Override
+        public void onReload() {
+            fireEvent(new NotifyEvents.Show("On reload Kits clicked", NotifyEvents.NotifyType.SUCCESS));
+        }
+    };
 
     @Inject
     private Lang lang;

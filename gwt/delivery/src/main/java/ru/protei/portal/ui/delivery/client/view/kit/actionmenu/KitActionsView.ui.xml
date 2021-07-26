@@ -1,0 +1,18 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel>
+        <p class="menu-title inline"><ui:text from="{lang.deliveryKits}"/></p>
+        <div class="pull-right menu-controls">
+            <g:Anchor ui:field="kitsActionsBtn" href="#" styleName="p-r-15">
+                <i class="fas fa-ellipsis-h"/>
+            </g:Anchor>
+            <g:Anchor ui:field="reloadKitsBtn" title="{lang.buttonReload}" href="#" styleName="p-r-15">
+                <i class="fa fa-redo-alt"/>
+            </g:Anchor>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

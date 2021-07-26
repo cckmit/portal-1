@@ -3,10 +3,10 @@ package ru.protei.portal.core.model.dao.impl;
 import org.springframework.dao.EmptyResultDataAccessException;
 import ru.protei.portal.core.model.dao.KitDAO;
 import ru.protei.portal.core.model.dict.En_CustomerType;
-import ru.protei.portal.core.model.ent.CaseMember;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.helper.HelperFunc;
 
+import java.sql.ResultSet;
 import java.util.List;
 
 /**
@@ -46,5 +46,18 @@ public class KitDAO_Impl extends PortalBaseJdbcDAO<Kit> implements KitDAO {
         } catch (EmptyResultDataAccessException e) {
             return false;
         }
+    }
+
+    @Override
+    public List<Kit> getModulesGroupedByKit(Long deliveryId) {
+        return jdbcTemplate.query( "SELECT id AS kitId, (SELECT count(id) FROM module WHERE module.kit_id = kitId) AS modulesCount " +
+                        "FROM kit " +
+                        "WHERE kit.delivery_id = " + deliveryId,
+                (ResultSet rs, int rowNum) -> {
+                    Kit shortView = new Kit();
+                    shortView.setId(rs.getLong("kitId"));
+                    shortView.setModulesCount(rs.getInt("modulesCount"));
+                    return shortView;
+                });
     }
 }

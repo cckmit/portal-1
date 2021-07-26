@@ -3,17 +3,25 @@ package ru.protei.portal.ui.delivery.client.activity.kit.page;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Delivery;
+import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Module;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.KitEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.service.ModuleControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.delivery.client.activity.kit.handler.KitActionsHandler;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public abstract class KitActivity implements Activity, AbstractKitActivity {
 
@@ -22,6 +30,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
         view.setActivity(this);
         moduleView.setActivity(this);
         view.getModulesContainer().add(moduleView.asWidget());
+        view.setHandler(kitActionsHandler);
     }
 
     @Event
@@ -38,7 +47,9 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
                             initDetails.parent.clear();
                             initDetails.parent.add(view.asWidget());
                             view.fillKits(delivery.getKits());
+                            view.setKitsActionsEnabled(hasEditPrivileges());
                             if (event.kitId != null) {
+                                view.makeKitSelected(event.kitId);
                                 fillModules(event.kitId);
                             }
                         }
@@ -68,11 +79,47 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
         );
     }
 
+    private boolean hasEditPrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
+    }
+
+    private KitActionsHandler kitActionsHandler = new KitActionsHandler() {
+        @Override
+        public void onCopy() {
+            Set<Kit> kitsSelected = view.getKitsSelected();
+            if (kitsSelected != null && kitsSelected.size() > 1){
+                fireEvent(new NotifyEvents.Show("On copy Kits clicked, but more one Kit selected!", NotifyEvents.NotifyType.ERROR));
+                return;
+            }
+            fireEvent(new NotifyEvents.Show("On copy Kits clicked", NotifyEvents.NotifyType.SUCCESS));
+        }
+
+        @Override
+        public void onChangeState() {
+            Set<Kit> kitsSelected = view.getKitsSelected();
+            String selectedNumbers = stream(kitsSelected).map(Kit::getSerialNumber).collect(Collectors.joining(","));
+            fireEvent(new NotifyEvents.Show("On change state Kits clicked, selected kits: " + selectedNumbers, NotifyEvents.NotifyType.SUCCESS));
+        }
+
+        @Override
+        public void onRemove() {
+            Set<Kit> kitsSelected = view.getKitsSelected();
+            String selectedNumbers = stream(kitsSelected).map(Kit::getSerialNumber).collect(Collectors.joining(","));
+            fireEvent(new NotifyEvents.Show("On remove Kits clicked, selected kits: " + selectedNumbers, NotifyEvents.NotifyType.SUCCESS));
+        }
+
+        @Override
+        public void onReload() {
+            fireEvent(new NotifyEvents.Show("On reload Kits clicked", NotifyEvents.NotifyType.SUCCESS));
+        }
+    };
+
     @Inject
     AbstractKitView view;
     @Inject
     AbstractModuleTableView moduleView;
-
+    @Inject
+    PolicyService policyService;
     @Inject
     private DeliveryControllerAsync deliveryService;
     @Inject

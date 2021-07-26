@@ -889,62 +889,98 @@ label.bordered:after {
   }
 }
 
-.delivery-item {
-  padding: 8px;
-  line-height: 1.42857143;
-  vertical-align: middle;
-  border-top: 1px solid #ddd;
-  background-color: white;
-  display: flex;
-  display: -webkit-flex;
-  display: -ms-flexbox;
+nav.secondary-sidebar {
+  width: 100%;
+  position: relative;
+  background: #fff;
+  padding-right: 20px;
+
+  .menu-title {
+    color: #757575;
+    text-transform: uppercase;
+  }
+
+  .menu-controls > a {
+    color: #757575;
+    font-size: 13px;
+
+    &:hover {
+      color: #212121;
+    }
+  }
+
+  .main-menu > li {
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+
+    &:hover {
+      background: #f4f4f4;
+    }
+
+    &.active {
+      background: #f4f4f4;
+    }
+  }
+}
+
+.kit-list li {
+  padding-right: 10px;
+  line-height: 32px;
+  display: table;
+
+  &:hover {
+    cursor: pointer;
+    color: #212121;
+  }
+
+  &.active {
+    color: #48b0f7;
+  }
 
   span.checkbox {
-    margin: 0;
+    display: table-cell;
+
+    label {
+      top: 4px;
+    }
   }
 
-  .delivery-number {
-    padding-right: 1em;
-    padding-left: 1em;
+  .kit-info {
+    display: table-cell;
+    width: 100%;
+
+    .title i {
+      margin-right: 2px;
+    }
   }
-  .delivery-status {
-    margin-top: 0.2em;
-    height: 1.5em;
+
+  span.badge {
+    background: 0 0;
+    font-size: 12px;
+    color: #788195;
+    line-height: 25px;
   }
-  .delivery-name {
-    flex: 1 1 auto;
+}
+
+.delivery {
+  nav.secondary-sidebar {
+    padding: 0;
+
+    .menu-title {
+      padding-left: 0;
+    }
+  }
+}
+
+.kit {
+  nav.secondary-sidebar .main-menu > li a span.title span:nth-child(3) {
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
-    padding: 0 .6em .3em 1em;
+    max-width: 90px;
   }
 
-  .delivery-clone-btn {
-    visibility: hidden;
-    padding-top: 5px;
-  }
-}
-
-.delivery-item:hover {
-  background-color: #f6f7f8;
-  cursor: pointer;
-
-  .delivery-clone-btn {
-    visibility: visible;
-  }
-}
-
-.form-group-default .kits-search {
-  margin-top: 1em;
-
-  input.form-control {
-    padding-left: 1em;
-    border: 1px solid #dcdcdc;
-    min-height: 35px;
-  }
-
-  .cleanable-search-icon {
-    top: -2px;
+  .kit-list li {
+    padding-left: 30px;
   }
 }
 

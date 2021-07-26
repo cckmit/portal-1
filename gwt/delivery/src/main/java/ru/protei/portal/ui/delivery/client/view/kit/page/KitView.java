@@ -12,16 +12,24 @@ import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.ui.common.client.events.EditEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.delivery.optionlist.kit.KitList;
+import ru.protei.portal.ui.delivery.client.activity.kit.handler.KitActionsHandler;
 import ru.protei.portal.ui.delivery.client.activity.kit.page.AbstractKitActivity;
 import ru.protei.portal.ui.delivery.client.activity.kit.page.AbstractKitView;
+import ru.protei.portal.ui.delivery.client.view.kit.actionmenu.KitActionsView;
 
 import java.util.List;
+import java.util.Set;
 
 public class KitView extends Composite implements AbstractKitView {
 
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
+    }
+
+    @Override
+    public void setHandler(KitActionsHandler handler) {
+        kitsMenu.setHandler(handler);
     }
 
     @Override
@@ -45,6 +53,21 @@ public class KitView extends Composite implements AbstractKitView {
         return moduleEditContainer;
     }
 
+    @Override
+    public void makeKitSelected(Long kitId) {
+        kits.makeKitSelected(kitId);
+    }
+
+    @Override
+    public void setKitsActionsEnabled(boolean hasEditPrivileges) {
+        kitsMenu.setActionsEnabled(hasEditPrivileges);
+    }
+
+    @Override
+    public Set<Kit> getKitsSelected() {
+        return kits.getValue();
+    }
+
     @UiHandler("kits")
     public void onKitEditClicked(EditEvent event) {
         if ( activity != null ) {
@@ -52,12 +75,14 @@ public class KitView extends Composite implements AbstractKitView {
         }
     }
 
-
     @UiField
     Lang lang;
     @Inject
     @UiField(provided = true)
     KitList kits;
+    @Inject
+    @UiField(provided = true)
+    KitActionsView kitsMenu;
     @UiField
     HTMLPanel modulesContainer;
     @UiField
