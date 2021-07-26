@@ -2292,6 +2292,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportNightWork();
 
+    String reportYtWork();
+
+    String reportYtWorkDates();
+
     String reportScheduledType();
 
     String reportScheduledTypeNone();

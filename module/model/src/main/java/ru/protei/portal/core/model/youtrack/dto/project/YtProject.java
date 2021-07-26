@@ -18,7 +18,6 @@ public class YtProject extends YtDto {
     public Boolean archived;
     public String iconUrl;
     public List<YtProjectCustomField> customFields;
-//    public List<YtIssue> issues;
 
     @Override
     public String toString() {

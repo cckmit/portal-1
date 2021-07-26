@@ -1,0 +1,20 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:range="urn:import:ru.protei.portal.ui.common.client.widget.typedrangepicker"
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="card card-default no-border card-fixed">
+        <div class="card-body">
+            <div class="row">
+                <range:TypedSelectorRangePicker ui:field="date" formatValue="dd.MM.yyyy HH:mm"
+                                                header="{lang.reportYtWorkDates}"
+                                                addStyleNames="form-group col-md-4 resize-md-12"/>
+            </div>
+        </div>
+        <div ui:field="footer" class="card-footer text-right">
+            <g:Button ui:field="resetBtn" styleName="btn btn-default" text="{lang.buttonReset}"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

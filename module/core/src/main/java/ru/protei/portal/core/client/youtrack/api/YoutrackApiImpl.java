@@ -15,13 +15,12 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 import ru.protei.portal.core.model.youtrack.dto.activity.YtActivityCategory;
 import ru.protei.portal.core.model.youtrack.dto.activity.YtActivityItem;
+import ru.protei.portal.core.model.youtrack.dto.activity.singlevalue.YtWorkItemDurationActivityItem;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtEnumBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtIssueCustomField;
 import ru.protei.portal.core.model.youtrack.dto.filterfield.YtFilterField;
-import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
-import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueAttachment;
-import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
+import ru.protei.portal.core.model.youtrack.dto.issue.*;
 import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 
@@ -105,6 +104,21 @@ public class YoutrackApiImpl implements YoutrackApi {
                 .url(new YoutrackUrlProvider(getBaseUrl()).issues())
                 .query(query))
                 .map(Arrays::asList);
+    }
+
+    @Override
+    public Result<List<IssueWorkItem>> getWorkItems(Date start, Date end, int offset, int limit) {
+        return read(new YoutrackRequest<>(IssueWorkItem[].class)
+                .url(new YoutrackUrlProvider(getBaseUrl()).workItems())
+                .params(new HashMap<String, String>() {{
+                    put("start", String.valueOf(start.getTime()));
+                    put("end", String.valueOf(end.getTime()));
+                    put("$skip", String.valueOf(offset));
+                    put("$top", String.valueOf(limit));
+                }})
+                .fillSimpleFields()
+                .fillYtFields(YtWorkItemDurationActivityItem.class, IssueWorkItem.class, YtUser.class, DurationValue.class, YtIssue.class, YtIssueCustomField.class, YtProject.class)
+        ).map(Arrays::asList);
     }
 
     @Override

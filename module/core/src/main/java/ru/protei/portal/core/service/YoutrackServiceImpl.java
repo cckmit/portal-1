@@ -48,7 +48,7 @@ public class YoutrackServiceImpl implements YoutrackService {
                 .map(ytActivityItems -> {
                     ytActivityItems.sort(Comparator.comparing(
                             ytActivityItem -> ytActivityItem.timestamp,
-                            Comparator.nullsFirst(Long::compareTo)
+                            Comparator.nullsFirst(Date::compareTo)
                     ));
                     return ytActivityItems;
                 })
@@ -298,7 +298,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         YouTrackIssueStateChange issueStateChange = new YouTrackIssueStateChange();
         issueStateChange.setAddedCaseStateId(YoutrackConstansMapping.toCaseState(added != null ? added.name : null));
         issueStateChange.setRemovedCaseStateId(YoutrackConstansMapping.toCaseState(removed != null ? removed.name : null));
-        issueStateChange.setTimestamp(activityItem.timestamp);
+        issueStateChange.setTimestamp(activityItem.timestamp.getTime());
         issueStateChange.setAuthorLogin(activityItem.author != null ? activityItem.author.login : null);
         issueStateChange.setAuthorFullName(activityItem.author != null ? activityItem.author.fullName : null);
         return issueStateChange;

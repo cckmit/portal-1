@@ -43,6 +43,11 @@ public class YtIssue extends YtDto {
     }
 
     @JsonIgnore
+    public YtIssueCustomField getCustomerField() {
+        return getField(CustomFieldNames.cumstomer);
+    }
+
+    @JsonIgnore
     public YtIssueCustomField getPriorityField() {
         return getField(CustomFieldNames.priority);
     }
@@ -82,6 +87,7 @@ public class YtIssue extends YtDto {
         String stateEquipmentRus = "Статус заказа";
         String stateAcrmRus = "Статус заявки";
         String requestType = "Тип заявки";
+        String cumstomer = "Заказчик";
     }
 
     @Override

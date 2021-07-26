@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.ContractService;
 import ru.protei.portal.core.service.ProjectService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.mock.AuthServiceMock;
@@ -445,4 +446,6 @@ public class BaseServiceTest {
     protected DocumentDAO documentDAO;
     @Autowired
     protected PlanDAO planDAO;
+    @Autowired
+    protected ContractService contractService;
 }
