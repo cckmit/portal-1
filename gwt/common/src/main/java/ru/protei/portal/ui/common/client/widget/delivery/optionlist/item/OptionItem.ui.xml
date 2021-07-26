@@ -1,19 +1,22 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:common="urn:import:ru.protei.portal.ui.common.client.common"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel tag="li" ui:field="root">
 
-        <a href="#" ui:field="anchor">
-            <g:CheckBox ui:field="checkbox" styleName="checkbox no-margin"/>
-            <span class="title p-l-5">
+        <g:CheckBox ui:field="checkbox" styleName="checkbox no-margin"/>
+
+        <common:ClickHTMLPanel ui:field="panel" styleName="d-inline">
+            <span class="title">
                 <i ui:field="status" class="fas fa-circle"/>
                 <span ui:field="number" class="bold"/>
                 <span ui:field="name" class="p-l-5"/>
             </span>
             <span ui:field="amount" class="badge pull-right"/>
-        </a>
+        </common:ClickHTMLPanel>
+
     </g:HTMLPanel>
 </ui:UiBinder>

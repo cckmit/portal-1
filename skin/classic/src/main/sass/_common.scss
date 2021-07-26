@@ -920,21 +920,31 @@ nav.secondary-sidebar {
     &.active {
       background: #f4f4f4;
     }
+  }
+}
 
-    a {
-      padding-right: 10px;
-      color: #4b4b4b;
-      line-height: 32px;
+.kit-list li {
+  padding-right: 10px;
+  line-height: 32px;
 
-      &:hover {
-        color: #212121;
-      }
+  &:hover {
+    cursor: pointer;
+    color: #212121;
+  }
 
-      & > * {
-        display: flex;
-        align-items: center;
-      }
-    }
+  &.active {
+    color: #48b0f7;
+  }
+
+  span.checkbox label {
+    top: 3px;
+  }
+
+  span.badge {
+    background: 0 0;
+    font-size: 12px;
+    color: #788195;
+    line-height: 25px;
   }
 }
 
@@ -943,10 +953,6 @@ nav.secondary-sidebar {
     padding: 0;
 
     .menu-title {
-      padding-left: 0;
-    }
-
-    .main-menu > li a {
       padding-left: 0;
     }
   }
@@ -958,19 +964,9 @@ nav.secondary-sidebar {
     text-overflow: ellipsis;
     max-width: 90px;
   }
-}
 
-.form-group-default .kits-search {
-  margin-top: 1em;
-
-  input.form-control {
-    padding-left: 1em;
-    border: 1px solid #dcdcdc;
-    min-height: 35px;
-  }
-
-  .cleanable-search-icon {
-    top: -2px;
+  .kit-list li {
+    padding-left: 30px;
   }
 }
 

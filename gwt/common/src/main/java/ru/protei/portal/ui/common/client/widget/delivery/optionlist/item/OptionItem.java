@@ -1,18 +1,17 @@
 package ru.protei.portal.ui.common.client.widget.delivery.optionlist.item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.ui.common.client.common.ClickHTMLPanel;
 import ru.protei.portal.ui.common.client.events.EditEvent;
 import ru.protei.portal.ui.common.client.events.EditHandler;
 import ru.protei.portal.ui.common.client.events.HasEditHandlers;
@@ -26,7 +25,6 @@ public class OptionItem
 {
     public OptionItem() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        initClickHandlers();
     }
 
     public void setNumber( String number ) {
@@ -100,36 +98,19 @@ public class OptionItem
         checkbox.setFormValue( event.getValue().toString());
     }
 
+    @UiHandler( "panel" )
+    public void onInfoClicked( ClickEvent event ) {
+        EditEvent.fire(OptionItem.this, null, null);
+    }
+
     public void setEnsureDebugId(String debugId) {
         checkbox.ensureDebugId(debugId);
     }
 
-    private void initClickHandlers() {
-        Event.sinkEvents(anchor, Event.ONCLICK);
-        Event.setEventListener(anchor, clickHandler);
-    }
-
-    EventListener clickHandler = new EventListener() {
-        @Override
-        public void onBrowserEvent(Event event) {
-            String tagName = event.getTarget().getTagName();
-
-            if (Event.ONCLICK != event.getTypeInt()) {
-                return;
-            }
-
-            if (tagName.equalsIgnoreCase("label") || tagName.equalsIgnoreCase("input")){
-                return;
-            }
-            event.preventDefault();
-            EditEvent.fire(OptionItem.this, null, null);
-        }
-    };
-
     @UiField
     HTMLPanel root;
     @UiField
-    AnchorElement anchor;
+    ClickHTMLPanel panel;
     @UiField
     CheckBox checkbox;
     @UiField
