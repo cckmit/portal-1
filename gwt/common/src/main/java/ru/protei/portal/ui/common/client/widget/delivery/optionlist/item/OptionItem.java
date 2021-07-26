@@ -37,10 +37,10 @@ public class OptionItem
         this.status.setTitle( status );
     }
 
-    public void setName( String name ) {
+    public void setName( String name, String title ) {
         if (name == null) return;
         this.name.setInnerText( name );
-        this.name.setTitle( name );
+        this.name.setTitle( title );
     }
 
     public void setAmount( Integer amount ) {

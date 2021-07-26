@@ -926,6 +926,7 @@ nav.secondary-sidebar {
 .kit-list li {
   padding-right: 10px;
   line-height: 32px;
+  display: table;
 
   &:hover {
     cursor: pointer;
@@ -936,8 +937,21 @@ nav.secondary-sidebar {
     color: #48b0f7;
   }
 
-  span.checkbox label {
-    top: 3px;
+  span.checkbox {
+    display: table-cell;
+
+    label {
+      top: 4px;
+    }
+  }
+
+  .kit-info {
+    display: table-cell;
+    width: 100%;
+
+    .title i {
+      margin-right: 2px;
+    }
   }
 
   span.badge {

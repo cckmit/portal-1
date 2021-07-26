@@ -9,8 +9,8 @@
 
         <g:CheckBox ui:field="checkbox" styleName="checkbox no-margin"/>
 
-        <common:ClickHTMLPanel ui:field="panel" styleName="d-inline">
-            <span class="title">
+        <common:ClickHTMLPanel ui:field="panel" styleName="kit-info">
+            <span class="title p-l-5">
                 <i ui:field="status" class="fas fa-circle"/>
                 <span ui:field="number" class="bold"/>
                 <span ui:field="name" class="p-l-5"/>

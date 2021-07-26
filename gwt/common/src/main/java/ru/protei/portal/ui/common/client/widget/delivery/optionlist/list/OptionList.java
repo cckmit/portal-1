@@ -24,6 +24,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import java.util.*;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.StringUtils.length;
 
 /**
  * Список комплектов поставки
@@ -77,7 +78,7 @@ public class OptionList<T extends HasLongId>
         itemView.setNumber( number );
         itemView.setStatusTitle( status );
         itemView.setStatusColor( statusColor );
-        itemView.setName( name );
+        itemView.setName( getName(name), name );
         itemView.setAmount(amount);
 
         itemView.addValueChangeHandler( this );
@@ -94,6 +95,13 @@ public class OptionList<T extends HasLongId>
         itemToViewModel.put( value, itemView );
         itemToNameModel.put( value, name );
         container.add( itemView.asWidget() );
+    }
+
+    private String getName(String name) {
+        if (isShortNameEnabled && length(name)>10) {
+            return name.substring(0, 10) + "...";
+        }
+        return name;
     }
 
     public void addOption( String name, T value ) {
@@ -195,6 +203,11 @@ public class OptionList<T extends HasLongId>
         selected.addAll(mandatoryOptions);
     }
 
+
+    public void setShortNameEnabled(boolean isShortNameEnabled){
+        this.isShortNameEnabled = isShortNameEnabled;
+    }
+
     private void onSelectItem(OptionItem itemView, T value, String name) {
         unselectItems();
         itemView.setActive(true);
@@ -244,6 +257,7 @@ public class OptionList<T extends HasLongId>
     protected Selector.SelectorFilter<T> filter = null;
     private List<T> mandatoryOptions;
     private SelectorModel<T> selectorModel;
+    private boolean isShortNameEnabled;
 
     interface OptionListUiBinder extends UiBinder< FlowPanel, OptionList > {}
     private static OptionListUiBinder ourUiBinder = GWT.create( OptionListUiBinder.class );
