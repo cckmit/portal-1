@@ -234,12 +234,9 @@ public class OptionList<T extends HasLongId>
         if (isEmpty(itemToViewModel)){
             return;
         }
-        Map.Entry<T, OptionItem> tOptionItemEntry = itemToViewModel.entrySet().stream()
-                .filter(entry -> Objects.equals(entry.getKey().getId(), kitId)).findAny().orElseGet(null);
-        if (tOptionItemEntry == null){
-            return;
-        }
-        tOptionItemEntry.getValue().setActive(true);
+        itemToViewModel.entrySet().stream()
+                .filter(entry -> Objects.equals(entry.getKey().getId(), kitId))
+                .findAny().ifPresent(entry -> entry.getValue().setActive(true));
     }
 
     @UiField

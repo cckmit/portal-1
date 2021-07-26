@@ -99,11 +99,6 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     }
 
     @Override
-    public Set<Kit> getSelectedKits() {
-        return kits.getValue();
-    }
-
-    @Override
     public HasVisibility nameAndDescriptionEditButtonVisibility() {
         return nameAndDescriptionEditButton;
     }
@@ -119,13 +114,13 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     }
 
     @Override
-    public void setHandler(KitActionsHandler handler) {
+    public void setKitsActionHandler(KitActionsHandler handler) {
         kitsMenu.setHandler(handler);
     }
 
     @Override
-    public void setKitsActionsEnabled(boolean hasEditPrivileges) {
-        kitsMenu.setActionsEnabled(hasEditPrivileges);
+    public void setKitsActionsEnabled(boolean isEnabled) {
+        kitsMenu.setActionsEnabled(isEnabled);
     }
 
     @Override

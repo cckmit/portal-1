@@ -437,11 +437,9 @@ public class DeliveryServiceImpl implements DeliveryService {
         List<Kit> modulesGroupedByKit = kitDAO.getModulesGroupedByKit(deliveryId);
 
         for (Kit kit : kits){
-            Kit kitShortView = stream(modulesGroupedByKit).filter(o -> Objects.equals(o.getId(), kit.getId())).findAny().orElse(null);
-            if (kitShortView == null) {
-                continue;
-            }
-            kit.setModulesCount(kitShortView.getModulesCount());
+            stream(modulesGroupedByKit)
+                    .filter(o -> Objects.equals(o.getId(), kit.getId()))
+                    .findAny().ifPresent(kitShort -> kit.setModulesCount(kitShort.getModulesCount()));
         }
     }
 

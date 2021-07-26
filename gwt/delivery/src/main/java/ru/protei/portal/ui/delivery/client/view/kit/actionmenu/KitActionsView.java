@@ -23,21 +23,24 @@ public class KitActionsView extends Composite {
     public void onInit(Lang lang) {
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        popup.setValues(Arrays.asList(lang.buttonCopy(), lang.buttonState(), lang.buttonRemove()));
+        String ACTION_COPY = lang.buttonCopy();
+        String ACTION_CHANGE_STATE = lang.buttonState();
+        String ACTION_REMOVE = lang.buttonRemove();
+        popup.setValues(Arrays.asList(ACTION_COPY, ACTION_CHANGE_STATE, ACTION_REMOVE));
 
         popup.addValueChangeHandler(event -> {
             if (handler == null) {
                 return;
             }
-            if (lang.buttonCopy().equals(event.getValue())) {
+            if (ACTION_COPY.equals(event.getValue())) {
                 handler.onCopy();
                 return;
             }
-            if (lang.buttonState().equals(event.getValue())) {
+            if (ACTION_CHANGE_STATE.equals(event.getValue())) {
                 handler.onChangeState();
                 return;
             }
-            if (lang.buttonRemove().equals(event.getValue())) {
+            if (ACTION_REMOVE.equals(event.getValue())) {
                 handler.onRemove();
                 return;
             }
@@ -65,8 +68,8 @@ public class KitActionsView extends Composite {
     }
 
     public void setActionsEnabled(boolean isEnabled) {
-        kitsActionsBtn.setEnabled(isEnabled);
-        reloadKitsBtn.setEnabled(isEnabled);
+        kitsActionsBtn.setStyleName("link-disabled", !isEnabled);
+        reloadKitsBtn.setStyleName("link-disabled", !isEnabled);
     }
 
     private void ensureDebugIds() {

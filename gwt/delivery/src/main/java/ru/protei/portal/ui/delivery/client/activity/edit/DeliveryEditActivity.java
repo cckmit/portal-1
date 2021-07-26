@@ -25,7 +25,6 @@ import ru.protei.portal.ui.common.client.lang.DeliveryStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.delivery.client.activity.kit.handler.KitActionsHandler;
@@ -52,7 +51,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         nameAndDescriptionButtonView.setActivity(this);
         nameAndDescriptionEditView.getButtonContainer().add(nameAndDescriptionButtonView);
         switchNameDescriptionToEdit(false);
-        view.setHandler(kitActionsHandler);
+        view.setKitsActionHandler(kitActionsHandler);
     }
 
     @Event

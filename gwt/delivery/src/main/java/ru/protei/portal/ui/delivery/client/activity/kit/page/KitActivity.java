@@ -64,11 +64,6 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     }
 
     @Override
-    public void onReloadKitsBtnClicked() {
-        fireEvent(new NotifyEvents.Show("On reload Kits clicked", NotifyEvents.NotifyType.SUCCESS));
-    }
-
-    @Override
     public void onItemClicked(Module module) {
         fireEvent(new NotifyEvents.Show("Module name edit clicked: " + module.getSerialNumber() + " " + module.getDescription(),
                 NotifyEvents.NotifyType.SUCCESS));
