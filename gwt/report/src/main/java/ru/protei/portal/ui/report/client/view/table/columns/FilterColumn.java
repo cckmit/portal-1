@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.core.model.query.YtWorkQuery;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.ui.common.client.columns.StaticColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -72,6 +73,8 @@ public class FilterColumn extends StaticColumn<ReportDto> {
                 case PROJECT:
                     appendProjectQueryInfo(divElement, (ProjectQuery) value.getQuery());
                     break;
+                case YT_WORK:
+                    appendYtWorkQueryInfo(divElement, (YtWorkQuery) value.getQuery());
             }
         }
 
@@ -299,6 +302,10 @@ public class FilterColumn extends StaticColumn<ReportDto> {
         if (isNotEmpty(contractQuery.getManagerIds())) {
             element.appendChild(makeArraySelectedElement(lang.contractProjectManager(), contractQuery.getManagerIds()));
         }
+    }
+
+    private void appendYtWorkQueryInfo(Element element, YtWorkQuery query){
+        element.appendChild(makeDateRangeElement(lang.period(), query.getDateRange()));
     }
 
     private Element makeDateRangeElement(String name, Date from, Date to) {

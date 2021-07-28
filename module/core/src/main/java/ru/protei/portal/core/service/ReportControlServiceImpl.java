@@ -184,7 +184,7 @@ public class ReportControlServiceImpl implements ReportControlService {
 
             mergeReportStatus(report, En_ReportStatus.READY);
         } catch (Throwable th) {
-            log.error("processReport(): reportId={}, throwable={}", report.getId(), th.getMessage());
+            log.error("processReport(): reportId={}, throwable={}", report.getId(), th);
             th.printStackTrace();
             if (storageResult != null) {
                 reportStorageService.removeContent(report.getId());

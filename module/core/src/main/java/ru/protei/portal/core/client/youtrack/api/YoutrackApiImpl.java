@@ -107,12 +107,13 @@ public class YoutrackApiImpl implements YoutrackApi {
     }
 
     @Override
-    public Result<List<IssueWorkItem>> getWorkItems(Date start, Date end, int offset, int limit) {
+    public Result<List<IssueWorkItem>> getWorkItems(Date from, Date to, int offset, int limit) {
+        log.debug("getWorkItems(): from ={}, to={}, offset={}, limit={}", from, to, offset, limit);
         return read(new YoutrackRequest<>(IssueWorkItem[].class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).workItems())
                 .params(new HashMap<String, String>() {{
-                    put("start", String.valueOf(start.getTime()));
-                    put("end", String.valueOf(end.getTime()));
+                    if (from != null) put("start", String.valueOf(from.getTime()));
+                    if (to != null) put("end", String.valueOf(to.getTime()));
                     put("$skip", String.valueOf(offset));
                     put("$top", String.valueOf(limit));
                 }})
