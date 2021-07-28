@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.YtWorkQuery;
+import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.struct.ReportYtWorkInfo;
 import ru.protei.portal.core.model.struct.ReportYtWorkItem;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtSingleEnumIssueCustomField;
@@ -31,6 +32,7 @@ import java.util.function.Predicate;
 import static java.util.stream.Collectors.toSet;
 import static ru.protei.portal.core.model.helper.CollectionUtils.inverseMap;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 public class ReportYtWorkImpl implements ReportYtWork {
@@ -124,10 +126,9 @@ public class ReportYtWorkImpl implements ReportYtWork {
 
         log.debug("writeReport : reportId={} to process", report.getId());
 
+        Interval interval = makeInterval(query.getDateRange());
         ChunkIterator<IssueWorkItem> iterator = new ChunkIterator<>(
-                (offset, limit) -> api.getWorkItems(
-                        query.getDateRange().getFrom(), query.getDateRange().getTo(),
-                        offset, limit),
+                (offset, limit) -> api.getWorkItems(interval.from, interval.to, offset, limit),
                 () -> isCancel.test(report.getId()),
                 config.data().reportConfig().getChunkSize()
         );
@@ -139,12 +140,15 @@ public class ReportYtWorkImpl implements ReportYtWork {
                 new Date(), makeHomeCompanySet()
         );
 
+        log.debug("writeReport : reportId={} start process", report.getId());
         List<ReportYtWorkItem> data = stream(iterator)
                 .map(this::makeYtReportItem)
                 .collect(collector);
 
         switch(iterator.getStatus()) {
-            case OK: break;
+            case OK:
+                log.debug("writeReport : collect data with isOk status : reportId={}", report.getId());
+                break;
             case CANCELED: {
                 log.info("writeReport : canceled : reportId={}", report.getId());
                 return true;
@@ -157,12 +161,13 @@ public class ReportYtWorkImpl implements ReportYtWork {
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
         try (ReportWriter<ReportYtWorkItem> writer = new ExcelReportWriter(localizedLang, collector.getProcessedWorkTypes())) {
+            log.debug("writeReport : start write sheet");
             int sheetNumber = writer.createSheet();
             writer.write(sheetNumber, data);
             writer.collect(buffer);
             return true;
         } catch (Throwable th) {
-            log.error("writeReport : fail to write : reportId={}", report.getId(), th);
+            log.error("writeReport : fail to write : reportId={}, th={}", report.getId(), th);
             return false;
         }
     }
@@ -171,6 +176,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
         Set<String> homeCompany = companyDAO.getAllHomeCompanies().stream()
                 .map(Company::getCname).collect(toSet());
         homeCompany.add(null);
+        log.debug("makeHomeCompanySet : set={}", homeCompany);
         return homeCompany;
     }
 

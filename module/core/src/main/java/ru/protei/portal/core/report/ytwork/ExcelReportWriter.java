@@ -87,7 +87,7 @@ public class ExcelReportWriter implements
 
     @Override
     public String[] getLangColumnNames() {
-        return new String[]{"reportYtWorkPersonName", "reportYtWorkAllSpentTime", "reportYtWorkAllSpentTime"};
+        return new String[]{"reportYtWorkPersonName", "reportYtWorkAllSpentTimeInMinutes", "reportYtWorkAllSpentTimeFormatted"};
     }
     @Override
     public String[] getColumnNames() {
@@ -112,9 +112,8 @@ public class ExcelReportWriter implements
             values.add(item.getPerson().getLogins().get(0));
         }
         long allTimeSpent = item.getAllTimeSpent();
-        long hours = allTimeSpent / 60;
         values.add(allTimeSpent);
-        values.add(localizedLang.get("reportYtWorkRepresentTime", new Object[]{hours, allTimeSpent - hours*60}));
+        values.add(localizedLang.get("reportYtWorkRepresentTime", new Object[]{allTimeSpent / 60, allTimeSpent % 60}));
         processedWorkTypes.forEach((ytWorkType, strings) ->
                 strings.forEach(value -> values.add(item.selectSpentTimeMap(ytWorkType).getOrDefault(value, 0L))));
 

@@ -25,7 +25,7 @@ public interface YoutrackApi {
 
     Result<List<YtIssue>> getIssueIdsByQuery(String query);
 
-    Result<List<IssueWorkItem>> getWorkItems(Date start, Date end, int offset, int limit);
+    Result<List<IssueWorkItem>> getWorkItems(Date from, Date to, int offset, int limit);
 
     Result<List<YtActivityItem>> getIssueCustomFieldActivityItems(String issueId);
 
