@@ -17,7 +17,7 @@ import ru.protei.portal.ui.delivery.client.activity.kit.handler.KitActionsHandle
 
 import java.util.Arrays;
 
-public class KitActionsView extends Composite {
+public class KitMenu extends Composite {
 
     @Inject
     public void onInit(Lang lang) {
@@ -25,8 +25,9 @@ public class KitActionsView extends Composite {
 
         String ACTION_COPY = lang.buttonCopy();
         String ACTION_CHANGE_STATE = lang.buttonState();
+        String ACTION_EDIT = lang.buttonModify();
         String ACTION_REMOVE = lang.buttonRemove();
-        popup.setValues(Arrays.asList(ACTION_COPY, ACTION_CHANGE_STATE, ACTION_REMOVE));
+        popup.setValues(Arrays.asList(ACTION_COPY, ACTION_CHANGE_STATE, ACTION_EDIT, ACTION_REMOVE));
 
         popup.addValueChangeHandler(event -> {
             if (handler == null) {
@@ -37,11 +38,15 @@ public class KitActionsView extends Composite {
                 return;
             }
             if (ACTION_CHANGE_STATE.equals(event.getValue())) {
-                handler.onChangeState();
+                handler.onGroupChangeState();
+                return;
+            }
+            if (ACTION_EDIT.equals(event.getValue())) {
+                handler.onEdit();
                 return;
             }
             if (ACTION_REMOVE.equals(event.getValue())) {
-                handler.onRemove();
+                handler.onGroupRemove();
                 return;
             }
         });
@@ -88,7 +93,7 @@ public class KitActionsView extends Composite {
     @UiField
     Anchor kitsActionsBtn;
 
-    private static KitActionsView.KitViewUiBinder ourUiBinder = GWT.create(KitActionsView.KitViewUiBinder.class);
+    private static KitMenu.KitViewUiBinder ourUiBinder = GWT.create(KitMenu.KitViewUiBinder.class);
 
-    interface KitViewUiBinder extends UiBinder<HTMLPanel, KitActionsView> {}
+    interface KitViewUiBinder extends UiBinder<HTMLPanel, KitMenu> {}
 }

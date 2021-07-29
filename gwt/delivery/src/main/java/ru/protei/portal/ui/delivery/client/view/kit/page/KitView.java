@@ -15,7 +15,7 @@ import ru.protei.portal.ui.common.client.widget.delivery.optionlist.kit.KitList;
 import ru.protei.portal.ui.delivery.client.activity.kit.handler.KitActionsHandler;
 import ru.protei.portal.ui.delivery.client.activity.kit.page.AbstractKitActivity;
 import ru.protei.portal.ui.delivery.client.activity.kit.page.AbstractKitView;
-import ru.protei.portal.ui.delivery.client.view.kit.actionmenu.KitActionsView;
+import ru.protei.portal.ui.delivery.client.view.kit.actionmenu.KitMenu;
 
 import java.util.List;
 import java.util.Set;
@@ -82,7 +82,7 @@ public class KitView extends Composite implements AbstractKitView {
     KitList kits;
     @Inject
     @UiField(provided = true)
-    KitActionsView kitsMenu;
+    KitMenu kitsMenu;
     @UiField
     HTMLPanel modulesContainer;
     @UiField

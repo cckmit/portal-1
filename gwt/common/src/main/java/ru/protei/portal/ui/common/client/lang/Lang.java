@@ -3587,4 +3587,6 @@ public interface Lang extends Messages, ContactItemLang {
     String documentation();
 
     String deliveryKit();
+
+    String warnOneKitAllowedForTheOperation();
 }

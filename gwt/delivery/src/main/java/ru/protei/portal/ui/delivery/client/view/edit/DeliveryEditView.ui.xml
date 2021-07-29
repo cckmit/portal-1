@@ -35,7 +35,7 @@
                 <g:HTMLPanel ui:field="nameContainer"/>
 
                 <nav class="secondary-sidebar">
-                    <kitsmenu:KitActionsView ui:field="kitsMenu"/>
+                    <kitsmenu:KitMenu ui:field="kitsMenu"/>
                     <kits:KitList ui:field="kits"/>
                 </nav>
 

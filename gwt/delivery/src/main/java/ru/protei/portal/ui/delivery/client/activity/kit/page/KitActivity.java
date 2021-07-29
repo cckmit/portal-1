@@ -11,6 +11,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.KitEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.service.ModuleControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -86,23 +87,22 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     private KitActionsHandler kitActionsHandler = new KitActionsHandler() {
         @Override
         public void onCopy() {
-            Set<Kit> kitsSelected = view.getKitsSelected();
-            if (kitsSelected != null && kitsSelected.size() > 1){
-                fireEvent(new NotifyEvents.Show("On copy Kits clicked, but more one Kit selected!", NotifyEvents.NotifyType.ERROR));
+            if (isOneKitSelected(view.getKitsSelected())) {
+                fireEvent(new NotifyEvents.Show("On copy Kits clicked", NotifyEvents.NotifyType.SUCCESS));
                 return;
             }
-            fireEvent(new NotifyEvents.Show("On copy Kits clicked", NotifyEvents.NotifyType.SUCCESS));
+            fireEvent(new NotifyEvents.Show(lang.warnOneKitAllowedForTheOperation(), NotifyEvents.NotifyType.ERROR));
         }
 
         @Override
-        public void onChangeState() {
+        public void onGroupChangeState() {
             Set<Kit> kitsSelected = view.getKitsSelected();
             String selectedNumbers = stream(kitsSelected).map(Kit::getSerialNumber).collect(Collectors.joining(","));
             fireEvent(new NotifyEvents.Show("On change state Kits clicked, selected kits: " + selectedNumbers, NotifyEvents.NotifyType.SUCCESS));
         }
 
         @Override
-        public void onRemove() {
+        public void onGroupRemove() {
             Set<Kit> kitsSelected = view.getKitsSelected();
             String selectedNumbers = stream(kitsSelected).map(Kit::getSerialNumber).collect(Collectors.joining(","));
             fireEvent(new NotifyEvents.Show("On remove Kits clicked, selected kits: " + selectedNumbers, NotifyEvents.NotifyType.SUCCESS));
@@ -112,8 +112,23 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
         public void onReload() {
             fireEvent(new NotifyEvents.Show("On reload Kits clicked", NotifyEvents.NotifyType.SUCCESS));
         }
+
+        @Override
+        public void onEdit() {
+            if (isOneKitSelected(view.getKitsSelected())){
+                fireEvent(new KitEvents.Edit(stream(view.getKitsSelected()).findFirst().map(Kit::getId).orElse(null)));
+                return;
+            }
+            fireEvent(new NotifyEvents.Show(lang.warnOneKitAllowedForTheOperation(), NotifyEvents.NotifyType.ERROR));
+        }
     };
 
+    private boolean isOneKitSelected(Set<Kit> kitsSelected) {
+        return kitsSelected != null && kitsSelected.size() == 1;
+    }
+
+    @Inject
+    Lang lang;
     @Inject
     AbstractKitView view;
     @Inject

@@ -20,7 +20,7 @@ import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
 import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.edit.AbstractDeliveryEditView;
 import ru.protei.portal.ui.delivery.client.activity.kit.handler.KitActionsHandler;
-import ru.protei.portal.ui.delivery.client.view.kit.actionmenu.KitActionsView;
+import ru.protei.portal.ui.delivery.client.view.kit.actionmenu.KitMenu;
 
 import java.util.Arrays;
 import java.util.List;
@@ -184,7 +184,7 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     KitList kits;
     @Inject
     @UiField(provided = true)
-    KitActionsView kitsMenu;
+    KitMenu kitsMenu;
     @UiField
     HTMLPanel metaContainer;
     @UiField

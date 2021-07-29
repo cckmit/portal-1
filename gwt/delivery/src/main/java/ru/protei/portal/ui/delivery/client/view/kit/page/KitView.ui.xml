@@ -10,7 +10,7 @@
         <div class="kit row m-0">
 
             <nav class="col-xs-12 col-md-2 secondary-sidebar">
-                <kitsmenu:KitActionsView ui:field="kitsMenu"/>
+                <kitsmenu:KitMenu ui:field="kitsMenu"/>
                 <kits:KitList ui:field="kits" shortNameEnabled="true"/>
             </nav>
 
