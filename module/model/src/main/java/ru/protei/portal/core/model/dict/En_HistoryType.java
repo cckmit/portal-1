@@ -11,6 +11,7 @@ public enum En_HistoryType implements HasId {
     CASE_IMPORTANCE(5),
     DATE(6),
     DELIVERY_STATE(7),
+    MODULE_STATE(8),
     ;
 
     En_HistoryType(int id) {

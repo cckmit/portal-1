@@ -145,7 +145,7 @@ public class DeliveryServiceImpl implements DeliveryService {
                 log.warn("createDelivery(): kit not created, kit={}", kit);
                 throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
             }
-            Result<Long> resultState = addStateHistory(token, kitCaseObjectId, kit.getStateId(), caseStateDAO.get(kit.getStateId()).getState());
+            Result<Long> resultState = addDeliveryStateHistory(token, kitCaseObjectId, kit.getStateId(), caseStateDAO.get(kit.getStateId()).getState());
             if (resultState.isError()) {
                 log.error("State for the kit {} not saved!", kitCaseObjectId);
             }
@@ -162,7 +162,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         long stateId = delivery.getStateId();
-        Result<Long> resultState = addStateHistory(token, deliveryId, stateId, caseStateDAO.get(stateId).getState());
+        Result<Long> resultState = addDeliveryStateHistory(token, deliveryId, stateId, caseStateDAO.get(stateId).getState());
         if (resultState.isError()) {
             log.error("State message for the delivery {} not saved!", deliveryCaseId);
         }
@@ -238,7 +238,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         // update kits
 
         if (meta.getStateId() != oldMeta.getStateId()) {
-            Result<Long> resultState = changeStateHistory(token, meta.getId(), oldMeta.getStateId(), caseStateDAO.get(oldMeta.getStateId()).getState(),
+            Result<Long> resultState = changeDeliveryStateHistory(token, meta.getId(), oldMeta.getStateId(), caseStateDAO.get(oldMeta.getStateId()).getState(),
                                                           meta.getStateId(), caseStateDAO.get(meta.getStateId()).getState());
 
             if (resultState.isError()) {
@@ -405,7 +405,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     private void createKitHistory(AuthToken token, Kit kit) {
 
-        Result<Long> resultState = addStateHistory(token, kit.getId(), kit.getStateId(), caseStateDAO.get(kit.getStateId()).getState());
+        Result<Long> resultState = addModuleStateHistory(token, kit.getId(), kit.getStateId(), caseStateDAO.get(kit.getStateId()).getState());
 
         if (resultState.isError()) {
             log.error("State message for the kit {} not created!", kit.getId());
@@ -414,7 +414,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     private void updateKitHistory(AuthToken token, Kit newKit, Kit oldKit) {
         if (!Objects.equals(newKit.getStateId(), oldKit.getStateId())) {
-            Result<Long> resultState = changeStateHistory(token, newKit.getId(), oldKit.getStateId(), caseStateDAO.get(oldKit.getStateId()).getState(),
+            Result<Long> resultState = changeModuleStateHistory(token, newKit.getId(), oldKit.getStateId(), caseStateDAO.get(oldKit.getStateId()).getState(),
                     newKit.getStateId(), caseStateDAO.get(newKit.getStateId()).getState());
 
             if (resultState.isError()) {
@@ -562,12 +562,20 @@ public class DeliveryServiceImpl implements DeliveryService {
         return oldDate != null && newDate == null;
     }
 
-    private Result<Long> addStateHistory(AuthToken authToken, Long caseObjectId, Long stateId, String stateName) {
+    private Result<Long> addDeliveryStateHistory(AuthToken authToken, Long caseObjectId, Long stateId, String stateName) {
         return historyService.createHistory(authToken, caseObjectId, En_HistoryAction.ADD, En_HistoryType.DELIVERY_STATE, null, null, stateId, stateName);
     }
 
-    private Result<Long> changeStateHistory(AuthToken token, Long caseObjectId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
+    private Result<Long> addModuleStateHistory(AuthToken authToken, Long caseObjectId, Long stateId, String stateName) {
+        return historyService.createHistory(authToken, caseObjectId, En_HistoryAction.ADD, En_HistoryType.MODULE_STATE, null, null, stateId, stateName);
+    }
+
+    private Result<Long> changeDeliveryStateHistory(AuthToken token, Long caseObjectId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
         return historyService.createHistory(token, caseObjectId, En_HistoryAction.CHANGE, En_HistoryType.DELIVERY_STATE, oldStateId, oldStateName, newStateId, newStateName);
+    }
+
+    private Result<Long> changeModuleStateHistory(AuthToken token, Long caseObjectId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
+        return historyService.createHistory(token, caseObjectId, En_HistoryAction.CHANGE, En_HistoryType.MODULE_STATE, oldStateId, oldStateName, newStateId, newStateName);
     }
 
     private Result<Long> addDateHistory(AuthToken token, Long deliveryId, Date date) {

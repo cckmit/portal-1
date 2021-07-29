@@ -15,6 +15,7 @@ import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.DeliveryStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.lang.ModuleStateLang;
 import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItem;
 import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItemsContainer;
 import ru.protei.portal.ui.common.client.view.casehistory.item.casestate.CaseHistoryStateItemView;
@@ -37,19 +38,6 @@ public class CommentOrHistoryUtils {
                 .stream()
                 .sorted(CommentOrHistoryUtils::compareCommentOrHistoryItems)
                 .collect(Collectors.toList());
-    }
-
-    public static CaseHistoryItem makeHistoryItem(History history) {
-        switch (history.getType()) {
-            case PLAN: return makeHistoryItem(history, lang.plan(), Plan.class);
-            case TAG: return makeHistoryItem(history, lang.tag(), CaseTag.class);
-            case CASE_STATE: return makeHistoryItem(history, lang.issueState(), CaseState.class);
-            case CASE_MANAGER: return makeHistoryItem(history, lang.issueManager(), EmployeeShortView.class);
-            case CASE_IMPORTANCE: return makeHistoryItem(history, lang.issueImportance(), ImportanceLevel.class);
-            case DATE: return makeHistoryItem(history, lang.deliveryDepartureDate(), Delivery.class);
-            case DELIVERY_STATE: return makeHistoryItem(history, lang.issueState(), Delivery.class);
-            default: return null;
-        }
     }
 
     public static List<CaseHistoryItemsContainer> fillView(List<History> caseHistories, FlowPanel historyContainer) {
@@ -105,6 +93,20 @@ public class CommentOrHistoryUtils {
 
     public static String transliteration(String name) {
         return TransliterationUtils.transliterate(name, LocaleInfo.getCurrentLocale().getLocaleName());
+    }
+
+    private static CaseHistoryItem makeHistoryItem(History history) {
+        switch (history.getType()) {
+            case PLAN: return makeHistoryItem(history, lang.plan(), Plan.class);
+            case TAG: return makeHistoryItem(history, lang.tag(), CaseTag.class);
+            case CASE_STATE: return makeHistoryItem(history, lang.issueState(), CaseState.class);
+            case CASE_MANAGER: return makeHistoryItem(history, lang.issueManager(), EmployeeShortView.class);
+            case CASE_IMPORTANCE: return makeHistoryItem(history, lang.issueImportance(), ImportanceLevel.class);
+            case DATE: return makeHistoryItem(history, lang.deliveryDepartureDate(), Delivery.class);
+            case DELIVERY_STATE: return makeHistoryItem(history, lang.issueState(), Delivery.class);
+            case MODULE_STATE: return makeHistoryItem(history, lang.issueState(), Module.class);
+            default: return null;
+        }
     }
 
     private static CaseHistoryItem makeHistoryItem(History history, String historyType, Class<?> clazz) {
@@ -223,6 +225,15 @@ public class CommentOrHistoryUtils {
             return caseHistoryDeliveryStateItemView;
         }
 
+        if (En_HistoryType.MODULE_STATE.equals(historyType)) {
+            CaseHistoryStateItemView caseHistoryDeliveryStateItemView = caseHistoryStateItemViewProvider.get();
+            caseHistoryDeliveryStateItemView.setName(moduleStateLang.getStateName(new CaseState(value)));
+            caseHistoryDeliveryStateItemView.setColor(color);
+
+            return caseHistoryDeliveryStateItemView;
+        }
+
+
         return null;
     }
 
@@ -242,6 +253,8 @@ public class CommentOrHistoryUtils {
     private static CaseLinkProvider caseLinkProvider;
     @Inject
     private static DeliveryStateLang deliveryStateLang;
+    @Inject
+    private static ModuleStateLang moduleStateLang;
     @Inject
     private static Provider<CaseHistoryItemsContainer> caseHistoryItemsContainerProvider;
 }
