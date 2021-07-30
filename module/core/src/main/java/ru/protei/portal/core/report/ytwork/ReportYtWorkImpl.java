@@ -56,6 +56,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
 
     private final Map<String, List<String>> invertNiokrs;
     private final Map<String, List<String>> invertNmas;
+    static private final String CLASSIFICATION_ERROR_PREFIX = "CLASSIFICATION ERROR - ";
 
     public ReportYtWorkImpl() {
         Map<String, List<String>> niokrs = new HashMap<>();
@@ -136,19 +137,31 @@ public class ReportYtWorkImpl implements ReportYtWork {
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 invertNiokrs, invertNmas,
                 name -> contractDAO.getByCustomerAndProject(name),
-                this::getPersonByEmail,
-                new Date(), makeHomeCompanySet()
+                new Date(), makeHomeCompanySet(),
+                CLASSIFICATION_ERROR_PREFIX
         );
 
         log.debug("writeReport : reportId={} start process", report.getId());
-        List<ReportYtWorkItem> data = stream(iterator)
+        Map<String, ReportYtWorkItem> data = stream(iterator)
                 .map(this::makeYtReportItem)
                 .collect(collector);
 
         switch(iterator.getStatus()) {
             case OK:
                 log.debug("writeReport : collect data with isOk status : reportId={}", report.getId());
-                break;
+                data.forEach((email, ytWorkItem) -> ytWorkItem.setPerson(getPersonByEmail(email)));
+                List<ReportYtWorkItem> reportData = new ArrayList<>(data.values());
+                Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
+                try (ReportWriter<ReportYtWorkItem> writer = new ExcelReportWriter(localizedLang, collector.getProcessedWorkTypes())) {
+                    log.debug("writeReport : start write sheet");
+                    int sheetNumber = writer.createSheet();
+                    writer.write(sheetNumber, reportData);
+                    writer.collect(buffer);
+                    return true;
+                } catch (Throwable th) {
+                    log.error("writeReport : fail to write : reportId={}, th={}", report.getId(), th);
+                    return false;
+                }
             case CANCELED: {
                 log.info("writeReport : canceled : reportId={}", report.getId());
                 return true;
@@ -157,18 +170,6 @@ public class ReportYtWorkImpl implements ReportYtWork {
                 log.error("writeReport : error : reportId={}, status = {}", report.getId(), iterator.getStatus());
                 return false;
             }
-        }
-
-        Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
-        try (ReportWriter<ReportYtWorkItem> writer = new ExcelReportWriter(localizedLang, collector.getProcessedWorkTypes())) {
-            log.debug("writeReport : start write sheet");
-            int sheetNumber = writer.createSheet();
-            writer.write(sheetNumber, data);
-            writer.collect(buffer);
-            return true;
-        } catch (Throwable th) {
-            log.error("writeReport : fail to write : reportId={}, th={}", report.getId(), th);
-            return false;
         }
     }
 
@@ -196,7 +197,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
 
     static private Person createTempPerson(String email) {
         Person person = new Person();
-        person.setLogins(Collections.singletonList("CLASSIFICATION ERROR - " + email));
+        person.setLogins(Collections.singletonList(CLASSIFICATION_ERROR_PREFIX + email));
         return person;
     }
 

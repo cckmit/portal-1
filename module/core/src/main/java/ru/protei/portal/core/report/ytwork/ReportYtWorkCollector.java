@@ -2,16 +2,21 @@ package ru.protei.portal.core.report.ytwork;
 
 import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.ReportYtWorkInfo;
 import ru.protei.portal.core.model.struct.ReportYtWorkItem;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.*;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-import static java.util.Collections.*;
+import static java.util.Collections.unmodifiableMap;
+import static java.util.Collections.unmodifiableSet;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.*;
 import static ru.protei.portal.core.model.dict.En_ReportYtWorkType.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -19,7 +24,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 public class ReportYtWorkCollector implements Collector<
         ReportYtWorkInfo,
         Map<String, ReportYtWorkItem>,      // email -> processed items
-        List<ReportYtWorkItem>> {           // collected items
+        Map<String, ReportYtWorkItem>> {
 
     private final Map<En_ReportYtWorkType, Set<String>> processedWorkTypes;
     private final Map<String, WorkTypeAndValue> memoCustomerToContract = new ConcurrentHashMap<>();
@@ -27,24 +32,24 @@ public class ReportYtWorkCollector implements Collector<
     private final Map<String, List<String>> niokrs;
     private final Map<String, List<String>> nmas;
     private final Function<String, List<Contract>> getContractsByCustomer;
-    private final Function<String, Person> getPersonByEmail;
     private final Date now;
     private final Set<String> homeCompany;
+    private final String classificationErrorPrefix;
 
     public ReportYtWorkCollector(Map<String, List<String>> niokrs,
                                  Map<String, List<String>> nmas,
                                  Function< String, List<Contract>> getContractsByCustomer,
-                                 Function<String, Person> getPersonByEmail,
                                  Date now,
-                                 Set<String> homeCompany) {
+                                 Set<String> homeCompany,
+                                 String classificationErrorPrefix) {
         this.niokrs = unmodifiableMap(new HashMap<>(niokrs));
         this.nmas = unmodifiableMap(new HashMap<>(nmas));
         this.getContractsByCustomer = getContractsByCustomer;
-        this.getPersonByEmail = getPersonByEmail;
         this.now = now;
         this.homeCompany = unmodifiableSet(new HashSet<>(homeCompany));
+        this.classificationErrorPrefix = classificationErrorPrefix;
         processedWorkTypes = new LinkedHashMap<>();
-        for (En_ReportYtWorkType value : values()) {
+        for (En_ReportYtWorkType value : En_ReportYtWorkType.values()) {
             processedWorkTypes.put(value, new HashSet<>());
         }
     }
@@ -97,7 +102,7 @@ public class ReportYtWorkCollector implements Collector<
                 return new WorkTypeAndValue(NMA, strings);
             }
             ArrayList<String> value = new ArrayList<>();
-            value.add("CLASSIFICATION ERROR - " + project);
+            value.add(classificationErrorPrefix + project);
             return new WorkTypeAndValue(NIOKR, value);
         } else {
             return getContractsAndGuarantee(customer);
@@ -124,9 +129,9 @@ public class ReportYtWorkCollector implements Collector<
         });
     }
 
-    static private WorkTypeAndValue createContractListFromCustomer(String name) {
+    private WorkTypeAndValue createContractListFromCustomer(String name) {
         List<String> list = new ArrayList<>();
-        list.add("CLASSIFICATION ERROR - " + name);
+        list.add(classificationErrorPrefix + name);
         return new WorkTypeAndValue(CONTRACT, list);
     }
 
@@ -151,16 +156,13 @@ public class ReportYtWorkCollector implements Collector<
     }
 
     @Override
-    public Function<Map<String, ReportYtWorkItem>, List<ReportYtWorkItem>> finisher() {
-        return map -> {
-            map.forEach((email, ytWorkItem) -> ytWorkItem.setPerson(getPersonByEmail.apply(email)));
-            return new ArrayList<>(map.values());
-        };
+    public Function<Map<String, ReportYtWorkItem>, Map<String, ReportYtWorkItem>> finisher() {
+        return Function.identity();
     }
 
     @Override
     public Set<Characteristics> characteristics() {
-        return Collections.emptySet();
+        return setOf(Characteristics.UNORDERED, Characteristics.IDENTITY_FINISH);
     }
 
     public Map<En_ReportYtWorkType, Set<String>> getProcessedWorkTypes() {

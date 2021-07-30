@@ -3,7 +3,6 @@ package ru.protei.portal.test.utils;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.ReportYtWorkInfo;
 import ru.protei.portal.core.model.struct.ReportYtWorkItem;
 import ru.protei.portal.core.report.ytwork.ReportYtWorkCollector;
@@ -12,8 +11,9 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class ReportYtWorkCollectorTest {
-    static private final String homeCompanyName = "homeCompany";
-    static private final String customerCompanyName = "customerCompany";
+    static private final String HOME_COMPANY_NAME = "homeCompany";
+    static private final String CUSTOMER_COMPANY_NAME = "customerCompany";
+    static private final String CLASSIFICATION_ERROR_PREFIX = "CLASSIFICATION ERROR - ";
 
     @Test
     public void testNiokrNmaReport() {
@@ -29,29 +29,24 @@ public class ReportYtWorkCollectorTest {
         long niokrTime = 30L;
         long nmaTime = 48L;
 
-        Person user1 = new Person();
-        user1.setDisplayName(userEmail1);
-        HashMap<String, Person> persons = new HashMap<>();
-        persons.put(userEmail1, user1);
+        Set<String> homeCompany = new HashSet<>(Arrays.asList(HOME_COMPANY_NAME));
 
-        Set<String> homeCompany = new HashSet<>(Arrays.asList(homeCompanyName));
-
-        ReportYtWorkInfo info1 = new ReportYtWorkInfo(userEmail1, "niokrIssue1", homeCompanyName, niokrTime, niokrProject);
-        ReportYtWorkInfo info2 = new ReportYtWorkInfo(userEmail1, "nmaIssue1", homeCompanyName, nmaTime, nmaProject);
+        ReportYtWorkInfo info1 = new ReportYtWorkInfo(userEmail1, "niokrIssue1", HOME_COMPANY_NAME, niokrTime, niokrProject);
+        ReportYtWorkInfo info2 = new ReportYtWorkInfo(userEmail1, "nmaIssue1", HOME_COMPANY_NAME, nmaTime, nmaProject);
 
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 niokrs, nmas,
                 name -> new ArrayList<>(),
-                persons::get,
-                new Date(), homeCompany
+                new Date(), homeCompany,
+                CLASSIFICATION_ERROR_PREFIX
         );
 
-        List<ReportYtWorkItem> data = Stream.of(info1, info2).collect(collector);
+        Map<String, ReportYtWorkItem> data = Stream.of(info1, info2).collect(collector);
 
         Assert.assertEquals(1, data.size());
-        ReportYtWorkItem ytWorkItem = data.get(0);
+        ReportYtWorkItem ytWorkItem = data.get(userEmail1);
 
-        Assert.assertEquals(userEmail1, ytWorkItem.getPerson().getDisplayName());
+        Assert.assertNotNull(ytWorkItem);
         Assert.assertEquals(niokrTime + nmaTime, ytWorkItem.getAllTimeSpent().longValue());
         int niokrSize = niokrs.get(niokrProject).size();
         Assert.assertEquals(2, ytWorkItem.getNiokrSpentTime().size());
@@ -80,29 +75,24 @@ public class ReportYtWorkCollectorTest {
         long niokrTime1 = 30L;
         long niokrTime2 = 48L;
 
-        Person user1 = new Person();
-        user1.setDisplayName(userEmail1);
-        HashMap<String, Person> persons = new HashMap<>();
-        persons.put(userEmail1, user1);
+        Set<String> homeCompany = new HashSet<>(Arrays.asList(HOME_COMPANY_NAME));
 
-        Set<String> homeCompany = new HashSet<>(Arrays.asList(homeCompanyName));
-
-        ReportYtWorkInfo info1 = new ReportYtWorkInfo(userEmail1, "niokrIssue1", homeCompanyName, niokrTime1, niokrProject1);
-        ReportYtWorkInfo info2 = new ReportYtWorkInfo(userEmail1, "niokrIssue2", homeCompanyName, niokrTime2, niokrProject2);
+        ReportYtWorkInfo info1 = new ReportYtWorkInfo(userEmail1, "niokrIssue1", HOME_COMPANY_NAME, niokrTime1, niokrProject1);
+        ReportYtWorkInfo info2 = new ReportYtWorkInfo(userEmail1, "niokrIssue2", HOME_COMPANY_NAME, niokrTime2, niokrProject2);
 
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 niokrs, nmas,
                 name -> new ArrayList<>(),
-                persons::get,
-                new Date(), homeCompany
+                new Date(), homeCompany,
+                CLASSIFICATION_ERROR_PREFIX
         );
 
-        List<ReportYtWorkItem> data = Stream.of(info1, info2).collect(collector);
+        Map<String, ReportYtWorkItem> data = Stream.of(info1, info2).collect(collector);
 
         Assert.assertEquals(1, data.size());
-        ReportYtWorkItem ytWorkItem = data.get(0);
+        ReportYtWorkItem ytWorkItem = data.get(userEmail1);
 
-        Assert.assertEquals(userEmail1, ytWorkItem.getPerson().getDisplayName());
+        Assert.assertNotNull(ytWorkItem);
         Assert.assertEquals(niokrTime1 + niokrTime2, ytWorkItem.getAllTimeSpent().longValue());
         int niokrSize1 = niokrs.get(niokrProject1).size();
         int niokrSize2 = niokrs.get(niokrProject2).size();
@@ -124,12 +114,7 @@ public class ReportYtWorkCollectorTest {
         long contractTime = 30L;
         long guaranteeTime = 48L;
 
-        Person user1 = new Person();
-        user1.setDisplayName(userEmail1);
-        HashMap<String, Person> persons = new HashMap<>();
-        persons.put(userEmail1, user1);
-
-        Set<String> homeCompany = new HashSet<>(Arrays.asList(homeCompanyName));
+        Set<String> homeCompany = new HashSet<>(Arrays.asList(HOME_COMPANY_NAME));
 
         String contractProject = "contractProject1";
         String guaranteeProject = "guaranteeProject1";
@@ -143,25 +128,25 @@ public class ReportYtWorkCollectorTest {
         guarantee.setDateValid(new GregorianCalendar(2021, Calendar.JULY, 18, 0, 0, 0).getTime());
 
         Map<String, List<Contract>> contracts = new HashMap<>();
-        contracts.put(customerCompanyName, Arrays.asList(contract, guarantee));
+        contracts.put(CUSTOMER_COMPANY_NAME, Arrays.asList(contract, guarantee));
 
-        ReportYtWorkInfo info1 = new ReportYtWorkInfo(userEmail1, "contractIssue1", customerCompanyName, contractTime, contractProject);
-        ReportYtWorkInfo info2 = new ReportYtWorkInfo(userEmail1, "guaranteeIssue1", customerCompanyName, guaranteeTime, guaranteeProject);
+        ReportYtWorkInfo info1 = new ReportYtWorkInfo(userEmail1, "contractIssue1", CUSTOMER_COMPANY_NAME, contractTime, contractProject);
+        ReportYtWorkInfo info2 = new ReportYtWorkInfo(userEmail1, "guaranteeIssue1", CUSTOMER_COMPANY_NAME, guaranteeTime, guaranteeProject);
 
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 niokrs, nmas,
-                name -> contracts.get(name),
-                persons::get,
+                contracts::get,
                 new GregorianCalendar(2021, Calendar.JULY, 19, 0, 0, 0).getTime(),
-                homeCompany
+                homeCompany,
+                CLASSIFICATION_ERROR_PREFIX
         );
 
-        List<ReportYtWorkItem> data = Stream.of(info1, info2).collect(collector);
+        Map<String, ReportYtWorkItem> data = Stream.of(info1, info2).collect(collector);
 
         Assert.assertEquals(1, data.size());
-        ReportYtWorkItem ytWorkItem = data.get(0);
+        ReportYtWorkItem ytWorkItem = data.get(userEmail1);
 
-        Assert.assertEquals(userEmail1, ytWorkItem.getPerson().getDisplayName());
+        Assert.assertNotNull(ytWorkItem);
         Assert.assertEquals(contractTime + guaranteeTime, ytWorkItem.getAllTimeSpent().longValue());
 
         Assert.assertEquals(0, ytWorkItem.getNiokrSpentTime().size());
@@ -182,12 +167,7 @@ public class ReportYtWorkCollectorTest {
         long guaranteeTime1 = 30L;
         long guaranteeTime2 = 43L;
 
-        Person user1 = new Person();
-        user1.setDisplayName(userEmail1);
-        HashMap<String, Person> persons = new HashMap<>();
-        persons.put(userEmail1, user1);
-
-        Set<String> homeCompany = new HashSet<>(Arrays.asList(homeCompanyName));
+        Set<String> homeCompany = new HashSet<>(Arrays.asList(HOME_COMPANY_NAME));
 
         String guaranteeProject1 = "guaranteeProject1";
 
@@ -200,25 +180,25 @@ public class ReportYtWorkCollectorTest {
         guarantee2.setDateValid(new GregorianCalendar(2021, Calendar.JULY, 18, 3, 0, 0).getTime());
 
         Map<String, List<Contract>> contracts = new HashMap<>();
-        contracts.put(customerCompanyName, Arrays.asList(guarantee1, guarantee2));
+        contracts.put(CUSTOMER_COMPANY_NAME, Arrays.asList(guarantee1, guarantee2));
 
-        ReportYtWorkInfo info1 = new ReportYtWorkInfo(userEmail1, "guaranteeIssue1", customerCompanyName, guaranteeTime1, guaranteeProject1);
-        ReportYtWorkInfo info3 = new ReportYtWorkInfo(userEmail1, "guaranteeIssue2", customerCompanyName, guaranteeTime2, guaranteeProject1);
+        ReportYtWorkInfo info1 = new ReportYtWorkInfo(userEmail1, "guaranteeIssue1", CUSTOMER_COMPANY_NAME, guaranteeTime1, guaranteeProject1);
+        ReportYtWorkInfo info3 = new ReportYtWorkInfo(userEmail1, "guaranteeIssue2", CUSTOMER_COMPANY_NAME, guaranteeTime2, guaranteeProject1);
 
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 niokrs, nmas,
-                name -> contracts.get(name),
-                persons::get,
+                contracts::get,
                 new GregorianCalendar(2021, Calendar.JULY, 19, 0, 0, 0).getTime(),
-                homeCompany
+                homeCompany,
+                CLASSIFICATION_ERROR_PREFIX
         );
 
-        List<ReportYtWorkItem> data = Stream.of(info1, info3).collect(collector);
+        Map<String, ReportYtWorkItem> data = Stream.of(info1, info3).collect(collector);
 
         Assert.assertEquals(1, data.size());
-        ReportYtWorkItem ytWorkItem = data.get(0);
+        ReportYtWorkItem ytWorkItem = data.get(userEmail1);
 
-        Assert.assertEquals(userEmail1, ytWorkItem.getPerson().getDisplayName());
+        Assert.assertNotNull(ytWorkItem);
         Assert.assertEquals(guaranteeTime1 + guaranteeTime2, ytWorkItem.getAllTimeSpent().longValue());
 
         Assert.assertEquals(0, ytWorkItem.getNiokrSpentTime().size());
@@ -245,37 +225,24 @@ public class ReportYtWorkCollectorTest {
         long niokrTime = 30L;
         long nmaTime = 48L;
 
-        Person user1 = new Person();
-        user1.setId(1L);
-        user1.setDisplayName(userEmail1);
+        Set<String> homeCompany = new HashSet<>(Arrays.asList(HOME_COMPANY_NAME));
 
-        Person user2 = new Person();
-        user2.setId(2L);
-        user2.setDisplayName(userEmail2);
-
-        HashMap<String, Person> persons = new HashMap<>();
-        persons.put(userEmail1, user1);
-        persons.put(userEmail2, user2);
-
-        Set<String> homeCompany = new HashSet<>(Arrays.asList(homeCompanyName));
-
-        ReportYtWorkInfo info1 = new ReportYtWorkInfo(userEmail1, "niokrIssue1", homeCompanyName, niokrTime, niokrProject);
-        ReportYtWorkInfo info2 = new ReportYtWorkInfo(userEmail2, "nmaIssue1", homeCompanyName, nmaTime, nmaProject);
+        ReportYtWorkInfo info1 = new ReportYtWorkInfo(userEmail1, "niokrIssue1", HOME_COMPANY_NAME, niokrTime, niokrProject);
+        ReportYtWorkInfo info2 = new ReportYtWorkInfo(userEmail2, "nmaIssue1", HOME_COMPANY_NAME, nmaTime, nmaProject);
 
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 niokrs, nmas,
                 name -> new ArrayList<>(),
-                persons::get,
-                new Date(), homeCompany
+                new Date(), homeCompany,
+                CLASSIFICATION_ERROR_PREFIX
         );
 
-        List<ReportYtWorkItem> data = Stream.of(info1, info2).collect(collector);
-        data.sort(Comparator.comparing((ReportYtWorkItem item) -> item.getPerson().getId()));
+        Map<String, ReportYtWorkItem> data = Stream.of(info1, info2).collect(collector);
 
         Assert.assertEquals(2, data.size());
-        ReportYtWorkItem ytWorkItem1 = data.get(0);
+        ReportYtWorkItem ytWorkItem1 = data.get(userEmail1);
 
-        Assert.assertEquals(userEmail1, ytWorkItem1.getPerson().getDisplayName());
+        Assert.assertNotNull(ytWorkItem1);
         Assert.assertEquals(niokrTime, ytWorkItem1.getAllTimeSpent().longValue());
         int niokrSize = niokrs.get(niokrProject).size();
         Assert.assertEquals(2, ytWorkItem1.getNiokrSpentTime().size());
@@ -285,8 +252,8 @@ public class ReportYtWorkCollectorTest {
         Assert.assertEquals(0, ytWorkItem1.getContractSpentTime().size());
         Assert.assertEquals(0, ytWorkItem1.getGuaranteeSpentTime().size());
 
-        ReportYtWorkItem ytWorkItem2 = data.get(1);
-        Assert.assertEquals(userEmail2, ytWorkItem2.getPerson().getDisplayName());
+        ReportYtWorkItem ytWorkItem2 = data.get(userEmail2);
+        Assert.assertNotNull(ytWorkItem1);
         Assert.assertEquals(nmaTime, ytWorkItem2.getAllTimeSpent().longValue());
         int nmaSize = niokrs.get(niokrProject).size();
         Assert.assertEquals(0, ytWorkItem2.getNiokrSpentTime().size());
