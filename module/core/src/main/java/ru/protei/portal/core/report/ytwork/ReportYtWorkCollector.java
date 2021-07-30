@@ -2,8 +2,8 @@ package ru.protei.portal.core.report.ytwork;
 
 import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.struct.ReportYtWorkInfo;
-import ru.protei.portal.core.model.struct.ReportYtWorkItem;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkInfo;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,8 +23,8 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class ReportYtWorkCollector implements Collector<
         ReportYtWorkInfo,
-        Map<String, ReportYtWorkItem>,      // email -> processed items
-        Map<String, ReportYtWorkItem>> {
+        Map<String, ReportYtWorkRowItem>,      // email -> processed items
+        Map<String, ReportYtWorkRowItem>> {
 
     private final Map<En_ReportYtWorkType, Set<String>> processedWorkTypes;
     private final Map<String, WorkTypeAndValue> memoCustomerToContract = new ConcurrentHashMap<>();
@@ -55,27 +55,27 @@ public class ReportYtWorkCollector implements Collector<
     }
 
     @Override
-    public Supplier<Map<String, ReportYtWorkItem>> supplier() {
+    public Supplier<Map<String, ReportYtWorkRowItem>> supplier() {
         return HashMap::new;
     }
 
     @Override
-    public BiConsumer<Map<String, ReportYtWorkItem>, ReportYtWorkInfo> accumulator() {
+    public BiConsumer<Map<String, ReportYtWorkRowItem>, ReportYtWorkInfo> accumulator() {
         return this::collectItems;
     }
 
-    private void collectItems(Map<String, ReportYtWorkItem> accumulator, ReportYtWorkInfo ytWorkInfo) {
-        ReportYtWorkItem reportYtWorkItem = accumulator.compute(ytWorkInfo.getEmail(),
-                (email, ytWorkItem) -> ytWorkItem != null ? ytWorkItem : new ReportYtWorkItem());
+    private void collectItems(Map<String, ReportYtWorkRowItem> accumulator, ReportYtWorkInfo ytWorkInfo) {
+        ReportYtWorkRowItem reportYtWorkRowItem = accumulator.compute(ytWorkInfo.getEmail(),
+                (email, ytWorkItem) -> ytWorkItem != null ? ytWorkItem : new ReportYtWorkRowItem());
         WorkTypeAndValue workTypeAndValue = makeWorkType(ytWorkInfo.getCustomer(), ytWorkInfo.getProject());
         Map<String, Long> spentTimeMap = createSpentTimeMap(ytWorkInfo.getSpentTime(), workTypeAndValue.getValue());
-        Map<String, Long> itemMap = reportYtWorkItem.selectSpentTimeMap(workTypeAndValue.getWorkType());
+        Map<String, Long> itemMap = reportYtWorkRowItem.selectSpentTimeMap(workTypeAndValue.getWorkType());
         mergeSpentTimeMap(itemMap, spentTimeMap);
         processedWorkTypes.compute(workTypeAndValue.getWorkType(), (workType, value) -> {
             value.addAll(workTypeAndValue.getValue());
             return value;
         });
-        reportYtWorkItem.addAllTimeSpent(ytWorkInfo.getSpentTime());
+        reportYtWorkRowItem.addAllTimeSpent(ytWorkInfo.getSpentTime());
     }
 
     static private Map<String, Long> createSpentTimeMap(Long spentTime, List<String> values) {
@@ -140,11 +140,11 @@ public class ReportYtWorkCollector implements Collector<
     }
 
     @Override
-    public BinaryOperator<Map<String, ReportYtWorkItem>> combiner() {
+    public BinaryOperator<Map<String, ReportYtWorkRowItem>> combiner() {
         return ReportYtWorkCollector::mergeCollectedItems;
     }
 
-    static private Map<String, ReportYtWorkItem> mergeCollectedItems(Map<String, ReportYtWorkItem> map1, Map<String, ReportYtWorkItem> map2) {
+    static private Map<String, ReportYtWorkRowItem> mergeCollectedItems(Map<String, ReportYtWorkRowItem> map1, Map<String, ReportYtWorkRowItem> map2) {
         mergeMap(map1, map2, (ytWorkItem1, ytWorkItem2) -> {
             mergeSpentTimeMap(ytWorkItem1.getNiokrSpentTime(), ytWorkItem2.getNiokrSpentTime());
             mergeSpentTimeMap(ytWorkItem1.getNmaSpentTime(), ytWorkItem2.getNmaSpentTime());
@@ -156,7 +156,7 @@ public class ReportYtWorkCollector implements Collector<
     }
 
     @Override
-    public Function<Map<String, ReportYtWorkItem>, Map<String, ReportYtWorkItem>> finisher() {
+    public Function<Map<String, ReportYtWorkRowItem>, Map<String, ReportYtWorkRowItem>> finisher() {
         return Function.identity();
     }
 

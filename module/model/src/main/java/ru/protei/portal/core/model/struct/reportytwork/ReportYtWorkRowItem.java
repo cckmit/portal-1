@@ -1,13 +1,13 @@
-package ru.protei.portal.core.model.struct;
+package ru.protei.portal.core.model.struct.reportytwork;
 
 import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.view.WorkerEntryShortView;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReportYtWorkItem {
-    private Person person;
+public class ReportYtWorkRowItem implements ReportYtWorkRow {
+    private PersonInfo personInfo;
     // Общее время
     private long allTimeSpent = 0L;
     // Map<Project, Map<NIOKR, SpentTime>>
@@ -19,15 +19,15 @@ public class ReportYtWorkItem {
     // Map<Project, Map<GUARANTEE, SpentTime>>
     final private Map<String, Long> guaranteeSpentTime;
 
-    public ReportYtWorkItem() {
+    public ReportYtWorkRowItem() {
         this.niokrSpentTime = new HashMap<>();
         this.nmaSpentTime = new HashMap<>();
         this.contractSpentTime = new HashMap<>();
         this.guaranteeSpentTime = new HashMap<>();
     }
 
-    public Person getPerson() {
-        return person;
+    public PersonInfo getPersonInfo() {
+        return personInfo;
     }
 
     public Map<String, Long> getNiokrSpentTime() {
@@ -46,8 +46,8 @@ public class ReportYtWorkItem {
         return guaranteeSpentTime;
     }
 
-    public void setPerson(Person person) {
-        this.person = person;
+    public void setPersonInfo(PersonInfo personInfo) {
+        this.personInfo = personInfo;
     }
 
     public Long getAllTimeSpent() {
@@ -65,6 +65,24 @@ public class ReportYtWorkItem {
             case CONTRACT: return this.getContractSpentTime();
             case GUARANTEE: return this.getGuaranteeSpentTime();
             default: return null;
+        }
+    }
+
+    static public class PersonInfo {
+        final private String displayName;
+        final private WorkerEntryShortView mainWorkEntry;
+
+        public PersonInfo(String displayName, WorkerEntryShortView mainWorkEntry) {
+            this.displayName = displayName;
+            this.mainWorkEntry = mainWorkEntry;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public WorkerEntryShortView getMainWorkEntry() {
+            return mainWorkEntry;
         }
     }
 }

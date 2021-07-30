@@ -3,8 +3,8 @@ package ru.protei.portal.test.utils;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.struct.ReportYtWorkInfo;
-import ru.protei.portal.core.model.struct.ReportYtWorkItem;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkInfo;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem;
 import ru.protei.portal.core.report.ytwork.ReportYtWorkCollector;
 
 import java.util.*;
@@ -41,10 +41,10 @@ public class ReportYtWorkCollectorTest {
                 CLASSIFICATION_ERROR_PREFIX
         );
 
-        Map<String, ReportYtWorkItem> data = Stream.of(info1, info2).collect(collector);
+        Map<String, ReportYtWorkRowItem> data = Stream.of(info1, info2).collect(collector);
 
         Assert.assertEquals(1, data.size());
-        ReportYtWorkItem ytWorkItem = data.get(userEmail1);
+        ReportYtWorkRowItem ytWorkItem = data.get(userEmail1);
 
         Assert.assertNotNull(ytWorkItem);
         Assert.assertEquals(niokrTime + nmaTime, ytWorkItem.getAllTimeSpent().longValue());
@@ -87,10 +87,10 @@ public class ReportYtWorkCollectorTest {
                 CLASSIFICATION_ERROR_PREFIX
         );
 
-        Map<String, ReportYtWorkItem> data = Stream.of(info1, info2).collect(collector);
+        Map<String, ReportYtWorkRowItem> data = Stream.of(info1, info2).collect(collector);
 
         Assert.assertEquals(1, data.size());
-        ReportYtWorkItem ytWorkItem = data.get(userEmail1);
+        ReportYtWorkRowItem ytWorkItem = data.get(userEmail1);
 
         Assert.assertNotNull(ytWorkItem);
         Assert.assertEquals(niokrTime1 + niokrTime2, ytWorkItem.getAllTimeSpent().longValue());
@@ -141,10 +141,10 @@ public class ReportYtWorkCollectorTest {
                 CLASSIFICATION_ERROR_PREFIX
         );
 
-        Map<String, ReportYtWorkItem> data = Stream.of(info1, info2).collect(collector);
+        Map<String, ReportYtWorkRowItem> data = Stream.of(info1, info2).collect(collector);
 
         Assert.assertEquals(1, data.size());
-        ReportYtWorkItem ytWorkItem = data.get(userEmail1);
+        ReportYtWorkRowItem ytWorkItem = data.get(userEmail1);
 
         Assert.assertNotNull(ytWorkItem);
         Assert.assertEquals(contractTime + guaranteeTime, ytWorkItem.getAllTimeSpent().longValue());
@@ -193,10 +193,10 @@ public class ReportYtWorkCollectorTest {
                 CLASSIFICATION_ERROR_PREFIX
         );
 
-        Map<String, ReportYtWorkItem> data = Stream.of(info1, info3).collect(collector);
+        Map<String, ReportYtWorkRowItem> data = Stream.of(info1, info3).collect(collector);
 
         Assert.assertEquals(1, data.size());
-        ReportYtWorkItem ytWorkItem = data.get(userEmail1);
+        ReportYtWorkRowItem ytWorkItem = data.get(userEmail1);
 
         Assert.assertNotNull(ytWorkItem);
         Assert.assertEquals(guaranteeTime1 + guaranteeTime2, ytWorkItem.getAllTimeSpent().longValue());
@@ -237,10 +237,10 @@ public class ReportYtWorkCollectorTest {
                 CLASSIFICATION_ERROR_PREFIX
         );
 
-        Map<String, ReportYtWorkItem> data = Stream.of(info1, info2).collect(collector);
+        Map<String, ReportYtWorkRowItem> data = Stream.of(info1, info2).collect(collector);
 
         Assert.assertEquals(2, data.size());
-        ReportYtWorkItem ytWorkItem1 = data.get(userEmail1);
+        ReportYtWorkRowItem ytWorkItem1 = data.get(userEmail1);
 
         Assert.assertNotNull(ytWorkItem1);
         Assert.assertEquals(niokrTime, ytWorkItem1.getAllTimeSpent().longValue());
@@ -252,7 +252,7 @@ public class ReportYtWorkCollectorTest {
         Assert.assertEquals(0, ytWorkItem1.getContractSpentTime().size());
         Assert.assertEquals(0, ytWorkItem1.getGuaranteeSpentTime().size());
 
-        ReportYtWorkItem ytWorkItem2 = data.get(userEmail2);
+        ReportYtWorkRowItem ytWorkItem2 = data.get(userEmail2);
         Assert.assertNotNull(ytWorkItem1);
         Assert.assertEquals(nmaTime, ytWorkItem2.getAllTimeSpent().longValue());
         int nmaSize = niokrs.get(niokrProject).size();

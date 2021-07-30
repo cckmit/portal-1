@@ -1,4 +1,4 @@
-package ru.protei.portal.core.model.struct;
+package ru.protei.portal.core.model.struct.reportytwork;
 
 public class ReportYtWorkInfo {
     final String email;

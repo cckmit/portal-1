@@ -6,18 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
-import ru.protei.portal.core.model.dao.CompanyDAO;
-import ru.protei.portal.core.model.dao.ContractDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dao.ReportDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.query.PersonQuery;
+import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.YtWorkQuery;
 import ru.protei.portal.core.model.struct.Interval;
-import ru.protei.portal.core.model.struct.ReportYtWorkInfo;
-import ru.protei.portal.core.model.struct.ReportYtWorkItem;
+import ru.protei.portal.core.model.struct.WorkerEntryFacade;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkInfo;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRow;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowHeader;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtSingleEnumIssueCustomField;
 import ru.protei.portal.core.model.youtrack.dto.issue.IssueWorkItem;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
@@ -28,10 +28,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
-import static ru.protei.portal.core.model.helper.CollectionUtils.inverseMap;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static java.util.stream.Collectors.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
@@ -47,6 +48,10 @@ public class ReportYtWorkImpl implements ReportYtWork {
     ContractDAO contractDAO;
     @Autowired
     PersonDAO personDAO;
+    @Autowired
+    EmployeeShortViewDAO employeeShortViewDAO;
+    @Autowired
+    WorkerEntryShortViewDAO workerEntryShortViewDAO;
     @Autowired
     ReportDAO reportDAO;
     @Autowired
@@ -142,17 +147,17 @@ public class ReportYtWorkImpl implements ReportYtWork {
         );
 
         log.debug("writeReport : reportId={} start process", report.getId());
-        Map<String, ReportYtWorkItem> data = stream(iterator)
+        Map<String, ReportYtWorkRowItem> data = stream(iterator)
                 .map(this::makeYtReportItem)
                 .collect(collector);
 
         switch(iterator.getStatus()) {
             case OK:
                 log.debug("writeReport : collect data with isOk status : reportId={}", report.getId());
-                data.forEach((email, ytWorkItem) -> ytWorkItem.setPerson(getPersonByEmail(email)));
-                List<ReportYtWorkItem> reportData = new ArrayList<>(data.values());
+                data.forEach((email, ytWorkItem) -> ytWorkItem.setPersonInfo(makePersonInfo(email)));
+                List<ReportYtWorkRow> reportData = groupingByDepartment(data.values());
                 Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
-                try (ReportWriter<ReportYtWorkItem> writer = new ExcelReportWriter(localizedLang, collector.getProcessedWorkTypes())) {
+                try (ReportWriter<ReportYtWorkRow> writer = new ExcelReportWriter(localizedLang, collector.getProcessedWorkTypes())) {
                     log.debug("writeReport : start write sheet");
                     int sheetNumber = writer.createSheet();
                     writer.write(sheetNumber, reportData);
@@ -173,6 +178,36 @@ public class ReportYtWorkImpl implements ReportYtWork {
         }
     }
 
+    private List<ReportYtWorkRow> groupingByDepartment(Collection<ReportYtWorkRowItem> items){
+        Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasDepartment = stream(items)
+                .collect(partitioningBy(item -> item.getPersonInfo().getMainWorkEntry() != null));
+        List<ReportYtWorkRowItem> hasDepartments = partitionByHasDepartment.get(true);
+
+        Map<String, List<ReportYtWorkRowItem>> hasCompany = hasDepartments.stream()
+                .collect(groupingBy(item -> item.getPersonInfo().getMainWorkEntry().getCompanyName(),
+                        Collectors.toList()));
+
+        Map<String, Map<String, List<ReportYtWorkRowItem>>> hasDepartmentParent = new HashMap<>();
+        hasCompany.forEach((companyName, i) -> {
+            Map<String, List<ReportYtWorkRowItem>> collect = i.stream().collect(groupingBy(item -> item.getPersonInfo().getMainWorkEntry().getDepartmentParentName(),
+                    Collectors.toList()));
+            hasDepartmentParent.put(companyName, collect);
+        });
+
+        List<ReportYtWorkRow> list = new ArrayList<>();
+        hasDepartmentParent.forEach((companyName, i) -> {
+            list.add(new ReportYtWorkRowHeader(companyName));
+            i.forEach((DepartmentParent, ii) -> {
+                list.add(new ReportYtWorkRowHeader(DepartmentParent));
+                list.addAll(ii);
+            });
+        });
+        list.add(new ReportYtWorkRowHeader("w/o company"));
+        list.addAll(partitionByHasDepartment.get(false));
+        return list;
+    }
+
+
     private Set<String> makeHomeCompanySet() {
         Set<String> homeCompany = companyDAO.getAllHomeCompanies().stream()
                 .map(Company::getCname).collect(toSet());
@@ -181,24 +216,29 @@ public class ReportYtWorkImpl implements ReportYtWork {
         return homeCompany;
     }
 
-    private Person getPersonByEmail(String email) {
-        PersonQuery query = new PersonQuery();
-        Person person = null;
+    private ReportYtWorkRowItem.PersonInfo makePersonInfo(String email) {
+        EmployeeShortView employeeShortView = null;
         if (isNotEmpty(email)) {
-            query.setEmail(email);
-            List<Person> persons = personDAO.getPersons(query);
-            if (persons.size() >= 1) {
-                person = persons.get(0);
-                person.setLogins(Collections.singletonList(email));
+            EmployeeQuery query = new EmployeeQuery();
+            query.setEmailByLike(email);
+            List<EmployeeShortView> personShortViews = employeeShortViewDAO.getEmployees(query);
+            if (personShortViews.size() >= 1) {
+                employeeShortView = personShortViews.get(0);
+                employeeShortView.setWorkerEntries(workerEntryShortViewDAO.listByPersonIds(setOf(employeeShortView.getId())));
             }
         }
-        return person != null ? person : createTempPerson(email);
+        return employeeShortView != null ? createPersonInfo(employeeShortView) : createTempPersonInfo(email);
     }
 
-    static private Person createTempPerson(String email) {
-        Person person = new Person();
-        person.setLogins(Collections.singletonList(CLASSIFICATION_ERROR_PREFIX + email));
-        return person;
+    static private ReportYtWorkRowItem.PersonInfo createPersonInfo(EmployeeShortView employeeShortView) {
+        return new ReportYtWorkRowItem.PersonInfo(
+                employeeShortView.getDisplayShortName(),
+                new WorkerEntryFacade(employeeShortView.getWorkerEntries()).getMainEntry()
+                );
+    }
+
+    static private ReportYtWorkRowItem.PersonInfo createTempPersonInfo(String email) {
+        return new ReportYtWorkRowItem.PersonInfo(CLASSIFICATION_ERROR_PREFIX + email, null);
     }
 
     private ReportYtWorkInfo makeYtReportItem(IssueWorkItem issueWorkItem) {
