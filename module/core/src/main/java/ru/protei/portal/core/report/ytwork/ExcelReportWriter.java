@@ -7,6 +7,7 @@ import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
 import ru.protei.portal.core.model.struct.ListBuilder;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRow;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowHeader;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
@@ -114,8 +115,12 @@ public class ExcelReportWriter implements
             values.add(localizedLang.get("reportYtWorkRepresentTime", new Object[]{allTimeSpent / 60, allTimeSpent % 60}));
             processedWorkTypes.forEach((ytWorkType, strings) ->
                     strings.forEach(value -> values.add(item.selectSpentTimeMap(ytWorkType).getOrDefault(value, 0L))));
-
         }
+        if (row instanceof ReportYtWorkRowHeader) {
+            ReportYtWorkRowHeader header = (ReportYtWorkRowHeader)row;
+            values.add(header.getValue());
+        }
+
         return values.toArray();
     }
 

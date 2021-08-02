@@ -82,12 +82,12 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
         renderComponentsAfterBlock.add(blockRendererComponent);
 
         subRenderer = new V2SubRenderer(new V2Renderer(renderComponentsAfterBlock));
-        rendererFacade = new V2RendererFacade();
-        rendererFacade.setRenderer(new V2Renderer(renderComponentsAfterBlock));
-
         iconManager = new JiraIconManager();
-
         renderContext = makeRenderContext(config, subRenderer, iconManager);
+
+        V2RendererFacade rendererFacade = new V2RendererFacade();
+        rendererFacade.setRenderer(new V2Renderer(renderComponentsAfterBlock));
+        this.rendererFacade = rendererFacade;
     }
 
     @Override
@@ -244,7 +244,7 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
     private AttachmentService attachmentService;
 
     private final V2RendererFacade rendererFacade;
-    private V2SubRenderer subRenderer;
+    private final V2SubRenderer subRenderer;
     private final JiraIconManager iconManager;
     private final RenderContext renderContext;
 

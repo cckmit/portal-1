@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Collectors.*;
@@ -179,31 +178,80 @@ public class ReportYtWorkImpl implements ReportYtWork {
     }
 
     private List<ReportYtWorkRow> groupingByDepartment(Collection<ReportYtWorkRowItem> items){
-        Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasDepartment = stream(items)
+        final String noValue = "Nothing";
+        class StringWithId implements Comparable<StringWithId> {
+            final String string;
+            final long id;
+            StringWithId(String string, long id) {
+                this.string = string;
+                this.id = id;
+            }
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (!(o instanceof StringWithId)) return false;
+                StringWithId that = (StringWithId) o;
+                return id == that.id;
+            }
+            @Override
+            public int hashCode() {
+                return Objects.hash(id);
+            }
+
+            @Override
+            public int compareTo(StringWithId o) {
+                return (int)(id - o.id);
+            }
+        }
+
+        Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasWorkEntry = stream(items)
                 .collect(partitioningBy(item -> item.getPersonInfo().getMainWorkEntry() != null));
-        List<ReportYtWorkRowItem> hasDepartments = partitionByHasDepartment.get(true);
+        List<ReportYtWorkRowItem> hasWorkEntry = partitionByHasWorkEntry.get(true);
 
-        Map<String, List<ReportYtWorkRowItem>> hasCompany = hasDepartments.stream()
-                .collect(groupingBy(item -> item.getPersonInfo().getMainWorkEntry().getCompanyName(),
-                        Collectors.toList()));
+        Map<StringWithId, List<ReportYtWorkRowItem>> groupingByCompany = hasWorkEntry.stream()
+                .collect(groupingBy(item -> new StringWithId(
+                        item.getPersonInfo().getMainWorkEntry().getCompanyName(),
+                        item.getPersonInfo().getMainWorkEntry().getCompanyId()))
+                );
 
-        Map<String, Map<String, List<ReportYtWorkRowItem>>> hasDepartmentParent = new HashMap<>();
-        hasCompany.forEach((companyName, i) -> {
-            Map<String, List<ReportYtWorkRowItem>> collect = i.stream().collect(groupingBy(item -> item.getPersonInfo().getMainWorkEntry().getDepartmentParentName(),
-                    Collectors.toList()));
-            hasDepartmentParent.put(companyName, collect);
+        Map<StringWithId, Map<StringWithId, List<ReportYtWorkRowItem>>> groupingByDepartmentParent = new HashMap<>();
+        groupingByCompany.forEach((companyName, i) -> {
+            Map<StringWithId, List<ReportYtWorkRowItem>> collect = i.stream().collect(groupingBy(item -> {
+                        String departmentParentName = item.getPersonInfo().getMainWorkEntry().getDepartmentParentName();
+                    return departmentParentName == null ?
+                            new StringWithId(noValue, 0) :
+                            new StringWithId(departmentParentName, item.getPersonInfo().getMainWorkEntry().getParentDepId());
+                    }));
+            groupingByDepartmentParent.put(companyName, collect);
         });
 
         List<ReportYtWorkRow> list = new ArrayList<>();
-        hasDepartmentParent.forEach((companyName, i) -> {
-            list.add(new ReportYtWorkRowHeader(companyName));
-            i.forEach((DepartmentParent, ii) -> {
-                list.add(new ReportYtWorkRowHeader(DepartmentParent));
-                list.addAll(ii);
+        groupingByDepartmentParent.entrySet().stream().sorted(Comparator.comparing(entry -> entry.getKey().id)).forEach(i -> {
+            String companyName = i.getKey().string;
+            if (!noValue.equals(companyName)) {
+                list.add( new ReportYtWorkRowHeader(companyName));
+            }
+            i.getValue().entrySet().stream().sorted(Comparator.comparing(entry -> entry.getKey().id)).forEach(ii -> {
+                String departmentParent = ii.getKey().string;
+                if (!noValue.equals(departmentParent)) {
+                    list.add(new ReportYtWorkRowHeader(departmentParent));
+                }
+                Map<StringWithId, List<ReportYtWorkRowItem>> hasDepartment = ii.getValue().stream().collect(groupingBy(item -> {
+                    String departmentName = item.getPersonInfo().getMainWorkEntry().getDepartmentName();
+                    return departmentName == null ? new StringWithId(noValue, 0) :
+                            new StringWithId(departmentName, item.getPersonInfo().getMainWorkEntry().getDepId());
+                }));
+                hasDepartment.entrySet().stream().sorted(Comparator.comparing(entry -> entry.getKey().id)).forEach(iii -> {
+                    String department = iii.getKey().string;
+                    if (!noValue.equals(department)) {
+                        list.add(new ReportYtWorkRowHeader(department));
+                    }
+                    list.addAll(iii.getValue().stream().sorted(Comparator.comparing(item -> item.getPersonInfo().getDisplayName())).collect(toList()));
+                });
             });
         });
-        list.add(new ReportYtWorkRowHeader("w/o company"));
-        list.addAll(partitionByHasDepartment.get(false));
+        list.add(new ReportYtWorkRowHeader(CLASSIFICATION_ERROR_PREFIX + " company"));
+        list.addAll(partitionByHasWorkEntry.get(false));
         return list;
     }
 
