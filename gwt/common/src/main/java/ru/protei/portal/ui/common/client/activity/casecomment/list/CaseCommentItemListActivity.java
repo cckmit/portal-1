@@ -158,18 +158,24 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
             return;
         }
 
-        caseCommentController.removeCaseComment(caseType, caseComment, new FluentCallback<Long>()
-                .withSuccess(result -> {
-                    Collection<Attachment> commentAttachments = itemView.attachmentContainer().getAll();
-                    if (CollectionUtils.isNotEmpty(commentAttachments)) {
-                        fireEvent(new AttachmentEvents.Remove(caseId, commentAttachments));
-                    }
+        fireEvent(new ConfirmDialogEvents.Show(lang.commentRemoveConfirmMessage(), removeAction(caseComment, itemView)));
+    }
 
-                    commentsContainer.remove(itemView.asWidget());
-                    itemViewToModel.remove(itemView);
-                    updateTimeElapsedInIssue(itemViewToModel.values());
-                })
-        );
+    private Runnable removeAction(CaseComment caseComment, AbstractCaseCommentItemView itemView) {
+        return () -> {
+            caseCommentController.removeCaseComment(caseType, caseComment, new FluentCallback<Long>()
+                    .withSuccess(result -> {
+                        Collection<Attachment> commentAttachments = itemView.attachmentContainer().getAll();
+                        if (CollectionUtils.isNotEmpty(commentAttachments)) {
+                            fireEvent(new AttachmentEvents.Remove(caseId, commentAttachments));
+                        }
+
+                        commentsContainer.remove(itemView.asWidget());
+                        itemViewToModel.remove(itemView);
+                        updateTimeElapsedInIssue(itemViewToModel.values());
+                    })
+            );
+        };
     }
 
     @Override

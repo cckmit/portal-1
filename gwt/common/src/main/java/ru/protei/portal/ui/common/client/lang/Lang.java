@@ -3376,6 +3376,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String commentRemove();
 
+    String commentRemoveConfirmMessage();
+
     String issueReportDeadlineWorkTrigger();
 
     String errMySqlDataTruncation();
