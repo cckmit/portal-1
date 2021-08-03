@@ -1,10 +1,10 @@
 package ru.protei.portal.core.model.struct.reportytwork;
 
 import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
-import ru.protei.portal.core.model.view.WorkerEntryShortView;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ReportYtWorkRowItem implements ReportYtWorkRow {
     private PersonInfo personInfo;
@@ -69,20 +69,89 @@ public class ReportYtWorkRowItem implements ReportYtWorkRow {
     }
 
     static public class PersonInfo {
-        final private String displayName;
-        final private WorkerEntryShortView mainWorkEntry;
+        static public final NameWithId nullCompanyName = new NameWithId("companyName", 0L);
+        static public final NameWithId nullDepartmentParentName = new NameWithId("departmentParentName", 0L);
+        static public final NameWithId nullDepartmentName = new NameWithId("departmentName", 0L);
 
-        public PersonInfo(String displayName, WorkerEntryShortView mainWorkEntry) {
+        final private String displayName;
+        final private Long personId;
+        final NameWithId companyName;
+        final NameWithId departmentParentName;
+        final NameWithId departmentName;
+
+        public PersonInfo(String displayName, Long personId,
+                          NameWithId companyName, NameWithId departmentParentName, NameWithId departmentName) {
             this.displayName = displayName;
-            this.mainWorkEntry = mainWorkEntry;
+            this.personId = personId;
+            this.companyName = companyName;
+            this.departmentParentName = departmentParentName;
+            this.departmentName = departmentName;
+        }
+
+        public PersonInfo(String displayName, Long personId) {
+            this(displayName, personId, nullCompanyName, nullDepartmentParentName, nullDepartmentName);
         }
 
         public String getDisplayName() {
             return displayName;
         }
 
-        public WorkerEntryShortView getMainWorkEntry() {
-            return mainWorkEntry;
+        public Long getPersonId() {
+            return personId;
+        }
+
+        public NameWithId getCompanyName() {
+            return companyName;
+        }
+
+        public NameWithId getDepartmentParentName() {
+            return departmentParentName;
+        }
+
+        public NameWithId getDepartmentName() {
+            return departmentName;
+        }
+
+        public boolean hasWorkEntry() {
+            return companyName != nullCompanyName;
+        }
+    }
+
+    static public class NameWithId implements Comparable<NameWithId> {
+        final private String string;
+        final private long id;
+        public NameWithId(String string, long id) {
+            this.string = string;
+            this.id = id;
+        }
+        public String getString() {
+            return string;
+        }
+        public long getId() {
+            return id;
+        }
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof NameWithId)) return false;
+            NameWithId that = (NameWithId) o;
+            return id == that.id;
+        }
+        @Override
+        public int hashCode() {
+            return Objects.hash(id);
+        }
+        @Override
+        public int compareTo(NameWithId o) {
+            return (int)(id - o.id);
+        }
+
+        @Override
+        public String toString() {
+            return "NameWithId{" +
+                    "string='" + string + '\'' +
+                    ", id=" + id +
+                    '}';
         }
     }
 }

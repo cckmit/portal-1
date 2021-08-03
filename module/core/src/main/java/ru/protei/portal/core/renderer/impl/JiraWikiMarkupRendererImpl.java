@@ -81,9 +81,9 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
         List<RendererComponent> renderComponentsAfterBlock = new ArrayList<>(renderComponentsAfterMacro);
         renderComponentsAfterBlock.add(blockRendererComponent);
 
-        subRenderer = new V2SubRenderer(new V2Renderer(renderComponentsAfterBlock));
-        iconManager = new JiraIconManager();
-        renderContext = makeRenderContext(config, subRenderer, iconManager);
+        this.subRenderer = new V2SubRenderer(new V2Renderer(renderComponentsAfterBlock));
+        this.iconManager = new JiraIconManager();
+        this.renderContext = makeRenderContext(config, subRenderer, iconManager);
 
         V2RendererFacade rendererFacade = new V2RendererFacade();
         rendererFacade.setRenderer(new V2Renderer(renderComponentsAfterBlock));

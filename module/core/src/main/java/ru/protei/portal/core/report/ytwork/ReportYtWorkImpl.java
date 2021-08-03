@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRow;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowHeader;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem;
 import ru.protei.portal.core.model.view.EmployeeShortView;
+import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtSingleEnumIssueCustomField;
 import ru.protei.portal.core.model.youtrack.dto.issue.IssueWorkItem;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
@@ -28,12 +29,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.partitioningBy;
 import static java.util.stream.Collectors.toSet;
-import static java.util.stream.Collectors.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
+import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.NameWithId;
+import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.PersonInfo;
+import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.PersonInfo.nullDepartmentName;
+import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.PersonInfo.nullDepartmentParentName;
 
 public class ReportYtWorkImpl implements ReportYtWork {
 
@@ -151,21 +157,10 @@ public class ReportYtWorkImpl implements ReportYtWork {
                 .collect(collector);
 
         switch(iterator.getStatus()) {
-            case OK:
+            case OK: {
                 log.debug("writeReport : collect data with isOk status : reportId={}", report.getId());
-                data.forEach((email, ytWorkItem) -> ytWorkItem.setPersonInfo(makePersonInfo(email)));
-                List<ReportYtWorkRow> reportData = groupingByDepartment(data.values());
-                Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
-                try (ReportWriter<ReportYtWorkRow> writer = new ExcelReportWriter(localizedLang, collector.getProcessedWorkTypes())) {
-                    log.debug("writeReport : start write sheet");
-                    int sheetNumber = writer.createSheet();
-                    writer.write(sheetNumber, reportData);
-                    writer.collect(buffer);
-                    return true;
-                } catch (Throwable th) {
-                    log.error("writeReport : fail to write : reportId={}, th={}", report.getId(), th);
-                    return false;
-                }
+                break;
+            }
             case CANCELED: {
                 log.info("writeReport : canceled : reportId={}", report.getId());
                 return true;
@@ -175,86 +170,77 @@ public class ReportYtWorkImpl implements ReportYtWork {
                 return false;
             }
         }
+
+        data.forEach((email, ytWorkItem) -> ytWorkItem.setPersonInfo(makePersonInfo(email)));
+        List<ReportYtWorkRow> reportData = groupingByDepartment(data.values());
+        Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
+        try (ReportWriter<ReportYtWorkRow> writer = new ExcelReportWriter(localizedLang, collector.getProcessedWorkTypes())) {
+            log.debug("writeReport : start write sheet");
+            int sheetNumber = writer.createSheet();
+            writer.write(sheetNumber, reportData);
+            writer.collect(buffer);
+            return true;
+        } catch (Throwable th) {
+            log.error("writeReport : fail to write : reportId={}, th={}", report.getId(), th);
+            return false;
+        }
     }
 
-    private List<ReportYtWorkRow> groupingByDepartment(Collection<ReportYtWorkRowItem> items){
-        final String noValue = "Nothing";
-        class StringWithId implements Comparable<StringWithId> {
-            final String string;
-            final long id;
-            StringWithId(String string, long id) {
-                this.string = string;
-                this.id = id;
-            }
-            @Override
-            public boolean equals(Object o) {
-                if (this == o) return true;
-                if (!(o instanceof StringWithId)) return false;
-                StringWithId that = (StringWithId) o;
-                return id == that.id;
-            }
-            @Override
-            public int hashCode() {
-                return Objects.hash(id);
-            }
-
-            @Override
-            public int compareTo(StringWithId o) {
-                return (int)(id - o.id);
-            }
-        }
-
+    public List<ReportYtWorkRow> groupingByDepartment(Collection<ReportYtWorkRowItem> items){
         Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasWorkEntry = stream(items)
-                .collect(partitioningBy(item -> item.getPersonInfo().getMainWorkEntry() != null));
+                .collect(partitioningBy(item -> item.getPersonInfo().hasWorkEntry()));
         List<ReportYtWorkRowItem> hasWorkEntry = partitionByHasWorkEntry.get(true);
 
-        Map<StringWithId, List<ReportYtWorkRowItem>> groupingByCompany = hasWorkEntry.stream()
-                .collect(groupingBy(item -> new StringWithId(
-                        item.getPersonInfo().getMainWorkEntry().getCompanyName(),
-                        item.getPersonInfo().getMainWorkEntry().getCompanyId()))
-                );
+        Map<NameWithId, Map<NameWithId, Map<NameWithId, List<ReportYtWorkRowItem>>>>
+                cToPDToDToItem = new HashMap<>(); // companyToParentDepartmentToDepartmentToItem
 
-        Map<StringWithId, Map<StringWithId, List<ReportYtWorkRowItem>>> groupingByDepartmentParent = new HashMap<>();
-        groupingByCompany.forEach((companyName, i) -> {
-            Map<StringWithId, List<ReportYtWorkRowItem>> collect = i.stream().collect(groupingBy(item -> {
-                        String departmentParentName = item.getPersonInfo().getMainWorkEntry().getDepartmentParentName();
-                    return departmentParentName == null ?
-                            new StringWithId(noValue, 0) :
-                            new StringWithId(departmentParentName, item.getPersonInfo().getMainWorkEntry().getParentDepId());
-                    }));
-            groupingByDepartmentParent.put(companyName, collect);
+        hasWorkEntry.forEach(item -> {
+            PersonInfo personInfo = item.getPersonInfo();
+            Map<NameWithId, Map<NameWithId, List<ReportYtWorkRowItem>>> PDToDToItem =
+                    cToPDToDToItem.compute(personInfo.getCompanyName(), (k, v) -> v != null ? v : new HashMap<>());
+            if (personInfo.getDepartmentParentName() != nullDepartmentParentName) {
+                Map<NameWithId, List<ReportYtWorkRowItem>> DToItem =
+                        PDToDToItem.compute(personInfo.getDepartmentParentName(), (k, v) -> v != null ? v : new HashMap<>());
+                DToItem.compute(personInfo.getDepartmentName(), (k, v) -> {
+                    if (v == null) { v = new ArrayList<>(); }
+                    v.add(item);
+                    return v;
+                });
+            } else {
+                Map<NameWithId, List<ReportYtWorkRowItem>> DToItem =
+                        PDToDToItem.compute(personInfo.getDepartmentName(), (k, v) -> v != null ? v : new HashMap<>());
+                DToItem.compute(nullDepartmentName, (k, v) -> {
+                    if (v == null) { v = new ArrayList<>(); }
+                    v.add(item);
+                    return v;
+                });
+            }
         });
 
         List<ReportYtWorkRow> list = new ArrayList<>();
-        groupingByDepartmentParent.entrySet().stream().sorted(Comparator.comparing(entry -> entry.getKey().id)).forEach(i -> {
-            String companyName = i.getKey().string;
-            if (!noValue.equals(companyName)) {
-                list.add( new ReportYtWorkRowHeader(companyName));
-            }
-            i.getValue().entrySet().stream().sorted(Comparator.comparing(entry -> entry.getKey().id)).forEach(ii -> {
-                String departmentParent = ii.getKey().string;
-                if (!noValue.equals(departmentParent)) {
-                    list.add(new ReportYtWorkRowHeader(departmentParent));
-                }
-                Map<StringWithId, List<ReportYtWorkRowItem>> hasDepartment = ii.getValue().stream().collect(groupingBy(item -> {
-                    String departmentName = item.getPersonInfo().getMainWorkEntry().getDepartmentName();
-                    return departmentName == null ? new StringWithId(noValue, 0) :
-                            new StringWithId(departmentName, item.getPersonInfo().getMainWorkEntry().getDepId());
-                }));
-                hasDepartment.entrySet().stream().sorted(Comparator.comparing(entry -> entry.getKey().id)).forEach(iii -> {
-                    String department = iii.getKey().string;
-                    if (!noValue.equals(department)) {
-                        list.add(new ReportYtWorkRowHeader(department));
+        cToPDToDToItem.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(i -> {
+            String companyName = i.getKey().getString();
+            list.add( new ReportYtWorkRowHeader(companyName));
+            i.getValue().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(ii -> {
+                String departmentParent = ii.getKey().getString();
+                list.add(new ReportYtWorkRowHeader(departmentParent));
+                ii.getValue().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(iii -> {
+                    NameWithId department = iii.getKey();
+                    if (department != nullDepartmentName) {
+                        list.add(new ReportYtWorkRowHeader(department.getString()));
                     }
-                    list.addAll(iii.getValue().stream().sorted(Comparator.comparing(item -> item.getPersonInfo().getDisplayName())).collect(toList()));
+                    list.addAll(iii.getValue().stream()
+                            .sorted(Comparator.comparing(item -> item.getPersonInfo().getDisplayName()))
+                            .collect(Collectors.toList())
+                    );
                 });
             });
         });
+
         list.add(new ReportYtWorkRowHeader(CLASSIFICATION_ERROR_PREFIX + " company"));
         list.addAll(partitionByHasWorkEntry.get(false));
         return list;
     }
-
 
     private Set<String> makeHomeCompanySet() {
         Set<String> homeCompany = companyDAO.getAllHomeCompanies().stream()
@@ -264,7 +250,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
         return homeCompany;
     }
 
-    private ReportYtWorkRowItem.PersonInfo makePersonInfo(String email) {
+    private PersonInfo makePersonInfo(String email) {
         EmployeeShortView employeeShortView = null;
         if (isNotEmpty(email)) {
             EmployeeQuery query = new EmployeeQuery();
@@ -278,15 +264,32 @@ public class ReportYtWorkImpl implements ReportYtWork {
         return employeeShortView != null ? createPersonInfo(employeeShortView) : createTempPersonInfo(email);
     }
 
-    static private ReportYtWorkRowItem.PersonInfo createPersonInfo(EmployeeShortView employeeShortView) {
-        return new ReportYtWorkRowItem.PersonInfo(
-                employeeShortView.getDisplayShortName(),
-                new WorkerEntryFacade(employeeShortView.getWorkerEntries()).getMainEntry()
-                );
+    static private PersonInfo createPersonInfo(EmployeeShortView employeeShortView) {
+        WorkerEntryShortView mainEntry = new WorkerEntryFacade(employeeShortView.getWorkerEntries()).getMainEntry();
+        if (mainEntry == null) {
+            return new PersonInfo(
+                    employeeShortView.getDisplayShortName(),
+                    employeeShortView.getId()
+            );
+        } else {
+            return new PersonInfo(
+                    employeeShortView.getDisplayShortName(),
+                    employeeShortView.getId(),
+                    mainEntry.getCompanyName() != null ?
+                            new NameWithId(mainEntry.getCompanyName(), mainEntry.getCompanyId())
+                            : PersonInfo.nullCompanyName,
+                    mainEntry.getDepartmentParentName() != null ?
+                            new NameWithId(mainEntry.getDepartmentParentName(), mainEntry.getParentDepId())
+                            : PersonInfo.nullDepartmentParentName,
+                    mainEntry.getDepartmentName() != null ?
+                            new NameWithId(mainEntry.getDepartmentName(), mainEntry.getDepId())
+                            : nullDepartmentName
+            );
+        }
     }
 
-    static private ReportYtWorkRowItem.PersonInfo createTempPersonInfo(String email) {
-        return new ReportYtWorkRowItem.PersonInfo(CLASSIFICATION_ERROR_PREFIX + email, null);
+    static private PersonInfo createTempPersonInfo(String email) {
+        return new PersonInfo(CLASSIFICATION_ERROR_PREFIX + email, null);
     }
 
     private ReportYtWorkInfo makeYtReportItem(IssueWorkItem issueWorkItem) {
