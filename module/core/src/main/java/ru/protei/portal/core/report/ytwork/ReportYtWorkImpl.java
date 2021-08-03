@@ -28,8 +28,8 @@ import ru.protei.portal.tools.ChunkIterator;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.partitioningBy;
 import static java.util.stream.Collectors.toSet;
@@ -39,7 +39,6 @@ import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.NameWithId;
 import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.PersonInfo;
 import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.PersonInfo.nullDepartmentName;
-import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.PersonInfo.nullDepartmentParentName;
 
 public class ReportYtWorkImpl implements ReportYtWork {
 
@@ -191,7 +190,23 @@ public class ReportYtWorkImpl implements ReportYtWork {
                 .collect(partitioningBy(item -> item.getPersonInfo().hasWorkEntry()));
         List<ReportYtWorkRowItem> hasWorkEntry = partitionByHasWorkEntry.get(true);
 
-        Map<NameWithId, Map<NameWithId, Map<NameWithId, List<ReportYtWorkRowItem>>>>
+        List<ReportYtWorkRow> list = new ArrayList<>();
+        Map<NameWithId, Tree> companyMap = new HashMap<>();
+        hasWorkEntry.forEach(item -> {
+            PersonInfo personInfo = item.getPersonInfo();
+            Tree tree = companyMap.compute(personInfo.getCompanyName(), (k, v) -> v != null ? v : new Tree());
+            tree.addNode(personInfo.getDepartmentParentName(), personInfo.getDepartmentName(), item);
+        });
+
+        companyMap.forEach((company, tree) -> {
+            list.add(new ReportYtWorkRowHeader(company.getString()));
+            tree.traversal(node -> {
+                list.add(new ReportYtWorkRowHeader(node.nameWithId.getString()));
+                list.addAll(node.value);
+            });
+        });
+
+/*        Map<NameWithId, Map<NameWithId, Map<NameWithId, List<ReportYtWorkRowItem>>>>
                 cToPDToDToItem = new HashMap<>(); // companyToParentDepartmentToDepartmentToItem
 
         hasWorkEntry.forEach(item -> {
@@ -235,7 +250,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
                     );
                 });
             });
-        });
+        });*/
 
         list.add(new ReportYtWorkRowHeader(CLASSIFICATION_ERROR_PREFIX + " company"));
         list.addAll(partitionByHasWorkEntry.get(false));
@@ -308,5 +323,79 @@ public class ReportYtWorkImpl implements ReportYtWork {
             return null;
         }
         return field.getValueAsString();
+    }
+
+    static class Tree {
+        static class Node {
+            Node parent;
+            List<Node> children;
+            NameWithId nameWithId;
+            List<ReportYtWorkRowItem> value;
+
+            public Node() {
+                this.parent = null;
+                this.children = new ArrayList<>();
+                this.nameWithId = null;
+                this.value = new ArrayList<>();
+            }
+
+            public Node(Node parent, List<Node> children, NameWithId nameWithId, List<ReportYtWorkRowItem> value) {
+                this.parent = parent;
+                this.children = children;
+                this.nameWithId = nameWithId;
+                this.value = value;
+            }
+        }
+        Node root = new Node(null, new ArrayList<>(), new NameWithId("root", -1L), new ArrayList<>());
+        Map<NameWithId, Node> map = new HashMap<>();
+        void addNode(NameWithId parentName, NameWithId childName, ReportYtWorkRowItem value) {
+            Node parent = findNode(root, parentName);
+            if (parent != null) {
+                Node child = null;
+                for (Node node : parent.children) {
+                    if (node.nameWithId.equals(childName)) {
+                        child = node;
+                    }
+                }
+                if (child == null) {
+                    Node node = new Node(parent, new ArrayList<>(), childName, listOf(value));
+                    parent.children.add(node);
+                    map.put(node.nameWithId, node);
+                } else {
+                    child.value.add(value);
+                }
+            } else {
+                Node child = findNode(root, childName);
+                if (child != null) {
+                    child.value.add(value);
+                    Node newParent = new Node(child.parent, listOf(child), parentName, new ArrayList<>());
+                    child.parent.children.remove(child);
+                    child.parent = newParent;
+                    map.put(newParent.nameWithId, newParent);
+                } else {
+                    Node node = new Node(root, new ArrayList<>(), childName, listOf(value));
+                    root.children.add(node);
+                    map.put(node.nameWithId, node);
+                }
+            }
+        }
+
+        void traversal(Consumer<Node> consumer) {
+            if (root == null) {
+                return;
+            }
+            Queue<Node> queue = new LinkedList<>();
+            queue.add(root);
+            while (!queue.isEmpty()) {
+                Node cur = queue.poll();
+                consumer.accept(cur);
+                queue.addAll(cur.children);
+            }
+        }
+
+        Node findNode(Node root, NameWithId nameWithId) {
+            return map.get(nameWithId);
+        }
+
     }
 }
