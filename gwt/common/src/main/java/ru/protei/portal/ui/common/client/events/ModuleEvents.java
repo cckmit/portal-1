@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.events;
 
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import ru.protei.portal.core.model.ent.Module;
 
 public class ModuleEvents {
 
@@ -12,6 +13,16 @@ public class ModuleEvents {
         }
 
         public Long id;
+        public HasWidgets parent;
+    }
+
+    public static class EditModuleMeta {
+        public EditModuleMeta(HasWidgets parent, Module module) {
+            this.parent = parent;
+            this.module = module;
+        }
+
+        public Module module;
         public HasWidgets parent;
     }
 }

@@ -21,6 +21,9 @@
                     </div>
                 </div>
                 <div class="p-l-30 p-t-15 p-r-15">
+                    <h5 class="no-margin">
+                        <span ui:field="serialNumber"/>
+                    </h5>
                     <small ui:field="createdBy" class="pull-right text-right"/>
                     <g:HTMLPanel ui:field="nameContainer"/>
                 </div>

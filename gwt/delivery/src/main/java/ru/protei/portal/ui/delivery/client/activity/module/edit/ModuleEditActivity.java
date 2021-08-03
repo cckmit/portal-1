@@ -5,12 +5,9 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
-import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.CommentAndHistoryEvents;
 import ru.protei.portal.ui.common.client.events.ModuleEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ModuleControllerAsync;
@@ -47,7 +44,7 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
                     this.module = module;
                     switchNameDescriptionToEdit(false);
                     fillView(module);
-//                    showMeta(delivery);
+                    showMeta(module);
                     attachToContainer(container);
                 }));
     }
@@ -80,7 +77,7 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
     private void fillView(Module module) {
         view.setCreatedBy(lang.createBy("Создатель",
                 DateFormatter.formatDateTime(module.getCreated())));
-
+        view.setModuleNumber(module.getSerialNumber());
         nameAndDescriptionView.setName(module.getName());
         nameAndDescriptionView.setDescription(module.getDescription());
         view.nameAndDescriptionEditButtonVisibility().setVisible(true);
@@ -92,6 +89,12 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
         textRenderController.render( text, markup, new FluentCallback<String>()
                 .withError( throwable -> consumer.accept( null ) )
                 .withSuccess( consumer ) );
+    }
+
+    private void showMeta(Module module) {
+        // нужно ли уведомлять подписчиков
+//        fireEvent(new ModuleEvents.EditModuleMeta(view.getMetaContainer(), module, makeMetaNotifiers(delivery)));
+        fireEvent(new ModuleEvents.EditModuleMeta(view.getMetaContainer(), module));
     }
 
     private void attachToContainer(HasWidgets container) {

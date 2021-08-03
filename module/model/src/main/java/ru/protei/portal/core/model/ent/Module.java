@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
@@ -106,11 +107,17 @@ public class Module extends AuditableObject {
     @JdbcColumn(name = HW_MANAGER)
     private Long hwManagerId;
 
+    @JdbcJoinedObject(localColumn = HW_MANAGER, remoteColumn = "id")
+    private PersonShortView hwManager;
+
     /**
      * Ответственный КК
      */
     @JdbcColumn(name = QC_MANAGER)
     private Long qcManagerId;
+
+    @JdbcJoinedObject(localColumn = QC_MANAGER, remoteColumn = "id")
+    private PersonShortView qcManager;
 
     /**
      * Дата отправки
@@ -218,7 +225,13 @@ public class Module extends AuditableObject {
         this.parentModuleId = parentModuleId;
     }
 
+    public String getCustomerName() {
+        return customerName;
+    }
 
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
 
     public String getManagerName() {
         return managerName;
@@ -236,12 +249,28 @@ public class Module extends AuditableObject {
         this.hwManagerId = hwManagerId;
     }
 
+    public PersonShortView getHwManager() {
+        return hwManager;
+    }
+
+    public void setHwManager(PersonShortView hwManager) {
+        this.hwManager = hwManager;
+    }
+
     public Long getQcManagerId() {
         return qcManagerId;
     }
 
     public void setQcManagerId(Long qcManagerId) {
         this.qcManagerId = qcManagerId;
+    }
+
+    public PersonShortView getQcManager() {
+        return qcManager;
+    }
+
+    public void setQcManager(PersonShortView qcManager) {
+        this.qcManager = qcManager;
     }
 
     public Date getDepartureDate() {

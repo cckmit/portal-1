@@ -2,6 +2,7 @@ package ru.protei.portal.ui.delivery.client.view.module.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -49,6 +50,11 @@ public class ModuleEditView extends Composite implements AbstractModuleEditView 
         createdBy.setInnerHTML( value );
     }
 
+    @Override
+    public void setModuleNumber( String serialNumber ) {
+        this.serialNumber.setInnerText(serialNumber);
+    }
+
     @UiHandler("nameAndDescriptionEditButton")
     public void onNameAndDescriptionEditButtonClicked(ClickEvent event) {
         if (activity != null) {
@@ -67,6 +73,8 @@ public class ModuleEditView extends Composite implements AbstractModuleEditView 
     @UiField
     Anchor addLinkButton;
 
+    @UiField
+    SpanElement serialNumber;
     @UiField
     HTMLPanel nameContainer;
     @UiField

@@ -3588,6 +3588,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String moduleDescription();
 
+    String moduleState();
+
     String errKitSerialNumberNotMatchDeliveryNumber();
 
     String documentation();
