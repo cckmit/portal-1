@@ -7,5 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface ModuleControllerAsync {
+    void getModule(Long id, AsyncCallback<Module> async);
+
     void getModulesByKitId(Long kitId, AsyncCallback<Map<Module, List<Module>>> async);
+
 }

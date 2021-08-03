@@ -2,7 +2,7 @@ package ru.protei.portal.ui.delivery.server.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.core.service.ModuleService;
 import ru.protei.portal.core.service.session.SessionService;
@@ -29,8 +29,14 @@ public class ModuleControllerImpl implements ModuleController {
     HttpServletRequest httpServletRequest;
 
     @Override
+    public Module getModule(Long id) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(moduleService.getModule(token, id));
+    }
+
+    @Override
     public Map<Module, List<Module>> getModulesByKitId(Long kitId) throws RequestFailedException {
-        Result<Map<Module, List<Module>>> result = moduleService.getModulesByKitId(getAuthToken(sessionService, httpServletRequest), kitId);
-        return checkResultAndGetData(result);
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(moduleService.getModulesByKitId(token, kitId));
     }
 }

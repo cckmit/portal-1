@@ -8,5 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface ModuleService {
+    Result<Module> getModule(AuthToken token, Long id);
     Result<Map<Module, List<Module>>> getModulesByKitId(AuthToken token, Long kitId);
 }

@@ -3584,6 +3584,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String moduleStatePaused();
 
+    String moduleName();
+
+    String moduleDescription();
+
     String errKitSerialNumberNotMatchDeliveryNumber();
 
     String documentation();

@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.KitEvents;
+import ru.protei.portal.ui.common.client.events.ModuleEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
@@ -66,8 +67,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     @Override
     public void onItemClicked(Module module) {
-        fireEvent(new NotifyEvents.Show("Module name edit clicked: " + module.getSerialNumber() + " " + module.getDescription(),
-                NotifyEvents.NotifyType.SUCCESS));
+        fireEvent(new ModuleEvents.Show(view.getModuleEditContainer(), module.getId()));
     }
 
     private void fillModules(Long kitId) {

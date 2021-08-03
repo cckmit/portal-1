@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dao.ModuleDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Module;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 
 import java.util.*;
@@ -18,6 +19,15 @@ import static ru.protei.portal.api.struct.Result.ok;
 public class ModuleServiceImpl implements ModuleService {
     @Autowired
     ModuleDAO moduleDAO;
+
+
+    @Override
+    public Result<Module> getModule(AuthToken token, Long id) {
+        Module module = moduleDAO.get(id);
+        if (module == null) return error(En_ResultStatus.NOT_FOUND);
+
+        return ok(module);
+    }
 
     @Override
     public Result<Map<Module, List<Module>>> getModulesByKitId(AuthToken token, Long kitId) {
