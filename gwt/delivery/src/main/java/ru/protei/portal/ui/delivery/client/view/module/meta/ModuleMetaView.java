@@ -28,6 +28,7 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
     @Override
     public void setActivity(AbstractModuleMetaActivity activity) {
         this.activity = activity;
+        state.addValueChangeHandler(event -> activity.onStateChange());
     }
 
     @Override

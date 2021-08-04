@@ -138,6 +138,10 @@ public enum En_AuditType implements HasId {
     KIT_CREATE(92),
     KIT_MODIFY(93),
     KIT_REMOVE(94),
+
+    MODULE_CREATE(95),
+    MODULE_MODIFY(96),
+    MODULE_REMOVE(97),
     ;
 
     En_AuditType(int id ) {

@@ -59,6 +59,13 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
         );
     }
 
+    @Event
+    public void onChangeRow( ModuleEvents.ChangeModule event ) {
+        moduleService.getModule(event.id, new FluentCallback<Module>()
+                .withSuccess(module -> moduleView.updateRow(module))
+        );
+    }
+
     @Override
     public void onKitClicked(Long kitId) {
         moduleView.clearModules();

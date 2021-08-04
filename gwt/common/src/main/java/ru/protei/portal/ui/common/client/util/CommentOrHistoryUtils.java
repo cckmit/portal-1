@@ -102,9 +102,10 @@ public class CommentOrHistoryUtils {
             case CASE_STATE: return makeHistoryItem(history, lang.issueState(), CaseState.class);
             case CASE_MANAGER: return makeHistoryItem(history, lang.issueManager(), EmployeeShortView.class);
             case CASE_IMPORTANCE: return makeHistoryItem(history, lang.issueImportance(), ImportanceLevel.class);
-            case DATE: return makeHistoryItem(history, lang.deliveryDepartureDate(), Delivery.class);
+            case DEPARTURE_DATE: return makeHistoryItem(history, lang.deliveryDepartureDate(), Delivery.class);
             case DELIVERY_STATE: return makeHistoryItem(history, lang.issueState(), Delivery.class);
             case MODULE_STATE: return makeHistoryItem(history, lang.issueState(), Module.class);
+            case BUILD_DATE: return makeHistoryItem(history, lang.moduleBuildDate(), Module.class);
             default: return null;
         }
     }
@@ -210,7 +211,7 @@ public class CommentOrHistoryUtils {
             return caseHistorySimpleItemView;
         }
 
-        if (En_HistoryType.DATE.equals(historyType)) {
+        if (En_HistoryType.DEPARTURE_DATE.equals(historyType)) {
             CaseHistorySimpleItemView caseHistoryDateItemView = caseHistorySimpleItemViewProvider.get();
             caseHistoryDateItemView.setLink(value, null);
 
@@ -233,6 +234,12 @@ public class CommentOrHistoryUtils {
             return caseHistoryDeliveryStateItemView;
         }
 
+        if (En_HistoryType.BUILD_DATE.equals(historyType)) {
+            CaseHistorySimpleItemView caseHistoryDateItemView = caseHistorySimpleItemViewProvider.get();
+            caseHistoryDateItemView.setLink(value, null);
+
+            return caseHistoryDateItemView;
+        }
 
         return null;
     }

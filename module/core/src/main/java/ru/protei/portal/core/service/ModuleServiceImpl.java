@@ -1,25 +1,49 @@
 package ru.protei.portal.core.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.exception.RollbackTransactionException;
+import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.CaseStateDAO;
+import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dao.ModuleDAO;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Module;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.service.policy.PolicyService;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.core.utils.HistoryUtils.*;
 
 public class ModuleServiceImpl implements ModuleService {
+
+    private final static DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
+
+    private static Logger log = LoggerFactory.getLogger(ModuleServiceImpl.class);
+
     @Autowired
     ModuleDAO moduleDAO;
-
+    @Autowired
+    PolicyService policyService;
+    @Autowired
+    CaseObjectDAO caseObjectDAO;
+    @Autowired
+    CaseTypeDAO caseTypeDAO;
+    @Autowired
+    HistoryService historyService;
+    @Autowired
+    CaseStateDAO caseStateDAO;
 
     @Override
     public Result<Module> getModule(AuthToken token, Long id) {
@@ -49,5 +73,150 @@ public class ModuleServiceImpl implements ModuleService {
                         .collect(Collectors.toCollection(ArrayList::new)),
                         (a, b) -> a,
                         LinkedHashMap::new));
+    }
+
+    @Override
+    @Transactional
+    public Result<Module> updateMeta(AuthToken token, Module meta) {
+        if (meta == null || meta.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!isValid(meta)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        Module oldMeta = moduleDAO.get(meta.getId());
+        if (oldMeta == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        CaseObject caseObject = caseObjectDAO.get(meta.getId());
+        caseObject = createModuleCaseObject(caseObject, meta, null, null, new Date());
+        boolean isUpdated = caseObjectDAO.merge(caseObject);
+        if (!isUpdated) {
+            log.info("Failed to update module meta data {} at db", caseObject.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        isUpdated = moduleDAO.merge(meta);
+        if (!isUpdated) {
+            log.warn("updateMeta(): module not updated. module={}",  caseObject.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        updateModuleHistory(token, meta, oldMeta);
+
+        //todo надо будет добавить событие изменения модуля для рассылки уведомлений
+        return ok(moduleDAO.get(caseObject.getId()));
+    }
+
+    private void updateModuleHistory(AuthToken token, Module meta, Module oldMeta) {
+        addStateHistory(token, meta, oldMeta);
+        addBuildDateHistory(token, meta, oldMeta);
+        addDepartureDateHistory(token, meta, oldMeta);
+    }
+
+    private void addStateHistory(AuthToken token, Module meta, Module oldMeta) {
+        if (meta.getStateId() != oldMeta.getStateId()) {
+            Result<Long> resultState = changeModuleStateHistory(token, meta.getId(), oldMeta.getStateId(), caseStateDAO.get(oldMeta.getStateId()).getState(),
+                    meta.getStateId(), caseStateDAO.get(meta.getStateId()).getState());
+
+            if (resultState.isError()) {
+                log.error("State message for the module {} not saved!", meta.getId());
+            }
+        }
+    }
+
+    private void addDepartureDateHistory(AuthToken token, Module meta, Module oldMeta) {
+        Date oldDepartureDate = oldMeta.getDepartureDate();
+        Date newDepartureDate = meta.getDepartureDate();
+        Result<Long> resultDate = ok();
+
+        if (dateAdded(oldDepartureDate, newDepartureDate)) {
+            resultDate = addDateHistory(token, meta.getId(), meta.getDepartureDate(), En_HistoryType.DEPARTURE_DATE);
+        }
+
+        if (dateChanged(oldDepartureDate, newDepartureDate)) {
+            resultDate = changeDateHistory(token, meta.getId(), oldMeta.getDepartureDate(), meta.getDepartureDate(), En_HistoryType.DEPARTURE_DATE);
+        }
+
+        if (dateRemoved(oldDepartureDate, newDepartureDate)) {
+            resultDate = removeDateHistory(token, meta.getId(), oldMeta.getDepartureDate(), En_HistoryType.DEPARTURE_DATE);
+        }
+
+        if (resultDate.isError()) {
+            log.error("Departure date message with oldDate={}, newDate={} for module {} not saved!",
+                    oldDepartureDate, newDepartureDate, meta.getName());
+        }
+    }
+
+    private void addBuildDateHistory(AuthToken token, Module meta, Module oldMeta) {
+        Date oldBuildDate = oldMeta.getBuildDate();
+        Date newBuildDate = meta.getBuildDate();
+        Result<Long> resultDate = ok();
+
+        if (dateAdded(oldBuildDate, newBuildDate)) {
+            resultDate = addDateHistory(token, meta.getId(), meta.getDepartureDate(), En_HistoryType.BUILD_DATE);
+        }
+
+        if (dateChanged(oldBuildDate, newBuildDate)) {
+            resultDate = changeDateHistory(token, meta.getId(), oldMeta.getDepartureDate(), meta.getDepartureDate(), En_HistoryType.BUILD_DATE);
+        }
+
+        if (dateRemoved(oldBuildDate, newBuildDate)) {
+            resultDate = removeDateHistory(token, meta.getId(), oldMeta.getDepartureDate(), En_HistoryType.BUILD_DATE);
+        }
+
+        if (resultDate.isError()) {
+            log.error("Build date message with oldDate={}, newDate={} for module {} not saved!",
+                    oldBuildDate, newBuildDate, meta.getName());
+        }
+    }
+
+    private boolean isValid(Module module) {
+        return !isBlank(module.getName())
+                && module.getSerialNumber() != null;
+    }
+
+    private CaseObject createModuleCaseObject(CaseObject caseObject, Module module, Long creatorId,
+                                           Date created, Date modified) {
+        if (caseObject == null) {
+            caseObject = new CaseObject();
+            caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.MODULE));
+            caseObject.setType(En_CaseType.KIT);
+            caseObject.setCreated(created);
+            caseObject.setModified(created);
+            caseObject.setCreatorId(creatorId);
+        } else {
+            caseObject.setModified(modified);
+        }
+
+        caseObject.setId(module.getId());
+        caseObject.setName(module.getName());
+        caseObject.setStateId(module.getStateId());
+        caseObject.setInfo(module.getDescription());
+
+        return caseObject;
+    }
+
+    private Result<Long> changeModuleStateHistory(AuthToken token, Long caseObjectId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
+        return historyService.createHistory(token, caseObjectId, En_HistoryAction.CHANGE, En_HistoryType.MODULE_STATE, oldStateId, oldStateName, newStateId, newStateName);
+    }
+
+    private Result<Long> addDateHistory(AuthToken token, Long deliveryId, Date date, En_HistoryType type) {
+        return historyService.createHistory(token, deliveryId, En_HistoryAction.ADD, type,
+                null, null, deliveryId, DATE_FORMAT.format(date));
+    }
+
+    private Result<Long> changeDateHistory(AuthToken token, Long deliveryId, Date oldDate, Date newDate, En_HistoryType type) {
+        return historyService.createHistory(token, deliveryId, En_HistoryAction.CHANGE, type, null,
+                oldDate != null ? DATE_FORMAT.format(oldDate) : null, deliveryId,
+                newDate != null ? DATE_FORMAT.format(newDate) : null);
+    }
+
+    private Result<Long> removeDateHistory(AuthToken token, Long deliveryId, Date oldDate, En_HistoryType type) {
+        return historyService.createHistory(token, deliveryId, En_HistoryAction.REMOVE, type,
+                null, DATE_FORMAT.format(oldDate), deliveryId, null);
     }
 }

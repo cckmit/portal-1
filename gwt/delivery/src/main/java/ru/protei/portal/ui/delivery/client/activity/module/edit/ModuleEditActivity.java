@@ -7,8 +7,10 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.Module;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.ModuleEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ModuleControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
@@ -51,16 +53,43 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
 
     @Override
     public void onNameDescriptionChanged() {
-
+        module.setName(changeRequest.getName());
+        module.setDescription(changeRequest.getInfo());
+        switchNameDescriptionToEdit(false);
+        fillView(module);
     }
 
     @Override
     public void saveModuleNameAndDescription() {
+        if (!nameAndDescriptionEditView.getNameValidator().isValid()) {
+            fireEvent( new NotifyEvents.Show( lang.errEmptyName(), NotifyEvents.NotifyType.ERROR ) );
+            return;
+        }
+        if (requestedNameDescription) {
+            return;
+        }
+        requestedNameDescription = true;
 
+        changeRequest.setName( nameAndDescriptionEditView.name().getValue() );
+        changeRequest.setInfo( nameAndDescriptionEditView.description().getValue() );
+
+        moduleService.updateNameAndDescription( changeRequest, new FluentCallback<Void>()
+                .withError( t -> requestedNameDescription = false )
+                .withSuccess( result -> {
+                    requestedNameDescription = false;
+
+                    fireEvent( new NotifyEvents.Show( lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS ));
+                    fireEvent( new ModuleEvents.ChangeModule(changeRequest.getId()) );
+                    onNameDescriptionChanged();
+                } ) );
     }
 
     @Override
     public void onNameAndDescriptionEditClicked() {
+        nameAndDescriptionEditView.name().setValue(module.getName());
+        nameAndDescriptionEditView.description().setValue(module.getDescription());
+        view.nameAndDescriptionEditButtonVisibility().setVisible(false);
+        changeRequest = new CaseNameAndDescriptionChangeRequest(module.getId(), module.getName(), module.getDescription());
         switchNameDescriptionToEdit(true);
     }
 
@@ -121,5 +150,8 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
 
     @ContextAware
     Module module;
+
+    private boolean requestedNameDescription;
+    private CaseNameAndDescriptionChangeRequest changeRequest;
 }
 

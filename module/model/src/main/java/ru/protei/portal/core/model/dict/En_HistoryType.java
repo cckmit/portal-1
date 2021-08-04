@@ -9,9 +9,10 @@ public enum En_HistoryType implements HasId {
     CASE_STATE(3),
     CASE_MANAGER(4),
     CASE_IMPORTANCE(5),
-    DATE(6),
+    DEPARTURE_DATE(6),
     DELIVERY_STATE(7),
     MODULE_STATE(8),
+    BUILD_DATE(9)
     ;
 
     En_HistoryType(int id) {

@@ -43,7 +43,7 @@ public class ModuleColumn extends ClickColumn<Module> {
 
     private Node makeBottomBlock(Module value) {
         DivElement div = Document.get().createDivElement();
-        div.appendChild(makeSpan("", value.getDescription()));
+        div.appendChild(makeSpan("", value.getName()));
         return div;
     }
 

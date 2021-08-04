@@ -71,6 +71,12 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
         }
     }
 
+    @Override
+    public void updateRow(Module item) {
+        if(item != null)
+            table.updateRow(item);
+    }
+
     @UiField
     Lang lang;
 

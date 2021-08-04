@@ -17,4 +17,6 @@ public interface AbstractModuleTableView extends IsWidget {
     void clearModules();
 
     Set<Module> getSelectedModules();
+
+    void updateRow(Module item);
 }

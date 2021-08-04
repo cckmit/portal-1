@@ -25,4 +25,12 @@ public class ModuleEvents {
         public Module module;
         public HasWidgets parent;
     }
+
+    public static class ChangeModule {
+        public ChangeModule(Long id) {
+            this.id = id;
+        }
+
+        public Long id;
+    }
 }

@@ -423,6 +423,7 @@ public class CaseServiceImpl implements CaseService {
                         infoDiff,
                         token.getPersonId()) );
             }
+            // todo добавить тип MODULE
             return result;
         });
     }
