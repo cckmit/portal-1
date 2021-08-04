@@ -26,4 +26,8 @@ public interface AbstractModuleMetaView {
     void setBuildDateValid(boolean isValid);
 
     void setDepartureDateValid(boolean isValid);
+
+    boolean isBuildDateEmpty();
+
+    boolean isDepartureDateEmpty();
 }

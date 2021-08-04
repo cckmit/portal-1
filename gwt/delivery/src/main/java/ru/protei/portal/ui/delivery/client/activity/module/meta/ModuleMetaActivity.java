@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Module;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.CommentAndHistoryEvents;
 import ru.protei.portal.ui.common.client.events.ModuleEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -14,6 +15,9 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ModuleControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.view.module.meta.ModuleMetaView;
+
+import java.util.Date;
+import java.util.Objects;
 
 
 public abstract class ModuleMetaActivity implements Activity, AbstractModuleMetaActivity {
@@ -38,6 +42,39 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
         CaseState caseState = view.state().getValue();
         module.setState(caseState);
         module.setStateId(caseState.getId());
+        onCaseMetaChanged(module);
+    }
+
+    @Override
+    public void onHwManagerChange() {
+        PersonShortView hwManager = view.hwManager().getValue();
+        module.setHwManagerId(hwManager == null ? null : hwManager.getId());
+        module.setHwManager(hwManager);
+        onCaseMetaChanged(module);
+    }
+
+    @Override
+    public void onQcManagerChange() {
+        PersonShortView qcManager = view.qcManager().getValue();
+        module.setQcManagerId(qcManager == null ? null : qcManager.getId());
+        module.setQcManager(qcManager);
+        onCaseMetaChanged(module);
+    }
+
+    @Override
+    public void onDepartureDateChanged() {
+        if (isDepartureDateEquals(view.departureDate().getValue(), module.getDepartureDate())) {
+            view.setDepartureDateValid(isDepartureDateFieldValid());
+            return;
+        }
+
+        if (!isDepartureDateFieldValid()) {
+            view.setDepartureDateValid(false);
+            return;
+        }
+
+        module.setDepartureDate(view.departureDate().getValue());
+        view.setDepartureDateValid(true);
         onCaseMetaChanged(module);
     }
 
@@ -84,6 +121,24 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
     private void showValidationError(String error) {
         fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
     }
+
+    private boolean isDepartureDateEquals(Date departureDateField, Date departureDateMeta) {
+        if (departureDateField == null) {
+            return departureDateMeta == null;
+        } else {
+            return Objects.equals(departureDateField, departureDateMeta);
+        }
+    }
+
+    public boolean isDepartureDateFieldValid() {
+        Date departureDate = view.departureDate().getValue();
+        if (departureDate == null) {
+            return view.isDepartureDateEmpty();
+        }
+
+        return departureDate.getTime() > System.currentTimeMillis();
+    }
+
 
     @Inject
     private Lang lang;

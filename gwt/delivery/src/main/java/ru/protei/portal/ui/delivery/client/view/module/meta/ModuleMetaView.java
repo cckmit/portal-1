@@ -1,14 +1,17 @@
 package ru.protei.portal.ui.delivery.client.view.module.meta;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.selector.module.ModuleStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
@@ -29,6 +32,8 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
     public void setActivity(AbstractModuleMetaActivity activity) {
         this.activity = activity;
         state.addValueChangeHandler(event -> activity.onStateChange());
+        hwManager.addValueChangeHandler(event -> activity.onHwManagerChange());
+        qcManager.addValueChangeHandler(event -> activity.onQcManagerChange());
     }
 
     @Override
@@ -74,6 +79,21 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
     @Override
     public void setDepartureDateValid(boolean isValid) {
         departureDate.markInputValid(isValid);
+    }
+
+    @Override
+    public boolean isBuildDateEmpty() {
+        return HelperFunc.isEmpty(buildDate.getInputValue());
+    }
+
+    @Override
+    public boolean isDepartureDateEmpty() {
+        return HelperFunc.isEmpty(departureDate.getInputValue());
+    }
+
+    @UiHandler("departureDate")
+    public void onDepartureDateChanged(ValueChangeEvent<Date> event) {
+        activity.onDepartureDateChanged();
     }
 
     @Inject
