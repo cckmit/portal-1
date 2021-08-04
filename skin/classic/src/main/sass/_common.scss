@@ -5441,8 +5441,14 @@ div.form-group-default.form-group-default-selectFx:focus {
 
   .module-row {
     padding-right: 8px;
-    .module-state {
-      padding-right: 5px;
+
+    .module-info {
+      max-height: 38px;
+      overflow: hidden;
+
+      .module-state {
+        padding-right: 5px;
+      }
     }
 
     .manager {

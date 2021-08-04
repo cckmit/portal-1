@@ -51,6 +51,31 @@
                                                      enabled="false" notNull="false"/>
                 </div>
             </div>
+
+            <div class="form-group m-t-10 m-b-0">
+                <label><ui:text from="{lang.deliveryDepartureInfo}"/></label>
+            </div>
+
+            <div class="form-group form-group-attached">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group form-group-default date-picker">
+                            <label class="fade" ><ui:text from="{lang.moduleBuildDate}"/></label>
+                            <datepicker:SinglePicker ui:field="buildDate" type="DATE"
+                                                     formatValue="dd-MM-yyyy" styleName="clearfix"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group form-group-default date-picker">
+                            <label class="fade" ><ui:text from="{lang.deliveryDepartureDate}"/></label>
+                            <datepicker:SinglePicker ui:field="departureDate" type="DATE"
+                                                     formatValue="dd-MM-yyyy" styleName="clearfix"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

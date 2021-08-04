@@ -36,6 +36,10 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
         moduleMetaView.setCustomerCompany(module.getCustomerName());
         moduleMetaView.setManager(module.getManagerName());
 
+        moduleMetaView.buildDate().setValue(module.getBuildDate());
+        moduleMetaView.setBuildDateValid(true);
+        moduleMetaView.departureDate().setValue(module.getDepartureDate());
+        moduleMetaView.setDepartureDateValid(true);
     }
 
     @Inject

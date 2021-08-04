@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
+import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.selector.module.ModuleStateFormSelector;
@@ -14,6 +15,8 @@ import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSele
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.delivery.client.activity.module.meta.AbstractModuleMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.module.meta.AbstractModuleMetaView;
+
+import java.util.Date;
 
 public class ModuleMetaView extends Composite implements AbstractModuleMetaView {
 
@@ -52,6 +55,26 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
         return qcManager;
     }
 
+    @Override
+    public HasValue<Date> buildDate() {
+        return buildDate;
+    }
+
+    @Override
+    public HasValue<Date> departureDate() {
+        return departureDate;
+    }
+
+    @Override
+    public void setBuildDateValid(boolean isValid) {
+        buildDate.markInputValid(isValid);
+    }
+
+    @Override
+    public void setDepartureDateValid(boolean isValid) {
+        departureDate.markInputValid(isValid);
+    }
+
     @Inject
     @UiField( provided = true )
     ModuleStateFormSelector state;
@@ -65,6 +88,12 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
     EmployeeFormSelector qcManager;
     @UiField
     ValidableTextBox customerCompany;
+    @Inject
+    @UiField(provided = true)
+    SinglePicker buildDate;
+    @Inject
+    @UiField(provided = true)
+    SinglePicker departureDate;
 
     private AbstractModuleMetaActivity activity;
 
