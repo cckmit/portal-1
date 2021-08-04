@@ -1,0 +1,24 @@
+variables:
+  PROTEI_PROJECT_CURRENT_PATH: documentation
+
+stages:
+  - build
+  - sync docs
+  - test
+  - deploy
+
+sync-docs:
+  stage: sync docs
+  trigger: department-7/documentation
+  variables:
+    PROTEI_PROJECT_NAME: $CI_PROJECT_NAME
+    PROTEI_PROJECT_CLONE: "${CI_PROJECT_PATH}.git"
+    PROTEI_PROJECT_BRANCH: $CI_COMMIT_REF_NAME
+    PROTEI_PROJECT_PATH: $PROTEI_PROJECT_CURRENT_PATH
+    PROTEI_COMMIT_INITIATOR: $GITLAB_USER_EMAIL
+    PROTEI_COMMIT_MESSAGE: $CI_COMMIT_MESSAGE
+  only:
+    refs:
+      - master
+    changes:
+      - documentation/**/*
