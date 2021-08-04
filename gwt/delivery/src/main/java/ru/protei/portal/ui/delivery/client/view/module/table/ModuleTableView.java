@@ -1,8 +1,10 @@
 package ru.protei.portal.ui.delivery.client.view.module.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -33,6 +35,11 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
         table.addColumn(infoColumn.header, infoColumn.values);
         infoColumn.setHandler(activity);
         infoColumn.setColumnProvider(columnProvider);
+        selectionColumn.setSelectionHandler((module, handler) -> {
+            if (activity != null) {
+                activity.onCheckModuleClicked(this);
+            }
+        });
     }
 
     @Override
@@ -50,6 +57,7 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
     public void clearSelectedRows() {
         selectionColumn.clear();
         columnProvider.removeSelection();
+        setDeleteEnabled(false);
     }
 
     @Override
@@ -69,6 +77,28 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
                 table.addRowStyle(row, "child-row");
             });
         }
+    }
+
+    @UiHandler("deleteButton")
+    public void onRemoveClicked(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onRemoveModuleClicked(this);
+        }
+    }
+
+    @Override
+    public void setDeleteEnabled(boolean isEnabled) {
+        if (isEnabled) {
+            deleteButton.getElement().removeClassName(REMOVING_DISABLED);
+        } else {
+            deleteButton.getElement().addClassName(REMOVING_DISABLED);
+        }
+    }
+
+    @Override
+    public boolean isDeleteEnabled() {
+        return this.getSelectedModules().size() > 0;
     }
 
     @UiField
@@ -94,4 +124,6 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
 
     private static ModuleTableView.ModuleViewUiBinder ourUiBinder = GWT.create(ModuleTableView.ModuleViewUiBinder.class);
     interface ModuleViewUiBinder extends UiBinder<HTMLPanel, ModuleTableView> {}
+
+    private static final String REMOVING_DISABLED = "module-removing-disabled";
 }

@@ -9,4 +9,6 @@ import java.util.Map;
 
 public interface ModuleService {
     Result<Map<Module, List<Module>>> getModulesByKitId(AuthToken token, Long kitId);
+
+    Result<Long> removeModule(AuthToken token, Long moduleId);
 }

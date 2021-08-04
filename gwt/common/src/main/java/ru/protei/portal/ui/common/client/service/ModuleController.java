@@ -11,4 +11,6 @@ import java.util.Map;
 @RemoteServiceRelativePath( "springGwtServices/ModuleController" )
 public interface ModuleController extends RemoteService {
     Map<Module, List<Module>> getModulesByKitId(Long kitId) throws RequestFailedException;
+
+    Long removeModule(Long moduleId) throws RequestFailedException;
 }

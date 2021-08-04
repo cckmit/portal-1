@@ -17,4 +17,8 @@ public interface AbstractModuleTableView extends IsWidget {
     void clearModules();
 
     Set<Module> getSelectedModules();
+
+    void setDeleteEnabled(boolean isEnabled);
+
+    boolean isDeleteEnabled();
 }

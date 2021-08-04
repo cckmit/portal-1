@@ -5495,3 +5495,8 @@ div.form-group-default.form-group-default-selectFx:focus {
     }
   }
 }
+
+.module-removing-disabled {
+  opacity: 0.3;
+  cursor: not-allowed !important;
+}

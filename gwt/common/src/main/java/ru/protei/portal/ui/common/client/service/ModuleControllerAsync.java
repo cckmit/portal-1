@@ -8,4 +8,6 @@ import java.util.Map;
 
 public interface ModuleControllerAsync {
     void getModulesByKitId(Long kitId, AsyncCallback<Map<Module, List<Module>>> async);
+
+    void removeModule(Long id, AsyncCallback<Long> async);
 }

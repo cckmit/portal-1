@@ -8,14 +8,13 @@ import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.KitEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.service.ModuleControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.activity.kit.handler.KitActionsHandler;
+import ru.protei.portal.ui.delivery.client.view.module.table.ModuleTableView;
 
 import java.util.List;
 import java.util.Map;
@@ -125,6 +124,37 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     private boolean isOneKitSelected(Set<Kit> kitsSelected) {
         return kitsSelected != null && kitsSelected.size() == 1;
+    }
+
+    @Override
+    public void onCheckModuleClicked(ModuleTableView moduleTableView) {
+        moduleTableView.setDeleteEnabled(moduleTableView.isDeleteEnabled());
+    }
+
+    @Override
+    public void onRemoveModuleClicked(AbstractModuleTableView moduleTableView) {
+        fireEvent(!moduleTableView.isDeleteEnabled()
+               ? new NotifyEvents.Show(lang.selectModulesToRemove(), NotifyEvents.NotifyType.ERROR)
+               : new ConfirmDialogEvents.Show(lang.moduleRemoveConfirmMessage(), removeModuleAction(moduleTableView)));
+    }
+
+    private Runnable removeModuleAction(AbstractModuleTableView itemView) {
+        return () -> {
+            for (Module module: itemView.getSelectedModules()) {
+                 moduleService.removeModule(module.getId(), new FluentCallback<Long>()
+                         .withError(throwable -> fireEvent(new NotifyEvents.Show(throwable.getMessage(),
+                                                               NotifyEvents.NotifyType.ERROR)))
+                         .withSuccess(result -> {
+                             fireEvent(new NotifyEvents.Show(lang.modulesRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                             reloadModules();
+                         }));
+            }
+        };
+    }
+
+    private void reloadModules() {
+        moduleView.clearModules();
+        fillModules(moduleView.getSelectedModules().iterator().next().getKitId());
     }
 
     @Inject
