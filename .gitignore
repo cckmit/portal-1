@@ -1,12 +1,8 @@
-path:
-.idea
-target
-depl.sh
-
 syntax: glob
-
 **.iml
 **.orig
+.idea
+target
 
 debug/
 module/core/index/
