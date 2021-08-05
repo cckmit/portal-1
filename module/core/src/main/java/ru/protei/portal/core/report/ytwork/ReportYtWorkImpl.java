@@ -13,10 +13,7 @@ import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.YtWorkQuery;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.struct.WorkerEntryFacade;
-import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkInfo;
-import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRow;
-import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowHeader;
-import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem;
+import ru.protei.portal.core.model.struct.reportytwork.*;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtSingleEnumIssueCustomField;
@@ -28,8 +25,8 @@ import ru.protei.portal.tools.ChunkIterator;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.partitioningBy;
 import static java.util.stream.Collectors.toSet;
@@ -191,70 +188,37 @@ public class ReportYtWorkImpl implements ReportYtWork {
         List<ReportYtWorkRowItem> hasWorkEntry = partitionByHasWorkEntry.get(true);
 
         List<ReportYtWorkRow> list = new ArrayList<>();
-        Map<NameWithId, Tree> companyMap = new HashMap<>();
+        Map<NameWithId, ReportYtWorkDepartmentTree> companyMap = new HashMap<>();
         hasWorkEntry.forEach(item -> {
             PersonInfo personInfo = item.getPersonInfo();
-            Tree tree = companyMap.compute(personInfo.getCompanyName(), (k, v) -> v != null ? v : new Tree());
+            ReportYtWorkDepartmentTree tree = companyMap.compute(personInfo.getCompanyName(), (k, v) -> v != null ? v : new ReportYtWorkDepartmentTree());
             tree.addNode(personInfo.getDepartmentParentName(), personInfo.getDepartmentName(), item);
         });
 
-        companyMap.forEach((company, tree) -> {
-            list.add(new ReportYtWorkRowHeader(company.getString()));
+        companyMap.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(i -> {
+            NameWithId company = i.getKey();
+            ReportYtWorkDepartmentTree tree = i.getValue();
+            list.add(new ReportYtWorkRowHeader("******** " + company.getString() + " ********"));
             tree.traversal(node -> {
-                list.add(new ReportYtWorkRowHeader(node.nameWithId.getString()));
-                list.addAll(node.value);
+                int level = node.getLevel();
+                String name = node.getNameWithId().getString();
+                list.add(new ReportYtWorkRowHeader(levelMark.getOrDefault(level, "?") + name));
+                list.addAll(node.getValue().stream().sorted(Comparator.comparing(item -> item.getPersonInfo().getDisplayName())).collect(Collectors.toList()));
             });
         });
 
-/*        Map<NameWithId, Map<NameWithId, Map<NameWithId, List<ReportYtWorkRowItem>>>>
-                cToPDToDToItem = new HashMap<>(); // companyToParentDepartmentToDepartmentToItem
-
-        hasWorkEntry.forEach(item -> {
-            PersonInfo personInfo = item.getPersonInfo();
-            Map<NameWithId, Map<NameWithId, List<ReportYtWorkRowItem>>> PDToDToItem =
-                    cToPDToDToItem.compute(personInfo.getCompanyName(), (k, v) -> v != null ? v : new HashMap<>());
-            if (personInfo.getDepartmentParentName() != nullDepartmentParentName) {
-                Map<NameWithId, List<ReportYtWorkRowItem>> DToItem =
-                        PDToDToItem.compute(personInfo.getDepartmentParentName(), (k, v) -> v != null ? v : new HashMap<>());
-                DToItem.compute(personInfo.getDepartmentName(), (k, v) -> {
-                    if (v == null) { v = new ArrayList<>(); }
-                    v.add(item);
-                    return v;
-                });
-            } else {
-                Map<NameWithId, List<ReportYtWorkRowItem>> DToItem =
-                        PDToDToItem.compute(personInfo.getDepartmentName(), (k, v) -> v != null ? v : new HashMap<>());
-                DToItem.compute(nullDepartmentName, (k, v) -> {
-                    if (v == null) { v = new ArrayList<>(); }
-                    v.add(item);
-                    return v;
-                });
-            }
-        });
-
-        List<ReportYtWorkRow> list = new ArrayList<>();
-        cToPDToDToItem.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(i -> {
-            String companyName = i.getKey().getString();
-            list.add( new ReportYtWorkRowHeader(companyName));
-            i.getValue().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(ii -> {
-                String departmentParent = ii.getKey().getString();
-                list.add(new ReportYtWorkRowHeader(departmentParent));
-                ii.getValue().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(iii -> {
-                    NameWithId department = iii.getKey();
-                    if (department != nullDepartmentName) {
-                        list.add(new ReportYtWorkRowHeader(department.getString()));
-                    }
-                    list.addAll(iii.getValue().stream()
-                            .sorted(Comparator.comparing(item -> item.getPersonInfo().getDisplayName()))
-                            .collect(Collectors.toList())
-                    );
-                });
-            });
-        });*/
-
-        list.add(new ReportYtWorkRowHeader(CLASSIFICATION_ERROR_PREFIX + " company"));
+        list.add(new ReportYtWorkRowHeader("******** " + CLASSIFICATION_ERROR_PREFIX + " company ********"));
         list.addAll(partitionByHasWorkEntry.get(false));
         return list;
+    }
+
+    static private final Map<Integer, String> levelMark = new HashMap<>();
+    static {
+        levelMark.put(0, "======== ");
+        levelMark.put(1, "====== ");
+        levelMark.put(2, "==== ");
+        levelMark.put(3, "== ");
+        levelMark.put(4, "");
     }
 
     private Set<String> makeHomeCompanySet() {
@@ -323,79 +287,5 @@ public class ReportYtWorkImpl implements ReportYtWork {
             return null;
         }
         return field.getValueAsString();
-    }
-
-    static class Tree {
-        static class Node {
-            Node parent;
-            List<Node> children;
-            NameWithId nameWithId;
-            List<ReportYtWorkRowItem> value;
-
-            public Node() {
-                this.parent = null;
-                this.children = new ArrayList<>();
-                this.nameWithId = null;
-                this.value = new ArrayList<>();
-            }
-
-            public Node(Node parent, List<Node> children, NameWithId nameWithId, List<ReportYtWorkRowItem> value) {
-                this.parent = parent;
-                this.children = children;
-                this.nameWithId = nameWithId;
-                this.value = value;
-            }
-        }
-        Node root = new Node(null, new ArrayList<>(), new NameWithId("root", -1L), new ArrayList<>());
-        Map<NameWithId, Node> map = new HashMap<>();
-        void addNode(NameWithId parentName, NameWithId childName, ReportYtWorkRowItem value) {
-            Node parent = findNode(root, parentName);
-            if (parent != null) {
-                Node child = null;
-                for (Node node : parent.children) {
-                    if (node.nameWithId.equals(childName)) {
-                        child = node;
-                    }
-                }
-                if (child == null) {
-                    Node node = new Node(parent, new ArrayList<>(), childName, listOf(value));
-                    parent.children.add(node);
-                    map.put(node.nameWithId, node);
-                } else {
-                    child.value.add(value);
-                }
-            } else {
-                Node child = findNode(root, childName);
-                if (child != null) {
-                    child.value.add(value);
-                    Node newParent = new Node(child.parent, listOf(child), parentName, new ArrayList<>());
-                    child.parent.children.remove(child);
-                    child.parent = newParent;
-                    map.put(newParent.nameWithId, newParent);
-                } else {
-                    Node node = new Node(root, new ArrayList<>(), childName, listOf(value));
-                    root.children.add(node);
-                    map.put(node.nameWithId, node);
-                }
-            }
-        }
-
-        void traversal(Consumer<Node> consumer) {
-            if (root == null) {
-                return;
-            }
-            Queue<Node> queue = new LinkedList<>();
-            queue.add(root);
-            while (!queue.isEmpty()) {
-                Node cur = queue.poll();
-                consumer.accept(cur);
-                queue.addAll(cur.children);
-            }
-        }
-
-        Node findNode(Node root, NameWithId nameWithId) {
-            return map.get(nameWithId);
-        }
-
     }
 }
