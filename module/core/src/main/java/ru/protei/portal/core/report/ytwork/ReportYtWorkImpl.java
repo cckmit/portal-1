@@ -172,7 +172,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
         Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasWorkEntry = stream(data.values())
                 .collect(partitioningBy(item -> item.getPersonInfo().hasWorkEntry()));
 
-        Map<NameWithId, ReportYtWorkDepartmentTree> groupingByCompanyDepartment =
+        Map<NameWithId, DepartmentTree<ReportYtWorkRowItem>> groupingByCompanyDepartment =
                 groupingByCompanyDepartment(partitionByHasWorkEntry.get(true));
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
@@ -196,21 +196,21 @@ public class ReportYtWorkImpl implements ReportYtWork {
         }
     }
 
-    public Map<NameWithId, ReportYtWorkDepartmentTree> groupingByCompanyDepartment(List<ReportYtWorkRowItem> hasWorkEntry) {
-        Map<NameWithId, ReportYtWorkDepartmentTree> companyMap = new HashMap<>();
+    public Map<NameWithId, DepartmentTree<ReportYtWorkRowItem>> groupingByCompanyDepartment(List<ReportYtWorkRowItem> hasWorkEntry) {
+        Map<NameWithId, DepartmentTree<ReportYtWorkRowItem>> companyMap = new HashMap<>();
         hasWorkEntry.forEach(item -> {
             PersonInfo personInfo = item.getPersonInfo();
-            ReportYtWorkDepartmentTree tree = companyMap.compute(personInfo.getCompanyName(),
-                    (k, v) -> v != null ? v : new ReportYtWorkDepartmentTree());
+            DepartmentTree<ReportYtWorkRowItem> tree = companyMap.compute(personInfo.getCompanyName(),
+                    (companyName, companyTree) -> companyTree != null ? companyTree : new DepartmentTree<>());
             tree.addNode(personInfo.getDepartmentParentName(), personInfo.getDepartmentName(), item);
         });
 
         return companyMap;
     }
 
-    public List<ReportYtWorkRow> makeReportCompanyData(ReportYtWorkDepartmentTree tree) {
+    public List<ReportYtWorkRow> makeReportCompanyData(DepartmentTree<ReportYtWorkRowItem> tree) {
         List<ReportYtWorkRow> list = new ArrayList<>();
-        tree.breadthFirstSearchTraversal(node -> {
+        tree.deepFirstSearchTraversal(node -> {
             int level = node.getLevel();
             String name = node.getNameWithId().getString();
             list.add(new ReportYtWorkRowHeader(levelMark.getOrDefault(level, "?") + name));
