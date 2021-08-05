@@ -168,12 +168,26 @@ public class ReportYtWorkImpl implements ReportYtWork {
         }
 
         data.forEach((email, ytWorkItem) -> ytWorkItem.setPersonInfo(makePersonInfo(email)));
-        List<ReportYtWorkRow> reportData = groupingByDepartment(data.values());
+
+        Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasWorkEntry = stream(data.values())
+                .collect(partitioningBy(item -> item.getPersonInfo().hasWorkEntry()));
+
+        Map<NameWithId, ReportYtWorkDepartmentTree> groupingByCompanyDepartment =
+                groupingByCompanyDepartment(partitionByHasWorkEntry.get(true));
+
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
         try (ReportWriter<ReportYtWorkRow> writer = new ExcelReportWriter(localizedLang, collector.getProcessedWorkTypes())) {
             log.debug("writeReport : start write sheet");
+            groupingByCompanyDepartment.forEach((companyName, departmentTree) -> {
+                int sheetNumber = writer.createSheet();
+                writer.setSheetName(sheetNumber, companyName.getString());
+                writer.write(sheetNumber, makeReportCompanyData(departmentTree));
+            });
+
             int sheetNumber = writer.createSheet();
-            writer.write(sheetNumber, reportData);
+            writer.setSheetName(sheetNumber, CLASSIFICATION_ERROR_PREFIX + " company");
+            writer.write(sheetNumber, new ArrayList<>(partitionByHasWorkEntry.get(false)));
+
             writer.collect(buffer);
             return true;
         } catch (Throwable th) {
@@ -182,43 +196,36 @@ public class ReportYtWorkImpl implements ReportYtWork {
         }
     }
 
-    public List<ReportYtWorkRow> groupingByDepartment(Collection<ReportYtWorkRowItem> items){
-        Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasWorkEntry = stream(items)
-                .collect(partitioningBy(item -> item.getPersonInfo().hasWorkEntry()));
-        List<ReportYtWorkRowItem> hasWorkEntry = partitionByHasWorkEntry.get(true);
-
-        List<ReportYtWorkRow> list = new ArrayList<>();
+    public Map<NameWithId, ReportYtWorkDepartmentTree> groupingByCompanyDepartment(List<ReportYtWorkRowItem> hasWorkEntry) {
         Map<NameWithId, ReportYtWorkDepartmentTree> companyMap = new HashMap<>();
         hasWorkEntry.forEach(item -> {
             PersonInfo personInfo = item.getPersonInfo();
-            ReportYtWorkDepartmentTree tree = companyMap.compute(personInfo.getCompanyName(), (k, v) -> v != null ? v : new ReportYtWorkDepartmentTree());
+            ReportYtWorkDepartmentTree tree = companyMap.compute(personInfo.getCompanyName(),
+                    (k, v) -> v != null ? v : new ReportYtWorkDepartmentTree());
             tree.addNode(personInfo.getDepartmentParentName(), personInfo.getDepartmentName(), item);
         });
 
-        companyMap.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(i -> {
-            NameWithId company = i.getKey();
-            ReportYtWorkDepartmentTree tree = i.getValue();
-            list.add(new ReportYtWorkRowHeader("******** " + company.getString() + " ********"));
-            tree.traversal(node -> {
-                int level = node.getLevel();
-                String name = node.getNameWithId().getString();
-                list.add(new ReportYtWorkRowHeader(levelMark.getOrDefault(level, "?") + name));
-                list.addAll(node.getValue().stream().sorted(Comparator.comparing(item -> item.getPersonInfo().getDisplayName())).collect(Collectors.toList()));
-            });
+        return companyMap;
+    }
+
+    public List<ReportYtWorkRow> makeReportCompanyData(ReportYtWorkDepartmentTree tree) {
+        List<ReportYtWorkRow> list = new ArrayList<>();
+        tree.breadthFirstSearchTraversal(node -> {
+            int level = node.getLevel();
+            String name = node.getNameWithId().getString();
+            list.add(new ReportYtWorkRowHeader(levelMark.getOrDefault(level, "?") + name));
+            list.addAll(node.getValue().stream().sorted(Comparator.comparing(item -> item.getPersonInfo().getDisplayName())).collect(Collectors.toList()));
         });
 
-        list.add(new ReportYtWorkRowHeader("******** " + CLASSIFICATION_ERROR_PREFIX + " company ********"));
-        list.addAll(partitionByHasWorkEntry.get(false));
         return list;
     }
 
     static private final Map<Integer, String> levelMark = new HashMap<>();
     static {
-        levelMark.put(0, "======== ");
-        levelMark.put(1, "====== ");
-        levelMark.put(2, "==== ");
-        levelMark.put(3, "== ");
-        levelMark.put(4, "");
+        levelMark.put(0, "== ");
+        levelMark.put(1, "==== ");
+        levelMark.put(2, "====== ");
+        levelMark.put(3, "======== ");
     }
 
     private Set<String> makeHomeCompanySet() {

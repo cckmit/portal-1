@@ -2,15 +2,15 @@ package ru.protei.portal.core.model.struct.reportytwork;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.NameWithId;
 import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.PersonInfo.nullDepartmentParentName;
 
 public class ReportYtWorkDepartmentTree {
-    private final Node root = new Node(null, new ArrayList<>(), new NameWithId("root", -1L), new ArrayList<>());
+    private final Node root = new Node(null, new HashMap<>(), new NameWithId("root", -1L), new ArrayList<>());
     private final Map<NameWithId, Node> map = new HashMap<>();
 
     public void addNode(NameWithId parentName, NameWithId childName, ReportYtWorkRowItem value) {
@@ -38,42 +38,51 @@ public class ReportYtWorkDepartmentTree {
             if (parent != null) {
                 parent.value.add(value);
                 Node oldParent = parent.parent;
-                parent.parent = appendNode(oldParent, listOf(parent), parentName, new ArrayList<>());
-                oldParent.children.remove(parent);
+                parent.parent = appendNode(oldParent, setOf(parent), parentName, new ArrayList<>());
+                oldParent.children.remove(parent.nameWithId);
             } else {
-                Node newParent = appendNode(root, new ArrayList<>(), parentName, new ArrayList<>());
+                Node newParent = appendNode(root, new HashSet<>(), parentName, new ArrayList<>());
                 appendNode(newParent, childName, value);
             }
         }
     }
 
-    public void traversal(Consumer<Node> consumer) {
-        root.children.forEach(i -> i.level = 0);
-        Deque<Node> deque = new ArrayDeque<>(root.children);
+    public void breadthFirstSearchTraversal(Consumer<Node> consumer) {
+        root.children.values().forEach(i -> i.level = 0);
+        Deque<Node> deque = new ArrayDeque<>(root.children.values());
         while (!deque.isEmpty()) {
             Node cur = deque.pollLast();
-            cur.children.forEach(i -> i.level = cur.level+1);
-            deque.addAll(stream(cur.children).sorted().collect(Collectors.toList()));
+            cur.children.values().forEach(i -> i.level = cur.level+1);
+            deque.addAll(stream(cur.children.values()).sorted().collect(Collectors.toList()));
             consumer.accept(cur);
         }
     }
 
     private Node appendNode(Node parent, NameWithId childName, ReportYtWorkRowItem value) {
-        return appendNode(parent, new ArrayList<>(), childName, listOf(value));
+        return appendNode(parent, new HashSet<>(), childName, listOf(value));
     }
 
-    private Node appendNode(Node parent, List<Node> children, NameWithId childName, List<ReportYtWorkRowItem> values) {
+    private Node appendNode(Node parent, Set<Node> children, NameWithId childName, List<ReportYtWorkRowItem> values) {
         Node node = map.compute(childName, (k, v) -> {
             if (v != null) {
-                v.parent.children.remove(v);
+                v.parent.children.remove(v.nameWithId);
                 v.parent = parent;
                 v.value.addAll(values);
-                v.children.addAll(children);
+                children.forEach(child -> v.children.compute(child.nameWithId, (key, oldChild) -> {
+                    if (oldChild != null) {
+                        oldChild.merge(child);
+                        return oldChild;
+                    } else {
+                        return child;
+                    }
+                }));
                 return v;
             }
-            return new Node(parent, children, childName, values);
+            return new Node(parent,
+                    children.stream().collect(Collectors.toMap(Node::getNameWithId, Function.identity())),
+                    childName, values);
         });
-        parent.children.add(node);
+        parent.children.put(node.nameWithId, node);
         return node;
     }
 
@@ -83,12 +92,12 @@ public class ReportYtWorkDepartmentTree {
 
     public static class Node implements Comparable<Node> {
         private Node parent;
-        private final List<Node> children;
+        private final Map<NameWithId, Node> children;
         private final NameWithId nameWithId;
         private final List<ReportYtWorkRowItem> value;
         private int level;
 
-        public Node(Node parent, List<Node> children, NameWithId nameWithId, List<ReportYtWorkRowItem> value) {
+        public Node(Node parent, Map<NameWithId, Node> children, NameWithId nameWithId, List<ReportYtWorkRowItem> value) {
             this.parent = parent;
             this.children = children;
             this.nameWithId = nameWithId;
@@ -107,13 +116,26 @@ public class ReportYtWorkDepartmentTree {
             return level;
         }
 
+        public Node merge(Node other) {
+            other.parent.children.remove(other.nameWithId);
+
+            other.children.forEach((k, v) -> {
+                this.children.merge(k, v, (v1, v2) -> {
+                    if (v1 != null) {
+                        v1.value.addAll(v2.value);
+                        v1.children.putAll(v2.children);
+                    }
+                    return v2;
+                });
+            });
+
+            List<ReportYtWorkRowItem> mergedValue =  new ArrayList<>(this.value);
+            mergedValue.addAll(other.value);
+            return new Node(this.parent, new HashMap<>(this.children), this.nameWithId, mergedValue);
+        }
+
         private Node getChildrenByName(NameWithId nameWithId) {
-            for (Node node : children) {
-                if (node.nameWithId.equals(nameWithId)) {
-                    return node;
-                }
-            }
-            return null;
+            return children.get(nameWithId);
         }
 
         @Override
