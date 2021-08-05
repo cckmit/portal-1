@@ -19,6 +19,6 @@ sync-docs:
     PROTEI_COMMIT_MESSAGE: $CI_COMMIT_MESSAGE
   only:
     refs:
-      - master
+      - develop
     changes:
       - documentation/**/*
