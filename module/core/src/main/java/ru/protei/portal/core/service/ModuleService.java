@@ -6,9 +6,10 @@ import ru.protei.portal.core.model.ent.Module;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface ModuleService {
     Result<Map<Module, List<Module>>> getModulesByKitId(AuthToken token, Long kitId);
 
-    Result<Long> removeModule(AuthToken token, Long moduleId);
+    Result<Set<Long>> removeModules(AuthToken token, Set<Long> modulesIds);
 }

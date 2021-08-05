@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
 import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
@@ -41,11 +42,11 @@ public class ModuleControllerImpl implements ModuleController {
     }
 
     @Override
-    public Long removeModule(Long moduleId) throws RequestFailedException {
-        log.info("removeModule(): moduleId={}", moduleId);
+    public Set<Long> removeModules(Set<Long> ids) throws RequestFailedException {
+        log.info("removeModules(): modulesIds={}", ids);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result<Long> response = moduleService.removeModule(token, moduleId);
-        log.info("removeModule(): id={}, {}", moduleId, response.isOk() ? "ok" : response.getStatus());
+        Result<Set<Long>> response = moduleService.removeModules(token, ids);
+        log.info("removeModules(): modulesIds={}, {}", ids, response.isOk() ? "ok" : response.getStatus());
         return checkResultAndGetData(response);
     }
 }

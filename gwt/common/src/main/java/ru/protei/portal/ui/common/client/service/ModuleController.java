@@ -7,10 +7,11 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RemoteServiceRelativePath( "springGwtServices/ModuleController" )
 public interface ModuleController extends RemoteService {
     Map<Module, List<Module>> getModulesByKitId(Long kitId) throws RequestFailedException;
 
-    Long removeModule(Long moduleId) throws RequestFailedException;
+    Set<Long> removeModules(Set<Long> ids) throws RequestFailedException;
 }

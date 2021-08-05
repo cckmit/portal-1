@@ -40,17 +40,22 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     @Event
     public void onShow(KitEvents.Show event) {
-        moduleView.clearModules();
-        deliveryService.getDelivery(event.deliveryId, new FluentCallback<Delivery>()
+        deliveryId = event.deliveryId;
+        kitId = event.kitId;
+        fillKits(deliveryId, kitId);
+    }
+
+    private void fillKits(Long deliveryId, Long kitId) {
+        deliveryService.getDelivery(deliveryId, new FluentCallback<Delivery>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
                 .withSuccess(delivery -> {
                             initDetails.parent.clear();
                             initDetails.parent.add(view.asWidget());
                             view.fillKits(delivery.getKits());
                             view.setKitsActionsEnabled(hasEditPrivileges());
-                            if (event.kitId != null) {
-                                view.makeKitSelected(event.kitId);
-                                fillModules(event.kitId);
+                            if (kitId != null) {
+                                view.makeKitSelected(kitId);
+                                fillModules(kitId);
                             }
                         }
                 )
@@ -59,7 +64,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     @Override
     public void onKitClicked(Long kitId) {
-        moduleView.clearModules();
+        this.kitId = kitId;
         fillModules(kitId);
     }
 
@@ -70,6 +75,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     }
 
     private void fillModules(Long kitId) {
+        moduleView.clearModules();
         moduleView.clearSelectedRows();
         moduleService.getModulesByKitId(kitId, new FluentCallback<Map<Module, List<Module>>>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
@@ -132,30 +138,27 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     }
 
     @Override
-    public void onRemoveModuleClicked(AbstractModuleTableView moduleTableView) {
-        fireEvent(!moduleTableView.isDeleteEnabled()
+    public void onRemoveModuleClicked(AbstractModuleTableView modulesTableView) {
+        fireEvent(!modulesTableView.isDeleteEnabled()
                ? new NotifyEvents.Show(lang.selectModulesToRemove(), NotifyEvents.NotifyType.ERROR)
-               : new ConfirmDialogEvents.Show(lang.moduleRemoveConfirmMessage(), removeModuleAction(moduleTableView)));
+               : new ConfirmDialogEvents.Show(lang.moduleRemoveConfirmMessage(), removeModuleAction(modulesTableView)));
     }
 
-    private Runnable removeModuleAction(AbstractModuleTableView itemView) {
-        return () -> {
-            for (Module module: itemView.getSelectedModules()) {
-                 moduleService.removeModule(module.getId(), new FluentCallback<Long>()
-                         .withError(throwable -> fireEvent(new NotifyEvents.Show(throwable.getMessage(),
-                                                               NotifyEvents.NotifyType.ERROR)))
-                         .withSuccess(result -> {
-                             fireEvent(new NotifyEvents.Show(lang.modulesRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                             reloadModules();
-                         }));
-            }
-        };
+    private Runnable removeModuleAction(AbstractModuleTableView modulesTableView) {
+        Set<Long> modulesToRemoveIds = modulesTableView.getSelectedModules().stream().map(Module::getId)
+                                                       .collect(Collectors.toSet());
+
+        return () -> moduleService.removeModules(modulesToRemoveIds, new FluentCallback<Set<Long>>()
+                .withError(throwable -> fireEvent(new NotifyEvents.Show(throwable.getMessage(),
+                                                      NotifyEvents.NotifyType.ERROR)))
+                .withSuccess(result -> {
+                    fireEvent(new NotifyEvents.Show(lang.modulesRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    fillKits(deliveryId, kitId);
+                }));
     }
 
-    private void reloadModules() {
-        moduleView.clearModules();
-        fillModules(moduleView.getSelectedModules().iterator().next().getKitId());
-    }
+    private Long deliveryId;
+    private Long kitId;
 
     @Inject
     Lang lang;

@@ -5,9 +5,10 @@ import ru.protei.portal.core.model.ent.Module;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface ModuleControllerAsync {
     void getModulesByKitId(Long kitId, AsyncCallback<Map<Module, List<Module>>> async);
 
-    void removeModule(Long id, AsyncCallback<Long> async);
+    void removeModules(Set<Long> ids, AsyncCallback<Set<Long>> async);
 }

@@ -49,8 +49,8 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Override
     @Transactional
-    public Result<Long> removeModule(AuthToken token, Long moduleId) {
-        if (moduleId == null) {
+    public Result<Set<Long>> removeModules(AuthToken token, Set<Long> modulesIds) {
+        if (modulesIds == null || modulesIds.isEmpty()) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -58,12 +58,13 @@ public class ModuleServiceImpl implements ModuleService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        if (!moduleDAO.removeByKey(moduleId)) {
-            log.warn("removeModule(): NOT_FOUND. moduleId={}", moduleId);
+        int countRemoved = moduleDAO.removeByKeys(modulesIds);
+        if (countRemoved != modulesIds.size()) {
+            log.warn("removeModules(): NOT_FOUND. modulesIds={}", modulesIds);
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        return ok(moduleId);
+        return ok(modulesIds);
     }
 
     private boolean validateToken(AuthToken authToken) {
