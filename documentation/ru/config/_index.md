@@ -56,7 +56,7 @@ CREATE DATABASE portal_dev DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_gener
 
 Размещаются в каталоге **cfg** (**cfg** - позволяет отличать от каталога **conf** Tomcat)
 
-Путь к каталогу файлов определяется на старте приложения конфигурацией "MainConfiguration" читающей значение переменной "winter_file_path_prefix" из файла "portal/app/portal/src/main/resources/spring.properties"
+Путь к каталогу файлов определяется на старте приложения конфигурацией "MainConfiguration", читающей значение переменной "winter_file_path_prefix" из файла "portal/app/portal/src/main/resources/spring.properties"
 
 Путь к файлу **"log4j2.xml"** определяется на старте приложения чтением значения переменной "log4j.configurationFile" из файла "portal/app/portal/src/main/resources/log4j2.component.properties"
 
