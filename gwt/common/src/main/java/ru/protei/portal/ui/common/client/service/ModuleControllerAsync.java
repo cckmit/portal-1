@@ -15,4 +15,6 @@ public interface ModuleControllerAsync {
     void updateNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest, AsyncCallback<Void> async);
 
     void updateMeta(Module meta, AsyncCallback<Module> async);
+
+    void saveModule(Module module, AsyncCallback<Module> withSuccess);
 }

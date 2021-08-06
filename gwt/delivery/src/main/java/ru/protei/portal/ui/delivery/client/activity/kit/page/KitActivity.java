@@ -46,6 +46,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
         deliveryService.getDelivery(event.deliveryId, new FluentCallback<Delivery>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
                 .withSuccess(delivery -> {
+                            view.getModuleEditContainer().clear();
                             initDetails.parent.clear();
                             initDetails.parent.add(view.asWidget());
                             view.fillKits(delivery.getKits());
@@ -69,6 +70,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     @Override
     public void onKitClicked(Long kitId) {
         moduleView.clearModules();
+        view.getModuleEditContainer().clear();
         fillModules(kitId);
     }
 

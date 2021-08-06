@@ -56,4 +56,9 @@ public class ModuleControllerImpl implements ModuleController {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         return checkResultAndGetData(moduleService.updateMeta(token, meta));
     }
+
+    @Override
+    public Module saveModule(Module module) {
+        return null;
+    }
 }

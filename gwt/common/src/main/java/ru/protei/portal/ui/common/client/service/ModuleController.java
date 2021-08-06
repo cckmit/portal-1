@@ -19,4 +19,6 @@ public interface ModuleController extends RemoteService {
     void updateNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest)  throws RequestFailedException;
 
     Module updateMeta(Module meta) throws RequestFailedException;
+
+    Module saveModule(Module module);
 }

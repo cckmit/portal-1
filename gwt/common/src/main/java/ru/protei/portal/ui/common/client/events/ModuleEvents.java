@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.events;
 
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Module;
 
 public class ModuleEvents {
@@ -32,5 +33,9 @@ public class ModuleEvents {
         }
 
         public Long id;
+    }
+
+    public static class Create {
+        public Create() {}
     }
 }
