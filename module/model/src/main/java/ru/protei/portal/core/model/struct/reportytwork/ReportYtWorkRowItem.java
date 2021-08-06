@@ -130,6 +130,7 @@ public class ReportYtWorkRowItem implements ReportYtWorkRow {
         public long getId() {
             return id;
         }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -137,10 +138,12 @@ public class ReportYtWorkRowItem implements ReportYtWorkRow {
             NameWithId that = (NameWithId) o;
             return id == that.id;
         }
+
         @Override
         public int hashCode() {
             return Objects.hash(id);
         }
+
         @Override
         public int compareTo(NameWithId o) {
             return (int)(id - o.id);

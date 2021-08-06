@@ -172,16 +172,16 @@ public class ReportYtWorkImpl implements ReportYtWork {
         Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasWorkEntry = stream(data.values())
                 .collect(partitioningBy(item -> item.getPersonInfo().hasWorkEntry()));
 
-        Map<NameWithId, TreeAndMapRow> groupingByCompanyDepartment =
+        Map<NameWithId, DepartmentTreeAndValues> groupingByCompanyDepartment =
                 groupingByCompanyDepartment(partitionByHasWorkEntry.get(true));
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
         try (ReportWriter<ReportYtWorkRow> writer = new ExcelReportWriter(localizedLang, collector.getProcessedWorkTypes())) {
             log.debug("writeReport : start write sheet");
-            groupingByCompanyDepartment.forEach((companyName, departmentTree) -> {
+            groupingByCompanyDepartment.forEach((companyName, companyTreeAndValues) -> {
                 int sheetNumber = writer.createSheet();
                 writer.setSheetName(sheetNumber, companyName.getString());
-                writer.write(sheetNumber, makeReportCompanyData(departmentTree));
+                writer.write(sheetNumber, makeReportCompanyData(companyTreeAndValues));
             });
 
             int sheetNumber = writer.createSheet();
@@ -196,15 +196,15 @@ public class ReportYtWorkImpl implements ReportYtWork {
         }
     }
 
-    public Map<NameWithId, TreeAndMapRow> groupingByCompanyDepartment(List<ReportYtWorkRowItem> hasWorkEntry) {
-        Map<NameWithId, TreeAndMapRow> companyMap = new HashMap<>();
+    public Map<NameWithId, DepartmentTreeAndValues> groupingByCompanyDepartment(List<ReportYtWorkRowItem> hasWorkEntry) {
+        Map<NameWithId, DepartmentTreeAndValues> companyMap = new HashMap<>();
         hasWorkEntry.forEach(item -> {
             PersonInfo personInfo = item.getPersonInfo();
-            TreeAndMapRow pair = companyMap.compute(personInfo.getCompanyName(),
-                    (companyName, companyTree) -> companyTree != null ? companyTree : new TreeAndMapRow());
-            pair.map.compute(personInfo.getDepartmentName(), (name, values) -> {
+            DepartmentTreeAndValues treeAndValues = companyMap.compute(personInfo.getCompanyName(),
+                    (companyName, companyTree) -> companyTree != null ? companyTree : new DepartmentTreeAndValues());
+            treeAndValues.getValues().compute(personInfo.getDepartmentName(), (name, values) -> {
                 if (values == null) {
-                    pair.tree.addNode(personInfo.getDepartmentParentName(), personInfo.getDepartmentName());
+                    treeAndValues.getTree().addNode(personInfo.getDepartmentParentName(), personInfo.getDepartmentName());
                     values = new ArrayList<>();
                 }
                 values.add(item);
@@ -215,21 +215,19 @@ public class ReportYtWorkImpl implements ReportYtWork {
         return companyMap;
     }
 
-    public List<ReportYtWorkRow> makeReportCompanyData(TreeAndMapRow pair) {
+    public List<ReportYtWorkRow> makeReportCompanyData(DepartmentTreeAndValues treeAndValues) {
         List<ReportYtWorkRow> list = new ArrayList<>();
-        pair.tree.deepFirstSearchTraversal(node -> {
-            int level = node.getLevel();
-            list.add(new ReportYtWorkRowHeader(levelMark.getOrDefault(level, "?") + node.getNameWithId().getString()));
-            List<ReportYtWorkRowItem> reportYtWorkRowItems = pair.map.get(node.getNameWithId());
-            list.addAll(stream(reportYtWorkRowItems).sorted(Comparator.comparing(item -> item.getPersonInfo().getDisplayName())).collect(Collectors.toList()));
+        treeAndValues.getTree().deepFirstSearchTraversal(node -> {
+            list.add(new ReportYtWorkRowHeader(levelMark.getOrDefault(node.getLevel(), "?") + node.getNameWithId().getString()));
+
+            List<ReportYtWorkRowItem> reportYtWorkRowItems = treeAndValues.getValues().get(node.getNameWithId());
+            list.addAll(stream(reportYtWorkRowItems)
+                    .sorted(Comparator.comparing(item -> item.getPersonInfo().getDisplayName()))
+                    .collect(Collectors.toList())
+            );
         });
 
         return list;
-    }
-
-    static private class TreeAndMapRow {
-        DepartmentTree tree = new DepartmentTree();
-        Map<NameWithId, List<ReportYtWorkRowItem>> map = new HashMap<>();
     }
 
     static private final Map<Integer, String> levelMark = new HashMap<>();
@@ -306,5 +304,18 @@ public class ReportYtWorkImpl implements ReportYtWork {
             return null;
         }
         return field.getValueAsString();
+    }
+
+    static private class DepartmentTreeAndValues {
+        private final DepartmentTree tree = new DepartmentTree();
+        private final Map<NameWithId, List<ReportYtWorkRowItem>> values = new HashMap<>();
+
+        public DepartmentTree getTree() {
+            return tree;
+        }
+
+        public Map<NameWithId, List<ReportYtWorkRowItem>> getValues() {
+            return values;
+        }
     }
 }

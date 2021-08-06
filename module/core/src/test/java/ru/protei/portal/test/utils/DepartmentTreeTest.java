@@ -13,6 +13,7 @@ import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowIte
 import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.PersonInfo;
 
 public class DepartmentTreeTest {
+
     @Test
     public void oneNodeWithOutParent() {
         DepartmentTree tree = new DepartmentTree();
@@ -30,6 +31,7 @@ public class DepartmentTreeTest {
         Assert.assertEquals(dep1, node.getNameWithId());
         Assert.assertEquals(0, node.getLevel());
     }
+
     @Test
     public void twoNodeWithOutParent() {
         DepartmentTree tree = new DepartmentTree();
@@ -45,14 +47,14 @@ public class DepartmentTreeTest {
         Assert.assertEquals(2, data.size());
 
         DepartmentTree.Node node = data.get(dep1);
-        Assert.assertEquals(node.getParent().getNameWithId(), DepartmentTree.rootName);
-        Assert.assertEquals(node.getNameWithId(), dep1);
-        Assert.assertEquals(node.getLevel(), 0);
+        Assert.assertEquals(DepartmentTree.rootName, node.getParent().getNameWithId());
+        Assert.assertEquals(dep1, node.getNameWithId());
+        Assert.assertEquals(0, node.getLevel());
 
         node = data.get(dep2);
-        Assert.assertEquals(node.getParent().getNameWithId(), DepartmentTree.rootName);
-        Assert.assertEquals(node.getNameWithId(), dep2);
-        Assert.assertEquals(node.getLevel(), 0);
+        Assert.assertEquals(DepartmentTree.rootName, node.getParent().getNameWithId());
+        Assert.assertEquals(dep2, node.getNameWithId());
+        Assert.assertEquals(0, node.getLevel());
     }
 
     @Test
@@ -69,14 +71,14 @@ public class DepartmentTreeTest {
         Assert.assertEquals(2, data.size());
 
         DepartmentTree.Node node = data.get(depParent1);
-        Assert.assertEquals(node.getParent().getNameWithId(), DepartmentTree.rootName);
-        Assert.assertEquals(node.getNameWithId(), depParent1);
-        Assert.assertEquals(node.getLevel(), 0);
+        Assert.assertEquals(DepartmentTree.rootName, node.getParent().getNameWithId());
+        Assert.assertEquals(depParent1, node.getNameWithId());
+        Assert.assertEquals(0, node.getLevel());
 
         node = data.get(dep1);
-        Assert.assertEquals(node.getParent().getNameWithId(), depParent1);
-        Assert.assertEquals(node.getNameWithId(), dep1);
-        Assert.assertEquals(node.getLevel(), 1);
+        Assert.assertEquals(depParent1, node.getParent().getNameWithId());
+        Assert.assertEquals(dep1, node.getNameWithId());
+        Assert.assertEquals(1, node.getLevel());
     }
 
     @Test
@@ -96,24 +98,24 @@ public class DepartmentTreeTest {
         Assert.assertEquals(4, data.size());
 
         DepartmentTree.Node node = data.get(depParent1);
-        Assert.assertEquals(node.getParent().getNameWithId(), DepartmentTree.rootName);
-        Assert.assertEquals(node.getNameWithId(), depParent1);
-        Assert.assertEquals(node.getLevel(), 0);
+        Assert.assertEquals(DepartmentTree.rootName, node.getParent().getNameWithId());
+        Assert.assertEquals(depParent1, node.getNameWithId());
+        Assert.assertEquals(0, node.getLevel());
 
         node = data.get(dep1);
-        Assert.assertEquals(node.getParent().getNameWithId(), depParent1);
-        Assert.assertEquals(node.getNameWithId(), dep1);
-        Assert.assertEquals(node.getLevel(), 1);
+        Assert.assertEquals(depParent1, node.getParent().getNameWithId());
+        Assert.assertEquals(dep1, node.getNameWithId());
+        Assert.assertEquals(1, node.getLevel());
 
         node = data.get(depParent2);
-        Assert.assertEquals(node.getParent().getNameWithId(), DepartmentTree.rootName);
-        Assert.assertEquals(node.getNameWithId(), depParent2);
-        Assert.assertEquals(node.getLevel(), 0);
+        Assert.assertEquals(DepartmentTree.rootName, node.getParent().getNameWithId());
+        Assert.assertEquals(depParent2, node.getNameWithId());
+        Assert.assertEquals(0, node.getLevel());
 
         node = data.get(dep2);
-        Assert.assertEquals(node.getParent().getNameWithId(), depParent2);
-        Assert.assertEquals(node.getNameWithId(), dep2);
-        Assert.assertEquals(node.getLevel(), 1);
+        Assert.assertEquals(depParent2, node.getParent().getNameWithId());
+        Assert.assertEquals(dep2, node.getNameWithId());
+        Assert.assertEquals(1, node.getLevel());
     }
 
     @Test
@@ -132,19 +134,19 @@ public class DepartmentTreeTest {
         Assert.assertEquals(3, data.size());
 
         DepartmentTree.Node node = data.get(depParent);
-        Assert.assertEquals(node.getParent().getNameWithId(), DepartmentTree.rootName);
-        Assert.assertEquals(node.getNameWithId(), depParent);
-        Assert.assertEquals(node.getLevel(), 0);
+        Assert.assertEquals(DepartmentTree.rootName, node.getParent().getNameWithId());
+        Assert.assertEquals(depParent, node.getNameWithId());
+        Assert.assertEquals(0, node.getLevel());
 
         node = data.get(dep1);
-        Assert.assertEquals(node.getParent().getNameWithId(), depParent);
-        Assert.assertEquals(node.getNameWithId(), dep1);
-        Assert.assertEquals(node.getLevel(), 1);
+        Assert.assertEquals(depParent, node.getParent().getNameWithId());
+        Assert.assertEquals(dep1, node.getNameWithId());
+        Assert.assertEquals(1, node.getLevel());
 
         node = data.get(dep2);
-        Assert.assertEquals(node.getParent().getNameWithId(), depParent);
-        Assert.assertEquals(node.getNameWithId(), dep2);
-        Assert.assertEquals(node.getLevel(), 1);
+        Assert.assertEquals(depParent, node.getParent().getNameWithId());
+        Assert.assertEquals(dep2, node.getNameWithId());
+        Assert.assertEquals(1, node.getLevel());
     }
 
     @Test
@@ -163,19 +165,19 @@ public class DepartmentTreeTest {
         Assert.assertEquals(3, data.size());
 
         DepartmentTree.Node node = data.get(depParent);
-        Assert.assertEquals(node.getParent().getNameWithId(), DepartmentTree.rootName);
-        Assert.assertEquals(node.getNameWithId(), depParent);
-        Assert.assertEquals(node.getLevel(), 0);
+        Assert.assertEquals(DepartmentTree.rootName, node.getParent().getNameWithId());
+        Assert.assertEquals(depParent, node.getNameWithId());
+        Assert.assertEquals(0, node.getLevel());
 
         node = data.get(dep);
-        Assert.assertEquals(node.getParent().getNameWithId(), depParent);
-        Assert.assertEquals(node.getNameWithId(), dep);
-        Assert.assertEquals(node.getLevel(), 1);
+        Assert.assertEquals(depParent, node.getParent().getNameWithId());
+        Assert.assertEquals(dep, node.getNameWithId());
+        Assert.assertEquals(1, node.getLevel());
 
         node = data.get(subDep);
-        Assert.assertEquals(node.getParent().getNameWithId(), dep);
-        Assert.assertEquals(node.getNameWithId(), subDep);
-        Assert.assertEquals(node.getLevel(), 2);
+        Assert.assertEquals(dep, node.getParent().getNameWithId());
+        Assert.assertEquals(subDep, node.getNameWithId());
+        Assert.assertEquals(2, node.getLevel());
     }
 
     @Test
@@ -194,28 +196,30 @@ public class DepartmentTreeTest {
         Assert.assertEquals(3, data.size());
 
         DepartmentTree.Node node = data.get(depParent);
-        Assert.assertEquals(node.getParent().getNameWithId(), DepartmentTree.rootName);
-        Assert.assertEquals(node.getNameWithId(), depParent);
-        Assert.assertEquals(node.getLevel(), 0);
+        Assert.assertEquals(DepartmentTree.rootName, node.getParent().getNameWithId());
+        Assert.assertEquals(depParent, node.getNameWithId());
+        Assert.assertEquals(0, node.getLevel());
 
         node = data.get(dep);
-        Assert.assertEquals(node.getParent().getNameWithId(), depParent);
-        Assert.assertEquals(node.getNameWithId(), dep);
-        Assert.assertEquals(node.getLevel(), 1);
+        Assert.assertEquals(depParent, node.getParent().getNameWithId());
+        Assert.assertEquals(dep, node.getNameWithId());
+        Assert.assertEquals(1, node.getLevel());
 
         node = data.get(subDep);
-        Assert.assertEquals(node.getParent().getNameWithId(), dep);
-        Assert.assertEquals(node.getNameWithId(), subDep);
-        Assert.assertEquals(node.getLevel(), 2);
+        Assert.assertEquals(dep, node.getParent().getNameWithId());
+        Assert.assertEquals(subDep, node.getNameWithId());
+        Assert.assertEquals(2, node.getLevel());
     }
 
     @Test
     public void fourNode() {
-        // seq                       1    =>   1  и  3   =>   1
-        //                          /         /     /        / \
-        //                         2         2     4        2   3
-        //                                                      \
-        //                                                       4
+        //                            root           root               root
+        //                            /               /\                /
+        // seq                       1    =>        1   3   =>         1
+        //                          /              /     \            / \
+        //                         2              2       4          2   3
+        //                                                                \
+        //                                                                 4
         DepartmentTree tree = new DepartmentTree();
         NameWithId dep1 = new NameWithId("dep1", 1L);
         NameWithId dep2 = new NameWithId("dep2", 2L);
@@ -232,23 +236,23 @@ public class DepartmentTreeTest {
         Assert.assertEquals(4, data.size());
 
         DepartmentTree.Node node = data.get(dep1);
-        Assert.assertEquals(node.getParent().getNameWithId(), DepartmentTree.rootName);
-        Assert.assertEquals(node.getNameWithId(), dep1);
-        Assert.assertEquals(node.getLevel(), 0);
+        Assert.assertEquals(DepartmentTree.rootName, node.getParent().getNameWithId());
+        Assert.assertEquals(dep1, node.getNameWithId());
+        Assert.assertEquals(0, node.getLevel());
 
         node = data.get(dep2);
-        Assert.assertEquals(node.getParent().getNameWithId(), dep1);
-        Assert.assertEquals(node.getNameWithId(), dep2);
-        Assert.assertEquals(node.getLevel(), 1);
+        Assert.assertEquals(dep1, node.getParent().getNameWithId());
+        Assert.assertEquals(dep2, node.getNameWithId());
+        Assert.assertEquals(1, node.getLevel());
 
         node = data.get(dep3);
-        Assert.assertEquals(node.getParent().getNameWithId(), dep1);
-        Assert.assertEquals(node.getNameWithId(), dep3);
-        Assert.assertEquals(node.getLevel(), 1);
+        Assert.assertEquals(dep1, node.getParent().getNameWithId());
+        Assert.assertEquals(dep3, node.getNameWithId());
+        Assert.assertEquals(1, node.getLevel());
 
         node = data.get(dep4);
-        Assert.assertEquals(node.getParent().getNameWithId(), dep3);
-        Assert.assertEquals(node.getNameWithId(), dep4);
-        Assert.assertEquals(node.getLevel(), 2);
+        Assert.assertEquals(dep3, node.getParent().getNameWithId());
+        Assert.assertEquals(dep4, node.getNameWithId());
+        Assert.assertEquals(2, node.getLevel());
     }
 }

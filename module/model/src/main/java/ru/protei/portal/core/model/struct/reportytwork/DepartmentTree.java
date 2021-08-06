@@ -12,7 +12,7 @@ import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowIte
 public class DepartmentTree {
     static public final NameWithId rootName = new NameWithId("root", -1L);
     private final Node root = new Node(null, new HashMap<>(), rootName);
-    private final Map<NameWithId, Node> map = new HashMap<>();
+    private final Map<NameWithId, Node> mapNameToNode = new HashMap<>();
 
     public void addNode(NameWithId parentName, NameWithId childName) {
         if (parentName == nullDepartmentParentName) {
@@ -26,16 +26,16 @@ public class DepartmentTree {
 
         Node parent = findNode(parentName);
         if (parent != null) {
-            Node child = parent.getChildrenByName(childName);
+            Node child = parent.getChildByName(childName);
             if (child == null) {
                 appendNode(parent, childName);
             }
         } else {
             parent = findNode(childName);
             if (parent != null) {
-                Node oldParent = parent.parent;
-                parent.parent = appendNode(oldParent, setOf(parent), parentName);
-                oldParent.children.remove(parent.nameWithId);
+                Node oldParent = parent.getParent();
+                parent.setParent(appendNode(oldParent, setOf(parent), parentName));
+                oldParent.getChildren().remove(parent.getNameWithId());
             } else {
                 Node newParent = appendNode(root, new HashSet<>(), parentName);
                 appendNode(newParent, childName);
@@ -44,12 +44,17 @@ public class DepartmentTree {
     }
 
     public void deepFirstSearchTraversal(Consumer<Node> consumer) {
-        root.children.values().forEach(item -> item.level = 0);
-        Deque<Node> deque = new ArrayDeque<>(root.children.values());
+        Collection<Node> rootChildrenValues = root.getChildren().values();
+        rootChildrenValues.forEach(item -> item.setLevel(0));
+        Deque<Node> deque = new ArrayDeque<>(rootChildrenValues);
+
         while (!deque.isEmpty()) {
             Node cur = deque.pollLast();
-            cur.children.values().forEach(item -> item.level = cur.level+1);
-            deque.addAll(stream(cur.children.values()).sorted().collect(Collectors.toList()));
+
+            Collection<Node> curChildrenValues = cur.getChildren().values();
+            curChildrenValues.forEach(item -> item.setLevel(cur.getLevel() + 1));
+            deque.addAll(stream(curChildrenValues).sorted().collect(Collectors.toList()));
+
             consumer.accept(cur);
         }
     }
@@ -59,11 +64,11 @@ public class DepartmentTree {
     }
 
     private Node appendNode(Node parent, Set<Node> children, NameWithId childName) {
-        Node node = map.compute(childName, (k, v) -> {
+        Node node = mapNameToNode.compute(childName, (k, v) -> {
             if (v != null) {
-                v.parent.children.remove(v.nameWithId);
-                v.parent = parent;
-                children.forEach(child -> v.children.compute(child.nameWithId, (key, oldChild) -> {
+                v.getParent().getChildren().remove(v.getNameWithId());
+                v.setParent(parent);
+                children.forEach(child -> v.getChildren().compute(child.getNameWithId(), (key, oldChild) -> {
                     if (oldChild != null) {
                         oldChild.merge(child);
                         return oldChild;
@@ -77,12 +82,12 @@ public class DepartmentTree {
                     children.stream().collect(Collectors.toMap(Node::getNameWithId, Function.identity())),
                     childName);
         });
-        parent.children.put(node.nameWithId, node);
+        parent.getChildren().put(node.getNameWithId(), node);
         return node;
     }
 
     private Node findNode(NameWithId nameWithId) {
-        return map.get(nameWithId);
+        return mapNameToNode.get(nameWithId);
     }
 
     public static class Node implements Comparable<Node> {
@@ -97,12 +102,24 @@ public class DepartmentTree {
             this.nameWithId = nameWithId;
         }
 
+        private void setParent(Node parent) {
+            this.parent = parent;
+        }
+
         public Node getParent() {
             return parent;
         }
 
+        private Map<NameWithId, Node> getChildren() {
+            return children;
+        }
+
         public NameWithId getNameWithId() {
             return nameWithId;
+        }
+
+        private void setLevel(int level) {
+            this.level = level;
         }
 
         public int getLevel() {
@@ -110,9 +127,9 @@ public class DepartmentTree {
         }
 
         public Node merge(Node other) {
-            other.parent.children.remove(other.nameWithId);
+            other.getParent().getChildren().remove(other.getNameWithId());
 
-            other.children.forEach((otherChildName, otherChildNode) ->
+            other.getChildren().forEach((otherChildName, otherChildNode) ->
                     this.children.merge(otherChildName, otherChildNode, (oldChildNode, newChildNode) -> {
                         oldChildNode.children.putAll(newChildNode.children);
                         return newChildNode;
@@ -121,7 +138,7 @@ public class DepartmentTree {
             return new Node(this.parent, new HashMap<>(this.children), this.nameWithId);
         }
 
-        private Node getChildrenByName(NameWithId nameWithId) {
+        private Node getChildByName(NameWithId nameWithId) {
             return children.get(nameWithId);
         }
 
