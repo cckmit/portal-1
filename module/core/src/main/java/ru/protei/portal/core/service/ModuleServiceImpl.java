@@ -5,9 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.ModuleDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 
@@ -24,6 +26,9 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Autowired
     ModuleDAO moduleDAO;
+
+    @Autowired
+    CaseObjectDAO caseObjectDAO;
 
     @Override
     public Result<Map<Module, List<Module>>> getModulesByKitId(AuthToken token, Long kitId) {
@@ -50,24 +55,15 @@ public class ModuleServiceImpl implements ModuleService {
     @Override
     @Transactional
     public Result<Set<Long>> removeModules(AuthToken token, Set<Long> modulesIds) {
-        if (modulesIds == null || modulesIds.isEmpty()) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
+        for (Long moduleId: modulesIds) {
+            CaseObject caseObject = new CaseObject(moduleId);
+            caseObject.setDeleted(true);
 
-        if (!validateToken(token)) {
-            return error(En_ResultStatus.PERMISSION_DENIED);
-        }
-
-        int countRemoved = moduleDAO.removeByKeys(modulesIds);
-        if (countRemoved != modulesIds.size()) {
-            log.warn("removeModules(): NOT_FOUND. modulesIds={}", modulesIds);
-            return error(En_ResultStatus.NOT_FOUND);
+            if (!caseObjectDAO.partialMerge(caseObject, CaseObject.Columns.DELETED)) {
+                return error(En_ResultStatus.NOT_UPDATED, "Module " + caseObject.getName() + " was not removed");
+            }
         }
 
         return ok(modulesIds);
-    }
-
-    private boolean validateToken(AuthToken authToken) {
-        return authToken != null && authToken.getUserLoginId() != null;
     }
 }

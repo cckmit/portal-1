@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 public class ModuleDAO_Impl extends PortalBaseJdbcDAO<Module> implements ModuleDAO {
     @Override
     public List<Module> getListByKitId(Long kitId) {
-        List<Module> modules = getListByCondition("kit_id = ?", kitId);
+        List<Module> modules = getListByCondition("kit_id = ? AND deleted = 0", kitId);
 
         if (!modules.isEmpty()) {
             List<Module> childModules = getListByCondition("parent_module_id in (" + convertListToStringIds(modules) + ")");

@@ -97,7 +97,7 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
     }
 
     @Override
-    public boolean isDeleteEnabled() {
+    public boolean hasSelectedModules() {
         return this.getSelectedModules().size() > 0;
     }
 

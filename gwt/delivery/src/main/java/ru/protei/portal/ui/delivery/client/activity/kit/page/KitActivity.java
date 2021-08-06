@@ -77,6 +77,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     private void fillModules(Long kitId) {
         moduleView.clearModules();
         moduleView.clearSelectedRows();
+        moduleView.setDeleteEnabled(isDeleteEnabled());
         moduleService.getModulesByKitId(kitId, new FluentCallback<Map<Module, List<Module>>>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
                 .withSuccess(modules -> {
@@ -134,14 +135,16 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     @Override
     public void onCheckModuleClicked(ModuleTableView moduleTableView) {
-        moduleTableView.setDeleteEnabled(moduleTableView.isDeleteEnabled());
+        moduleTableView.setDeleteEnabled(isDeleteEnabled());
     }
 
     @Override
     public void onRemoveModuleClicked(AbstractModuleTableView modulesTableView) {
-        fireEvent(!modulesTableView.isDeleteEnabled()
-               ? new NotifyEvents.Show(lang.selectModulesToRemove(), NotifyEvents.NotifyType.ERROR)
-               : new ConfirmDialogEvents.Show(lang.moduleRemoveConfirmMessage(), removeModuleAction(modulesTableView)));
+        if (hasEditPrivileges()) {
+            fireEvent(!modulesTableView.hasSelectedModules()
+                    ? new NotifyEvents.Show(lang.selectModulesToRemove(), NotifyEvents.NotifyType.ERROR)
+                    : new ConfirmDialogEvents.Show(lang.moduleRemoveConfirmMessage(), removeModuleAction(modulesTableView)));
+        }
     }
 
     private Runnable removeModuleAction(AbstractModuleTableView modulesTableView) {
@@ -155,6 +158,10 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
                     fireEvent(new NotifyEvents.Show(lang.modulesRemoved(), NotifyEvents.NotifyType.SUCCESS));
                     fillKits(deliveryId, kitId);
                 }));
+    }
+
+    private boolean isDeleteEnabled() {
+        return hasEditPrivileges() && moduleView.hasSelectedModules();
     }
 
     private Long deliveryId;

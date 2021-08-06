@@ -50,9 +50,12 @@ public class KitDAO_Impl extends PortalBaseJdbcDAO<Kit> implements KitDAO {
 
     @Override
     public List<Kit> getModulesGroupedByKit(Long deliveryId) {
-        return jdbcTemplate.query( "SELECT id AS kitId, (SELECT count(id) FROM module WHERE module.kit_id = kitId) AS modulesCount " +
-                        "FROM kit " +
-                        "WHERE kit.delivery_id = " + deliveryId,
+        return jdbcTemplate.query( " SELECT kit.id AS kitId," +
+                                   " (SELECT count(kitId) FROM kit, case_object, module" +
+                                   " WHERE module.kit_id = kit_id " +
+                                   " AND module.id = case_object.id" +
+                                   " AND case_object.deleted = 0) AS modulesCount FROM kit" +
+                                   " WHERE kit.delivery_id = " + deliveryId,
                 (ResultSet rs, int rowNum) -> {
                     Kit shortView = new Kit();
                     shortView.setId(rs.getLong("kitId"));
