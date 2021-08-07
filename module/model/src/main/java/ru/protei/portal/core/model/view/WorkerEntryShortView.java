@@ -43,6 +43,11 @@ public class WorkerEntryShortView implements Serializable {
     @JdbcColumn(name="active")
     private int activeFlag;
 
+    @JdbcJoinedColumn(mappedColumn = "parent_dep", joinPath = {
+            @JdbcJoinPath(localColumn = "dep_id", table = "company_dep", remoteColumn = "id"),
+    })
+    private Long parentDepId;
+
     @JdbcColumn(name = "dep_id")
     private Long depId;
 
@@ -106,6 +111,14 @@ public class WorkerEntryShortView implements Serializable {
 
     public boolean isMain() {
         return activeFlag > 0;
+    }
+
+    public Long getParentDepId() {
+        return parentDepId;
+    }
+
+    public void setParentDepId(Long parentDepId) {
+        this.parentDepId = parentDepId;
     }
 
     public Long getDepId() {
@@ -173,6 +186,7 @@ public class WorkerEntryShortView implements Serializable {
                 ", departmentName='" + departmentName + '\'' +
                 ", positionName='" + positionName + '\'' +
                 ", activeFlag=" + activeFlag +
+                ", parentDepId=" + parentDepId +
                 ", depId=" + depId +
                 ", positionId=" + positionId +
                 ", isContractAgreement=" + isContractAgreement +

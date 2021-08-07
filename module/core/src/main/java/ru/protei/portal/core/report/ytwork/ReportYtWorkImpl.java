@@ -6,18 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
-import ru.protei.portal.core.model.dao.CompanyDAO;
-import ru.protei.portal.core.model.dao.ContractDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dao.ReportDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.query.PersonQuery;
+import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.YtWorkQuery;
 import ru.protei.portal.core.model.struct.Interval;
-import ru.protei.portal.core.model.struct.ReportYtWorkInfo;
-import ru.protei.portal.core.model.struct.ReportYtWorkItem;
+import ru.protei.portal.core.model.struct.WorkerEntryFacade;
+import ru.protei.portal.core.model.struct.reportytwork.*;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkInfo;
+import ru.protei.portal.core.model.view.EmployeeShortView;
+import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtSingleEnumIssueCustomField;
 import ru.protei.portal.core.model.youtrack.dto.issue.IssueWorkItem;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
@@ -28,12 +27,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.partitioningBy;
 import static java.util.stream.Collectors.toSet;
-import static ru.protei.portal.core.model.helper.CollectionUtils.inverseMap;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
+import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.NameWithId;
+import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.PersonInfo;
+import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.PersonInfo.nullDepartmentName;
 
 public class ReportYtWorkImpl implements ReportYtWork {
 
@@ -48,6 +51,10 @@ public class ReportYtWorkImpl implements ReportYtWork {
     @Autowired
     PersonDAO personDAO;
     @Autowired
+    EmployeeShortViewDAO employeeShortViewDAO;
+    @Autowired
+    WorkerEntryShortViewDAO workerEntryShortViewDAO;
+    @Autowired
     ReportDAO reportDAO;
     @Autowired
     CompanyDAO companyDAO;
@@ -56,6 +63,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
 
     private final Map<String, List<String>> invertNiokrs;
     private final Map<String, List<String>> invertNmas;
+    static private final String CLASSIFICATION_ERROR_PREFIX = "CLASSIFICATION ERROR - ";
 
     public ReportYtWorkImpl() {
         Map<String, List<String>> niokrs = new HashMap<>();
@@ -136,19 +144,20 @@ public class ReportYtWorkImpl implements ReportYtWork {
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 invertNiokrs, invertNmas,
                 name -> contractDAO.getByCustomerAndProject(name),
-                this::getPersonByEmail,
-                new Date(), makeHomeCompanySet()
+                new Date(), makeHomeCompanySet(),
+                CLASSIFICATION_ERROR_PREFIX
         );
 
         log.debug("writeReport : reportId={} start process", report.getId());
-        List<ReportYtWorkItem> data = stream(iterator)
+        Map<String, ReportYtWorkRowItem> data = stream(iterator)
                 .map(this::makeYtReportItem)
                 .collect(collector);
 
         switch(iterator.getStatus()) {
-            case OK:
+            case OK: {
                 log.debug("writeReport : collect data with isOk status : reportId={}", report.getId());
                 break;
+            }
             case CANCELED: {
                 log.info("writeReport : canceled : reportId={}", report.getId());
                 return true;
@@ -159,17 +168,76 @@ public class ReportYtWorkImpl implements ReportYtWork {
             }
         }
 
+        data.forEach((email, ytWorkItem) -> ytWorkItem.setPersonInfo(makePersonInfo(email)));
+
+        Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasWorkEntry = stream(data.values())
+                .collect(partitioningBy(item -> item.getPersonInfo().hasWorkEntry()));
+
+        Map<NameWithId, DepartmentTreeAndValues> groupingByCompanyDepartment =
+                groupingByCompanyDepartment(partitionByHasWorkEntry.get(true));
+
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
-        try (ReportWriter<ReportYtWorkItem> writer = new ExcelReportWriter(localizedLang, collector.getProcessedWorkTypes())) {
+        try (ReportWriter<ReportYtWorkRow> writer = new ExcelReportWriter(localizedLang, collector.getProcessedWorkTypes())) {
             log.debug("writeReport : start write sheet");
+            groupingByCompanyDepartment.forEach((companyName, companyTreeAndValues) -> {
+                int sheetNumber = writer.createSheet();
+                writer.setSheetName(sheetNumber, companyName.getString());
+                writer.write(sheetNumber, makeReportCompanyData(companyTreeAndValues));
+            });
+
             int sheetNumber = writer.createSheet();
-            writer.write(sheetNumber, data);
+            writer.setSheetName(sheetNumber, "NO COMPANY");
+            writer.write(sheetNumber, new ArrayList<>(partitionByHasWorkEntry.get(false)));
+
             writer.collect(buffer);
             return true;
         } catch (Throwable th) {
             log.error("writeReport : fail to write : reportId={}, th={}", report.getId(), th);
             return false;
         }
+    }
+
+    public Map<NameWithId, DepartmentTreeAndValues> groupingByCompanyDepartment(List<ReportYtWorkRowItem> hasWorkEntry) {
+        Map<NameWithId, DepartmentTreeAndValues> companyMap = new HashMap<>();
+        hasWorkEntry.forEach(item -> {
+            PersonInfo personInfo = item.getPersonInfo();
+            DepartmentTreeAndValues treeAndValues = companyMap.compute(personInfo.getCompanyName(),
+                    (companyName, companyTree) -> companyTree != null ? companyTree : new DepartmentTreeAndValues());
+            treeAndValues.getValues().compute(personInfo.getDepartmentName(), (name, values) -> {
+                if (values == null) {
+                    treeAndValues.getTree().addNode(personInfo.getDepartmentParentName(), personInfo.getDepartmentName());
+                    values = new ArrayList<>();
+                }
+                values.add(item);
+                return values;
+            });
+        });
+
+        return companyMap;
+    }
+
+    public List<ReportYtWorkRow> makeReportCompanyData(DepartmentTreeAndValues treeAndValues) {
+        List<ReportYtWorkRow> list = new ArrayList<>();
+        treeAndValues.getTree().deepFirstSearchTraversal(node -> {
+            int level = node.getLevel();
+            list.add(new ReportYtWorkRowHeader(levelMark.getOrDefault(level, "?") + node.getNameWithId().getString()));
+
+            List<ReportYtWorkRowItem> reportYtWorkRowItems = treeAndValues.getValues().get(node.getNameWithId());
+            list.addAll(stream(reportYtWorkRowItems)
+                    .sorted(Comparator.comparing(item -> item.getPersonInfo().getDisplayName()))
+                    .collect(Collectors.toList())
+            );
+        });
+
+        return list;
+    }
+
+    static private final Map<Integer, String> levelMark = new HashMap<>();
+    static {
+        levelMark.put(0, "== ");
+        levelMark.put(1, "==== ");
+        levelMark.put(2, "====== ");
+        levelMark.put(3, "======== ");
     }
 
     private Set<String> makeHomeCompanySet() {
@@ -180,24 +248,48 @@ public class ReportYtWorkImpl implements ReportYtWork {
         return homeCompany;
     }
 
-    private Person getPersonByEmail(String email) {
-        PersonQuery query = new PersonQuery();
-        Person person = null;
+    private PersonInfo makePersonInfo(String email) {
+        EmployeeShortView employeeShortView = null;
         if (isNotEmpty(email)) {
-            query.setEmail(email);
-            List<Person> persons = personDAO.getPersons(query);
-            if (persons.size() >= 1) {
-                person = persons.get(0);
-                person.setLogins(Collections.singletonList(email));
+            EmployeeQuery query = new EmployeeQuery();
+            query.setEmailByLike(email);
+            query.setDeleted(false);
+            query.setFired(false);
+            List<EmployeeShortView> personShortViews = employeeShortViewDAO.getEmployees(query);
+            if (personShortViews.size() >= 1) {
+                employeeShortView = personShortViews.get(0);
+                employeeShortView.setWorkerEntries(workerEntryShortViewDAO.listByPersonIds(setOf(employeeShortView.getId())));
             }
         }
-        return person != null ? person : createTempPerson(email);
+        return employeeShortView != null ? createPersonInfo(employeeShortView) : createTempPersonInfo(email);
     }
 
-    static private Person createTempPerson(String email) {
-        Person person = new Person();
-        person.setLogins(Collections.singletonList("CLASSIFICATION ERROR - " + email));
-        return person;
+    static private PersonInfo createPersonInfo(EmployeeShortView employeeShortView) {
+        WorkerEntryShortView mainEntry = new WorkerEntryFacade(employeeShortView.getWorkerEntries()).getMainEntry();
+        if (mainEntry == null) {
+            return new PersonInfo(
+                    employeeShortView.getDisplayShortName(),
+                    employeeShortView.getId()
+            );
+        } else {
+            return new PersonInfo(
+                    employeeShortView.getDisplayShortName(),
+                    employeeShortView.getId(),
+                    mainEntry.getCompanyName() != null ?
+                            new NameWithId(mainEntry.getCompanyName(), mainEntry.getCompanyId())
+                            : PersonInfo.nullCompanyName,
+                    mainEntry.getDepartmentParentName() != null ?
+                            new NameWithId(mainEntry.getDepartmentParentName(), mainEntry.getParentDepId())
+                            : PersonInfo.nullDepartmentParentName,
+                    mainEntry.getDepartmentName() != null ?
+                            new NameWithId(mainEntry.getDepartmentName(), mainEntry.getDepId())
+                            : nullDepartmentName
+            );
+        }
+    }
+
+    static private PersonInfo createTempPersonInfo(String email) {
+        return new PersonInfo(email, null);
     }
 
     private ReportYtWorkInfo makeYtReportItem(IssueWorkItem issueWorkItem) {
@@ -216,5 +308,18 @@ public class ReportYtWorkImpl implements ReportYtWork {
             return null;
         }
         return field.getValueAsString();
+    }
+
+    static private class DepartmentTreeAndValues {
+        private final DepartmentTree tree = new DepartmentTree();
+        private final Map<NameWithId, List<ReportYtWorkRowItem>> values = new HashMap<>();
+
+        public DepartmentTree getTree() {
+            return tree;
+        }
+
+        public Map<NameWithId, List<ReportYtWorkRowItem>> getValues() {
+            return values;
+        }
     }
 }

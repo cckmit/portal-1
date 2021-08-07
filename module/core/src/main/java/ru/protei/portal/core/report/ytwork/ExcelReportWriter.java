@@ -5,9 +5,10 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.ListBuilder;
-import ru.protei.portal.core.model.struct.ReportYtWorkItem;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRow;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowHeader;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
 import ru.protei.portal.core.utils.JXLSHelper;
@@ -22,11 +23,11 @@ import java.util.Set;
 import static ru.protei.portal.core.model.helper.CollectionUtils.toPrimitiveIntegerArray;
 
 public class ExcelReportWriter implements
-        ReportWriter<ReportYtWorkItem>,
-        JXLSHelper.ReportBook.Writer<ReportYtWorkItem> {
+        ReportWriter<ReportYtWorkRow>,
+        JXLSHelper.ReportBook.Writer<ReportYtWorkRow> {
 
     private final Lang.LocalizedLang localizedLang;
-    private final JXLSHelper.ReportBook<ReportYtWorkItem> book;
+    private final JXLSHelper.ReportBook<ReportYtWorkRow> book;
     private final String[] formats;
     private final Map<En_ReportYtWorkType, Set<String>> processedWorkTypes;
 
@@ -48,7 +49,7 @@ public class ExcelReportWriter implements
     }
 
     @Override
-    public void write(int sheetNumber, List<ReportYtWorkItem> objects) {
+    public void write(int sheetNumber, List<ReportYtWorkRow> objects) {
         book.write(sheetNumber, objects);
     }
 
@@ -95,27 +96,30 @@ public class ExcelReportWriter implements
         int count = 0;
         for (Map.Entry<En_ReportYtWorkType, Set<String>> entry : processedWorkTypes.entrySet()) {
             entry.getValue().forEach(value -> columnsList.add(entry.getKey() + " : " + value));
-            count =+ entry.getValue().size();
+            count += entry.getValue().size();
         }
         String[] array = new String[count];
         return columnsList.build().toArray(array);
     }
 
     @Override
-    public Object[] getColumnValues(ReportYtWorkItem item) {
+    public Object[] getColumnValues(ReportYtWorkRow row) {
         List<Object> values = new ArrayList<>();
 
-        Person person = item.getPerson();
-        if (person.getId() != null) {
-            values.add(item.getPerson().getDisplayShortName());
-        } else {
-            values.add(item.getPerson().getLogins().get(0));
+        if (row instanceof ReportYtWorkRowItem) {
+            ReportYtWorkRowItem item = (ReportYtWorkRowItem)row;
+
+            values.add(item.getPersonInfo().getDisplayName());
+            long allTimeSpent = item.getAllTimeSpent();
+            values.add(allTimeSpent);
+            values.add(localizedLang.get("reportYtWorkRepresentTime", new Object[]{allTimeSpent / 60, allTimeSpent % 60}));
+            processedWorkTypes.forEach((ytWorkType, strings) ->
+                    strings.forEach(value -> values.add(item.selectSpentTimeMap(ytWorkType).getOrDefault(value, 0L))));
         }
-        long allTimeSpent = item.getAllTimeSpent();
-        values.add(allTimeSpent);
-        values.add(localizedLang.get("reportYtWorkRepresentTime", new Object[]{allTimeSpent / 60, allTimeSpent % 60}));
-        processedWorkTypes.forEach((ytWorkType, strings) ->
-                strings.forEach(value -> values.add(item.selectSpentTimeMap(ytWorkType).getOrDefault(value, 0L))));
+        if (row instanceof ReportYtWorkRowHeader) {
+            ReportYtWorkRowHeader header = (ReportYtWorkRowHeader)row;
+            values.add(header.getValue());
+        }
 
         return values.toArray();
     }
