@@ -2,8 +2,8 @@ package ru.protei.portal.core.report.ytwork;
 
 import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkInfo;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkInfo;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.query.YtWorkQuery;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.struct.WorkerEntryFacade;
 import ru.protei.portal.core.model.struct.reportytwork.*;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkInfo;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtSingleEnumIssueCustomField;
@@ -185,7 +186,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
             });
 
             int sheetNumber = writer.createSheet();
-            writer.setSheetName(sheetNumber, CLASSIFICATION_ERROR_PREFIX + " company");
+            writer.setSheetName(sheetNumber, "NO COMPANY");
             writer.write(sheetNumber, new ArrayList<>(partitionByHasWorkEntry.get(false)));
 
             writer.collect(buffer);
@@ -218,7 +219,8 @@ public class ReportYtWorkImpl implements ReportYtWork {
     public List<ReportYtWorkRow> makeReportCompanyData(DepartmentTreeAndValues treeAndValues) {
         List<ReportYtWorkRow> list = new ArrayList<>();
         treeAndValues.getTree().deepFirstSearchTraversal(node -> {
-            list.add(new ReportYtWorkRowHeader(levelMark.getOrDefault(node.getLevel(), "?") + node.getNameWithId().getString()));
+            int level = node.getLevel();
+            list.add(new ReportYtWorkRowHeader(levelMark.getOrDefault(level, "?") + node.getNameWithId().getString()));
 
             List<ReportYtWorkRowItem> reportYtWorkRowItems = treeAndValues.getValues().get(node.getNameWithId());
             list.addAll(stream(reportYtWorkRowItems)
@@ -251,6 +253,8 @@ public class ReportYtWorkImpl implements ReportYtWork {
         if (isNotEmpty(email)) {
             EmployeeQuery query = new EmployeeQuery();
             query.setEmailByLike(email);
+            query.setDeleted(false);
+            query.setFired(false);
             List<EmployeeShortView> personShortViews = employeeShortViewDAO.getEmployees(query);
             if (personShortViews.size() >= 1) {
                 employeeShortView = personShortViews.get(0);
@@ -285,7 +289,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
     }
 
     static private PersonInfo createTempPersonInfo(String email) {
-        return new PersonInfo(CLASSIFICATION_ERROR_PREFIX + email, null);
+        return new PersonInfo(email, null);
     }
 
     private ReportYtWorkInfo makeYtReportItem(IssueWorkItem issueWorkItem) {
