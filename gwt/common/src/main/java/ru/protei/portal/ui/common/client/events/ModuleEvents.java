@@ -36,6 +36,12 @@ public class ModuleEvents {
     }
 
     public static class Create {
-        public Create() {}
+        public Create(HasWidgets parent, Long kitId) {
+            this.parent = parent;
+            this.kitId = kitId;
+        }
+
+        public HasWidgets parent;
+        public Long kitId;
     }
 }

@@ -21,4 +21,6 @@ public interface ModuleController extends RemoteService {
     Module updateMeta(Module meta) throws RequestFailedException;
 
     Module saveModule(Module module);
+
+    String generateSerialNumber(Long kitId) throws RequestFailedException;
 }

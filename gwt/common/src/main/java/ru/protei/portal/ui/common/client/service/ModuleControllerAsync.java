@@ -17,4 +17,6 @@ public interface ModuleControllerAsync {
     void updateMeta(Module meta, AsyncCallback<Module> async);
 
     void saveModule(Module module, AsyncCallback<Module> withSuccess);
+
+    void generateSerialNumber(Long kitId, AsyncCallback<String> withSuccess);
 }

@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.exception.RollbackTransactionException;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.CaseStateDAO;
-import ru.protei.portal.core.model.dao.CaseTypeDAO;
-import ru.protei.portal.core.model.dao.ModuleDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -29,6 +26,8 @@ import static ru.protei.portal.core.utils.HistoryUtils.*;
 public class ModuleServiceImpl implements ModuleService {
 
     private final static DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
+    private final static String DEFAULT_MODULE_SERIAL_NUMBER = "001";
+
 
     private static Logger log = LoggerFactory.getLogger(ModuleServiceImpl.class);
 
@@ -44,6 +43,8 @@ public class ModuleServiceImpl implements ModuleService {
     HistoryService historyService;
     @Autowired
     CaseStateDAO caseStateDAO;
+    @Autowired
+    KitDAO kitDAO;
 
     @Override
     public Result<Module> getModule(AuthToken token, Long id) {
@@ -63,16 +64,6 @@ public class ModuleServiceImpl implements ModuleService {
         CollectionUtils.emptyIfNull(modules).sort(Comparator.comparing(Module::getSerialNumber));
 
         return ok(parentToChild(modules));
-    }
-
-    private Map<Module, List<Module>> parentToChild(List<Module> modules) {
-        return CollectionUtils.stream(modules)
-                .filter(module -> module.getParentModuleId() == null)
-                .collect(Collectors.toMap(Function.identity(), module -> modules.stream()
-                        .filter(m -> Objects.equals(m.getParentModuleId(), module.getId()))
-                        .collect(Collectors.toCollection(ArrayList::new)),
-                        (a, b) -> a,
-                        LinkedHashMap::new));
     }
 
     @Override
@@ -107,8 +98,51 @@ public class ModuleServiceImpl implements ModuleService {
 
         updateModuleHistory(token, meta, oldMeta);
 
-        //todo надо будет добавить событие изменения модуля для рассылки уведомлений
         return ok(moduleDAO.get(caseObject.getId()));
+    }
+
+    @Override
+    public Result<String> generateSerialNumber(AuthToken token, Long kitId) {
+        if (kitId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Kit kit = kitDAO.get(kitId);
+        if (kit == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        List<Module> modules = moduleDAO.getListByKitId(kitId);
+
+        return ok(makeNewSerialNumber(modules, kit.getSerialNumber()));
+    }
+
+    private String makeNewSerialNumber(List<Module> modules, String kitSerialNumber) {
+        if (CollectionUtils.isEmpty(modules)) {
+            return kitSerialNumber + "." + DEFAULT_MODULE_SERIAL_NUMBER;
+        }
+
+        Integer maxExistSerialNumber = modules.stream()
+                .map(m -> Integer.parseInt(m.getSerialNumber().substring(m.getSerialNumber().lastIndexOf(".") + 1)))
+                .max(Comparator.naturalOrder())
+                .get();
+
+        Integer newSerialNumber = maxExistSerialNumber + 1;
+        if (newSerialNumber < 100) {
+            return kitSerialNumber + "." + String.format("%03d", newSerialNumber);
+        } else {
+            return kitSerialNumber + "." + newSerialNumber;
+        }
+    }
+
+    private Map<Module, List<Module>> parentToChild(List<Module> modules) {
+        return CollectionUtils.stream(modules)
+                .filter(module -> module.getParentModuleId() == null)
+                .collect(Collectors.toMap(Function.identity(), module -> modules.stream()
+                                .filter(m -> Objects.equals(m.getParentModuleId(), module.getId()))
+                                .collect(Collectors.toCollection(ArrayList::new)),
+                        (a, b) -> a,
+                        LinkedHashMap::new));
     }
 
     private void updateModuleHistory(AuthToken token, Module meta, Module oldMeta) {

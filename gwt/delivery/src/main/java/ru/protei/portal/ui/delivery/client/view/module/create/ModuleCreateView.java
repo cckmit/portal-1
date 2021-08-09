@@ -92,7 +92,7 @@ public class ModuleCreateView extends Composite implements AbstractModuleCreateV
         }
     }
 
-    @UiHandler({"cancelButton"})
+    @UiHandler("cancelButton")
     public void onCancelClicked(ClickEvent event) {
         if (activity != null) {
             activity.onCancelClicked();

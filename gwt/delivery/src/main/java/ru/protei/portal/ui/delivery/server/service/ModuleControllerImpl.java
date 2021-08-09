@@ -61,4 +61,10 @@ public class ModuleControllerImpl implements ModuleController {
     public Module saveModule(Module module) {
         return null;
     }
+
+    @Override
+    public String generateSerialNumber(Long kitId) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(moduleService.generateSerialNumber(token, kitId));
+    }
 }

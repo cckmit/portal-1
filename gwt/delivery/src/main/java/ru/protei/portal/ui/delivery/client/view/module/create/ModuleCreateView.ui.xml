@@ -5,15 +5,21 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel ui:field="root">
+    <g:HTMLPanel>
         <div class="row">
             <div class="col-lg-8 p-0 m-0">
                 <div class="actions-wrapper menu-clipper">
                     <div class="actions menu-clipper-menu">
                     </div>
                 </div>
-                <validablefield:ValidableTextBox ui:field="serialNumber" styleName="form-control"
-                                                 enabled="false" notNull="false"/>
+                <div class="p-l-30 p-t-15 p-r-15">
+                    <div class="form-group form-group-default">
+                        <label class="fade"><ui:text from="{lang.moduleSerialNumber}"/></label>
+                        <validablefield:ValidableTextBox ui:field="serialNumber" styleName="form-control"
+                                                         enabled="false" notNull="false"/>
+                    </div>
+                </div>
+
                 <div class="p-l-30 p-t-15 p-r-15">
                     <view:namedescription.ModuleNameDescriptionEditView ui:field="nameDescription"/>
                 </div>

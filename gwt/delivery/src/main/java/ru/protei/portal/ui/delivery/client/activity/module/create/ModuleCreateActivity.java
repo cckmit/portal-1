@@ -1,16 +1,15 @@
 package ru.protei.portal.ui.delivery.client.activity.module.create;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.ModuleEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -33,20 +32,14 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
     }
 
     @Event
-    public void onInitDetails(AppEvents.InitDetails initDetails) {
-        this.initDetails = initDetails;
-    }
-
-    @Event
-    public void onShow(ModuleEvents.Create event ) {
+    public void onShow(ModuleEvents.Create event) {
         if (!hasPrivileges()) {
-            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
+            fireEvent(new ErrorPageEvents.ShowForbidden(event.parent));
             return;
         }
-
-        initDetails.parent.clear();
-        Window.scrollTo(0, 0);
-        initDetails.parent.add(view.asWidget());
+        event.parent.clear();
+        event.parent.add(view.asWidget());
+        this.kitId = event.kitId;
 
         prepare();
     }
@@ -67,11 +60,20 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
         fireEvent(new Back());
     }
 
-    public void getLastSerialNumber(Consumer<String> success) {
-        // todo получить последний номер модуля данного комплекта
+    @Override
+    public void onUpdateSerialNumberClicked() {
+        updateSerialNumber();
+    }
+
+    private void updateSerialNumber() {
+        moduleService.generateSerialNumber(kitId, new FluentCallback<String>()
+                .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
+                .withSuccess(serialNumber -> view.setSerialNumber(serialNumber))
+        );
     }
 
     private void prepare() {
+        updateSerialNumber();
 
     }
 
@@ -140,6 +142,6 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
     @Inject
     private DefaultErrorHandler defaultErrorHandler;
 
-    private AppEvents.InitDetails initDetails;
+    private Long kitId;
 }
 

@@ -51,8 +51,10 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
                             initDetails.parent.add(view.asWidget());
                             view.fillKits(delivery.getKits());
                             view.setKitsActionsEnabled(hasEditPrivileges());
+
                             if (event.kitId != null) {
                                 view.makeKitSelected(event.kitId);
+                                kitId = event.kitId;
                                 fillModules(event.kitId);
                             }
                         }
@@ -71,12 +73,18 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     public void onKitClicked(Long kitId) {
         moduleView.clearModules();
         view.getModuleEditContainer().clear();
+        this.kitId = kitId;
         fillModules(kitId);
     }
 
     @Override
     public void onItemClicked(Module module) {
         fireEvent(new ModuleEvents.Show(view.getModuleEditContainer(), module.getId()));
+    }
+
+    @Override
+    public void onAddModuleClicked() {
+        fireEvent(new ModuleEvents.Create(view.getModuleEditContainer(), kitId));
     }
 
     private void fillModules(Long kitId) {
@@ -148,6 +156,8 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     private DeliveryControllerAsync deliveryService;
     @Inject
     private ModuleControllerAsync moduleService;
-    
+
+    private Long kitId;
+
     private AppEvents.InitDetails initDetails;
 }
