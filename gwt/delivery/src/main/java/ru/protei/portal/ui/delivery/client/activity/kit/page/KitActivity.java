@@ -90,6 +90,10 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
         return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
     }
 
+    private boolean hasRemovePrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_REMOVE);
+    }
+
     private KitActionsHandler kitActionsHandler = new KitActionsHandler() {
         @Override
         public void onCopy() {
@@ -140,7 +144,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     @Override
     public void onRemoveModuleClicked(AbstractModuleTableView modulesTableView) {
-        if (hasEditPrivileges()) {
+        if (hasRemovePrivileges()) {
             fireEvent(!modulesTableView.hasSelectedModules()
                     ? new NotifyEvents.Show(lang.selectModulesToRemove(), NotifyEvents.NotifyType.ERROR)
                     : new ConfirmDialogEvents.Show(lang.moduleRemoveConfirmMessage(), removeModuleAction(modulesTableView)));
@@ -151,7 +155,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
         Set<Long> modulesToRemoveIds = modulesTableView.getSelectedModules().stream().map(Module::getId)
                                                        .collect(Collectors.toSet());
 
-        return () -> moduleService.removeModules(modulesToRemoveIds, new FluentCallback<Set<Long>>()
+        return () -> moduleService.removeModules(kitId, modulesToRemoveIds, new FluentCallback<Set<Long>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(throwable.getMessage(),
                                                       NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(result -> {
@@ -161,7 +165,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     }
 
     private boolean isDeleteEnabled() {
-        return hasEditPrivileges() && moduleView.hasSelectedModules();
+        return hasRemovePrivileges() && moduleView.hasSelectedModules();
     }
 
     private Long deliveryId;

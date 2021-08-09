@@ -9,7 +9,6 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.ModuleDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 
@@ -54,16 +53,35 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Override
     @Transactional
-    public Result<Set<Long>> removeModules(AuthToken token, Set<Long> modulesIds) {
-        for (Long moduleId: modulesIds) {
-            CaseObject caseObject = new CaseObject(moduleId);
-            caseObject.setDeleted(true);
+    public Result<Set<Long>> removeModules(AuthToken token, Long kitId, Set<Long> modulesIds) {
+        if (kitId == null || modulesIds == null || modulesIds.isEmpty()) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
-            if (!caseObjectDAO.partialMerge(caseObject, CaseObject.Columns.DELETED)) {
-                return error(En_ResultStatus.NOT_UPDATED, "Module " + caseObject.getName() + " was not removed");
+        if (!validateToken(token)) {
+            return error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        Map<Module, List<Module>> modules = getModulesByKitId(token, kitId).getData();
+        for (Map.Entry<Module, List<Module>> parentModule : modules.entrySet()) {
+            if (modulesIds.contains(parentModule.getKey().getId())) {
+                parentModule.getValue().forEach(childModule -> {
+                    log.info("Add child module id " + childModule.getId() + " to modulesIds for removing");
+                    modulesIds.add(childModule.getId());
+                });
             }
         }
 
+        int countRemoved = caseObjectDAO.removeByKeys(modulesIds);
+        if (countRemoved != modulesIds.size()) {
+            log.warn("removeModules(): NOT_FOUND. modulesIds={}", modulesIds);
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
         return ok(modulesIds);
+    }
+
+    private boolean validateToken(AuthToken authToken) {
+        return authToken != null && authToken.getUserLoginId() != null;
     }
 }

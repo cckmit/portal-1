@@ -11,5 +11,5 @@ import java.util.Set;
 public interface ModuleService {
     Result<Map<Module, List<Module>>> getModulesByKitId(AuthToken token, Long kitId);
 
-    Result<Set<Long>> removeModules(AuthToken token, Set<Long> modulesIds);
+    Result<Set<Long>> removeModules(AuthToken token, Long kitId, Set<Long> modulesIds);
 }

@@ -13,5 +13,5 @@ import java.util.Set;
 public interface ModuleController extends RemoteService {
     Map<Module, List<Module>> getModulesByKitId(Long kitId) throws RequestFailedException;
 
-    Set<Long> removeModules(Set<Long> ids) throws RequestFailedException;
+    Set<Long> removeModules(Long kitId, Set<Long> modulesIds) throws RequestFailedException;
 }

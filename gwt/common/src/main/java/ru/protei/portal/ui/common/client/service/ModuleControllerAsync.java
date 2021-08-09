@@ -10,5 +10,5 @@ import java.util.Set;
 public interface ModuleControllerAsync {
     void getModulesByKitId(Long kitId, AsyncCallback<Map<Module, List<Module>>> async);
 
-    void removeModules(Set<Long> ids, AsyncCallback<Set<Long>> async);
+    void removeModules(Long kitId, Set<Long> modulesIds, AsyncCallback<Set<Long>> async);
 }

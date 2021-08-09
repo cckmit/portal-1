@@ -42,11 +42,11 @@ public class ModuleControllerImpl implements ModuleController {
     }
 
     @Override
-    public Set<Long> removeModules(Set<Long> ids) throws RequestFailedException {
-        log.info("removeModules(): modulesIds={}", ids);
+    public Set<Long> removeModules(Long kitId, Set<Long> modulesIds) throws RequestFailedException {
+        log.info("removeModules(): modulesIds={}", modulesIds);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result<Set<Long>> response = moduleService.removeModules(token, ids);
-        log.info("removeModules(): modulesIds={}, {}", ids, response.isOk() ? "ok" : response.getStatus());
+        Result<Set<Long>> response = moduleService.removeModules(token, kitId, modulesIds);
+        log.info("removeModules(): modulesIds={}, {}", modulesIds, response.isOk() ? "ok" : response.getStatus());
         return checkResultAndGetData(response);
     }
 }
