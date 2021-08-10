@@ -458,4 +458,9 @@ public class DaoMockTestConfiguration {
     public KitDAO getKitDAO() {
         return mock(KitDAO.class);
     }
+
+    @Bean
+    public ModuleDAO getModuleDAO() {
+        return mock(ModuleDAO.class);
+    }
 }

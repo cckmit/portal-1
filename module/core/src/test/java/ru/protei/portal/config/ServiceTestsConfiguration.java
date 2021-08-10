@@ -522,4 +522,9 @@ public class ServiceTestsConfiguration {
     public NRPEProcessor getNRPERequest() {
         return new NRPEProcessor(new NRPEExecutorTest());
     }
+
+    @Bean
+    public ModuleService getModuleService() {
+        return new ModuleServiceImpl();
+    }
 }

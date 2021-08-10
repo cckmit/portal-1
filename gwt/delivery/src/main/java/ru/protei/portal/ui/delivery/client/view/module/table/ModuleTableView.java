@@ -98,7 +98,7 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
 
     @Override
     public boolean hasSelectedModules() {
-        return this.getSelectedModules().size() > 0;
+        return getSelectedModules().size() > 0;
     }
 
     @UiField
