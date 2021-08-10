@@ -1,5 +1,6 @@
 package ru.protei.portal.core.service;
 
+import com.atlassian.util.concurrent.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,6 @@ import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.service.policy.PolicyService;
 
 import java.text.DateFormat;
@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.utils.HistoryUtils.*;
 
@@ -61,7 +62,7 @@ public class ModuleServiceImpl implements ModuleService {
         }
 
         List<Module> modules = moduleDAO.getListByKitId(kitId);
-        CollectionUtils.emptyIfNull(modules).sort(Comparator.comparing(Module::getSerialNumber));
+        emptyIfNull(modules).sort(Comparator.comparing(Module::getSerialNumber));
 
         return ok(parentToChild(modules));
     }
@@ -114,29 +115,29 @@ public class ModuleServiceImpl implements ModuleService {
 
         List<Module> modules = moduleDAO.getListByKitId(kitId);
 
-        return ok(makeNewSerialNumber(modules, kit.getSerialNumber()));
+        return makeNewSerialNumber(modules, kit.getSerialNumber());
     }
 
-    private String makeNewSerialNumber(List<Module> modules, String kitSerialNumber) {
-        if (CollectionUtils.isEmpty(modules)) {
-            return kitSerialNumber + "." + DEFAULT_MODULE_SERIAL_NUMBER;
+    private static Result<String> makeNewSerialNumber(List<Module> modules, String kitSerialNumber) {
+        if (isEmpty(modules)) {
+            return ok(kitSerialNumber + "." + DEFAULT_MODULE_SERIAL_NUMBER);
         }
 
-        Integer maxExistSerialNumber = modules.stream()
-                .map(m -> Integer.parseInt(m.getSerialNumber().substring(m.getSerialNumber().lastIndexOf(".") + 1)))
-                .max(Comparator.naturalOrder())
-                .get();
-
-        Integer newSerialNumber = maxExistSerialNumber + 1;
-        if (newSerialNumber < 100) {
-            return kitSerialNumber + "." + String.format("%03d", newSerialNumber);
-        } else {
-            return kitSerialNumber + "." + newSerialNumber;
+        try {
+            Integer maxExistSerialNumber = stream(modules)
+                    .map(m -> Integer.parseInt(m.getSerialNumber().substring(m.getSerialNumber().lastIndexOf(".") + 1)))
+                    .max(Comparator.naturalOrder())
+                    .get();
+            Integer newSerialNumber = maxExistSerialNumber + 1;
+            return ok(kitSerialNumber + "." + String.format("%03d", newSerialNumber));
+        } catch (Exception e) {
+            log.error("makeNewSerialNumber(): failed to generate module serial number", e);
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
     }
 
     private Map<Module, List<Module>> parentToChild(List<Module> modules) {
-        return CollectionUtils.stream(modules)
+        return stream(modules)
                 .filter(module -> module.getParentModuleId() == null)
                 .collect(Collectors.toMap(Function.identity(), module -> modules.stream()
                                 .filter(m -> Objects.equals(m.getParentModuleId(), module.getId()))

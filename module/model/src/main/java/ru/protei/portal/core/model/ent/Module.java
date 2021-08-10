@@ -89,6 +89,9 @@ public class Module extends AuditableObject {
      * Заказчик
      */
     @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "kit_id", remoteColumn = "id", table = "kit"),
+            @JdbcJoinPath(localColumn = "delivery_id", remoteColumn = "id", table = "delivery"),
+            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "project"),
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
             @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "company")}, mappedColumn = "cname")
     private String customerName;
@@ -97,8 +100,11 @@ public class Module extends AuditableObject {
      * Менеджер
      */
     @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "kit_id", remoteColumn = "id", table = "kit"),
+            @JdbcJoinPath(localColumn = "delivery_id", remoteColumn = "id", table = "delivery"),
+            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "project"),
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
-            @JdbcJoinPath(localColumn = Project.Columns.MANAGER, remoteColumn = "id", table = "person")}, mappedColumn = "displayShortName")
+            @JdbcJoinPath(localColumn = Project.Columns.MANAGER, remoteColumn = "id", table = "person")}, mappedColumn = "displayName")
     private String managerName;
 
     /**

@@ -11,6 +11,8 @@ public interface AbstractModuleMetaView {
 
     HasValue<CaseState> state();
 
+    void setStateEnabled(boolean isEnabled);
+
     void setManager(String value);
 
     void setCustomerCompany(String value);

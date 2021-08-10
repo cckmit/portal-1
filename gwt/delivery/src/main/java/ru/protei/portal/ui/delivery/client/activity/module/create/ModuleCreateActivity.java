@@ -7,6 +7,8 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.Delivery;
+import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -14,6 +16,8 @@ import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.ModuleEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
+import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.service.ModuleControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
@@ -39,9 +43,16 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
         }
         event.parent.clear();
         event.parent.add(view.asWidget());
-        this.kitId = event.kitId;
 
-        prepare();
+        deliveryService.getDelivery(event.deliveryId, new FluentCallback<Delivery>()
+                .withError(defaultErrorHandler)
+                .withSuccess(delivery -> {
+                            delivery.getKits().stream()
+                                    .filter(k -> Objects.equals(k.getId(), event.kitId))
+                                    .findFirst()
+                                    .ifPresent(kit -> fillView(delivery, kit));
+                        }
+                ));
     }
 
     @Override
@@ -61,20 +72,27 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
     }
 
     @Override
-    public void onUpdateSerialNumberClicked() {
-        updateSerialNumber();
+    public void onUpdateSerialNumberClicked(Long kitId) {
+        updateSerialNumber(kitId);
     }
 
-    private void updateSerialNumber() {
+    private void updateSerialNumber(Long kitId) {
         moduleService.generateSerialNumber(kitId, new FluentCallback<String>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
                 .withSuccess(serialNumber -> view.setSerialNumber(serialNumber))
         );
     }
 
-    private void prepare() {
-        updateSerialNumber();
-
+    private void fillView(Delivery delivery, Kit kit) {
+        updateSerialNumber(kit.getId());
+        view.name().setValue(null);
+        view.description().setValue(null);
+        fillStateSelector(CrmConstants.State.PRELIMINARY);
+        view.setAllowChangingState(kit.getStateId() != CrmConstants.State.PRELIMINARY);
+        view.setManager(delivery.getProject().getManagerFullName());
+        view.hwManager().setValue(delivery.getHwManager());
+        view.qcManager().setValue(delivery.getQcManager());
+        view.setCustomerCompany(delivery.getProject().getManagerCompanyName());
     }
 
     private Module fillDto() {
@@ -129,6 +147,12 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
         return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE);
     }
 
+    private void fillStateSelector(Long id) {
+        view.state().setValue(new CaseState(id));
+        caseStateController.getCaseStateWithoutCompaniesOmitPrivileges(id, new FluentCallback<CaseState>()
+                .withSuccess(caseState -> view.state().setValue(caseState)));
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -136,12 +160,14 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
     @Inject
     private ModuleControllerAsync moduleService;
     @Inject
-    TextRenderControllerAsync textRenderController;
+    private DeliveryControllerAsync deliveryService;
+    @Inject
+    private TextRenderControllerAsync textRenderController;
+    @Inject
+    private CaseStateControllerAsync caseStateController;
     @Inject
     private PolicyService policyService;
     @Inject
     private DefaultErrorHandler defaultErrorHandler;
-
-    private Long kitId;
 }
 

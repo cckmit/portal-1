@@ -5,5 +5,5 @@ public interface AbstractModuleCreateActivity {
 
     void onCancelClicked();
 
-    void onUpdateSerialNumberClicked();
+    void onUpdateSerialNumberClicked(Long kitId);
 }

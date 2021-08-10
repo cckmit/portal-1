@@ -121,8 +121,6 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
     }
 
     private void showMeta(Module module) {
-        // нужно ли уведомлять подписчиков
-//        fireEvent(new ModuleEvents.EditModuleMeta(view.getMetaContainer(), module, makeMetaNotifiers(delivery)));
         fireEvent(new ModuleEvents.EditModuleMeta(view.getMetaContainer(), module));
     }
 

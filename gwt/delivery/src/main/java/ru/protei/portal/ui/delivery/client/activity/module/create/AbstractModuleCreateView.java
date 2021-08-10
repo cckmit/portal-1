@@ -33,4 +33,6 @@ public interface AbstractModuleCreateView extends IsWidget {
     void setCustomerCompany(String value);
 
     HasValue<Date> buildDate();
+
+    void setAllowChangingState(boolean isAllow);
 }

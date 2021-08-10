@@ -85,6 +85,11 @@ public class ModuleCreateView extends Composite implements AbstractModuleCreateV
         return meta.buildDate();
     }
 
+    @Override
+    public void setAllowChangingState(boolean isAllow) {
+        meta.setStateEnabled(isAllow);
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
