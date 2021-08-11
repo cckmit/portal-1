@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -14,6 +15,7 @@ import ru.protei.portal.config.ServiceTestsConfiguration;
 import ru.protei.portal.config.TestEventConfiguration;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.ModuleDAO;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.test.service.BaseServiceTest;
 
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -51,16 +54,18 @@ public class ModuleServiceImplTest extends BaseServiceTest {
         modulesIdsToRemove.add(1L);
         modulesIdsToRemove.add(2L);
 
-        int removedModulesExpectedCount = modulesIdsToRemove.size();
-
         when(moduleDAO.getListByKitId(anyLong())).thenReturn(new ArrayList<>());
-        when(caseObjectDAO.removeByKeys(anySet())).thenReturn(removedModulesExpectedCount);
+
+        ArgumentCaptor<CaseObject> caseObjectArgumentCaptor = forClass(CaseObject.class);
+        when(caseObjectDAO.partialMerge(caseObjectArgumentCaptor.capture(), eq("deleted"))).thenReturn(true);
+        when(moduleDAO.removeByKeys(anySet())).thenReturn(modulesIdsToRemove.size());
 
         Result<Set<Long>> result = moduleService.removeModules(getAuthToken(), anyLong(), modulesIdsToRemove);
 
-        verify(caseObjectDAO, atLeastOnce()).removeByKeys(modulesIdsToRemove);
+        verify(caseObjectDAO, atLeastOnce()).partialMerge(caseObjectArgumentCaptor.capture(), eq("deleted"));
+        verify(moduleDAO, atLeastOnce()).removeByKeys(anySet());
         assertTrue("Expected removed modules count is equal or bigger than modules ids count",
-                    removedModulesExpectedCount >= result.getData().size());
+                    modulesIdsToRemove.size() >= result.getData().size());
     }
 
     @Test
@@ -69,14 +74,16 @@ public class ModuleServiceImplTest extends BaseServiceTest {
         modulesIdsToRemove.add(1L);
         modulesIdsToRemove.add(2L);
 
-        int removedModulesExpectedCount = modulesIdsToRemove.size();
-
         when(moduleDAO.getListByKitId(anyLong())).thenReturn(new ArrayList<>());
-        when(caseObjectDAO.removeByKeys(anySet())).thenReturn(removedModulesExpectedCount - 1);
+
+        ArgumentCaptor<CaseObject> caseObjectArgumentCaptor = forClass(CaseObject.class);
+        when(caseObjectDAO.partialMerge(caseObjectArgumentCaptor.capture(), eq("deleted"))).thenReturn(true);
+        when(moduleDAO.removeByKeys(anySet())).thenReturn(modulesIdsToRemove.size() - 1);
 
         Result<Set<Long>> result = moduleService.removeModules(getAuthToken(), anyLong(), modulesIdsToRemove);
 
-        verify(caseObjectDAO, atLeastOnce()).removeByKeys(modulesIdsToRemove);
+        verify(caseObjectDAO, atLeastOnce()).partialMerge(caseObjectArgumentCaptor.capture(), eq("deleted"));
+        verify(moduleDAO, atLeastOnce()).removeByKeys(anySet());
         assertTrue("Removed less modules than expected", result.isError());
     }
 }

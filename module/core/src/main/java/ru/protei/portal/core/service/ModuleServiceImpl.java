@@ -5,10 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.ModuleDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 
@@ -31,13 +33,16 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Override
     public Result<Map<Module, List<Module>>> getModulesByKitId(AuthToken token, Long kitId) {
+       return getModules(kitId);
+    }
+
+    private Result<Map<Module, List<Module>>> getModules(Long kitId) {
         if (kitId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         List<Module> modules = moduleDAO.getListByKitId(kitId);
         CollectionUtils.emptyIfNull(modules).sort(Comparator.comparing(Module::getSerialNumber));
-
         return ok(parentToChild(modules));
     }
 
@@ -62,23 +67,35 @@ public class ModuleServiceImpl implements ModuleService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        Map<Module, List<Module>> modules = getModulesByKitId(token, kitId).getData();
-        for (Map.Entry<Module, List<Module>> parentModule : modules.entrySet()) {
-            if (modulesIds.contains(parentModule.getKey().getId())) {
-                parentModule.getValue().forEach(childModule -> {
-                    log.info("Add child module id " + childModule.getId() + " to modulesIds for removing");
-                    modulesIds.add(childModule.getId());
-                });
+        Set<Long> modulesToRemoveIds = removeChildModulesIds(getModules(kitId).getData(), modulesIds);
+        for (Long id: modulesToRemoveIds) {
+            CaseObject caseObject = new CaseObject();
+            caseObject.setId(id);
+            caseObject.setDeleted(true);
+
+            boolean caseObjectMergeResult = caseObjectDAO.partialMerge(caseObject, "deleted");
+            if (!caseObjectMergeResult) {
+                throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
             }
         }
 
-        int countRemoved = caseObjectDAO.removeByKeys(modulesIds);
+        int countRemoved = moduleDAO.removeByKeys(modulesToRemoveIds);
         if (countRemoved != modulesIds.size()) {
-            log.warn("removeModules(): NOT_FOUND. modulesIds={}", modulesIds);
+            log.warn("removeModules(): NOT_FOUND. modulesIds={}", modulesToRemoveIds);
             return error(En_ResultStatus.NOT_FOUND);
         }
 
         return ok(modulesIds);
+    }
+
+    private Set<Long> removeChildModulesIds(Map<Module, List<Module>> parentModuleToChildModules, Set<Long> modulesToRemoveIds) {
+        for (Map.Entry<Module, List<Module>> parentModule : parentModuleToChildModules.entrySet()) {
+            if (modulesToRemoveIds.contains(parentModule.getKey().getId())) {
+                parentModule.getValue().forEach(childModule -> modulesToRemoveIds.remove(childModule.getId()));
+            }
+        }
+
+        return modulesToRemoveIds;
     }
 
     private boolean validateToken(AuthToken authToken) {
