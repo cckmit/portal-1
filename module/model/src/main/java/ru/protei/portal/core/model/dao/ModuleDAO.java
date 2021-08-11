@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface ModuleDAO extends PortalBaseDAO<Module> {
     List<Module> getListByKitId(Long kitId);
+
+    List<String> getSerialNumbersByKitId(Long kitId);
 }

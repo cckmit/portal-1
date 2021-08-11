@@ -89,10 +89,10 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
         view.description().setValue(null);
         fillStateSelector(CrmConstants.State.PRELIMINARY);
         view.setAllowChangingState(kit.getStateId() != CrmConstants.State.PRELIMINARY);
-        view.setManager(delivery.getProject().getManagerFullName());
+        view.setManager(delivery.getProject().getManagerName());
         view.hwManager().setValue(delivery.getHwManager());
         view.qcManager().setValue(delivery.getQcManager());
-        view.setCustomerCompany(delivery.getProject().getManagerCompanyName());
+        view.setCustomerCompany(delivery.getProject().getCustomer().getCname());
     }
 
     private Module fillDto() {

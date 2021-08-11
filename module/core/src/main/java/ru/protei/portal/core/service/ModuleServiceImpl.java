@@ -113,29 +113,32 @@ public class ModuleServiceImpl implements ModuleService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        List<Module> modules = moduleDAO.getListByKitId(kitId);
+        List<String> moduleSerialNumbers = moduleDAO.getSerialNumbersByKitId(kitId);
 
-        return makeNewSerialNumber(modules, kit.getSerialNumber());
+        return makeNewSerialNumber(moduleSerialNumbers, kit.getSerialNumber());
     }
 
-    private static Result<String> makeNewSerialNumber(List<Module> modules, String kitSerialNumber) {
-        if (isEmpty(modules)) {
+    private Result<String> makeNewSerialNumber(List<String> moduleSerialNumbers, String kitSerialNumber) {
+        if (isEmpty(moduleSerialNumbers)) {
             return ok(kitSerialNumber + "." + DEFAULT_MODULE_SERIAL_NUMBER);
         }
 
         try {
-            Integer maxExistSerialNumber = stream(modules)
-                    .map(m -> Integer.parseInt(m.getSerialNumber().substring(m.getSerialNumber().lastIndexOf(".") + 1)))
+            Integer maxExistSerialNumber = stream(moduleSerialNumbers)
+                    .map(num -> Integer.parseInt(num.substring(num.lastIndexOf(".") + 1)))
                     .max(Comparator.naturalOrder())
                     .get();
             Integer newSerialNumber = maxExistSerialNumber + 1;
             return ok(kitSerialNumber + "." + String.format("%03d", newSerialNumber));
         } catch (Exception e) {
-            log.error("makeNewSerialNumber(): failed to generate module serial number", e);
+            log.warn("makeNewSerialNumber(): failed to generate module serial number", e);
             return error(En_ResultStatus.INTERNAL_ERROR);
         }
     }
 
+    /**
+     key - parent module, value - list of its submodules
+     */
     private Map<Module, List<Module>> parentToChild(List<Module> modules) {
         return stream(modules)
                 .filter(module -> module.getParentModuleId() == null)
