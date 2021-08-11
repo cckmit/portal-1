@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -46,7 +46,7 @@ public class ModuleServiceImplTest extends BaseServiceTest {
     ModuleService moduleService;
 
     @Test
-    public void checkIsModulesRemoved() {
+    public void modulesRemove() {
         Set<Long> modulesIdsToRemove = new HashSet<>();
         modulesIdsToRemove.add(1L);
         modulesIdsToRemove.add(2L);
@@ -61,5 +61,22 @@ public class ModuleServiceImplTest extends BaseServiceTest {
         verify(caseObjectDAO, atLeastOnce()).removeByKeys(modulesIdsToRemove);
         assertTrue("Expected removed modules count is equal or bigger than modules ids count",
                     removedModulesExpectedCount >= result.getData().size());
+    }
+
+    @Test
+    public void getErrorWhenRemovedLessModulesThanExpected() {
+        Set<Long> modulesIdsToRemove = new HashSet<>();
+        modulesIdsToRemove.add(1L);
+        modulesIdsToRemove.add(2L);
+
+        int removedModulesExpectedCount = modulesIdsToRemove.size();
+
+        when(moduleDAO.getListByKitId(anyLong())).thenReturn(new ArrayList<>());
+        when(caseObjectDAO.removeByKeys(anySet())).thenReturn(removedModulesExpectedCount - 1);
+
+        Result<Set<Long>> result = moduleService.removeModules(getAuthToken(), anyLong(), modulesIdsToRemove);
+
+        verify(caseObjectDAO, atLeastOnce()).removeByKeys(modulesIdsToRemove);
+        assertTrue("Removed less modules than expected", result.isError());
     }
 }
