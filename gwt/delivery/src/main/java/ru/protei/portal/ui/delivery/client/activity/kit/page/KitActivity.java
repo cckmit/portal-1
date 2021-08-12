@@ -8,14 +8,13 @@ import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.KitEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.service.ModuleControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.activity.kit.handler.KitActionsHandler;
+import ru.protei.portal.ui.delivery.client.view.module.table.ModuleTableView;
 
 import java.util.List;
 import java.util.Map;
@@ -41,17 +40,22 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     @Event
     public void onShow(KitEvents.Show event) {
-        moduleView.clearModules();
-        deliveryService.getDelivery(event.deliveryId, new FluentCallback<Delivery>()
+        deliveryId = event.deliveryId;
+        kitId = event.kitId;
+        fillKits(deliveryId, kitId);
+    }
+
+    private void fillKits(Long deliveryId, Long kitId) {
+        deliveryService.getDelivery(deliveryId, new FluentCallback<Delivery>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
                 .withSuccess(delivery -> {
                             initDetails.parent.clear();
                             initDetails.parent.add(view.asWidget());
                             view.fillKits(delivery.getKits());
                             view.setKitsActionsEnabled(hasEditPrivileges());
-                            if (event.kitId != null) {
-                                view.makeKitSelected(event.kitId);
-                                fillModules(event.kitId);
+                            if (kitId != null) {
+                                view.makeKitSelected(kitId);
+                                fillModules(kitId);
                             }
                         }
                 )
@@ -60,7 +64,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     @Override
     public void onKitClicked(Long kitId) {
-        moduleView.clearModules();
+        this.kitId = kitId;
         fillModules(kitId);
     }
 
@@ -71,7 +75,9 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     }
 
     private void fillModules(Long kitId) {
+        moduleView.clearModules();
         moduleView.clearSelectedRows();
+        moduleView.setDeleteEnabled(isDeleteEnabled());
         moduleService.getModulesByKitId(kitId, new FluentCallback<Map<Module, List<Module>>>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
                 .withSuccess(modules -> {
@@ -82,6 +88,10 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     private boolean hasEditPrivileges() {
         return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
+    }
+
+    private boolean hasRemovePrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_REMOVE);
     }
 
     private KitActionsHandler kitActionsHandler = new KitActionsHandler() {
@@ -126,6 +136,40 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     private boolean isOneKitSelected(Set<Kit> kitsSelected) {
         return kitsSelected != null && kitsSelected.size() == 1;
     }
+
+    @Override
+    public void onCheckModuleClicked(ModuleTableView moduleTableView) {
+        moduleTableView.setDeleteEnabled(isDeleteEnabled());
+    }
+
+    @Override
+    public void onRemoveModuleClicked(AbstractModuleTableView modulesTableView) {
+        if (hasRemovePrivileges()) {
+            fireEvent(!modulesTableView.hasSelectedModules()
+                    ? new NotifyEvents.Show(lang.selectModulesToRemove(), NotifyEvents.NotifyType.ERROR)
+                    : new ConfirmDialogEvents.Show(lang.moduleRemoveConfirmMessage(), removeModuleAction(modulesTableView)));
+        }
+    }
+
+    private Runnable removeModuleAction(AbstractModuleTableView modulesTableView) {
+        Set<Long> modulesToRemoveIds = modulesTableView.getSelectedModules().stream().map(Module::getId)
+                                                       .collect(Collectors.toSet());
+
+        return () -> moduleService.removeModules(kitId, modulesToRemoveIds, new FluentCallback<Set<Long>>()
+                .withError(throwable -> fireEvent(new NotifyEvents.Show(throwable.getMessage(),
+                                                      NotifyEvents.NotifyType.ERROR)))
+                .withSuccess(result -> {
+                    fireEvent(new NotifyEvents.Show(lang.modulesRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    fillKits(deliveryId, kitId);
+                }));
+    }
+
+    private boolean isDeleteEnabled() {
+        return hasRemovePrivileges() && moduleView.hasSelectedModules();
+    }
+
+    private Long deliveryId;
+    private Long kitId;
 
     @Inject
     Lang lang;

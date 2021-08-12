@@ -100,6 +100,9 @@ public class Module extends AuditableObject {
             @JdbcJoinPath(localColumn = Project.Columns.MANAGER, remoteColumn = "id", table = "person")}, mappedColumn = "displayShortName")
     private String managerName;
 
+    @JdbcJoinedColumn(localColumn = Delivery.Columns.ID, remoteColumn = Delivery.Columns.ID, mappedColumn = CaseObject.Columns.DELETED, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
+    private boolean deleted;
+
     /**
      * Ответственный АО
      */
@@ -228,6 +231,14 @@ public class Module extends AuditableObject {
         this.managerName = managerName;
     }
 
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     public Long getHwManagerId() {
         return hwManagerId;
     }
@@ -289,6 +300,7 @@ public class Module extends AuditableObject {
                 ", parentModuleId=" + parentModuleId +
                 ", customerName='" + customerName + '\'' +
                 ", managerName='" + managerName + '\'' +
+                ", deleted=" + deleted +
                 ", hwManagerId=" + hwManagerId +
                 ", qcManagerId=" + qcManagerId +
                 ", departureDate=" + departureDate +

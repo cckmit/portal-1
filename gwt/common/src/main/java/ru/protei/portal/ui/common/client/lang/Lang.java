@@ -3584,6 +3584,14 @@ public interface Lang extends Messages, ContactItemLang {
 
     String moduleStatePaused();
 
+    String selectModulesToRemove();
+
+    String moduleRemoveConfirmMessage();
+
+    String moduleNotRemoved(String moduleName);
+
+    String modulesRemoved();
+
     String errKitSerialNumberNotMatchDeliveryNumber();
 
     String documentation();
