@@ -67,7 +67,9 @@ public class ModuleServiceImpl implements ModuleService {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        Set<Long> modulesToRemoveIds = removeChildModulesIds(getModules(kitId).getData(), modulesIds);
+        Map<Module, List<Module>> parentToChildModules = getModules(kitId).getData();
+
+        Set<Long> modulesToRemoveIds = doOperationOnChildModulesIds(parentToChildModules, modulesIds, "add");
         for (Long id: modulesToRemoveIds) {
             CaseObject caseObject = new CaseObject();
             caseObject.setId(id);
@@ -79,8 +81,11 @@ public class ModuleServiceImpl implements ModuleService {
             }
         }
 
+        // удаляем из списка на удаление id дочерних модулей, поскольку при удалении
+        // родительского модуля дочерние удалятся из БД автоматически
+        modulesToRemoveIds = doOperationOnChildModulesIds(parentToChildModules, modulesIds, "remove");
         int countRemoved = moduleDAO.removeByKeys(modulesToRemoveIds);
-        if (countRemoved != modulesIds.size()) {
+        if (countRemoved != modulesToRemoveIds.size()) {
             log.warn("removeModules(): NOT_FOUND. modulesIds={}", modulesToRemoveIds);
             return error(En_ResultStatus.NOT_FOUND);
         }
@@ -88,10 +93,17 @@ public class ModuleServiceImpl implements ModuleService {
         return ok(modulesIds);
     }
 
-    private Set<Long> removeChildModulesIds(Map<Module, List<Module>> parentModuleToChildModules, Set<Long> modulesToRemoveIds) {
-        for (Map.Entry<Module, List<Module>> parentModule : parentModuleToChildModules.entrySet()) {
+    private Set<Long> doOperationOnChildModulesIds(Map<Module, List<Module>> parentToChildModules, Set<Long> modulesToRemoveIds, String operation) {
+        for (Map.Entry<Module, List<Module>> parentModule : parentToChildModules.entrySet()) {
             if (modulesToRemoveIds.contains(parentModule.getKey().getId())) {
-                parentModule.getValue().forEach(childModule -> modulesToRemoveIds.remove(childModule.getId()));
+                parentModule.getValue().forEach(childModule -> {
+                    Long childModuleId = childModule.getId();
+                    if (operation.equals("add")) {
+                        modulesToRemoveIds.add(childModuleId);
+                    } else {
+                        modulesToRemoveIds.remove(childModuleId);
+                    }
+                });
             }
         }
 

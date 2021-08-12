@@ -50,37 +50,37 @@ public class ModuleServiceImplTest extends BaseServiceTest {
 
     @Test
     public void modulesRemove() {
-        Set<Long> modulesIdsToRemove = new HashSet<>();
-        modulesIdsToRemove.add(1L);
-        modulesIdsToRemove.add(2L);
+        Set<Long> modulesToRemoveIds = new HashSet<>();
+        modulesToRemoveIds.add(1L);
+        modulesToRemoveIds.add(2L);
 
         when(moduleDAO.getListByKitId(anyLong())).thenReturn(new ArrayList<>());
 
         ArgumentCaptor<CaseObject> caseObjectArgumentCaptor = forClass(CaseObject.class);
         when(caseObjectDAO.partialMerge(caseObjectArgumentCaptor.capture(), eq("deleted"))).thenReturn(true);
-        when(moduleDAO.removeByKeys(anySet())).thenReturn(modulesIdsToRemove.size());
+        when(moduleDAO.removeByKeys(anySet())).thenReturn(modulesToRemoveIds.size());
 
-        Result<Set<Long>> result = moduleService.removeModules(getAuthToken(), anyLong(), modulesIdsToRemove);
+        Result<Set<Long>> result = moduleService.removeModules(getAuthToken(), anyLong(), modulesToRemoveIds);
 
         verify(caseObjectDAO, atLeastOnce()).partialMerge(caseObjectArgumentCaptor.capture(), eq("deleted"));
         verify(moduleDAO, atLeastOnce()).removeByKeys(anySet());
         assertTrue("Expected removed modules count is equal or bigger than modules ids count",
-                    modulesIdsToRemove.size() >= result.getData().size());
+                    modulesToRemoveIds.size() >= result.getData().size());
     }
 
     @Test
     public void getErrorWhenRemovedLessModulesThanExpected() {
-        Set<Long> modulesIdsToRemove = new HashSet<>();
-        modulesIdsToRemove.add(1L);
-        modulesIdsToRemove.add(2L);
+        Set<Long> modulesToRemoveIds = new HashSet<>();
+        modulesToRemoveIds.add(1L);
+        modulesToRemoveIds.add(2L);
 
         when(moduleDAO.getListByKitId(anyLong())).thenReturn(new ArrayList<>());
 
         ArgumentCaptor<CaseObject> caseObjectArgumentCaptor = forClass(CaseObject.class);
         when(caseObjectDAO.partialMerge(caseObjectArgumentCaptor.capture(), eq("deleted"))).thenReturn(true);
-        when(moduleDAO.removeByKeys(anySet())).thenReturn(modulesIdsToRemove.size() - 1);
+        when(moduleDAO.removeByKeys(anySet())).thenReturn(modulesToRemoveIds.size() - 1);
 
-        Result<Set<Long>> result = moduleService.removeModules(getAuthToken(), anyLong(), modulesIdsToRemove);
+        Result<Set<Long>> result = moduleService.removeModules(getAuthToken(), anyLong(), modulesToRemoveIds);
 
         verify(caseObjectDAO, atLeastOnce()).partialMerge(caseObjectArgumentCaptor.capture(), eq("deleted"));
         verify(moduleDAO, atLeastOnce()).removeByKeys(anySet());
