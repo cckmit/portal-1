@@ -12,25 +12,31 @@
                     <div class="actions menu-clipper-menu">
                     </div>
                 </div>
-                <div class="p-l-30 p-t-15 p-r-15">
-                    <div class="form-group form-group-default">
-                        <label class="fade"><ui:text from="{lang.moduleSerialNumber}"/></label>
-                        <validablefield:ValidableTextBox ui:field="serialNumber" styleName="form-control"
-                                                         enabled="false" notNull="false"/>
+                <div class="module-body module-create p-t-15">
+                    <div class="p-l-30 p-r-15">
+                        <div class="form-group form-group-default">
+                            <label class="fade"><ui:text from="{lang.moduleSerialNumber}"/></label>
+                            <validablefield:ValidableTextBox ui:field="serialNumber" styleName="form-control"
+                                                             enabled="false" notNull="false"/>
+                        </div>
+                    </div>
+                    <div class="p-l-30 p-r-15">
+                        <view:namedescription.ModuleNameDescriptionEditView ui:field="nameDescription"/>
                     </div>
                 </div>
-
-                <div class="p-l-30 p-t-15 p-r-15">
-                    <view:namedescription.ModuleNameDescriptionEditView ui:field="nameDescription"/>
+            </div>
+            <div class="col-lg-4 p-0 m-0">
+                <div class="actions-wrapper menu-clipper">
+                    <div class="actions menu-clipper-menu">
+                    </div>
+                </div>
+                <div class="module-meta-body module-create p-t-15 p-r-15">
+                    <view:meta.ModuleMetaView ui:field="meta"/>
                 </div>
             </div>
-            <div class="col-lg-4">
-                <view:meta.ModuleMetaView ui:field="meta"/>
-            </div>
         </div>
-        <div class="card-footer text-right">
+        <div class="module-footer text-right">
             <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
-            <g:Button ui:field="cancelButton" styleName="btn btn-default close_button" text="{lang.buttonCancel}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

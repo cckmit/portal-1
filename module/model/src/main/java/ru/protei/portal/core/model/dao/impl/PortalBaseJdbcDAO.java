@@ -315,18 +315,6 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
     }
 
 
-    @Override
-    public List<Long> existingKeys(Collection<Long> testKeys) {
-        List<Object> args = new ArrayList<Object>();
-        StringBuilder query = new StringBuilder("select ")
-                .append(getIdColumnName())
-                .append(" from ").append(getTableName())
-                .append(" where ")
-                .append(getIdColumnName()).append(" in ")
-                .append(JdbcHelper.makeSqlStringCollection(testKeys, args, null));
-
-        return jdbcTemplate.queryForList(query.toString(), Long.class, args.toArray());
-    }
 
     protected Integer booleanAsNumber( Boolean isExpression ) {
         if (isExpression == null) return null;

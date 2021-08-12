@@ -70,8 +70,6 @@ public class ModuleEditView extends Composite implements AbstractModuleEditView 
     Anchor showEditViewButton;
     @UiField
     Anchor nameAndDescriptionEditButton;
-    @UiField
-    Anchor addLinkButton;
 
     @UiField
     SpanElement serialNumber;

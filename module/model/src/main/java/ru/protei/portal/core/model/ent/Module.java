@@ -39,6 +39,11 @@ public class Module extends AuditableObject {
             mappedColumn = CaseObject.Columns.CREATOR, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long creatorId;
 
+    @JdbcJoinedObject(joinPath = {
+            @JdbcJoinPath(localColumn = ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = CaseObject.Columns.CREATOR, remoteColumn = "id", table = "person")})
+    private Person creator;
+
     /**
      * Дата изменения
      */
@@ -99,13 +104,13 @@ public class Module extends AuditableObject {
     /**
      * Менеджер
      */
-    @JdbcJoinedColumn(joinPath = {
+    @JdbcJoinedObject(joinPath = {
             @JdbcJoinPath(localColumn = "kit_id", remoteColumn = "id", table = "kit"),
             @JdbcJoinPath(localColumn = "delivery_id", remoteColumn = "id", table = "delivery"),
             @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "project"),
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
-            @JdbcJoinPath(localColumn = Project.Columns.MANAGER, remoteColumn = "id", table = "person")}, mappedColumn = "displayName")
-    private String managerName;
+            @JdbcJoinPath(localColumn = Project.Columns.MANAGER, remoteColumn = "id", table = "person")})
+    private Person manager;
 
     /**
      * Ответственный АО
@@ -165,6 +170,14 @@ public class Module extends AuditableObject {
 
     public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
+    }
+
+    public Person getCreator() {
+        return creator;
+    }
+
+    public void setCreator(Person creator) {
+        this.creator = creator;
     }
 
     public Date getModified() {
@@ -239,12 +252,12 @@ public class Module extends AuditableObject {
         this.customerName = customerName;
     }
 
-    public String getManagerName() {
-        return managerName;
+    public Person getManager() {
+        return manager;
     }
 
-    public void setManagerName(String managerName) {
-        this.managerName = managerName;
+    public void setManager(Person manager) {
+        this.manager = manager;
     }
 
     public Long getHwManagerId() {
@@ -323,7 +336,7 @@ public class Module extends AuditableObject {
                 ", kitId=" + kitId +
                 ", parentModuleId=" + parentModuleId +
                 ", customerName='" + customerName + '\'' +
-                ", managerName='" + managerName + '\'' +
+                ", managerName='" + manager + '\'' +
                 ", hwManagerId=" + hwManagerId +
                 ", qcManagerId=" + qcManagerId +
                 ", departureDate=" + departureDate +
@@ -333,5 +346,6 @@ public class Module extends AuditableObject {
 
     public interface Columns {
         String ID = "id";
+        String SERIAL_NUMBER = "serial_number";
     }
 }

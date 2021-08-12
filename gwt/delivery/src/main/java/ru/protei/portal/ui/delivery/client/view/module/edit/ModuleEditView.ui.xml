@@ -7,7 +7,7 @@
         <div class="row">
             <div class="col-lg-8 p-0 m-0">
                 <div class="actions-wrapper menu-clipper">
-                    <div class="actions menu-clipper-menu">
+                    <div class="actions menu-clipper-menu col-6 p-0">
                         <g:Anchor styleName="" ui:field="showEditViewButton" title="{lang.openFullScreen}">
                             <i class="fas fa-expand-arrows-alt"/>
                         </g:Anchor>
@@ -15,21 +15,24 @@
                                   title="{lang.editNameAndDescription}">
                             <i class="fa fa-pencil-alt"/>
                         </g:Anchor>
-                        <g:Anchor styleName="" ui:field="addLinkButton" title="{lang.linkAdd}">
-                            <i class="fas fa-link"/>
-                        </g:Anchor>
                     </div>
                 </div>
-                <div class="p-l-30 p-t-15 p-r-15">
-                    <h5 class="no-margin">
-                        <span ui:field="serialNumber"/>
-                    </h5>
-                    <small ui:field="createdBy" class="pull-right text-right"/>
-                    <g:HTMLPanel ui:field="nameContainer"/>
+                <div class="module-body module-edit p-t-15">
+                    <div class="p-l-30 p-r-15">
+                        <h5 class=" no-margin">
+                            <span ui:field="serialNumber"/>
+                        </h5>
+                        <small ui:field="createdBy" class="pull-right text-right"/>
+                        <g:HTMLPanel ui:field="nameContainer"/>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-4 p-0 m-0">
-                <g:HTMLPanel ui:field="metaContainer"/>
+                <div class="actions-wrapper menu-clipper">
+                    <div class="actions menu-clipper-menu">
+                    </div>
+                </div>
+                <g:HTMLPanel ui:field="metaContainer" addStyleNames="module-meta-body module-edit p-t-15 p-r-15"/>
             </div>
         </div>
     </g:HTMLPanel>

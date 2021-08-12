@@ -5501,3 +5501,23 @@ div.form-group-default.form-group-default-selectFx:focus {
     }
   }
 }
+
+.module-body, .module-meta-body {
+  overflow-y: auto;
+  box-sizing: border-box;
+  z-index: 0;
+  right: 0;
+  position: relative;
+
+  &.module-create {
+    max-height: calc(100vh - 170px);
+  }
+
+  &.module-edit {
+    max-height: calc(100vh - 120px);
+  }
+}
+
+.module-footer {
+  padding: .75rem 1.25rem;
+}

@@ -67,11 +67,6 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
     }
 
     @Override
-    public void onCancelClicked() {
-        fireEvent(new Back());
-    }
-
-    @Override
     public void onUpdateSerialNumberClicked(Long kitId) {
         updateSerialNumber(kitId);
     }
@@ -89,7 +84,7 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
         view.description().setValue(null);
         fillStateSelector(CrmConstants.State.PRELIMINARY);
         view.setAllowChangingState(kit.getStateId() != CrmConstants.State.PRELIMINARY);
-        view.setManager(delivery.getProject().getManagerName());
+        view.setManager(delivery.getProject().getManagerFullName());
         view.hwManager().setValue(delivery.getHwManager());
         view.qcManager().setValue(delivery.getQcManager());
         view.setCustomerCompany(delivery.getProject().getCustomer().getCname());

@@ -37,7 +37,7 @@ public class ModuleColumn extends ClickColumn<Module> {
         DivElement div = Document.get().createDivElement();
         div.appendChild(makeIcon(value));
         div.appendChild(makeSpan("bold", value.getSerialNumber()));
-        div.appendChild(makeSpan("float-right manager", value.getManagerName()));
+        div.appendChild(makeSpan("float-right manager", value.getManager().getDisplayShortName()));
         return div;
     }
 

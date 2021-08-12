@@ -94,7 +94,7 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
         view.qcManager().setValue(module.getQcManager());
 
         view.setCustomerCompany(module.getCustomerName());
-        view.setManager(module.getManagerName());
+        view.setManager(module.getManager().getDisplayName());
 
         view.buildDate().setValue(module.getBuildDate());
         view.setBuildDateValid(true);

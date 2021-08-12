@@ -104,7 +104,7 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
     }
 
     private void fillView(Module module) {
-        view.setCreatedBy(lang.createBy("Создатель",
+        view.setCreatedBy(lang.createBy(module.getCreator().getDisplayShortName(),
                 DateFormatter.formatDateTime(module.getCreated())));
         view.setModuleNumber(module.getSerialNumber());
         nameAndDescriptionView.setName(module.getName());

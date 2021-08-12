@@ -13,9 +13,6 @@ public class ModuleDAO_Impl extends PortalBaseJdbcDAO<Module> implements ModuleD
 
     @Override
     public List<String> getSerialNumbersByKitId(Long kitId) {
-        StringBuilder sql = new StringBuilder("select serial_number from ")
-                .append(getTableName())
-                .append(" where kit_id=?");
-        return jdbcTemplate.queryForList(sql.toString(), String.class, kitId);
+        return listColumnValue(Module.Columns.SERIAL_NUMBER, String.class, "kit_id = ?", kitId);
     }
 }

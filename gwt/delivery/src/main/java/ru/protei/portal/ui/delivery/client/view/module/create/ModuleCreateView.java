@@ -97,13 +97,6 @@ public class ModuleCreateView extends Composite implements AbstractModuleCreateV
         }
     }
 
-    @UiHandler("cancelButton")
-    public void onCancelClicked(ClickEvent event) {
-        if (activity != null) {
-            activity.onCancelClicked();
-        }
-    }
-
     @UiField
     Lang lang;
     @UiField
@@ -116,8 +109,6 @@ public class ModuleCreateView extends Composite implements AbstractModuleCreateV
     ModuleMetaView meta;
     @UiField
     Button saveButton;
-    @UiField
-    Button cancelButton;
 
     private AbstractModuleCreateActivity activity;
 
