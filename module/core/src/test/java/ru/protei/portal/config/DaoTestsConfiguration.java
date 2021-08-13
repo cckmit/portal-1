@@ -489,4 +489,9 @@ public class DaoTestsConfiguration {
     public KitDAO getKitDAO() {
         return new KitDAO_Impl();
     }
+
+    @Bean
+    public ModuleDAO getModuleDAO() {
+        return new ModuleDAO_Impl();
+    }
 }
