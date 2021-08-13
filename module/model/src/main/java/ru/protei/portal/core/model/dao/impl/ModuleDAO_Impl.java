@@ -15,4 +15,9 @@ public class ModuleDAO_Impl extends PortalBaseJdbcDAO<Module> implements ModuleD
     public List<String> getSerialNumbersByKitId(Long kitId) {
         return listColumnValue(Module.Columns.SERIAL_NUMBER, String.class, "kit_id = ?", kitId);
     }
+
+    @Override
+    public boolean isExistSerialNumber(String serialNumber) {
+        return checkExistsByCondition("serial_number = ?", serialNumber);
+    }
 }

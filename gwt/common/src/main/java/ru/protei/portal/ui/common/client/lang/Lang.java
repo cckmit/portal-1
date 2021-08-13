@@ -3514,6 +3514,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errDeliverySerialNumberNotAvailable();
 
+    String errModuleSerialNumberNotAvailable();
+
     String errDeliveryForbiddenChangeStatus();
 
     String errDeliveryForbiddenChangeProject();

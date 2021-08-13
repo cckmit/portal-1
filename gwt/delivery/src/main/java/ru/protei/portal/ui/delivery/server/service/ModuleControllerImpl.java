@@ -3,6 +3,7 @@ package ru.protei.portal.ui.delivery.server.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
@@ -10,6 +11,7 @@ import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.ModuleService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.ModuleController;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,6 +48,15 @@ public class ModuleControllerImpl implements ModuleController {
     }
 
     @Override
+    public Module saveModule(Module module) throws RequestFailedException {
+        if (module == null) {
+            throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
+        }
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(moduleService.createModule(token, module));
+    }
+
+    @Override
     public void updateNameAndDescription(CaseNameAndDescriptionChangeRequest changeRequest)  throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         checkResult(caseService.updateCaseNameAndDescription(token, changeRequest, En_CaseType.MODULE));
@@ -55,11 +66,6 @@ public class ModuleControllerImpl implements ModuleController {
     public Module updateMeta(Module meta) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         return checkResultAndGetData(moduleService.updateMeta(token, meta));
-    }
-
-    @Override
-    public Module saveModule(Module module) {
-        return null;
     }
 
     @Override

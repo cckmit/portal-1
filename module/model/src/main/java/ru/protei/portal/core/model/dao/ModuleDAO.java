@@ -8,4 +8,6 @@ public interface ModuleDAO extends PortalBaseDAO<Module> {
     List<Module> getListByKitId(Long kitId);
 
     List<String> getSerialNumbersByKitId(Long kitId);
+
+    boolean isExistSerialNumber(String serialNumber);
 }

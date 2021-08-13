@@ -364,6 +364,11 @@ public enum En_ResultStatus {
     NOT_AVAILABLE_DELIVERY_KIT_SERIAL_NUMBER,
 
     /**
+     * Модули, серийный номер занят
+     */
+    NOT_AVAILABLE_MODULE_SERIAL_NUMBER,
+
+    /**
      * Поставки, серийный номер комплекта не соответствует номеру поставки
      */
     KIT_SERIAL_NUMBER_NOT_MATCH_DELIVERY_NUMBER,

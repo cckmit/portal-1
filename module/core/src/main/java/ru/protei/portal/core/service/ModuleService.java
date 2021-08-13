@@ -19,6 +19,10 @@ public interface ModuleService {
     @Privileged({ En_Privilege.DELIVERY_VIEW })
     Result<Map<Module, List<Module>>> getModulesByKitId(AuthToken token, Long kitId);
 
+    @Privileged({ En_Privilege.DELIVERY_CREATE })
+    @Auditable( En_AuditType.MODULE_CREATE )
+    Result<Module> createModule(AuthToken token, Module module);
+
     @Privileged({ En_Privilege.DELIVERY_EDIT })
     @Auditable( En_AuditType.MODULE_MODIFY )
     Result<Module> updateMeta(AuthToken token, Module meta);
