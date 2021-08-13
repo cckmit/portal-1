@@ -97,6 +97,12 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
         return HelperFunc.isEmpty(departureDate.getInputValue());
     }
 
+    @UiHandler("buildDate")
+    public void onBuildDateChanged(ValueChangeEvent<Date> event) {
+        activity.onBuildDateChanged();
+    }
+
+
     @UiHandler("departureDate")
     public void onDepartureDateChanged(ValueChangeEvent<Date> event) {
         activity.onDepartureDateChanged();

@@ -36,8 +36,8 @@ public class ModuleCreateView extends Composite implements AbstractModuleCreateV
     }
 
     @Override
-    public void setSerialNumber(String serialNumber ) {
-        this.serialNumber.setValue(serialNumber);
+    public HasValue<String> serialNumber() {
+        return serialNumber;
     }
 
     @Override
@@ -90,12 +90,41 @@ public class ModuleCreateView extends Composite implements AbstractModuleCreateV
         meta.setStateEnabled(isAllow);
     }
 
+    @Override
+    public void setBuildDateValid(boolean isValid) {
+        meta.setBuildDateValid(isValid);
+    }
+
+    @Override
+    public void setDepartureDateValid(boolean isValid) {
+        meta.setDepartureDateValid(isValid);
+    }
+
+    @Override
+    public boolean isBuildDateEmpty() {
+        return meta.isBuildDateEmpty();
+    }
+
+    @Override
+    public boolean isDepartureDateEmpty() {
+        return meta.isDepartureDateEmpty();
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
             activity.onSaveClicked();
         }
     }
+
+    // todo нужно будет добавить ModuleCommonMeta для разного поведения изменения полей в блоке meta
+    // на страницах создания и редактирования модулей. Сделать как в Delivery
+//    @UiHandler("departureDate")
+//    public void onDepartureDateChanged(ValueChangeEvent<Date> event) {
+//        if (commonActivity != null) {
+//            commonActivity.onDepartureDateChanged();
+//        }
+//    }
 
     @UiField
     Lang lang;

@@ -61,9 +61,27 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
         onCaseMetaChanged(module);
     }
 
+
+    @Override
+    public void onBuildDateChanged() {
+        if (isDateEquals(view.buildDate().getValue(), module.getBuildDate())) {
+            view.setBuildDateValid(isBuildDateFieldValid());
+            return;
+        }
+
+        if (!isBuildDateFieldValid()) {
+            view.setBuildDateValid(false);
+            return;
+        }
+
+        module.setBuildDate(view.buildDate().getValue());
+        view.setBuildDateValid(true);
+        onCaseMetaChanged(module);
+    }
+
     @Override
     public void onDepartureDateChanged() {
-        if (isDepartureDateEquals(view.departureDate().getValue(), module.getDepartureDate())) {
+        if (isDateEquals(view.departureDate().getValue(), module.getDepartureDate())) {
             view.setDepartureDateValid(isDepartureDateFieldValid());
             return;
         }
@@ -122,12 +140,21 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
         fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
     }
 
-    private boolean isDepartureDateEquals(Date departureDateField, Date departureDateMeta) {
-        if (departureDateField == null) {
-            return departureDateMeta == null;
+    private boolean isDateEquals(Date dateField, Date dateMeta) {
+        if (dateField == null) {
+            return dateMeta == null;
         } else {
-            return Objects.equals(departureDateField, departureDateMeta);
+            return Objects.equals(dateField, dateMeta);
         }
+    }
+
+    public boolean isBuildDateFieldValid() {
+        Date buildDate = view.buildDate().getValue();
+        if (buildDate == null) {
+            return view.isBuildDateEmpty();
+        }
+
+        return buildDate.getTime() > System.currentTimeMillis();
     }
 
     public boolean isDepartureDateFieldValid() {

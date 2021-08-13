@@ -18,6 +18,6 @@ public class ModuleDAO_Impl extends PortalBaseJdbcDAO<Module> implements ModuleD
 
     @Override
     public boolean isExistSerialNumber(String serialNumber) {
-        return checkExistsByCondition("serial_number = ?", serialNumber);
+        return checkExistsByCondition("module.serial_number = ?", serialNumber);
     }
 }

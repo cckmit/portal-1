@@ -7,6 +7,8 @@ public interface AbstractModuleMetaActivity {
 
     void onQcManagerChange();
 
+    void onBuildDateChanged();
+
     void onDepartureDateChanged();
 
     String getValidationError();

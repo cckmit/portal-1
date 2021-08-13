@@ -3594,7 +3594,19 @@ public interface Lang extends Messages, ContactItemLang {
 
     String moduleBuildDate();
 
+    String moduleDepartureDate();
+
     String moduleSerialNumber();
+
+    String moduleValidationEmptyName();
+
+    String moduleValidationEmptyState();
+
+    String moduleValidationInvalidDepartureDate();
+
+    String moduleValidationInvalidBuildDate();
+
+    String moduleCreatedSuccessfully();
 
     String errKitSerialNumberNotMatchDeliveryNumber();
 

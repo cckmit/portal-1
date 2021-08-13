@@ -14,7 +14,7 @@ public interface AbstractModuleCreateView extends IsWidget {
 
     HasEnabled saveEnabled();
 
-    void setSerialNumber(String serialNumber);
+    HasValue<String> serialNumber();
 
     HasValue<String> name();
 
@@ -35,4 +35,12 @@ public interface AbstractModuleCreateView extends IsWidget {
     HasValue<Date> buildDate();
 
     void setAllowChangingState(boolean isAllow);
+
+    void setBuildDateValid(boolean isValid);
+
+    void setDepartureDateValid(boolean isValid);
+
+    boolean isBuildDateEmpty();
+
+    boolean isDepartureDateEmpty();
 }

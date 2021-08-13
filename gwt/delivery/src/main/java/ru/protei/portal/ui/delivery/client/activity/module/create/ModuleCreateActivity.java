@@ -1,10 +1,8 @@
 package ru.protei.portal.ui.delivery.client.activity.module.create;
 
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Delivery;
@@ -13,16 +11,17 @@ import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
+import ru.protei.portal.ui.common.client.events.KitEvents;
 import ru.protei.portal.ui.common.client.events.ModuleEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.service.ModuleControllerAsync;
-import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+import java.util.Date;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -43,7 +42,8 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
         }
         event.parent.clear();
         event.parent.add(view.asWidget());
-
+        this.kitId = event.kitId;
+        this.deliveryId = event.deliveryId;
         deliveryService.getDelivery(event.deliveryId, new FluentCallback<Delivery>()
                 .withError(defaultErrorHandler)
                 .withSuccess(delivery -> {
@@ -67,14 +67,23 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
     }
 
     @Override
-    public void onUpdateSerialNumberClicked(Long kitId) {
-        updateSerialNumber(kitId);
+    public void onDepartureDateChanged() {
+        view.setDepartureDateValid(isDepartureDateFieldValid());
+    }
+
+    public boolean isDepartureDateFieldValid() {
+        Date departureDate = view.departureDate().getValue();
+        if (departureDate == null) {
+            return view.isDepartureDateEmpty();
+        }
+
+        return departureDate.getTime() > System.currentTimeMillis();
     }
 
     private void updateSerialNumber(Long kitId) {
         moduleService.generateSerialNumber(kitId, new FluentCallback<String>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
-                .withSuccess(serialNumber -> view.setSerialNumber(serialNumber))
+                .withSuccess(serialNumber -> view.serialNumber().setValue(serialNumber))
         );
     }
 
@@ -88,11 +97,21 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
         view.hwManager().setValue(delivery.getHwManager());
         view.qcManager().setValue(delivery.getQcManager());
         view.setCustomerCompany(delivery.getProject().getCustomer().getCname());
+        view.setBuildDateValid(true);
+        view.setDepartureDateValid(true);
     }
 
     private Module fillDto() {
         Module module = new Module();
-
+        module.setSerialNumber(view.serialNumber().getValue());
+        module.setName(view.name().getValue());
+        module.setDescription(view.description().getValue());
+        module.setStateId(view.state().getValue().getId());
+        module.setHwManagerId(view.hwManager().getValue() == null ? null : view.hwManager().getValue().getId());
+        module.setQcManagerId(view.qcManager().getValue() == null ? null : view.qcManager().getValue().getId());
+        module.setBuildDate(view.buildDate().getValue());
+        module.setDepartureDate(view.departureDate().getValue());
+        module.setKitId(kitId);
         return module;
     }
 
@@ -102,25 +121,28 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
 
     private String getValidationError() {
         if (isBlank(view.name().getValue())) {
-            return lang.deliveryValidationEmptyName();
+            return lang.moduleValidationEmptyName();
         }
 
-//        String error = view.getValidationError();
-//        if (error != null) {
-//            return error;
-//        }
-        CaseState state = view.state().getValue();
-        if (!Objects.equals(CrmConstants.State.PRELIMINARY, state.getId())) {
-            return lang.deliveryValidationInvalidStateAtCreate();
+        if (view.state() == null) {
+            return lang.moduleValidationEmptyState();
         }
 
+        if (!isDateValid(view.buildDate().getValue())) {
+            return lang.moduleValidationInvalidBuildDate();
+        }
+
+        if (!isDateValid(view.departureDate().getValue())) {
+            return lang.moduleValidationInvalidDepartureDate();
+        }
 
         return null;
     }
 
     private void save(Module module) {
         save(module, throwable -> {}, () -> {
-            fireEvent(new Back());
+            fireEvent(new NotifyEvents.Show(lang.moduleCreatedSuccessfully(), NotifyEvents.NotifyType.SUCCESS));
+            fireEvent(new KitEvents.Show(deliveryId, kitId));
         });
     }
 
@@ -148,6 +170,13 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
                 .withSuccess(caseState -> view.state().setValue(caseState)));
     }
 
+    private boolean isDateValid(Date date) {
+        return date == null || date.getTime() > System.currentTimeMillis();
+    }
+
+    private Long kitId;
+    private Long deliveryId;
+
     @Inject
     Lang lang;
     @Inject
@@ -156,8 +185,6 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
     private ModuleControllerAsync moduleService;
     @Inject
     private DeliveryControllerAsync deliveryService;
-    @Inject
-    private TextRenderControllerAsync textRenderController;
     @Inject
     private CaseStateControllerAsync caseStateController;
     @Inject

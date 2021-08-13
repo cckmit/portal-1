@@ -231,15 +231,15 @@ public class ModuleServiceImpl implements ModuleService {
         Result<Long> resultDate = ok();
 
         if (dateAdded(oldBuildDate, newBuildDate)) {
-            resultDate = addDateHistory(token, meta.getId(), meta.getDepartureDate(), En_HistoryType.BUILD_DATE);
+            resultDate = addDateHistory(token, meta.getId(), meta.getBuildDate(), En_HistoryType.BUILD_DATE);
         }
 
         if (dateChanged(oldBuildDate, newBuildDate)) {
-            resultDate = changeDateHistory(token, meta.getId(), oldMeta.getDepartureDate(), meta.getDepartureDate(), En_HistoryType.BUILD_DATE);
+            resultDate = changeDateHistory(token, meta.getId(), oldMeta.getBuildDate(), meta.getBuildDate(), En_HistoryType.BUILD_DATE);
         }
 
         if (dateRemoved(oldBuildDate, newBuildDate)) {
-            resultDate = removeDateHistory(token, meta.getId(), oldMeta.getDepartureDate(), En_HistoryType.BUILD_DATE);
+            resultDate = removeDateHistory(token, meta.getId(), oldMeta.getBuildDate(), En_HistoryType.BUILD_DATE);
         }
 
         if (resultDate.isError()) {
@@ -255,10 +255,13 @@ public class ModuleServiceImpl implements ModuleService {
         if (isBlank(module.getName())) {
             return false;
         }
-        if (isDateValid(module.getBuildDate())) {
+        if (module.getStateId() == 0) {
             return false;
         }
-        if (isDateValid(module.getDepartureDate())) {
+        if (!isDateValid(module.getBuildDate())) {
+            return false;
+        }
+        if (!isDateValid(module.getDepartureDate())) {
             return false;
         }
         return true;
@@ -273,7 +276,7 @@ public class ModuleServiceImpl implements ModuleService {
         if (caseObject == null) {
             caseObject = new CaseObject();
             caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.MODULE));
-            caseObject.setType(En_CaseType.KIT);
+            caseObject.setType(En_CaseType.MODULE);
             caseObject.setCreated(created);
             caseObject.setModified(created);
             caseObject.setCreatorId(creatorId);
