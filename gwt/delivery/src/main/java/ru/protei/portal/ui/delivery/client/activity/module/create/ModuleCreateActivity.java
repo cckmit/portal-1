@@ -20,6 +20,8 @@ import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.service.ModuleControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.delivery.client.activity.module.meta.AbstractModuleMetaActivity;
+import ru.protei.portal.ui.delivery.client.activity.module.meta.AbstractModuleMetaView;
 
 import java.util.Date;
 import java.util.Objects;
@@ -27,11 +29,14 @@ import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 
-public abstract class ModuleCreateActivity implements Activity, AbstractModuleCreateActivity {
+public abstract class ModuleCreateActivity implements Activity, AbstractModuleCreateActivity,
+        AbstractModuleMetaActivity {
 
     @Inject
     public void onInit() {
         view.setActivity(this);
+        metaView.setActivity(this);
+        view.getMetaViewContainer().add(metaView.asWidget());
     }
 
     @Event
@@ -42,8 +47,10 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
         }
         event.parent.clear();
         event.parent.add(view.asWidget());
+
         this.kitId = event.kitId;
         this.deliveryId = event.deliveryId;
+
         deliveryService.getDelivery(event.deliveryId, new FluentCallback<Delivery>()
                 .withError(defaultErrorHandler)
                 .withSuccess(delivery -> {
@@ -67,76 +74,13 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
     }
 
     @Override
+    public void onBuildDateChanged() {
+        metaView.setBuildDateValid(isBuildDateFieldValid());
+    }
+
+    @Override
     public void onDepartureDateChanged() {
-        view.setDepartureDateValid(isDepartureDateFieldValid());
-    }
-
-    public boolean isDepartureDateFieldValid() {
-        Date departureDate = view.departureDate().getValue();
-        if (departureDate == null) {
-            return view.isDepartureDateEmpty();
-        }
-
-        return departureDate.getTime() > System.currentTimeMillis();
-    }
-
-    private void updateSerialNumber(Long kitId) {
-        moduleService.generateSerialNumber(kitId, new FluentCallback<String>()
-                .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
-                .withSuccess(serialNumber -> view.serialNumber().setValue(serialNumber))
-        );
-    }
-
-    private void fillView(Delivery delivery, Kit kit) {
-        updateSerialNumber(kit.getId());
-        view.name().setValue(null);
-        view.description().setValue(null);
-        fillStateSelector(CrmConstants.State.PRELIMINARY);
-        view.setAllowChangingState(kit.getStateId() != CrmConstants.State.PRELIMINARY);
-        view.setManager(delivery.getProject().getManagerFullName());
-        view.hwManager().setValue(delivery.getHwManager());
-        view.qcManager().setValue(delivery.getQcManager());
-        view.setCustomerCompany(delivery.getProject().getCustomer().getCname());
-        view.setBuildDateValid(true);
-        view.setDepartureDateValid(true);
-    }
-
-    private Module fillDto() {
-        Module module = new Module();
-        module.setSerialNumber(view.serialNumber().getValue());
-        module.setName(view.name().getValue());
-        module.setDescription(view.description().getValue());
-        module.setStateId(view.state().getValue().getId());
-        module.setHwManagerId(view.hwManager().getValue() == null ? null : view.hwManager().getValue().getId());
-        module.setQcManagerId(view.qcManager().getValue() == null ? null : view.qcManager().getValue().getId());
-        module.setBuildDate(view.buildDate().getValue());
-        module.setDepartureDate(view.departureDate().getValue());
-        module.setKitId(kitId);
-        return module;
-    }
-
-    private void showValidationError(String error) {
-        fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
-    }
-
-    private String getValidationError() {
-        if (isBlank(view.name().getValue())) {
-            return lang.moduleValidationEmptyName();
-        }
-
-        if (view.state() == null) {
-            return lang.moduleValidationEmptyState();
-        }
-
-        if (!isDateValid(view.buildDate().getValue())) {
-            return lang.moduleValidationInvalidBuildDate();
-        }
-
-        if (!isDateValid(view.departureDate().getValue())) {
-            return lang.moduleValidationInvalidDepartureDate();
-        }
-
-        return null;
+        metaView.setDepartureDateValid(isDepartureDateFieldValid());
     }
 
     private void save(Module module) {
@@ -160,27 +104,105 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
                 }));
     }
 
-    private boolean hasPrivileges() {
-        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE);
+    public boolean isBuildDateFieldValid() {
+        Date buildDate = metaView.buildDate().getValue();
+        if (buildDate == null) {
+            return metaView.isBuildDateEmpty();
+        }
+
+        return buildDate.getTime() > System.currentTimeMillis();
+    }
+
+    public boolean isDepartureDateFieldValid() {
+        Date departureDate = metaView.departureDate().getValue();
+        if (departureDate == null) {
+            return metaView.isDepartureDateEmpty();
+        }
+
+        return departureDate.getTime() > System.currentTimeMillis();
+    }
+
+    private void fillView(Delivery delivery, Kit kit) {
+        updateSerialNumber(kit.getId());
+        view.name().setValue(null);
+        view.description().setValue(null);
+        fillStateSelector(CrmConstants.State.PRELIMINARY);
+        metaView.setAllowChangingState(kit.getStateId() != CrmConstants.State.PRELIMINARY);
+        metaView.setManager(delivery.getProject().getManagerFullName());
+        metaView.hwManager().setValue(delivery.getHwManager());
+        metaView.qcManager().setValue(delivery.getQcManager());
+        metaView.setCustomerCompany(delivery.getProject().getCustomer().getCname());
+        metaView.buildDate().setValue(null);
+        metaView.setBuildDateValid(true);
+        metaView.departureDate().setValue(null);
+        metaView.setDepartureDateValid(true);
+    }
+
+    private Module fillDto() {
+        Module module = new Module();
+        module.setSerialNumber(view.serialNumber().getValue());
+        module.setName(view.name().getValue());
+        module.setDescription(view.description().getValue());
+        module.setStateId(metaView.state().getValue().getId());
+        module.setHwManagerId(metaView.hwManager().getValue() == null ? null : metaView.hwManager().getValue().getId());
+        module.setQcManagerId(metaView.qcManager().getValue() == null ? null : metaView.qcManager().getValue().getId());
+        module.setBuildDate(metaView.buildDate().getValue());
+        module.setDepartureDate(metaView.departureDate().getValue());
+        module.setKitId(kitId);
+        return module;
+    }
+
+    private void updateSerialNumber(Long kitId) {
+        moduleService.generateSerialNumber(kitId, new FluentCallback<String>()
+                .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
+                .withSuccess(serialNumber -> view.serialNumber().setValue(serialNumber))
+        );
     }
 
     private void fillStateSelector(Long id) {
-        view.state().setValue(new CaseState(id));
+        metaView.state().setValue(new CaseState(id));
         caseStateController.getCaseStateWithoutCompaniesOmitPrivileges(id, new FluentCallback<CaseState>()
-                .withSuccess(caseState -> view.state().setValue(caseState)));
+                .withSuccess(caseState -> metaView.state().setValue(caseState)));
+    }
+
+    private void showValidationError(String error) {
+        fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
+    }
+
+    private String getValidationError() {
+        if (isBlank(view.name().getValue())) {
+            return lang.moduleValidationEmptyName();
+        }
+
+        if (metaView.state() == null) {
+            return lang.moduleValidationEmptyState();
+        }
+
+        if (!isDateValid(metaView.buildDate().getValue())) {
+            return lang.moduleValidationInvalidBuildDate();
+        }
+
+        if (!isDateValid(metaView.departureDate().getValue())) {
+            return lang.moduleValidationInvalidDepartureDate();
+        }
+
+        return null;
     }
 
     private boolean isDateValid(Date date) {
         return date == null || date.getTime() > System.currentTimeMillis();
     }
 
-    private Long kitId;
-    private Long deliveryId;
+    private boolean hasPrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE);
+    }
 
     @Inject
     Lang lang;
     @Inject
     AbstractModuleCreateView view;
+    @Inject
+    AbstractModuleMetaView metaView;
     @Inject
     private ModuleControllerAsync moduleService;
     @Inject
@@ -191,5 +213,8 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
     private PolicyService policyService;
     @Inject
     private DefaultErrorHandler defaultErrorHandler;
+
+    private Long kitId;
+    private Long deliveryId;
 }
 

@@ -38,7 +38,7 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
     }
 
     @Override
-    public void onStateChange() {
+    public void onStateChanged() {
         CaseState caseState = view.state().getValue();
         module.setState(caseState);
         module.setStateId(caseState.getId());
@@ -46,7 +46,7 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
     }
 
     @Override
-    public void onHwManagerChange() {
+    public void onHwManagerChanged() {
         PersonShortView hwManager = view.hwManager().getValue();
         module.setHwManagerId(hwManager == null ? null : hwManager.getId());
         module.setHwManager(hwManager);
@@ -54,13 +54,12 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
     }
 
     @Override
-    public void onQcManagerChange() {
+    public void onQcManagerChanged() {
         PersonShortView qcManager = view.qcManager().getValue();
         module.setQcManagerId(qcManager == null ? null : qcManager.getId());
         module.setQcManager(qcManager);
         onCaseMetaChanged(module);
     }
-
 
     @Override
     public void onBuildDateChanged() {
@@ -96,8 +95,7 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
         onCaseMetaChanged(module);
     }
 
-    @Override
-    public String getValidationError() {
+    private String getValidationError() {
         CaseState state = view.state().getValue();
         if (state == null) {
             return lang.deliveryValidationEmptyState();

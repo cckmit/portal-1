@@ -226,7 +226,7 @@ public class ModuleServiceImpl implements ModuleService {
     }
 
     private void addBuildDateHistory(AuthToken token, Module meta, Module oldMeta) {
-        Date oldBuildDate = oldMeta == null ? null : oldMeta.getDepartureDate();
+        Date oldBuildDate = oldMeta == null ? null : oldMeta.getBuildDate();
         Date newBuildDate = meta.getBuildDate();
         Result<Long> resultDate = ok();
 

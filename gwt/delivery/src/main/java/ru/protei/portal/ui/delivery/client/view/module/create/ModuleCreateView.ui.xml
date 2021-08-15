@@ -31,7 +31,7 @@
                     </div>
                 </div>
                 <div class="module-meta-body module-create p-t-15 p-r-15">
-                    <view:meta.ModuleMetaView ui:field="meta"/>
+                    <g:HTMLPanel ui:field="metaViewContainer"/>
                 </div>
             </div>
         </div>

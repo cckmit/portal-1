@@ -5,10 +5,13 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.ModuleEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -35,8 +38,11 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
     @Event
     public void onShow(ModuleEvents.Show event ) {
         HasWidgets container = event.parent;
+        if (!hasAccessEdit()) {
+            fireEvent(new ErrorPageEvents.ShowForbidden(container));
+            return;
+        }
         requestModule(event.id, container);
-
     }
 
     private void requestModule(Long id, HasWidgets container) {
@@ -93,6 +99,26 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
         switchNameDescriptionToEdit(true);
     }
 
+    private void fillView(Module module) {
+        view.setCreatedBy(lang.createBy(module.getCreator().getDisplayShortName(),
+                DateFormatter.formatDateTime(module.getCreated())));
+        view.setModuleNumber(module.getSerialNumber());
+        nameAndDescriptionView.setName(module.getName());
+        nameAndDescriptionView.setDescription(module.getDescription());
+        view.nameAndDescriptionEditButtonVisibility().setVisible(true);
+
+        renderMarkupText(module.getDescription(), En_TextMarkup.MARKDOWN, html -> nameAndDescriptionView.setDescription(html));
+    }
+
+    private void showMeta(Module module) {
+        fireEvent(new ModuleEvents.EditModuleMeta(view.getMetaContainer(), module));
+    }
+
+    private void attachToContainer(HasWidgets container) {
+        container.clear();
+        container.add(view.asWidget());
+    }
+
     private void switchNameDescriptionToEdit(boolean isEdit) {
         HasWidgets nameContainer = view.getNameContainer();
         nameContainer.clear();
@@ -103,30 +129,14 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
         }
     }
 
-    private void fillView(Module module) {
-        view.setCreatedBy(lang.createBy(module.getCreator().getDisplayShortName(),
-                DateFormatter.formatDateTime(module.getCreated())));
-        view.setModuleNumber(module.getSerialNumber());
-        nameAndDescriptionView.setName(module.getName());
-        nameAndDescriptionView.setDescription(module.getDescription());
-        view.nameAndDescriptionEditButtonVisibility().setVisible(true);
-
-        renderMarkupText(module.getDescription(), En_TextMarkup.MARKDOWN, html -> nameAndDescriptionView.setDescription(html));
- }
-
     private void renderMarkupText(String text, En_TextMarkup markup, Consumer<String> consumer ) {
         textRenderController.render( text, markup, new FluentCallback<String>()
                 .withError( throwable -> consumer.accept( null ) )
                 .withSuccess( consumer ) );
     }
 
-    private void showMeta(Module module) {
-        fireEvent(new ModuleEvents.EditModuleMeta(view.getMetaContainer(), module));
-    }
-
-    private void attachToContainer(HasWidgets container) {
-        container.clear();
-        container.add(view.asWidget());
+    private boolean hasAccessEdit() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
     }
 
     @Inject
@@ -143,6 +153,8 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
     @Inject
     private ModuleControllerAsync moduleService;
 
+    @Inject
+    PolicyService policyService;
     @Inject
     TextRenderControllerAsync textRenderController;
 

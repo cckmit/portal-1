@@ -1,15 +1,13 @@
 package ru.protei.portal.ui.delivery.client.activity.module.meta;
 
 public interface AbstractModuleMetaActivity {
-    void onStateChange();
+    default void onStateChanged() {};
 
-    void onHwManagerChange();
+    default void onHwManagerChanged() {};
 
-    void onQcManagerChange();
+    default void onQcManagerChanged() {};
 
     void onBuildDateChanged();
 
     void onDepartureDateChanged();
-
-    String getValidationError();
 }
