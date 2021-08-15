@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.delivery.client.view.module.meta;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -13,6 +14,7 @@ import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SingleP
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.module.ModuleStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -26,6 +28,7 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
     }
 
     @Override
@@ -96,6 +99,19 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
     @Override
     public void setAllowChangingState(boolean isAllow) {
         setStateEnabled(isAllow);
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        state.setEnsureDebugId(DebugIds.DELIVERY.KIT.MODULE.STATE);
+        customerCompany.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.CUSTOMER_COMPANY);
+        manager.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.MANAGER);
+        hwManager.ensureLabelDebugId(DebugIds.DELIVERY.KIT.MODULE.HW_MANAGER);
+        qcManager.ensureLabelDebugId(DebugIds.DELIVERY.KIT.MODULE.QC_MANAGER);
+        buildDate.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.BUILD_DATE);
+        departureDate.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.DEPARTURE_DATE);
     }
 
     @UiHandler("state")

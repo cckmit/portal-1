@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.delivery.client.view.module.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -12,6 +13,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.ent.Module;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.delivery.client.activity.kit.page.AbstractKitActivity;
@@ -27,6 +29,7 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
     }
 
     private void initTable() {
@@ -77,6 +80,13 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
     public void updateRow(Module item) {
         if(item != null)
             table.updateRow(item);
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        addButton.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.ADD_BUTTON);
     }
 
     @UiHandler("addButton")

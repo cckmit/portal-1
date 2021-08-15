@@ -1318,6 +1318,23 @@ public class DebugIds {
             String TAB_HISTORY = "kit-item-tab-history";
             String RELOAD_BUTTON = "kit-reload-button";
             String ACTION_MENU_BUTTON = "kit-action-menu-button";
+
+            interface MODULE {
+                String NAME = "module-name-input";
+                String DESCRIPTION = "module-description-input";
+                String STATE = "module-state-selector";
+                String MANAGER = "module-manager";
+                String HW_MANAGER = "module-hw-manager-selector";
+                String QC_MANAGER = "module-qc-manager-selector";
+                String CUSTOMER_COMPANY = "module-customer-company";
+                String BUILD_DATE = "module-build-date-container";
+                String DEPARTURE_DATE = "module-departure-date-container";
+                String ADD_BUTTON = "module-add-button";
+                String SAVE_BUTTON = "module-save-button";
+                String EDIT_NAME_AND_DESCRIPTION_BUTTON = "module-edit-name-and-desc-button";
+                String EDIT_NAME_AND_DESC_ACCEPT = "module-edit-name-and-desc-accept";
+                String EDIT_NAME_AND_DESC_REJECT = "module-edit-name-and-desc-reject";
+            }
         }
 
         interface FILTER {

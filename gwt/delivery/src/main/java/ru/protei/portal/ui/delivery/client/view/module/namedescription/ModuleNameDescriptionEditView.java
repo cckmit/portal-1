@@ -80,12 +80,12 @@ public class ModuleNameDescriptionEditView extends Composite {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-//        name.ensureDebugId( DebugIds.ISSUE.NAME_INPUT );
-//        description.setEnsureDebugId( DebugIds.ISSUE.DESCRIPTION_INPUT );
+        name.ensureDebugId( DebugIds.DELIVERY.KIT.MODULE.NAME );
+        description.setEnsureDebugId( DebugIds.DELIVERY.KIT.MODULE.DESCRIPTION );
     }
 
     private void onDisplayPreviewChanged( String key, boolean isDisplay ) {
-//        localStorageService.set( DELIVERY_EDIT + "_" + key, String.valueOf( isDisplay ) );
+        localStorageService.set( DELIVERY_EDIT + "_" + key, String.valueOf( isDisplay ) );
     }
 
     @UiField

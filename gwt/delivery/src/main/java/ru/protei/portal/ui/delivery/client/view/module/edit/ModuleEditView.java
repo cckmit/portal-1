@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.delivery.client.view.module.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -9,6 +10,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.delivery.client.activity.module.edit.AbstractModuleEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.module.edit.AbstractModuleEditView;
@@ -18,6 +20,7 @@ public class ModuleEditView extends Composite implements AbstractModuleEditView 
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
     }
 
     @Override
@@ -55,6 +58,13 @@ public class ModuleEditView extends Composite implements AbstractModuleEditView 
         this.serialNumber.setInnerText(serialNumber);
     }
 
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        nameAndDescriptionEditButton.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.EDIT_NAME_AND_DESCRIPTION_BUTTON);
+    }
+
     @UiHandler("nameAndDescriptionEditButton")
     public void onNameAndDescriptionEditButtonClicked(ClickEvent event) {
         if (activity != null) {
@@ -65,7 +75,7 @@ public class ModuleEditView extends Composite implements AbstractModuleEditView 
     @UiField
     Lang lang;
     @UiField
-    HTMLPanel root; // для изменения стилей при переключении проевью/полный экран
+    HTMLPanel root; // для изменения стилей при переключении превью/полный экран
     @UiField
     Anchor showEditViewButton;
     @UiField

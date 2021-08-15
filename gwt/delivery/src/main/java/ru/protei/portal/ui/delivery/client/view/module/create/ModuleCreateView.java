@@ -1,12 +1,14 @@
 package ru.protei.portal.ui.delivery.client.view.module.create;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.delivery.client.activity.module.create.AbstractModuleCreateActivity;
@@ -19,6 +21,7 @@ public class ModuleCreateView extends Composite implements AbstractModuleCreateV
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
     }
 
     @Override
@@ -49,6 +52,13 @@ public class ModuleCreateView extends Composite implements AbstractModuleCreateV
     @Override
     public HasWidgets getMetaViewContainer() {
         return metaViewContainer;
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        saveButton.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.SAVE_BUTTON);
     }
 
     @UiHandler("saveButton")

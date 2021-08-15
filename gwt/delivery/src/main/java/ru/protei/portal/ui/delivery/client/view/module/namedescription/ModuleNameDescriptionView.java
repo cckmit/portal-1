@@ -32,8 +32,8 @@ public class ModuleNameDescriptionView extends Composite  {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-//        nameRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DELIVERY.NAME);
-//        descriptionRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DELIVERY.DESCRIPTION);
+        name.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DELIVERY.KIT.MODULE.NAME);
+        description.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DELIVERY.KIT.MODULE.DESCRIPTION);
     }
 
     @UiField

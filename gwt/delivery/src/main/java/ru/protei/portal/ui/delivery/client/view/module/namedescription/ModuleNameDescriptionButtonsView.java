@@ -39,8 +39,8 @@ public class ModuleNameDescriptionButtonsView extends Composite {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-//        saveNameAndDescriptionButton.ensureDebugId(DebugIds.ISSUE.EDIT_NAME_AND_DESC_ACCEPT);
-//        cancelNameAndDescriptionButton.ensureDebugId(DebugIds.ISSUE.EDIT_NAME_AND_DESC_REJECT);
+        saveNameAndDescriptionButton.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.EDIT_NAME_AND_DESC_ACCEPT);
+        cancelNameAndDescriptionButton.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.EDIT_NAME_AND_DESC_REJECT);
     }
 
     @UiField
