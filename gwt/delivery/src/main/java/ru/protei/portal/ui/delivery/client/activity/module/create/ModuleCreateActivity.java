@@ -41,7 +41,7 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
 
     @Event
     public void onShow(ModuleEvents.Create event) {
-        if (!hasPrivileges()) {
+        if (!hasEditPrivileges()) {
             fireEvent(new ErrorPageEvents.ShowForbidden(event.parent));
             return;
         }
@@ -193,8 +193,8 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
         return date == null || date.getTime() > System.currentTimeMillis();
     }
 
-    private boolean hasPrivileges() {
-        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE);
+    private boolean hasEditPrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
     }
 
     @Inject

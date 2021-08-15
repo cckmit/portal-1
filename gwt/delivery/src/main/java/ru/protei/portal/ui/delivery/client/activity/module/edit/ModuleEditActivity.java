@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.ModuleEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -37,23 +36,14 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
 
     @Event
     public void onShow(ModuleEvents.Show event ) {
-        HasWidgets container = event.parent;
-        if (!hasAccessEdit()) {
-            fireEvent(new ErrorPageEvents.ShowForbidden(container));
-            return;
-        }
-        requestModule(event.id, container);
-    }
-
-    private void requestModule(Long id, HasWidgets container) {
-        moduleService.getModule(id, new FluentCallback<Module>()
+        moduleService.getModule(event.id, new FluentCallback<Module>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
                 .withSuccess(module -> {
                     this.module = module;
                     switchNameDescriptionToEdit(false);
                     fillView(module);
                     showMeta(module);
-                    attachToContainer(container);
+                    attachToContainer(event.parent);
                 }));
     }
 
@@ -105,7 +95,7 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
         view.setModuleNumber(module.getSerialNumber());
         nameAndDescriptionView.setName(module.getName());
         nameAndDescriptionView.setDescription(module.getDescription());
-        view.nameAndDescriptionEditButtonVisibility().setVisible(true);
+        view.nameAndDescriptionEditButtonVisibility().setVisible(hasEditPrivileges());
 
         renderMarkupText(module.getDescription(), En_TextMarkup.MARKDOWN, html -> nameAndDescriptionView.setDescription(html));
     }
@@ -135,7 +125,7 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
                 .withSuccess( consumer ) );
     }
 
-    private boolean hasAccessEdit() {
+    private boolean hasEditPrivileges() {
         return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
     }
 

@@ -8,10 +8,7 @@ import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.KitEvents;
-import ru.protei.portal.ui.common.client.events.ModuleEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.service.ModuleControllerAsync;
@@ -42,6 +39,11 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     @Event
     public void onShow(KitEvents.Show event) {
+        if (!hasViewPrivileges()) {
+            fireEvent(new NotifyEvents.Show(lang.errAccessDenied(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
         moduleView.clearModules();
         deliveryService.getDelivery(event.deliveryId, new FluentCallback<Delivery>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
@@ -96,6 +98,10 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
                     moduleView.fillTable(modules);
                 })
         );
+    }
+
+    private boolean hasViewPrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW);
     }
 
     private boolean hasEditPrivileges() {
