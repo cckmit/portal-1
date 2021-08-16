@@ -9,7 +9,7 @@ import java.util.List;
 
 public class KitEvents {
 
-    @Url( value = "kits" )
+    @Url( value = "kits", primary = true)
     public static class Show {
         public Show () {}
         public Show(Long deliveryId, Long kitId) {

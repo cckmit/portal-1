@@ -10,4 +10,6 @@ public interface AbstractKitActivity extends ClickColumn.Handler<Module> {
     void onCheckModuleClicked(ModuleTableView moduleTableView);
 
     void onRemoveModuleClicked(AbstractModuleTableView module);
+
+    void onAddModuleClicked();
 }

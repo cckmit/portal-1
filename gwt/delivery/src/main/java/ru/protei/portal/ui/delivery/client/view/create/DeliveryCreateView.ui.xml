@@ -9,7 +9,7 @@
         <div class="card-body row no-margin">
             <div class="col-lg-8 order-last order-lg-first p-l-25 p-r-5">
                 <view:namedescription.DeliveryNameDescriptionEditView ui:field="nameDescription"/>
-                <div class="form-group form-group-default col-md-12">
+                 <div class="form-group form-group-default col-md-12">
                     <label class="fade"><ui:text from="{lang.deliveryKits}"/></label>
                     <g:HTMLPanel ui:field="kitsContainer"/>
                 </div>

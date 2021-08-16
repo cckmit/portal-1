@@ -5441,8 +5441,14 @@ div.form-group-default.form-group-default-selectFx:focus {
 
   .module-row {
     padding-right: 8px;
-    .module-state {
-      padding-right: 5px;
+
+    .module-info {
+      max-height: 38px;
+      overflow: hidden;
+
+      .module-state {
+        padding-right: 5px;
+      }
     }
 
     .manager {
@@ -5499,4 +5505,24 @@ div.form-group-default.form-group-default-selectFx:focus {
 .module-removing-disabled {
   opacity: 0.3;
   cursor: not-allowed !important;
+}
+
+.module-body, .module-meta-body {
+  overflow-y: auto;
+  box-sizing: border-box;
+  z-index: 0;
+  right: 0;
+  position: relative;
+
+  &.module-create {
+    max-height: calc(100vh - 170px);
+  }
+
+  &.module-edit {
+    max-height: calc(100vh - 120px);
+  }
+}
+
+.module-footer {
+  padding: .75rem 1.25rem;
 }

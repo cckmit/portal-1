@@ -40,20 +40,27 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     @Event
     public void onShow(KitEvents.Show event) {
+        if (!hasViewPrivileges()) {
+            fireEvent(new NotifyEvents.Show(lang.errAccessDenied(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+        fireEvent( new ActionBarEvents.Clear() );
+
         deliveryId = event.deliveryId;
-        kitId = event.kitId;
-        fillKits(deliveryId, kitId);
+        fillKits(deliveryId, event.kitId);
     }
 
     private void fillKits(Long deliveryId, Long kitId) {
         deliveryService.getDelivery(deliveryId, new FluentCallback<Delivery>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
                 .withSuccess(delivery -> {
+                            view.getModuleEditContainer().clear();
                             initDetails.parent.clear();
                             initDetails.parent.add(view.asWidget());
                             view.fillKits(delivery.getKits());
                             view.setKitsActionsEnabled(hasEditPrivileges());
                             if (kitId != null) {
+                                this.kitId = kitId;
                                 view.makeKitSelected(kitId);
                                 fillModules(kitId);
                             }
@@ -62,16 +69,28 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
         );
     }
 
+    @Event
+    public void onChangeRow( ModuleEvents.ChangeModule event ) {
+        moduleService.getModule(event.id, new FluentCallback<Module>()
+                .withSuccess(module -> moduleView.updateRow(module))
+        );
+    }
+
     @Override
     public void onKitClicked(Long kitId) {
+        view.getModuleEditContainer().clear();
         this.kitId = kitId;
         fillModules(kitId);
     }
 
     @Override
     public void onItemClicked(Module module) {
-        fireEvent(new NotifyEvents.Show("Module name edit clicked: " + module.getSerialNumber() + " " + module.getDescription(),
-                NotifyEvents.NotifyType.SUCCESS));
+        fireEvent(new ModuleEvents.Show(view.getModuleEditContainer(), module.getId()));
+    }
+
+    @Override
+    public void onAddModuleClicked() {
+        fireEvent(new ModuleEvents.Create(view.getModuleEditContainer(), kitId, deliveryId));
     }
 
     private void fillModules(Long kitId) {
@@ -84,6 +103,10 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
                     moduleView.fillTable(modules);
                 })
         );
+    }
+
+    private boolean hasViewPrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW);
     }
 
     private boolean hasEditPrivileges() {
@@ -168,9 +191,6 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
         return hasRemovePrivileges() && moduleView.hasSelectedModules();
     }
 
-    private Long deliveryId;
-    private Long kitId;
-
     @Inject
     Lang lang;
     @Inject
@@ -183,6 +203,9 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     private DeliveryControllerAsync deliveryService;
     @Inject
     private ModuleControllerAsync moduleService;
-    
+
+    private Long kitId;
+    private Long deliveryId;
+
     private AppEvents.InitDetails initDetails;
 }

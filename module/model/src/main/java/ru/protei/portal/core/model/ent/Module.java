@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
@@ -37,6 +38,11 @@ public class Module extends AuditableObject {
     @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID,
             mappedColumn = CaseObject.Columns.CREATOR, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long creatorId;
+
+    @JdbcJoinedObject(joinPath = {
+            @JdbcJoinPath(localColumn = ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = CaseObject.Columns.CREATOR, remoteColumn = "id", table = "person")})
+    private Person creator;
 
     /**
      * Дата изменения
@@ -88,6 +94,9 @@ public class Module extends AuditableObject {
      * Заказчик
      */
     @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "kit_id", remoteColumn = "id", table = "kit"),
+            @JdbcJoinPath(localColumn = "delivery_id", remoteColumn = "id", table = "delivery"),
+            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "project"),
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
             @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "company")}, mappedColumn = "cname")
     private String customerName;
@@ -95,10 +104,13 @@ public class Module extends AuditableObject {
     /**
      * Менеджер
      */
-    @JdbcJoinedColumn(joinPath = {
+    @JdbcJoinedObject(joinPath = {
+            @JdbcJoinPath(localColumn = "kit_id", remoteColumn = "id", table = "kit"),
+            @JdbcJoinPath(localColumn = "delivery_id", remoteColumn = "id", table = "delivery"),
+            @JdbcJoinPath(localColumn = "project_id", remoteColumn = "id", table = "project"),
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
-            @JdbcJoinPath(localColumn = Project.Columns.MANAGER, remoteColumn = "id", table = "person")}, mappedColumn = "displayShortName")
-    private String managerName;
+            @JdbcJoinPath(localColumn = Project.Columns.MANAGER, remoteColumn = "id", table = "person")})
+    private Person manager;
 
     @JdbcJoinedColumn(localColumn = Delivery.Columns.ID, remoteColumn = Delivery.Columns.ID, mappedColumn = CaseObject.Columns.DELETED, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private boolean deleted;
@@ -109,11 +121,17 @@ public class Module extends AuditableObject {
     @JdbcColumn(name = HW_MANAGER)
     private Long hwManagerId;
 
+    @JdbcJoinedObject(localColumn = HW_MANAGER, remoteColumn = "id")
+    private PersonShortView hwManager;
+
     /**
      * Ответственный КК
      */
     @JdbcColumn(name = QC_MANAGER)
     private Long qcManagerId;
+
+    @JdbcJoinedObject(localColumn = QC_MANAGER, remoteColumn = "id")
+    private PersonShortView qcManager;
 
     /**
      * Дата отправки
@@ -155,6 +173,14 @@ public class Module extends AuditableObject {
 
     public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
+    }
+
+    public Person getCreator() {
+        return creator;
+    }
+
+    public void setCreator(Person creator) {
+        this.creator = creator;
     }
 
     public Date getModified() {
@@ -221,14 +247,20 @@ public class Module extends AuditableObject {
         this.parentModuleId = parentModuleId;
     }
 
-
-
-    public String getManagerName() {
-        return managerName;
+    public String getCustomerName() {
+        return customerName;
     }
 
-    public void setManagerName(String managerName) {
-        this.managerName = managerName;
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public Person getManager() {
+        return manager;
+    }
+
+    public void setManager(Person manager) {
+        this.manager = manager;
     }
 
     public boolean isDeleted() {
@@ -247,12 +279,28 @@ public class Module extends AuditableObject {
         this.hwManagerId = hwManagerId;
     }
 
+    public PersonShortView getHwManager() {
+        return hwManager;
+    }
+
+    public void setHwManager(PersonShortView hwManager) {
+        this.hwManager = hwManager;
+    }
+
     public Long getQcManagerId() {
         return qcManagerId;
     }
 
     public void setQcManagerId(Long qcManagerId) {
         this.qcManagerId = qcManagerId;
+    }
+
+    public PersonShortView getQcManager() {
+        return qcManager;
+    }
+
+    public void setQcManager(PersonShortView qcManager) {
+        this.qcManager = qcManager;
     }
 
     public Date getDepartureDate() {
@@ -299,8 +347,8 @@ public class Module extends AuditableObject {
                 ", kitId=" + kitId +
                 ", parentModuleId=" + parentModuleId +
                 ", customerName='" + customerName + '\'' +
-                ", managerName='" + managerName + '\'' +
                 ", deleted=" + deleted +
+                ", managerName='" + manager + '\'' +
                 ", hwManagerId=" + hwManagerId +
                 ", qcManagerId=" + qcManagerId +
                 ", departureDate=" + departureDate +
@@ -310,5 +358,6 @@ public class Module extends AuditableObject {
 
     public interface Columns {
         String ID = "id";
+        String SERIAL_NUMBER = "serial_number";
     }
 }

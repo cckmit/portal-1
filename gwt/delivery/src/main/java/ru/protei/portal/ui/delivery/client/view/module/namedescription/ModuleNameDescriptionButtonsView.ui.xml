@@ -1,0 +1,11 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel>
+        <g:Button ui:field="saveNameAndDescriptionButton" styleName="btn btn-xs btn-complete" text="{lang.buttonApply}"/>
+        <g:Button ui:field="cancelNameAndDescriptionButton" styleName="btn btn-xs btn-default" text="{lang.buttonCancel}"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

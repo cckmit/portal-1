@@ -3514,6 +3514,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errDeliverySerialNumberNotAvailable();
 
+    String errModuleSerialNumberNotAvailable();
+
     String errDeliveryForbiddenChangeStatus();
 
     String errDeliveryForbiddenChangeProject();
@@ -3589,6 +3591,28 @@ public interface Lang extends Messages, ContactItemLang {
     String moduleRemoveConfirmMessage();
 
     String modulesRemoved();
+
+    String moduleName();
+
+    String moduleDescription();
+
+    String moduleState();
+
+    String moduleBuildDate();
+
+    String moduleDepartureDate();
+
+    String moduleSerialNumber();
+
+    String moduleValidationEmptyName();
+
+    String moduleValidationEmptyState();
+
+    String moduleValidationInvalidDepartureDate();
+
+    String moduleValidationInvalidBuildDate();
+
+    String moduleCreatedSuccessfully();
 
     String errKitSerialNumberNotMatchDeliveryNumber();
 

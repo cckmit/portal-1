@@ -14,6 +14,12 @@ import ru.protei.portal.ui.delivery.client.activity.kit.page.AbstractModuleTable
 import ru.protei.portal.ui.delivery.client.activity.kit.page.KitActivity;
 import ru.protei.portal.ui.delivery.client.activity.meta.AbstractDeliveryMetaView;
 import ru.protei.portal.ui.delivery.client.activity.meta.DeliveryMetaActivity;
+import ru.protei.portal.ui.delivery.client.activity.module.create.AbstractModuleCreateView;
+import ru.protei.portal.ui.delivery.client.activity.module.create.ModuleCreateActivity;
+import ru.protei.portal.ui.delivery.client.activity.module.edit.AbstractModuleEditView;
+import ru.protei.portal.ui.delivery.client.activity.module.edit.ModuleEditActivity;
+import ru.protei.portal.ui.delivery.client.activity.module.meta.AbstractModuleMetaView;
+import ru.protei.portal.ui.delivery.client.activity.module.meta.ModuleMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.page.DeliveryPage;
 import ru.protei.portal.ui.delivery.client.activity.table.AbstractDeliveryTableView;
 import ru.protei.portal.ui.delivery.client.activity.table.DeliveryTableActivity;
@@ -22,6 +28,9 @@ import ru.protei.portal.ui.delivery.client.view.edit.DeliveryEditView;
 import ru.protei.portal.ui.delivery.client.view.kit.edit.DeliveryKitEditView;
 import ru.protei.portal.ui.delivery.client.view.kit.page.KitView;
 import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
+import ru.protei.portal.ui.delivery.client.view.module.create.ModuleCreateView;
+import ru.protei.portal.ui.delivery.client.view.module.edit.ModuleEditView;
+import ru.protei.portal.ui.delivery.client.view.module.meta.ModuleMetaView;
 import ru.protei.portal.ui.delivery.client.view.module.table.ModuleTableView;
 import ru.protei.portal.ui.delivery.client.view.table.DeliveryTableView;
 
@@ -49,6 +58,14 @@ public class DeliveryClientModule extends AbstractGinModule {
         bind(KitActivity.class).asEagerSingleton();
         bind(AbstractKitView.class).to(KitView.class).in(Singleton.class);
         bind(AbstractModuleTableView.class).to(ModuleTableView.class).in(Singleton.class);
+
+        bind(ModuleEditActivity.class).asEagerSingleton();
+        bind(ModuleMetaActivity.class).asEagerSingleton();
+        bind(ModuleCreateActivity.class).asEagerSingleton();
+
+        bind(AbstractModuleEditView.class).to(ModuleEditView.class).in(Singleton.class);
+        bind(AbstractModuleCreateView.class).to(ModuleCreateView.class).in(Singleton.class);
+        bind(AbstractModuleMetaView.class).to(ModuleMetaView.class);
     }
 }
 

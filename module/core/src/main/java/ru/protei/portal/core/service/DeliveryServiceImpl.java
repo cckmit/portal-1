@@ -36,6 +36,7 @@ import static ru.protei.portal.core.model.ent.Delivery.Columns.SUBSCRIBERS;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.DELIVERY_KIT_SERIAL_NUMBER_PATTERN;
+import static ru.protei.portal.core.utils.HistoryUtils.*;
 
 /**
  * Реализация сервиса управления поставками
@@ -250,15 +251,15 @@ public class DeliveryServiceImpl implements DeliveryService {
         Date newDate = meta.getDepartureDate();
         Result<Long> resultDate = ok();
 
-        if (departureDateAdded(oldDate, newDate)) {
+        if (dateAdded(oldDate, newDate)) {
             resultDate = addDateHistory(token, meta.getId(), meta.getDepartureDate());
         }
 
-        if (departureDateChanged(oldDate, newDate)) {
+        if (dateChanged(oldDate, newDate)) {
             resultDate = changeDateHistory(token, meta.getId(), oldMeta.getDepartureDate(), meta.getDepartureDate());
         }
 
-        if (departureDateRemoved(oldDate, newDate)) {
+        if (dateRemoved(oldDate, newDate)) {
             resultDate = removeDateHistory(token, meta.getId(), oldMeta.getDepartureDate());
         }
 
@@ -550,18 +551,6 @@ public class DeliveryServiceImpl implements DeliveryService {
         return caseObject;
     }
 
-    private boolean departureDateAdded(Date oldDate, Date newDate) {
-        return oldDate == null && newDate != null;
-    }
-
-    private boolean departureDateChanged(Date oldDate, Date newDate) {
-        return oldDate != null && newDate != null && oldDate.getTime() != newDate.getTime();
-    }
-
-    private boolean departureDateRemoved(Date oldDate, Date newDate) {
-        return oldDate != null && newDate == null;
-    }
-
     private Result<Long> addDeliveryStateHistory(AuthToken authToken, Long caseObjectId, Long stateId, String stateName) {
         return historyService.createHistory(authToken, caseObjectId, En_HistoryAction.ADD, En_HistoryType.DELIVERY_STATE, null, null, stateId, stateName);
     }
@@ -579,18 +568,18 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     private Result<Long> addDateHistory(AuthToken token, Long deliveryId, Date date) {
-        return historyService.createHistory(token, deliveryId, En_HistoryAction.ADD, En_HistoryType.DATE,
+        return historyService.createHistory(token, deliveryId, En_HistoryAction.ADD, En_HistoryType.DEPARTURE_DATE,
                                             null, null, deliveryId, DEPARTURE_DATE_FORMAT.format(date));
     }
 
     private Result<Long> changeDateHistory(AuthToken token, Long deliveryId, Date oldDate, Date newDate) {
-        return historyService.createHistory(token, deliveryId, En_HistoryAction.CHANGE, En_HistoryType.DATE, null,
+        return historyService.createHistory(token, deliveryId, En_HistoryAction.CHANGE, En_HistoryType.DEPARTURE_DATE, null,
                                             oldDate != null ? DEPARTURE_DATE_FORMAT.format(oldDate) : null, deliveryId,
                                             newDate != null ? DEPARTURE_DATE_FORMAT.format(newDate) : null);
     }
 
     private Result<Long> removeDateHistory(AuthToken token, Long deliveryId, Date oldDate) {
-        return historyService.createHistory(token, deliveryId, En_HistoryAction.REMOVE, En_HistoryType.DATE,
+        return historyService.createHistory(token, deliveryId, En_HistoryAction.REMOVE, En_HistoryType.DEPARTURE_DATE,
                                             null, DEPARTURE_DATE_FORMAT.format(oldDate), deliveryId, null);
     }
 }

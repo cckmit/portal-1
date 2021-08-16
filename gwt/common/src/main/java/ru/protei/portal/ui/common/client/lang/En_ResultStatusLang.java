@@ -97,6 +97,7 @@ public class En_ResultStatusLang {
             case MYSQL_DATA_TRUNCATION: return lang.errMySqlDataTruncation();
             case INVALID_FILE_FORMAT: return lang.errInvalidFileFormat();
             case NOT_AVAILABLE_DELIVERY_KIT_SERIAL_NUMBER: return lang.errDeliverySerialNumberNotAvailable();
+            case NOT_AVAILABLE_MODULE_SERIAL_NUMBER: return lang.errModuleSerialNumberNotAvailable();
             case KIT_SERIAL_NUMBER_NOT_MATCH_DELIVERY_NUMBER: return lang.errKitSerialNumberNotMatchDeliveryNumber();
             case DELIVERY_FORBIDDEN_CHANGE_STATUS: return lang.errDeliveryForbiddenChangeStatus();
             case DELIVERY_FORBIDDEN_CHANGE_PROJECT: return lang.errDeliveryForbiddenChangeProject();
