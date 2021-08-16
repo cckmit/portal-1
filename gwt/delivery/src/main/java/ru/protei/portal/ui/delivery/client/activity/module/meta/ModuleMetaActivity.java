@@ -34,7 +34,7 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
 
         module = event.module;
 
-        fillView( event.module );
+        fillView( event.module, false);
     }
 
     @Override
@@ -63,35 +63,21 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
 
     @Override
     public void onBuildDateChanged() {
+        view.setBuildDateValid(isBuildDateFieldValid());
         if (isDateEquals(view.buildDate().getValue(), module.getBuildDate())) {
-            view.setBuildDateValid(isBuildDateFieldValid());
             return;
         }
-
-        if (!isBuildDateFieldValid()) {
-            view.setBuildDateValid(false);
-            return;
-        }
-
         module.setBuildDate(view.buildDate().getValue());
-        view.setBuildDateValid(true);
         onCaseMetaChanged(module);
     }
 
     @Override
     public void onDepartureDateChanged() {
+        view.setDepartureDateValid(isDepartureDateFieldValid());
         if (isDateEquals(view.departureDate().getValue(), module.getDepartureDate())) {
-            view.setDepartureDateValid(isDepartureDateFieldValid());
             return;
         }
-
-        if (!isDepartureDateFieldValid()) {
-            view.setDepartureDateValid(false);
-            return;
-        }
-
         module.setDepartureDate(view.departureDate().getValue());
-        view.setDepartureDateValid(true);
         onCaseMetaChanged(module);
     }
 
@@ -104,7 +90,7 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
         return null;
     }
 
-    private void fillView(Module module) {
+    private void fillView(Module module, boolean afterUpdate) {
         view.state().setValue(module.getState());
         view.hwManager().setValue(module.getHwManager());
         view.qcManager().setValue(module.getQcManager());
@@ -112,10 +98,12 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
         view.setCustomerCompany(module.getCustomerName());
         view.setManager(module.getManager().getDisplayName());
 
-        view.buildDate().setValue(module.getBuildDate());
-        view.setBuildDateValid(true);
-        view.departureDate().setValue(module.getDepartureDate());
-        view.setDepartureDateValid(true);
+        if (!afterUpdate) {
+            view.buildDate().setValue(module.getBuildDate());
+            view.setBuildDateValid(true);
+            view.departureDate().setValue(module.getDepartureDate());
+            view.setDepartureDateValid(true);
+        }
     }
 
     private void onCaseMetaChanged(Module module) {
@@ -129,8 +117,7 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
                 .withSuccess(caseMetaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new ModuleEvents.ChangeModule(module.getId()));
-                    fireEvent(new CommentAndHistoryEvents.Reload());
-                    fillView( caseMetaUpdated );
+                    fillView( caseMetaUpdated, true );
                 }));
     }
 

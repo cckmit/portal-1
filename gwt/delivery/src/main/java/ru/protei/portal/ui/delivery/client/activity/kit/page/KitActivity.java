@@ -43,6 +43,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
             fireEvent(new NotifyEvents.Show(lang.errAccessDenied(), NotifyEvents.NotifyType.ERROR));
             return;
         }
+        fireEvent( new ActionBarEvents.Clear() );
 
         moduleView.clearModules();
         deliveryService.getDelivery(event.deliveryId, new FluentCallback<Delivery>()

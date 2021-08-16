@@ -258,13 +258,17 @@ public class ModuleServiceImpl implements ModuleService {
         if (module.getStateId() == 0) {
             return false;
         }
-        if (!isDateValid(module.getBuildDate())) {
+        if (isNewModule(module) && !isDateValid(module.getBuildDate())) {
             return false;
         }
-        if (!isDateValid(module.getDepartureDate())) {
+        if (isNewModule(module) && !isDateValid(module.getDepartureDate())) {
             return false;
         }
         return true;
+    }
+
+    private boolean isNewModule(Module module) {
+        return module.getId() == null;
     }
 
     private boolean isDateValid(Date date) {
