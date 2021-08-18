@@ -64,7 +64,7 @@ public abstract class EquipmentPage
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
         if ( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_VIEW ) ) {
-            fireEvent( new MenuEvents.Select( ТAB ) );
+            fireEvent( new MenuEvents.Select( ТAB, CATEGORY ) );
         }
     }
 
