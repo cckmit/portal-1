@@ -237,6 +237,7 @@ public class PortalConfigData {
         private final String[] crmEducationRequestApprovedCourseRecipients;
         private final String[] crmEducationRequestApprovedConferenceRecipients;
         private final String[] crmEducationRequestApprovedLiteratureRecipients;
+        private final boolean deliveryNotificationEnabled;
 
         public MailNotificationConfig(PropertiesWrapper properties) throws ConfigException {
             super(properties);
@@ -257,6 +258,7 @@ public class PortalConfigData {
             crmEducationRequestApprovedCourseRecipients = properties.getProperty("crm.education.request.approved.course.recipients", "").split(",");
             crmEducationRequestApprovedConferenceRecipients = properties.getProperty("crm.education.request.approved.conference.recipients", "").split(",");
             crmEducationRequestApprovedLiteratureRecipients = properties.getProperty("crm.education.request.approved.literature.recipients", "").split(",");
+            deliveryNotificationEnabled = properties.getProperty("delivery.notification.enabled", Boolean.class, false);
         }
 
         public String getCrmCaseUrl() {
@@ -324,6 +326,10 @@ public class PortalConfigData {
 
         public String[] getCrmEducationRequestApprovedLiteratureRecipients() {
             return crmEducationRequestApprovedLiteratureRecipients;
+        }
+
+        public boolean isDeliveryNotificationEnabled() {
+            return deliveryNotificationEnabled;
         }
     }
 

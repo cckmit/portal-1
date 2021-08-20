@@ -892,8 +892,13 @@ public class MainConfiguration {
     }
 
     @Bean
-    public EventDeliveryAssemblerService getEventDeliveryAssemblerService() {
-        return new EventDeliveryAssemblerServiceImpl();
+    public EventDeliveryAssemblerService getEventDeliveryAssemblerService(@Autowired PortalConfig config) {
+        if (config.data().getMailNotificationConfig().isDeliveryNotificationEnabled()) {
+            return new EventDeliveryAssemblerServiceImpl();
+        } else {
+            log.info("delivery notification disabled in configuration");
+            return new EventDeliveryAssemblerServiceMock();
+        }
     }
 
     @Bean
