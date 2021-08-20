@@ -372,29 +372,29 @@ public class EnumLangUtil {
     }
 
     public String deliveryStateLang(CaseState caseState, String langCode) {
-        if (caseState == null) {
+        if (caseState == null || caseState.getState() == null) {
             return "";
         }
         if (localizedLang == null) {
             localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         }
-        switch (caseState.getId().intValue()) {
-            case 39:
+        switch (caseState.getState().toLowerCase()) {
+            case "preliminary":
                 return localizedLang.get("deliveryStatePreliminary");
-            case 40:
-                return localizedLang.get("deliveryStatePreReserve");
-            case 41:
-                return localizedLang.get("deliveryStateReserve");
-            case 42:
+            case "reservation":
+                return localizedLang.get("deliveryStateReservation");
+            case "reserved":
+                return localizedLang.get("deliveryStateReserved");
+            case "assembly":
                 return localizedLang.get("deliveryStateAssembly");
-            case 43:
-                return localizedLang.get("deliveryStateTest");
-            case 44:
+            case "testing":
+                return localizedLang.get("deliveryStateTesting");
+            case "ready":
                 return localizedLang.get("deliveryStateReady");
-            case 45:
+            case "sent":
                 return localizedLang.get("deliveryStateSent");
-            case 46:
-                return localizedLang.get("deliveryStateWork");
+            case "works":
+                return localizedLang.get("deliveryStateWorks");
         }
         return caseState.getState();
     }

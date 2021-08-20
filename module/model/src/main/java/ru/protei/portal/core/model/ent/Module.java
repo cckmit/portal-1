@@ -10,7 +10,7 @@ import java.util.Objects;
 
 import static ru.protei.portal.core.model.ent.Delivery.Columns.HW_MANAGER;
 import static ru.protei.portal.core.model.ent.Delivery.Columns.QC_MANAGER;
-import static ru.protei.portal.core.model.ent.Module.Columns.ID;
+import static ru.protei.portal.core.model.ent.Module.Columns.*;
 
 
 @JdbcEntity(table = "module")
@@ -61,19 +61,19 @@ public class Module extends AuditableObject {
     /**
      * Описание
      */
-    @JdbcJoinedColumn(localColumn = Delivery.Columns.ID, remoteColumn = CaseObject.Columns.ID,
+    @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID,
             mappedColumn = CaseObject.Columns.INFO, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private String description;
 
     /**
      * Статус модуля
      */
-    @JdbcJoinedColumn(localColumn = Module.Columns.ID, remoteColumn = CaseObject.Columns.ID, mappedColumn = CaseObject.Columns.STATE,
-            table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
+    @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.STATE, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private long stateId;
 
     @JdbcJoinedObject(joinPath = {
-            @JdbcJoinPath(localColumn = Module.Columns.ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
             @JdbcJoinPath(localColumn = CaseObject.Columns.STATE, remoteColumn = "id", table = "case_state", sqlTableAlias = CASE_OBJECT_ALIAS),
     })
     private CaseState state;
@@ -81,11 +81,15 @@ public class Module extends AuditableObject {
     /**
      * Серийный номер
      */
-    @JdbcColumn(name = "serial_number")
+    @JdbcColumn(name = SERIAL_NUMBER)
     private String serialNumber;
 
-    @JdbcColumn(name = "kit_id")
+    @JdbcColumn(name = KIT_ID)
     private Long kitId;
+
+    @JdbcJoinedColumn(localColumn = KIT_ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.STATE, table = CASE_OBJECT_TABLE, sqlTableAlias = "KCO")
+    private Long kitStateId;
 
     @JdbcColumn(name = "parent_module_id")
     private Long parentModuleId;
@@ -239,6 +243,14 @@ public class Module extends AuditableObject {
         this.kitId = kitId;
     }
 
+    public Long getKitStateId() {
+        return kitStateId;
+    }
+
+    public void setKitStateId(Long kitStateId) {
+        this.kitStateId = kitStateId;
+    }
+
     public Long getParentModuleId() {
         return parentModuleId;
     }
@@ -359,5 +371,6 @@ public class Module extends AuditableObject {
     public interface Columns {
         String ID = "id";
         String SERIAL_NUMBER = "serial_number";
+        String KIT_ID = "kit_id";
     }
 }

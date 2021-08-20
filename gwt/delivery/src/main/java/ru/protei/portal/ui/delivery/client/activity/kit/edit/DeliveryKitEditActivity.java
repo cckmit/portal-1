@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CommentsAndHistories;
 import ru.protei.portal.core.model.ent.History;
 import ru.protei.portal.core.model.ent.Kit;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -121,6 +122,7 @@ public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliv
 
         view.setSerialNumber(kit.getSerialNumber());
         view.state().setValue(kit.getState());
+        view.setStateEnabled(hasEditAccess() && kit.getDeliveryStateId() != CrmConstants.State.PRELIMINARY);
         view.name().setValue(kit.getName());
         view.setCreatedBy(lang.createBy(kit.getCreator() == null ? "" : transliteration(kit.getCreator().getDisplayShortName()),
                 DateFormatter.formatDateTime(kit.getCreated())));

@@ -162,7 +162,9 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         deliveryMetaView.type().setValue(delivery.getType());
         deliveryMetaView.typeEnabled().setEnabled(hasEditPrivileges());
         deliveryMetaView.hwManager().setValue(delivery.getHwManager());
+        deliveryMetaView.hwManagerEnabled().setEnabled(hasEditPrivileges());
         deliveryMetaView.qcManager().setValue(delivery.getQcManager());
+        deliveryMetaView.qcManagerEnabled().setEnabled(hasEditPrivileges());
 
         ProjectInfo projectInfo = ProjectInfo.fromProject(delivery.getProject());
         deliveryMetaView.project().setValue(projectInfo);

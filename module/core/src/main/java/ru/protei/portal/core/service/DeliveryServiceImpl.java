@@ -365,7 +365,14 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     public Result<Kit> getKit(AuthToken token, Long kitId) {
 
+        if (kitId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         Kit kit = kitDAO.get(kitId);
+        if (kit == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
         return ok(kit);
     }
 
@@ -383,6 +390,15 @@ public class DeliveryServiceImpl implements DeliveryService {
         Kit oldKit = kitDAO.get(kit.getId());
         if (oldKit == null) {
             return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        Delivery delivery = deliveryDAO.get(kit.getDeliveryId());
+        if (delivery == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (isInvalidKitStates(listOf(kit), delivery.getStateId())) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
         CaseObject caseObject = caseObjectDAO.get(kit.getId());

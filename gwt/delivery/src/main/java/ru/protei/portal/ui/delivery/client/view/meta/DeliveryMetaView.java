@@ -214,7 +214,17 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     }
 
     @Override
+    public HasEnabled hwManagerEnabled() {
+        return hwManager;
+    }
+
+    @Override
     public HasValue<PersonShortView> qcManager() {
+        return qcManager;
+    }
+
+    @Override
+    public HasEnabled qcManagerEnabled() {
         return qcManager;
     }
 

@@ -7,8 +7,8 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Module;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.events.CommentAndHistoryEvents;
 import ru.protei.portal.ui.common.client.events.ModuleEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -34,7 +34,7 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
 
         module = event.module;
 
-        fillView( event.module, false);
+        fillView(event.module, false);
     }
 
     @Override
@@ -92,6 +92,7 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
 
     private void fillView(Module module, boolean afterUpdate) {
         view.state().setValue(module.getState());
+        view.setAllowChangingState(module.getKitStateId() != CrmConstants.State.PRELIMINARY);
         view.hwManager().setValue(module.getHwManager());
         view.qcManager().setValue(module.getQcManager());
 
@@ -114,10 +115,10 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
         }
 
         moduleService.updateMeta(module, new FluentCallback<Module>()
-                .withSuccess(caseMetaUpdated -> {
+                .withSuccess(moduleMetaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new ModuleEvents.ChangeModule(module.getId()));
-                    fillView( caseMetaUpdated, true );
+                    fillView(moduleMetaUpdated, true);
                 }));
     }
 
