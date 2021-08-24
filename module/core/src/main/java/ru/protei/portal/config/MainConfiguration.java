@@ -20,6 +20,8 @@ import ru.protei.portal.core.client.enterprise1c.api.Api1C;
 import ru.protei.portal.core.client.enterprise1c.api.Api1CImpl;
 import ru.protei.portal.core.client.enterprise1c.http.HttpClient1C;
 import ru.protei.portal.core.client.enterprise1c.http.HttpClient1CImpl;
+import ru.protei.portal.core.client.enterprise1c.http.HttpClient1CWork;
+import ru.protei.portal.core.client.enterprise1c.http.HttpClient1CWorkImpl;
 import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1C;
 import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1CImpl;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
@@ -677,6 +679,11 @@ public class MainConfiguration {
     @Bean
     public HttpClient1C getHttpClient1C() {
         return new HttpClient1CImpl();
+    }
+
+    @Bean
+    public HttpClient1CWork getHttpClient1CWork() {
+        return new HttpClient1CWorkImpl();
     }
 
     @Bean
