@@ -132,6 +132,7 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         editClickColumn.setColumnProvider(columnProvider);
 
         table.setLoadHandler(activity);
+        table.setPagerListener(activity);
     }
 
     private final ClickColumn<Contract> columnState = new ClickColumn<Contract>() {
