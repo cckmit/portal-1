@@ -27,6 +27,7 @@ import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
 
+import java.util.Date;
 import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
@@ -123,9 +124,11 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
     @Override
     public void onDepartureDateChanged() {
         super.onDepartureDateChanged();
-        if (!isDepartureDateFieldValid()) {
+        if (!isDepartureDateFieldValid() ||
+             isDateEquals(deliveryMetaView.departureDate().getValue(), delivery.getDepartureDate())) {
             return;
         }
+
         delivery.setDepartureDate(deliveryMetaView.departureDate().getValue());
         onCaseMetaChanged(delivery);
     }
@@ -196,6 +199,14 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
 
     private void showValidationError(String error) {
         fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
+    }
+
+    private boolean isDateEquals(Date dateField, Date dateMeta) {
+        if (dateField == null) {
+            return dateMeta == null;
+        } else {
+            return Objects.equals(dateField, dateMeta);
+        }
     }
 
     private boolean hasPrivilegesChangeStatus(CaseState caseState) {
