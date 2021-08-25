@@ -27,6 +27,7 @@ import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
 
+import java.util.Date;
 import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
@@ -126,8 +127,18 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         if (!isDepartureDateFieldValid()) {
             return;
         }
-        delivery.setDepartureDate(deliveryMetaView.departureDate().getValue());
-        onCaseMetaChanged(delivery);
+
+        if (isDepartureDateChanged()) {
+            delivery.setDepartureDate(deliveryMetaView.departureDate().getValue());
+            onCaseMetaChanged(delivery);
+        }
+    }
+
+    private boolean isDepartureDateChanged() {
+        Date oldDate = delivery.getDepartureDate();
+        Date newDate = deliveryMetaView.departureDate().getValue();
+        return oldDate != null && newDate != null &&
+               oldDate.getTime() != newDate.getTime();
     }
 
     @Override
