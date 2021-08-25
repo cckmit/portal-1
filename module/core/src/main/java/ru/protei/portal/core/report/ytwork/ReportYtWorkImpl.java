@@ -3,18 +3,23 @@ package ru.protei.portal.core.report.ytwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
+import ru.protei.portal.core.client.enterprise1c.api.Api1CWork;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.enterprise1c.dto.WorkPersonInfo1C;
+import ru.protei.portal.core.model.enterprise1c.query.WorkQuery1C;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.YtWorkQuery;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.struct.WorkerEntryFacade;
 import ru.protei.portal.core.model.struct.reportytwork.*;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkInfo;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtSingleEnumIssueCustomField;
@@ -60,6 +65,8 @@ public class ReportYtWorkImpl implements ReportYtWork {
     CompanyDAO companyDAO;
     @Autowired
     YoutrackApi api;
+    @Autowired
+    Api1CWork api1CWork;
 
     private final Map<String, List<String>> invertNiokrs;
     private final Map<String, List<String>> invertNmas;
@@ -173,6 +180,15 @@ public class ReportYtWorkImpl implements ReportYtWork {
         Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasWorkEntry = stream(data.values())
                 .collect(partitioningBy(item -> item.getPersonInfo().hasWorkEntry()));
 
+        partitionByHasWorkEntry.get(true).forEach(item -> {
+            WorkQuery1C query1C = new WorkQuery1C();
+            query1C.setDateFrom(interval.from);
+            query1C.setDateTo(interval.to);
+            query1C.setPersonNumber(item.getPersonInfo().getWorkerId());
+
+            item.setWorkedHours(getWorkedHours(item.getPersonInfo().getCompanyName().getString(), query1C));
+        });
+
         Map<NameWithId, DepartmentTreeAndValues> groupingByCompanyDepartment =
                 groupingByCompanyDepartment(partitionByHasWorkEntry.get(true));
 
@@ -197,7 +213,22 @@ public class ReportYtWorkImpl implements ReportYtWork {
         }
     }
 
-    public Map<NameWithId, DepartmentTreeAndValues> groupingByCompanyDepartment(List<ReportYtWorkRowItem> hasWorkEntry) {
+    private Integer getWorkedHours(String companyName, WorkQuery1C query) {
+        Result<WorkPersonInfo1C> proteiWorkPersonInfo = null;
+        if (CrmConstants.Company.MAIN_HOME_COMPANY_NAME.equals(companyName)) {
+            proteiWorkPersonInfo = api1CWork.getProteiWorkPersonInfo(query);
+        }
+        if (CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME.equals(companyName)) {
+            proteiWorkPersonInfo = api1CWork.getProteiWorkPersonInfo(query);
+        }
+        if (proteiWorkPersonInfo != null && proteiWorkPersonInfo.isOk()) {
+            return proteiWorkPersonInfo.getData().getWorkedHours();
+        } else {
+            return 0;
+        }
+    }
+
+    private Map<NameWithId, DepartmentTreeAndValues> groupingByCompanyDepartment(List<ReportYtWorkRowItem> hasWorkEntry) {
         Map<NameWithId, DepartmentTreeAndValues> companyMap = new HashMap<>();
         hasWorkEntry.forEach(item -> {
             PersonInfo personInfo = item.getPersonInfo();
@@ -216,7 +247,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
         return companyMap;
     }
 
-    public List<ReportYtWorkRow> makeReportCompanyData(DepartmentTreeAndValues treeAndValues) {
+    private List<ReportYtWorkRow> makeReportCompanyData(DepartmentTreeAndValues treeAndValues) {
         List<ReportYtWorkRow> list = new ArrayList<>();
         treeAndValues.getTree().deepFirstSearchTraversal(node -> {
             int level = node.getLevel();
@@ -275,6 +306,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
             return new PersonInfo(
                     employeeShortView.getDisplayShortName(),
                     employeeShortView.getId(),
+                    mainEntry.getWorkerExtId(),
                     mainEntry.getCompanyName() != null ?
                             new NameWithId(mainEntry.getCompanyName(), mainEntry.getCompanyId())
                             : PersonInfo.nullCompanyName,
@@ -302,7 +334,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
         );
     }
 
-    static String getCustomerName(YtIssue issue) {
+    static private String getCustomerName(YtIssue issue) {
         YtSingleEnumIssueCustomField field = (YtSingleEnumIssueCustomField) issue.getCustomerField();
         if (field == null) {
             return null;

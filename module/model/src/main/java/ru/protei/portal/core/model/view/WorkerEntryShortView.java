@@ -54,6 +54,9 @@ public class WorkerEntryShortView implements Serializable {
     @JdbcColumn(name = "positionId")
     private Long positionId;
 
+    @JdbcColumn(name = "worker_extId")
+    private String workerExtId;
+
     @JdbcColumn(name = "is_contract_agreement")
     private boolean isContractAgreement;
 
@@ -165,6 +168,14 @@ public class WorkerEntryShortView implements Serializable {
         this.positionName = positionName;
     }
 
+    public String getWorkerExtId() {
+        return workerExtId;
+    }
+
+    public void setWorkerExtId(String workerExtId) {
+        this.workerExtId = workerExtId;
+    }
+
     public boolean getContractAgreement() {
         return isContractAgreement;
     }
@@ -189,6 +200,7 @@ public class WorkerEntryShortView implements Serializable {
                 ", parentDepId=" + parentDepId +
                 ", depId=" + depId +
                 ", positionId=" + positionId +
+                ", workerExtId='" + workerExtId + '\'' +
                 ", isContractAgreement=" + isContractAgreement +
                 '}';
     }

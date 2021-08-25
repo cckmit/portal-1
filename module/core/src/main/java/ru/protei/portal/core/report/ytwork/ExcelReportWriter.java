@@ -80,7 +80,7 @@ public class ExcelReportWriter implements
 
     private int[] getColumnsWidth(Map<En_ReportYtWorkType, Set<String>> processedWorkTypes) {
         ListBuilder<Integer> columnsWidthList = new ListBuilder<Integer>()
-                .add(5800).add(5800).add(5800);
+                .add(5800).add(5800).add(5800).add(5800);
         processedWorkTypes.forEach((ytWorkType, strings) ->
                 strings.forEach(value -> columnsWidthList.add(5800)));
         return toPrimitiveIntegerArray(columnsWidthList.build());
@@ -88,7 +88,9 @@ public class ExcelReportWriter implements
 
     @Override
     public String[] getLangColumnNames() {
-        return new String[]{"reportYtWorkPersonName", "reportYtWorkAllSpentTimeInMinutes", "reportYtWorkAllSpentTimeFormatted"};
+        return new String[]{"reportYtWorkPersonName",
+                "reportYtWorkAllSpentTimeInMinutes", "reportYtWorkAllSpentTimeFormatted",
+                "reportYtWorkWorkHours"};
     }
     @Override
     public String[] getColumnNames() {
@@ -113,6 +115,7 @@ public class ExcelReportWriter implements
             long allTimeSpent = item.getAllTimeSpent();
             values.add(allTimeSpent);
             values.add(localizedLang.get("reportYtWorkRepresentTime", new Object[]{allTimeSpent / 60, allTimeSpent % 60}));
+            values.add(item.getWorkedHours());
             processedWorkTypes.forEach((ytWorkType, strings) ->
                     strings.forEach(value -> values.add(item.selectSpentTimeMap(ytWorkType).getOrDefault(value, 0L))));
         }
@@ -126,6 +129,7 @@ public class ExcelReportWriter implements
 
     private String[] getFormats(Map<En_ReportYtWorkType, Set<String>> processedWorkTypes) {
         ListBuilder<String> columnsList = new ListBuilder<String>()
+                .add(ExcelFormat.STANDARD)
                 .add(ExcelFormat.STANDARD)
                 .add(ExcelFormat.STANDARD)
                 .add(ExcelFormat.STANDARD);
