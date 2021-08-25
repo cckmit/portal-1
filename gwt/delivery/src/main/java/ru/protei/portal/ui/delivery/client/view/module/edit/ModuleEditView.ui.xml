@@ -4,7 +4,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel ui:field="root">
-        <div class="row">
+        <div class="row m-0">
             <div class="col-lg-8 p-0 m-0">
                 <div class="actions-wrapper menu-clipper">
                     <div class="actions menu-clipper-menu col-6 p-0">

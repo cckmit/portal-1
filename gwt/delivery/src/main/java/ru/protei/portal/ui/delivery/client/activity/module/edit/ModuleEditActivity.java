@@ -139,7 +139,7 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
     }
 
     private void showMeta(Module module) {
-        fireEvent(new ModuleEvents.EditModuleMeta(view.getMetaContainer(), module));
+        fireEvent(new ModuleEvents.EditModuleMeta(view.getMetaContainer(), module, !hasEditPrivileges()));
     }
 
     private void attachToContainer(HasWidgets container) {

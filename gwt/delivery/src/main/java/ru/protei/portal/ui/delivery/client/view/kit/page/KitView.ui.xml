@@ -15,7 +15,7 @@
             </nav>
 
             <g:HTMLPanel ui:field="modulesContainer" styleName="col-xs-12 col-md-3 p-15 m-0"/>
-            <g:HTMLPanel ui:field="moduleEditContainer" styleName="col-xs-12 col-md-7 p-15 m-0"/>
+            <g:HTMLPanel ui:field="moduleEditContainer" styleName="col-xs-12 col-md-7 p-0 m-0"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>
