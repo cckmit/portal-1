@@ -124,21 +124,13 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
     @Override
     public void onDepartureDateChanged() {
         super.onDepartureDateChanged();
-        if (!isDepartureDateFieldValid()) {
+        if (!isDepartureDateFieldValid() ||
+             isDateEquals(deliveryMetaView.departureDate().getValue(), delivery.getDepartureDate())) {
             return;
         }
 
-        if (isDepartureDateChanged()) {
-            delivery.setDepartureDate(deliveryMetaView.departureDate().getValue());
-            onCaseMetaChanged(delivery);
-        }
-    }
-
-    private boolean isDepartureDateChanged() {
-        Date oldDate = delivery.getDepartureDate();
-        Date newDate = deliveryMetaView.departureDate().getValue();
-        return oldDate != null && newDate != null &&
-               oldDate.getTime() != newDate.getTime();
+        delivery.setDepartureDate(deliveryMetaView.departureDate().getValue());
+        onCaseMetaChanged(delivery);
     }
 
     @Override
@@ -207,6 +199,14 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
 
     private void showValidationError(String error) {
         fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
+    }
+
+    private boolean isDateEquals(Date dateField, Date dateMeta) {
+        if (dateField == null) {
+            return dateMeta == null;
+        } else {
+            return Objects.equals(dateField, dateMeta);
+        }
     }
 
     private boolean hasPrivilegesChangeStatus(CaseState caseState) {
