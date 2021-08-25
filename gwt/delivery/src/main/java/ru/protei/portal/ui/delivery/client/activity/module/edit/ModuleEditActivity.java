@@ -1,18 +1,19 @@
 package ru.protei.portal.ui.delivery.client.activity.module.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.ModuleEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ModuleControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
@@ -35,16 +36,30 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
     }
 
     @Event
-    public void onShow(ModuleEvents.Show event ) {
-        moduleService.getModule(event.id, new FluentCallback<Module>()
-                .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
-                .withSuccess(module -> {
-                    this.module = module;
-                    switchNameDescriptionToEdit(false);
-                    fillView(module);
-                    showMeta(module);
-                    attachToContainer(event.parent);
-                }));
+    public void onInitDetails(AppEvents.InitDetails initDetails) {
+        this.initDetails = initDetails;
+    }
+
+    @Event
+    public void onShow(ModuleEvents.ShowPreview event) {
+        HasWidgets container = event.parent;
+        if (!hasViewPrivileges()) {
+            fireEvent(new ErrorPageEvents.ShowForbidden(container));
+            return;
+        }
+
+        requestModule(event.id, container, true);
+    }
+
+    @Event(Type.FILL_CONTENT)
+    public void onShow(ModuleEvents.Edit event) {
+        if (!hasViewPrivileges()) {
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
+            return;
+        }
+
+        Window.scrollTo(0, 0);
+        requestModule(event.id, initDetails.parent, false);
     }
 
     @Override
@@ -89,6 +104,16 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
         switchNameDescriptionToEdit(true);
     }
 
+    @Override
+    public void onOpenEditViewClicked() {
+        fireEvent(new ModuleEvents.Edit(module.getId()));
+    }
+
+    @Override
+    public void onBackClicked() {
+        fireEvent(new KitEvents.Show(module.getDeliveryId(), module.getKitId()));
+    }
+
     private void fillView(Module module) {
         view.setCreatedBy(lang.createBy(module.getCreator().getDisplayShortName(),
                 DateFormatter.formatDateTime(module.getCreated())));
@@ -98,6 +123,19 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
         view.nameAndDescriptionEditButtonVisibility().setVisible(hasEditPrivileges());
 
         renderMarkupText(module.getDescription(), En_TextMarkup.MARKDOWN, html -> nameAndDescriptionView.setDescription(html));
+    }
+
+    private void requestModule(Long id, HasWidgets container, boolean isPreviewMode) {
+        moduleService.getModule(id, new FluentCallback<Module>()
+                .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
+                .withSuccess(module -> {
+                    this.module = module;
+                    switchNameDescriptionToEdit(false);
+                    fillView(module);
+                    showMeta(module);
+                    attachToContainer(container);
+                    viewModeIsPreview(isPreviewMode);
+                }));
     }
 
     private void showMeta(Module module) {
@@ -125,8 +163,17 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
                 .withSuccess( consumer ) );
     }
 
+    private void viewModeIsPreview(boolean isPreviewMode){
+        view.backButtonVisibility().setVisible(!isPreviewMode);
+        view.showEditViewButtonVisibility().setVisible(isPreviewMode);
+    }
+
     private boolean hasEditPrivileges() {
         return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
+    }
+
+    private boolean hasViewPrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW);
     }
 
     @Inject
@@ -153,5 +200,6 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
 
     private boolean requestedNameDescription;
     private CaseNameAndDescriptionChangeRequest changeRequest;
+    private AppEvents.InitDetails initDetails;
 }
 

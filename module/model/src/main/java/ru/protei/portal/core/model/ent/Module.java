@@ -87,6 +87,11 @@ public class Module extends AuditableObject {
     @JdbcColumn(name = "kit_id")
     private Long kitId;
 
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "kit_id", remoteColumn = "id", table = "kit"),
+            @JdbcJoinPath(localColumn = "delivery_id", remoteColumn = "id", table = "delivery")}, mappedColumn = "id")
+    private Long deliveryId;
+
     @JdbcColumn(name = "parent_module_id")
     private Long parentModuleId;
 
@@ -237,6 +242,14 @@ public class Module extends AuditableObject {
 
     public void setKitId(Long kitId) {
         this.kitId = kitId;
+    }
+
+    public Long getDeliveryId() {
+        return deliveryId;
+    }
+
+    public void setDeliveryId(Long deliveryId) {
+        this.deliveryId = deliveryId;
     }
 
     public Long getParentModuleId() {

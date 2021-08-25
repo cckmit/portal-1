@@ -19,4 +19,6 @@ public interface AbstractModuleEditView extends IsWidget {
     void setCreatedBy(String value);
 
     void setModuleNumber(String serialNumber);
+
+    HasVisibility backButtonVisibility();
 }
