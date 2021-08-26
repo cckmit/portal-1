@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
 import ru.protei.portal.core.model.struct.ListBuilder;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkClassificationError;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRow;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowHeader;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem;
@@ -122,6 +123,10 @@ public class ExcelReportWriter implements
         if (row instanceof ReportYtWorkRowHeader) {
             ReportYtWorkRowHeader header = (ReportYtWorkRowHeader)row;
             values.add(header.getValue());
+        }
+        if (row instanceof ReportYtWorkClassificationError) {
+            ReportYtWorkClassificationError error = (ReportYtWorkClassificationError)row;
+            values.add(error.getIssue());
         }
 
         return values.toArray();

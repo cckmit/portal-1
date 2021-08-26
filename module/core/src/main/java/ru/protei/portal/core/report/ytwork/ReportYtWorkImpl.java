@@ -70,7 +70,8 @@ public class ReportYtWorkImpl implements ReportYtWork {
 
     private final Map<String, List<String>> invertNiokrs;
     private final Map<String, List<String>> invertNmas;
-    static private final String CLASSIFICATION_ERROR_PREFIX = "CLASSIFICATION ERROR - ";
+    static private final String CLASSIFICATION_ERROR = "CLASSIFICATION ERROR";
+    static private final String NO_COMPANY = "NO_COMPANY";
 
     public ReportYtWorkImpl() {
         Map<String, List<String>> niokrs = new HashMap<>();
@@ -151,12 +152,11 @@ public class ReportYtWorkImpl implements ReportYtWork {
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 invertNiokrs, invertNmas,
                 name -> contractDAO.getByCustomerAndProject(name),
-                new Date(), makeHomeCompanySet(),
-                CLASSIFICATION_ERROR_PREFIX
+                new Date(), makeHomeCompanySet()
         );
 
         log.debug("writeReport : reportId={} start process", report.getId());
-        Map<String, ReportYtWorkRowItem> data = stream(iterator)
+        ReportYtWorkCollector.ErrorsAndItems data = stream(iterator)
                 .map(this::makeYtReportItem)
                 .collect(collector);
 
@@ -175,19 +175,19 @@ public class ReportYtWorkImpl implements ReportYtWork {
             }
         }
 
-        data.forEach((email, ytWorkItem) -> ytWorkItem.setPersonInfo(makePersonInfo(email)));
+        data.getItems().forEach((email, ytWorkItem) -> ytWorkItem.setPersonInfo(makePersonInfo(email)));
 
-        Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasWorkEntry = stream(data.values())
+        Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasWorkEntry = stream(data.getItems().values())
                 .collect(partitioningBy(item -> item.getPersonInfo().hasWorkEntry()));
 
-        partitionByHasWorkEntry.get(true).forEach(item -> {
+/*        partitionByHasWorkEntry.get(true).forEach(item -> {
             WorkQuery1C query1C = new WorkQuery1C();
             query1C.setDateFrom(interval.from);
             query1C.setDateTo(interval.to);
             query1C.setPersonNumber(item.getPersonInfo().getWorkerId());
 
             item.setWorkedHours(getWorkedHours(item.getPersonInfo().getCompanyName().getString(), query1C));
-        });
+        });*/
 
         Map<NameWithId, DepartmentTreeAndValues> groupingByCompanyDepartment =
                 groupingByCompanyDepartment(partitionByHasWorkEntry.get(true));
@@ -202,8 +202,12 @@ public class ReportYtWorkImpl implements ReportYtWork {
             });
 
             int sheetNumber = writer.createSheet();
-            writer.setSheetName(sheetNumber, "NO COMPANY");
+            writer.setSheetName(sheetNumber, NO_COMPANY);
             writer.write(sheetNumber, new ArrayList<>(partitionByHasWorkEntry.get(false)));
+
+            sheetNumber = writer.createSheet();
+            writer.setSheetName(sheetNumber, CLASSIFICATION_ERROR);
+            writer.write(sheetNumber, new ArrayList<>(data.getErrors()));
 
             writer.collect(buffer);
             return true;

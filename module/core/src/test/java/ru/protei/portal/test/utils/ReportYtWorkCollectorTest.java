@@ -3,6 +3,7 @@ package ru.protei.portal.test.utils;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkClassificationError;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkInfo;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem;
 import ru.protei.portal.core.report.ytwork.ReportYtWorkCollector;
@@ -13,7 +14,6 @@ import java.util.stream.Stream;
 public class ReportYtWorkCollectorTest {
     static private final String HOME_COMPANY_NAME = "homeCompany";
     static private final String CUSTOMER_COMPANY_NAME = "customerCompany";
-    static private final String CLASSIFICATION_ERROR_PREFIX = "CLASSIFICATION ERROR - ";
 
     @Test
     public void testNiokrNmaReport() {
@@ -37,11 +37,10 @@ public class ReportYtWorkCollectorTest {
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 niokrs, nmas,
                 name -> new ArrayList<>(),
-                new Date(), homeCompany,
-                CLASSIFICATION_ERROR_PREFIX
+                new Date(), homeCompany
         );
 
-        Map<String, ReportYtWorkRowItem> data = Stream.of(info1, info2).collect(collector);
+        Map<String, ReportYtWorkRowItem> data = Stream.of(info1, info2).collect(collector).getItems();
 
         Assert.assertEquals(1, data.size());
         ReportYtWorkRowItem ytWorkItem = data.get(userEmail1);
@@ -83,11 +82,10 @@ public class ReportYtWorkCollectorTest {
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 niokrs, nmas,
                 name -> new ArrayList<>(),
-                new Date(), homeCompany,
-                CLASSIFICATION_ERROR_PREFIX
+                new Date(), homeCompany
         );
 
-        Map<String, ReportYtWorkRowItem> data = Stream.of(info1, info2).collect(collector);
+        Map<String, ReportYtWorkRowItem> data = Stream.of(info1, info2).collect(collector).getItems();
 
         Assert.assertEquals(1, data.size());
         ReportYtWorkRowItem ytWorkItem = data.get(userEmail1);
@@ -137,11 +135,10 @@ public class ReportYtWorkCollectorTest {
                 niokrs, nmas,
                 contracts::get,
                 new GregorianCalendar(2021, Calendar.JULY, 19, 0, 0, 0).getTime(),
-                homeCompany,
-                CLASSIFICATION_ERROR_PREFIX
+                homeCompany
         );
 
-        Map<String, ReportYtWorkRowItem> data = Stream.of(info1, info2).collect(collector);
+        Map<String, ReportYtWorkRowItem> data = Stream.of(info1, info2).collect(collector).getItems();
 
         Assert.assertEquals(1, data.size());
         ReportYtWorkRowItem ytWorkItem = data.get(userEmail1);
@@ -189,11 +186,10 @@ public class ReportYtWorkCollectorTest {
                 niokrs, nmas,
                 contracts::get,
                 new GregorianCalendar(2021, Calendar.JULY, 19, 0, 0, 0).getTime(),
-                homeCompany,
-                CLASSIFICATION_ERROR_PREFIX
+                homeCompany
         );
 
-        Map<String, ReportYtWorkRowItem> data = Stream.of(info1, info3).collect(collector);
+        Map<String, ReportYtWorkRowItem> data = Stream.of(info1, info3).collect(collector).getItems();
 
         Assert.assertEquals(1, data.size());
         ReportYtWorkRowItem ytWorkItem = data.get(userEmail1);
@@ -233,11 +229,10 @@ public class ReportYtWorkCollectorTest {
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 niokrs, nmas,
                 name -> new ArrayList<>(),
-                new Date(), homeCompany,
-                CLASSIFICATION_ERROR_PREFIX
+                new Date(), homeCompany
         );
 
-        Map<String, ReportYtWorkRowItem> data = Stream.of(info1, info2).collect(collector);
+        Map<String, ReportYtWorkRowItem> data = Stream.of(info1, info2).collect(collector).getItems();
 
         Assert.assertEquals(2, data.size());
         ReportYtWorkRowItem ytWorkItem1 = data.get(userEmail1);
@@ -263,4 +258,33 @@ public class ReportYtWorkCollectorTest {
         Assert.assertEquals(0, ytWorkItem2.getContractSpentTime().size());
         Assert.assertEquals(0, ytWorkItem2.getGuaranteeSpentTime().size());
     }
+
+    @Test
+    public void testErrorClassificationReport() {
+        Map<String, List<String>> niokrs = new HashMap<>();
+        Map<String, List<String>> nmas = new HashMap<>();
+
+        String userEmail1 = "user1@protei.ru";
+        String niokrIssue = "niokrIssue1";
+        long niokrTime = 30L;
+        String nmaIssue = "nmaIssue1";
+        long contractTime = 48L;
+
+        Set<String> homeCompany = new HashSet<>(Arrays.asList(HOME_COMPANY_NAME));
+        ReportYtWorkInfo info1 = new ReportYtWorkInfo(userEmail1, niokrIssue, HOME_COMPANY_NAME, niokrTime, "niokrProject");
+        ReportYtWorkInfo info2 = new ReportYtWorkInfo(userEmail1, nmaIssue, HOME_COMPANY_NAME, contractTime, "contractProject");
+
+        ReportYtWorkCollector collector = new ReportYtWorkCollector(
+                niokrs, nmas,
+                name -> new ArrayList<>(),
+                new Date(), homeCompany
+        );
+
+        Set<ReportYtWorkClassificationError> errors = Stream.of(info1, info2).collect(collector).getErrors();
+
+        Assert.assertEquals(2, errors.size());
+        Assert.assertTrue(errors.contains(new ReportYtWorkClassificationError(niokrIssue)));
+        Assert.assertTrue(errors.contains(new ReportYtWorkClassificationError(nmaIssue)));
+    }
+
 }

@@ -2,8 +2,9 @@ package ru.protei.portal.core.report.ytwork;
 
 import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkClassificationError;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkInfo;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,8 +24,8 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class ReportYtWorkCollector implements Collector<
         ReportYtWorkInfo,
-        Map<String, ReportYtWorkRowItem>,      // email -> processed items
-        Map<String, ReportYtWorkRowItem>> {
+        ReportYtWorkCollector.ErrorsAndItems,      // email -> processed items
+        ReportYtWorkCollector.ErrorsAndItems> {
 
     private final Map<En_ReportYtWorkType, Set<String>> processedWorkTypes;
     private final Map<String, WorkTypeAndValue> memoCustomerToContract = new ConcurrentHashMap<>();
@@ -34,20 +35,17 @@ public class ReportYtWorkCollector implements Collector<
     private final Function<String, List<Contract>> getContractsByCustomer;
     private final Date now;
     private final Set<String> homeCompany;
-    private final String classificationErrorPrefix;
 
     public ReportYtWorkCollector(Map<String, List<String>> niokrs,
                                  Map<String, List<String>> nmas,
                                  Function< String, List<Contract>> getContractsByCustomer,
                                  Date now,
-                                 Set<String> homeCompany,
-                                 String classificationErrorPrefix) {
+                                 Set<String> homeCompany) {
         this.niokrs = unmodifiableMap(new HashMap<>(niokrs));
         this.nmas = unmodifiableMap(new HashMap<>(nmas));
         this.getContractsByCustomer = getContractsByCustomer;
         this.now = now;
         this.homeCompany = unmodifiableSet(new HashSet<>(homeCompany));
-        this.classificationErrorPrefix = classificationErrorPrefix;
         processedWorkTypes = new LinkedHashMap<>();
         for (En_ReportYtWorkType value : En_ReportYtWorkType.values()) {
             processedWorkTypes.put(value, new HashSet<>());
@@ -55,27 +53,31 @@ public class ReportYtWorkCollector implements Collector<
     }
 
     @Override
-    public Supplier<Map<String, ReportYtWorkRowItem>> supplier() {
-        return HashMap::new;
+    public Supplier<ErrorsAndItems> supplier() {
+        return ErrorsAndItems::new;
     }
 
     @Override
-    public BiConsumer<Map<String, ReportYtWorkRowItem>, ReportYtWorkInfo> accumulator() {
+    public BiConsumer<ErrorsAndItems, ReportYtWorkInfo> accumulator() {
         return this::collectItems;
     }
 
-    private void collectItems(Map<String, ReportYtWorkRowItem> accumulator, ReportYtWorkInfo ytWorkInfo) {
-        ReportYtWorkRowItem reportYtWorkRowItem = accumulator.compute(ytWorkInfo.getEmail(),
-                (email, ytWorkItem) -> ytWorkItem != null ? ytWorkItem : new ReportYtWorkRowItem());
+    private void collectItems(ErrorsAndItems accumulator, ReportYtWorkInfo ytWorkInfo) {
         WorkTypeAndValue workTypeAndValue = makeWorkType(ytWorkInfo.getCustomer(), ytWorkInfo.getProject());
-        Map<String, Long> spentTimeMap = createSpentTimeMap(ytWorkInfo.getSpentTime(), workTypeAndValue.getValue());
-        Map<String, Long> itemMap = reportYtWorkRowItem.selectSpentTimeMap(workTypeAndValue.getWorkType());
-        mergeSpentTimeMap(itemMap, spentTimeMap);
-        processedWorkTypes.compute(workTypeAndValue.getWorkType(), (workType, value) -> {
-            value.addAll(workTypeAndValue.getValue());
-            return value;
-        });
-        reportYtWorkRowItem.addAllTimeSpent(ytWorkInfo.getSpentTime());
+        if (workTypeAndValue != null) {
+            ReportYtWorkRowItem reportYtWorkRowItem = accumulator.getItems().compute(ytWorkInfo.getEmail(),
+                    (email, ytWorkItem) -> ytWorkItem != null ? ytWorkItem : new ReportYtWorkRowItem());
+            Map<String, Long> spentTimeMap = createSpentTimeMap(ytWorkInfo.getSpentTime(), workTypeAndValue.getValue());
+            Map<String, Long> itemMap = reportYtWorkRowItem.selectSpentTimeMap(workTypeAndValue.getWorkType());
+            mergeSpentTimeMap(itemMap, spentTimeMap);
+            processedWorkTypes.compute(workTypeAndValue.getWorkType(), (workType, value) -> {
+                value.addAll(workTypeAndValue.getValue());
+                return value;
+            });
+            reportYtWorkRowItem.addAllTimeSpent(ytWorkInfo.getSpentTime());
+        } else {
+            accumulator.getErrors().add(new ReportYtWorkClassificationError(ytWorkInfo.getIssue()));
+        }
     }
 
     static private Map<String, Long> createSpentTimeMap(Long spentTime, List<String> values) {
@@ -101,9 +103,7 @@ public class ReportYtWorkCollector implements Collector<
             if (strings != null) {
                 return new WorkTypeAndValue(NMA, strings);
             }
-            ArrayList<String> value = new ArrayList<>();
-            value.add(classificationErrorPrefix + project);
-            return new WorkTypeAndValue(NIOKR, value);
+            return null;
         } else {
             return getContractsAndGuarantee(customer);
         }
@@ -116,7 +116,7 @@ public class ReportYtWorkCollector implements Collector<
             }
             List<Contract> contracts = getContractsByCustomer.apply(customer);
             if (contracts.isEmpty()) {
-                return createContractListFromCustomer(keyCustomer);
+                return null;
             } else {
                 Map<En_ReportYtWorkType, List<String>> mapContactGuaranteeToName = contracts.stream()
                         .collect(groupingBy(contract -> contractGuaranteeClassifier(contract, now), mapping(Contract::getNumber, toList())));
@@ -129,34 +129,29 @@ public class ReportYtWorkCollector implements Collector<
         });
     }
 
-    private WorkTypeAndValue createContractListFromCustomer(String name) {
-        List<String> list = new ArrayList<>();
-        list.add(classificationErrorPrefix + name);
-        return new WorkTypeAndValue(CONTRACT, list);
-    }
-
     static private En_ReportYtWorkType contractGuaranteeClassifier(Contract contract, Date now) {
         return contract.getDateValid() == null || contract.getDateValid().after(now) ? CONTRACT : GUARANTEE;
     }
 
     @Override
-    public BinaryOperator<Map<String, ReportYtWorkRowItem>> combiner() {
+    public BinaryOperator<ErrorsAndItems> combiner() {
         return ReportYtWorkCollector::mergeCollectedItems;
     }
 
-    static private Map<String, ReportYtWorkRowItem> mergeCollectedItems(Map<String, ReportYtWorkRowItem> map1, Map<String, ReportYtWorkRowItem> map2) {
-        mergeMap(map1, map2, (ytWorkItem1, ytWorkItem2) -> {
+    static private ErrorsAndItems mergeCollectedItems(ErrorsAndItems collector1, ErrorsAndItems collector2) {
+        mergeMap(collector1.getItems(), collector2.getItems(), (ytWorkItem1, ytWorkItem2) -> {
             mergeSpentTimeMap(ytWorkItem1.getNiokrSpentTime(), ytWorkItem2.getNiokrSpentTime());
             mergeSpentTimeMap(ytWorkItem1.getNmaSpentTime(), ytWorkItem2.getNmaSpentTime());
             mergeSpentTimeMap(ytWorkItem1.getContractSpentTime(), ytWorkItem2.getContractSpentTime());
             mergeSpentTimeMap(ytWorkItem1.getGuaranteeSpentTime(), ytWorkItem2.getGuaranteeSpentTime());
             return ytWorkItem1;
         });
-        return map1;
+        collector1.getErrors().addAll(collector2.getErrors());
+        return collector1;
     }
 
     @Override
-    public Function<Map<String, ReportYtWorkRowItem>, Map<String, ReportYtWorkRowItem>> finisher() {
+    public Function<ErrorsAndItems, ErrorsAndItems> finisher() {
         return Function.identity();
     }
 
@@ -167,6 +162,19 @@ public class ReportYtWorkCollector implements Collector<
 
     public Map<En_ReportYtWorkType, Set<String>> getProcessedWorkTypes() {
         return processedWorkTypes;
+    }
+
+    static public class ErrorsAndItems {
+        Set<ReportYtWorkClassificationError> errors = new HashSet<>();
+        Map<String, ReportYtWorkRowItem> items = new HashMap<>();
+
+        public Set<ReportYtWorkClassificationError> getErrors() {
+            return errors;
+        }
+
+        public Map<String, ReportYtWorkRowItem> getItems() {
+            return items;
+        }
     }
 
     static private class WorkTypeAndValue {
