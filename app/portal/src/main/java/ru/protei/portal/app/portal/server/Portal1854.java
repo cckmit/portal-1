@@ -18,13 +18,16 @@ public class Portal1854 {
                 CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class);
 
         HttpClient1CWork api = ctx.getBean(HttpClient1CWork.class);
-        WorkQuery1C query1C = new WorkQuery1C();
-        query1C.setDateFrom(new Date(2021 - 1900, Calendar.JUNE, 1));
-        query1C.setDateTo(new Date(2021 - 1900, Calendar.JUNE, 2));
-        query1C.setPersonNumber("0000000816");
-        Result<WorkPersonInfo1C> proteiWorkPersonInfo = api.getProteiWorkPersonInfo(query1C);
-        proteiWorkPersonInfo.ifOk(System.out::println);
-        proteiWorkPersonInfo.ifError(System.out::println);
+        if (true)
+            while (true) {
+                WorkQuery1C query1C = new WorkQuery1C();
+                query1C.setDateFrom(new Date(2021 - 1900, Calendar.JUNE, 1));
+                query1C.setDateTo(new Date(2021 - 1900, Calendar.JUNE, 2));
+                query1C.setPersonNumber("000000081");
+                Result<WorkPersonInfo1C> proteiWorkPersonInfo = api.getProteiWorkPersonInfo(query1C);
+                proteiWorkPersonInfo.ifOk(System.out::println);
+                proteiWorkPersonInfo.ifError(System.out::println);
+            }
 
         ctx.destroy();
     }

@@ -86,7 +86,6 @@ public class HttpClient1CWorkImpl implements HttpClient1CWork{
 
         HttpClient client = HttpClients.createDefault();
         template.setRequestFactory(new HttpComponentsClientHttpRequestFactory(client));
-
         ((DefaultUriTemplateHandler) template.getUriTemplateHandler()).setStrictEncoding(true);
         return template;
     }

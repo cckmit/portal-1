@@ -219,7 +219,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
             proteiWorkPersonInfo = api1CWork.getProteiWorkPersonInfo(query);
         }
         if (CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME.equals(companyName)) {
-            proteiWorkPersonInfo = api1CWork.getProteiWorkPersonInfo(query);
+            proteiWorkPersonInfo = api1CWork.getProteiStWorkPersonInfo(query);
         }
         if (proteiWorkPersonInfo != null && proteiWorkPersonInfo.isOk()) {
             return proteiWorkPersonInfo.getData().getWorkedHours();
