@@ -1,5 +1,8 @@
 package ru.protei.portal.core.client.enterprise1c.http;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
@@ -7,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriTemplateHandler;
@@ -18,10 +20,8 @@ import ru.protei.portal.core.model.enterprise1c.dto.WorkPersonInfo1C;
 import ru.protei.portal.core.model.enterprise1c.query.WorkQuery1C;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.List;
 import java.util.function.BiFunction;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -34,22 +34,34 @@ public class HttpClient1CWorkImpl implements HttpClient1CWork{
         headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
-        headers.set("Authorization", "Basic " + Base64.getEncoder().encodeToString((portalConfig.data().enterprise1C().getWorkLogin() + ":" + portalConfig.data().enterprise1C().getWorkPassword()).getBytes()));
+        headers.set("Authorization", "Basic " + Base64.getEncoder().encodeToString(
+                        (portalConfig.data().enterprise1C().getWorkLogin() + ":" +
+                        portalConfig.data().enterprise1C().getWorkPassword())
+                                .getBytes()));
         headers.set("IBSession", "start");
     }
 
     @Override
     public Result<WorkPersonInfo1C> getProteiWorkPersonInfo(WorkQuery1C query) {
-        return execute((client, headers) -> client.exchange(portalConfig.data().enterprise1C().getWorkProteiUrl(),
-                HttpMethod.POST, new HttpEntity<>(query, headers), WorkPersonInfo1C.class))
-                .map(ResponseEntity::getBody);
+        return makeResult(execute((client, headers) -> client.exchange(portalConfig.data().enterprise1C().getWorkProteiUrl(),
+                HttpMethod.POST, new HttpEntity<>(query, headers), Response.class)));
     }
 
     @Override
     public Result<WorkPersonInfo1C> getProteiStWorkPersonInfo(WorkQuery1C query) {
-        return execute((client, headers) -> client.exchange(portalConfig.data().enterprise1C().getWorkProteiStUrl(),
-                HttpMethod.POST, new HttpEntity<>(query, headers), WorkPersonInfo1C.class))
-                .map(ResponseEntity::getBody);
+        return makeResult(execute((client, headers) ->
+                client.exchange(portalConfig.data().enterprise1C().getWorkProteiStUrl(),
+                        HttpMethod.POST, new HttpEntity<>(query, headers), Response.class)));
+
+    }
+
+    static private Result<WorkPersonInfo1C> makeResult(Result<ResponseEntity<Response>> resultResponse) {
+        if (resultResponse.isOk()) {
+            Response response = resultResponse.getData().getBody();
+            return new Result<>(response.status, response.data, null, null);
+        } else {
+            return error(resultResponse.getStatus());
+        }
     }
 
     private <RES> Result<ResponseEntity<RES>> execute(BiFunction<RestTemplate, HttpHeaders, ResponseEntity<RES>> handler) {
@@ -68,22 +80,14 @@ public class HttpClient1CWorkImpl implements HttpClient1CWork{
         }
         if (HttpStatus.NOT_FOUND.equals(response.getStatusCode())) {
             log.warn("execute(): Can't get data from 1c, NOT_FOUND");
-            return error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.REQUEST_1C_NOT_FOUND);
         }
 
         return ok(response);
     }
 
     private RestTemplate makeClient() {
-        List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
-
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        converter.setSupportedMediaTypes(Collections.singletonList(MediaType.ALL));
-        messageConverters.add(converter);
-
-        RestTemplate template = new RestTemplate(messageConverters);
-        template.setMessageConverters(messageConverters);
-
+        RestTemplate template = new RestTemplate(Collections.singletonList(new MappingJackson2HttpMessageConverter()));
         HttpClient client = HttpClients.createDefault();
         template.setRequestFactory(new HttpComponentsClientHttpRequestFactory(client));
         ((DefaultUriTemplateHandler) template.getUriTemplateHandler()).setStrictEncoding(true);
@@ -94,6 +98,15 @@ public class HttpClient1CWorkImpl implements HttpClient1CWork{
     private PortalConfig portalConfig;
 
     private HttpHeaders headers;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonAutoDetect
+    static private class Response {
+        @JsonProperty
+        En_ResultStatus status;
+        @JsonProperty
+        WorkPersonInfo1C data;
+    }
 
     static private final  Logger log = LoggerFactory.getLogger(HttpClient1CWorkImpl.class);
 }

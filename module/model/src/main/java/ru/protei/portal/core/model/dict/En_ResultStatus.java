@@ -258,6 +258,10 @@ public enum En_ResultStatus {
      * Ошибка при запросе в 1С
      */
     REQUEST_1C_FAILED,
+    /**
+     * Не найдено при запросе в 1С
+     */
+    REQUEST_1C_NOT_FOUND,
 
     /**
      * Найдено пересечение с другими отсутствиями

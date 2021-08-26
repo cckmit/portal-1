@@ -180,14 +180,17 @@ public class ReportYtWorkImpl implements ReportYtWork {
         Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasWorkEntry = stream(data.getItems().values())
                 .collect(partitioningBy(item -> item.getPersonInfo().hasWorkEntry()));
 
-/*        partitionByHasWorkEntry.get(true).forEach(item -> {
-            WorkQuery1C query1C = new WorkQuery1C();
-            query1C.setDateFrom(interval.from);
-            query1C.setDateTo(interval.to);
-            query1C.setPersonNumber(item.getPersonInfo().getWorkerId());
+        partitionByHasWorkEntry.get(true).forEach(item -> {
+            String workerId = item.getPersonInfo().getWorkerId();
+            if (workerId != null) {
+                WorkQuery1C query1C = new WorkQuery1C();
+                query1C.setDateFrom(interval.from);
+                query1C.setDateTo(interval.to);
+                query1C.setPersonNumber(workerId);
 
-            item.setWorkedHours(getWorkedHours(item.getPersonInfo().getCompanyName().getString(), query1C));
-        });*/
+                item.setWorkedHours(getWorkedHours(item.getPersonInfo().getCompanyName().getString(), query1C));
+            }
+        });
 
         Map<NameWithId, DepartmentTreeAndValues> groupingByCompanyDepartment =
                 groupingByCompanyDepartment(partitionByHasWorkEntry.get(true));
@@ -207,7 +210,8 @@ public class ReportYtWorkImpl implements ReportYtWork {
 
             sheetNumber = writer.createSheet();
             writer.setSheetName(sheetNumber, CLASSIFICATION_ERROR);
-            writer.write(sheetNumber, new ArrayList<>(data.getErrors()));
+            List<ReportYtWorkRow> sortedErrors = data.getErrors().stream().sorted(Comparator.comparing(ReportYtWorkClassificationError::getIssue)).collect(Collectors.toList());
+            writer.write(sheetNumber, sortedErrors);
 
             writer.collect(buffer);
             return true;
