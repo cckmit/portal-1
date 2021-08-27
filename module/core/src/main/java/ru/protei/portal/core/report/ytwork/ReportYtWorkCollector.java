@@ -27,7 +27,6 @@ public class ReportYtWorkCollector implements Collector<
         ReportYtWorkCollector.ErrorsAndItems,      // email -> processed items
         ReportYtWorkCollector.ErrorsAndItems> {
 
-    private final Map<En_ReportYtWorkType, Set<String>> processedWorkTypes;
     private final Map<String, WorkTypeAndValue> memoCustomerToContract = new ConcurrentHashMap<>();
 
     private final Map<String, List<String>> niokrs;
@@ -46,10 +45,6 @@ public class ReportYtWorkCollector implements Collector<
         this.getContractsByCustomer = getContractsByCustomer;
         this.now = now;
         this.homeCompany = unmodifiableSet(new HashSet<>(homeCompany));
-        processedWorkTypes = new LinkedHashMap<>();
-        for (En_ReportYtWorkType value : En_ReportYtWorkType.values()) {
-            processedWorkTypes.put(value, new HashSet<>());
-        }
     }
 
     @Override
@@ -70,10 +65,6 @@ public class ReportYtWorkCollector implements Collector<
             Map<String, Long> spentTimeMap = createSpentTimeMap(ytWorkInfo.getSpentTime(), workTypeAndValue.getValue());
             Map<String, Long> itemMap = reportYtWorkRowItem.selectSpentTimeMap(workTypeAndValue.getWorkType());
             mergeSpentTimeMap(itemMap, spentTimeMap);
-            processedWorkTypes.compute(workTypeAndValue.getWorkType(), (workType, value) -> {
-                value.addAll(workTypeAndValue.getValue());
-                return value;
-            });
             reportYtWorkRowItem.addAllTimeSpent(ytWorkInfo.getSpentTime());
         } else {
             accumulator.getErrors().add(new ReportYtWorkClassificationError(ytWorkInfo.getIssue()));
@@ -158,10 +149,6 @@ public class ReportYtWorkCollector implements Collector<
     @Override
     public Set<Characteristics> characteristics() {
         return setOf(Characteristics.UNORDERED, Characteristics.IDENTITY_FINISH);
-    }
-
-    public Map<En_ReportYtWorkType, Set<String>> getProcessedWorkTypes() {
-        return processedWorkTypes;
     }
 
     static public class ErrorsAndItems {
