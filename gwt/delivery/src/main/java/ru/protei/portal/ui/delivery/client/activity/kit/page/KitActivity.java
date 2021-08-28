@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
@@ -18,6 +19,7 @@ import ru.protei.portal.ui.delivery.client.view.module.table.ModuleTableView;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,6 +29,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     @Inject
     public void onInit() {
+        CREATE_ACTION = lang.addKits();
         view.setActivity(this);
         moduleView.setActivity(this);
         view.getModulesContainer().add(moduleView.asWidget());
@@ -44,33 +47,41 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
             fireEvent(new NotifyEvents.Show(lang.errAccessDenied(), NotifyEvents.NotifyType.ERROR));
             return;
         }
-        fireEvent( new ActionBarEvents.Clear() );
+        fireEvent(new ActionBarEvents.Clear());
+        if (hasCreatePrivileges()){
+            fireEvent(new ActionBarEvents.Add(CREATE_ACTION, null, UiConstants.ActionBarIdentity.KIT));
+        }
 
         deliveryId = event.deliveryId;
         fillKits(deliveryId, event.kitId);
     }
 
-    private void fillKits(Long deliveryId, Long kitId) {
-        deliveryService.getDelivery(deliveryId, new FluentCallback<Delivery>()
-                .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
-                .withSuccess(delivery -> {
-                            view.getModuleEditContainer().clear();
-                            initDetails.parent.clear();
-                            initDetails.parent.add(view.asWidget());
-                            view.fillKits(delivery.getKits());
-                            view.setKitsActionsEnabled(hasEditPrivileges());
-                            if (kitId != null) {
-                                this.kitId = kitId;
-                                view.makeKitSelected(kitId);
-                                fillModules(kitId);
-                            }
-                        }
-                )
-        );
+    @Event
+    public void onCancelCreatingModule(ModuleEvents.CancelCreating event) {
+        moduleView.clearSelectedRows();
+        view.modulesContainerVisibility().setVisible(true);
     }
 
     @Event
-    public void onChangeRow( ModuleEvents.ChangeModule event ) {
+    public void onKitChanged(KitEvents.Changed event) {
+        if (deliveryId == null || !Objects.equals(deliveryId, event.deliveryId)) {
+            return;
+        }
+
+        fillKits(deliveryId, kitId);
+    }
+
+    @Event
+    public void onKitAdded(KitEvents.Added event) {
+        if (deliveryId == null || !Objects.equals(deliveryId, event.deliveryId)) {
+            return;
+        }
+
+        fillKits(deliveryId, kitId);
+    }
+
+    @Event
+    public void onChangeRow(ModuleEvents.ChangeModule event) {
         moduleService.getModule(event.id, new FluentCallback<Module>()
                 .withSuccess(module -> moduleView.updateRow(module))
         );
@@ -78,6 +89,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     @Override
     public void onKitClicked(Long kitId) {
+        view.modulesContainerVisibility().setVisible(true);
         view.getModuleEditContainer().clear();
         this.kitId = kitId;
         fillModules(kitId);
@@ -90,7 +102,27 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     @Override
     public void onAddModuleClicked() {
+        view.modulesContainerVisibility().setVisible(false);
         fireEvent(new ModuleEvents.Create(view.getModuleEditContainer(), kitId, deliveryId));
+    }
+
+    private void fillKits(Long deliveryId, Long kitId) {
+        deliveryService.getDelivery(deliveryId, new FluentCallback<Delivery>()
+                .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
+                .withSuccess(delivery -> {
+                    view.modulesContainerVisibility().setVisible(true);
+                    view.getModuleEditContainer().clear();
+                    initDetails.parent.clear();
+                    initDetails.parent.add(view.asWidget());
+                    view.fillKits(delivery.getKits());
+                    view.setKitsActionsEnabled(hasEditPrivileges());
+                    if (kitId != null) {
+                        this.kitId = kitId;
+                        view.makeKitSelected(kitId);
+                        fillModules(kitId);
+                    }
+                })
+        );
     }
 
     private void fillModules(Long kitId) {
@@ -107,6 +139,10 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     private boolean hasViewPrivileges() {
         return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW);
+    }
+
+    private boolean hasCreatePrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE);
     }
 
     private boolean hasEditPrivileges() {
@@ -142,8 +178,8 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
         }
 
         @Override
-        public void onReload() {
-            fireEvent(new NotifyEvents.Show("On reload Kits clicked", NotifyEvents.NotifyType.SUCCESS));
+        public void onBack() {
+            fireEvent(new DeliveryEvents.Edit(deliveryId));
         }
 
         @Override
@@ -206,6 +242,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     private Long kitId;
     private Long deliveryId;
+    private static String CREATE_ACTION;
 
     private AppEvents.InitDetails initDetails;
 }

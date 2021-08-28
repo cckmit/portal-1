@@ -82,8 +82,8 @@
         </div>
 
         <div class="page-container">
-            <div class="page-content-wrapper">
-                <g:HTMLPanel ui:field="container" styleName="content"/>
+            <div class="page-content-wrapper full-height">
+                <g:HTMLPanel ui:field="container" styleName="content full-height"/>
             </div>
         </div>
 

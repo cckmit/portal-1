@@ -74,6 +74,12 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
     }
 
     @Override
+    public void onCancelClicked() {
+        view.asWidget().removeFromParent();
+        fireEvent(new ModuleEvents.CancelCreating());
+    }
+
+    @Override
     public void onBuildDateChanged() {
         metaView.setBuildDateValid(isBuildDateFieldValid());
     }

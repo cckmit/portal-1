@@ -6,6 +6,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Kit;
@@ -42,7 +43,6 @@ public class KitView extends Composite implements AbstractKitView {
         kits.fillOptions(kitSet);
     }
 
-
     @Override
     public HasWidgets getModulesContainer() {
         return modulesContainer;
@@ -51,6 +51,11 @@ public class KitView extends Composite implements AbstractKitView {
     @Override
     public HasWidgets getModuleEditContainer() {
         return moduleEditContainer;
+    }
+
+    @Override
+    public HasVisibility modulesContainerVisibility() {
+        return modulesContainer;
     }
 
     @Override

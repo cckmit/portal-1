@@ -6,17 +6,14 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel tag="li" ui:field="root">
-
-        <g:CheckBox ui:field="checkbox" styleName="checkbox no-margin"/>
-
-        <common:ClickHTMLPanel ui:field="panel" styleName="kit-info">
-            <span class="title p-l-5">
+        <a href="javascript:void(0);">
+            <g:CheckBox ui:field="checkbox" styleName="checkbox no-margin"/>
+            <common:ClickHTMLPanel ui:field="title" styleName="title p-l-5">
                 <i ui:field="status" class="fas fa-circle"/>
                 <span ui:field="number" class="bold"/>
-                <span ui:field="name" class="p-l-5"/>
-            </span>
-            <span ui:field="amount" class="badge pull-right"/>
-        </common:ClickHTMLPanel>
-
+                <span ui:field="name" class="name"/>
+            </common:ClickHTMLPanel>
+            <g:Label ui:field="amount" styleName="badge pull-right"/>
+        </a>
     </g:HTMLPanel>
 </ui:UiBinder>

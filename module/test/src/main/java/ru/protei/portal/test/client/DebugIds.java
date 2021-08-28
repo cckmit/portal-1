@@ -1314,9 +1314,8 @@ public class DebugIds {
             String REMOVE_BUTTON = "kit-item-remove-button";
             String SAVE_BUTTON = "kit-item-save-button";
             String CANCEL_BUTTON = "kit-item-cancel-button";
-            String BACK_BUTTON = "kit-item-back-button";
             String TAB_HISTORY = "kit-item-tab-history";
-            String RELOAD_BUTTON = "kit-reload-button";
+            String BACK_BUTTON = "kit-back-button";
             String ACTION_MENU_BUTTON = "kit-action-menu-button";
 
             interface MODULE {
@@ -1331,6 +1330,7 @@ public class DebugIds {
                 String DEPARTURE_DATE = "module-departure-date-container";
                 String ADD_BUTTON = "module-add-button";
                 String SAVE_BUTTON = "module-save-button";
+                String CANCEL_BUTTON = "module-cancel-button";
                 String EDIT_NAME_AND_DESCRIPTION_BUTTON = "module-edit-name-and-desc-button";
                 String EDIT_NAME_AND_DESC_ACCEPT = "module-edit-name-and-desc-accept";
                 String EDIT_NAME_AND_DESC_REJECT = "module-edit-name-and-desc-reject";

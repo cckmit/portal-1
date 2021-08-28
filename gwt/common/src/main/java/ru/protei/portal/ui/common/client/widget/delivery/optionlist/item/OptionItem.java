@@ -45,7 +45,7 @@ public class OptionItem
 
     public void setAmount( Integer amount ) {
         if (amount == null) return;
-        this.amount.setInnerText( String.valueOf(amount) );
+        this.amount.setText( String.valueOf(amount) );
     }
 
     public void setStatusColor( String color ) {
@@ -98,7 +98,7 @@ public class OptionItem
         checkbox.setFormValue( event.getValue().toString());
     }
 
-    @UiHandler( "panel" )
+    @UiHandler( {"title","amount"} )
     public void onInfoClicked( ClickEvent event ) {
         EditEvent.fire(OptionItem.this, null, null);
     }
@@ -110,8 +110,6 @@ public class OptionItem
     @UiField
     HTMLPanel root;
     @UiField
-    ClickHTMLPanel panel;
-    @UiField
     CheckBox checkbox;
     @UiField
     SpanElement number;
@@ -120,7 +118,9 @@ public class OptionItem
     @UiField
     SpanElement name;
     @UiField
-    SpanElement amount;
+    ClickHTMLPanel title;
+    @UiField
+    Label amount;
 
     private static OptionItemUiBinder ourUiBinder = GWT.create( OptionItemUiBinder.class );
 

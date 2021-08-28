@@ -54,18 +54,18 @@ public class KitMenu extends Composite {
         ensureDebugIds();
     }
 
-    @UiHandler("reloadKitsBtn")
-    public void onReloadKitsBtnClicked(ClickEvent event) {
+    @UiHandler("backBtn")
+    public void onBackBtnClicked(ClickEvent event) {
         event.preventDefault();
-        if ( handler != null ) {
-            handler.onReload();
+        if (handler != null) {
+            handler.onBack();
         }
     }
 
-    @UiHandler("kitsActionsBtn")
-    public void setKitsActionsBtnClick(ClickEvent event) {
+    @UiHandler("actionsBtn")
+    public void onActionsBtnClick(ClickEvent event) {
         event.preventDefault();
-        popup.showUnderRight(kitsActionsBtn, 200);
+        popup.showUnderRight(actionsBtn, 200);
     }
 
     public void setHandler(KitActionsHandler handler) {
@@ -73,25 +73,28 @@ public class KitMenu extends Composite {
     }
 
     public void setActionsEnabled(boolean isEnabled) {
-        kitsActionsBtn.setStyleName("link-disabled", !isEnabled);
-        reloadKitsBtn.setStyleName("link-disabled", !isEnabled);
+        actionsBtn.setStyleName("link-disabled", !isEnabled);
+    }
+
+    public void setBackVisible(boolean isVisible) {
+        backBtn.setVisible(isVisible);
     }
 
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        reloadKitsBtn.ensureDebugId(DebugIds.DELIVERY.KIT.RELOAD_BUTTON);
-        kitsActionsBtn.ensureDebugId(DebugIds.DELIVERY.KIT.ACTION_MENU_BUTTON);
+        backBtn.ensureDebugId(DebugIds.DELIVERY.KIT.BACK_BUTTON);
+        actionsBtn.ensureDebugId(DebugIds.DELIVERY.KIT.ACTION_MENU_BUTTON);
     }
 
     private StringSelectPopup popup = new StringSelectPopup();
     private KitActionsHandler handler;
 
     @UiField
-    Anchor reloadKitsBtn;
+    Anchor actionsBtn;
     @UiField
-    Anchor kitsActionsBtn;
+    Anchor backBtn;
 
     private static KitMenu.KitViewUiBinder ourUiBinder = GWT.create(KitMenu.KitViewUiBinder.class);
 

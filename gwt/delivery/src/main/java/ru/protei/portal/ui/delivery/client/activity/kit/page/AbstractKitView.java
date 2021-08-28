@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.delivery.client.activity.kit.page;
 
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.Kit;
@@ -24,4 +25,6 @@ public interface AbstractKitView extends IsWidget {
     void setKitsActionsEnabled(boolean hasEditPrivileges);
 
     Set<Kit> getKitsSelected();
+
+    HasVisibility modulesContainerVisibility();
 }

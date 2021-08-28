@@ -112,6 +112,7 @@ public class UiConstants {
         String EMPLOYEE_REGISTRATION = "employee_registration";
         String CONTRACT = "contract";
         String DELIVERY = "delivery";
+        String KIT = "kit";
         String EMPLOYEE_TYPE_VIEW = "employeeTypeView";
         String TOP_BRASS = "top_brass";
         String EMPLOYEE_VIEW = "employee_view";

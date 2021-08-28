@@ -46,4 +46,6 @@ public class ModuleEvents {
         public Long kitId;
         public Long deliveryId;
     }
+
+    public static class CancelCreating {}
 }

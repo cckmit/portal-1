@@ -24,7 +24,7 @@
                             <i class="fa fa-pencil-alt"/>
                         </g:Button>
                         <g:Button ui:field="addKitsButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
-                                  title="{lang.deliveryKitsAddHeader}">
+                                  title="{lang.addKits}">
                             <i class="fa fa-plus"/>
                         </g:Button>
                     </div>
@@ -35,7 +35,7 @@
                 <g:HTMLPanel ui:field="nameContainer"/>
 
                 <nav class="secondary-sidebar">
-                    <kitsmenu:KitMenu ui:field="kitsMenu"/>
+                    <kitsmenu:KitMenu ui:field="kitsMenu" backVisible="false"/>
                     <kits:KitList ui:field="kits"/>
                 </nav>
 

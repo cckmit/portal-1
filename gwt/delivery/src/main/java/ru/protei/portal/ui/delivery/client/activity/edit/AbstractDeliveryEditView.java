@@ -3,7 +3,6 @@ package ru.protei.portal.ui.delivery.client.activity.edit;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.core.model.ent.Kit;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
 import ru.protei.portal.ui.delivery.client.activity.kit.handler.KitActionsHandler;
 
@@ -41,7 +40,7 @@ public interface AbstractDeliveryEditView extends IsWidget {
 
     void setKitsActionHandler(KitActionsHandler handler);
 
-    void setKitsActionsEnabled(boolean hasEditPrivileges);
+    void setKitActionsEnabled(boolean hasEditPrivileges);
 
     Set<Kit> getKitsSelected();
 }

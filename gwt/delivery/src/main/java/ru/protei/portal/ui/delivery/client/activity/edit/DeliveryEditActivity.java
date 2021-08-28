@@ -20,6 +20,7 @@ import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractComment
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
@@ -108,6 +109,14 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
                     this.delivery = delivery;
                     view.fillKits(delivery.getKits());
                 }));
+    }
+
+    @Event
+    public void onCreateKitClicked(ActionBarEvents.Clicked event) {
+        if (!UiConstants.ActionBarIdentity.KIT.equals(event.identity)) {
+            return;
+        }
+        onAddKitsButtonClicked();
     }
 
     @Override
@@ -211,7 +220,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         nameAndDescriptionView.setDescription(delivery.getDescription());
 
         view.fillKits(delivery.getKits());
-        view.setKitsActionsEnabled(hasEditPrivileges());
+        view.setKitActionsEnabled(hasEditPrivileges());
 
         view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
 
@@ -310,9 +319,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         }
 
         @Override
-        public void onReload() {
-            fireEvent(new NotifyEvents.Show("On reload Kits clicked", NotifyEvents.NotifyType.SUCCESS));
-        }
+        public void onBack() {}
 
         @Override
         public void onEdit() {
