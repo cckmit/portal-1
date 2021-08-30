@@ -8,6 +8,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
@@ -41,11 +42,6 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
         return state;
     }
 
-    @Override
-    public void setStateEnabled(boolean isEnabled) {
-        state.setEnabled(isEnabled);
-    }
-    
     @Override
     public void setManager(String value) {
         manager.setValue(value);
@@ -98,7 +94,32 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
 
     @Override
     public void setAllowChangingState(boolean isAllow) {
-        setStateEnabled(isAllow);
+        state.setEnabled(isAllow);
+    }
+
+    @Override
+    public HasEnabled stateEnabled() {
+        return state;
+    }
+
+    @Override
+    public HasEnabled hwManagerEnabled() {
+        return hwManager;
+    }
+
+    @Override
+    public HasEnabled qcManagerEnabled() {
+        return qcManager;
+    }
+
+    @Override
+    public HasEnabled buildDateEnabled() {
+        return buildDate;
+    }
+
+    @Override
+    public HasEnabled departureDateEnabled() {
+        return departureDate;
     }
 
     private void ensureDebugIds() {

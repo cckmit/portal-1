@@ -33,6 +33,7 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
         event.parent.add(view.asWidget());
 
         module = event.module;
+        readOnly = event.isReadOnly;
 
         fillView( event.module, false);
     }
@@ -91,6 +92,12 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
     }
 
     private void fillView(Module module, boolean afterUpdate) {
+        view.stateEnabled().setEnabled(!readOnly);
+        view.hwManagerEnabled().setEnabled(!readOnly);
+        view.qcManagerEnabled().setEnabled(!readOnly);
+        view.buildDateEnabled().setEnabled(!readOnly);
+        view.departureDateEnabled().setEnabled(!readOnly);
+
         view.state().setValue(module.getState());
         view.hwManager().setValue(module.getHwManager());
         view.qcManager().setValue(module.getQcManager());
@@ -161,4 +168,6 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
 
     @ContextAware
     Module module;
+
+    private boolean readOnly;
 }

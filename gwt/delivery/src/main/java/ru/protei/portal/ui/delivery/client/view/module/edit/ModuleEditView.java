@@ -58,11 +58,30 @@ public class ModuleEditView extends Composite implements AbstractModuleEditView 
         this.serialNumber.setInnerText(serialNumber);
     }
 
+    @Override
+    public HasVisibility backButtonVisibility() {
+        return backButton;
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
         nameAndDescriptionEditButton.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.EDIT_NAME_AND_DESCRIPTION_BUTTON);
+    }
+
+    @UiHandler("backButton")
+    public void onBackClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onBackClicked();
+        }
+    }
+
+    @UiHandler("showEditViewButton")
+    public void onShowEditViewModeButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onOpenEditViewClicked();
+        }
     }
 
     @UiHandler("nameAndDescriptionEditButton")
@@ -75,7 +94,9 @@ public class ModuleEditView extends Composite implements AbstractModuleEditView 
     @UiField
     Lang lang;
     @UiField
-    HTMLPanel root; // для изменения стилей при переключении превью/полный экран
+    HTMLPanel root;
+    @UiField
+    Anchor backButton;
     @UiField
     Anchor showEditViewButton;
     @UiField

@@ -3,6 +3,7 @@ package ru.protei.portal.ui.delivery.client.activity.kit.page;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.ent.Kit;
@@ -38,7 +39,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
         this.initDetails = initDetails;
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow(KitEvents.Show event) {
         if (!hasViewPrivileges()) {
             fireEvent(new NotifyEvents.Show(lang.errAccessDenied(), NotifyEvents.NotifyType.ERROR));
@@ -85,7 +86,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
 
     @Override
     public void onItemClicked(Module module) {
-        fireEvent(new ModuleEvents.Show(view.getModuleEditContainer(), module.getId()));
+        fireEvent(new ModuleEvents.ShowPreview(view.getModuleEditContainer(), module.getId()));
     }
 
     @Override
