@@ -220,6 +220,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
             writer.write(sheetNumber, sortedErrors);
 
             writer.collect(buffer);
+            log.debug("writeReport : reportId={} to end", report.getId());
             return true;
         } catch (Throwable th) {
             log.error("writeReport : fail to write : reportId={}, th={}", report.getId(), th);
