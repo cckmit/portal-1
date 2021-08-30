@@ -18,8 +18,12 @@ import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
 import ru.protei.portal.core.client.enterprise1c.api.Api1C;
 import ru.protei.portal.core.client.enterprise1c.api.Api1CImpl;
+import ru.protei.portal.core.client.enterprise1c.api.Api1CWork;
+import ru.protei.portal.core.client.enterprise1c.api.Api1CWorkImpl;
 import ru.protei.portal.core.client.enterprise1c.http.HttpClient1C;
 import ru.protei.portal.core.client.enterprise1c.http.HttpClient1CImpl;
+import ru.protei.portal.core.client.enterprise1c.http.HttpClient1CWork;
+import ru.protei.portal.core.client.enterprise1c.http.HttpClient1CWorkImpl;
 import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1C;
 import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1CImpl;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
@@ -680,8 +684,18 @@ public class MainConfiguration {
     }
 
     @Bean
+    public HttpClient1CWork getHttpClient1CWork() {
+        return new HttpClient1CWorkImpl();
+    }
+
+    @Bean
     public Api1C getApi1C() {
         return new Api1CImpl();
+    }
+
+    @Bean
+    public Api1CWork getApi1CWork() {
+        return new Api1CWorkImpl();
     }
 
     @Bean

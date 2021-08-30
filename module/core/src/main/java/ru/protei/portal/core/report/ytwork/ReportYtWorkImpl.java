@@ -3,24 +3,28 @@ package ru.protei.portal.core.report.ytwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
+import ru.protei.portal.core.client.enterprise1c.api.Api1CWork;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.enterprise1c.dto.WorkPersonInfo1C;
+import ru.protei.portal.core.model.enterprise1c.query.WorkQuery1C;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.YtWorkQuery;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.struct.WorkerEntryFacade;
 import ru.protei.portal.core.model.struct.reportytwork.*;
-import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkInfo;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtSingleEnumIssueCustomField;
 import ru.protei.portal.core.model.youtrack.dto.issue.IssueWorkItem;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
-import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.tools.ChunkIterator;
 
 import java.io.IOException;
@@ -60,10 +64,13 @@ public class ReportYtWorkImpl implements ReportYtWork {
     CompanyDAO companyDAO;
     @Autowired
     YoutrackApi api;
+    @Autowired
+    Api1CWork api1CWork;
 
     private final Map<String, List<String>> invertNiokrs;
     private final Map<String, List<String>> invertNmas;
-    static private final String CLASSIFICATION_ERROR_PREFIX = "CLASSIFICATION ERROR - ";
+    static private final String CLASSIFICATION_ERROR = "CLASSIFICATION ERROR";
+    static private final String NO_COMPANY = "NO_COMPANY";
 
     public ReportYtWorkImpl() {
         Map<String, List<String>> niokrs = new HashMap<>();
@@ -144,12 +151,11 @@ public class ReportYtWorkImpl implements ReportYtWork {
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 invertNiokrs, invertNmas,
                 name -> contractDAO.getByCustomerAndProject(name),
-                new Date(), makeHomeCompanySet(),
-                CLASSIFICATION_ERROR_PREFIX
+                new Date(), makeHomeCompanySet()
         );
 
         log.debug("writeReport : reportId={} start process", report.getId());
-        Map<String, ReportYtWorkRowItem> data = stream(iterator)
+        ReportYtWorkCollector.ErrorsAndItems data = stream(iterator)
                 .map(this::makeYtReportItem)
                 .collect(collector);
 
@@ -168,28 +174,53 @@ public class ReportYtWorkImpl implements ReportYtWork {
             }
         }
 
-        data.forEach((email, ytWorkItem) -> ytWorkItem.setPersonInfo(makePersonInfo(email)));
+        Map<String, ReportYtWorkRowItem> items = data.getItems();
 
-        Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasWorkEntry = stream(data.values())
+        items.forEach((email, ytWorkItem) -> ytWorkItem.setPersonInfo(makePersonInfo(email)));
+        Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasWorkEntry = stream(items.values())
                 .collect(partitioningBy(item -> item.getPersonInfo().hasWorkEntry()));
 
-        Map<NameWithId, DepartmentTreeAndValues> groupingByCompanyDepartment =
+        partitionByHasWorkEntry.get(true).forEach(item -> {
+            String workerId = item.getPersonInfo().getWorkerId();
+            if (workerId != null) {
+                WorkQuery1C query1C = new WorkQuery1C();
+                query1C.setDateFrom(interval.from);
+                query1C.setDateTo(interval.to);
+                query1C.setPersonNumber(workerId);
+
+                item.setWorkedHours(getWorkedHours(item.getPersonInfo().getCompanyName().getString(), query1C));
+            }
+        });
+
+        Map<NameWithId, CompanyReportInfo> groupingByCompanyDepartment =
                 groupingByCompanyDepartment(partitionByHasWorkEntry.get(true));
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
-        try (ReportWriter<ReportYtWorkRow> writer = new ExcelReportWriter(localizedLang, collector.getProcessedWorkTypes())) {
+        try (ExcelReportWriter writer = new ExcelReportWriter(localizedLang)) {
             log.debug("writeReport : start write sheet");
-            groupingByCompanyDepartment.forEach((companyName, companyTreeAndValues) -> {
+            groupingByCompanyDepartment.forEach((companyName, companyReportInfo) -> {
+                writer.setValueSheet(companyReportInfo.getProcessedWorkTypes());
                 int sheetNumber = writer.createSheet();
                 writer.setSheetName(sheetNumber, companyName.getString());
-                writer.write(sheetNumber, makeReportCompanyData(companyTreeAndValues));
+                writer.write(sheetNumber, makeReportCompanyData(companyReportInfo));
             });
 
+            Map<En_ReportYtWorkType, Set<String>> noCompanyProcessedWorkTypes = createProcessedWorkTypes();
+            ArrayList<ReportYtWorkRow> noCompany = new ArrayList<>(partitionByHasWorkEntry.get(false));
+            noCompany.forEach(item -> collectProcessedWorkTypes(noCompanyProcessedWorkTypes, item));
+            writer.setValueSheet(noCompanyProcessedWorkTypes);
             int sheetNumber = writer.createSheet();
-            writer.setSheetName(sheetNumber, "NO COMPANY");
-            writer.write(sheetNumber, new ArrayList<>(partitionByHasWorkEntry.get(false)));
+            writer.setSheetName(sheetNumber, NO_COMPANY);
+            writer.write(sheetNumber, noCompany);
+
+            writer.setClassificationErrorSheet();
+            sheetNumber = writer.createSheet();
+            writer.setSheetName(sheetNumber, CLASSIFICATION_ERROR);
+            List<ReportYtWorkRow> sortedErrors = data.getErrors().stream().sorted(Comparator.comparing(ReportYtWorkClassificationError::getIssue)).collect(Collectors.toList());
+            writer.write(sheetNumber, sortedErrors);
 
             writer.collect(buffer);
+            log.debug("writeReport : reportId={} to end", report.getId());
             return true;
         } catch (Throwable th) {
             log.error("writeReport : fail to write : reportId={}, th={}", report.getId(), th);
@@ -197,26 +228,56 @@ public class ReportYtWorkImpl implements ReportYtWork {
         }
     }
 
-    public Map<NameWithId, DepartmentTreeAndValues> groupingByCompanyDepartment(List<ReportYtWorkRowItem> hasWorkEntry) {
-        Map<NameWithId, DepartmentTreeAndValues> companyMap = new HashMap<>();
+    private Integer getWorkedHours(String companyName, WorkQuery1C query) {
+        Result<WorkPersonInfo1C> proteiWorkPersonInfo = null;
+        if (CrmConstants.Company.MAIN_HOME_COMPANY_NAME.equals(companyName)) {
+            proteiWorkPersonInfo = api1CWork.getProteiWorkPersonInfo(query);
+        }
+        if (CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME.equals(companyName)) {
+            proteiWorkPersonInfo = api1CWork.getProteiStWorkPersonInfo(query);
+        }
+        if (proteiWorkPersonInfo != null && proteiWorkPersonInfo.isOk()) {
+            return proteiWorkPersonInfo.getData().getWorkedHours();
+        } else {
+            return 0;
+        }
+    }
+
+    private Map<NameWithId, CompanyReportInfo> groupingByCompanyDepartment(List<ReportYtWorkRowItem> hasWorkEntry) {
+        Map<NameWithId, CompanyReportInfo> companyMap = new HashMap<>();
         hasWorkEntry.forEach(item -> {
             PersonInfo personInfo = item.getPersonInfo();
-            DepartmentTreeAndValues treeAndValues = companyMap.compute(personInfo.getCompanyName(),
-                    (companyName, companyTree) -> companyTree != null ? companyTree : new DepartmentTreeAndValues());
-            treeAndValues.getValues().compute(personInfo.getDepartmentName(), (name, values) -> {
+            CompanyReportInfo companyReportInfo = companyMap.compute(personInfo.getCompanyName(),
+                    (companyName, companyTree) -> companyTree != null ? companyTree : new CompanyReportInfo());
+            companyReportInfo.getValues().compute(personInfo.getDepartmentName(), (name, values) -> {
                 if (values == null) {
-                    treeAndValues.getTree().addNode(personInfo.getDepartmentParentName(), personInfo.getDepartmentName());
+                    companyReportInfo.getTree().addNode(personInfo.getDepartmentParentName(), personInfo.getDepartmentName());
                     values = new ArrayList<>();
                 }
                 values.add(item);
                 return values;
             });
+            collectProcessedWorkTypes(companyReportInfo.processedWorkTypes, item);
         });
 
         return companyMap;
     }
 
-    public List<ReportYtWorkRow> makeReportCompanyData(DepartmentTreeAndValues treeAndValues) {
+    private void collectProcessedWorkTypes(Map<En_ReportYtWorkType, Set<String>> map, ReportYtWorkRow row) {
+        if (row instanceof ReportYtWorkRowItem) {
+            ReportYtWorkRowItem item = (ReportYtWorkRowItem)row;
+            map.compute(En_ReportYtWorkType.NIOKR,
+                    (type, set) -> set != null ? set : new HashSet<>()).addAll(item.getNiokrSpentTime().keySet());
+            map.compute(En_ReportYtWorkType.NMA,
+                    (type, set) -> set != null ? set : new HashSet<>()).addAll(item.getNmaSpentTime().keySet());
+            map.compute(En_ReportYtWorkType.CONTRACT,
+                    (type, set) -> set != null ? set : new HashSet<>()).addAll(item.getContractSpentTime().keySet());
+            map.compute(En_ReportYtWorkType.GUARANTEE,
+                    (type, set) -> set != null ? set : new HashSet<>()).addAll(item.getGuaranteeSpentTime().keySet());
+        }
+    }
+
+    private List<ReportYtWorkRow> makeReportCompanyData(CompanyReportInfo treeAndValues) {
         List<ReportYtWorkRow> list = new ArrayList<>();
         treeAndValues.getTree().deepFirstSearchTraversal(node -> {
             int level = node.getLevel();
@@ -275,6 +336,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
             return new PersonInfo(
                     employeeShortView.getDisplayShortName(),
                     employeeShortView.getId(),
+                    mainEntry.getWorkerExtId(),
                     mainEntry.getCompanyName() != null ?
                             new NameWithId(mainEntry.getCompanyName(), mainEntry.getCompanyId())
                             : PersonInfo.nullCompanyName,
@@ -302,7 +364,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
         );
     }
 
-    static String getCustomerName(YtIssue issue) {
+    static private String getCustomerName(YtIssue issue) {
         YtSingleEnumIssueCustomField field = (YtSingleEnumIssueCustomField) issue.getCustomerField();
         if (field == null) {
             return null;
@@ -310,16 +372,26 @@ public class ReportYtWorkImpl implements ReportYtWork {
         return field.getValueAsString();
     }
 
-    static private class DepartmentTreeAndValues {
+    static private class CompanyReportInfo {
         private final DepartmentTree tree = new DepartmentTree();
         private final Map<NameWithId, List<ReportYtWorkRowItem>> values = new HashMap<>();
-
+        private final Map<En_ReportYtWorkType, Set<String>> processedWorkTypes = createProcessedWorkTypes();
         public DepartmentTree getTree() {
             return tree;
         }
-
         public Map<NameWithId, List<ReportYtWorkRowItem>> getValues() {
             return values;
         }
+        public Map<En_ReportYtWorkType, Set<String>> getProcessedWorkTypes() {
+            return processedWorkTypes;
+        }
+    }
+
+    static private Map<En_ReportYtWorkType, Set<String>> createProcessedWorkTypes() {
+        Map<En_ReportYtWorkType, Set<String>> processedWorkTypes = new LinkedHashMap<>();
+        for (En_ReportYtWorkType value : En_ReportYtWorkType.values()) {
+            processedWorkTypes.put(value, new HashSet<>());
+        }
+        return processedWorkTypes;
     }
 }

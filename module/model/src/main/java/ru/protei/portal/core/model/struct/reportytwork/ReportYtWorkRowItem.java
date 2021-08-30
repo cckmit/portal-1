@@ -18,6 +18,8 @@ public class ReportYtWorkRowItem implements ReportYtWorkRow {
     final private  Map<String, Long> contractSpentTime;
     // Map<Project, Map<GUARANTEE, SpentTime>>
     final private Map<String, Long> guaranteeSpentTime;
+    //
+    private Integer workedHours = 0;
 
     public ReportYtWorkRowItem() {
         this.niokrSpentTime = new HashMap<>();
@@ -50,6 +52,14 @@ public class ReportYtWorkRowItem implements ReportYtWorkRow {
         this.personInfo = personInfo;
     }
 
+    public Integer getWorkedHours() {
+        return workedHours;
+    }
+
+    public void setWorkedHours(Integer workedHours) {
+        this.workedHours = workedHours;
+    }
+
     public Long getAllTimeSpent() {
         return allTimeSpent;
     }
@@ -75,21 +85,23 @@ public class ReportYtWorkRowItem implements ReportYtWorkRow {
 
         final private String displayName;
         final private Long personId;
-        final NameWithId companyName;
-        final NameWithId departmentParentName;
-        final NameWithId departmentName;
+        final private String workerId;
+        final private NameWithId companyName;
+        final private NameWithId departmentParentName;
+        final private NameWithId departmentName;
 
-        public PersonInfo(String displayName, Long personId,
+        public PersonInfo(String displayName, Long personId, String workerId,
                           NameWithId companyName, NameWithId departmentParentName, NameWithId departmentName) {
             this.displayName = displayName;
             this.personId = personId;
+            this.workerId = workerId;
             this.companyName = companyName;
             this.departmentParentName = departmentParentName;
             this.departmentName = departmentName;
         }
 
         public PersonInfo(String displayName, Long personId) {
-            this(displayName, personId, nullCompanyName, nullDepartmentParentName, nullDepartmentName);
+            this(displayName, personId, null, nullCompanyName, nullDepartmentParentName, nullDepartmentName);
         }
 
         public String getDisplayName() {
@@ -98,6 +110,10 @@ public class ReportYtWorkRowItem implements ReportYtWorkRow {
 
         public Long getPersonId() {
             return personId;
+        }
+
+        public String getWorkerId() {
+            return workerId;
         }
 
         public NameWithId getCompanyName() {
