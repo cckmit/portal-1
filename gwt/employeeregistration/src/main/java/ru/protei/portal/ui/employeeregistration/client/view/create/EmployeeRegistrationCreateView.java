@@ -100,6 +100,11 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
     }
 
     @Override
+    public void setEquipmentOptionEnabled(En_EmployeeEquipment equipment, boolean isEnabled) {
+        equipmentList.setOptionEnabled(equipment, isEnabled);
+    }
+
+    @Override
     public HasValue<Set<En_InternalResource>> resourcesList() {
         return resourcesList;
     }
@@ -107,6 +112,11 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
     @Override
     public HasValue<Set<En_PhoneOfficeType>> phoneOfficeTypeList() {
         return phoneTypeList;
+    }
+
+    @Override
+    public void setPhoneOptionEnabled(En_PhoneOfficeType phone, boolean isEnabled) {
+        phoneTypeList.setOptionEnabled(phone, isEnabled);
     }
 
     @Override
@@ -224,6 +234,13 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
     @Override
     public void setDepartmentModel(SelectorModel<EntityOption> model) {
         department.setModel(model);
+    }
+
+    @UiHandler("company")
+    public void onCompanySelected(ValueChangeEvent<EntityOption> event) {
+        if (activity != null) {
+            activity.onCompanySelected();
+        }
     }
 
     @UiHandler("headOfDepartment")

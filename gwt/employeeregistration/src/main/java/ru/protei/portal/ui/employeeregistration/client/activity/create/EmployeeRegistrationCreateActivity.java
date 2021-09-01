@@ -6,13 +6,11 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_EmploymentType;
-import ru.protei.portal.core.model.dict.En_InternalResource;
-import ru.protei.portal.core.model.dict.En_PhoneOfficeType;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -24,10 +22,10 @@ import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerA
 import ru.protei.portal.ui.common.client.widget.selector.employeedepartment.EmployeeDepartmentModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.Date;
-import java.util.HashSet;
+import java.util.*;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.util.CrmConstants.Company.*;
 
 
 public abstract class EmployeeRegistrationCreateActivity implements Activity, AbstractEmployeeRegistrationCreateActivity {
@@ -109,6 +107,22 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         view.departmentEnabled().setEnabled(true);
         view.department().setValue(null);
         departmentModel.refreshOptions(view.headOfDepartment().getValue() == null ? null : view.headOfDepartment().getValue().getId());
+    }
+
+    @Override
+    public void onCompanySelected() {
+        if (isSelectProteiOrProteiST(view.company().getValue())) {
+            setPhoneEquipmentEnabled(true);
+            Set<En_PhoneOfficeType> value = view.phoneOfficeTypeList().getValue();
+            value.add(En_PhoneOfficeType.OFFICE);
+            view.phoneOfficeTypeList().setValue(value);
+        } else {
+            setPhoneEquipmentEnabled(false);
+            Set<En_EmployeeEquipment> value = view.equipmentList().getValue();
+            value.remove(En_EmployeeEquipment.TELEPHONE);
+            view.equipmentList().setValue(value);
+            view.phoneOfficeTypeList().setValue(new HashSet<>());
+        }
     }
 
     private void showValidationError(EmployeeRegistration employeeRegistration) {
@@ -214,9 +228,8 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         view.headOfDepartment().setValue(null);
         view.department().setValue(null);
         view.equipmentList().setValue(new HashSet<>());
-        HashSet<En_PhoneOfficeType> phoneOfficeTypes = new HashSet<>();
-        phoneOfficeTypes.add(En_PhoneOfficeType.OFFICE);
-        view.phoneOfficeTypeList().setValue(phoneOfficeTypes);
+        view.phoneOfficeTypeList().setValue(new HashSet<>());
+        setPhoneEquipmentEnabled(false);
         HashSet<En_InternalResource> resources = new HashSet<>();
         resources.add(En_InternalResource.EMAIL);
         view.resourcesList().setValue(resources);
@@ -239,6 +252,18 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
 
         view.departmentEnabled().setEnabled(false);
         view.saveEnabled().setEnabled(true);
+    }
+
+    private void setPhoneEquipmentEnabled(boolean isEnabled) {
+        view.setEquipmentOptionEnabled(En_EmployeeEquipment.TELEPHONE, isEnabled);
+        view.setPhoneOptionEnabled(En_PhoneOfficeType.INTERNATIONAL, isEnabled);
+        view.setPhoneOptionEnabled(En_PhoneOfficeType.LONG_DISTANCE, isEnabled);
+        view.setPhoneOptionEnabled(En_PhoneOfficeType.OFFICE, isEnabled);
+    }
+
+    private boolean isSelectProteiOrProteiST(EntityOption value) {
+        if (value == null) return false;
+        return value.getDisplayText().equals(MAIN_HOME_COMPANY_NAME) || value.getDisplayText().equals(PROTEI_ST_HOME_COMPANY_NAME);
     }
 
     @Inject

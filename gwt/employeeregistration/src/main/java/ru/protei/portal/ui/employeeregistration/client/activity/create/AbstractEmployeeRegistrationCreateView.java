@@ -38,9 +38,13 @@ public interface AbstractEmployeeRegistrationCreateView extends IsWidget {
 
     HasValue<Set<En_EmployeeEquipment>> equipmentList();
 
+    void setEquipmentOptionEnabled(En_EmployeeEquipment equipment, boolean isEnabled);
+
     HasValue<Set<En_InternalResource>> resourcesList();
 
     HasValue<Set<En_PhoneOfficeType>> phoneOfficeTypeList();
+
+    void setPhoneOptionEnabled(En_PhoneOfficeType phone, boolean isEnabled);
 
     HasValidable fullNameValidation();
 
