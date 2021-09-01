@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.helper;
 
 import ru.protei.portal.core.model.marker.HasLongId;
+import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 
 import java.util.*;
@@ -220,17 +221,19 @@ public class CollectionUtils {
     }
 
     public static <K, V> Map<V, List<K>> inverseMap(Map<K, List<V>> map) {
-        Map<V, List<K>> inverseMap = new HashMap<>();
-        map.forEach((k, v) -> {
-            v.forEach(value -> {
-                inverseMap.compute(value, (k2, v2) -> {
-                    if (v2 == null) v2 = new ArrayList<>();
-                    v2.add(k);
-                    return v2;
-                });
-            });
-        });
-        return inverseMap;
+        return map.entrySet().stream().flatMap(entry -> 
+                        entry.getValue().stream().map(v -> new Pair<>(v, entry.getKey())))
+                .collect(HashMap::new,
+                        (acc, i) -> acc.compute(i.getA(), (k2, v2) -> {
+                            if (v2 == null) v2 = new ArrayList<>();
+                            v2.add(i.getB());
+                            return v2;
+                        }),
+                        (acc1, acc2) -> mergeMap(acc1, acc2, (list1, list2) -> {
+                            list1.addAll(list2);
+                            return list1;
+                        })
+                );
     }
 
     public static <T> List<T> singleValueList(T value) {

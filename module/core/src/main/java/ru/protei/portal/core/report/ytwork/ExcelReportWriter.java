@@ -111,6 +111,16 @@ public class ExcelReportWriter implements
     }
 
     private class ValueSheet implements Sheet {
+        private final Map<Integer, String> levelMark;
+
+        public ValueSheet() {
+            levelMark = new HashMap<>();
+            levelMark.put(0, "== ");
+            levelMark.put(1, "==== ");
+            levelMark.put(2, "====== ");
+            levelMark.put(3, "======== ");
+        }
+
         @Override
         public int[] getColumnsWidth() {
             ListBuilder<Integer> columnsWidthList = new ListBuilder<Integer>()
@@ -156,7 +166,7 @@ public class ExcelReportWriter implements
             }
             if (row instanceof ReportYtWorkRowHeader) {
                 ReportYtWorkRowHeader header = (ReportYtWorkRowHeader)row;
-                values.add(header.getValue());
+                values.add(levelMark.getOrDefault(header.getLevel(), "?") + header.getValue());
             }
 
             return values.toArray();

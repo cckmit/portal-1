@@ -70,7 +70,8 @@ public class ReportYtWorkImpl implements ReportYtWork {
     private final Map<String, List<String>> invertNiokrs;
     private final Map<String, List<String>> invertNmas;
     static private final String CLASSIFICATION_ERROR = "CLASSIFICATION ERROR";
-    static private final String NO_COMPANY = "NO_COMPANY";
+    static private final String NO_COMPANY = "NO COMPANY";
+    static private final Set<String> workerCompanyName = setOf(CrmConstants.Company.MAIN_HOME_COMPANY_NAME, CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME);
 
     public ReportYtWorkImpl() {
         Map<String, List<String>> niokrs = new HashMap<>();
@@ -176,48 +177,29 @@ public class ReportYtWorkImpl implements ReportYtWork {
 
         Map<String, ReportYtWorkRowItem> items = data.getItems();
 
-        items.forEach((email, ytWorkItem) -> ytWorkItem.setPersonInfo(makePersonInfo(email)));
+        fillPersonInfo(items);
+
         Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasWorkEntry = stream(items.values())
                 .collect(partitioningBy(item -> item.getPersonInfo().hasWorkEntry()));
 
-        partitionByHasWorkEntry.get(true).forEach(item -> {
-            String workerId = item.getPersonInfo().getWorkerId();
-            if (workerId != null) {
-                WorkQuery1C query1C = new WorkQuery1C();
-                query1C.setDateFrom(interval.from);
-                query1C.setDateTo(interval.to);
-                query1C.setPersonNumber(workerId);
+        Map<NameWithId, CompanyReportInfo> groupingByCompanyInfo =
+                groupingByCompanyInfo(partitionByHasWorkEntry.get(true));
 
-                item.setWorkedHours(getWorkedHours(item.getPersonInfo().getCompanyName().getString(), query1C));
+        groupingByCompanyInfo.forEach((companyName, info) -> {
+            if (workerCompanyName.contains(companyName.getString())) {
+                info.values.values().forEach(list -> fillWorkedHours(interval, companyName.getString(), list));
             }
         });
-
-        Map<NameWithId, CompanyReportInfo> groupingByCompanyDepartment =
-                groupingByCompanyDepartment(partitionByHasWorkEntry.get(true));
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
         try (ExcelReportWriter writer = new ExcelReportWriter(localizedLang)) {
             log.debug("writeReport : start write sheet");
-            groupingByCompanyDepartment.forEach((companyName, companyReportInfo) -> {
-                writer.setValueSheet(companyReportInfo.getProcessedWorkTypes());
-                int sheetNumber = writer.createSheet();
-                writer.setSheetName(sheetNumber, companyName.getString());
-                writer.write(sheetNumber, makeReportCompanyData(companyReportInfo));
-            });
+            groupingByCompanyInfo.forEach((companyName, companyReportInfo) ->
+                    writeCompanySheets(companyName, companyReportInfo, writer));
 
-            Map<En_ReportYtWorkType, Set<String>> noCompanyProcessedWorkTypes = createProcessedWorkTypes();
-            ArrayList<ReportYtWorkRow> noCompany = new ArrayList<>(partitionByHasWorkEntry.get(false));
-            noCompany.forEach(item -> collectProcessedWorkTypes(noCompanyProcessedWorkTypes, item));
-            writer.setValueSheet(noCompanyProcessedWorkTypes);
-            int sheetNumber = writer.createSheet();
-            writer.setSheetName(sheetNumber, NO_COMPANY);
-            writer.write(sheetNumber, noCompany);
+            writeNoCompanySheet(new ArrayList<>(partitionByHasWorkEntry.get(false)), writer);
 
-            writer.setClassificationErrorSheet();
-            sheetNumber = writer.createSheet();
-            writer.setSheetName(sheetNumber, CLASSIFICATION_ERROR);
-            List<ReportYtWorkRow> sortedErrors = data.getErrors().stream().sorted(Comparator.comparing(ReportYtWorkClassificationError::getIssue)).collect(Collectors.toList());
-            writer.write(sheetNumber, sortedErrors);
+            writeClassificationErrorSheet(data.getErrors(), writer);
 
             writer.collect(buffer);
             log.debug("writeReport : reportId={} to end", report.getId());
@@ -226,6 +208,50 @@ public class ReportYtWorkImpl implements ReportYtWork {
             log.error("writeReport : fail to write : reportId={}, th={}", report.getId(), th);
             return false;
         }
+    }
+
+    private void writeCompanySheets(NameWithId companyName, CompanyReportInfo companyReportInfo, ExcelReportWriter writer) {
+        writer.setValueSheet(companyReportInfo.getProcessedWorkTypes());
+        int sheetNumber = writer.createSheet();
+        writer.setSheetName(sheetNumber, companyName.getString());
+        writer.write(sheetNumber, makeReportCompanyData(companyReportInfo));
+    }
+
+    private void writeNoCompanySheet(List<ReportYtWorkRow> noCompanyItems, ExcelReportWriter writer) {
+        Map<En_ReportYtWorkType, Set<String>> noCompanyProcessedWorkTypes = createProcessedWorkTypes();
+        noCompanyItems.forEach(item -> collectProcessedWorkTypes(noCompanyProcessedWorkTypes, item));
+        writer.setValueSheet(noCompanyProcessedWorkTypes);
+        int sheetNumber = writer.createSheet();
+        writer.setSheetName(sheetNumber, NO_COMPANY);
+        writer.write(sheetNumber, noCompanyItems);
+    }
+
+    private void writeClassificationErrorSheet(Set<ReportYtWorkClassificationError> errors, ExcelReportWriter writer) {
+        writer.setClassificationErrorSheet();
+        int sheetNumber = writer.createSheet();
+        writer.setSheetName(sheetNumber, CLASSIFICATION_ERROR);
+        List<ReportYtWorkRow> sortedErrors = errors.stream()
+                .sorted(Comparator.comparing(ReportYtWorkClassificationError::getIssue))
+                .collect(Collectors.toList());
+        writer.write(sheetNumber, sortedErrors);
+    }
+
+    private void fillPersonInfo(Map<String, ReportYtWorkRowItem> items) {
+        items.forEach((email, ytWorkItem) -> ytWorkItem.setPersonInfo(makePersonInfo(email)));
+    }
+
+    private void fillWorkedHours(Interval interval, String companyName, List<ReportYtWorkRowItem> items) {
+        items.forEach(item -> {
+            String workerId = item.getPersonInfo().getWorkerId();
+            if (workerId != null) {
+                WorkQuery1C query1C = new WorkQuery1C();
+                query1C.setDateFrom(interval.from);
+                query1C.setDateTo(interval.to);
+                query1C.setPersonNumber(workerId);
+
+                item.setWorkedHours(getWorkedHours(companyName, query1C));
+            }
+        });
     }
 
     private Integer getWorkedHours(String companyName, WorkQuery1C query) {
@@ -243,7 +269,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
         }
     }
 
-    private Map<NameWithId, CompanyReportInfo> groupingByCompanyDepartment(List<ReportYtWorkRowItem> hasWorkEntry) {
+    private Map<NameWithId, CompanyReportInfo> groupingByCompanyInfo(List<ReportYtWorkRowItem> hasWorkEntry) {
         Map<NameWithId, CompanyReportInfo> companyMap = new HashMap<>();
         hasWorkEntry.forEach(item -> {
             PersonInfo personInfo = item.getPersonInfo();
@@ -280,8 +306,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
     private List<ReportYtWorkRow> makeReportCompanyData(CompanyReportInfo treeAndValues) {
         List<ReportYtWorkRow> list = new ArrayList<>();
         treeAndValues.getTree().deepFirstSearchTraversal(node -> {
-            int level = node.getLevel();
-            list.add(new ReportYtWorkRowHeader(levelMark.getOrDefault(level, "?") + node.getNameWithId().getString()));
+            list.add(new ReportYtWorkRowHeader(node.getLevel(), node.getNameWithId().getString()));
 
             List<ReportYtWorkRowItem> reportYtWorkRowItems = treeAndValues.getValues().get(node.getNameWithId());
             list.addAll(stream(reportYtWorkRowItems)
@@ -291,14 +316,6 @@ public class ReportYtWorkImpl implements ReportYtWork {
         });
 
         return list;
-    }
-
-    static private final Map<Integer, String> levelMark = new HashMap<>();
-    static {
-        levelMark.put(0, "== ");
-        levelMark.put(1, "==== ");
-        levelMark.put(2, "====== ");
-        levelMark.put(3, "======== ");
     }
 
     private Set<String> makeHomeCompanySet() {

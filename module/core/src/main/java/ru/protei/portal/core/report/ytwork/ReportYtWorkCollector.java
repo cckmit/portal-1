@@ -24,10 +24,10 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class ReportYtWorkCollector implements Collector<
         ReportYtWorkInfo,
-        ReportYtWorkCollector.ErrorsAndItems,      // email -> processed items
+        ReportYtWorkCollector.ErrorsAndItems,
         ReportYtWorkCollector.ErrorsAndItems> {
 
-    private final Map<String, WorkTypeAndValue> memoCustomerToContract = new ConcurrentHashMap<>();
+    private final Map<String, Optional<WorkTypeAndValue>> memoCustomerToContract = new ConcurrentHashMap<>();
 
     private final Map<String, List<String>> niokrs;
     private final Map<String, List<String>> nmas;
@@ -96,26 +96,26 @@ public class ReportYtWorkCollector implements Collector<
             }
             return null;
         } else {
-            return getContractsAndGuarantee(customer);
+            return getContractsAndGuarantee(customer).orElse(null);
         }
     }
 
-    private WorkTypeAndValue getContractsAndGuarantee(String customer) {
+    private Optional<WorkTypeAndValue> getContractsAndGuarantee(String customer) {
         return memoCustomerToContract.compute(customer, (keyCustomer, workTypeAndValues) -> {
             if (workTypeAndValues != null) {
                 return workTypeAndValues;
             }
             List<Contract> contracts = getContractsByCustomer.apply(customer);
             if (contracts.isEmpty()) {
-                return null;
+                return Optional.empty();
             } else {
                 Map<En_ReportYtWorkType, List<String>> mapContactGuaranteeToName = contracts.stream()
                         .collect(groupingBy(contract -> contractGuaranteeClassifier(contract, now), mapping(Contract::getNumber, toList())));
                 List<String> contractNames = mapContactGuaranteeToName.get(CONTRACT);
                 if (isNotEmpty(contractNames)) {
-                    return new WorkTypeAndValue(CONTRACT, contractNames);
+                    return Optional.of(new WorkTypeAndValue(CONTRACT, contractNames));
                 }
-                return new WorkTypeAndValue(GUARANTEE, mapContactGuaranteeToName.get(GUARANTEE));
+                return Optional.of(new WorkTypeAndValue(GUARANTEE, mapContactGuaranteeToName.get(GUARANTEE)));
             }
         });
     }

@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class ReportYtWorkRowItem implements ReportYtWorkRow {
+public final class ReportYtWorkRowItem implements ReportYtWorkRow {
     private PersonInfo personInfo;
     // Общее время
     private long allTimeSpent = 0L;
@@ -18,7 +18,7 @@ public class ReportYtWorkRowItem implements ReportYtWorkRow {
     final private  Map<String, Long> contractSpentTime;
     // Map<Project, Map<GUARANTEE, SpentTime>>
     final private Map<String, Long> guaranteeSpentTime;
-    //
+    // Отработанное время
     private Integer workedHours = 0;
 
     public ReportYtWorkRowItem() {
@@ -78,7 +78,7 @@ public class ReportYtWorkRowItem implements ReportYtWorkRow {
         }
     }
 
-    static public class PersonInfo {
+    static public final class PersonInfo {
         static public final NameWithId nullCompanyName = new NameWithId("companyName", 0L);
         static public final NameWithId nullDepartmentParentName = new NameWithId("departmentParentName", 0L);
         static public final NameWithId nullDepartmentName = new NameWithId("departmentName", 0L);
