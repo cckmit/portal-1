@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYtWorkFilterActivity;
 import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYtWorkFilterView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.report.ReportYtWorkYtProjectMultiSelector;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 
@@ -35,6 +36,8 @@ public class YtWorkFilterView extends Composite implements AbstractYtWorkFilterV
     @Override
     public void resetFilter() {
         date.setValue(null);
+        youtrackProjects.setValue(null);
+        youtrackProjects.clean();
     }
 
     @Override
@@ -79,6 +82,10 @@ public class YtWorkFilterView extends Composite implements AbstractYtWorkFilterV
     @Inject
     @UiField(provided = true)
     TypedSelectorRangePicker date;
+
+    @Inject
+    @UiField(provided = true)
+    ReportYtWorkYtProjectMultiSelector youtrackProjects;
 
     @UiField
     DivElement footer;

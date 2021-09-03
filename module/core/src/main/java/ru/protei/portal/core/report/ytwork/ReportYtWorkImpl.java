@@ -187,7 +187,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
 
         groupingByCompanyInfo.forEach((companyName, info) -> {
             if (workerCompanyName.contains(companyName.getString())) {
-                info.values.values().forEach(list -> fillWorkedHours(interval, companyName.getString(), list));
+                info.getValues().values().forEach(list -> fillWorkedHours(interval, companyName.getString(), list));
             }
         });
 

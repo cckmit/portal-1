@@ -25,4 +25,11 @@ public class ReportYtWorkClassificationError implements ReportYtWorkRow {
     public int hashCode() {
         return Objects.hash(issue);
     }
+
+    @Override
+    public String toString() {
+        return "ReportYtWorkClassificationError{" +
+                "issue='" + issue + '\'' +
+                '}';
+    }
 }

@@ -78,6 +78,19 @@ public final class ReportYtWorkRowItem implements ReportYtWorkRow {
         }
     }
 
+    @Override
+    public String toString() {
+        return "ReportYtWorkRowItem{" +
+                "personInfo=" + personInfo +
+                ", allTimeSpent=" + allTimeSpent +
+                ", niokrSpentTime=" + niokrSpentTime +
+                ", nmaSpentTime=" + nmaSpentTime +
+                ", contractSpentTime=" + contractSpentTime +
+                ", guaranteeSpentTime=" + guaranteeSpentTime +
+                ", workedHours=" + workedHours +
+                '}';
+    }
+
     static public final class PersonInfo {
         static public final NameWithId nullCompanyName = new NameWithId("companyName", 0L);
         static public final NameWithId nullDepartmentParentName = new NameWithId("departmentParentName", 0L);

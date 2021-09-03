@@ -1,9 +1,7 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
-import ru.protei.portal.core.model.ent.YouTrackIssueStateChange;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
 
 import java.util.Date;
@@ -37,4 +35,6 @@ public interface YoutrackService {
     Result<YouTrackIssueInfo> addIssueSystemComment(String issueNumber, String text);
 
     Result<CaseComment> convertYtIssueComment(YtIssueComment issueComment);
+
+    Result<List<YoutrackProject>> getProjects(AuthToken token, int offset, int limit);
 }
