@@ -778,6 +778,16 @@ public class MainConfiguration {
         return new DutyLogDAO_Impl();
     }
 
+    @Bean
+    public YoutrackProjectDAO getYoutrackProjectDAO() {
+        return new YoutrackProjectDAO_Impl();
+    }
+
+    @Bean
+    public YoutrackReportDictionaryDAO getYoutrackReportDictionaryDAO() {
+        return new YoutrackReportDictionaryDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean

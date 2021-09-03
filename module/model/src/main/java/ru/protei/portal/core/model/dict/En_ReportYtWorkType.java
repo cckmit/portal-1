@@ -1,5 +1,22 @@
 package ru.protei.portal.core.model.dict;
 
-public enum En_ReportYtWorkType {
-    NIOKR, NMA, CONTRACT, GUARANTEE
+import ru.protei.winter.core.utils.enums.HasId;
+
+public enum En_ReportYtWorkType  implements HasId {
+    NIOKR(1),
+    NMA(2),
+    CONTRACT(3),
+    GUARANTEE(4)
+    ;
+
+    En_ReportYtWorkType(int id) {
+        this.id = id;
+    }
+
+    @Override
+    public int getId() {
+        return id;
+    }
+
+    private final int id;
 }

@@ -43,6 +43,10 @@ public class YoutrackProject implements Serializable {
         this.shortName = shortName;
     }
 
+    public interface Fields {
+        String YOUTRACK_ID = "youtrack_id";
+    }
+
     @Override
     public String toString() {
         return "YoutrackProject{" +

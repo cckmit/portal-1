@@ -1,0 +1,59 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create-youtrack_project-table" author="porubov">
+        <createTable tableName="youtrack_project">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="youtrack_id" type="varchar(32)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="short_name" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-youtrack_report_dictionary-table" author="porubov">
+        <createTable tableName="youtrack_report_dictionary">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="int"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-youtrack_report_dictionary_to_youtrack_project-table" author="porubov">
+        <createTable tableName="youtrack_report_dictionary_to_youtrack_project">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="youtrack_report_dictionary_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="youtrack_project_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-fk-on-youtrack_report_dictionary_to_youtrack_project-table" author="porubov">
+        <addForeignKeyConstraint constraintName="fk_youtrack_report_dictionary_id_to_youtrack_report_dictionary"
+                                 baseTableName="youtrack_report_dictionary_to_youtrack_project" baseColumnNames="youtrack_report_dictionary_id"
+                                 referencedTableName="youtrack_report_dictionary" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint constraintName="fk_youtrack_project_id_to_youtrack_project"
+                                 baseTableName="youtrack_report_dictionary_to_youtrack_project" baseColumnNames="youtrack_project_id"
+                                 referencedTableName="youtrack_project" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>
