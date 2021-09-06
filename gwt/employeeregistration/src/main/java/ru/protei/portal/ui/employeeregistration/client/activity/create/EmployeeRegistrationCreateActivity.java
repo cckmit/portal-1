@@ -263,7 +263,7 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
 
     private boolean isSelectProteiOrProteiST(EntityOption value) {
         if (value == null) return false;
-        return value.getDisplayText().equals(MAIN_HOME_COMPANY_NAME) || value.getDisplayText().equals(PROTEI_ST_HOME_COMPANY_NAME);
+        return MAIN_HOME_COMPANY_NAME.equals(value.getDisplayText()) || PROTEI_ST_HOME_COMPANY_NAME.equals(value.getDisplayText());
     }
 
     @Inject

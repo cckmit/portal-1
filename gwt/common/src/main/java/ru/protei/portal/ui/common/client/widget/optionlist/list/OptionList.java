@@ -221,7 +221,9 @@ public class OptionList<T>
     }
 
     public void setOptionEnabled(T option, boolean isEnabled) {
-        itemToViewModel.get(option).setEnabled(isEnabled);
+        if (itemToViewModel.containsKey(option)) {
+            itemToViewModel.get(option).setEnabled(isEnabled);
+        }
     }
 
     private void makeOptionMandatory(OptionItem item) {
