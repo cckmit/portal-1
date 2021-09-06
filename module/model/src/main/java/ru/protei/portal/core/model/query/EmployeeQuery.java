@@ -72,7 +72,7 @@ public class EmployeeQuery extends BaseQuery {
         this.ipAddress = ipAddress;
         this.emailByLike = emailByLike;
         this.departmentParent = departmentParent;
-        this.limit = 1000;
+        this.limit = 1500;
         this.ids = ids;
         this.absent = absent;
     }

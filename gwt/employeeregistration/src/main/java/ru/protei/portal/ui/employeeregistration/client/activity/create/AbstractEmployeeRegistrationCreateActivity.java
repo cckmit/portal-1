@@ -9,4 +9,6 @@ public interface AbstractEmployeeRegistrationCreateActivity {
     void validateLimitedFields();
 
     void onHeadOfDepartmentChanged();
+
+    void onCompanySelected();
 }
