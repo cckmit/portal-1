@@ -1557,8 +1557,6 @@ public class WorkerController {
 
                         logger.debug("success result, workerRowId={}", worker.getId());
                         return ok(person.getId());
-                    } else if (!rec.isFired() && !rec.isDeleted()) {
-                        unlockAccountsIfLocked(userLogins);
                     }
 
                     mergePerson(person);
@@ -1751,12 +1749,4 @@ public class WorkerController {
         return false;
     }
 
-    private void unlockAccountsIfLocked(List<UserLogin> userLogins) throws Exception {
-        for (UserLogin userLogin : userLogins) {
-            if (En_AdminState.LOCKED.getId() == userLogin.getAdminStateId()) {
-                userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
-                saveAccount(userLogin);
-            }
-        }
-    }
 }
