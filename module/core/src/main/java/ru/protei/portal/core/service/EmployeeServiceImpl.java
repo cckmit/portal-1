@@ -341,6 +341,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         updateWorkerEntries(token, person.getId(), workerEntries);
 
+        if (isHiredAgain(oldPerson)) {
+            userLoginDAO.unlockAccounts(oldPerson.getId());
+        }
+
         final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEmployeeSyncEnabled();
         if (needToChangeAccount && YOUTRACK_INTEGRATION_ENABLED) {
             createChangeLastNameYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), oldPerson.getLastName());
@@ -909,5 +913,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private WorkerEntry getFirstEntry(List<WorkerEntry> workers) {
         return workers.stream().findFirst().orElse(null);
+    }
+
+    private boolean isHiredAgain(Person oldPerson) {
+        return oldPerson.isFired();
     }
 }

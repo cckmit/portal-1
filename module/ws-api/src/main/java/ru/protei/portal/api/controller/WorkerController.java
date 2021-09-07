@@ -17,13 +17,10 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.*;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.service.EmployeeService;
 import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
@@ -32,7 +29,6 @@ import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.util.AuthUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -1561,6 +1557,8 @@ public class WorkerController {
 
                         logger.debug("success result, workerRowId={}", worker.getId());
                         return ok(person.getId());
+                    } else if (!rec.isFired() && !rec.isDeleted()) {
+                        unlockAccountsIfLocked(userLogins);
                     }
 
                     mergePerson(person);
@@ -1753,4 +1751,12 @@ public class WorkerController {
         return false;
     }
 
+    private void unlockAccountsIfLocked(List<UserLogin> userLogins) throws Exception {
+        for (UserLogin userLogin : userLogins) {
+            if (En_AdminState.LOCKED.getId() == userLogin.getAdminStateId()) {
+                userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
+                saveAccount(userLogin);
+            }
+        }
+    }
 }
