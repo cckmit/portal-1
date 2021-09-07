@@ -338,6 +338,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         this.account = userLogin;
         fillView(contact, account);
         resetValidationStatus();
+        validateFields();
     }
 
     private void fillView(Person person, UserLogin userLogin){
