@@ -3623,4 +3623,6 @@ public interface Lang extends Messages, ContactItemLang {
     String deliveryKit();
 
     String warnOneKitAllowedForTheOperation();
+
+    String errAccountIsLocked();
 }

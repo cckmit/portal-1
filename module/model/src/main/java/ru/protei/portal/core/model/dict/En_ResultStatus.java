@@ -31,6 +31,11 @@ public enum En_ResultStatus {
     INVALID_LOGIN_OR_PWD,
 
     /**
+     *  учетная запись заблокирована
+     */
+    ACCOUNT_IS_LOCKED,
+
+    /**
      * ошибка получения данных
      */
     GET_DATA_ERROR,

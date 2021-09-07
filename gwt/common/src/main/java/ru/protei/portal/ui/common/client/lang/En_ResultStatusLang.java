@@ -32,6 +32,7 @@ public class En_ResultStatusLang {
             case INTERNAL_ERROR : return lang.errInternalError();
             case INVALID_SESSION_ID :  return lang.errInvalidSessionID();
             case INVALID_LOGIN_OR_PWD :  return lang.errLoginOrPwd();
+            case ACCOUNT_IS_LOCKED:  return lang.errAccountIsLocked();
             case GET_DATA_ERROR: return lang.errGetDataError();
             case NOT_FOUND :  return lang.errNotFound();
             case NOT_CREATED :  return lang.errNotCreated();
