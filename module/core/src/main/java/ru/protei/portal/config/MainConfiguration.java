@@ -784,8 +784,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public YoutrackReportDictionaryDAO getYoutrackReportDictionaryDAO() {
-        return new YoutrackReportDictionaryDAO_Impl();
+    public YoutrackWorkDictionaryDAO getYoutrackWorkDictionaryDAO() {
+        return new YoutrackWorkDictionaryDAO_Impl();
     }
 
     /* SERVICES */
@@ -1016,8 +1016,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public YoutrackReportDictionaryService getYoutrackReportDictionaryService() {
-        return new YoutrackReportDictionaryServiceImpl();
+    public YoutrackWorkDictionaryService getYoutrackWorkDictionaryService() {
+        return new YoutrackWorkDictionaryServiceImpl();
     }
 
     @Bean

@@ -1,13 +1,13 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_ReportYoutrackWorkType;
+import ru.protei.portal.core.model.dict.En_YoutrackWorkType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.List;
 
-@JdbcEntity( table = "youtrack_report_dictionary" )
-public class YoutrackReportDictionary extends AuditableObject {
+@JdbcEntity( table = "youtrack_work_dictionary" )
+public class YoutrackWorkDictionary extends AuditableObject {
 
     @JdbcId( name = "id", idInsertMode = IdInsertMode.AUTO )
     private Long id;
@@ -17,10 +17,10 @@ public class YoutrackReportDictionary extends AuditableObject {
 
     @JdbcColumn(name = "type")
     @JdbcEnumerated( EnumType.ID )
-    private En_ReportYoutrackWorkType dictionaryType;
+    private En_YoutrackWorkType type;
 
-    @JdbcManyToMany(linkTable = "youtrack_report_dictionary_to_youtrack_project",
-            localLinkColumn = "youtrack_report_dictionary_id",
+    @JdbcManyToMany(linkTable = "youtrack_work_dictionary_to_youtrack_project",
+            localLinkColumn = "youtrack_work_dictionary_id",
             remoteLinkColumn = "youtrack_project_id")
     private List<YoutrackProject> youtrackProjects;
 
@@ -41,12 +41,12 @@ public class YoutrackReportDictionary extends AuditableObject {
         this.name = name;
     }
 
-    public En_ReportYoutrackWorkType getDictionaryType() {
-        return dictionaryType;
+    public En_YoutrackWorkType getType() {
+        return type;
     }
 
-    public void setDictionaryType(En_ReportYoutrackWorkType dictionaryType) {
-        this.dictionaryType = dictionaryType;
+    public void setType(En_YoutrackWorkType type) {
+        this.type = type;
     }
 
     public List<YoutrackProject> getYoutrackProjects() {
@@ -70,14 +70,14 @@ public class YoutrackReportDictionary extends AuditableObject {
         String DICTIONARY_TYPE = "type";
     }
 
-    public static final String AUDIT_TYPE = "YoutrackReportDictionary";
+    public static final String AUDIT_TYPE = "YoutrackWorkDictionary";
 
     @Override
     public String toString() {
-        return "YoutrackReportDictionary{" +
+        return "YoutrackWorkDictionary{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", dictionaryType=" + dictionaryType +
+                ", dictionaryType=" + type +
                 ", youtrackProjects=" + youtrackProjects +
                 '}';
     }

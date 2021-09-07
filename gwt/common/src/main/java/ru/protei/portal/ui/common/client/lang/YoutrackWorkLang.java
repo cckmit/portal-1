@@ -1,11 +1,11 @@
 package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_ReportYoutrackWorkType;
+import ru.protei.portal.core.model.dict.En_YoutrackWorkType;
 
-public class ReportYoutrackWorkLang {
+public class YoutrackWorkLang {
 
-    public String getTypeName(En_ReportYoutrackWorkType type) {
+    public String getTypeName(En_YoutrackWorkType type) {
         if (type == null) {
             return lang.unknownField();
         }

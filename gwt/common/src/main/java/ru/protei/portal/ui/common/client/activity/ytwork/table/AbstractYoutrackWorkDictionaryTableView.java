@@ -1,16 +1,16 @@
 package ru.protei.portal.ui.common.client.activity.ytwork.table;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.ent.YoutrackReportDictionary;
+import ru.protei.portal.core.model.ent.YoutrackWorkDictionary;
 
 import java.util.List;
 
-public interface AbstractYoutrackReportDictionaryTableView extends IsWidget {
-    void setActivity(AbstractYoutrackReportDictionaryTableActivity activity);
+public interface AbstractYoutrackWorkDictionaryTableView extends IsWidget {
+    void setActivity(AbstractYoutrackWorkDictionaryTableActivity activity);
 
     void clearRecords();
 
-    void putRecords(List<YoutrackReportDictionary> list);
+    void putRecords(List<YoutrackWorkDictionary> list);
 
     void setName(String name);
 
@@ -26,5 +26,5 @@ public interface AbstractYoutrackReportDictionaryTableView extends IsWidget {
 
     void setEnsureDebugId(String debugId);
 
-    void onShow();
+    void refreshTable();
 }

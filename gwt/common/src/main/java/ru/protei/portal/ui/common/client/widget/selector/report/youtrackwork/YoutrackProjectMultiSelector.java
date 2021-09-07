@@ -5,7 +5,7 @@ import ru.protei.portal.core.model.ent.YoutrackProject;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
 
-public class ReportYoutrackWorkYtProjectMultiSelector extends InputPopupMultiSelector<YoutrackProject> {
+public class YoutrackProjectMultiSelector extends InputPopupMultiSelector<YoutrackProject> {
     public void clean() {
         if (model != null) {
             model.clean();
@@ -13,7 +13,7 @@ public class ReportYoutrackWorkYtProjectMultiSelector extends InputPopupMultiSel
     }
 
     @Inject
-    void init(ReportYtWorkYtProjectMultiModel model, Lang lang) {
+    void init(YoutrackProjectModel model, Lang lang) {
         this.model = model;
 
         setAsyncModel(model);
@@ -26,5 +26,5 @@ public class ReportYoutrackWorkYtProjectMultiSelector extends InputPopupMultiSel
         setItemRenderer(YoutrackProject::getShortName);
     }
 
-    private ReportYtWorkYtProjectMultiModel model;
+    private YoutrackProjectModel model;
 }

@@ -11,15 +11,17 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
-import ru.protei.portal.core.model.dict.En_ReportYoutrackWorkType;
-import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYtWorkFilterActivity;
-import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYtWorkFilterView;
-import ru.protei.portal.ui.common.client.activity.ytwork.table.AbstractYoutrackReportDictionaryTableView;
+import ru.protei.portal.core.model.dict.En_YoutrackWorkType;
+import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYoutrackWorkFilterActivity;
+import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYoutrackWorkFilterView;
+import ru.protei.portal.ui.common.client.activity.ytwork.table.AbstractYoutrackWorkDictionaryTableView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 
-public class YtWorkFilterView extends Composite implements AbstractYtWorkFilterView {
+import java.util.*;
+
+public class YoutrackWorkFilterView extends Composite implements AbstractYoutrackWorkFilterView {
 
     @Inject
     public void onInit() {
@@ -28,10 +30,16 @@ public class YtWorkFilterView extends Composite implements AbstractYtWorkFilterV
     }
 
     @Override
-    public void setActivity(AbstractYtWorkFilterActivity activity) {
+    public void setActivity(AbstractYoutrackWorkFilterActivity activity) {
         this.activity = activity;
-        tables.add(addCol(activity.getDictionaryTable(En_ReportYoutrackWorkType.NIOKR).asWidget()));
-        tables.add(addCol(activity.getDictionaryTable(En_ReportYoutrackWorkType.NMA).asWidget()));
+
+        AbstractYoutrackWorkDictionaryTableView dictionaryTable = activity.getDictionaryTable(En_YoutrackWorkType.NIOKR);
+        tablesViews.add(dictionaryTable);
+        tables.add(addCol(dictionaryTable.asWidget()));
+
+        dictionaryTable = activity.getDictionaryTable(En_YoutrackWorkType.NMA);
+        tablesViews.add(dictionaryTable);
+        tables.add(addCol(dictionaryTable.asWidget()));
     }
 
     private Widget addCol(Widget widget) {
@@ -43,10 +51,9 @@ public class YtWorkFilterView extends Composite implements AbstractYtWorkFilterV
     @Override
     public void resetFilter() {
         date.setValue(null);
-        tables.forEach(widget -> {
-            AbstractYoutrackReportDictionaryTableView tableView = (AbstractYoutrackReportDictionaryTableView)widget;
+        tablesViews.forEach(tableView -> {
             tableView.setCollapsed(true);
-            tableView.onShow();
+            tableView.refreshTable();
         });
     }
 
@@ -99,8 +106,9 @@ public class YtWorkFilterView extends Composite implements AbstractYtWorkFilterV
     @UiField
     DivElement footer;
 
-    private AbstractYtWorkFilterActivity activity;
+    private AbstractYoutrackWorkFilterActivity activity;
+    private List<AbstractYoutrackWorkDictionaryTableView> tablesViews = new ArrayList<>();
 
     private static FilterViewUiBinder outUiBinder = GWT.create(FilterViewUiBinder.class);
-    interface FilterViewUiBinder extends UiBinder<HTMLPanel, YtWorkFilterView> {}
+    interface FilterViewUiBinder extends UiBinder<HTMLPanel, YoutrackWorkFilterView> {}
 }

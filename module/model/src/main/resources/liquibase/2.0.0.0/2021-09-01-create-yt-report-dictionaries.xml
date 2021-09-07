@@ -18,8 +18,8 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="create-youtrack_report_dictionary-table" author="porubov">
-        <createTable tableName="youtrack_report_dictionary">
+    <changeSet id="create-youtrack_work_dictionary-table" author="porubov">
+        <createTable tableName="youtrack_work_dictionary">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
@@ -28,14 +28,17 @@
             </column>
             <column name="type" type="int"/>
         </createTable>
+        <createIndex indexName="ix_youtrack_work_dictionary_type" tableName="youtrack_work_dictionary">
+            <column name="type"/>
+        </createIndex>
     </changeSet>
 
-    <changeSet id="create-youtrack_report_dictionary_to_youtrack_project-table" author="porubov">
-        <createTable tableName="youtrack_report_dictionary_to_youtrack_project">
+    <changeSet id="create-youtrack_work_dictionary_to_youtrack_project-table" author="porubov">
+        <createTable tableName="youtrack_work_dictionary_to_youtrack_project">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="youtrack_report_dictionary_id" type="BIGINT">
+            <column name="youtrack_work_dictionary_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
             <column name="youtrack_project_id" type="BIGINT">
@@ -44,14 +47,14 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="add-fk-on-youtrack_report_dictionary_to_youtrack_project-table" author="porubov">
-        <addForeignKeyConstraint constraintName="fk_youtrack_report_dictionary_id_to_youtrack_report_dictionary"
-                                 baseTableName="youtrack_report_dictionary_to_youtrack_project" baseColumnNames="youtrack_report_dictionary_id"
-                                 referencedTableName="youtrack_report_dictionary" referencedColumnNames="id"
+    <changeSet id="add-fk-on-youtrack_work_dictionary_to_youtrack_project-table" author="porubov">
+        <addForeignKeyConstraint constraintName="fk_youtrack_work_dictionary_id_to_youtrack_work_dictionary"
+                                 baseTableName="youtrack_work_dictionary_to_youtrack_project" baseColumnNames="youtrack_work_dictionary_id"
+                                 referencedTableName="youtrack_work_dictionary" referencedColumnNames="id"
                                  onUpdate="CASCADE" onDelete="CASCADE"/>
 
         <addForeignKeyConstraint constraintName="fk_youtrack_project_id_to_youtrack_project"
-                                 baseTableName="youtrack_report_dictionary_to_youtrack_project" baseColumnNames="youtrack_project_id"
+                                 baseTableName="youtrack_work_dictionary_to_youtrack_project" baseColumnNames="youtrack_project_id"
                                  referencedTableName="youtrack_project" referencedColumnNames="id"
                                  onUpdate="CASCADE" onDelete="CASCADE"/>
     </changeSet>

@@ -12,7 +12,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
 
-public abstract class ReportYtWorkYtProjectMultiModel extends BaseSelectorModel<YoutrackProject> implements Activity {
+public abstract class YoutrackProjectModel extends BaseSelectorModel<YoutrackProject> implements Activity {
 
     @Override
     protected void requestData(LoadingHandler selector, String searchText) {

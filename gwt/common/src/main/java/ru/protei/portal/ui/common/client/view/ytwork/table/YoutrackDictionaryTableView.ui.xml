@@ -17,8 +17,8 @@
                 </div>
                 <div class="card-controls">
                     <ul>
-                        <li><g:Button ui:field="add" title="{lang.dashboardActionOpen}" styleName="btn btn-default padding-0 no-border bg-transparent">
-                            <i class="fas fa-fw fa-external-link-alt"/>
+                        <li><g:Button ui:field="add" title="{lang.reportYoutrackWorkDictionaryAdd}" styleName="btn btn-default padding-0 no-border bg-transparent">
+                            <i class="fas fa-fw fa-plus"/>
                         </g:Button></li>
                     </ul>
                 </div>

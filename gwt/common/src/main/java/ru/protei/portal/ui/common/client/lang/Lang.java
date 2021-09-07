@@ -3628,6 +3628,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportYoutrackWorkTypeNma();
 
+    String reportYoutrackWorkDictionaryAdd();
+
     String reportYoutrackWorkDictionaryCreate();
 
     String reportYoutrackWorkDictionaryEdit();

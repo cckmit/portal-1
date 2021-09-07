@@ -1350,7 +1350,7 @@ public class DebugIds {
         String CANCEL_BUTTON = "confirm-dialog-cancel-button";
     }
 
-    public interface YOUTRACK_WORK_REPORT {
+    public interface YOUTRACK_WORK {
         String TABLE = "youtrack-work-report-table-";
 
         interface DIALOG {

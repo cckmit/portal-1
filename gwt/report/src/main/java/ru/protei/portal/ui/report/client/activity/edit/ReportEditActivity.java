@@ -20,8 +20,8 @@ import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContrac
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYtWorkFilterActivity;
-import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYtWorkFilterView;
+import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYoutrackWorkFilterActivity;
+import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYoutrackWorkFilterView;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseFilterControllerAsync;
@@ -727,9 +727,9 @@ public abstract class ReportEditActivity implements Activity,
     @Inject
     AbstractContractFilterView contractFilterView;
     @Inject
-    AbstractYtWorkFilterView ytWorkFilterView;
+    AbstractYoutrackWorkFilterView ytWorkFilterView;
     @Inject
-    AbstractYtWorkFilterActivity ytWorkFilterActivity;
+    AbstractYoutrackWorkFilterActivity ytWorkFilterActivity;
 
     @Inject
     CompanyModel companyModel;

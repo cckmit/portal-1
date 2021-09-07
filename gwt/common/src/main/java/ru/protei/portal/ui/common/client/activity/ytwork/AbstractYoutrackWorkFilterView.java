@@ -4,9 +4,9 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 
-public interface AbstractYtWorkFilterView extends IsWidget {
+public interface AbstractYoutrackWorkFilterView extends IsWidget {
 
-    void setActivity(AbstractYtWorkFilterActivity activity);
+    void setActivity(AbstractYoutrackWorkFilterActivity activity);
 
     void resetFilter();
 
