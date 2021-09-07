@@ -1,6 +1,6 @@
 package ru.protei.portal.core.model.struct.reportytwork;
 
-import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
+import ru.protei.portal.core.model.dict.En_ReportYoutrackWorkType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -68,7 +68,7 @@ public final class ReportYtWorkRowItem implements ReportYtWorkRow {
         this.allTimeSpent = this.allTimeSpent + time;
     }
 
-    public Map<String, Long> selectSpentTimeMap(En_ReportYtWorkType type) {
+    public Map<String, Long> selectSpentTimeMap(En_ReportYoutrackWorkType type) {
         switch (type) {
             case NIOKR: return this.getNiokrSpentTime();
             case NMA: return this.getNmaSpentTime();

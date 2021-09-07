@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.YoutrackProjectDAO;
 import ru.protei.portal.core.model.dao.YoutrackReportDictionaryDAO;
-import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
+import ru.protei.portal.core.model.dict.En_ReportYoutrackWorkType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.YoutrackProject;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.*;
 
 public class YoutrackReportDictionaryServiceImpl implements YoutrackReportDictionaryService {
     private static Logger log = LoggerFactory.getLogger(YoutrackReportDictionaryServiceImpl.class);
@@ -32,7 +32,7 @@ public class YoutrackReportDictionaryServiceImpl implements YoutrackReportDictio
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Override
-    public Result<List<YoutrackReportDictionary>> getDictionaries(AuthToken token, En_ReportYtWorkType type) {
+    public Result<List<YoutrackReportDictionary>> getDictionaries(AuthToken token, En_ReportYoutrackWorkType type) {
         if (type == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -60,11 +60,11 @@ public class YoutrackReportDictionaryServiceImpl implements YoutrackReportDictio
 
     @Override
     @Transactional
-    public Result<Long> createDictionary(AuthToken token, YoutrackReportDictionary dictionary) {
+    public Result<YoutrackReportDictionary> createDictionary(AuthToken token, YoutrackReportDictionary dictionary) {
         if (dictionary == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        if (isValid(dictionary)) {
+        if (!isValid(dictionary)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
@@ -72,16 +72,16 @@ public class YoutrackReportDictionaryServiceImpl implements YoutrackReportDictio
         dictionary.setYoutrackProjects(fillOrSaveProjects(dictionary.getYoutrackProjects()));
         jdbcManyRelationsHelper.persist(dictionary, YoutrackReportDictionary.Fields.YOUTRACK_PROJECTS);
 
-        return null;
+        return ok(dictionary);
     }
 
     @Override
     @Transactional
-    public Result<Long> updateDictionary(AuthToken token, YoutrackReportDictionary dictionary) {
+    public Result<YoutrackReportDictionary> updateDictionary(AuthToken token, YoutrackReportDictionary dictionary) {
         if (dictionary == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        if (isValid(dictionary)) {
+        if (!isValid(dictionary)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
@@ -94,17 +94,17 @@ public class YoutrackReportDictionaryServiceImpl implements YoutrackReportDictio
         dictionary.setYoutrackProjects(fillOrSaveProjects(dictionary.getYoutrackProjects()));
         jdbcManyRelationsHelper.persist(dictionary, YoutrackReportDictionary.Fields.YOUTRACK_PROJECTS);
 
-        return null;
+        return ok(dictionary);
     }
 
     @Override
     @Transactional
-    public Result<Long> removeDictionary(AuthToken token, YoutrackReportDictionary dictionary) {
+    public Result<YoutrackReportDictionary> removeDictionary(AuthToken token, YoutrackReportDictionary dictionary) {
         if (dictionary == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
         if (dictionaryDAO.remove(dictionary)) {
-            return Result.ok(dictionary.getId());
+            return ok(dictionary);
         }
         return error(En_ResultStatus.INTERNAL_ERROR);
     }

@@ -1016,6 +1016,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public YoutrackReportDictionaryService getYoutrackReportDictionaryService() {
+        return new YoutrackReportDictionaryServiceImpl();
+    }
+
+    @Bean
     public UitsService getUitsService() {
         return new UitsServiceImpl();
     }

@@ -8,15 +8,14 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
+import ru.protei.portal.core.model.dict.En_ReportYoutrackWorkType;
 import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYtWorkFilterActivity;
 import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYtWorkFilterView;
+import ru.protei.portal.ui.common.client.activity.ytwork.table.AbstractYoutrackReportDictionaryTableView;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.report.ReportYtWorkYtProjectMultiSelector;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 
@@ -31,13 +30,24 @@ public class YtWorkFilterView extends Composite implements AbstractYtWorkFilterV
     @Override
     public void setActivity(AbstractYtWorkFilterActivity activity) {
         this.activity = activity;
+        tables.add(addCol(activity.getDictionaryTable(En_ReportYoutrackWorkType.NIOKR).asWidget()));
+        tables.add(addCol(activity.getDictionaryTable(En_ReportYoutrackWorkType.NMA).asWidget()));
+    }
+
+    private Widget addCol(Widget widget) {
+        SimplePanel widgets = new SimplePanel(widget);
+        widgets.setStyleName("col-lg-12 col-xl-6 col-xlg-6");
+        return widgets;
     }
 
     @Override
     public void resetFilter() {
         date.setValue(null);
-        youtrackProjects.setValue(null);
-        youtrackProjects.clean();
+        tables.forEach(widget -> {
+            AbstractYoutrackReportDictionaryTableView tableView = (AbstractYoutrackReportDictionaryTableView)widget;
+            tableView.setCollapsed(true);
+            tableView.onShow();
+        });
     }
 
     @Override
@@ -83,9 +93,8 @@ public class YtWorkFilterView extends Composite implements AbstractYtWorkFilterV
     @UiField(provided = true)
     TypedSelectorRangePicker date;
 
-    @Inject
-    @UiField(provided = true)
-    ReportYtWorkYtProjectMultiSelector youtrackProjects;
+    @UiField
+    HTMLPanel tables;
 
     @UiField
     DivElement footer;

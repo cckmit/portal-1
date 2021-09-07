@@ -48,7 +48,13 @@ import ru.protei.portal.ui.common.client.activity.projectsearch.AbstractProjectS
 import ru.protei.portal.ui.common.client.activity.projectsearch.ProjectSearchActivity;
 import ru.protei.portal.ui.common.client.activity.workerposition.edit.AbstractWorkerPositionEditView;
 import ru.protei.portal.ui.common.client.activity.workerposition.edit.WorkerPositionEditActivity;
+import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYtWorkFilterActivity;
 import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYtWorkFilterView;
+import ru.protei.portal.ui.common.client.activity.ytwork.YtWorkFilterActivity;
+import ru.protei.portal.ui.common.client.activity.ytwork.dialog.AbstractYoutrackReportDictionaryDialogView;
+import ru.protei.portal.ui.common.client.activity.ytwork.table.AbstractYoutrackReportDictionaryTableActivity;
+import ru.protei.portal.ui.common.client.activity.ytwork.table.AbstractYoutrackReportDictionaryTableView;
+import ru.protei.portal.ui.common.client.activity.ytwork.table.YoutrackReportDictionaryTableActivity;
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
@@ -76,6 +82,8 @@ import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
 import ru.protei.portal.ui.common.client.view.projectsearch.ProjectSearchView;
 import ru.protei.portal.ui.common.client.view.workerposition.edit.WorkerPositionEditView;
 import ru.protei.portal.ui.common.client.view.ytwork.YtWorkFilterView;
+import ru.protei.portal.ui.common.client.view.ytwork.dialog.YoutrackReportDictionaryView;
+import ru.protei.portal.ui.common.client.view.ytwork.table.YoutrackReportDictionaryTableView;
 import ru.protei.portal.ui.common.client.widget.employeeregstate.EmployeeRegistrationStateModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateOptionsModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateSelectorModel;
@@ -192,6 +200,11 @@ public class CommonClientModule extends AbstractGinModule {
         bind(ContractModel.class).asEagerSingleton();
 
         bind(AbstractYtWorkFilterView.class).to(YtWorkFilterView.class);
+
+        bind(AbstractYtWorkFilterActivity.class).to(YtWorkFilterActivity.class);
+        bind(AbstractYoutrackReportDictionaryDialogView.class).to(YoutrackReportDictionaryView.class);
+        bind(AbstractYoutrackReportDictionaryTableView.class).to(YoutrackReportDictionaryTableView.class);
+        bind(AbstractYoutrackReportDictionaryTableActivity.class).to(YoutrackReportDictionaryTableActivity.class);
     }
 }
 

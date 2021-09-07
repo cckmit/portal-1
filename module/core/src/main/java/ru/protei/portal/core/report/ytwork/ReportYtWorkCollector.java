@@ -1,6 +1,6 @@
 package ru.protei.portal.core.report.ytwork;
 
-import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
+import ru.protei.portal.core.model.dict.En_ReportYoutrackWorkType;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkClassificationError;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkInfo;
@@ -19,7 +19,7 @@ import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.*;
-import static ru.protei.portal.core.model.dict.En_ReportYtWorkType.*;
+import static ru.protei.portal.core.model.dict.En_ReportYoutrackWorkType.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class ReportYtWorkCollector implements Collector<
@@ -109,7 +109,7 @@ public class ReportYtWorkCollector implements Collector<
             if (contracts.isEmpty()) {
                 return Optional.empty();
             } else {
-                Map<En_ReportYtWorkType, List<String>> mapContactGuaranteeToName = contracts.stream()
+                Map<En_ReportYoutrackWorkType, List<String>> mapContactGuaranteeToName = contracts.stream()
                         .collect(groupingBy(contract -> contractGuaranteeClassifier(contract, now), mapping(Contract::getNumber, toList())));
                 List<String> contractNames = mapContactGuaranteeToName.get(CONTRACT);
                 if (isNotEmpty(contractNames)) {
@@ -120,7 +120,7 @@ public class ReportYtWorkCollector implements Collector<
         });
     }
 
-    static private En_ReportYtWorkType contractGuaranteeClassifier(Contract contract, Date now) {
+    static private En_ReportYoutrackWorkType contractGuaranteeClassifier(Contract contract, Date now) {
         return contract.getDateValid() == null || contract.getDateValid().after(now) ? CONTRACT : GUARANTEE;
     }
 
@@ -165,15 +165,15 @@ public class ReportYtWorkCollector implements Collector<
     }
 
     static private class WorkTypeAndValue {
-        final En_ReportYtWorkType workType;
+        final En_ReportYoutrackWorkType workType;
         final List<String> value;
 
-        public WorkTypeAndValue(En_ReportYtWorkType workType, List<String> value) {
+        public WorkTypeAndValue(En_ReportYoutrackWorkType workType, List<String> value) {
             this.workType = workType;
             this.value = value;
         }
 
-        public En_ReportYtWorkType getWorkType() {
+        public En_ReportYoutrackWorkType getWorkType() {
             return workType;
         }
 

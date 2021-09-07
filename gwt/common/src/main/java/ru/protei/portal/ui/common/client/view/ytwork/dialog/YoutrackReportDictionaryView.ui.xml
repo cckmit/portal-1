@@ -1,0 +1,25 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+             xmlns:selector="urn:import:ru.protei.portal.ui.common.client.widget.selector.report.youtrackwork"
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="card card-transparent no-margin">
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label><ui:text from="{lang.reportYoutrackWorkDictionaryName}"/></label>
+                <validablefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
+            </div>
+            <div class="form-group col-md-12">
+                <label><ui:text from="{lang.reportYoutrackWorkDictionaryType}"/></label>
+                <selector:ReportYoutrackDictionarySelector ui:field="type"/>
+            </div>
+            <div class="form-group col-md-12">
+                <label><ui:text from="{lang.reportYoutrackWorkDictionaryProjects}"/></label>
+                <selector:ReportYoutrackWorkYtProjectMultiSelector ui:field="projects"/>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

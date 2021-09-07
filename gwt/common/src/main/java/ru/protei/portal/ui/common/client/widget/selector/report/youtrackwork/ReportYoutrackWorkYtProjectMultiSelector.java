@@ -1,11 +1,11 @@
-package ru.protei.portal.ui.common.client.widget.selector.report;
+package ru.protei.portal.ui.common.client.widget.selector.report.youtrackwork;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.YoutrackProject;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
 
-public class ReportYtWorkYtProjectMultiSelector extends InputPopupMultiSelector<YoutrackProject> {
+public class ReportYoutrackWorkYtProjectMultiSelector extends InputPopupMultiSelector<YoutrackProject> {
     public void clean() {
         if (model != null) {
             model.clean();

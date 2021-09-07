@@ -20,6 +20,7 @@ import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContrac
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYtWorkFilterActivity;
 import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYtWorkFilterView;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -63,6 +64,8 @@ public abstract class ReportEditActivity implements Activity,
         contractFilterView.clearFooterStyle();
         ytWorkFilterView.clearFooterStyle();
         view.fillReportScheduledTypes(asList(En_ReportScheduledType.values()));
+
+        ytWorkFilterView.setActivity(ytWorkFilterActivity);
     }
 
     @Event
@@ -725,6 +728,8 @@ public abstract class ReportEditActivity implements Activity,
     AbstractContractFilterView contractFilterView;
     @Inject
     AbstractYtWorkFilterView ytWorkFilterView;
+    @Inject
+    AbstractYtWorkFilterActivity ytWorkFilterActivity;
 
     @Inject
     CompanyModel companyModel;

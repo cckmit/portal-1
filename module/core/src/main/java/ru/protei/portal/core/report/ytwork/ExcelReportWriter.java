@@ -4,7 +4,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import ru.protei.portal.core.Lang;
-import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
+import ru.protei.portal.core.model.dict.En_ReportYoutrackWorkType;
 import ru.protei.portal.core.model.struct.ListBuilder;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkClassificationError;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRow;
@@ -26,7 +26,7 @@ public class ExcelReportWriter implements
 
     private final Lang.LocalizedLang localizedLang;
     private final JXLSHelper.ReportBook<ReportYtWorkRow> book;
-    private Map<En_ReportYtWorkType, Set<String>> processedWorkTypes = new HashMap<>();
+    private Map<En_ReportYoutrackWorkType, Set<String>> processedWorkTypes = new HashMap<>();
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang) {
         this.localizedLang = localizedLang;
@@ -93,7 +93,7 @@ public class ExcelReportWriter implements
         currentSheet = classificationErrorSheet;
     }
 
-    public void setValueSheet(Map<En_ReportYtWorkType, Set<String>> processedWorkTypes) {
+    public void setValueSheet(Map<En_ReportYoutrackWorkType, Set<String>> processedWorkTypes) {
         this.processedWorkTypes = processedWorkTypes;
         currentSheet = valueSheet;
     }
@@ -141,7 +141,7 @@ public class ExcelReportWriter implements
         public String[] getColumnNames() {
             ListBuilder<String> columnsList = new ListBuilder<>();
             int count = 0;
-            for (Map.Entry<En_ReportYtWorkType, Set<String>> entry : processedWorkTypes.entrySet()) {
+            for (Map.Entry<En_ReportYoutrackWorkType, Set<String>> entry : processedWorkTypes.entrySet()) {
                 entry.getValue().forEach(value -> columnsList.add(entry.getKey() + " : " + value));
                 count += entry.getValue().size();
             }
@@ -180,7 +180,7 @@ public class ExcelReportWriter implements
                     .add(ExcelFormat.STANDARD)
                     .add(ExcelFormat.STANDARD);
             int count = 0;
-            for (Map.Entry<En_ReportYtWorkType, Set<String>> entry : processedWorkTypes.entrySet()) {
+            for (Map.Entry<En_ReportYoutrackWorkType, Set<String>> entry : processedWorkTypes.entrySet()) {
                 entry.getValue().forEach(value -> columnsList.add(ExcelFormat.STANDARD));
                 count += entry.getValue().size();
             }

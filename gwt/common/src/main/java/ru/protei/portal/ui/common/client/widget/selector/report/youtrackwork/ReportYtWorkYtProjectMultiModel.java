@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.selector.report;
+package ru.protei.portal.ui.common.client.widget.selector.report.youtrackwork;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;

@@ -1,6 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
+import ru.protei.portal.core.model.dict.En_ReportYoutrackWorkType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -17,7 +17,7 @@ public class YoutrackReportDictionary extends AuditableObject {
 
     @JdbcColumn(name = "type")
     @JdbcEnumerated( EnumType.ID )
-    private En_ReportYtWorkType dictionaryType;
+    private En_ReportYoutrackWorkType dictionaryType;
 
     @JdbcManyToMany(linkTable = "youtrack_report_dictionary_to_youtrack_project",
             localLinkColumn = "youtrack_report_dictionary_id",
@@ -41,11 +41,11 @@ public class YoutrackReportDictionary extends AuditableObject {
         this.name = name;
     }
 
-    public En_ReportYtWorkType getDictionaryType() {
+    public En_ReportYoutrackWorkType getDictionaryType() {
         return dictionaryType;
     }
 
-    public void setDictionaryType(En_ReportYtWorkType dictionaryType) {
+    public void setDictionaryType(En_ReportYoutrackWorkType dictionaryType) {
         this.dictionaryType = dictionaryType;
     }
 

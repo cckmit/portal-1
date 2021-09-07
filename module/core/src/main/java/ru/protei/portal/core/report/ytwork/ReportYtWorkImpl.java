@@ -9,7 +9,7 @@ import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.client.enterprise1c.api.Api1CWork;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
+import ru.protei.portal.core.model.dict.En_ReportYoutrackWorkType;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.enterprise1c.dto.WorkPersonInfo1C;
@@ -218,7 +218,7 @@ public class ReportYtWorkImpl implements ReportYtWork {
     }
 
     private void writeNoCompanySheet(List<ReportYtWorkRow> noCompanyItems, ExcelReportWriter writer) {
-        Map<En_ReportYtWorkType, Set<String>> noCompanyProcessedWorkTypes = createProcessedWorkTypes();
+        Map<En_ReportYoutrackWorkType, Set<String>> noCompanyProcessedWorkTypes = createProcessedWorkTypes();
         noCompanyItems.forEach(item -> collectProcessedWorkTypes(noCompanyProcessedWorkTypes, item));
         writer.setValueSheet(noCompanyProcessedWorkTypes);
         int sheetNumber = writer.createSheet();
@@ -289,16 +289,16 @@ public class ReportYtWorkImpl implements ReportYtWork {
         return companyMap;
     }
 
-    private void collectProcessedWorkTypes(Map<En_ReportYtWorkType, Set<String>> map, ReportYtWorkRow row) {
+    private void collectProcessedWorkTypes(Map<En_ReportYoutrackWorkType, Set<String>> map, ReportYtWorkRow row) {
         if (row instanceof ReportYtWorkRowItem) {
             ReportYtWorkRowItem item = (ReportYtWorkRowItem)row;
-            map.compute(En_ReportYtWorkType.NIOKR,
+            map.compute(En_ReportYoutrackWorkType.NIOKR,
                     (type, set) -> set != null ? set : new HashSet<>()).addAll(item.getNiokrSpentTime().keySet());
-            map.compute(En_ReportYtWorkType.NMA,
+            map.compute(En_ReportYoutrackWorkType.NMA,
                     (type, set) -> set != null ? set : new HashSet<>()).addAll(item.getNmaSpentTime().keySet());
-            map.compute(En_ReportYtWorkType.CONTRACT,
+            map.compute(En_ReportYoutrackWorkType.CONTRACT,
                     (type, set) -> set != null ? set : new HashSet<>()).addAll(item.getContractSpentTime().keySet());
-            map.compute(En_ReportYtWorkType.GUARANTEE,
+            map.compute(En_ReportYoutrackWorkType.GUARANTEE,
                     (type, set) -> set != null ? set : new HashSet<>()).addAll(item.getGuaranteeSpentTime().keySet());
         }
     }
@@ -392,21 +392,21 @@ public class ReportYtWorkImpl implements ReportYtWork {
     static private class CompanyReportInfo {
         private final DepartmentTree tree = new DepartmentTree();
         private final Map<NameWithId, List<ReportYtWorkRowItem>> values = new HashMap<>();
-        private final Map<En_ReportYtWorkType, Set<String>> processedWorkTypes = createProcessedWorkTypes();
+        private final Map<En_ReportYoutrackWorkType, Set<String>> processedWorkTypes = createProcessedWorkTypes();
         public DepartmentTree getTree() {
             return tree;
         }
         public Map<NameWithId, List<ReportYtWorkRowItem>> getValues() {
             return values;
         }
-        public Map<En_ReportYtWorkType, Set<String>> getProcessedWorkTypes() {
+        public Map<En_ReportYoutrackWorkType, Set<String>> getProcessedWorkTypes() {
             return processedWorkTypes;
         }
     }
 
-    static private Map<En_ReportYtWorkType, Set<String>> createProcessedWorkTypes() {
-        Map<En_ReportYtWorkType, Set<String>> processedWorkTypes = new LinkedHashMap<>();
-        for (En_ReportYtWorkType value : En_ReportYtWorkType.values()) {
+    static private Map<En_ReportYoutrackWorkType, Set<String>> createProcessedWorkTypes() {
+        Map<En_ReportYoutrackWorkType, Set<String>> processedWorkTypes = new LinkedHashMap<>();
+        for (En_ReportYoutrackWorkType value : En_ReportYoutrackWorkType.values()) {
             processedWorkTypes.put(value, new HashSet<>());
         }
         return processedWorkTypes;

@@ -1,7 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:range="urn:import:ru.protei.portal.ui.common.client.widget.typedrangepicker"
-             xmlns:selectors="urn:import:ru.protei.portal.ui.common.client.widget.selector"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -12,10 +11,8 @@
                 <range:TypedSelectorRangePicker ui:field="date" formatValue="dd.MM.yyyy HH:mm"
                                                 header="{lang.reportYtWorkDates}"
                                                 addStyleNames="form-group col-md-4 resize-md-12"/>
-                <selectors:report.ReportYtWorkYtProjectMultiSelector ui:field="youtrackProjects"
-                                                header="{lang.reportYtWorkDates}"
-                                                addStyleNames="form-group col-md-4 resize-md-12"/>
             </div>
+            <g:HTMLPanel styleName="row" ui:field="tables"/>
         </div>
         <div ui:field="footer" class="card-footer text-right">
             <g:Button ui:field="resetBtn" styleName="btn btn-default" text="{lang.buttonReset}"/>

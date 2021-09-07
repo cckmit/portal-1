@@ -1349,4 +1349,17 @@ public class DebugIds {
         String OK_BUTTON = "confirm-dialog-ok-button";
         String CANCEL_BUTTON = "confirm-dialog-cancel-button";
     }
+
+    public interface YOUTRACK_WORK_REPORT {
+        String TABLE = "youtrack-work-report-table-";
+
+        interface DIALOG {
+            String NAME = "youtrack-work-report-dialog-name";
+            String TYPE = "youtrack-work-report-dialog-type";
+            String PROJECTS = "youtrack-work-report-dialog-projects";
+            String PROJECTS_ADD = "youtrack-work-report-dialog-projects-add";
+            String PROJECTS_CLEAR = "youtrack-work-report-dialog-projects-clear";
+            String PROJECTS_ITEM_CONTAINER = "youtrack-work-report-dialog-projects-item-container";
+        }
+    }
 }
