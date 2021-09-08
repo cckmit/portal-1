@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_YoutrackWorkType;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.ent.YoutrackWorkDictionary;
 import ru.protei.portal.core.model.enterprise1c.dto.WorkPersonInfo1C;
 import ru.protei.portal.core.model.enterprise1c.query.WorkQuery1C;
 import ru.protei.portal.core.model.query.EmployeeQuery;
@@ -26,6 +27,7 @@ import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtSingleEnumIs
 import ru.protei.portal.core.model.youtrack.dto.issue.IssueWorkItem;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
 import ru.protei.portal.tools.ChunkIterator;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -63,12 +65,14 @@ public class ReportYtWorkImpl implements ReportYtWork {
     @Autowired
     CompanyDAO companyDAO;
     @Autowired
+    YoutrackWorkDictionaryDAO youtrackWorkDictionaryDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
     YoutrackApi api;
     @Autowired
     Api1CWork api1CWork;
 
-    private final Map<String, List<String>> invertNiokrs;
-    private final Map<String, List<String>> invertNmas;
     static private final String CLASSIFICATION_ERROR = "CLASSIFICATION ERROR";
     static private final String NO_COMPANY = "NO COMPANY";
     static private final Set<String> workerCompanyName = setOf(CrmConstants.Company.MAIN_HOME_COMPANY_NAME, CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME);
@@ -91,7 +95,6 @@ public class ReportYtWorkImpl implements ReportYtWork {
         niokrs.put("Программное обеспечение \"Платформа Видеоаналитики\"", Arrays.asList("VAD", "VP"));
         niokrs.put("ПО Protei TAS", Arrays.asList("MKD", "TAS", "ATE"));
         niokrs.put("ПО Protei SCC-AS", Arrays.asList("SCC-AS", "TAS"));
-        invertNiokrs = inverseMap(niokrs);
 
         Map<String, List<String>> nmas = new HashMap<>();
         nmas.put("СПО КТСО МУССОН", Arrays.asList("MC", "PHMONSOON", "HWMONSOON", "HWR", "EQA"));
@@ -130,8 +133,6 @@ public class ReportYtWorkImpl implements ReportYtWork {
         nmas.put("Пакетный шлюз PROTEI GGSN/PDN-GW", Arrays.asList("GGSN", "Mobile_HLR", "SGW"));
         nmas.put("Программа системы видеонаблюдения Видеопортал", Arrays.asList("VP", "CRS"));
         nmas.put("WIX", Arrays.asList("Mobile_WIX"));
-
-        invertNmas = inverseMap(nmas);
     }
 
     @Override
@@ -142,6 +143,10 @@ public class ReportYtWorkImpl implements ReportYtWork {
 
         log.debug("writeReport : reportId={} to process", report.getId());
 
+        List<YoutrackWorkDictionary> dictionaries = youtrackWorkDictionaryDAO.getAll();
+        jdbcManyRelationsHelper.fill(dictionaries, YoutrackWorkDictionary.Fields.YOUTRACK_PROJECTS);
+        Map<En_YoutrackWorkType, Map<String, List<String>>> dictionariesMap = makeYoutrackWorkTypeMap(dictionaries);
+
         Interval interval = makeInterval(query.getDateRange());
         ChunkIterator<IssueWorkItem> iterator = new ChunkIterator<>(
                 (offset, limit) -> api.getWorkItems(interval.from, interval.to, offset, limit),
@@ -150,7 +155,8 @@ public class ReportYtWorkImpl implements ReportYtWork {
         );
 
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
-                invertNiokrs, invertNmas,
+                dictionariesMap.get(En_YoutrackWorkType.NIOKR),
+                dictionariesMap.get(En_YoutrackWorkType.NMA),
                 name -> contractDAO.getByCustomerAndProject(name),
                 new Date(), makeHomeCompanySet()
         );
@@ -410,5 +416,31 @@ public class ReportYtWorkImpl implements ReportYtWork {
             processedWorkTypes.put(value, new HashSet<>());
         }
         return processedWorkTypes;
+    }
+
+    private Map<En_YoutrackWorkType, Map<String, List<String>>> makeYoutrackWorkTypeMap(List<YoutrackWorkDictionary> dictionaries) {
+        return dictionaries.stream().collect(HashMap::new,
+                (map, dictionary) -> {
+                    Map<String, List<String>> typeToMap = map.compute(dictionary.getType(), (type, innerMap) -> {
+                        if (innerMap == null) {
+                            innerMap = new HashMap<>();
+                        }
+                        return innerMap;
+                    });
+                    dictionary.getYoutrackProjects().forEach(project -> {
+                        typeToMap.compute(project.getShortName(), (projectKey, list) -> {
+                            if (list == null) {
+                                list = new ArrayList<>();
+                            }
+                            list.add(dictionary.getName());
+                            return list;
+                        });
+                    });
+                },
+                (map1, map2) -> mergeMap(map1, map2, (innerMap1, innerMap2) ->
+                        mergeMap(innerMap1, innerMap2, (list1, list2) -> {
+                            list1.addAll(list2);
+                            return list1;
+                        }) ));
     }
 }

@@ -6,16 +6,18 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.List;
 
+import static ru.protei.portal.core.model.ent.YoutrackWorkDictionary.Columns.*;
+
 @JdbcEntity( table = "youtrack_work_dictionary" )
 public class YoutrackWorkDictionary extends AuditableObject {
 
-    @JdbcId( name = "id", idInsertMode = IdInsertMode.AUTO )
+    @JdbcId( name = ID, idInsertMode = IdInsertMode.AUTO )
     private Long id;
 
-    @JdbcColumn( name = "name" )
+    @JdbcColumn( name = NAME )
     private String name;
 
-    @JdbcColumn(name = "type")
+    @JdbcColumn(name = DICTIONARY_TYPE)
     @JdbcEnumerated( EnumType.ID )
     private En_YoutrackWorkType type;
 
@@ -67,6 +69,8 @@ public class YoutrackWorkDictionary extends AuditableObject {
     }
 
     public interface Columns {
+        String ID = "id";
+        String NAME = "name";
         String DICTIONARY_TYPE = "type";
     }
 

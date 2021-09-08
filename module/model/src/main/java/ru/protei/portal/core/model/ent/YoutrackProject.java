@@ -7,13 +7,15 @@ import ru.protei.winter.jdbc.annotations.JdbcId;
 
 import java.io.Serializable;
 
+import static ru.protei.portal.core.model.ent.YoutrackProject.Fields.*;
+
 @JdbcEntity( table = "youtrack_project" )
 public class YoutrackProject implements Serializable {
 
     @JdbcId( name = "id", idInsertMode = IdInsertMode.AUTO )
     private Long id;
 
-    @JdbcColumn( name = "youtrack_id" )
+    @JdbcColumn( name = YOUTRACK_ID )
     private String youtrackId;
 
     @JdbcColumn( name = "short_name" )
