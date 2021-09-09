@@ -40,4 +40,5 @@ public interface UserLoginDAO extends PortalBaseDAO<UserLogin> {
         return userLogin;
     }
 
+    void unlockAccounts(Long personId);
 }

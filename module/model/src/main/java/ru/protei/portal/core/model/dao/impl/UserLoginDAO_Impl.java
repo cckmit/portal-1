@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import org.apache.commons.lang3.StringUtils;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
+import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.UserLogin;
@@ -21,6 +22,9 @@ import java.util.stream.Collectors;
  * Created by michael on 16.06.16.
  */
 public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements UserLoginDAO {
+
+    private static final String COLUMN_ASTATE = "astate";
+    private static final String COLUMN_PERSON_ID = "personId";
 
     @Override
     public UserLogin findByLogin(String login) {
@@ -123,5 +127,12 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
                 condition.append(" and person.company_id = " + query.getCompanyId());
             }
         });
+    }
+
+    @Override
+    public void unlockAccounts(Long personId) {
+        String sql = "UPDATE " + getTableName() + " SET " + COLUMN_ASTATE + " = " +
+                En_AdminState.UNLOCKED.getId() + " WHERE " + COLUMN_PERSON_ID + " = " + personId;
+        jdbcTemplate.update(sql);
     }
 }

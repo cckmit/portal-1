@@ -8,6 +8,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
+import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -85,6 +86,16 @@ public class AuthServiceImpl implements AuthService {
         }
 
         UserLogin userLogin = userLoginDAO.findByLogin(login);
+        if (userLogin == null) {
+            log.debug("login [" + userLogin + "] not found, auth-failed");
+            return error( En_ResultStatus.INVALID_LOGIN_OR_PWD );
+        }
+
+        if (userLogin.getAdminStateId() == En_AdminState.LOCKED.getId()) {
+            log.debug("account [" + userLogin + "] is locked");
+            return error( En_ResultStatus.ACCOUNT_IS_LOCKED );
+        }
+
         String loginSuffix = config.data().getLoginSuffix();
         boolean loginHasSuffix = login.contains("@");
         En_ResultStatus loginStatus;
@@ -92,7 +103,7 @@ public class AuthServiceImpl implements AuthService {
             loginStatus = authentificate(userLogin, login, pwd);
         } else {
             // PORTAL-490 feature
-            if (userLogin == null || !userLogin.isLDAP_Auth()) {
+            if (!userLogin.isLDAP_Auth()) {
                 log.debug("login [{}] not found, forced to use suffix [{}]", login, loginSuffix);
                 login += loginSuffix;
                 userLogin = userLoginDAO.findByLogin(login);

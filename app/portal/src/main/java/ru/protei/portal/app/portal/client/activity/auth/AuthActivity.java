@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.app.portal.client.service.AuthControllerAsync;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -65,7 +66,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         view.showError( "" );
         view.hideError();
         authService.authenticate(login, pwd, new FluentCallback<Profile>()
-                .withError(throwable -> {
+                .withError((throwable, defaultErrorHandler, status) -> {
                     log.warning( "onLoginClicked(): e: " + throwable );
                     if ( throwable instanceof StatusCodeException ) {
                         view.showError(lang.errServerUnavailable());
@@ -74,6 +75,11 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
 
                     if ( throwable instanceof IncompatibleRemoteServiceException) {
                         defaultErrorHandler.accept( throwable );
+                        return;
+                    }
+
+                    if (En_ResultStatus.ACCOUNT_IS_LOCKED.equals(status)) {
+                        view.showError( lang.errAccountIsLocked() );
                         return;
                     }
 
