@@ -40,8 +40,8 @@ public class ReportYtWorkCollector implements Collector<
                                  Function< String, List<Contract>> getContractsByCustomer,
                                  Date now,
                                  Set<String> homeCompany) {
-        this.niokrs = unmodifiableMap(new HashMap<>(niokrs));
-        this.nmas = unmodifiableMap(new HashMap<>(nmas));
+        this.niokrs = unmodifiableMap(niokrs == null? new HashMap<>() : new HashMap<>(niokrs));
+        this.nmas = unmodifiableMap(nmas == null? new HashMap<>() : new HashMap<>(nmas));
         this.getContractsByCustomer = getContractsByCustomer;
         this.now = now;
         this.homeCompany = unmodifiableSet(new HashSet<>(homeCompany));

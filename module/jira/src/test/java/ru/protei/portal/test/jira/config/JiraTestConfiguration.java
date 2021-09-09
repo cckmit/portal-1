@@ -406,6 +406,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public YoutrackWorkDictionaryService getYoutrackWorkDictionaryService() {
+        return new YoutrackWorkDictionaryServiceImpl();
+    }
+
+    @Bean
     public MailReceiverService getMailReceiverService() {
         return mock(MailReceiverService.class);
     }
@@ -419,7 +424,17 @@ public class JiraTestConfiguration {
     public YoutrackApi getYoutrackApi() {
         return new YoutrackApiImpl();
     }
+    
+    @Bean
+    public YoutrackProjectDAO getYoutrackProjectDAO() {
+        return new YoutrackProjectDAO_Impl();
+    }
 
+    @Bean
+    public YoutrackWorkDictionaryDAO getYoutrackWorkDictionaryDAO() {
+        return new YoutrackWorkDictionaryDAO_Impl();
+    }
+    
     @Bean
     public YtDtoFieldsMapper getYtDtoFieldsMapper() {
         return new YtDtoFieldsMapperImpl();
