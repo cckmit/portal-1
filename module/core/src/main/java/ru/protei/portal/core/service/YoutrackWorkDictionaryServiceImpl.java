@@ -92,7 +92,7 @@ public class YoutrackWorkDictionaryServiceImpl implements YoutrackWorkDictionary
         if (dictionaryDAO.remove(dictionary)) {
             return ok(dictionary);
         }
-        return error(En_ResultStatus.INTERNAL_ERROR);
+        return error(En_ResultStatus.NOT_FOUND);
     }
 
     private boolean isValid(YoutrackWorkDictionary dictionary) {

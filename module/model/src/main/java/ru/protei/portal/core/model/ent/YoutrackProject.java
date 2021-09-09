@@ -6,6 +6,7 @@ import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import static ru.protei.portal.core.model.ent.YoutrackProject.Fields.*;
 
@@ -47,6 +48,19 @@ public class YoutrackProject implements Serializable {
 
     public interface Fields {
         String YOUTRACK_ID = "youtrack_id";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof YoutrackProject)) return false;
+        YoutrackProject project = (YoutrackProject) o;
+        return id.equals(project.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

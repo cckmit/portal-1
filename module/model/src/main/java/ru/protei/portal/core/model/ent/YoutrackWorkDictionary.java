@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.List;
+import java.util.Objects;
 
 import static ru.protei.portal.core.model.ent.YoutrackWorkDictionary.Columns.*;
 
@@ -75,6 +76,19 @@ public class YoutrackWorkDictionary extends AuditableObject {
     }
 
     public static final String AUDIT_TYPE = "YoutrackWorkDictionary";
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof YoutrackWorkDictionary)) return false;
+        YoutrackWorkDictionary that = (YoutrackWorkDictionary) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     @Override
     public String toString() {

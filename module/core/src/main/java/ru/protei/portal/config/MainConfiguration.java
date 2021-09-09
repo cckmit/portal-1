@@ -1177,7 +1177,7 @@ public class MainConfiguration {
     }
 
     @Bean
-    public ReportYoutrackWork getReportYtWork() {
+    public ReportYoutrackWork getReportYoutrackWork() {
         return new ReportYoutrackWorkImpl();
     }
 
