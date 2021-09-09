@@ -16,6 +16,8 @@ public interface AbstractKitView extends IsWidget {
 
     void fillKits(List<Kit> kitSet);
 
+    void updateKit(Kit kit);
+
     HasWidgets getModulesContainer();
 
     HasWidgets getModuleEditContainer();
@@ -27,4 +29,8 @@ public interface AbstractKitView extends IsWidget {
     Set<Kit> getKitsSelected();
 
     HasVisibility modulesContainerVisibility();
+
+    void setModuleNotSelectedMessageVisible(boolean isVisible);
+
+    void setKitNotSelectedMessageVisible(boolean isVisible);
 }

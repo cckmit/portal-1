@@ -17,8 +17,8 @@ public class ModuleEvents {
         public HasWidgets parent;
     }
 
-    public static class EditModuleMeta {
-        public EditModuleMeta(HasWidgets parent, Module module) {
+    public static class EditMeta {
+        public EditMeta(HasWidgets parent, Module module) {
             this.parent = parent;
             this.module = module;
         }
@@ -27,8 +27,8 @@ public class ModuleEvents {
         public HasWidgets parent;
     }
 
-    public static class ChangeModule {
-        public ChangeModule(Long id) {
+    public static class Changed {
+        public Changed(Long id) {
             this.id = id;
         }
 

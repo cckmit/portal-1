@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.delivery.client.activity.kit.add;
 
-import com.google.gwt.debug.client.DebugInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -8,7 +7,6 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -44,10 +42,13 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
         }
 
         this.deliveryId = event.deliveryId;
+        this.backHandler = event.backHandler;
 
         kitList.clear();
-        kitList.setAllowChangingState(event.stateId != CrmConstants.State.PRELIMINARY);
+        kitList.updateAllowChangingState(false);
         kitList.updateSerialNumbering(true);
+
+        getDeliveryStateId(deliveryId, stateId -> kitList.updateAllowChangingState(stateId != CrmConstants.State.PRELIMINARY));
 
         dialogView.showPopup();
     }
@@ -80,6 +81,12 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
         dialogView.hidePopup();
     }
 
+    private void getDeliveryStateId(Long deliveryId, Consumer<Long> success) {
+        deliveryController.getDeliveryStateId(deliveryId, new FluentCallback<Long>()
+                .withError(defaultErrorHandler)
+                .withSuccess(success));
+    }
+
     private void prepareDialog(AbstractDialogDetailsView dialog) {
         dialog.setActivity(this);
         dialog.addStyleName(XL_MODAL);
@@ -103,8 +110,10 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
                 .withSuccess(list -> {
                     dialogView.saveButtonEnabled().setEnabled(true);
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new KitEvents.Added(list, deliveryId));
                     dialogView.hidePopup();
+                    if (backHandler != null) {
+                        backHandler.accept(list);
+                    }
                 }));
     }
 
@@ -124,4 +133,5 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
     Lang lang;
 
     private Long deliveryId;
+    private Consumer<List<Kit>> backHandler;
 }

@@ -890,9 +890,10 @@ label.bordered:after {
 }
 
 nav.secondary-sidebar {
-  background: #fff;
+  background: #ffffff;
   width: 280px;
   padding-right: 20px;
+  padding-top: 0;
 
   .menu-title {
     color: #626262;
@@ -900,13 +901,25 @@ nav.secondary-sidebar {
     padding-left: 0;
   }
 
-  .menu-controls > a {
-    color: #757575;
+  a.menu-controls {
+    color: #626262;
     font-size: 13px;
+    line-height: 50px;
+    padding: 0 10px;
 
     &:hover {
       color: #212121;
     }
+  }
+
+  .main-menu {
+    height: calc(100% - 50px);
+    padding-top: 50px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 100%;
+    margin: 0;
+    background: #ffffff;
   }
 
   .main-menu > li {
@@ -954,31 +967,45 @@ nav.secondary-sidebar {
   }
 
   .kit-menu-header {
-    padding-left: 30px;
-    padding-right: 15px;
-    padding-bottom: 10px;
-    text-align: center;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 50px;
+    z-index: 799;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    padding: 0 20px;
   }
 }
 
 .delivery nav.secondary-sidebar {
   width: 100%;
-  height: auto;
   position: relative;
-  padding-right: 0;
-
-  .menu-title {
-    padding-left: 0;
-  }
-
-  .main-menu > li > a {
-    padding-left: 10px;
-  }
+  padding: 0;
+  max-height: calc(100vh - 50px);
+  overflow-y: auto;
+  height: auto;
+  margin-bottom: 20px;
+  background: transparent;
 
   .kit-menu-header {
-    padding-left: 0;
+    position: relative;
     text-align: left;
+    background: transparent;
+    padding: 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  }
+
+  .main-menu {
+    max-height: 290px;
+    padding: 0;
+    overflow: auto;
+    > li > a {
+      padding-left: 15px;
+    }
   }
 }
 
@@ -988,6 +1015,10 @@ nav.secondary-sidebar {
 
 .list-view-group-container {
   padding: 50px 0 0;
+}
+
+.list-view-wrapper {
+  height: calc(100% - 10px);
 }
 
 .companies {
@@ -5476,7 +5507,7 @@ div.form-group-default.form-group-default-selectFx:focus {
   z-index: 799;
   border-bottom: 1px solid rgba(0, 0, 0, .07);
   display: flex;
-  justify-content: end;
+  justify-content: start;
   align-items: center;
   background-color: #ffffff;
 
@@ -5487,13 +5518,14 @@ div.form-group-default.form-group-default-selectFx:focus {
     line-height: 50px;
     flex: 0 1 25%;
     cursor: pointer;
+    color: #626262;
 
     &:hover {
       background: none;
       color: #212121;
     }
 
-    &:after{
+    &:after {
       content: '';
       position: absolute;
       right: 0;
@@ -5521,8 +5553,9 @@ div.form-group-default.form-group-default-selectFx:focus {
   opacity: 0.3;
   cursor: not-allowed !important;
 }
+
 .module-content-wrapper {
-  height: 100%;
+  height: calc(100% - 10px);
   display: flex;
   -ms-flex-direction: column;
   flex-direction: column;
@@ -5546,4 +5579,15 @@ div.form-group-default.form-group-default-selectFx:focus {
   background-color: #ededed;
   border-top: 1px solid #dadada;
   z-index: 150;
+}
+
+.split-view .split-list .no-result {
+  bottom: 0;
+  left: 0;
+  margin-top: -34px;
+  opacity: .5;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 50%;
 }

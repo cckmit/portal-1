@@ -26,6 +26,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
@@ -49,6 +50,8 @@ public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliv
             fireEvent(new NotifyEvents.Show(lang.errAccessDenied(), NotifyEvents.NotifyType.ERROR));
             return;
         }
+
+        this.backHandler = event.backHandler;
 
         view.setStateEnabled(hasEditAccess());
         view.setNameEnabled(hasEditAccess());
@@ -105,16 +108,18 @@ public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliv
 
     private void save(final Kit kit) {
         dialogView.saveButtonEnabled().setEnabled(false);
-        deliveryController.updateKit(kit, new FluentCallback<Void>()
+        deliveryController.updateKit(kit, new FluentCallback<Kit>()
                 .withError(throwable -> {
                     dialogView.saveButtonEnabled().setEnabled(true);
                     defaultErrorHandler.accept(throwable);
                 })
-                .withSuccess(list -> {
+                .withSuccess(updatedKit -> {
                     dialogView.saveButtonEnabled().setEnabled(true);
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new KitEvents.Changed(kit.getDeliveryId()));
                     dialogView.hidePopup();
+                    if (backHandler != null) {
+                        backHandler.accept(updatedKit);
+                    }
                 }));
     }
 
@@ -180,5 +185,6 @@ public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliv
     CommentAndHistoryListView commentAndHistoryView;
 
     private Kit kit;
+    private Consumer<Kit> backHandler;
     private final List<CaseHistoryItemsContainer> historyItemsContainers = new LinkedList<>();
 }

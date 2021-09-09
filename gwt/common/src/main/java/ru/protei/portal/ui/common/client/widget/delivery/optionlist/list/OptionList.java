@@ -100,6 +100,15 @@ public class OptionList<T extends HasLongId>
         addOption( null, null, null, null, name, value );
     }
 
+    public void updateOption(String status, String statusColor, String name, T value) {
+        OptionItem optionItem = itemToViewModel.get(value);
+        if (optionItem != null) {
+            optionItem.setStatusTitle(status);
+            optionItem.setStatusColor(statusColor);
+            optionItem.setName(name, name);
+        }
+    }
+
     @Override
     public void fillOptions(List<T> options) {
         clearOptions();
@@ -218,9 +227,6 @@ public class OptionList<T extends HasLongId>
     }
 
     protected void makeItemSelected(Long kitId) {
-        if (isEmpty(itemToViewModel)){
-            return;
-        }
         itemToViewModel.entrySet().stream()
                 .filter(entry -> Objects.equals(entry.getKey().getId(), kitId))
                 .findAny().ifPresent(entry -> entry.getValue().setActive(true));

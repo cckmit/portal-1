@@ -35,7 +35,7 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
     }
 
     @Event
-    public void onShow(ModuleEvents.Show event ) {
+    public void onShow(ModuleEvents.Show event) {
         moduleService.getModule(event.id, new FluentCallback<Module>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
                 .withSuccess(module -> {
@@ -75,7 +75,7 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
                     requestedNameDescription = false;
 
                     fireEvent( new NotifyEvents.Show( lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS ));
-                    fireEvent( new ModuleEvents.ChangeModule(changeRequest.getId()) );
+                    fireEvent( new ModuleEvents.Changed(changeRequest.getId()) );
                     onNameDescriptionChanged();
                 } ) );
     }
@@ -101,7 +101,7 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
     }
 
     private void showMeta(Module module) {
-        fireEvent(new ModuleEvents.EditModuleMeta(view.getMetaContainer(), module));
+        fireEvent(new ModuleEvents.EditMeta(view.getMetaContainer(), module));
     }
 
     private void attachToContainer(HasWidgets container) {

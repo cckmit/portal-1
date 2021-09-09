@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.delivery.client.view.kit.page;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -44,6 +45,12 @@ public class KitView extends Composite implements AbstractKitView {
     }
 
     @Override
+    public void updateKit(Kit kit) {
+        kits.updateOption(kit);
+        kits.setValue(null);
+    }
+
+    @Override
     public HasWidgets getModulesContainer() {
         return modulesContainer;
     }
@@ -73,6 +80,24 @@ public class KitView extends Composite implements AbstractKitView {
         return kits.getValue();
     }
 
+    @Override
+    public void setModuleNotSelectedMessageVisible(boolean isVisible) {
+        if (isVisible) {
+            moduleNotSelectedMessage.removeClassName("hide");
+        } else {
+            moduleNotSelectedMessage.addClassName("hide");
+        }
+    }
+
+    @Override
+    public void setKitNotSelectedMessageVisible(boolean isVisible) {
+        if (isVisible) {
+            kitNotSelectedMessage.removeClassName("hide");
+        } else {
+            kitNotSelectedMessage.addClassName("hide");
+        }
+    }
+
     @UiHandler("kits")
     public void onKitEditClicked(EditEvent event) {
         if ( activity != null ) {
@@ -92,6 +117,10 @@ public class KitView extends Composite implements AbstractKitView {
     HTMLPanel modulesContainer;
     @UiField
     HTMLPanel moduleEditContainer;
+    @UiField
+    HeadingElement moduleNotSelectedMessage;
+    @UiField
+    HeadingElement kitNotSelectedMessage;
 
     private AbstractKitActivity activity;
 

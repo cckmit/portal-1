@@ -88,15 +88,9 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
             table.updateRow(item);
     }
 
-    private void ensureDebugIds() {
-        if (!DebugInfo.isDebugIdEnabled()) {
-            return;
-        }
-        addButton.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.ADD_BUTTON);
-    }
-
     @UiHandler("addButton")
     public void onClickAddButton(ClickEvent event) {
+        event.preventDefault();
         if (activity != null) {
             activity.onAddModuleClicked();
         }
@@ -122,6 +116,13 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
     @Override
     public boolean hasSelectedModules() {
         return getSelectedModules().size() > 0;
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        addButton.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.ADD_BUTTON);
     }
 
     @UiField

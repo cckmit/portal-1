@@ -420,6 +420,15 @@ public class DeliveryServiceImpl implements DeliveryService {
         return ok(kit);
     }
 
+    @Override
+    public Result<Long> getDeliveryStateId(AuthToken token, Long deliveryId) {
+        CaseObject deliveryCaseObject = caseObjectDAO.partialGet(deliveryId, "STATE");
+        if (deliveryCaseObject == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+        return ok(deliveryCaseObject.getStateId());
+    }
+
     private void createKitHistory(AuthToken token, Kit kit) {
 
         Result<Long> resultState = addModuleStateHistory(token, kit.getId(), kit.getStateId(), caseStateDAO.get(kit.getStateId()).getState());

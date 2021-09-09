@@ -5,11 +5,10 @@
 
     <g:HTMLPanel ui:field="root" styleName="col-md-12 module-content-wrapper">
         <div class="actions-wrapper">
-            <g:Anchor styleName="" ui:field="showEditViewButton" title="{lang.openFullScreen}">
+            <g:Anchor styleName="" ui:field="showEditViewButton" title="{lang.openFullScreen}" href="#">
                 <i class="fas fa-expand-arrows-alt"/>
             </g:Anchor>
-            <g:Anchor styleName="" ui:field="nameAndDescriptionEditButton"
-                      title="{lang.editNameAndDescription}">
+            <g:Anchor styleName="" ui:field="nameAndDescriptionEditButton" title="{lang.editNameAndDescription}" href="#">
                 <i class="fa fa-pencil-alt"/>
             </g:Anchor>
         </div>

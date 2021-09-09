@@ -67,6 +67,7 @@ public class ModuleEditView extends Composite implements AbstractModuleEditView 
 
     @UiHandler("nameAndDescriptionEditButton")
     public void onNameAndDescriptionEditButtonClicked(ClickEvent event) {
+        event.preventDefault();
         if (activity != null) {
             activity.onNameAndDescriptionEditClicked();
         }

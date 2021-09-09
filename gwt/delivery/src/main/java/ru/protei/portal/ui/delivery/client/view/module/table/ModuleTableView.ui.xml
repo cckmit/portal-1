@@ -6,19 +6,19 @@
 
     <g:HTMLPanel styleName="list-view">
         <div class="actions-wrapper">
-            <g:Anchor styleName="" ui:field="addButton" title="{lang.buttonAdd}">
+            <g:Anchor styleName="" ui:field="addButton" title="{lang.buttonAddModule}" href="#">
                 <i class="fa fa-plus"/>
             </g:Anchor>
-            <g:Anchor styleName="" ui:field="copyButton" title="{lang.buttonCopy}">
+            <g:Anchor styleName="" ui:field="copyButton" title="{lang.buttonCopyModule}" href="#">
                 <i class="far fa-clone"/>
             </g:Anchor>
-            <g:Anchor styleName="" ui:field="stateButton" title="{lang.buttonState}">
+            <g:Anchor styleName="" ui:field="stateButton" title="{lang.buttonStateModule}" href="#">
                 <i class="far fa-circle"/>
             </g:Anchor>
-            <g:Anchor styleName="" ui:field="deleteButton" title="{lang.buttonRemove}">
+            <g:Anchor styleName="" ui:field="deleteButton" title="{lang.buttonRemoveModule}" href="#">
                 <i class="fa fa-trash-alt"/>
             </g:Anchor>
-            <g:Anchor styleName="" ui:field="reloadButton" title="{lang.buttonReload}">
+            <g:Anchor styleName="" ui:field="reloadButton" title="{lang.buttonReloadModule}" href="#">
                 <i class="fa fa-redo-alt"/>
             </g:Anchor>
         </div>

@@ -100,9 +100,15 @@ public class DeliveryControllerImpl implements DeliveryController {
     }
 
     @Override
-    public void updateKit(Kit kit) throws RequestFailedException {
+    public Kit updateKit(Kit kit) throws RequestFailedException {
         Result<Kit> result = deliveryService.updateKit(getAuthToken(sessionService, httpRequest), kit);
-        checkResult(result);
+        return checkResultAndGetData(result);
+    }
+
+    @Override
+    public Long getDeliveryStateId(long id) throws RequestFailedException {
+        Result<Long> result = deliveryService.getDeliveryStateId(getAuthToken(sessionService, httpRequest), id);
+        return checkResultAndGetData(result);
     }
 
     @Autowired

@@ -99,6 +99,12 @@ public class DeliveryEditView extends Composite implements AbstractDeliveryEditV
     }
 
     @Override
+    public void updateKit(Kit kit) {
+        kits.updateOption(kit);
+        kits.setValue(null);
+    }
+
+    @Override
     public HasVisibility nameAndDescriptionEditButtonVisibility() {
         return nameAndDescriptionEditButton;
     }

@@ -3623,4 +3623,18 @@ public interface Lang extends Messages, ContactItemLang {
     String warnOneKitAllowedForTheOperation();
 
     String addKits();
+
+    String kitNotSelectedMessage();
+
+    String moduleNotSelectedMessage();
+
+    String buttonAddModule();
+
+    String buttonCopyModule();
+
+    String buttonStateModule();
+
+    String buttonRemoveModule();
+
+    String buttonReloadModule();
 }
