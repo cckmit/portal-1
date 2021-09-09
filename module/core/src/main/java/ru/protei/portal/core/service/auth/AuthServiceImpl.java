@@ -91,7 +91,7 @@ public class AuthServiceImpl implements AuthService {
             return error( En_ResultStatus.INVALID_LOGIN_OR_PWD );
         }
 
-        if (userLogin.getAdminStateId() ==  En_AdminState.LOCKED.getId()) {
+        if (userLogin.getAdminStateId() == En_AdminState.LOCKED.getId()) {
             log.debug("account [" + userLogin + "] is locked");
             return error( En_ResultStatus.ACCOUNT_IS_LOCKED );
         }
@@ -103,7 +103,7 @@ public class AuthServiceImpl implements AuthService {
             loginStatus = authentificate(userLogin, login, pwd);
         } else {
             // PORTAL-490 feature
-            if (userLogin == null || !userLogin.isLDAP_Auth()) {
+            if (!userLogin.isLDAP_Auth()) {
                 log.debug("login [{}] not found, forced to use suffix [{}]", login, loginSuffix);
                 login += loginSuffix;
                 userLogin = userLoginDAO.findByLogin(login);
