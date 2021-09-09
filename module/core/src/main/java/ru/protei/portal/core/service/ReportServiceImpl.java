@@ -405,9 +405,9 @@ public class ReportServiceImpl implements ReportService {
                         report,
                         objectMapper.readValue(report.getQuery(), ProjectQuery.class)
                 ));
-                case YT_WORK: return ok(new ReportYtWorkQuery(
+                case YT_WORK: return ok(new ReportYoutrackWorkQuery(
                         report,
-                        objectMapper.readValue(report.getQuery(), YtWorkQuery.class)
+                        objectMapper.readValue(report.getQuery(), YoutrackWorkQuery.class)
                 ));
             }
             throw new IllegalStateException("No switch branch matched for En_ReportType");

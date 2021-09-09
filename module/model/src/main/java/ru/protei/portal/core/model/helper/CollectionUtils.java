@@ -214,10 +214,8 @@ public class CollectionUtils {
         return result;
     }
 
-    public static <K, V> Map<K, V> mergeMap(Map<K, V> map1, Map<K, V> map2, BiFunction<V, V, V> mergeOperator) {
-        Map<K, V> mergedMap = new HashMap<>(map1);
-        map2.forEach((key2, value2) -> mergedMap.merge(key2, value2, mergeOperator));
-        return mergedMap;
+    public static <K, V> void mergeMap(Map<K, V> accumulatorMap, Map<K, V> map, BiFunction<V, V, V> mergeOperator) {
+        map.forEach((key, value) -> accumulatorMap.merge(key, value, mergeOperator));
     }
 
     public static <T> List<T> singleValueList(T value) {

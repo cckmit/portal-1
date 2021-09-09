@@ -19,7 +19,7 @@ public final class ReportYtWorkRowItem implements ReportYtWorkRow {
     // Map<Project, Map<GUARANTEE, SpentTime>>
     final private Map<String, Long> guaranteeSpentTime;
     // Отработанное время
-    private Integer workedHours = 0;
+    private Integer workedHours;
 
     public ReportYtWorkRowItem() {
         this.niokrSpentTime = new HashMap<>();

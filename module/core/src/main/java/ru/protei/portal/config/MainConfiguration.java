@@ -59,8 +59,8 @@ import ru.protei.portal.core.report.nightwork.ReportNightWork;
 import ru.protei.portal.core.report.nightwork.ReportNightWorkImpl;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.report.projects.ReportProjectImpl;
-import ru.protei.portal.core.report.ytwork.ReportYtWork;
-import ru.protei.portal.core.report.ytwork.ReportYtWorkImpl;
+import ru.protei.portal.core.report.ytwork.ReportYoutrackWork;
+import ru.protei.portal.core.report.ytwork.ReportYoutrackWorkImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
@@ -1177,8 +1177,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public ReportYtWork getReportYtWork() {
-        return new ReportYtWorkImpl();
+    public ReportYoutrackWork getReportYtWork() {
+        return new ReportYoutrackWorkImpl();
     }
 
     @Bean

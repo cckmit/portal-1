@@ -142,7 +142,7 @@ public class ExcelReportWriter implements
             ListBuilder<String> columnsList = new ListBuilder<>();
             int count = 0;
             for (Map.Entry<En_YoutrackWorkType, Set<String>> entry : processedWorkTypes.entrySet()) {
-                entry.getValue().forEach(value -> columnsList.add(entry.getKey() + " : " + value));
+                entry.getValue().forEach(value -> columnsList.add(localizedLang.get("reportYtWorkType" + entry.getKey()) + ": " + value));
                 count += entry.getValue().size();
             }
             String[] array = new String[count];
@@ -160,7 +160,7 @@ public class ExcelReportWriter implements
                 long allTimeSpent = item.getAllTimeSpent();
                 values.add(allTimeSpent);
                 values.add(localizedLang.get("reportYtWorkRepresentTime", new Object[]{allTimeSpent / 60, allTimeSpent % 60}));
-                values.add(item.getWorkedHours());
+                values.add(item.getWorkedHours() != null? item.getWorkedHours() : localizedLang.get("reportYtWorkWorkHoursNoData") );
                 processedWorkTypes.forEach((ytWorkType, strings) ->
                         strings.forEach(value -> values.add(item.selectSpentTimeMap(ytWorkType).getOrDefault(value, 0L))));
             }

@@ -62,10 +62,11 @@ public abstract class ReportEditActivity implements Activity,
         projectFilterWidget.clearFooterStyles();
 
         contractFilterView.clearFooterStyle();
-        ytWorkFilterView.clearFooterStyle();
-        view.fillReportScheduledTypes(asList(En_ReportScheduledType.values()));
 
-        ytWorkFilterView.setActivity(ytWorkFilterActivity);
+        youtrackWorkFilterView.setActivity(youtrackWorkFilterActivity);
+        youtrackWorkFilterView.clearFooterStyle();
+
+        view.fillReportScheduledTypes(asList(En_ReportScheduledType.values()));
     }
 
     @Event
@@ -78,7 +79,7 @@ public abstract class ReportEditActivity implements Activity,
         issueFilterWidget.resetFilter(null);
         projectFilterWidget.resetFilter();
         contractFilterView.resetFilter();
-        ytWorkFilterView.resetFilter();
+        youtrackWorkFilterView.resetFilter();
         updateCompanyModels(event.profile);
     }
 
@@ -220,7 +221,7 @@ public abstract class ReportEditActivity implements Activity,
                 break;
             }
             case YT_WORK:
-                fillFilter((YtWorkQuery)query);
+                fillFilter((YoutrackWorkQuery)query);
                 break;
         }
         view.additionalParams().setValue(additionalParams);
@@ -308,8 +309,8 @@ public abstract class ReportEditActivity implements Activity,
         });
     }
 
-    private void fillFilter(YtWorkQuery query) {
-        ytWorkFilterView.date().setValue(fromDateRange(query.getDateRange()));
+    private void fillFilter(YoutrackWorkQuery query) {
+        youtrackWorkFilterView.date().setValue(fromDateRange(query.getDateRange()));
     }
 
     private Set<EntityOption> collectCompanies(Collection<EntityOption> companies, Collection<Long> companyIds) {
@@ -373,8 +374,8 @@ public abstract class ReportEditActivity implements Activity,
                 return new ReportContractQuery(report, query);
             }
             case YT_WORK:
-                YtWorkQuery query = getYtWorkQuery();
-                return new ReportYtWorkQuery(report, query);
+                YoutrackWorkQuery query = getYoutracktWorkQuery();
+                return new ReportYoutrackWorkQuery(report, query);
         }
         throw new IllegalStateException("No switch branch matched for En_ReportType");
     }
@@ -428,10 +429,10 @@ public abstract class ReportEditActivity implements Activity,
                 break;
             }
             case YT_WORK:
-                ytWorkFilterView.resetFilter();
+                youtrackWorkFilterView.resetFilter();
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
                 view.getFilterContainer().clear();
-                view.getFilterContainer().add(ytWorkFilterView.asWidget());
+                view.getFilterContainer().add(youtrackWorkFilterView.asWidget());
                 view.scheduledTypeContainerVisibility().setVisible(false);
                 view.additionalParamsVisibility().setVisible(false);
                 view.additionalParams().setValue(null);
@@ -686,9 +687,9 @@ public abstract class ReportEditActivity implements Activity,
         return query;
     }
 
-    private YtWorkQuery getYtWorkQuery() {
-        YtWorkQuery query = new YtWorkQuery();
-        query.setDateRange(toDateRange(ytWorkFilterView.date().getValue()));
+    private YoutrackWorkQuery getYoutracktWorkQuery() {
+        YoutrackWorkQuery query = new YoutrackWorkQuery();
+        query.setDateRange(toDateRange(youtrackWorkFilterView.date().getValue()));
         return query;
     }
 
@@ -727,9 +728,9 @@ public abstract class ReportEditActivity implements Activity,
     @Inject
     AbstractContractFilterView contractFilterView;
     @Inject
-    AbstractYoutrackWorkFilterView ytWorkFilterView;
+    AbstractYoutrackWorkFilterView youtrackWorkFilterView;
     @Inject
-    AbstractYoutrackWorkFilterActivity ytWorkFilterActivity;
+    AbstractYoutrackWorkFilterActivity youtrackWorkFilterActivity;
 
     @Inject
     CompanyModel companyModel;

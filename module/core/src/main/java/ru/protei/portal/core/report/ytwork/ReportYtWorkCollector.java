@@ -76,8 +76,8 @@ public class ReportYtWorkCollector implements Collector<
         return stream(values).collect(toMap(Function.identity(), (v) -> calcSpentTime, Long::sum));
     }
 
-    static private Map<String, Long> mergeSpentTimeMap(Map<String, Long> map1, Map<String, Long> map2) {
-        return mergeMap(map1, map2, Long::sum);
+    static private void mergeSpentTimeMap(Map<String, Long> accumulatorMap, Map<String, Long> map) {
+        mergeMap(accumulatorMap, map, Long::sum);
     }
 
     private boolean isHomeCompany(String company) {

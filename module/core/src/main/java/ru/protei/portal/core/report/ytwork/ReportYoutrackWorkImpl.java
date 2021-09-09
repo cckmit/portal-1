@@ -16,7 +16,7 @@ import ru.protei.portal.core.model.ent.YoutrackWorkDictionary;
 import ru.protei.portal.core.model.enterprise1c.dto.WorkPersonInfo1C;
 import ru.protei.portal.core.model.enterprise1c.query.WorkQuery1C;
 import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.core.model.query.YtWorkQuery;
+import ru.protei.portal.core.model.query.YoutrackWorkQuery;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.struct.WorkerEntryFacade;
 import ru.protei.portal.core.model.struct.reportytwork.*;
@@ -44,9 +44,9 @@ import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowIte
 import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.PersonInfo;
 import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.PersonInfo.nullDepartmentName;
 
-public class ReportYtWorkImpl implements ReportYtWork {
+public class ReportYoutrackWorkImpl implements ReportYoutrackWork {
 
-    private static Logger log = LoggerFactory.getLogger(ReportYtWorkImpl.class);
+    private static Logger log = LoggerFactory.getLogger(ReportYoutrackWorkImpl.class);
 
     @Autowired
     Lang lang;
@@ -77,68 +77,10 @@ public class ReportYtWorkImpl implements ReportYtWork {
     static private final String NO_COMPANY = "NO COMPANY";
     static private final Set<String> workerCompanyName = setOf(CrmConstants.Company.MAIN_HOME_COMPANY_NAME, CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME);
 
-    public ReportYtWorkImpl() {
-        Map<String, List<String>> niokrs = new HashMap<>();
-        niokrs.put("Программа автоматического детектирования и распознавания автомобильных регистрационных знаков", Arrays.asList("EREQUESTS"));
-        niokrs.put("Программное обеспечение \"Детектор человека\"", Arrays.asList("VAD", "VP"));
-        niokrs.put("Программное обеспечение \"Детектор транспорта\"", Arrays.asList("VAD", "VP"));
-        niokrs.put("Многофункциональный комплекс связи «Гелиос-5»", Arrays.asList("HWGELIOS", "HWD", "HWS", "HWT", "QAH", "HW_EQ"));
-        niokrs.put("Программа сервера приложений TAS AS для реализации услуги PUSH-TO-TALK для критических применений (MCPTT AS)", Arrays.asList("MCPTT", "TAS"));
-        niokrs.put("программное обеспечение Системы PROTEI Signaling Firewall.", Arrays.asList("Mobile_SS7FW"));
-        niokrs.put("Разработка технологий производства и создания оборудования беспроводного широкополосного доступа на основе спецификаций 3GPP LTE " +
-                "/ Программное обеспечение «Ядро сети + МСРТТ» (для Минпромторг)", Arrays.asList("MCPTT", "TAS"));
-        niokrs.put("Компас", Arrays.asList("eth_switch"));
-        niokrs.put("ПО для построения корпоративных услуг Unified Communication", Arrays.asList("UC"));
-        niokrs.put("ПО «AMF, AUSF, UDM/UDR»", Arrays.asList("Mobile_AUSF", "Mobile_UDM", "AMF"));
-        niokrs.put("ПО «SMF/UPF, NRF»", Arrays.asList("MobileCorePacketTester"));
-        niokrs.put("ПО «PCF»", Arrays.asList("PCRF"));
-        niokrs.put("Программное обеспечение \"Платформа Видеоаналитики\"", Arrays.asList("VAD", "VP"));
-        niokrs.put("ПО Protei TAS", Arrays.asList("MKD", "TAS", "ATE"));
-        niokrs.put("ПО Protei SCC-AS", Arrays.asList("SCC-AS", "TAS"));
-
-        Map<String, List<String>> nmas = new HashMap<>();
-        nmas.put("СПО КТСО МУССОН", Arrays.asList("MC", "PHMONSOON", "HWMONSOON", "HWR", "EQA"));
-        nmas.put("СПО \"Кругозор\"", Arrays.asList("VAD"));
-        nmas.put("Специальное ПО Безопасный город", Arrays.asList("EAS", "AT", "VAD", "VP", "ER", "WP", "CC", "SB", "SN", "PNR", "CPE", "Mobile_SMSC", "DAD_DDF",
-                "DAD_DAD", "DAD_EXP", "EWC", "POST", "sppr", "SC_int", "DAD_PKN", "DA", "GB", "EQA"));
-        nmas.put("Система перехвата TDM трафика. LIME1", Arrays.asList("LI", "EMSC", "PHYSICAL", "ITG", "SNGI"));
-        nmas.put("Система обработки информации о чрезвычайных ситуациях", Arrays.asList("ER", "CC", "SB", "SN", "TLG", "TM", "EACD", "RFW", "CPE", "PNR", "SNGI", "EQA"));
-        nmas.put("Система мониторинга сигнальных каналов", Arrays.asList("Mobile_SigMonitor"));
-        nmas.put("Система законного перехвата IP трафика. LIS", Arrays.asList("SORM", "LIS"));
-        nmas.put("Программный модуль GTP-Probe", Arrays.asList("PLP"));
-        nmas.put("Программное обеспечение Компонентов ядра сети IMS - PROTEI IMS Core", Arrays.asList("PCSCF", "ICSCF", "SCSCF", "SCCAS", "CLI", "IMST"));
-        nmas.put("Программное обеспечение PROTEI EPC", Arrays.asList("MME", "SGW", "PDN", "GGSN", "Mobile_HLR", "PCRF", "CPE"));
-        nmas.put("Программная подсистема обработки пакетного трафика", Arrays.asList("DPI", "DS", "DPI_TO"));
-        nmas.put("Программа Центра обслуживания вызовов \"ПРОТЕЙ\"", Arrays.asList("CC", "SB", "SN", "TLG", "EACD", "RFW", "CPE"));
-        nmas.put("Программа Системы глубокого анализа и применения политик для управления пакетным трафиком PROTEI_DPI", Arrays.asList("DPI", "DS", "DPI_TO"));
-        nmas.put("Программа преобразований речевой и сигнальной информации Шлюза PRIN", Arrays.asList("HWR"));
-        nmas.put("Программа комплекса ПРОТЕЙ-ВКС", Arrays.asList("MVP", "VCST", "VCSM", "VCSS", "CRS", "DBRL", "GB"));
-        nmas.put("Программа для ЭВМ \"Система управления подключенными устройствами PROTEI M2M/C2M\"", Arrays.asList("GEO", "OB"));
-        nmas.put("Программа для ЭВМ \"Домашний регистр местоположения/регистр абонентских данных PROTEI HLR/HSS (Версия 2)", Arrays.asList("Mobile_HLR"));
-        nmas.put("Программа для ЭВМ \"Автоматизированная система расчетов PROTEI OCS\"", Arrays.asList("OB", "billing-qa"));
-        nmas.put("ПО Узла PROTEI SCP", Arrays.asList("Mobile_CAPL"));
-        nmas.put("ПО Системы PROTEI Signaling Firewall", Arrays.asList("Mobile_SS7FW"));
-        nmas.put("ПО Система-112", Arrays.asList("ER", "CC", "SB", "SN", "TLG", "TM", "EACD", "RFW", "CPE", "SPLSIP", "GB", "EQA"));
-        nmas.put("ПО Комплекса управления роумингом", Arrays.asList("RG", "GLR", "Mobile_MI", "WSMS"));
-        nmas.put("ПО Комплекса управления дополнительными услугами", Arrays.asList("xVLR", "Mobile_Bulk", "SNGI"));
-        nmas.put("ПО комплекса предоставления услуг Messaging (SMSC/USSDC/SMS Firewall/IP-SM-GW)", Arrays.asList("Mobile_SMSC", "Mobile_SMSFW", "Mobile_IPSMGW", "Mobile_SCL", "CBC", "SGW"));
-        nmas.put("ПО комплекса автоматизации обработки вызовов экстренных оперативных служб по единому номеру 112", Arrays.asList("ER", "WP", "CC", "SB", "SN", "TLG", "TM", "EACD", "RFW", "CPE", "SPLSIP"));
-        nmas.put("ПО комплекса предоставления услуг роуминга с использованием технологии Multi-IMSI", Arrays.asList("Mobile_MI"));
-        nmas.put("ПО \"ПРОТЕЙ-GMSC\"", Arrays.asList("GMSC", "SSW4"));
-        nmas.put("ПО \"Мониторинг потенциально опасных объектов\"", Arrays.asList("EAS"));
-        nmas.put("ПК \"Протей-imSwitch\"", Arrays.asList("MKD", "MKD-Test"));
-        nmas.put("ПК \"МАК\"", Arrays.asList("MAK", "ITG", "ITG.UI"));
-        nmas.put("ПК \"ИП \"Протей\"", Arrays.asList("SB", "SN", "VO", "CPE", "PNR", "RP", "IVR", "PRBT", "pstorage", "TSIM", "VOT", "SDP", "TK", "SPLSIP"));
-        nmas.put("ПК \"Единый центр оперативного реагирования\"", Arrays.asList("ER"));
-        nmas.put("Пакетный шлюз PROTEI GGSN/PDN-GW", Arrays.asList("GGSN", "Mobile_HLR", "SGW"));
-        nmas.put("Программа системы видеонаблюдения Видеопортал", Arrays.asList("VP", "CRS"));
-        nmas.put("WIX", Arrays.asList("Mobile_WIX"));
-    }
-
     @Override
     public boolean writeReport(OutputStream buffer,
                                Report report,
-                               YtWorkQuery query,
+                               YoutrackWorkQuery query,
                                Predicate<Long> isCancel) throws IOException {
 
         log.debug("writeReport : reportId={} to process", report.getId());
@@ -437,10 +379,12 @@ public class ReportYtWorkImpl implements ReportYtWork {
                         });
                     });
                 },
-                (map1, map2) -> mergeMap(map1, map2, (innerMap1, innerMap2) ->
-                        mergeMap(innerMap1, innerMap2, (list1, list2) -> {
-                            list1.addAll(list2);
-                            return list1;
-                        }) ));
+                (map1, map2) -> mergeMap(map1, map2, (innerMap1, innerMap2) -> {
+                    mergeMap(innerMap1, innerMap2, (list1, list2) -> {
+                        list1.addAll(list2);
+                        return list1;
+                    });
+                    return innerMap1;
+                }));
     }
 }
