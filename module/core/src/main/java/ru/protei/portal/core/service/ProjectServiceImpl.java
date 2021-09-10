@@ -445,6 +445,7 @@ public class ProjectServiceImpl implements ProjectService {
         projects.forEach(project -> {
             project.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
             project.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
+            jdbcManyRelationsHelper.fill(project,"members");
         });
 
         List<ProjectInfo> result = projects.stream()

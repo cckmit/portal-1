@@ -51,9 +51,5 @@ public interface AbstractDeliveryCreateView extends IsWidget {
 
     Set<Person> getSubscribers();
 
-    HasValue<PersonShortView> hwManager();
-
-    HasValue<PersonShortView> qcManager();
-
     HasWidgets getKitsContainer();
 }

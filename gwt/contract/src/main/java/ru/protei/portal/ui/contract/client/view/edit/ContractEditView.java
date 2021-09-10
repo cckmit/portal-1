@@ -2,6 +2,7 @@ package ru.protei.portal.ui.contract.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -400,7 +401,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @UiField(provided = true)
     ProjectWidget projectWidget;
     @UiField
-    SpanElement directions;
+    DivElement directions;
     @UiField
     SpanElement projectManager;
     @Inject

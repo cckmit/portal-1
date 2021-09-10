@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
 import ru.protei.portal.core.model.dict.En_DeliveryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
 import ru.protei.portal.core.model.ent.CaseState;
@@ -15,6 +16,7 @@ import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -22,14 +24,16 @@ import ru.protei.portal.ui.common.client.events.CommentAndHistoryEvents;
 import ru.protei.portal.ui.common.client.events.DeliveryEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
+import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
 
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements Activity, AbstractDeliveryMetaActivity {
 
@@ -76,22 +80,6 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         delivery.setInitiatorId(null);
         delivery.setInitiator(null);
         delivery.setContractId(null);
-        onCaseMetaChanged(delivery);
-    }
-
-    @Override
-    public void onHwManagerChange() {
-        PersonShortView hwManager = deliveryMetaView.hwManager().getValue();
-        delivery.setHwManagerId(hwManager == null ? null : hwManager.getId());
-        delivery.setHwManager(hwManager);
-        onCaseMetaChanged(delivery);
-    }
-
-    @Override
-    public void onQcManagerChange() {
-        PersonShortView qcManager = deliveryMetaView.qcManager().getValue();
-        delivery.setQcManagerId(qcManager == null ? null : qcManager.getId());
-        delivery.setQcManager(qcManager);
         onCaseMetaChanged(delivery);
     }
 
@@ -161,10 +149,6 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         deliveryMetaView.stateEnable().setEnabled(hasEditPrivileges() && hasPrivilegesChangeStatus(delivery.getState()));
         deliveryMetaView.type().setValue(delivery.getType());
         deliveryMetaView.typeEnabled().setEnabled(hasEditPrivileges());
-        deliveryMetaView.hwManager().setValue(delivery.getHwManager());
-        deliveryMetaView.hwManagerEnabled().setEnabled(hasEditPrivileges());
-        deliveryMetaView.qcManager().setValue(delivery.getQcManager());
-        deliveryMetaView.qcManagerEnabled().setEnabled(hasEditPrivileges());
 
         ProjectInfo projectInfo = ProjectInfo.fromProject(delivery.getProject());
         deliveryMetaView.project().setValue(projectInfo);
@@ -173,9 +157,9 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         deliveryMetaView.updateInitiatorModel(projectInfo.getContragent().getId());
         deliveryMetaView.initiator().setValue(delivery.getInitiator());
         deliveryMetaView.initiatorEnable().setEnabled(hasEditPrivileges());
-        deliveryMetaView.setManager(delivery.getProject().getManagerFullName());
         deliveryMetaView.setProducts(joining(projectInfo.getProducts(), ", ", ProductShortView::getName));
         deliveryMetaView.updateContractModel(projectInfo.getId());
+        deliveryMetaView.setTeam(makeTeam(projectInfo));
 
         Contract contract = delivery.getContract();
         deliveryMetaView.contract().setValue(contract != null ? new ContractInfo(delivery.getContract().getId(), contract.getNumber(), contract.getOrganizationName()) : null);

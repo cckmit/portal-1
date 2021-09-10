@@ -31,8 +31,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.ent.Delivery.Columns.KITS;
-import static ru.protei.portal.core.model.ent.Delivery.Columns.SUBSCRIBERS;
+import static ru.protei.portal.core.model.ent.Delivery.Columns.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.DELIVERY_KIT_SERIAL_NUMBER_PATTERN;
@@ -453,6 +452,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         Delivery delivery = deliveryDAO.get(id);
         jdbcManyRelationsHelper.fill(delivery, KITS);
         jdbcManyRelationsHelper.fill(delivery, SUBSCRIBERS);
+        jdbcManyRelationsHelper.fill(delivery.getProject(), PROJECT_MEMBERS);
         delivery.getProject().setProducts(new HashSet<>(devUnitDAO.getProjectProducts(delivery.getProject().getId())));
         fillModulesCount(delivery.getId(), delivery.getKits());
         return delivery;

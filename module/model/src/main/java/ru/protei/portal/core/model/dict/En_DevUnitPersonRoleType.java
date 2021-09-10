@@ -46,6 +46,7 @@ public enum En_DevUnitPersonRoleType {
     }
 
     private final int id;
+
     private static final List<En_DevUnitPersonRoleType> projectRoles = Collections.unmodifiableList( Arrays.asList(
             HEAD_MANAGER, DEPLOY_MANAGER, HARDWARE_CURATOR, SOFTWARE_CURATOR, INTRO_NEW_TECH_SOLUTIONS, LIABLE_FOR_AUTO_TESTING,
             TECH_SUPPORT_CURATOR, PRODUCT_ASSEMBLER, SUPPLY_PREPARATION, ENGINEER_DOC_DEV, TECH_DOC_DEV, SOFTWARE_DOC_DEV,
@@ -56,6 +57,10 @@ public enum En_DevUnitPersonRoleType {
             DECISION_CENTER, CHIEF_DECISION_MAKER, KEEPER, TECH_SPECIALIST, INFLUENCE_MAKER, CHIEF_INFLUENCE_MAKER,
             ECONOMIST, WELL_WISHER, RECEPTIVITY_CENTER
     ) );
+
+    private static final List<En_DevUnitPersonRoleType> deliveryRoles = Collections.unmodifiableList( Arrays.asList(
+            HEAD_MANAGER, HARDWARE_CURATOR, SOFTWARE_CURATOR, LIABLE_FOR_AUTO_TESTING, TECH_SUPPORT_CURATOR,
+            PRODUCT_ASSEMBLER, ENGINEER_DOC_DEV, QUALITY_CONTROL_SMK, PROJECT_DOCUMENTATION));
 
     public int getId() {
         return id;
@@ -71,6 +76,10 @@ public enum En_DevUnitPersonRoleType {
 
     public static boolean isProjectRole(En_DevUnitPersonRoleType type) {
         return projectRoles.contains( type );
+    }
+
+    public static boolean isDeliveryRole(En_DevUnitPersonRoleType type) {
+        return deliveryRoles.contains(type);
     }
 
     public static List<En_DevUnitPersonRoleType> getProjectRoles() {

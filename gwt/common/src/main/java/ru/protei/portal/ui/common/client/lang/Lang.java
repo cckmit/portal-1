@@ -3637,4 +3637,48 @@ public interface Lang extends Messages, ContactItemLang {
     String buttonRemoveModule();
 
     String buttonReloadModule();
+
+    String personDeployManagerShort();
+
+    String personHardwareCuratorShort();
+
+    String personSoftwareCuratorShort();
+
+    String personIntroNewTechSolutionsShort();
+
+    String personLiableForAutoTestingShort();
+
+    String personTechSupportCuratorShort();
+
+    String personProductAssemblerShort();
+
+    String personSupplyPreparationShort();
+
+    String personEngineerDocDevShort();
+
+    String personTechDocDevShort();
+
+    String personSoftwareDocDevShort();
+
+    String personLiableForCertificationShort();
+
+    String personOkrEscortShort();
+
+    String personQualityControlSmkShort();
+
+    String personCustomerIntegrationShort();
+
+    String personPresaleManagerShort();
+
+    String personBusinessAnalyticsArchitectureShort();
+
+    String personProjectDocumentationShort();
+
+    String personProductManagerShort();
+
+    String personDevelopmentShort();
+
+    String personPresaleHeadManagerShort();
+
+    String personDeployHeadManagerShort();
 }

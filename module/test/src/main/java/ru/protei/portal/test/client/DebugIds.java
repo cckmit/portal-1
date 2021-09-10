@@ -1287,9 +1287,7 @@ public class DebugIds {
         String CUSTOMER_COMPANY = "delivery-customer-company";
         String CUSTOMER_INITIATOR = "delivery-customer-initiator-selector";
         String CONTRACT_COMPANY = "delivery-contract-company";
-        String MANAGER = "delivery-manager";
-        String HW_MANAGER = "delivery-hw-manager-selector";
-        String QC_MANAGER = "delivery-qc-manager-selector";
+        String TEAM = "delivery-team";
         String ATTRIBUTE = "delivery-attribute-selector";
         String CONTRACT = "delivery-contract-selector";
         String PRODUCTS = "delivery-products-selector";

@@ -9,10 +9,6 @@ public interface AbstractDeliveryMetaActivity extends AbstractDeliveryCommonMeta
 
     void onTypeChange();
 
-    void onHwManagerChange();
-
-    void onQcManagerChange();
-
     void onInitiatorChange();
 
     void onCaseMetaNotifiersChanged();

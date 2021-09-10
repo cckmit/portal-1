@@ -113,16 +113,6 @@ public class DeliveryCreateView extends Composite implements AbstractDeliveryCre
         return kitsContainer;
     }
 
-    @Override
-    public HasValue<PersonShortView> hwManager() {
-        return meta.hwManager();
-    }
-
-    @Override
-    public HasValue<PersonShortView> qcManager() {
-        return meta.qcManager();
-    }
-
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
