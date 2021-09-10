@@ -34,7 +34,8 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAny = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAny = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAny = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAny = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAny = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.MODULE, requireAny = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
     })
     Result<List<CaseComment>> getCaseCommentList( AuthToken token, En_CaseType caseType, long caseObjectId);
 
@@ -44,7 +45,8 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAny = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAny = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAny = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAny = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAny = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.MODULE, requireAny = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
     })
     Result<SearchResult<CaseCommentShortView>> getCaseCommentShortViewList(AuthToken token, En_CaseType caseType, CaseCommentQuery query);
 
@@ -54,7 +56,8 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.MODULE, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
     })
     @Auditable(value = En_AuditType.ISSUE_COMMENT_CREATE, forCases = En_CaseType.CRM_SUPPORT)
     Result<CaseComment> addCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment );
@@ -65,7 +68,8 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.MODULE, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
     })
     @Auditable(value = En_AuditType.ISSUE_COMMENT_CREATE, forCases = En_CaseType.CRM_SUPPORT)
     Result<CaseCommentSaveOrUpdateResult> addCaseCommentWithoutEvent( AuthToken token, En_CaseType caseType, CaseComment comment);
@@ -77,7 +81,8 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.MODULE, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
     })
     @Auditable(value = En_AuditType.ISSUE_COMMENT_MODIFY, forCases = En_CaseType.CRM_SUPPORT)
     Result<CaseComment> updateCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment );
@@ -88,7 +93,8 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.MODULE, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
     })
     @Auditable(value = En_AuditType.ISSUE_COMMENT_MODIFY, forCases = En_CaseType.CRM_SUPPORT)
     Result<CaseCommentSaveOrUpdateResult> updateCaseCommentWithoutEvent( AuthToken token, En_CaseType caseType, CaseComment comment );
@@ -100,7 +106,8 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.MODULE, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
     })
     @Auditable(value = En_AuditType.ISSUE_COMMENT_REMOVE, forCases = En_CaseType.CRM_SUPPORT)
     Result<Long> removeCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment );
@@ -111,7 +118,8 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.MODULE, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
     })
     @Auditable(value = En_AuditType.ISSUE_COMMENT_MODIFY, forCases = En_CaseType.CRM_SUPPORT)
     Result<Boolean> updateCaseTimeElapsedType(AuthToken token, Long caseCommentId, En_TimeElapsedType type);

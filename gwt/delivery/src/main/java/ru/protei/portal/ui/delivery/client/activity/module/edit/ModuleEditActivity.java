@@ -7,12 +7,16 @@ import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
+import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
+import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ModuleControllerAsync;
@@ -22,7 +26,11 @@ import ru.protei.portal.ui.delivery.client.view.module.namedescription.ModuleNam
 import ru.protei.portal.ui.delivery.client.view.module.namedescription.ModuleNameDescriptionEditView;
 import ru.protei.portal.ui.delivery.client.view.module.namedescription.ModuleNameDescriptionView;
 
+import java.util.List;
 import java.util.function.Consumer;
+
+import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
+import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
 
 public abstract class ModuleEditActivity implements Activity, AbstractModuleEditActivity,
         AbstractModuleNameDescriptionEditActivity {
@@ -114,6 +122,12 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
         fireEvent(new KitEvents.Show(module.getDeliveryId(), module.getKitId()));
     }
 
+    @Override
+    public void onSelectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
+        saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
+        fireEvent(new CommentAndHistoryEvents.ShowItems(commentAndHistoryView, selectedTabs));
+    }
+
     private void fillView(Module module) {
         view.setCreatedBy(lang.createBy(module.getCreator().getDisplayShortName(),
                 DateFormatter.formatDateTime(module.getCreated())));
@@ -121,6 +135,12 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
         nameAndDescriptionView.setName(module.getName());
         nameAndDescriptionView.setDescription(module.getDescription());
         view.nameAndDescriptionEditButtonVisibility().setVisible(hasEditPrivileges());
+
+        view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
+        view.getItemsContainer().clear();
+        view.getItemsContainer().add(commentAndHistoryView.asWidget());
+        fireEvent(new CommentAndHistoryEvents.Show(commentAndHistoryView, module.getId(),
+                En_CaseType.MODULE, true, module.getCreatorId()));
 
         renderMarkupText(module.getDescription(), En_TextMarkup.MARKDOWN, html -> nameAndDescriptionView.setDescription(html));
     }
@@ -189,11 +209,15 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
     private ModuleNameDescriptionButtonsView nameAndDescriptionButtonView;
     @Inject
     private ModuleControllerAsync moduleService;
+    @Inject
+    private AbstractCommentAndHistoryListView commentAndHistoryView;
 
     @Inject
     PolicyService policyService;
     @Inject
     TextRenderControllerAsync textRenderController;
+    @Inject
+    LocalStorageService localStorageService;
 
     @ContextAware
     Module module;

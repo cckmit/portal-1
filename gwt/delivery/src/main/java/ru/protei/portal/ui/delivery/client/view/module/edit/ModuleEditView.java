@@ -10,16 +10,29 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.lang.En_CommentOrHistoryTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
 import ru.protei.portal.ui.delivery.client.activity.module.edit.AbstractModuleEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.module.edit.AbstractModuleEditView;
+
+import java.util.Arrays;
+
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.COMMENT;
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
 
 public class ModuleEditView extends Composite implements AbstractModuleEditView {
 
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
+
+        multiTabWidget.setTabToNameRenderer(type -> commentOrHistoryTypeLang.getName(type));
+        multiTabWidget.addTabs(Arrays.asList(COMMENT, HISTORY));
+        multiTabWidget.setOnTabClickHandler(selectedTabs -> activity.onSelectedTabsChanged(selectedTabs));
+
         ensureDebugIds();
     }
 
@@ -68,6 +81,18 @@ public class ModuleEditView extends Composite implements AbstractModuleEditView 
             return;
         }
         nameAndDescriptionEditButton.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.EDIT_NAME_AND_DESCRIPTION_BUTTON);
+        multiTabWidget.setTabNameDebugId(COMMENT, DebugIds.DELIVERY.KIT.MODULE.TAB_COMMENT);
+        multiTabWidget.setTabNameDebugId(HISTORY, DebugIds.DELIVERY.KIT.MODULE.TAB_HISTORY);
+    }
+
+    @Override
+    public MultiTabWidget<En_CommentOrHistoryType> getMultiTabWidget() {
+        return multiTabWidget;
+    }
+
+    @Override
+    public HasWidgets getItemsContainer() {
+        return multiTabWidget.getContainer();
     }
 
     @UiHandler("backButton")
@@ -109,7 +134,11 @@ public class ModuleEditView extends Composite implements AbstractModuleEditView 
     @UiField
     Element createdBy;
     @UiField
+    MultiTabWidget<En_CommentOrHistoryType> multiTabWidget;
+    @UiField
     HTMLPanel metaContainer;
+    @Inject
+    En_CommentOrHistoryTypeLang commentOrHistoryTypeLang;
 
     private AbstractModuleEditActivity activity;
 

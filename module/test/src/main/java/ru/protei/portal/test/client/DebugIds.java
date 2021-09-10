@@ -1334,6 +1334,8 @@ public class DebugIds {
                 String EDIT_NAME_AND_DESCRIPTION_BUTTON = "module-edit-name-and-desc-button";
                 String EDIT_NAME_AND_DESC_ACCEPT = "module-edit-name-and-desc-accept";
                 String EDIT_NAME_AND_DESC_REJECT = "module-edit-name-and-desc-reject";
+                String TAB_COMMENT = "module-tab-comments";
+                String TAB_HISTORY = "module-tab-history";
             }
         }
 
