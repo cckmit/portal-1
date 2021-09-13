@@ -463,4 +463,14 @@ public class DaoMockTestConfiguration {
     public ModuleDAO getModuleDAO() {
         return mock(ModuleDAO.class);
     }
+
+    @Bean
+    public YoutrackProjectDAO getYoutrackProjectDAO() {
+        return mock(YoutrackProjectDAO.class);
+    }
+
+    @Bean
+    public YoutrackWorkDictionaryDAO getYoutrackWorkDictionaryDAO() {
+        return mock(YoutrackWorkDictionaryDAO.class);
+    }
 }

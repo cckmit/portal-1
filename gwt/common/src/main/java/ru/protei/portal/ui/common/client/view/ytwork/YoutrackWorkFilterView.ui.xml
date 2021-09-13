@@ -12,6 +12,7 @@
                                                 header="{lang.reportYtWorkDates}"
                                                 addStyleNames="form-group col-md-4 resize-md-12"/>
             </div>
+            <g:HTMLPanel styleName="row" ui:field="tables"/>
         </div>
         <div ui:field="footer" class="card-footer text-right">
             <g:Button ui:field="resetBtn" styleName="btn btn-default" text="{lang.buttonReset}"/>

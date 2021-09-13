@@ -34,4 +34,6 @@ public interface YoutrackApi {
     Result<YtEnumBundleElement> updateCompany(String companyId, YtEnumBundleElement company);
 
     Result<List<YtEnumBundleElement>> getCompanyByName (String companyName);
+
+    Result<List<YtProject>> getAllProjects(int offset, int limit);
 }

@@ -11,7 +11,7 @@ import ru.protei.portal.core.report.ytwork.ReportYtWorkCollector;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class ReportYtWorkCollectorTest {
+public class ReportYoutrackWorkCollectorTest {
     static private final String HOME_COMPANY_NAME = "homeCompany";
     static private final String CUSTOMER_COMPANY_NAME = "customerCompany";
 

@@ -1,6 +1,6 @@
 package ru.protei.portal.core.report.ytwork;
 
-import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
+import ru.protei.portal.core.model.dict.En_YoutrackWorkType;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkClassificationError;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkInfo;
@@ -19,15 +19,15 @@ import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.*;
-import static ru.protei.portal.core.model.dict.En_ReportYtWorkType.*;
+import static ru.protei.portal.core.model.dict.En_YoutrackWorkType.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class ReportYtWorkCollector implements Collector<
         ReportYtWorkInfo,
-        ReportYtWorkCollector.ErrorsAndItems,      // email -> processed items
+        ReportYtWorkCollector.ErrorsAndItems,
         ReportYtWorkCollector.ErrorsAndItems> {
 
-    private final Map<String, WorkTypeAndValue> memoCustomerToContract = new ConcurrentHashMap<>();
+    private final Map<String, Optional<WorkTypeAndValue>> memoCustomerToContract = new ConcurrentHashMap<>();
 
     private final Map<String, List<String>> niokrs;
     private final Map<String, List<String>> nmas;
@@ -40,8 +40,8 @@ public class ReportYtWorkCollector implements Collector<
                                  Function< String, List<Contract>> getContractsByCustomer,
                                  Date now,
                                  Set<String> homeCompany) {
-        this.niokrs = unmodifiableMap(new HashMap<>(niokrs));
-        this.nmas = unmodifiableMap(new HashMap<>(nmas));
+        this.niokrs = unmodifiableMap(niokrs == null? new HashMap<>() : new HashMap<>(niokrs));
+        this.nmas = unmodifiableMap(nmas == null? new HashMap<>() : new HashMap<>(nmas));
         this.getContractsByCustomer = getContractsByCustomer;
         this.now = now;
         this.homeCompany = unmodifiableSet(new HashSet<>(homeCompany));
@@ -76,8 +76,8 @@ public class ReportYtWorkCollector implements Collector<
         return stream(values).collect(toMap(Function.identity(), (v) -> calcSpentTime, Long::sum));
     }
 
-    static private Map<String, Long> mergeSpentTimeMap(Map<String, Long> map1, Map<String, Long> map2) {
-        return mergeMap(map1, map2, Long::sum);
+    static private void mergeSpentTimeMap(Map<String, Long> accumulatorMap, Map<String, Long> map) {
+        mergeMap(accumulatorMap, map, Long::sum);
     }
 
     private boolean isHomeCompany(String company) {
@@ -96,31 +96,31 @@ public class ReportYtWorkCollector implements Collector<
             }
             return null;
         } else {
-            return getContractsAndGuarantee(customer);
+            return getContractsAndGuarantee(customer).orElse(null);
         }
     }
 
-    private WorkTypeAndValue getContractsAndGuarantee(String customer) {
+    private Optional<WorkTypeAndValue> getContractsAndGuarantee(String customer) {
         return memoCustomerToContract.compute(customer, (keyCustomer, workTypeAndValues) -> {
             if (workTypeAndValues != null) {
                 return workTypeAndValues;
             }
             List<Contract> contracts = getContractsByCustomer.apply(customer);
             if (contracts.isEmpty()) {
-                return null;
+                return Optional.empty();
             } else {
-                Map<En_ReportYtWorkType, List<String>> mapContactGuaranteeToName = contracts.stream()
+                Map<En_YoutrackWorkType, List<String>> mapContactGuaranteeToName = contracts.stream()
                         .collect(groupingBy(contract -> contractGuaranteeClassifier(contract, now), mapping(Contract::getNumber, toList())));
                 List<String> contractNames = mapContactGuaranteeToName.get(CONTRACT);
                 if (isNotEmpty(contractNames)) {
-                    return new WorkTypeAndValue(CONTRACT, contractNames);
+                    return Optional.of(new WorkTypeAndValue(CONTRACT, contractNames));
                 }
-                return new WorkTypeAndValue(GUARANTEE, mapContactGuaranteeToName.get(GUARANTEE));
+                return Optional.of(new WorkTypeAndValue(GUARANTEE, mapContactGuaranteeToName.get(GUARANTEE)));
             }
         });
     }
 
-    static private En_ReportYtWorkType contractGuaranteeClassifier(Contract contract, Date now) {
+    static private En_YoutrackWorkType contractGuaranteeClassifier(Contract contract, Date now) {
         return contract.getDateValid() == null || contract.getDateValid().after(now) ? CONTRACT : GUARANTEE;
     }
 
@@ -165,15 +165,15 @@ public class ReportYtWorkCollector implements Collector<
     }
 
     static private class WorkTypeAndValue {
-        final En_ReportYtWorkType workType;
+        final En_YoutrackWorkType workType;
         final List<String> value;
 
-        public WorkTypeAndValue(En_ReportYtWorkType workType, List<String> value) {
+        public WorkTypeAndValue(En_YoutrackWorkType workType, List<String> value) {
             this.workType = workType;
             this.value = value;
         }
 
-        public En_ReportYtWorkType getWorkType() {
+        public En_YoutrackWorkType getWorkType() {
             return workType;
         }
 

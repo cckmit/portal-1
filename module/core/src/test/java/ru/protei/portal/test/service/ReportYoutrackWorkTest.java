@@ -20,7 +20,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.query.YtWorkQuery;
+import ru.protei.portal.core.model.query.YoutrackWorkQuery;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtEnumBundleElement;
@@ -30,7 +30,7 @@ import ru.protei.portal.core.model.youtrack.dto.issue.IssueWorkItem;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
 import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
-import ru.protei.portal.core.report.ytwork.ReportYtWork;
+import ru.protei.portal.core.report.ytwork.ReportYoutrackWork;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
@@ -46,12 +46,12 @@ import static ru.protei.portal.core.model.util.CrmConstants.State.PRESALE;
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
         JdbcConfigurationContext.class,
         DatabaseConfiguration.class, IntegrationTestsConfiguration.class,
-        ReportYtWorkTest.ReportYtWorkTestConfiguration.class})
+        ReportYoutrackWorkTest.ReportYoutrackWorkTestConfiguration.class})
 @Transactional
-public class ReportYtWorkTest extends BaseServiceTest {
+public class ReportYoutrackWorkTest extends BaseServiceTest {
 
     @Configuration
-    public static class ReportYtWorkTestConfiguration {
+    public static class ReportYoutrackWorkTestConfiguration {
         @Bean
         public YoutrackApi getYoutrackApi() {
             return mock(YoutrackApi.class);
@@ -87,7 +87,7 @@ public class ReportYtWorkTest extends BaseServiceTest {
 
         contractService.createContract(getAuthToken(), guarantee);
 
-        YtWorkQuery query = new YtWorkQuery();
+        YoutrackWorkQuery query = new YoutrackWorkQuery();
         Date from = new GregorianCalendar(2021, Calendar.JULY, 21, 0, 0, 0).getTime();
         Date to = new GregorianCalendar(2021, Calendar.JULY, 22, 0, 0, 0).getTime();
         query.setDateRange(new DateRange(En_DateIntervalType.FIXED, from, to));
@@ -133,7 +133,7 @@ public class ReportYtWorkTest extends BaseServiceTest {
     }
 
     @Autowired
-    ReportYtWork reportService;
+    ReportYoutrackWork reportService;
     @Autowired
     YoutrackApi api;
     @Autowired

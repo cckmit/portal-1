@@ -134,6 +134,17 @@ public class YoutrackApiImpl implements YoutrackApi {
                 .map(Arrays::asList);
     }
 
+    @Override
+    public Result<List<YtProject>> getAllProjects(int offset, int limit) {
+        return read(new YoutrackRequest<>(YtProject[].class)
+                .url(new YoutrackUrlProvider(getBaseUrl()).projects())
+                .params(new HashMap<String, String>() {{
+                    put("$skip", String.valueOf(offset));
+                    put("$top", String.valueOf(limit));
+                }}))
+                .map(Arrays::asList);
+    }
+
     private <RES> Result<RES> read(YoutrackRequest<?, RES> request) {
         ensureFieldsParamSet(request);
         String url = buildUrl(request.getUrl(), request.getParams());

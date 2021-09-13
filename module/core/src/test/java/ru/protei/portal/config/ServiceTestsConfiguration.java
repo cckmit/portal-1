@@ -49,8 +49,8 @@ import ru.protei.portal.core.report.nightwork.ReportNightWork;
 import ru.protei.portal.core.report.nightwork.ReportNightWorkImpl;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.report.projects.ReportProjectImpl;
-import ru.protei.portal.core.report.ytwork.ReportYtWork;
-import ru.protei.portal.core.report.ytwork.ReportYtWorkImpl;
+import ru.protei.portal.core.report.ytwork.ReportYoutrackWork;
+import ru.protei.portal.core.report.ytwork.ReportYoutrackWorkImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
@@ -138,6 +138,11 @@ public class ServiceTestsConfiguration {
     @Bean
     public YoutrackService getYoutrackService() {
         return new YoutrackServiceImpl();
+    }
+
+    @Bean
+    public YoutrackWorkDictionaryService getYoutrackWorkDictionaryService() {
+        return new YoutrackWorkDictionaryServiceImpl();
     }
 
     @Bean
@@ -466,8 +471,8 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
-    public ReportYtWork getReportYtWork() {
-        return new ReportYtWorkImpl();
+    public ReportYoutrackWork getReportYoutrackWork() {
+        return new ReportYoutrackWorkImpl();
     }
 
     @Bean
@@ -509,6 +514,7 @@ public class ServiceTestsConfiguration {
     public Api1CWork getApi1CWork() {
         return new Api1CWorkImpl();
     }
+
     @Bean
     public NRPEService getNRPEService() {
         return new NRPEServiceImpl();
@@ -540,4 +546,6 @@ public class ServiceTestsConfiguration {
     public ModuleService getModuleService() {
         return new ModuleServiceImpl();
     }
+
+
 }

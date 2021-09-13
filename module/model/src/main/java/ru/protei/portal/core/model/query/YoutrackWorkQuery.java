@@ -6,12 +6,12 @@ import ru.protei.portal.core.model.struct.DateRange;
 
 import java.util.Objects;
 
-public class YtWorkQuery extends BaseQuery {
+public class YoutrackWorkQuery extends BaseQuery {
     private DateRange dateRange;
 
-    public YtWorkQuery() {}
+    public YoutrackWorkQuery() {}
 
-    public YtWorkQuery(String searchString, En_SortField sortField, En_SortDir sortDir ) {
+    public YoutrackWorkQuery(String searchString, En_SortField sortField, En_SortDir sortDir ) {
         super(searchString, sortField, sortDir);
     }
 
@@ -39,8 +39,8 @@ public class YtWorkQuery extends BaseQuery {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof YtWorkQuery)) return false;
-        YtWorkQuery that = (YtWorkQuery) o;
+        if (!(o instanceof YoutrackWorkQuery)) return false;
+        YoutrackWorkQuery that = (YoutrackWorkQuery) o;
         return Objects.equals(dateRange, that.dateRange);
     }
 

@@ -4,7 +4,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import ru.protei.portal.core.Lang;
-import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
+import ru.protei.portal.core.model.dict.En_YoutrackWorkType;
 import ru.protei.portal.core.model.struct.ListBuilder;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkClassificationError;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRow;
@@ -26,7 +26,7 @@ public class ExcelReportWriter implements
 
     private final Lang.LocalizedLang localizedLang;
     private final JXLSHelper.ReportBook<ReportYtWorkRow> book;
-    private Map<En_ReportYtWorkType, Set<String>> processedWorkTypes = new HashMap<>();
+    private Map<En_YoutrackWorkType, Set<String>> processedWorkTypes = new HashMap<>();
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang) {
         this.localizedLang = localizedLang;
@@ -93,7 +93,7 @@ public class ExcelReportWriter implements
         currentSheet = classificationErrorSheet;
     }
 
-    public void setValueSheet(Map<En_ReportYtWorkType, Set<String>> processedWorkTypes) {
+    public void setValueSheet(Map<En_YoutrackWorkType, Set<String>> processedWorkTypes) {
         this.processedWorkTypes = processedWorkTypes;
         currentSheet = valueSheet;
     }
@@ -111,6 +111,16 @@ public class ExcelReportWriter implements
     }
 
     private class ValueSheet implements Sheet {
+        private final Map<Integer, String> levelMark;
+
+        public ValueSheet() {
+            levelMark = new HashMap<>();
+            levelMark.put(0, "== ");
+            levelMark.put(1, "==== ");
+            levelMark.put(2, "====== ");
+            levelMark.put(3, "======== ");
+        }
+
         @Override
         public int[] getColumnsWidth() {
             ListBuilder<Integer> columnsWidthList = new ListBuilder<Integer>()
@@ -131,8 +141,8 @@ public class ExcelReportWriter implements
         public String[] getColumnNames() {
             ListBuilder<String> columnsList = new ListBuilder<>();
             int count = 0;
-            for (Map.Entry<En_ReportYtWorkType, Set<String>> entry : processedWorkTypes.entrySet()) {
-                entry.getValue().forEach(value -> columnsList.add(entry.getKey() + " : " + value));
+            for (Map.Entry<En_YoutrackWorkType, Set<String>> entry : processedWorkTypes.entrySet()) {
+                entry.getValue().forEach(value -> columnsList.add(localizedLang.get("reportYtWorkType" + entry.getKey()) + ": " + value));
                 count += entry.getValue().size();
             }
             String[] array = new String[count];
@@ -150,13 +160,13 @@ public class ExcelReportWriter implements
                 long allTimeSpent = item.getAllTimeSpent();
                 values.add(allTimeSpent);
                 values.add(localizedLang.get("reportYtWorkRepresentTime", new Object[]{allTimeSpent / 60, allTimeSpent % 60}));
-                values.add(item.getWorkedHours());
+                values.add(item.getWorkedHours() != null? item.getWorkedHours() : localizedLang.get("reportYtWorkWorkHoursNoData") );
                 processedWorkTypes.forEach((ytWorkType, strings) ->
                         strings.forEach(value -> values.add(item.selectSpentTimeMap(ytWorkType).getOrDefault(value, 0L))));
             }
             if (row instanceof ReportYtWorkRowHeader) {
                 ReportYtWorkRowHeader header = (ReportYtWorkRowHeader)row;
-                values.add(header.getValue());
+                values.add(levelMark.getOrDefault(header.getLevel(), "?") + header.getValue());
             }
 
             return values.toArray();
@@ -170,7 +180,7 @@ public class ExcelReportWriter implements
                     .add(ExcelFormat.STANDARD)
                     .add(ExcelFormat.STANDARD);
             int count = 0;
-            for (Map.Entry<En_ReportYtWorkType, Set<String>> entry : processedWorkTypes.entrySet()) {
+            for (Map.Entry<En_YoutrackWorkType, Set<String>> entry : processedWorkTypes.entrySet()) {
                 entry.getValue().forEach(value -> columnsList.add(ExcelFormat.STANDARD));
                 count += entry.getValue().size();
             }

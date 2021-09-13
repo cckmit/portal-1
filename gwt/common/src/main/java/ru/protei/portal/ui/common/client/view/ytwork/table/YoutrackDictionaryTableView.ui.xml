@@ -1,0 +1,39 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:table='urn:import:ru.brainworm.factory.widget.table.client'
+             xmlns:loading='urn:import:ru.protei.portal.ui.common.client.widget.loading'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="p-b-15 p-t-15">
+        <div class="card card-default widget-11 widget-loader-bar dashboard no-margin">
+            <div ui:field="headerContainer" class="card-header bg-white">
+                <div class="card-title">
+                    <g:Button ui:field="collapse" styleName="btn btn-default padding-0 no-border bg-transparent">
+                        <i ui:field="collapseIcon" class="fas fa-caret-down font-large m-r-5 collapse-icon"/>
+                        <span ui:field="name"/>
+                        <span ui:field="count"/>
+                    </g:Button>
+                </div>
+                <div class="card-controls">
+                    <ul>
+                        <li><g:Button ui:field="add" title="{lang.reportYoutrackWorkDictionaryAdd}" styleName="btn btn-default padding-0 no-border bg-transparent">
+                            <i class="fas fa-fw fa-plus"/>
+                        </g:Button></li>
+                    </ul>
+                </div>
+            </div>
+            <div ui:field="tableContainer" class="widget-11-table auto-overflow transition-05">
+                <table:TableWidget ui:field="table" styleName="table table-hover issues"/>
+                <g:HTMLPanel ui:field="tableOverflow" styleName="padding-15 mt-auto" visible="false">
+                    <p class="small no-margin">
+                        <i class="fas fa-info-circle"/>
+                        <span class="hint-text" ui:field="tableOverflowText"/>
+                    </p>
+                </g:HTMLPanel>
+            </div>
+            <loading:IndeterminateCircleLoading styleName="card-progress" ui:field="loading"/>
+        </div>
+    </g:HTMLPanel>
+
+</ui:UiBinder>

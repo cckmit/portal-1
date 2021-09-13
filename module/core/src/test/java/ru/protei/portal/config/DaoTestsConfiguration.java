@@ -494,4 +494,14 @@ public class DaoTestsConfiguration {
     public ModuleDAO getModuleDAO() {
         return new ModuleDAO_Impl();
     }
+
+    @Bean
+    public YoutrackProjectDAO getYoutrackProjectDAO() {
+        return new YoutrackProjectDAO_Impl();
+    }
+
+    @Bean
+    public YoutrackWorkDictionaryDAO getYoutrackWorkDictionaryDAO() {
+        return new YoutrackWorkDictionaryDAO_Impl();
+    }
 }

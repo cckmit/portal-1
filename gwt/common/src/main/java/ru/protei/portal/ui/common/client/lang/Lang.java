@@ -3625,4 +3625,20 @@ public interface Lang extends Messages, ContactItemLang {
     String warnOneKitAllowedForTheOperation();
 
     String errAccountIsLocked();
+
+    String reportYoutrackWorkTypeNiokr();
+
+    String reportYoutrackWorkTypeNma();
+
+    String reportYoutrackWorkDictionaryAdd();
+
+    String reportYoutrackWorkDictionaryCreate();
+
+    String reportYoutrackWorkDictionaryEdit();
+
+    String reportYoutrackWorkDictionaryName();
+    
+    String reportYoutrackWorkDictionaryType();
+    
+    String reportYoutrackWorkDictionaryProjects();
 }

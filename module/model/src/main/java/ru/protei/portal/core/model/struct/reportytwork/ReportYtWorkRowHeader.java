@@ -1,10 +1,16 @@
 package ru.protei.portal.core.model.struct.reportytwork;
 
-public class ReportYtWorkRowHeader implements ReportYtWorkRow {
+public final class ReportYtWorkRowHeader implements ReportYtWorkRow {
+    final int level;
     final String value;
 
-    public ReportYtWorkRowHeader(String value) {
+    public ReportYtWorkRowHeader(int level, String value) {
+        this.level = level;
         this.value = value;
+    }
+
+    public int getLevel() {
+        return level;
     }
 
     public String getValue() {

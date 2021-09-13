@@ -1,15 +1,15 @@
 package ru.protei.portal.core.report.ytwork;
 
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.query.YtWorkQuery;
+import ru.protei.portal.core.model.query.YoutrackWorkQuery;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.function.Predicate;
 
-public interface ReportYtWork {
+public interface ReportYoutrackWork {
     boolean writeReport(OutputStream buffer,
                         Report report,
-                        YtWorkQuery query,
+                        YoutrackWorkQuery query,
                         Predicate<Long> isCancel) throws IOException;
 }

@@ -232,6 +232,12 @@ public class YoutrackServiceImpl implements YoutrackService {
         return ok(caseComment);
     }
 
+    @Override
+    public Result<List<YoutrackProject>> getProjects(AuthToken token, int offset, int limit) {
+        return api.getAllProjects(offset, limit)
+                .map(company -> company.stream().map(this::convertYtProject).collect(Collectors.toList()));
+    }
+
     private Result<String> getProjectIdByName (String projectName){
         Result<String> projectResult = api.getProjectIdByName(projectName)
                 .flatMap(projects -> {
@@ -274,6 +280,13 @@ public class YoutrackServiceImpl implements YoutrackService {
                 .collect(Collectors.toList())
         );
         return issueInfo;
+    }
+
+    private YoutrackProject convertYtProject(YtProject ytProject) {
+        YoutrackProject project = new YoutrackProject();
+        project.setYoutrackId(ytProject.id);
+        project.setShortName(ytProject.shortName);
+        return project;
     }
 
     private Pair<Attachment, CaseAttachment> convertYtIssueAttachment(YtIssueAttachment issueAttachment) {

@@ -214,23 +214,8 @@ public class CollectionUtils {
         return result;
     }
 
-    public static <K, V> Map<K, V> mergeMap(Map<K, V> map1, Map<K, V> map2, BinaryOperator<V> mergeOperator) {
-        map2.forEach((key2, value2) -> map1.merge(key2, value2, mergeOperator));
-        return map1;
-    }
-
-    public static <K, V> Map<V, List<K>> inverseMap(Map<K, List<V>> map) {
-        Map<V, List<K>> inverseMap = new HashMap<>();
-        map.forEach((k, v) -> {
-            v.forEach(value -> {
-                inverseMap.compute(value, (k2, v2) -> {
-                    if (v2 == null) v2 = new ArrayList<>();
-                    v2.add(k);
-                    return v2;
-                });
-            });
-        });
-        return inverseMap;
+    public static <K, V> void mergeMap(Map<K, V> accumulatorMap, Map<K, V> map, BiFunction<V, V, V> mergeOperator) {
+        map.forEach((key, value) -> accumulatorMap.merge(key, value, mergeOperator));
     }
 
     public static <T> List<T> singleValueList(T value) {

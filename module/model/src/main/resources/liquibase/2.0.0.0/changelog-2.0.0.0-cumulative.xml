@@ -100,4 +100,5 @@
   <include file="2021-06-15-add-commercial-negotiations-case-state.xml" relativeToChangelogFile="true"/>
   <include file="2021-06-17-fix-next_id-for-kit-case-type.xml" relativeToChangelogFile="true"/>
   <include file="2021-07-12-remove-type_id-from-module.xml" relativeToChangelogFile="true"/>
+  <include file="2021-09-01-create-yt-report-dictionaries.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

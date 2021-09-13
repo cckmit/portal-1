@@ -1,12 +1,12 @@
 package ru.protei.portal.core.model.struct.reportytwork;
 
-import ru.protei.portal.core.model.dict.En_ReportYtWorkType;
+import ru.protei.portal.core.model.dict.En_YoutrackWorkType;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class ReportYtWorkRowItem implements ReportYtWorkRow {
+public final class ReportYtWorkRowItem implements ReportYtWorkRow {
     private PersonInfo personInfo;
     // Общее время
     private long allTimeSpent = 0L;
@@ -18,8 +18,8 @@ public class ReportYtWorkRowItem implements ReportYtWorkRow {
     final private  Map<String, Long> contractSpentTime;
     // Map<Project, Map<GUARANTEE, SpentTime>>
     final private Map<String, Long> guaranteeSpentTime;
-    //
-    private Integer workedHours = 0;
+    // Отработанное время
+    private Integer workedHours;
 
     public ReportYtWorkRowItem() {
         this.niokrSpentTime = new HashMap<>();
@@ -68,7 +68,7 @@ public class ReportYtWorkRowItem implements ReportYtWorkRow {
         this.allTimeSpent = this.allTimeSpent + time;
     }
 
-    public Map<String, Long> selectSpentTimeMap(En_ReportYtWorkType type) {
+    public Map<String, Long> selectSpentTimeMap(En_YoutrackWorkType type) {
         switch (type) {
             case NIOKR: return this.getNiokrSpentTime();
             case NMA: return this.getNmaSpentTime();
@@ -78,7 +78,20 @@ public class ReportYtWorkRowItem implements ReportYtWorkRow {
         }
     }
 
-    static public class PersonInfo {
+    @Override
+    public String toString() {
+        return "ReportYtWorkRowItem{" +
+                "personInfo=" + personInfo +
+                ", allTimeSpent=" + allTimeSpent +
+                ", niokrSpentTime=" + niokrSpentTime +
+                ", nmaSpentTime=" + nmaSpentTime +
+                ", contractSpentTime=" + contractSpentTime +
+                ", guaranteeSpentTime=" + guaranteeSpentTime +
+                ", workedHours=" + workedHours +
+                '}';
+    }
+
+    static public final class PersonInfo {
         static public final NameWithId nullCompanyName = new NameWithId("companyName", 0L);
         static public final NameWithId nullDepartmentParentName = new NameWithId("departmentParentName", 0L);
         static public final NameWithId nullDepartmentName = new NameWithId("departmentName", 0L);
@@ -130,6 +143,18 @@ public class ReportYtWorkRowItem implements ReportYtWorkRow {
 
         public boolean hasWorkEntry() {
             return companyName != nullCompanyName;
+        }
+
+        @Override
+        public String toString() {
+            return "PersonInfo{" +
+                    "displayName='" + displayName + '\'' +
+                    ", personId=" + personId +
+                    ", workerId='" + workerId + '\'' +
+                    ", companyName=" + companyName +
+                    ", departmentParentName=" + departmentParentName +
+                    ", departmentName=" + departmentName +
+                    '}';
         }
     }
 

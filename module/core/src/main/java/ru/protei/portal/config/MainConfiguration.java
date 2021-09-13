@@ -59,8 +59,8 @@ import ru.protei.portal.core.report.nightwork.ReportNightWork;
 import ru.protei.portal.core.report.nightwork.ReportNightWorkImpl;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.report.projects.ReportProjectImpl;
-import ru.protei.portal.core.report.ytwork.ReportYtWork;
-import ru.protei.portal.core.report.ytwork.ReportYtWorkImpl;
+import ru.protei.portal.core.report.ytwork.ReportYoutrackWork;
+import ru.protei.portal.core.report.ytwork.ReportYoutrackWorkImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
@@ -778,6 +778,16 @@ public class MainConfiguration {
         return new DutyLogDAO_Impl();
     }
 
+    @Bean
+    public YoutrackProjectDAO getYoutrackProjectDAO() {
+        return new YoutrackProjectDAO_Impl();
+    }
+
+    @Bean
+    public YoutrackWorkDictionaryDAO getYoutrackWorkDictionaryDAO() {
+        return new YoutrackWorkDictionaryDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean
@@ -1006,6 +1016,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public YoutrackWorkDictionaryService getYoutrackWorkDictionaryService() {
+        return new YoutrackWorkDictionaryServiceImpl();
+    }
+
+    @Bean
     public UitsService getUitsService() {
         return new UitsServiceImpl();
     }
@@ -1162,8 +1177,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public ReportYtWork getReportYtWork() {
-        return new ReportYtWorkImpl();
+    public ReportYoutrackWork getReportYoutrackWork() {
+        return new ReportYoutrackWorkImpl();
     }
 
     @Bean
