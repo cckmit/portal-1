@@ -124,6 +124,7 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
                 .withSuccess(caseMetaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new ModuleEvents.ChangeModule(module.getId()));
+                    fireEvent(new CommentAndHistoryEvents.Reload());
                     fillView( caseMetaUpdated, true );
                 }));
     }

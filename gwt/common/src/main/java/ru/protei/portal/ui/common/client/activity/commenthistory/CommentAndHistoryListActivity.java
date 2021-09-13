@@ -578,6 +578,10 @@ public abstract class CommentAndHistoryListActivity
             return true;
         }
 
+        if (En_CaseType.MODULE.equals(caseType)) {
+            return true;
+        }
+
         return false;
     }
 
