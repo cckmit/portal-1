@@ -15,6 +15,7 @@ public class YoutrackConstansMapping {
             case "Done":
             case "Выдан заказчику":
             case "Complete":
+            case "Завершено":
             case "Отправлено":
                 return CrmConstants.State.DONE;
             case "Ignore":
