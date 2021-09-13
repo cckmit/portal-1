@@ -144,6 +144,18 @@ public final class ReportYtWorkRowItem implements ReportYtWorkRow {
         public boolean hasWorkEntry() {
             return companyName != nullCompanyName;
         }
+
+        @Override
+        public String toString() {
+            return "PersonInfo{" +
+                    "displayName='" + displayName + '\'' +
+                    ", personId=" + personId +
+                    ", workerId='" + workerId + '\'' +
+                    ", companyName=" + companyName +
+                    ", departmentParentName=" + departmentParentName +
+                    ", departmentName=" + departmentName +
+                    '}';
+        }
     }
 
     static public class NameWithId implements Comparable<NameWithId> {

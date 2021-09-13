@@ -3,11 +3,9 @@ package ru.protei.portal.ui.common.client.view.ytwork;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
@@ -74,24 +72,6 @@ public class YoutrackWorkFilterView extends Composite implements AbstractYoutrac
             activity.onFilterChanged();
         }
     }
-
-    @UiHandler("date")
-    public void onDateChanged(ValueChangeEvent<DateIntervalWithType> event) {
-        restartChangeTimer();
-    }
-
-    private void restartChangeTimer() {
-        changeTimer.cancel();
-        changeTimer.schedule(300);
-    }
-
-    private final Timer changeTimer = new Timer() {
-        @Override
-        public void run() {
-            if (activity != null)
-                activity.onFilterChanged();
-        }
-    };
 
     @UiField
     Lang lang;
