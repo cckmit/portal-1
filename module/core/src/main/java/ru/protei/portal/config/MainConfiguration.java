@@ -788,6 +788,11 @@ public class MainConfiguration {
         return new YoutrackWorkDictionaryDAO_Impl();
     }
 
+    @Bean
+    public CardTypeDAO getCardTypeDAO() {
+        return new CardTypeDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean

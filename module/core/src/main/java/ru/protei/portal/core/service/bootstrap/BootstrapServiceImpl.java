@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.io.IOException;
+import java.sql.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -85,7 +86,45 @@ public class BootstrapServiceImpl implements BootstrapService {
         /**
          *  end Спринт 80 */
 
+        /**
+         * begin Спринт 81 */
+        if (!bootstrapAppDAO.isActionExists("importCardTypes")) {
+            this.importCardTypes();
+            bootstrapAppDAO.createAction("importCardTypes");
+        }
+        /**
+         *  end Спринт */
+
         log.info( "bootstrapApplication(): BootstrapService complete."  );
+    }
+
+    private void importCardTypes() {
+        log.debug("importCardTypes(): start");
+        List<CardType> cardTypes = new ArrayList<>();
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(
+                    "jdbc:mysql://192.168.110.68:3306/resv3", "portal", "BvF4B2!p");
+                 PreparedStatement statement = connection.prepareStatement("select * from tm_cardtype;")) {
+
+                ResultSet rs = statement.executeQuery();
+                while (rs.next()) {
+                    cardTypes.add(new CardType(
+                            rs.getString("strValue"),
+                            "0" + rs.getString("strDisplay"),
+                            rs.getBoolean("lContainer"),
+                            rs.getBoolean("lDisplay"))
+                    );
+                }
+                log.info("importCardTypes(): get {} card types from resv3", cardTypes.size());
+            } catch (Exception e) {
+                log.error("importCardTypes(): error while importing card types from resv3", e);
+            }
+        } catch (ClassNotFoundException e) {
+            log.error("importCardTypes(): error while driver registration", e);
+        }
+        cardTypeDAO.persistBatch(cardTypes);
+        log.debug("importCardTypes(): finish");
     }
 
     private void changeIssueInitiatorCompany() {
@@ -377,6 +416,8 @@ public class BootstrapServiceImpl implements BootstrapService {
     YoutrackWorkDictionaryDAO youtrackWorkDictionaryDAO;
     @Autowired
     YoutrackProjectDAO youtrackProjectDAO;
+    @Autowired
+    CardTypeDAO cardTypeDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 }
