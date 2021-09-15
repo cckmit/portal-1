@@ -3634,6 +3634,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportYoutrackWorkDictionaryEdit();
 
+    String reportYoutrackWorkDictionaryConfirmRemove(String name);
+
     String reportYoutrackWorkDictionaryName();
     
     String reportYoutrackWorkDictionaryType();

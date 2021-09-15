@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.YoutrackWorkDictionary;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.ytwork.dialog.AbstractYoutrackWorkDictionaryDialogView;
+import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.lang.YoutrackWorkLang;
@@ -72,10 +73,16 @@ public abstract class YoutrackWorkDictionaryTableActivity implements
 
     @Override
     public void onRemoveClicked(YoutrackWorkDictionary dictionary) {
-        table.presetScroll();
-        controller.removeDictionary(dictionary, new FluentCallback<YoutrackWorkDictionary>()
-                .withError(defaultErrorHandler)
-                .withSuccess(d -> loadTable()));
+        fireEvent(new ConfirmDialogEvents.Show(lang.reportYoutrackWorkDictionaryConfirmRemove(dictionary.getName()), removeAction(dictionary)));
+    }
+
+    Runnable removeAction(YoutrackWorkDictionary dictionary) {
+        return () -> {
+            table.presetScroll();
+            controller.removeDictionary(dictionary, new FluentCallback<YoutrackWorkDictionary>()
+                    .withError(defaultErrorHandler)
+                    .withSuccess(d -> loadTable()));
+        };
     }
 
     @Override
