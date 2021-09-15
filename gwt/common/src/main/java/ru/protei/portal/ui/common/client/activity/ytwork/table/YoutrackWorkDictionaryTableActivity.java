@@ -38,6 +38,7 @@ public abstract class YoutrackWorkDictionaryTableActivity implements
 
     @Override
     public void refreshTable() {
+        table.resetScroll();
         loadTable();
     }
 
@@ -49,6 +50,8 @@ public abstract class YoutrackWorkDictionaryTableActivity implements
         dialogDictionaryId = null;
         dialogView.name().setValue(null);
         dialogView.projects().setValue(null);
+
+        table.resetScroll();
 
         dialogDetailView.showPopup();
     }
@@ -62,14 +65,18 @@ public abstract class YoutrackWorkDictionaryTableActivity implements
         dialogView.name().setValue(value.getName());
         dialogView.projects().setValue(new HashSet<>(value.getYoutrackProjects()));
 
+        table.presetScroll();
+
         dialogDetailView.showPopup();
     }
 
     @Override
     public void onRemoveClicked(YoutrackWorkDictionary dictionary) {
+        table.presetScroll();
         controller.removeDictionary(dictionary, new FluentCallback<YoutrackWorkDictionary>()
                 .withError(defaultErrorHandler)
-                .withSuccess(d -> loadTable()));    }
+                .withSuccess(d -> loadTable()));
+    }
 
     @Override
     public void onCollapseClicked(boolean isCollapsed) {

@@ -48,6 +48,8 @@ public class YoutrackDictionaryTableView extends Composite implements AbstractYo
     @Override
     public void putRecords(List<YoutrackWorkDictionary> list) {
         list.forEach(table::addRow);
+        tableContainer.setScrollLeft(left);
+        tableContainer.setScrollTop(top);
     }
 
     @Override
@@ -100,6 +102,18 @@ public class YoutrackDictionaryTableView extends Composite implements AbstractYo
     @Override
     public void refreshTable() {
         activity.refreshTable();
+    }
+
+    @Override
+    public void presetScroll() {
+        this.left = tableContainer.getScrollLeft();
+        this.top = tableContainer.getScrollTop();
+    }
+
+    @Override
+    public void resetScroll() {
+        left = 0;
+        top = 0;
     }
 
     @UiHandler("add")
@@ -183,6 +197,9 @@ public class YoutrackDictionaryTableView extends Composite implements AbstractYo
 
     @Inject
     AbstractYoutrackWorkDictionaryTableActivity activity;
+
+    private Integer left;
+    private Integer top;
 
     interface YoutrackReporDictionaryViewUiBinder extends UiBinder<HTMLPanel, YoutrackDictionaryTableView> {}
     private static YoutrackReporDictionaryViewUiBinder ourUiBinder = GWT.create(YoutrackReporDictionaryViewUiBinder.class);
