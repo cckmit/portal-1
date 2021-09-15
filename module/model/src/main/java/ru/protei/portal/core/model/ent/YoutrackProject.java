@@ -8,16 +8,17 @@ import ru.protei.winter.jdbc.annotations.JdbcId;
 import java.io.Serializable;
 import java.util.Objects;
 
-import static ru.protei.portal.core.model.ent.YoutrackProject.Fields.*;
+import static ru.protei.portal.core.model.ent.YoutrackProject.Fields.YOUTRACK_ID;
 
 @JdbcEntity( table = "youtrack_project" )
 public class YoutrackProject implements Serializable {
 
-    @JdbcId( name = "id", idInsertMode = IdInsertMode.AUTO )
-    private Long id;
-
+    // equals - Основным идентификатором является youtrackId
     @JdbcColumn( name = YOUTRACK_ID )
     private String youtrackId;
+
+    @JdbcId( name = "id", idInsertMode = IdInsertMode.AUTO )
+    private Long id;
 
     @JdbcColumn( name = "short_name" )
     private String shortName;
@@ -55,12 +56,12 @@ public class YoutrackProject implements Serializable {
         if (this == o) return true;
         if (!(o instanceof YoutrackProject)) return false;
         YoutrackProject project = (YoutrackProject) o;
-        return id.equals(project.id);
+        return youtrackId.equals(project.youtrackId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(youtrackId);
     }
 
     @Override
