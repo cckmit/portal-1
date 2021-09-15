@@ -504,4 +504,9 @@ public class DaoTestsConfiguration {
     public YoutrackWorkDictionaryDAO getYoutrackWorkDictionaryDAO() {
         return new YoutrackWorkDictionaryDAO_Impl();
     }
+
+    @Bean
+    public CardTypeDAO getCardTypeDAO() {
+        return new CardTypeDAO_Impl();
+    }
 }

@@ -473,4 +473,9 @@ public class DaoMockTestConfiguration {
     public YoutrackWorkDictionaryDAO getYoutrackWorkDictionaryDAO() {
         return mock(YoutrackWorkDictionaryDAO.class);
     }
+
+    @Bean
+    public CardTypeDAO getCardTypeDAO() {
+        return mock(CardTypeDAO.class);
+    }
 }
