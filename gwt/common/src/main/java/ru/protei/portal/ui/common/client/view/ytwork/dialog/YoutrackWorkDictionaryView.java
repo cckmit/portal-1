@@ -31,6 +31,11 @@ public class YoutrackWorkDictionaryView extends Composite implements AbstractYou
     }
 
     @Override
+    public boolean isValidName() {
+        return name.isValid();
+    }
+
+    @Override
     public HasValue<Set<YoutrackProject>> projects() {
         return projects;
     }

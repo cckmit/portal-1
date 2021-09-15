@@ -106,6 +106,10 @@ public abstract class YoutrackWorkDictionaryTableActivity implements
 
         @Override
         public void onSaveClicked() {
+            if (!isValid()) {
+                fireEvent(new NotifyEvents.Show(lang.errValidationError(), NotifyEvents.NotifyType.ERROR));
+                return;
+            }
             YoutrackWorkDictionary dictionary = new YoutrackWorkDictionary();
             dictionary.setName(dialogView.name().getValue());
             dictionary.setType(type);
@@ -129,6 +133,10 @@ public abstract class YoutrackWorkDictionaryTableActivity implements
                     .withError(defaultErrorHandler)
                     .withSuccess(d -> loadTable()));
         }
+    }
+
+    private boolean isValid() {
+        return dialogView.isValidName();
     }
 
     Long dialogDictionaryId;
