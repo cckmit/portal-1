@@ -169,7 +169,7 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
             boolean isEnterClicked = event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER;
             if (isEscapeClicked && !isAnySelectorPopupOpened(bodyContainer.getElement())) {
                 fireCancelClicked();
-            } else if (isEnterClicked && isSaveOnEnterClick) {
+            } else if (isEnterClicked && isSaveOnEnterClick && !isAnySelectorPopupOpened(bodyContainer.getElement())) {
                 fireSaveClicked();
             }
         }
