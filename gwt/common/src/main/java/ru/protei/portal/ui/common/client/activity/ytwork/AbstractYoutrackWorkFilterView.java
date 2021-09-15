@@ -8,7 +8,7 @@ public interface AbstractYoutrackWorkFilterView extends IsWidget {
 
     void setActivity(AbstractYoutrackWorkFilterActivity activity);
 
-    void resetFilter();
+    void resetFilter(boolean withRefreshTable);
 
     void clearFooterStyle();
 

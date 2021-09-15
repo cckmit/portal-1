@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.YoutrackWorkDictionary;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.ytwork.dialog.AbstractYoutrackWorkDictionaryDialogView;
+import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.lang.YoutrackWorkLang;
@@ -38,6 +39,7 @@ public abstract class YoutrackWorkDictionaryTableActivity implements
 
     @Override
     public void refreshTable() {
+        table.resetScroll();
         loadTable();
     }
 
@@ -49,6 +51,8 @@ public abstract class YoutrackWorkDictionaryTableActivity implements
         dialogDictionaryId = null;
         dialogView.name().setValue(null);
         dialogView.projects().setValue(null);
+
+        table.resetScroll();
 
         dialogDetailView.showPopup();
     }
@@ -62,14 +66,24 @@ public abstract class YoutrackWorkDictionaryTableActivity implements
         dialogView.name().setValue(value.getName());
         dialogView.projects().setValue(new HashSet<>(value.getYoutrackProjects()));
 
+        table.presetScroll();
+
         dialogDetailView.showPopup();
     }
 
     @Override
     public void onRemoveClicked(YoutrackWorkDictionary dictionary) {
-        controller.removeDictionary(dictionary, new FluentCallback<YoutrackWorkDictionary>()
-                .withError(defaultErrorHandler)
-                .withSuccess(d -> loadTable()));    }
+        fireEvent(new ConfirmDialogEvents.Show(lang.reportYoutrackWorkDictionaryConfirmRemove(dictionary.getName()), removeAction(dictionary)));
+    }
+
+    Runnable removeAction(YoutrackWorkDictionary dictionary) {
+        return () -> {
+            table.presetScroll();
+            controller.removeDictionary(dictionary, new FluentCallback<YoutrackWorkDictionary>()
+                    .withError(defaultErrorHandler)
+                    .withSuccess(d -> loadTable()));
+        };
+    }
 
     @Override
     public void onCollapseClicked(boolean isCollapsed) {
@@ -106,6 +120,10 @@ public abstract class YoutrackWorkDictionaryTableActivity implements
 
         @Override
         public void onSaveClicked() {
+            if (!isValid()) {
+                fireEvent(new NotifyEvents.Show(lang.errValidationError(), NotifyEvents.NotifyType.ERROR));
+                return;
+            }
             YoutrackWorkDictionary dictionary = new YoutrackWorkDictionary();
             dictionary.setName(dialogView.name().getValue());
             dictionary.setType(type);
@@ -129,6 +147,10 @@ public abstract class YoutrackWorkDictionaryTableActivity implements
                     .withError(defaultErrorHandler)
                     .withSuccess(d -> loadTable()));
         }
+    }
+
+    private boolean isValid() {
+        return dialogView.isValidName();
     }
 
     Long dialogDictionaryId;

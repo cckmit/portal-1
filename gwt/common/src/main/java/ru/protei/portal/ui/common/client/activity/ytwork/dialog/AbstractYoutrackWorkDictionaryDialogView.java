@@ -9,6 +9,8 @@ import java.util.Set;
 public interface AbstractYoutrackWorkDictionaryDialogView extends IsWidget {
     HasValue<String> name();
 
+    boolean isValidName();
+
     HasValue<Set<YoutrackProject>> projects();
 
     void refreshProjects();

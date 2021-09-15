@@ -79,7 +79,7 @@ public abstract class ReportEditActivity implements Activity,
         issueFilterWidget.resetFilter(null);
         projectFilterWidget.resetFilter();
         contractFilterView.resetFilter();
-        youtrackWorkFilterView.resetFilter();
+        youtrackWorkFilterView.resetFilter(false);
         updateCompanyModels(event.profile);
     }
 
@@ -429,7 +429,7 @@ public abstract class ReportEditActivity implements Activity,
                 break;
             }
             case YT_WORK:
-                youtrackWorkFilterView.resetFilter();
+                youtrackWorkFilterView.resetFilter(true);
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
                 view.getFilterContainer().clear();
                 view.getFilterContainer().add(youtrackWorkFilterView.asWidget());

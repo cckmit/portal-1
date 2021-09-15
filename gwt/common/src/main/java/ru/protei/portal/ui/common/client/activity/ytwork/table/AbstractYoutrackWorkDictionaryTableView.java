@@ -27,4 +27,8 @@ public interface AbstractYoutrackWorkDictionaryTableView extends IsWidget {
     void setEnsureDebugId(String debugId);
 
     void refreshTable();
+
+    void presetScroll();
+
+    void resetScroll();
 }

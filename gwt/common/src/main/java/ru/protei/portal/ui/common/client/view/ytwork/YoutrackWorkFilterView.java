@@ -47,12 +47,14 @@ public class YoutrackWorkFilterView extends Composite implements AbstractYoutrac
     }
 
     @Override
-    public void resetFilter() {
+    public void resetFilter(boolean withRefreshTables) {
         date.setValue(null);
-        tablesViews.forEach(tableView -> {
-            tableView.setCollapsed(true);
-            tableView.refreshTable();
-        });
+        if (withRefreshTables) {
+            tablesViews.forEach(tableView -> {
+                tableView.setCollapsed(true);
+                tableView.refreshTable();
+            });
+        }
     }
 
     @Override
@@ -67,7 +69,7 @@ public class YoutrackWorkFilterView extends Composite implements AbstractYoutrac
 
     @UiHandler("resetBtn")
     public void onResetClicked(ClickEvent event) {
-        resetFilter();
+        resetFilter(true);
         if (activity != null) {
             activity.onFilterChanged();
         }
