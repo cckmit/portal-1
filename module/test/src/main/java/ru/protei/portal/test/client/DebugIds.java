@@ -107,9 +107,11 @@ public class DebugIds {
         String CRM = "sidebar-menu-archive-crm";
         String ADMIN_CRM = "sidebar-menu-archive-admin-crm";
         String TEST_ZONE = "sidebar-menu-archive-test-zone";
-        String STORE_AND_DELIVERY = "sidebar-menu-store-delivery";
         String CARD_SEARCH = "sidebar-menu-store-delivery-card-search";
-        String DELIVERY = "sidebar-menu-store-delivery-delivery";
+        String STORE_AND_DELIVERY = "sidebar-menu-new-store-delivery";
+        String DELIVERY = "sidebar-menu-store-delivery-new-delivery";
+        String CARD = "sidebar-menu-new-store-delivery-delivery";
+        String CARD_BATCH = "sidebar-menu-new-store-delivery-card-batch";
         String STORE = "sidebar-menu-store-delivery-store";
         String FLOOR_PLAN = "sidebar-menu-floor-plan";
         String NOTIFICATION_SYSTEM = "sidebar-menu-notification-system";

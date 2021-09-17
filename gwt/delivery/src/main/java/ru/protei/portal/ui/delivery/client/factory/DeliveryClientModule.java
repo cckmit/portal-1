@@ -20,7 +20,10 @@ import ru.protei.portal.ui.delivery.client.activity.module.edit.AbstractModuleEd
 import ru.protei.portal.ui.delivery.client.activity.module.edit.ModuleEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.module.meta.AbstractModuleMetaView;
 import ru.protei.portal.ui.delivery.client.activity.module.meta.ModuleMetaActivity;
+import ru.protei.portal.ui.delivery.client.activity.page.CardBatchPage;
+import ru.protei.portal.ui.delivery.client.activity.page.CardPage;
 import ru.protei.portal.ui.delivery.client.activity.page.DeliveryPage;
+import ru.protei.portal.ui.delivery.client.activity.page.StoreAndDeliveryPage;
 import ru.protei.portal.ui.delivery.client.activity.table.AbstractDeliveryTableView;
 import ru.protei.portal.ui.delivery.client.activity.table.DeliveryTableActivity;
 import ru.protei.portal.ui.delivery.client.view.create.DeliveryCreateView;
@@ -37,7 +40,10 @@ import ru.protei.portal.ui.delivery.client.view.table.DeliveryTableView;
 public class DeliveryClientModule extends AbstractGinModule {
     @Override
     protected void configure()    {
+        bind(StoreAndDeliveryPage.class).asEagerSingleton();
         bind(DeliveryPage.class).asEagerSingleton();
+        bind(CardPage.class).asEagerSingleton();
+        bind(CardBatchPage.class).asEagerSingleton();
 
         bind(DeliveryTableActivity.class).asEagerSingleton();
         bind(AbstractDeliveryTableView.class).to(DeliveryTableView.class).in(Singleton.class);

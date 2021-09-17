@@ -3643,4 +3643,10 @@ public interface Lang extends Messages, ContactItemLang {
     String reportYoutrackWorkDictionaryType();
     
     String reportYoutrackWorkDictionaryProjects();
+
+    String newStoreAndDelivery();
+
+    String card();
+
+    String cardBatch();
 }

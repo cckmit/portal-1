@@ -8,42 +8,33 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.events.ActionBarEvents;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
-public abstract class DeliveryPage
+public abstract class CardBatchPage
         implements Activity {
 
     @PostConstruct
     public void onInit() {
         CATEGORY = lang.newStoreAndDelivery();
-        TAB = lang.deliveries();
+        TAB = lang.cardBatch();
     }
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.DELIVERY_VIEW) ) {
-            fireEvent( new MenuEvents.Add( TAB, UiConstants.TabIcons.DELIVERY, TAB, DebugIds.SIDEBAR_MENU.DELIVERY).withParent(CATEGORY) );
-            fireEvent( new AppEvents.InitPage( show ) );
+            fireEvent( new MenuEvents.Add( TAB, UiConstants.TabIcons.CARD_BATCH, TAB, DebugIds.SIDEBAR_MENU.CARD_BATCH).withParent(CATEGORY) );
+//            fireEvent( new AppEvents.InitPage( show ) );
         }
     }
 
-    @Event
-    public void onShowTable( DeliveryEvents.Show event ) {
-        fireSelectTab();
-    }
-
-    @Event
-    public void onShowDetail( DeliveryEvents.Create event ) {
-        fireSelectTab();
-    }
-
-    @Event
-    public void onShowPreview(DeliveryEvents.ShowFullScreen event) {
-        fireSelectTab();
-    }
+//    @Event
+//    public void onShowTable( DeliveryEvents.Show event ) {
+//        fireSelectTab();
+//    }
 
     @Event
     public void onClickSection( SectionEvents.Clicked event ) {
@@ -52,7 +43,7 @@ public abstract class DeliveryPage
         }
 
         fireSelectTab();
-        fireEvent( show );
+//        fireEvent( show );
     }
 
     private void fireSelectTab() {
@@ -71,6 +62,6 @@ public abstract class DeliveryPage
 
     private String CATEGORY;
     private String TAB;
-    private DeliveryEvents.Show show = new DeliveryEvents.Show(false);
+//    private DeliveryEvents.Show show = new DeliveryEvents.Show(false);
 }
 

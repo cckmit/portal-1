@@ -13,64 +13,35 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
-public abstract class DeliveryPage
+public abstract class StoreAndDeliveryPage
         implements Activity {
 
     @PostConstruct
     public void onInit() {
         CATEGORY = lang.newStoreAndDelivery();
-        TAB = lang.deliveries();
     }
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        if ( event.profile.hasPrivilegeFor( En_Privilege.DELIVERY_VIEW) ) {
-            fireEvent( new MenuEvents.Add( TAB, UiConstants.TabIcons.DELIVERY, TAB, DebugIds.SIDEBAR_MENU.DELIVERY).withParent(CATEGORY) );
-            fireEvent( new AppEvents.InitPage( show ) );
+        if ( policyService.hasAnyPrivilegeOf( En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT, En_Privilege.DELIVERY_CREATE ) ) {
+            fireEvent( new MenuEvents.Add( CATEGORY, UiConstants.TabIcons.STORE_AND_DELIVERY, CATEGORY, DebugIds.SIDEBAR_MENU.STORE_AND_DELIVERY ) );
         }
-    }
-
-    @Event
-    public void onShowTable( DeliveryEvents.Show event ) {
-        fireSelectTab();
-    }
-
-    @Event
-    public void onShowDetail( DeliveryEvents.Create event ) {
-        fireSelectTab();
-    }
-
-    @Event
-    public void onShowPreview(DeliveryEvents.ShowFullScreen event) {
-        fireSelectTab();
     }
 
     @Event
     public void onClickSection( SectionEvents.Clicked event ) {
-        if ( !TAB.equals( event.identity ) ) {
+        if ( !CATEGORY.equals( event.identity ) ) {
             return;
         }
 
-        fireSelectTab();
-        fireEvent( show );
+        fireEvent(new DeliveryEvents.Show(false));
     }
-
-    private void fireSelectTab() {
-        fireEvent( new ActionBarEvents.Clear() );
-        if ( policyService.hasPrivilegeFor( En_Privilege.DELIVERY_VIEW) ) {
-            fireEvent( new MenuEvents.Select( TAB, CATEGORY) );
-        }
-    }
-
 
     @Inject
     Lang lang;
-
     @Inject
-    PolicyService policyService;
+    private PolicyService policyService;
 
     private String CATEGORY;
-    private String TAB;
-    private DeliveryEvents.Show show = new DeliveryEvents.Show(false);
 }
 
