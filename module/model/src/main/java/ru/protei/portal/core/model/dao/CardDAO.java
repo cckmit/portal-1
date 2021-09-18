@@ -1,0 +1,9 @@
+package ru.protei.portal.core.model.dao;
+
+import ru.protei.portal.core.model.ent.Card;
+import ru.protei.portal.core.model.query.CardQuery;
+import ru.protei.winter.core.utils.beans.SearchResult;
+
+public interface CardDAO extends PortalBaseDAO<Card> {
+    SearchResult<Card> getSearchResult(CardQuery query);
+}
