@@ -7,46 +7,48 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer delivery">
-        <div class="card-body row no-margin">
-            <div class="col-lg-8 order-last order-lg-first p-l-25 p-r-5">
-                <div class="btn-toolbar flex-wrap">
-                    <div class="btn-group form-group">
-                        <g:Button ui:field="backButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
-                                  title="{lang.backToDeliveries}">
-                            <i class="fa fa-arrow-left"/>
-                        </g:Button>
-                        <g:Button ui:field="showEditViewButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.openFullScreen}">
-                            <i class="fas fa-expand-arrows-alt"/>
-                        </g:Button>
-                        <g:Button ui:field="nameAndDescriptionEditButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
-                                  title="{lang.editNameAndDescription}">
-                            <i class="fa fa-pencil-alt"/>
-                        </g:Button>
-                        <g:Button ui:field="addKitsButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
-                                  title="{lang.addKits}">
-                            <i class="fa fa-plus"/>
-                        </g:Button>
+    <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin delivery">
+        <div class="card-body no-margin">
+            <div class="row">
+                <div class="col-lg-8 order-last order-lg-first p-l-25 p-r-5">
+                    <div class="btn-toolbar flex-wrap">
+                        <div class="btn-group form-group">
+                            <g:Button ui:field="backButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
+                                      title="{lang.backToDeliveries}">
+                                <i class="fa fa-arrow-left"/>
+                            </g:Button>
+                            <g:Button ui:field="showEditViewButton" styleName="btn btn-default btn-xs btn-cons-toolbar" title="{lang.openFullScreen}">
+                                <i class="fas fa-expand-arrows-alt"/>
+                            </g:Button>
+                            <g:Button ui:field="nameAndDescriptionEditButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
+                                      title="{lang.editNameAndDescription}">
+                                <i class="fa fa-pencil-alt"/>
+                            </g:Button>
+                            <g:Button ui:field="addKitsButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
+                                      title="{lang.addKits}">
+                                <i class="fa fa-plus"/>
+                            </g:Button>
+                        </div>
+                    </div>
+
+                    <small ui:field="createdBy" class="pull-right text-right"/>
+
+                    <g:HTMLPanel ui:field="nameContainer"/>
+
+                    <nav class="secondary-sidebar">
+                        <kitsmenu:KitMenu ui:field="kitsMenu" backVisible="false"/>
+                        <kits:KitList ui:field="kits"/>
+                    </nav>
+
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <tab:multi.MultiTabWidget ui:field="multiTabWidget" styleName="issue-info-tab-widget"/>
+                        </div>
                     </div>
                 </div>
-
-                <small ui:field="createdBy" class="pull-right text-right"/>
-
-                <g:HTMLPanel ui:field="nameContainer"/>
-
-                <nav class="secondary-sidebar">
-                    <kitsmenu:KitMenu ui:field="kitsMenu" backVisible="false"/>
-                    <kits:KitList ui:field="kits"/>
-                </nav>
-
-                <div class="row">
-                    <div class="form-group col-md-12">
-                        <tab:multi.MultiTabWidget ui:field="multiTabWidget" styleName="issue-info-tab-widget"/>
-                    </div>
+                <div class="col-lg-4">
+                    <g:HTMLPanel ui:field="metaContainer"/>
                 </div>
-            </div>
-            <div class="col-lg-4">
-                <g:HTMLPanel ui:field="metaContainer"/>
             </div>
         </div>
     </g:HTMLPanel>

@@ -7,6 +7,7 @@ import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.user.client.Element;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 
 public class ModuleColumn extends ClickColumn<Module> {
 
@@ -37,7 +38,7 @@ public class ModuleColumn extends ClickColumn<Module> {
         DivElement div = Document.get().createDivElement();
         div.appendChild(makeIcon(value));
         div.appendChild(makeSpan("bold", value.getSerialNumber()));
-        div.appendChild(makeSpan("float-right manager", value.getManager().getDisplayShortName()));
+        div.appendChild(makeSpan("float-right manager", DateFormatter.formatDateOnly(value.getDepartureDate())));
         return div;
     }
 

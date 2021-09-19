@@ -59,7 +59,7 @@ public class InfoColumn extends ClickColumn<Delivery>{
             groupElement.appendChild( i );
 
             Element createdElement = DOM.createSpan();
-            createdElement.setInnerText( " " + DateFormatter.formatDateTime( delivered ) );
+            createdElement.setInnerText( " " + DateFormatter.formatDateOnly( delivered ) );
             groupElement.appendChild( createdElement );
 
             divElement.appendChild( groupElement );

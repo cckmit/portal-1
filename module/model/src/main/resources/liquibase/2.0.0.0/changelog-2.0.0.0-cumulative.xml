@@ -101,4 +101,5 @@
   <include file="2021-06-17-fix-next_id-for-kit-case-type.xml" relativeToChangelogFile="true"/>
   <include file="2021-07-12-remove-type_id-from-module.xml" relativeToChangelogFile="true"/>
   <include file="2021-09-10-remove-hw-manager-qc-manager-from-delivery.xml" relativeToChangelogFile="true"/>
+  <include file="2021-09-17-add-new-project-roles.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

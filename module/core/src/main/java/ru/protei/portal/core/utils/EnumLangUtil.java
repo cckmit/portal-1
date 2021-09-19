@@ -56,7 +56,7 @@ public class EnumLangUtil {
             case PRODUCT_ASSEMBLER:
                 return localizedLang.get("personProductAssembler");
             case SUPPLY_PREPARATION:
-                return localizedLang.get("personSupplyPreparation");
+                return localizedLang.get("personDeliveryPreparation");
             case ENGINEER_DOC_DEV:
                 return localizedLang.get("personEngineerDocDev");
             case TECH_DOC_DEV:
@@ -85,6 +85,19 @@ public class EnumLangUtil {
                 return localizedLang.get("personPresaleHeadManager");
             case DEPLOY_HEAD_MANAGER:
                 return localizedLang.get("personDeployHeadManager");
+            case DELIVERY_PACKING:
+                return localizedLang.get("personDeliveryPacking");
+            case ENTRANCE_CONTROL:
+                return localizedLang.get("personEntranceControl");
+            case EQUIPMENT_SETUP:
+                return localizedLang.get("personEquipmentSetup");
+            case OPERATIONAL_DOCUMENTATION:
+                return localizedLang.get("personOperationalDocumentation");
+            case QAD_DOCUMENTATION:
+                return localizedLang.get("personQadDocumentation");
+            case SPECIAL_CHECK_SPECIAL_RESEARCH:
+                return localizedLang.get("personSpecialCheckSpecialResearch");
+
         }
 
         return localizedLang.get("personRoleUnknown");

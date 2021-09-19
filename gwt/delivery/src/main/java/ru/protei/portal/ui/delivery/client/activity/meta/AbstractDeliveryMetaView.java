@@ -55,8 +55,6 @@ public interface AbstractDeliveryMetaView extends IsWidget {
 
     HasEnabled contractEnable();
 
-    void setContractFieldMandatory(boolean isMandatory);
-
     void updateContractModel(Long projectId);
 
     void setProducts(String value);

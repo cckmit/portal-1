@@ -1330,7 +1330,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String personProductAssembler();
 
-    String personSupplyPreparation();
+    String personDeliveryPreparation();
 
     String personEngineerDocDev();
 
@@ -3652,7 +3652,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String personProductAssemblerShort();
 
-    String personSupplyPreparationShort();
+    String personDeliveryPreparationShort();
 
     String personEngineerDocDevShort();
 
@@ -3681,4 +3681,28 @@ public interface Lang extends Messages, ContactItemLang {
     String personPresaleHeadManagerShort();
 
     String personDeployHeadManagerShort();
+
+    String personDeliveryPacking();
+
+    String personEntranceControl();
+
+    String personEquipmentSetup();
+
+    String personOperationalDocumentation();
+
+    String personQadDocumentation();
+
+    String personSpecialCheckSpecialResearch();
+
+    String personDeliveryPackingShort();
+
+    String personEntranceControlShort();
+
+    String personEquipmentSetupShort();
+
+    String personOperationalDocumentationShort();
+
+    String personQadDocumentationShort();
+
+    String personSpecialCheckSpecialResearchShort();
 }

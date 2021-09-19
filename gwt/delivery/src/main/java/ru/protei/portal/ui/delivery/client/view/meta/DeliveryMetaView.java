@@ -150,11 +150,6 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     }
 
     @Override
-    public void setContractFieldMandatory(boolean isMandatory) {
-        contract.setMandatory(isMandatory);
-    }
-
-    @Override
     public void updateContractModel(Long projectId) {
         contractModel.updateProject(null, projectId);
     }

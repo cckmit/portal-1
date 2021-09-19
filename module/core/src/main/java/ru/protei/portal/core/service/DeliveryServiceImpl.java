@@ -494,9 +494,6 @@ public class DeliveryServiceImpl implements DeliveryService {
         if (delivery.getProjectId() == null) {
             return false;
         }
-        if (En_DeliveryAttribute.DELIVERY == delivery.getAttribute() && delivery.getContractId() == null) {
-            return false;
-        }
         if (isEmpty(delivery.getKits())) {
             return false;
         }

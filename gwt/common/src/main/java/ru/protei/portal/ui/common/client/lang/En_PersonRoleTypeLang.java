@@ -44,7 +44,7 @@ public class En_PersonRoleTypeLang {
             case PRODUCT_ASSEMBLER:
                 return lang.personProductAssembler() + " (" + lang.personProductAssemblerShort() + ")";
             case SUPPLY_PREPARATION:
-                return lang.personSupplyPreparation() + " (" + lang.personSupplyPreparationShort() + ")";
+                return lang.personDeliveryPreparation() + " (" + lang.personDeliveryPreparationShort() + ")";
             case ENGINEER_DOC_DEV:
                 return lang.personEngineerDocDev() + " (" + lang.personEngineerDocDevShort() + ")";
             case TECH_DOC_DEV:
@@ -73,6 +73,19 @@ public class En_PersonRoleTypeLang {
                 return lang.personPresaleHeadManager() + " (" + lang.personPresaleHeadManagerShort() + ")";
             case DEPLOY_HEAD_MANAGER:
                 return lang.personDeployHeadManager() + " (" + lang.personDeployHeadManagerShort() + ")";
+            case DELIVERY_PACKING:
+                return lang.personDeliveryPacking() + " (" + lang.personDeliveryPackingShort() + ")";
+            case ENTRANCE_CONTROL:
+                return lang.personEntranceControl() + " (" + lang.personEntranceControlShort() + ")";
+            case EQUIPMENT_SETUP:
+                return lang.personEquipmentSetup() + " (" + lang.personEquipmentSetupShort() + ")";
+            case OPERATIONAL_DOCUMENTATION:
+                return lang.personOperationalDocumentation() + " (" + lang.personOperationalDocumentationShort() + ")";
+            case QAD_DOCUMENTATION:
+                return lang.personQadDocumentation() + " (" + lang.personQadDocumentationShort() + ")";
+            case SPECIAL_CHECK_SPECIAL_RESEARCH:
+                return lang.personSpecialCheckSpecialResearch() + " (" + lang.personSpecialCheckSpecialResearchShort() + ")";
+
         }
         return null;
     }
@@ -97,7 +110,7 @@ public class En_PersonRoleTypeLang {
             case PRODUCT_ASSEMBLER:
                 return lang.personProductAssemblerShort();
             case SUPPLY_PREPARATION:
-                return lang.personSupplyPreparationShort();
+                return lang.personDeliveryPreparationShort();
             case ENGINEER_DOC_DEV:
                 return lang.personEngineerDocDevShort();
             case TECH_DOC_DEV:
@@ -126,7 +139,18 @@ public class En_PersonRoleTypeLang {
                 return lang.personPresaleHeadManagerShort();
             case DEPLOY_HEAD_MANAGER:
                 return lang.personDeployHeadManagerShort();
-
+            case DELIVERY_PACKING:
+                return lang.personDeliveryPackingShort();
+            case ENTRANCE_CONTROL:
+                return lang.personEntranceControlShort();
+            case EQUIPMENT_SETUP:
+                return lang.personEquipmentSetupShort();
+            case OPERATIONAL_DOCUMENTATION:
+                return lang.personOperationalDocumentationShort();
+            case QAD_DOCUMENTATION:
+                return lang.personQadDocumentationShort();
+            case SPECIAL_CHECK_SPECIAL_RESEARCH:
+                return lang.personSpecialCheckSpecialResearchShort();
         }
         return null;
     }

@@ -119,11 +119,6 @@ public class Project extends AuditableObject {
 
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
-            @JdbcJoinPath(localColumn = Columns.MANAGER, remoteColumn = "id", table = "person")}, mappedColumn = "displayName")
-    private String managerFullName;
-
-    @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
             @JdbcJoinPath(localColumn = Columns.MANAGER, remoteColumn = "id", table = "person"),
             @JdbcJoinPath(localColumn = "company_id", remoteColumn = "id", table = "company")
     }, mappedColumn = "cname")
@@ -310,7 +305,7 @@ public class Project extends AuditableObject {
     }
 
     public List<PersonProjectMemberView> getTeam() {
-        if (team == null && !isEmpty( members )) {
+        if ( team == null && !isEmpty( members ) ) {
             team = CollectionUtils.stream( members )
                     .filter( member -> En_DevUnitPersonRoleType.isProjectRole( member.getRole() ) )
                     .map( member -> new PersonProjectMemberView( member.getMember(), member.getRole() ) )
@@ -320,11 +315,22 @@ public class Project extends AuditableObject {
     }
 
     public PersonProjectMemberView getLeader() {
-        if (team == null) {
-            return null;
-        }
-        return team.stream()
+        return stream(getTeam())
                 .filter(member -> En_DevUnitPersonRoleType.HEAD_MANAGER.equals(member.getRole()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public PersonProjectMemberView getHardwareCurator() {
+        return stream(getTeam())
+                .filter(member -> En_DevUnitPersonRoleType.HARDWARE_CURATOR.equals(member.getRole()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public PersonProjectMemberView getQualityControlCurator() {
+        return stream(getTeam())
+                .filter(member -> En_DevUnitPersonRoleType.QUALITY_CONTROL_SMK.equals(member.getRole()))
                 .findFirst()
                 .orElse(null);
     }
@@ -386,10 +392,6 @@ public class Project extends AuditableObject {
 
     public void setManagerName(String managerName) {
         this.managerName = managerName;
-    }
-
-    public String getManagerFullName() {
-        return managerFullName;
     }
 
     public String getManagerCompanyName() {
@@ -509,7 +511,6 @@ public class Project extends AuditableObject {
                 ", creator=" + creator +
                 ", managerId=" + managerId +
                 ", managerName='" + managerName + '\'' +
-                ", managerFullName='" + managerFullName + '\'' +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", technicalSupportValidity=" + technicalSupportValidity +
                 ", workCompletionDate=" + workCompletionDate +

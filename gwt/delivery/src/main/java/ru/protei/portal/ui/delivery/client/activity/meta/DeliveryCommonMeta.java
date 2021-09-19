@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
-import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.struct.ContractInfo;
@@ -36,14 +35,10 @@ public class DeliveryCommonMeta implements AbstractDeliveryCommonMeta {
 
     @Override
     public void onAttributeChanged() {
-        if (En_DeliveryAttribute.DELIVERY.equals(view.attribute().getValue())) {
-            if (view.project().getValue() != null) {
-                view.contractEnable().setEnabled(true);
-            }
-            view.setContractFieldMandatory(true);
+        if (En_DeliveryAttribute.DELIVERY.equals(view.attribute().getValue()) && view.project().getValue() != null) {
+            view.contractEnable().setEnabled(true);
         } else {
             view.contractEnable().setEnabled(false);
-            view.setContractFieldMandatory(false);
             view.contract().setValue(null);
             view.setContractCompany(null);
         }
@@ -85,7 +80,6 @@ public class DeliveryCommonMeta implements AbstractDeliveryCommonMeta {
         view.contract().setValue(null);
         view.contractEnable().setEnabled(false);
         view.setContractCompany(null);
-        view.setContractFieldMandatory(false);
         isMilitaryNumbering.accept(false);
         view.updateContractModel(null);
     }
@@ -102,11 +96,6 @@ public class DeliveryCommonMeta implements AbstractDeliveryCommonMeta {
         if (view.project().getValue() == null) {
             return lang.deliveryValidationEmptyProject();
         }
-        En_DeliveryAttribute attribute = view.attribute().getValue();
-        if (En_DeliveryAttribute.DELIVERY == attribute && view.contract().getValue() == null) {
-            return lang.deliveryValidationEmptyContractAtAttributeDelivery();
-        }
-
         return null;
     }
 
