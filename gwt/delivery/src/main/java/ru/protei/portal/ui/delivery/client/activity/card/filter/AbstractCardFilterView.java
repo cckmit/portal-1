@@ -3,19 +3,22 @@ package ru.protei.portal.ui.delivery.client.activity.card.filter;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.ui.delivery.client.activity.card.table.AbstractCardTableActivity;
-import ru.protei.portal.ui.delivery.client.widget.card.CardStatesOptionList;
+import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.view.CardTypeOption;
+import ru.protei.portal.core.model.view.PersonShortView;
+
+import java.util.Set;
 
 public interface AbstractCardFilterView extends IsWidget {
-    void setActivity(AbstractCardTableActivity cardTableActivity);
+    void setActivity(AbstractCardFilterActivity cardTableActivity);
 
     HasValue<String> search();
 
     HasValue<En_SortField> sortField();
     HasValue<Boolean> sortDir();
-    HasValue<Long> type();
-    CardStatesOptionList states();
-    HasValue<Long> manager();
+    HasValue<Set<CardTypeOption>> types();
+    HasValue<Set<CaseState>> states();
+    HasValue<Set<PersonShortView>> managers();
 
     void resetFilter();
 }

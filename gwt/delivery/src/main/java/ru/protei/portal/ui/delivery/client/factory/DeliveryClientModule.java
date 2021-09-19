@@ -2,6 +2,9 @@ package ru.protei.portal.ui.delivery.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
+import ru.protei.portal.ui.delivery.client.activity.card.filter.AbstractCardFilterView;
+import ru.protei.portal.ui.delivery.client.activity.card.table.AbstractCardTableView;
+import ru.protei.portal.ui.delivery.client.activity.card.table.CardTableActivity;
 import ru.protei.portal.ui.delivery.client.activity.delivery.create.AbstractDeliveryCreateView;
 import ru.protei.portal.ui.delivery.client.activity.delivery.create.DeliveryCreateActivity;
 import ru.protei.portal.ui.delivery.client.activity.delivery.edit.AbstractDeliveryEditView;
@@ -26,6 +29,8 @@ import ru.protei.portal.ui.delivery.client.page.DeliveryPage;
 import ru.protei.portal.ui.delivery.client.page.StoreAndDeliveryPage;
 import ru.protei.portal.ui.delivery.client.activity.delivery.table.AbstractDeliveryTableView;
 import ru.protei.portal.ui.delivery.client.activity.delivery.table.DeliveryTableActivity;
+import ru.protei.portal.ui.delivery.client.view.card.filter.CardFilterView;
+import ru.protei.portal.ui.delivery.client.view.card.table.CardTableView;
 import ru.protei.portal.ui.delivery.client.view.delivery.create.DeliveryCreateView;
 import ru.protei.portal.ui.delivery.client.view.delivery.edit.DeliveryEditView;
 import ru.protei.portal.ui.delivery.client.view.delivery.kit.edit.DeliveryKitEditView;
@@ -72,6 +77,10 @@ public class DeliveryClientModule extends AbstractGinModule {
         bind(AbstractModuleEditView.class).to(ModuleEditView.class).in(Singleton.class);
         bind(AbstractModuleCreateView.class).to(ModuleCreateView.class).in(Singleton.class);
         bind(AbstractModuleMetaView.class).to(ModuleMetaView.class);
+
+        bind(CardTableActivity.class).asEagerSingleton();
+        bind(AbstractCardTableView.class).to(CardTableView.class).in(Singleton.class);
+        bind(AbstractCardFilterView.class).to(CardFilterView.class).in(Singleton.class);
     }
 }
 

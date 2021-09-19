@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.widget.card;
+package ru.protei.portal.ui.delivery.client.widget.card.state;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;

@@ -2,6 +2,7 @@ package ru.protei.portal.ui.delivery.client.activity.card.table;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 
 public interface AbstractCardTableView extends IsWidget {
@@ -18,4 +19,6 @@ public interface AbstractCardTableView extends IsWidget {
     HasWidgets getPagerContainer();
 
     void clearSelection();
+
+    void updateRow(Card item);
 }

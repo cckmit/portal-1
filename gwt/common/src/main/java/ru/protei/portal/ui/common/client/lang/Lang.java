@@ -3650,9 +3650,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardBatch();
 
-    String cardSerialNumber();
-
     String cardTestDate();
+
+    String cardState();
 
     String cardStateTesting();
 
@@ -3667,4 +3667,22 @@ public interface Lang extends Messages, ContactItemLang {
     String cardStateRepair();
 
     String cardStateWriteOff();
+
+    String cardColumnNumber();
+
+    String cardColumnInfo();
+
+    String cardColumnTestDate();
+
+    String cardColumnManager();
+
+    String cardSerialNumber();
+
+    String cardType();
+
+    String cardArticle();
+
+    String cardNote();
+
+    String cardManager();
 }

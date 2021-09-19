@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.core.model.query.CardQuery;
+import ru.protei.portal.core.model.view.CardTypeOption;
 import ru.protei.portal.core.service.CardService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.CardController;
@@ -12,6 +13,8 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.List;
 
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
 import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
@@ -38,5 +41,11 @@ public class CardControllerImpl implements CardController {
     public Card getCard(Long id) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         return checkResultAndGetData(cardService.getCard(token, id));
+    }
+
+    @Override
+    public List<CardTypeOption> getCardTypeOptionList(CardQuery query) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(cardService.getCardTypeOptionList(token, query));
     }
 }

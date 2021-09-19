@@ -11,6 +11,8 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.query.CardQuery;
+import ru.protei.portal.core.model.view.CardTypeOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -118,9 +120,9 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
     private CardQuery makeQuery() {
         CardQuery query = new CardQuery();
         query.setSearchString(filterView.search().getValue());
-        query.setTypeId(filterView.type().getValue());
+        query.setTypeIds(nullIfEmpty(toList(filterView.types().getValue(), CardTypeOption::getId)));
         query.setStateIds(nullIfEmpty(toList(filterView.states().getValue(), CaseState::getId)));
-        query.setManagerId(filterView.manager().getValue());
+        query.setManagerIds(nullIfEmpty(toList(filterView.managers().getValue(), PersonShortView::getId)));
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setSortField(filterView.sortField().getValue());
         return query;

@@ -2,11 +2,12 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.winter.jdbc.annotations.*;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
 @JdbcEntity(table = "card")
-public class Card {
+public class Card implements Serializable {
     public static final String AUDIT_TYPE = "Card";
     public static final String CASE_OBJECT_TABLE = "case_object";
     public static final String CASE_OBJECT_ALIAS = "CO";
@@ -16,6 +17,9 @@ public class Card {
 
     @JdbcColumn(name = "type_id")
     private Long typeId;
+
+    @JdbcJoinedColumn(localColumn = Card.Columns.TYPE_ID, remoteColumn = "id", mappedColumn = "name", table = "card_type")
+    private String typeName;
 
     @JdbcColumn(name = "serial_number")
     private String serialNumber;
@@ -51,6 +55,9 @@ public class Card {
             mappedColumn = CaseObject.Columns.INFO, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private String note;
 
+    public Card() {
+    }
+
     public Long getId() {
         return id;
     }
@@ -65,6 +72,14 @@ public class Card {
 
     public void setTypeId(Long typeId) {
         this.typeId = typeId;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 
     public String getSerialNumber() {
@@ -175,5 +190,6 @@ public class Card {
 
     public interface Columns {
         String ID = "id";
+        String TYPE_ID = "type_id";
     }
 }
