@@ -3649,4 +3649,22 @@ public interface Lang extends Messages, ContactItemLang {
     String card();
 
     String cardBatch();
+
+    String cardSerialNumber();
+
+    String cardTestDate();
+
+    String cardStateTesting();
+
+    String cardStateInStock();
+
+    String cardStateInternalUse();
+
+    String cardStateReservation();
+
+    String cardStateSent();
+
+    String cardStateRepair();
+
+    String cardStateWriteOff();
 }

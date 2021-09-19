@@ -121,6 +121,9 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption(En_SortField.delivery_departure_date);
                 addOption(En_SortField.delivery_case_name);
                 break;
+            case CARD:
+                addOption(En_SortField.card_serial_number);
+                addOption(En_SortField.card_test_date);
         }
     }
 

@@ -261,6 +261,16 @@ public enum En_SortField {
      */
     delivery_creation_date("CO.created"),
 
+    /**
+     * Серийный номер карты
+     */
+    card_serial_number("serial_number"),
+
+    /**
+     * Дата тестирования карты
+     */
+    card_test_date("test_date"),
+
     ;
 
     private String fieldName;

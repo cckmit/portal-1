@@ -4,5 +4,5 @@ import ru.brainworm.factory.widget.table.client.InfiniteLoadHandler;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.ent.Card;
 
-public interface AbstractCardActivity extends InfiniteLoadHandler<Card>, InfiniteTableWidget.PagerListener{
+public interface AbstractCardTableActivity extends InfiniteLoadHandler<Card>, InfiniteTableWidget.PagerListener {
 }

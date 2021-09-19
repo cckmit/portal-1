@@ -89,6 +89,10 @@ public class En_SortFieldLang {
                 return lang.deliveryName();
             case delivery_departure_date:
                 return lang.deliveryDepartureDate();
+            case card_serial_number:
+                return lang.cardSerialNumber();
+            case card_test_date:
+                return lang.cardTestDate();
             default:
                 return lang.unknownField();
         }
