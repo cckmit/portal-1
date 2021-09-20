@@ -32,6 +32,8 @@ public class CardTableView extends Composite implements AbstractCardTableView {
     @Override
     public void setActivity(AbstractCardTableActivity activity) {
         this.activity = activity;
+        table.setPagerListener(activity);
+        table.setLoadHandler(activity);
     }
 
     @Override
@@ -96,13 +98,13 @@ public class CardTableView extends Composite implements AbstractCardTableView {
         table.addColumn(info.header, info.values);
         info.setColumnProvider(columnProvider);
 
-        ManagerColumn contact = new ManagerColumn(lang);
-        table.addColumn(contact.header, contact.values);
-        contact.setColumnProvider(columnProvider);
-
         TestDateColumn manager = new TestDateColumn(lang);
         table.addColumn(manager.header, manager.values);
         manager.setColumnProvider(columnProvider);
+
+        ManagerColumn contact = new ManagerColumn(lang);
+        table.addColumn(contact.header, contact.values);
+        contact.setColumnProvider(columnProvider);
     }
 
     @UiField

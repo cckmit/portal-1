@@ -42,14 +42,14 @@ public class InfoColumn extends ClickColumn<Card>{
                 .append(":</b> ")
                 .append(sanitizeHtml(card.getTypeName()))
                 .append("<br/>");
-        if (StringUtils.isEmpty(card.getArticle())) {
+        if (StringUtils.isNotEmpty(card.getArticle())) {
             sb.append("<b>")
                     .append(lang.cardArticle())
                     .append(":</b> ")
                     .append(sanitizeHtml(card.getArticle()))
                     .append("<br/>");
         }
-        if (StringUtils.isEmpty(card.getNote())) {
+        if (StringUtils.isNotEmpty(card.getNote())) {
             sb.append("<b>")
                     .append(lang.cardNote())
                     .append(":</b> ")

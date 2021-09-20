@@ -5,7 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.query.CardQuery;
+import ru.protei.portal.core.model.query.CardTypeQuery;
 import ru.protei.portal.core.model.view.CardTypeOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -26,11 +26,9 @@ public abstract class CardTypeModel extends BaseSelectorModel<CardTypeOption> im
 
     @Override
     protected void requestData( LoadingHandler selector, String searchText ) {
-        cardController.getCardTypeOptionList(new CardQuery(searchText, En_SortField.card_type_name, En_SortDir.ASC),
+        cardController.getCardTypeOptionList(new CardTypeQuery(searchText, En_SortField.card_type_name, En_SortDir.ASC),
                 new FluentCallback<List<CardTypeOption>>()
-                .withError(throwable -> {
-                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                })
+                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess( result -> updateElements( result, selector ) ));
     }
 

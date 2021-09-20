@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.core.model.query.CardQuery;
+import ru.protei.portal.core.model.query.CardTypeQuery;
 import ru.protei.portal.core.model.view.CardTypeOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -18,5 +19,5 @@ public interface CardService {
     @Privileged({ En_Privilege.DELIVERY_VIEW })
     Result<SearchResult<Card>> getCards(AuthToken token, CardQuery query);
 
-    Result<List<CardTypeOption>> getCardTypeOptionList(AuthToken token, CardQuery query);
+    Result<List<CardTypeOption>> getCardTypeOptionList(AuthToken token, CardTypeQuery query);
 }

@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CardQuery extends BaseQuery {
 
@@ -44,5 +45,18 @@ public class CardQuery extends BaseQuery {
 
     public void setManagerIds(List<Long> managerIds) {
         this.managerIds = managerIds;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CardQuery cardQuery = (CardQuery) o;
+        return Objects.equals(typeIds, cardQuery.typeIds) && Objects.equals(stateIds, cardQuery.stateIds) && Objects.equals(managerIds, cardQuery.managerIds);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(typeIds, stateIds, managerIds);
     }
 }

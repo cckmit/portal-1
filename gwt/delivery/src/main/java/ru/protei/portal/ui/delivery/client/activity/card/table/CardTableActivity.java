@@ -86,13 +86,13 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
                     asyncCallback.onFailure(throwable);
                 })
                 .withSuccess(sr -> {
-                    asyncCallback.onSuccess(sr.getResults());
                     if (isFirstChunk) {
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
                         restoreScroll();
                     }
+                    asyncCallback.onSuccess(sr.getResults());
                 }));
     }
 

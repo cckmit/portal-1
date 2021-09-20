@@ -33,9 +33,11 @@ public class ManagerColumn extends ClickColumn<Card> {
         cell.addClassName( "manager" );
 
         if (card.getManager() != null) {
+            com.google.gwt.dom.client.Element divElement = DOM.createDiv();
             com.google.gwt.dom.client.Element managerElement = DOM.createElement("p");
             managerElement.setInnerText(StringUtils.emptyIfNull(card.getManager().getDisplayShortName() ));
-            cell.appendChild(managerElement);
+            divElement.appendChild(managerElement);
+            cell.appendChild(divElement);
         }
     }
 

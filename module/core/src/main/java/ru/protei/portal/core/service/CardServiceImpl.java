@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.core.model.ent.CardType;
 import ru.protei.portal.core.model.query.CardQuery;
+import ru.protei.portal.core.model.query.CardTypeQuery;
 import ru.protei.portal.core.model.view.CardTypeOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -44,7 +45,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public Result<List<CardTypeOption>> getCardTypeOptionList(AuthToken token, CardQuery query) {
+    public Result<List<CardTypeOption>> getCardTypeOptionList(AuthToken token, CardTypeQuery query) {
         List<CardType> result = cardTypeDAO.listByQuery(query);
 
         if (result == null) {

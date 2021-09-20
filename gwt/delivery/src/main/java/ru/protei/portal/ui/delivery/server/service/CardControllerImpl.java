@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.core.model.query.CardQuery;
+import ru.protei.portal.core.model.query.CardTypeQuery;
 import ru.protei.portal.core.model.view.CardTypeOption;
 import ru.protei.portal.core.service.CardService;
 import ru.protei.portal.core.service.session.SessionService;
@@ -44,7 +45,7 @@ public class CardControllerImpl implements CardController {
     }
 
     @Override
-    public List<CardTypeOption> getCardTypeOptionList(CardQuery query) throws RequestFailedException {
+    public List<CardTypeOption> getCardTypeOptionList(CardTypeQuery query) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         return checkResultAndGetData(cardService.getCardTypeOptionList(token, query));
     }
