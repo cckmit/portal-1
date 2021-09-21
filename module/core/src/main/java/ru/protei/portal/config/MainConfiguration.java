@@ -659,6 +659,16 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CardDAO getCardDAO() {
+        return new CardDAO_Impl();
+    }
+
+    @Bean
+    public CardSqlBuilder cardSqlBuilder() {
+        return new CardSqlBuilder();
+    }
+
+    @Bean
     public YoutrackHttpClient getYoutrackHttpClient() {
         return new YoutrackHttpClientImpl();
     }
@@ -1228,6 +1238,11 @@ public class MainConfiguration {
     @Bean
     public ModuleService getModuleService() {
         return new ModuleServiceImpl();
+    }
+
+    @Bean
+    public CardService getCardService() {
+        return new CardServiceImpl();
     }
 
     /* ASPECT/INTERCEPTORS */
