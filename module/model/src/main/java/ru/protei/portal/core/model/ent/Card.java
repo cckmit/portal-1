@@ -8,7 +8,6 @@ import java.util.Objects;
 
 @JdbcEntity(table = "card")
 public class Card implements Serializable {
-    public static final String AUDIT_TYPE = "Card";
     public static final String CASE_OBJECT_TABLE = "case_object";
     public static final String CASE_OBJECT_ALIAS = "CO";
 
@@ -152,10 +151,6 @@ public class Card implements Serializable {
 
     public void setNote(String note) {
         this.note = note;
-    }
-
-    public String getAuditType() {
-        return AUDIT_TYPE;
     }
 
     @Override

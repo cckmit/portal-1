@@ -7,8 +7,6 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 public interface CardDAO extends PortalBaseDAO<Card> {
-    SearchResult<Card> getSearchResult(CardQuery query);
-
     @SqlConditionBuilder
     SqlCondition createSqlCondition(CardQuery query);
 }

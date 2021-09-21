@@ -1,9 +1,5 @@
 package ru.protei.portal.core.model.query;
 
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,11 +12,6 @@ public class CardQuery extends BaseQuery {
     private List<Long> managerIds;
 
     public CardQuery() {
-    }
-
-    public CardQuery(String searchString, En_SortField sortField, En_SortDir sortDir ) {
-        super(searchString, sortField, sortDir);
-        this.typeIds = new ArrayList<>();
     }
 
     public List<Long> getTypeIds() {
@@ -52,11 +43,14 @@ public class CardQuery extends BaseQuery {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CardQuery cardQuery = (CardQuery) o;
-        return Objects.equals(typeIds, cardQuery.typeIds) && Objects.equals(stateIds, cardQuery.stateIds) && Objects.equals(managerIds, cardQuery.managerIds);
+        return Objects.equals(typeIds, cardQuery.typeIds)
+                && Objects.equals(stateIds, cardQuery.stateIds)
+                && Objects.equals(managerIds, cardQuery.managerIds)
+                && Objects.equals(searchString, cardQuery.searchString);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(typeIds, stateIds, managerIds);
+        return Objects.hash(typeIds, stateIds, managerIds, searchString);
     }
 }

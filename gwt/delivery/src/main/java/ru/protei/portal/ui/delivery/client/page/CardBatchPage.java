@@ -14,6 +14,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
+// todo то, что закомментировано, заменить на событие открытия страницы партии плат при выполнении
+// задачи PORTAL-1809 Отображение Партии плат
 public abstract class CardBatchPage
         implements Activity {
 

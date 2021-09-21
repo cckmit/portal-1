@@ -5,13 +5,14 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.query.CardQuery;
-import ru.protei.portal.core.model.view.CardTypeOption;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -54,7 +55,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         this.initDetails = initDetails;
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow( CardEvents.Show event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW)) {
             fireEvent(new ErrorPageEvents.ShowForbidden());
@@ -120,7 +121,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
     private CardQuery makeQuery() {
         CardQuery query = new CardQuery();
         query.setSearchString(filterView.search().getValue());
-        query.setTypeIds(nullIfEmpty(toList(filterView.types().getValue(), CardTypeOption::getId)));
+        query.setTypeIds(nullIfEmpty(toList(filterView.types().getValue(), EntityOption::getId)));
         query.setStateIds(nullIfEmpty(toList(filterView.states().getValue(), CaseState::getId)));
         query.setManagerIds(nullIfEmpty(toList(filterView.managers().getValue(), PersonShortView::getId)));
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);

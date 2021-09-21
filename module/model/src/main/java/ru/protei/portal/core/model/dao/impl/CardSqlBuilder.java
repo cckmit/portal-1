@@ -32,12 +32,12 @@ public class CardSqlBuilder {
 
             if (isNotEmpty(query.getTypeIds())) {
                 condition.append(" and type_id in ")
-                        .append(JdbcHelper.makeSqlStringCollection(query.getTypeIds(), args, null));
+                        .append(makeInArg(query.getTypeIds()));
             }
 
             if ( isNotEmpty(query.getStateIds()) ) {
                 condition.append(" and CO.state in ")
-                        .append(makeInArg(query.getStateIds(), false));
+                        .append(makeInArg(query.getStateIds()));
             }
         });
     }

@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.core.model.ent.CardType;
 import ru.protei.portal.core.model.query.CardQuery;
 import ru.protei.portal.core.model.query.CardTypeQuery;
-import ru.protei.portal.core.model.view.CardTypeOption;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -40,20 +40,20 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public Result<SearchResult<Card>> getCards(AuthToken token, CardQuery query) {
-        SearchResult<Card> sr = cardDAO.getSearchResult(query);
+        SearchResult<Card> sr = cardDAO.getSearchResultByQuery(query);
         return ok(sr);
     }
 
     @Override
-    public Result<List<CardTypeOption>> getCardTypeOptionList(AuthToken token, CardTypeQuery query) {
+    public Result<List<EntityOption>> getCardTypeOptionList(AuthToken token, CardTypeQuery query) {
         List<CardType> result = cardTypeDAO.listByQuery(query);
 
         if (result == null) {
             return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        List<CardTypeOption> options = result.stream()
-                .map(ct -> new CardTypeOption(ct.getName(), ct.getId()))
+        List<EntityOption> options = result.stream()
+                .map(ct -> new EntityOption(ct.getName(), ct.getId()))
                 .collect(Collectors.toList());
 
         return ok(options);

@@ -11,7 +11,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.view.CardTypeOption;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
@@ -60,7 +60,7 @@ public class CardFilterView extends Composite implements AbstractCardFilterView 
     }
 
     @Override
-    public HasValue<Set<CardTypeOption>> types() {
+    public HasValue<Set<EntityOption>> types() {
         return types;
     }
 
@@ -85,7 +85,7 @@ public class CardFilterView extends Composite implements AbstractCardFilterView 
     }
 
     @UiHandler( "types" )
-    public void onTypeSelected( ValueChangeEvent<Set<CardTypeOption>> event ) {
+    public void onTypeSelected( ValueChangeEvent<Set<EntityOption>> event ) {
         fireChangeTimer();
     }
 
