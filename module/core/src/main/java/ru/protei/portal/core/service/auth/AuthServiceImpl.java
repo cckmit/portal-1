@@ -53,6 +53,11 @@ public class AuthServiceImpl implements AuthService {
             return En_ResultStatus.INVALID_LOGIN_OR_PWD;
         }
 
+        if (login.getAdminStateId() == En_AdminState.LOCKED.getId()) {
+            log.debug("account [" + login + "] is locked");
+            return En_ResultStatus.ACCOUNT_IS_LOCKED;
+        }
+
         if (login.isLDAP_Auth()) {
             // check by LDAP
             //
@@ -86,16 +91,6 @@ public class AuthServiceImpl implements AuthService {
         }
 
         UserLogin userLogin = userLoginDAO.findByLogin(login);
-        if (userLogin == null) {
-            log.debug("login [" + userLogin + "] not found, auth-failed");
-            return error( En_ResultStatus.INVALID_LOGIN_OR_PWD );
-        }
-
-        if (userLogin.getAdminStateId() == En_AdminState.LOCKED.getId()) {
-            log.debug("account [" + userLogin + "] is locked");
-            return error( En_ResultStatus.ACCOUNT_IS_LOCKED );
-        }
-
         String loginSuffix = config.data().getLoginSuffix();
         boolean loginHasSuffix = login.contains("@");
         En_ResultStatus loginStatus;
@@ -103,7 +98,7 @@ public class AuthServiceImpl implements AuthService {
             loginStatus = authentificate(userLogin, login, pwd);
         } else {
             // PORTAL-490 feature
-            if (!userLogin.isLDAP_Auth()) {
+            if (userLogin == null || !userLogin.isLDAP_Auth()) {
                 log.debug("login [{}] not found, forced to use suffix [{}]", login, loginSuffix);
                 login += loginSuffix;
                 userLogin = userLoginDAO.findByLogin(login);
