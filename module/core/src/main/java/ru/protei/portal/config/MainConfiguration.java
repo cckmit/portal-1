@@ -664,6 +664,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CardBatchDAO getCardBatchDAO() {
+        return new CardBatchDAO_Impl();
+    }
+
+    @Bean
     public CardSqlBuilder cardSqlBuilder() {
         return new CardSqlBuilder();
     }
