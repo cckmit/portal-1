@@ -64,7 +64,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     }
 
     @Event
-    public void onShow( DeliveryEvents.ShowPreview event ) {
+    public void onShow(DeliveryEvents.ShowPreview event) {
         HasWidgets container = event.parent;
         if (!hasAccess()) {
             fireEvent(new ErrorPageEvents.ShowForbidden(container));
@@ -73,6 +73,18 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
 
         viewModeIsPreview(true);
         requestDelivery(event.id, container);
+    }
+
+    @Event
+    public void onShow(DeliveryEvents.ShowFullScreen event) {
+        HasWidgets container = initDetails.parent;
+        if (!hasAccess()) {
+            fireEvent(new ErrorPageEvents.ShowForbidden(container));
+            return;
+        }
+
+        viewModeIsPreview(false);
+        requestDelivery(event.deliveryId, container);
     }
 
     @Event(Type.FILL_CONTENT)
@@ -85,29 +97,6 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         Window.scrollTo(0, 0);
         viewModeIsPreview(false);
         requestDelivery(event.id, initDetails.parent);
-    }
-
-    @Event
-    public void onKitsAdded(KitEvents.Added event) {
-        if (delivery == null || !Objects.equals(delivery.getId(), event.deliveryId)) {
-            return;
-        }
-        delivery.setKits(event.kits);
-        view.fillKits(event.kits);
-    }
-
-    @Event
-    public void onKitChanged(KitEvents.Changed event) {
-        if (delivery == null || !Objects.equals(delivery.getId(), event.deliveryId)) {
-            return;
-        }
-
-        controller.getDelivery(event.deliveryId, new FluentCallback<Delivery>()
-                .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
-                .withSuccess(delivery -> {
-                    this.delivery = delivery;
-                    view.fillKits(delivery.getKits());
-                }));
     }
 
     @Override
@@ -179,10 +168,20 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
 
     @Override
     public void onAddKitsButtonClicked() {
-        if (delivery == null || delivery.getProject() == null) {
+        if (!hasCreatePrivileges()) {
             return;
         }
-        fireEvent(new KitEvents.Add(delivery.getId(), delivery.getStateId()));
+        if (delivery == null || !isMilitaryProject(delivery.getProject())) {
+            return;
+        }
+        fireEvent(new KitEvents.Add(delivery.getId())
+                .withBackHandler(kits -> {
+                    if (kits.stream().anyMatch(kit -> !Objects.equals(kit.getDeliveryId(), delivery.getId()))) {
+                        return;
+                    }
+                    delivery.setKits(kits);
+                    view.fillKits(kits);
+                }));
     }
 
     @Override
@@ -211,12 +210,12 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         nameAndDescriptionView.setDescription(delivery.getDescription());
 
         view.fillKits(delivery.getKits());
-        view.setKitsActionsEnabled(hasEditPrivileges());
+        view.setKitActionsEnabled(hasEditPrivileges());
 
         view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
 
         view.nameAndDescriptionEditButtonVisibility().setVisible(hasEditPrivileges() && isSelfDelivery(delivery.getCreatorId()));
-        view.addKitsButtonVisibility().setVisible(hasEditPrivileges() && isMilitaryProject(delivery.getProject()));
+        view.addKitsButtonVisibility().setVisible(hasCreatePrivileges() && isMilitaryProject(delivery.getProject()));
 
         renderMarkupText(delivery.getDescription(), En_TextMarkup.MARKDOWN, html -> nameAndDescriptionView.setDescription(html));
 
@@ -253,6 +252,10 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW);
     }
 
+    private boolean hasCreatePrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE);
+    }
+
     private boolean hasEditPrivileges() {
         return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
     }
@@ -285,6 +288,21 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
+    private boolean isOneKitSelected(Set<Kit> kitsSelected) {
+        return kitsSelected != null && kitsSelected.size() == 1;
+    }
+
+    private void updateKit(final Kit newKit) {
+        delivery.getKits().stream()
+                .filter(kit -> Objects.equals(kit, newKit))
+                .findFirst()
+                .ifPresent(kit -> {
+                    kit.setState(newKit.getState());
+                    kit.setName(newKit.getName());
+                    view.updateKit(kit);
+                });
+    }
+
     private KitActionsHandler kitActionsHandler = new KitActionsHandler() {
         @Override
         public void onCopy() {
@@ -310,23 +328,24 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         }
 
         @Override
-        public void onReload() {
-            fireEvent(new NotifyEvents.Show("On reload Kits clicked", NotifyEvents.NotifyType.SUCCESS));
-        }
+        public void onBack() {}
 
         @Override
         public void onEdit() {
-            if (isOneKitSelected(view.getKitsSelected())){
-                fireEvent(new KitEvents.Edit(stream(view.getKitsSelected()).findFirst().map(Kit::getId).orElse(null)));
+            if (isOneKitSelected(view.getKitsSelected())) {
+                final Long selectedKitId = stream(view.getKitsSelected()).findFirst().map(Kit::getId).get();
+                fireEvent(new KitEvents.Edit(selectedKitId)
+                        .withBackHandler(kit -> {
+                            if (delivery == null || !Objects.equals(delivery.getId(), kit.getDeliveryId())) {
+                                return;
+                            }
+                            updateKit(kit);
+                        }));
                 return;
             }
             fireEvent(new NotifyEvents.Show(lang.warnOneKitAllowedForTheOperation(), NotifyEvents.NotifyType.ERROR));
         }
     };
-
-    private boolean isOneKitSelected(Set<Kit> kitsSelected) {
-        return kitsSelected != null && kitsSelected.size() == 1;
-    }
 
     @Inject
     private Lang lang;

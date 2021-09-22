@@ -1,0 +1,50 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:text="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
+             xmlns:textarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
+             xmlns:sel="urn:import:ru.protei.portal.ui.common.client.widget.selector.card.type"
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel>
+        <form>
+            <div class="row">
+                <sel:CardTypeSelector ui:field="type" styleName="col-md-6" mandatory="true" header="{lang.cardBatchType}"/>
+
+                <div class="col-md-6">
+                    <div class="form-group form-group-default required">
+                        <label class="fade"><ui:text from="{lang.cardBatchNumber}"/></label>
+                        <text:ValidableTextBox ui:field="number" enabled="false"
+                                               placeholder="{lang.cardBatchNumberPlaceholder}" styleName="form-control"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <g:Label styleName="form-group col-md-12 p-b-5 m-0 inline half-opacity plan-limit-label" ui:field="prevCardBatchInfo"/>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group form-group-default required">
+                        <label class="fade"><ui:text from="{lang.cardBatchArticle}"/></label>
+                        <text:ValidableTextBox ui:field="article" placeholder="{lang.cardBatchArticlePlaceholder}" styleName="form-control"/>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group form-group-default">
+                        <label class="fade"><ui:text from="{lang.cardBatchAmount}"/></label>
+                        <g:IntegerBox ui:field="amount" styleName="form-control"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12 form-group form-group-default">
+                <label class="fade"><ui:text from="{lang.cardBatchParams}"/></label>
+                <textarea:AutoResizeTextArea ui:field="params" minRows="1" styleName="form-control"/>
+            </div>
+        </form>
+
+    </g:HTMLPanel>
+</ui:UiBinder>

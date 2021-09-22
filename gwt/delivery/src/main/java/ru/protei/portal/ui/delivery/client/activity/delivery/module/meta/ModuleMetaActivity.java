@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Module;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.CommentAndHistoryEvents;
 import ru.protei.portal.ui.common.client.events.ModuleEvents;
@@ -28,14 +29,14 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
     }
 
     @Event
-    public void onShow(ModuleEvents.EditModuleMeta event) {
+    public void onShow(ModuleEvents.EditMeta event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
 
         module = event.module;
         readOnly = event.isReadOnly;
 
-        fillView( event.module, false);
+        fillView(event.module, false);
     }
 
     @Override
@@ -64,7 +65,11 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
 
     @Override
     public void onBuildDateChanged() {
-        view.setBuildDateValid(isBuildDateFieldValid());
+        boolean isBuildDateFieldValid = isBuildDateFieldValid();
+        view.setBuildDateValid(isBuildDateFieldValid);
+        if (!isBuildDateFieldValid) {
+            return;
+        }
         if (isDateEquals(view.buildDate().getValue(), module.getBuildDate())) {
             return;
         }
@@ -74,7 +79,11 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
 
     @Override
     public void onDepartureDateChanged() {
-        view.setDepartureDateValid(isDepartureDateFieldValid());
+        boolean isDepartureDateFieldValid = isDepartureDateFieldValid();
+        view.setDepartureDateValid(isDepartureDateFieldValid);
+        if (!isDepartureDateFieldValid) {
+            return;
+        }
         if (isDateEquals(view.departureDate().getValue(), module.getDepartureDate())) {
             return;
         }
@@ -99,6 +108,7 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
         view.departureDateEnabled().setEnabled(!readOnly);
 
         view.state().setValue(module.getState());
+        view.setAllowChangingState(module.getKitStateId() != CrmConstants.State.PRELIMINARY);
         view.hwManager().setValue(module.getHwManager());
         view.qcManager().setValue(module.getQcManager());
 
@@ -121,11 +131,11 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
         }
 
         moduleService.updateMeta(module, new FluentCallback<Module>()
-                .withSuccess(caseMetaUpdated -> {
+                .withSuccess(moduleMetaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new ModuleEvents.ChangeModule(module.getId()));
+                    fireEvent(new ModuleEvents.Changed(module.getId()));
                     fireEvent(new CommentAndHistoryEvents.Reload());
-                    fillView( caseMetaUpdated, true );
+                    fillView(moduleMetaUpdated, true);
                 }));
     }
 

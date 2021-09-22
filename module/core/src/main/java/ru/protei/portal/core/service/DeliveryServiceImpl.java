@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.ent.Delivery.Columns.KITS;
-import static ru.protei.portal.core.model.ent.Delivery.Columns.SUBSCRIBERS;
+import static ru.protei.portal.core.model.ent.Delivery.Fields.*;
+import static ru.protei.portal.core.model.dto.Project.Fields.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.DELIVERY_KIT_SERIAL_NUMBER_PATTERN;
@@ -365,7 +365,14 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     public Result<Kit> getKit(AuthToken token, Long kitId) {
 
+        if (kitId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         Kit kit = kitDAO.get(kitId);
+        if (kit == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
         return ok(kit);
     }
 
@@ -385,6 +392,15 @@ public class DeliveryServiceImpl implements DeliveryService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
+        Delivery delivery = deliveryDAO.get(kit.getDeliveryId());
+        if (delivery == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (isInvalidKitStates(listOf(kit), delivery.getStateId())) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
         CaseObject caseObject = caseObjectDAO.get(kit.getId());
         caseObject = createKitCaseObject(caseObject, kit, null, null, new Date());
         boolean isUpdated = caseObjectDAO.merge(caseObject);
@@ -402,6 +418,15 @@ public class DeliveryServiceImpl implements DeliveryService {
         updateKitHistory(token, kit, oldKit);
 
         return ok(kit);
+    }
+
+    @Override
+    public Result<Long> getDeliveryStateId(AuthToken token, Long deliveryId) {
+        CaseObject deliveryCaseObject = caseObjectDAO.partialGet(deliveryId, CaseObject.Columns.STATE);
+        if (deliveryCaseObject == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+        return ok(deliveryCaseObject.getStateId());
     }
 
     private void createKitHistory(AuthToken token, Kit kit) {
@@ -428,6 +453,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         Delivery delivery = deliveryDAO.get(id);
         jdbcManyRelationsHelper.fill(delivery, KITS);
         jdbcManyRelationsHelper.fill(delivery, SUBSCRIBERS);
+        jdbcManyRelationsHelper.fill(delivery.getProject(), PROJECT_MEMBERS);
         delivery.getProject().setProducts(new HashSet<>(devUnitDAO.getProjectProducts(delivery.getProject().getId())));
         fillModulesCount(delivery.getId(), delivery.getKits());
         return delivery;
@@ -467,9 +493,6 @@ public class DeliveryServiceImpl implements DeliveryService {
             return false;
         }
         if (delivery.getProjectId() == null) {
-            return false;
-        }
-        if (En_DeliveryAttribute.DELIVERY == delivery.getAttribute() && delivery.getContractId() == null) {
             return false;
         }
         if (isEmpty(delivery.getKits())) {

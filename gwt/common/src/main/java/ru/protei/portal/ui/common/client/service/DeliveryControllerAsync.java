@@ -34,5 +34,7 @@ public interface DeliveryControllerAsync {
 
     void getKit(long kitId, AsyncCallback<Kit> callback);
 
-    void updateKit(Kit kit, AsyncCallback<Void> async);
+    void updateKit(Kit kit, AsyncCallback<Kit> async);
+
+    void getDeliveryStateId(long id, AsyncCallback<Long> callback);
 }

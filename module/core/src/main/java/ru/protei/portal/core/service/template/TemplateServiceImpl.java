@@ -658,14 +658,6 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldContactPerson", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getInitiator(), PersonShortView::getDisplayName)));
         templateModel.put("newContactPerson", getNullOrElse(newDeliveryState.getInitiator(), PersonShortView::getDisplayName));
 
-        templateModel.put("hwManagerChanged", event.isHwManagerChanged());
-        templateModel.put("oldHwManager", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getHwManager(), PersonShortView::getDisplayName)));
-        templateModel.put("newHwManager", getNullOrElse(newDeliveryState.getHwManager(), PersonShortView::getDisplayName));
-
-        templateModel.put("qcManagerChanged", event.isQcManagerChanged());
-        templateModel.put("oldQcManager", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getQcManager(), PersonShortView::getDisplayName)));
-        templateModel.put("newQcManager", getNullOrElse(newDeliveryState.getQcManager(), PersonShortView::getDisplayName));
-
         templateModel.put( "caseComment",
                 getCommentsAttachesModelKeys(
                         comments,

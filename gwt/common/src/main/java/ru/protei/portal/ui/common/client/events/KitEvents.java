@@ -6,10 +6,11 @@ import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Kit;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class KitEvents {
 
-    @Url( value = "kits", primary = true)
+    @Url( value = "kits", primary = true )
     public static class Show {
         public Show () {}
         public Show(Long deliveryId, Long kitId) {
@@ -24,34 +25,26 @@ public class KitEvents {
     }
 
     public static class Add {
-        public Add(long deliveryId, long stateId) {
+        public Add(long deliveryId) {
             this.deliveryId = deliveryId;
-            this.stateId = stateId;
+        }
+        public Add withBackHandler(Consumer<List<Kit>> backHandler) {
+            this.backHandler = backHandler;
+            return this;
         }
         public long deliveryId;
-        public long stateId;
-    }
-
-    public static class Added {
-        public Added(List<Kit> kits, Long deliveryId) {
-            this.kits = kits;
-            this.deliveryId = deliveryId;
-        }
-        public Long deliveryId;
-        public List<Kit> kits;
-    }
-
-    public static class Changed {
-        public Changed(Long deliveryId) {
-            this.deliveryId = deliveryId;
-        }
-        public Long deliveryId;
+        public Consumer<List<Kit>> backHandler;
     }
 
     public static class Edit {
         public Edit(long kitId) {
             this.kitId = kitId;
         }
+        public Edit withBackHandler(Consumer<Kit> backHandler) {
+            this.backHandler = backHandler;
+            return this;
+        }
         public long kitId;
+        public Consumer<Kit> backHandler;
     }
 }

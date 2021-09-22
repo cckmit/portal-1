@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.ent.Kit;
@@ -41,7 +42,7 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
 
     @Event
     public void onShow(ModuleEvents.Create event) {
-        if (!hasEditPrivileges()) {
+        if (!hasCreatePrivileges()) {
             fireEvent(new ErrorPageEvents.ShowForbidden(event.parent));
             return;
         }
@@ -71,6 +72,12 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
         }
         Module module = fillDto();
         save(module);
+    }
+
+    @Override
+    public void onCancelClicked() {
+        view.asWidget().removeFromParent();
+        fireEvent(new ModuleEvents.CancelCreating());
     }
 
     @Override
@@ -128,10 +135,11 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
         view.description().setValue(null);
         fillStateSelector(CrmConstants.State.PRELIMINARY);
         metaView.setAllowChangingState(kit.getStateId() != CrmConstants.State.PRELIMINARY);
-        metaView.setManager(delivery.getProject().getManagerFullName());
-        metaView.hwManager().setValue(delivery.getHwManager());
-        metaView.qcManager().setValue(delivery.getQcManager());
-        metaView.setCustomerCompany(delivery.getProject().getCustomer().getCname());
+        Project project = delivery.getProject();
+        metaView.setCustomerCompany(project.getCustomer().getCname());
+        metaView.setManager(project.getManagerFullName());
+        metaView.hwManager().setValue(project.getHardwareCurator());
+        metaView.qcManager().setValue(project.getQualityControlCurator());
         metaView.buildDate().setValue(null);
         metaView.setBuildDateValid(true);
         metaView.departureDate().setValue(null);
@@ -193,8 +201,8 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
         return date == null || date.getTime() > System.currentTimeMillis();
     }
 
-    private boolean hasEditPrivileges() {
-        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
+    private boolean hasCreatePrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE);
     }
 
     @Inject

@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.Project;
-import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
@@ -49,7 +48,7 @@ public class ReportProjectTest extends BaseServiceTest {
         personDAO.persist(person2);
 
         PersonProjectMemberView personProjectMemberView =
-                new PersonProjectMemberView(person1.getDisplayShortName(), person1.getId(), person1.isFired(), En_DevUnitPersonRoleType.HEAD_MANAGER);
+                new PersonProjectMemberView(person1.getDisplayShortName(), person1.getId(), person1.isFired(), En_PersonRoleType.HEAD_MANAGER);
 
         Project project1 = new Project();
 

@@ -59,6 +59,7 @@ public class ModuleCreateView extends Composite implements AbstractModuleCreateV
             return;
         }
         saveButton.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.SAVE_BUTTON);
+        cancelButton.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.CANCEL_BUTTON);
     }
 
     @UiHandler("saveButton")
@@ -66,6 +67,14 @@ public class ModuleCreateView extends Composite implements AbstractModuleCreateV
         if (activity != null) {
             activity.onSaveClicked();
         }
+    }
+
+    @UiHandler("cancelButton")
+    public void onCancelClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onCancelClicked();
+        }
+
     }
 
     @UiField
@@ -79,6 +88,8 @@ public class ModuleCreateView extends Composite implements AbstractModuleCreateV
     HTMLPanel metaViewContainer;
     @UiField
     Button saveButton;
+    @UiField
+    Button cancelButton;
 
     private AbstractModuleCreateActivity activity;
 

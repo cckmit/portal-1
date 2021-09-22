@@ -5,38 +5,24 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel>
-        <div class="row">
-            <div class="col-lg-8 p-0 m-0">
-                <div class="actions-wrapper menu-clipper">
-                    <div class="actions menu-clipper-menu">
-                    </div>
+    <g:HTMLPanel styleName="col-md-12 module-content-wrapper">
+        <div class="row module-content p-t-15">
+            <div class="col-lg-8 order-last order-lg-first">
+                <div class="form-group form-group-default">
+                    <label class="fade"><ui:text from="{lang.moduleSerialNumber}"/></label>
+                    <validablefield:ValidableTextBox ui:field="serialNumber" styleName="form-control"
+                                                     enabled="false" notNull="false"/>
                 </div>
-                <div class="module-body module-create p-t-15">
-                    <div class="p-l-30 p-r-15">
-                        <div class="form-group form-group-default">
-                            <label class="fade"><ui:text from="{lang.moduleSerialNumber}"/></label>
-                            <validablefield:ValidableTextBox ui:field="serialNumber" styleName="form-control"
-                                                             enabled="false" notNull="false"/>
-                        </div>
-                    </div>
-                    <div class="p-l-30 p-r-15">
-                        <view:namedescription.ModuleNameDescriptionEditView ui:field="nameDescription"/>
-                    </div>
-                </div>
+                <view:namedescription.ModuleNameDescriptionEditView ui:field="nameDescription"/>
             </div>
-            <div class="col-lg-4 p-0 m-0">
-                <div class="actions-wrapper menu-clipper">
-                    <div class="actions menu-clipper-menu">
-                    </div>
-                </div>
-                <div class="module-meta-body module-create p-t-15 p-r-15">
-                    <g:HTMLPanel ui:field="metaViewContainer"/>
-                </div>
+            <div class="col-lg-4 order-first order-lg-last">
+                <g:HTMLPanel ui:field="metaViewContainer"/>
             </div>
         </div>
         <div class="module-footer text-right">
             <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-default close_button"
+                      text="{lang.buttonCancel}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -33,7 +33,7 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
     }
 
     private void initTable() {
-        ModuleColumn infoColumn = new ModuleColumn();
+        ModuleColumn infoColumn = new ModuleColumn(lang);
         table.addColumn(selectionColumn.header, selectionColumn.values);
         table.addColumn(infoColumn.header, infoColumn.values);
         infoColumn.setHandler(activity);
@@ -88,26 +88,40 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
             table.updateRow(item);
     }
 
-    private void ensureDebugIds() {
-        if (!DebugInfo.isDebugIdEnabled()) {
-            return;
-        }
-        addButton.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.ADD_BUTTON);
-    }
-
     @UiHandler("addButton")
     public void onClickAddButton(ClickEvent event) {
+        event.preventDefault();
+        event.stopPropagation();
         if (activity != null) {
             activity.onAddModuleClicked();
         }
     }
 
+    @UiHandler("copyButton")
+    public void onCopyClicked(ClickEvent event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    @UiHandler("stateButton")
+    public void onStateClicked(ClickEvent event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
     @UiHandler("deleteButton")
     public void onRemoveClicked(ClickEvent event) {
         event.preventDefault();
+        event.stopPropagation();
         if (activity != null) {
             activity.onRemoveModuleClicked(this);
         }
+    }
+
+    @UiHandler("reloadButton")
+    public void onReloadClicked(ClickEvent event) {
+        event.preventDefault();
+        event.stopPropagation();
     }
 
     @Override
@@ -122,6 +136,13 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
     @Override
     public boolean hasSelectedModules() {
         return getSelectedModules().size() > 0;
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        addButton.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.ADD_BUTTON);
     }
 
     @UiField

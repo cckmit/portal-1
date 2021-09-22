@@ -24,6 +24,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -69,6 +70,7 @@ public class CardServiceImpl implements CardService {
         }
 
         List<EntityOption> options = result.stream()
+                .filter(cardType -> query.getDisplay() == null || Objects.equals(cardType.isDisplay(), query.getDisplay()))
                 .map(ct -> new EntityOption(ct.getName(), ct.getId()))
                 .collect(Collectors.toList());
 

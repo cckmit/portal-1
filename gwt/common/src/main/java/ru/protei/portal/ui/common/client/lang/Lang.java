@@ -1298,24 +1298,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectOfficialProduct();
 
-    String personDecisionCenter();
-
-    String personChiefDecisionMaker();
-
-    String personDecisionKeeper();
-
-    String personTechSpecialist();
-
-    String personInfluenceMaker();
-
-    String personChielInfluenceMaker();
-
-    String personEconomist();
-
-    String personWellWisher();
-
-    String personReceptivityCenter();
-
     String personCreateNew();
 
     String personHardwareCurator();
@@ -1330,7 +1312,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String personProductAssembler();
 
-    String personSupplyPreparation();
+    String personDeliveryPreparation();
 
     String personEngineerDocDev();
 
@@ -3624,6 +3606,90 @@ public interface Lang extends Messages, ContactItemLang {
 
     String warnOneKitAllowedForTheOperation();
 
+    String addKits();
+
+    String kitNotSelectedMessage();
+
+    String moduleNotSelectedMessage();
+
+    String buttonAddModule();
+
+    String buttonCopyModule();
+
+    String buttonStateModule();
+
+    String buttonRemoveModule();
+
+    String buttonReloadModule();
+
+    String personDeployManagerShort();
+
+    String personHardwareCuratorShort();
+
+    String personSoftwareCuratorShort();
+
+    String personIntroNewTechSolutionsShort();
+
+    String personLiableForAutoTestingShort();
+
+    String personTechSupportCuratorShort();
+
+    String personProductAssemblerShort();
+
+    String personDeliveryPreparationShort();
+
+    String personEngineerDocDevShort();
+
+    String personTechDocDevShort();
+
+    String personSoftwareDocDevShort();
+
+    String personLiableForCertificationShort();
+
+    String personOkrEscortShort();
+
+    String personQualityControlSmkShort();
+
+    String personCustomerIntegrationShort();
+
+    String personPresaleManagerShort();
+
+    String personBusinessAnalyticsArchitectureShort();
+
+    String personProjectDocumentationShort();
+
+    String personProductManagerShort();
+
+    String personDevelopmentShort();
+
+    String personPresaleHeadManagerShort();
+
+    String personDeployHeadManagerShort();
+
+    String personDeliveryPacking();
+
+    String personEntranceControl();
+
+    String personEquipmentSetup();
+
+    String personOperationalDocumentation();
+
+    String personQadDocumentation();
+
+    String personSpecialCheckSpecialResearch();
+
+    String personDeliveryPackingShort();
+
+    String personEntranceControlShort();
+
+    String personEquipmentSetupShort();
+
+    String personOperationalDocumentationShort();
+
+    String personQadDocumentationShort();
+
+    String personSpecialCheckSpecialResearchShort();
+
     String errAccountIsLocked();
 
     String reportYoutrackWorkTypeNiokr();
@@ -3639,9 +3705,9 @@ public interface Lang extends Messages, ContactItemLang {
     String reportYoutrackWorkDictionaryConfirmRemove(String name);
 
     String reportYoutrackWorkDictionaryName();
-    
+
     String reportYoutrackWorkDictionaryType();
-    
+
     String reportYoutrackWorkDictionaryProjects();
 
     String newStoreAndDelivery();
@@ -3691,4 +3757,46 @@ public interface Lang extends Messages, ContactItemLang {
     String cardSelectManager();
 
     String editNoteAndComment();
+
+    String cardBatchNumber();
+
+    String cardBatchType();
+
+    String cardBatchArticle();
+
+    String cardBatchAmount();
+
+    String cardBatchParams();
+
+    String cardBatchArticlePlaceholder();
+
+    String cardBatchNumberPlaceholder();
+
+    String cardBatchPreviousInfo(String number, int amount, String state);
+
+    String cardBatchState();
+
+    String cardBatchPriority();
+
+    String cardBatchDeadline();
+
+    String cardBatchContractors();
+
+    String cardBatchRemoved();
+
+    String cardBatchSaved();
+
+    String cardBatchCreated();
+
+    String cardBatchStatePreliminary();
+
+    String cardBatchStateActual();
+
+    String cardBatchStateOrdered();
+
+    String cardBatchStateReserved();
+
+    String cardBatchStateMounting();
+
+    String cardBatchStateMounted();
 }

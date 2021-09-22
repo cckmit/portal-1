@@ -1,7 +1,7 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.dao.CaseMemberDAO;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.ent.CaseMember;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class CaseMemberDAO_Impl extends PortalBaseJdbcDAO<CaseMember> implements
     public List<CaseMember> getLeaders(Long caseId) {
         return getListByCondition(
                 "case_member.CASE_ID = ? AND case_member.MEMBER_ROLE_ID = ?",
-                caseId, En_DevUnitPersonRoleType.HEAD_MANAGER.getId()
+                caseId, En_PersonRoleType.HEAD_MANAGER.getId()
         );
     }
 }

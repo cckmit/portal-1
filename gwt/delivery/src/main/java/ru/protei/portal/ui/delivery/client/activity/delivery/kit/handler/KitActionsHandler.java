@@ -4,6 +4,6 @@ public interface KitActionsHandler {
     void onCopy();
     void onGroupChangeState();
     void onGroupRemove();
-    void onReload();
+    void onBack();
     void onEdit();
 }

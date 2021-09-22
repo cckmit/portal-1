@@ -3,7 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.ProjectDAO;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -22,7 +22,6 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
@@ -139,19 +138,19 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
 
                 if (headManagerIds.remove(null)) {
                     condition.append(" and (CO.id not in (SELECT CASE_ID FROM case_member WHERE MEMBER_ROLE_ID = ?)");
-                    args.add(En_DevUnitPersonRoleType.HEAD_MANAGER.getId());
+                    args.add(En_PersonRoleType.HEAD_MANAGER.getId());
                     if (!headManagerIds.isEmpty()) {
                         condition.append(" or CO.id in (SELECT CASE_ID FROM case_member WHERE MEMBER_ROLE_ID = ? and MEMBER_ID IN ")
                                 .append(makeInArg(headManagerIds, false))
                                 .append(")");
-                        args.add(En_DevUnitPersonRoleType.HEAD_MANAGER.getId());
+                        args.add(En_PersonRoleType.HEAD_MANAGER.getId());
                     }
                     condition.append(")");
                 } else {
                     condition.append(" and CO.id in (SELECT CASE_ID FROM case_member WHERE MEMBER_ROLE_ID = ? and MEMBER_ID IN ")
                             .append(makeInArg(headManagerIds, false))
                             .append(")");
-                    args.add(En_DevUnitPersonRoleType.HEAD_MANAGER.getId());
+                    args.add(En_PersonRoleType.HEAD_MANAGER.getId());
                 }
             }
 
