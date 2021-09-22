@@ -889,10 +889,9 @@ label.bordered:after {
   }
 }
 
-nav.secondary-sidebar {
+.secondary-sidebar {
   background: #ffffff;
-  width: 280px;
-  padding-right: 20px;
+  width: 270px;
   padding-top: 0;
 
   .menu-title {
@@ -937,7 +936,7 @@ nav.secondary-sidebar {
     > a {
       color: #4b4b4b;
       line-height: 32px;
-      padding-right: 10px;
+      padding-right: 20px;
 
       &:hover {
         color: #212121;
@@ -977,11 +976,12 @@ nav.secondary-sidebar {
     justify-content: space-between;
     align-items: center;
     background: #ffffff;
-    padding: 0 20px;
+    padding-left: 20px;
+    padding-right: 15px;
   }
 }
 
-.delivery nav.secondary-sidebar {
+.delivery .secondary-sidebar {
   width: 100%;
   position: relative;
   padding: 0;
@@ -990,12 +990,13 @@ nav.secondary-sidebar {
   height: auto;
   margin-bottom: 20px;
   background: transparent;
+  float: none;
 
   .kit-menu-header {
     position: relative;
     text-align: left;
     background: transparent;
-    padding: 0;
+    padding-left: 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.07);
   }
 
@@ -1010,7 +1011,7 @@ nav.secondary-sidebar {
 }
 
 .inner-content {
-  margin-left: 280px;
+  margin-left: 270px;
 }
 
 .list-view-group-container {

@@ -30,8 +30,8 @@ import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.view.meta.DeliveryMetaView;
 
+import java.util.Date;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
@@ -114,6 +114,9 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         if (!isDepartureDateFieldValid()) {
             return;
         }
+        if (isDateEquals(deliveryMetaView.departureDate().getValue(), delivery.getDepartureDate())) {
+            return;
+        }
         delivery.setDepartureDate(deliveryMetaView.departureDate().getValue());
         onCaseMetaChanged(delivery);
     }
@@ -191,6 +194,14 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
 
     private boolean hasEditPrivileges() {
         return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
+    }
+
+    private boolean isDateEquals(Date dateField, Date dateMeta) {
+        if (dateField == null) {
+            return dateMeta == null;
+        } else {
+            return Objects.equals(dateField, dateMeta);
+        }
     }
 
     @Inject

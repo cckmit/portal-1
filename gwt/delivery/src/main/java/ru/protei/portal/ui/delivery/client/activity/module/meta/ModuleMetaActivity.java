@@ -63,7 +63,11 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
 
     @Override
     public void onBuildDateChanged() {
-        view.setBuildDateValid(isBuildDateFieldValid());
+        boolean isBuildDateFieldValid = isBuildDateFieldValid();
+        view.setBuildDateValid(isBuildDateFieldValid);
+        if (!isBuildDateFieldValid) {
+            return;
+        }
         if (isDateEquals(view.buildDate().getValue(), module.getBuildDate())) {
             return;
         }
@@ -73,7 +77,11 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
 
     @Override
     public void onDepartureDateChanged() {
-        view.setDepartureDateValid(isDepartureDateFieldValid());
+        boolean isDepartureDateFieldValid = isDepartureDateFieldValid();
+        view.setDepartureDateValid(isDepartureDateFieldValid);
+        if (!isDepartureDateFieldValid) {
+            return;
+        }
         if (isDateEquals(view.departureDate().getValue(), module.getDepartureDate())) {
             return;
         }

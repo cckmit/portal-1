@@ -53,6 +53,7 @@ public class InfoColumn extends ClickColumn<Delivery>{
         if ( delivered != null ) {
             Element groupElement = DOM.createElement( "p" );
             groupElement.addClassName( "text-semimuted pull-right" );
+            groupElement.setTitle(lang.deliveryDepartureDate());
 
             Element i = DOM.createElement( "i" );
             i.addClassName( "fas fa-shipping-fast" );

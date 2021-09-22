@@ -5,11 +5,19 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.user.client.Element;
+import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Module;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.lang.Lang;
 
 public class ModuleColumn extends ClickColumn<Module> {
+
+    @Inject
+    public ModuleColumn(Lang lang) {
+        this.lang = lang;
+    }
 
     @Override
     protected void fillColumnHeader(Element columnHeader) { }
@@ -38,7 +46,7 @@ public class ModuleColumn extends ClickColumn<Module> {
         DivElement div = Document.get().createDivElement();
         div.appendChild(makeIcon(value));
         div.appendChild(makeSpan("bold", value.getSerialNumber()));
-        div.appendChild(makeSpan("float-right manager", DateFormatter.formatDateOnly(value.getDepartureDate())));
+        div.appendChild(makeSpan("float-right manager", DateFormatter.formatDateOnly(value.getDepartureDate()), lang.moduleDepartureDate()));
         return div;
     }
 
@@ -56,10 +64,18 @@ public class ModuleColumn extends ClickColumn<Module> {
         return span;
     }
 
-    private SpanElement makeSpan(String className, String text) {
+    private SpanElement makeSpan(String className, String text, String title) {
         SpanElement span = Document.get().createSpanElement();
         span.setClassName(className);
         span.setInnerText(text);
+        if (StringUtils.isNotBlank(title)) {
+            span.setTitle(title);
+        }
         return span;
     }
+    private SpanElement makeSpan(String className, String text) {
+        return makeSpan(className, text, null);
+    }
+
+    Lang lang;
 }

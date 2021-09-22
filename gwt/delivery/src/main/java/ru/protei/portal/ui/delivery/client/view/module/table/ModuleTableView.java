@@ -33,7 +33,7 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
     }
 
     private void initTable() {
-        ModuleColumn infoColumn = new ModuleColumn();
+        ModuleColumn infoColumn = new ModuleColumn(lang);
         table.addColumn(selectionColumn.header, selectionColumn.values);
         table.addColumn(infoColumn.header, infoColumn.values);
         infoColumn.setHandler(activity);

@@ -14,10 +14,10 @@
         </div>
         <div class="row module-content">
             <div class="col-xl-8 col-lg-12 order-last order-xl-first p-l-20">
+                <small ui:field="createdBy" class="pull-right text-right"/>
                 <h5 class=" no-margin">
                     <span ui:field="serialNumber"/>
                 </h5>
-                <small ui:field="createdBy" class="pull-right text-right"/>
                 <g:HTMLPanel ui:field="nameContainer"/>
             </div>
             <div class="col-xl-4 col-lg-12 order-first order-xl-last p-l-20">
