@@ -9,13 +9,13 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
+import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.events.CardBatchEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
-// todo то, что закомментировано, заменить на событие открытия страницы партии плат при выполнении
-// задачи PORTAL-1809 Отображение Партии плат
 public abstract class CardBatchPage
         implements Activity {
 
@@ -29,14 +29,19 @@ public abstract class CardBatchPage
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.DELIVERY_VIEW) ) {
             fireEvent( new MenuEvents.Add( TAB, UiConstants.TabIcons.CARD_BATCH, TAB, DebugIds.SIDEBAR_MENU.CARD_BATCH).withParent(CATEGORY) );
-//            fireEvent( new AppEvents.InitPage( show ) );
+            fireEvent( new AppEvents.InitPage( show ) );
         }
     }
 
-//    @Event
-//    public void onShowTable( DeliveryEvents.Show event ) {
-//        fireSelectTab();
-//    }
+    @Event
+    public void onShowTable( CardBatchEvents.Show event ) {
+        fireSelectTab();
+    }
+
+    @Event
+    public void onShowDetail( CardBatchEvents.Create event ) {
+        fireSelectTab();
+    }
 
     @Event
     public void onClickSection( SectionEvents.Clicked event ) {
@@ -45,7 +50,7 @@ public abstract class CardBatchPage
         }
 
         fireSelectTab();
-//        fireEvent( show );
+        fireEvent( show );
     }
 
     private void fireSelectTab() {
@@ -64,6 +69,6 @@ public abstract class CardBatchPage
 
     private String CATEGORY;
     private String TAB;
-//    private DeliveryEvents.Show show = new DeliveryEvents.Show(false);
+    private CardBatchEvents.Show show = new CardBatchEvents.Show(false);
 }
 

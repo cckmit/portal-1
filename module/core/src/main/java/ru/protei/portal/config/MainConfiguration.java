@@ -1241,6 +1241,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CardBatchService getCardBatchService() {
+        return new CardBatchServiceImpl();
+    }
+
+    @Bean
     public ModuleService getModuleService() {
         return new ModuleServiceImpl();
     }

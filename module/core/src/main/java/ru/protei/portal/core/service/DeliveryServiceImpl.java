@@ -232,7 +232,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
         isUpdated = deliveryDAO.merge(meta);
         if (!isUpdated) {
-            log.warn("createDelivery(): delivery not created. delivery={}",  caseObject.getId());
+            log.warn("updateMeta(): delivery not updated. delivery={}",  caseObject.getId());
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 

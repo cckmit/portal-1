@@ -1,0 +1,21 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:cardbatch="urn:import:ru.protei.portal.ui.delivery.client.view.cardbatch">
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
+        <div class="card-body row no-margin">
+            <div class="col-lg-8 order-last order-lg-first p-l-25 p-r-5">
+                <cardbatch:common.CardBatchCommonInfoView ui:field="commonInfoView"/>
+            </div>
+            <div class="col-lg-4">
+<!--                <cardbatch:meta.DeliveryMetaView ui:field="meta"/>-->
+            </div>
+        </div>
+        <div class="card-footer text-right">
+            <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-default close_button" text="{lang.buttonCancel}"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

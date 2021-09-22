@@ -3685,4 +3685,14 @@ public interface Lang extends Messages, ContactItemLang {
     String cardNote();
 
     String cardManager();
+
+    String cardBatchNumber();
+
+    String cardBatchType();
+
+    String cardBatchArticle();
+
+    String cardBatchAmount();
+
+    String cardBatchParams();
 }

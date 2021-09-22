@@ -525,6 +525,11 @@ public class ServiceTestsConfiguration {
         return new DeliveryServiceImpl();
     }
 
+    @Bean
+    public CardBatchService getCardBatchService() {
+        return new CardBatchServiceImpl();
+    }
+
     /* ASPECT/INTERCEPTORS */
 
     @Bean

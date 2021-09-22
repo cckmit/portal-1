@@ -43,7 +43,7 @@ public class CardBatch implements Serializable {
 
     @JdbcJoinedColumn(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID,
             mappedColumn = CaseObject.Columns.INFO, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
-    private String info;
+    private String params;
 
     @JdbcJoinedColumn(localColumn = CardBatch.Columns.ID, table = CASE_OBJECT_TABLE, remoteColumn = CaseObject.Columns.ID,
             mappedColumn = CaseObject.Columns.DEADLINE, sqlTableAlias = CASE_OBJECT_ALIAS)
@@ -54,6 +54,94 @@ public class CardBatch implements Serializable {
     private Long importance;
 
     public CardBatch() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Long typeId) {
+        this.typeId = typeId;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public String getArticle() {
+        return article;
+    }
+
+    public void setArticle(String article) {
+        this.article = article;
+    }
+
+    public Integer getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Integer amount) {
+        this.amount = amount;
+    }
+
+    public Long getStateId() {
+        return stateId;
+    }
+
+    public void setStateId(Long stateId) {
+        this.stateId = stateId;
+    }
+
+    public CaseState getState() {
+        return state;
+    }
+
+    public void setState(CaseState state) {
+        this.state = state;
+    }
+
+    public String getParams() {
+        return params;
+    }
+
+    public void setParams(String params) {
+        this.params = params;
+    }
+
+    public Date getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(Date deadline) {
+        this.deadline = deadline;
+    }
+
+    public Long getImportance() {
+        return importance;
+    }
+
+    public void setImportance(Long importance) {
+        this.importance = importance;
     }
 
     @Override
@@ -80,7 +168,7 @@ public class CardBatch implements Serializable {
                 ", amount=" + amount +
                 ", stateId=" + stateId +
                 ", state=" + state +
-                ", info='" + info + '\'' +
+                ", info='" + params + '\'' +
                 ", deadline=" + deadline +
                 ", importance=" + importance +
                 '}';
