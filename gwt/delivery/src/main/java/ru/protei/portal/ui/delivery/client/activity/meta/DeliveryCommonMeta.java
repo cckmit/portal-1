@@ -104,7 +104,7 @@ public class DeliveryCommonMeta implements AbstractDeliveryCommonMeta {
             return "";
         }
         StringBuilder teamBuilder = new StringBuilder();
-        stream(projectInfo.getTeam())
+        projectInfo.getTeam().stream()
                 .filter(personProjectMemberView -> En_DevUnitPersonRoleType.isDeliveryRole(personProjectMemberView.getRole()))
                 .collect(Collectors.groupingBy(PersonProjectMemberView::getRole,
                         Collectors.mapping(PersonProjectMemberView::getDisplayShortName, Collectors.joining(", "))))

@@ -9,7 +9,6 @@ import java.util.Objects;
 
 import static ru.protei.portal.core.model.ent.Kit.Columns.DELIVERY_ID;
 import static ru.protei.portal.core.model.ent.Kit.Columns.ID;
-import static ru.protei.portal.core.model.ent.Module.Columns.KIT_ID;
 
 @JdbcEntity(table = "kit")
 public class Kit extends AuditableObject implements HasLongId {

@@ -30,8 +30,7 @@
             <div class="form-group-attached form-group">
                 <div class="form-group form-group-default">
                     <label class="fade"><ui:text from="{lang.deliveryManager}"/></label>
-                    <validablefield:ValidableTextBox ui:field="manager" styleName="form-control"
-                                                     enabled="false" notNull="false"/>
+                    <g:TextBox ui:field="manager" styleName="form-control" enabled="false"/>
                 </div>
                 <person:EmployeeFormSelector ui:field="hwManager" header="{lang.deliveryHwManager}"
                                              hasNullValue="true" defaultValue="{lang.selectIssueManager}"/>
@@ -47,8 +46,7 @@
             <div class="form-group-attached form-group">
                 <div class="form-group form-group-default">
                     <label class="fade"><ui:text from="{lang.deliveryCustomerCompany}"/></label>
-                    <validablefield:ValidableTextBox ui:field="customerCompany" styleName="form-control"
-                                                     enabled="false" notNull="false"/>
+                    <g:TextBox ui:field="customerCompany" styleName="form-control" enabled="false"/>
                 </div>
             </div>
 

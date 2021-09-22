@@ -137,7 +137,7 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
         metaView.setAllowChangingState(kit.getStateId() != CrmConstants.State.PRELIMINARY);
         Project project = delivery.getProject();
         metaView.setCustomerCompany(project.getCustomer().getCname());
-        metaView.setManager(project.getLeader().getDisplayName());
+        metaView.setManager(project.getManagerFullName());
         metaView.hwManager().setValue(project.getHardwareCurator());
         metaView.qcManager().setValue(project.getQualityControlCurator());
         metaView.buildDate().setValue(null);

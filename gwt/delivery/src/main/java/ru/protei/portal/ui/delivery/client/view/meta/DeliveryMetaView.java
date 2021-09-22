@@ -3,7 +3,6 @@ package ru.protei.portal.ui.delivery.client.view.meta;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;

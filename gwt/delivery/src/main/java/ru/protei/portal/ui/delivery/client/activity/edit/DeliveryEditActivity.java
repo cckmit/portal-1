@@ -5,7 +5,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
@@ -21,7 +20,6 @@ import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractComment
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;

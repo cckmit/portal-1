@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 public class ProjectInfo implements Serializable {
 
