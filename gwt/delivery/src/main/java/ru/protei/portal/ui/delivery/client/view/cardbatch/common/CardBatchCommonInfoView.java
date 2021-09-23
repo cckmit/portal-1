@@ -12,6 +12,7 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.markdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
+import ru.protei.portal.ui.delivery.client.widget.card.selector.CardTypeSelector;
 
 public class CardBatchCommonInfoView extends Composite {
 
@@ -40,6 +41,9 @@ public class CardBatchCommonInfoView extends Composite {
     @UiField
     Lang lang;
 
+    @Inject
+    @UiField(provided = true)
+    CardTypeSelector type;
     @UiField
     ValidableTextBox number;
     @UiField

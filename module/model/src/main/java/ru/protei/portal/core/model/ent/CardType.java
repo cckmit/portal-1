@@ -1,12 +1,13 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.IdInsertMode;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
 @JdbcEntity(table = "card_type")
-public class CardType {
+public class CardType extends EntityOption {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;

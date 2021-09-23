@@ -6,9 +6,7 @@
 
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
         <div class="card-body row no-margin">
-            <div class="col-lg-8 order-last order-lg-first p-l-25 p-r-5">
-                <cardbatch:common.CardBatchCommonInfoView ui:field="commonInfoView"/>
-            </div>
+            <cardbatch:common.CardBatchCommonInfoView styleName="col-lg-8" ui:field="commonInfoView"/>
             <div class="col-lg-4">
 <!--                <cardbatch:meta.DeliveryMetaView ui:field="meta"/>-->
             </div>
