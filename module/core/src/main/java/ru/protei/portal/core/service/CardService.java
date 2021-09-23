@@ -1,7 +1,9 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Card;
@@ -18,6 +20,14 @@ public interface CardService {
 
     @Privileged({ En_Privilege.DELIVERY_VIEW })
     Result<SearchResult<Card>> getCards(AuthToken token, CardQuery query);
+
+    @Privileged({ En_Privilege.DELIVERY_CREATE })
+    @Auditable( En_AuditType.CARD_CREATE )
+    Result<Card> createCard(AuthToken token, Card card);
+
+    @Privileged({ En_Privilege.DELIVERY_EDIT })
+    @Auditable( En_AuditType.CARD_MODIFY)
+    Result<Card> updateMeta(AuthToken token, Card card);
 
     Result<List<EntityOption>> getCardTypeOptionList(AuthToken token, CardTypeQuery query);
 }
