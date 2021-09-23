@@ -30,11 +30,12 @@ import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 
-public abstract class CardBatchCreateActivity implements Activity, AbstractCardBatchCreateActivity {
+public abstract class CardBatchCreateActivity implements Activity, AbstractCardBatchCreateActivity, AbstractCardBatchCommonInfoActivity {
 
     @Inject
     public void onInit() {
         view.setActivity(this);
+
 
 //        DeliveryMetaView metaView = view.getMetaView();
 //        commonMeta.setDeliveryMetaView(metaView);
@@ -77,14 +78,11 @@ public abstract class CardBatchCreateActivity implements Activity, AbstractCardB
     }
 
     @Override
-    public void getLastNumber(Consumer<String> success) {
-//        ProjectInfo projectInfo = view.type().getValue();
-//        if (projectInfo == null) {
-//            return;
-//        }
-//        cardBatchService.getLastNumber(projectInfo.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE, new FluentCallback<String>()
-//                .withError(defaultErrorHandler)
-//                .withSuccess(success));
+    public void onCardTypeChanged(Long cardTypeId) {
+
+        cardBatchService.getLastNumber(cardTypeId, new FluentCallback<String>()
+                        .withError(defaultErrorHandler)
+                        .withSuccess(getLastNumberConsumer));
     }
 
     @Override
@@ -95,17 +93,22 @@ public abstract class CardBatchCreateActivity implements Activity, AbstractCardB
     }
 
     private void prepare() {
+        view.type().setValue(null);
         view.number().setValue(null);
+        view.article().setValue(null);
+        view.amount().setValue(null);
         view.params().setValue(null);
         fillStateSelector(CrmConstants.State.PRELIMINARY);
     }
 
     private CardBatch fillDto() {
         CardBatch cardBatch = new CardBatch();
+        cardBatch.setTypeId(view.type().getValue().getId());
         cardBatch.setNumber(view.number().getValue());
+        cardBatch.setArticle(view.article().getValue());
+        cardBatch.setAmount(view.amount().getValue());
         cardBatch.setParams(view.params().getValue());
 //        cardBatch.setStateId(view.state().getValue().getId());
-//        cardBatch.setType(view.type().getValue());
         return cardBatch;
     }
 
@@ -114,8 +117,16 @@ public abstract class CardBatchCreateActivity implements Activity, AbstractCardB
     }
 
     private String getValidationError() {
-        if (isBlank(view.number().getValue())) {
-            return lang.deliveryValidationEmptyName();
+        if (null == view.type().getValue()) {
+            return "Тип не может быть пустым";
+        }
+
+        if (ru.protei.portal.core.model.helper.StringUtils.isNotEmpty(view.article().getValue()) && !view.isArticleValid()) {
+            return "Артикул должен быть валиден";
+        }
+
+        if (null == view.amount().getValue() || view.amount().getValue() > 0) {
+            return "Количество должно быть больше нуля";
         }
 
         String error = commonMeta.getValidationError();
@@ -159,6 +170,20 @@ public abstract class CardBatchCreateActivity implements Activity, AbstractCardB
 //        getCaseState(id, caseState -> view.state().setValue(caseState));
     }
 
+    Consumer<String> getLastNumberConsumer = new Consumer<String>() {
+        @Override
+        public void accept(String lastNumberStr) {
+
+            Integer lastNumber = null;
+            try {
+                lastNumber = Integer.valueOf(lastNumberStr);
+            } catch (NumberFormatException e){
+                fireEvent(new NotifyEvents.Show("Ошибка при получении последнего номера", NotifyEvents.NotifyType.ERROR));
+            }
+
+            view.number().setValue(String.valueOf(lastNumber++));
+        }
+    };
     @Inject
     private Lang lang;
     @Inject
@@ -171,6 +196,7 @@ public abstract class CardBatchCreateActivity implements Activity, AbstractCardB
     private CaseStateControllerAsync caseStateService;
     @Inject
     private PolicyService policyService;
+
     @Inject
     private DefaultErrorHandler defaultErrorHandler;
 

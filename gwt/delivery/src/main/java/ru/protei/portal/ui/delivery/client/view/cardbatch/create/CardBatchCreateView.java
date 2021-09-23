@@ -8,6 +8,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.create.AbstractCardBatchCreateActivity;
@@ -34,10 +35,24 @@ public class CardBatchCreateView extends Composite implements AbstractCardBatchC
     }
 
     @Override
+    public HasValue<EntityOption> type() { return commonInfoView.type(); }
+
+    @Override
     public HasValue<String> number() { return commonInfoView.number(); }
 
     @Override
+    public HasValue<String> article() { return commonInfoView.article(); }
+
+    @Override
+    public HasValue<Integer> amount() { return commonInfoView.amount(); }
+
+    @Override
     public HasValue<String> params() { return commonInfoView.params(); }
+
+    @Override
+    public boolean isArticleValid() {
+        return commonInfoView.isArticleValid();
+    }
 
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
@@ -57,8 +72,8 @@ public class CardBatchCreateView extends Composite implements AbstractCardBatchC
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        saveButton.ensureDebugId(DebugIds.DELIVERY.SAVE_BUTTON);
-        cancelButton.ensureDebugId(DebugIds.DELIVERY.CANCEL_BUTTON);
+        saveButton.ensureDebugId(DebugIds.CARD_BATCH.SAVE_BUTTON);
+        cancelButton.ensureDebugId(DebugIds.CARD_BATCH.CANCEL_BUTTON);
     }
 
     @UiField

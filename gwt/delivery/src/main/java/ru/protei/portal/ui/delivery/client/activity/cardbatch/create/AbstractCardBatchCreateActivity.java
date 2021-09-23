@@ -10,7 +10,5 @@ public interface AbstractCardBatchCreateActivity {
 
     void onCancelClicked();
 
-    void getLastNumber(Consumer<String> success);
-
     void getCaseState(Long id, Consumer<CaseState> success);
 }
