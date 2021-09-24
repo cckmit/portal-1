@@ -3701,4 +3701,30 @@ public interface Lang extends Messages, ContactItemLang {
     String cardBatchNumberPlaceholder();
 
     String cardBatchPreviousInfo(String number, int amount, String state);
+
+    String cardBatchState();
+
+    String cardBatchPriority();
+
+    String cardBatchDeadline();
+
+    String cardBatchContractors();
+
+    String cardBatchRemoved();
+
+    String cardBatchSaved();
+
+    String cardBatchCreated();
+
+    String cardBatchStatePreliminary();
+
+    String cardBatchStateActual();
+
+    String cardBatchStateOrdered();
+
+    String cardBatchStateReserved();
+
+    String cardBatchStateMounting();
+
+    String cardBatchStateMounted();
 }
