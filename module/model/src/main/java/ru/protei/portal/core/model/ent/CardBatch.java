@@ -177,5 +177,6 @@ public class CardBatch implements Serializable {
     public interface Columns {
         String ID = "id";
         String TYPE_ID = "type_id";
+        String NUMBER = "number";
     }
 }

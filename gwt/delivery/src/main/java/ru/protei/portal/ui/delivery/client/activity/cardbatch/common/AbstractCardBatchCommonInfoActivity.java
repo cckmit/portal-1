@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.activity.cardbatch.create;
+package ru.protei.portal.ui.delivery.client.activity.cardbatch.common;
 
 public interface AbstractCardBatchCommonInfoActivity {
 

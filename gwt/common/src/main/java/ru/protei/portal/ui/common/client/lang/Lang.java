@@ -3699,4 +3699,6 @@ public interface Lang extends Messages, ContactItemLang {
     String cardBatchArticlePlaceholder();
 
     String cardBatchNumberPlaceholder();
+
+    String cardBatchPreviousInfo(String number, int amount, String state);
 }

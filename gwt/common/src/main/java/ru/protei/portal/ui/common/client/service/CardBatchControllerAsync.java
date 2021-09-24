@@ -7,7 +7,7 @@ public interface CardBatchControllerAsync {
 
     void saveCardBatch(CardBatch cardBatch, AsyncCallback<CardBatch> async);
 
-    void getLastNumber(Long typeId, AsyncCallback<String> async);
+    void getLastCardBatch(Long typeId, AsyncCallback<CardBatch> async);
 
     void updateMeta(CardBatch meta, AsyncCallback<CardBatch> async);
 }

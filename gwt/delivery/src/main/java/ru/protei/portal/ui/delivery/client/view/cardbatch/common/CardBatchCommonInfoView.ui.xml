@@ -13,12 +13,15 @@
                 <sel:CardTypeSelector ui:field="type" styleName="col-md-6" mandatory="true" header="{lang.cardBatchType}"/>
 
                 <div class="col-md-6">
-                    <div class="form-group form-group-default input-group">
+                    <div class="form-group form-group-default required">
                         <label class="fade"><ui:text from="{lang.cardBatchNumber}"/></label>
-                        <text:ValidableTextBox ui:field="number" valid="true" enabled="false"
+                        <text:ValidableTextBox ui:field="number" enabled="false"
                                                placeholder="{lang.cardBatchNumberPlaceholder}" styleName="form-control"/>
                     </div>
                 </div>
+            </div>
+            <div class="row">
+                <g:Label styleName="form-group col-md-12 p-b-5 m-0 inline half-opacity plan-limit-label" ui:field="prevCardBatchInfo"/>
             </div>
 
             <div class="row">

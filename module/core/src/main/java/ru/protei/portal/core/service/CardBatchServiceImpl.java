@@ -138,16 +138,13 @@ public class CardBatchServiceImpl implements CardBatchService {
     }
 
     @Override
-    public Result<String> getLastNumber(AuthToken token, Long typeId) {
+    public Result<CardBatch> getLastCardBatch(AuthToken token, Long typeId) {
         if (typeId == null) {
             return error(INCORRECT_PARAMS);
         }
-        String lastNumber = cardBatchDAO.getLastNumber(typeId);
-        if (lastNumber == null) {
-            return error(En_ResultStatus.NOT_FOUND);
-        }
-        log.debug("getLastNumber(): typeId = {}, result = {}", typeId, lastNumber);
-        return ok(lastNumber);
+        CardBatch cardBatch = cardBatchDAO.getLastCardBatch(typeId);
+        log.debug("getLastCardBatch(): typeId = {}, result = {}", typeId, cardBatch);
+        return ok(cardBatch);
     }
 
 

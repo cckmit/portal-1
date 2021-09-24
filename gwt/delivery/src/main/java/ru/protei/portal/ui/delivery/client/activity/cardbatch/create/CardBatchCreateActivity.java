@@ -6,35 +6,33 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
-import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CardBatch;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CardBatchControllerAsync;
 import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
-import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoActivity;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoView;
 import ru.protei.portal.ui.delivery.client.activity.delivery.meta.DeliveryCommonMeta;
-import ru.protei.portal.ui.delivery.client.view.delivery.meta.DeliveryMetaView;
-import ru.protei.portal.ui.delivery.client.widget.kit.list.DeliveryKitList;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
-import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
+import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.ERROR;
 
 public abstract class CardBatchCreateActivity implements Activity, AbstractCardBatchCreateActivity, AbstractCardBatchCommonInfoActivity {
 
     @Inject
     public void onInit() {
         view.setActivity(this);
+        commonInfoView.setActivity(this);
 
 
 //        DeliveryMetaView metaView = view.getMetaView();
@@ -57,6 +55,7 @@ public abstract class CardBatchCreateActivity implements Activity, AbstractCardB
         initDetails.parent.clear();
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
+        view.getCommonInfoContainer().add(commonInfoView);
 
         prepare();
     }
@@ -80,9 +79,9 @@ public abstract class CardBatchCreateActivity implements Activity, AbstractCardB
     @Override
     public void onCardTypeChanged(Long cardTypeId) {
 
-        cardBatchService.getLastNumber(cardTypeId, new FluentCallback<String>()
+        cardBatchService.getLastCardBatch(cardTypeId, new FluentCallback<CardBatch>()
                         .withError(defaultErrorHandler)
-                        .withSuccess(getLastNumberConsumer));
+                        .withSuccess(getLastCardBatchConsumer));
     }
 
     @Override
@@ -93,46 +92,51 @@ public abstract class CardBatchCreateActivity implements Activity, AbstractCardB
     }
 
     private void prepare() {
-        view.type().setValue(null);
-        view.number().setValue(null);
-        view.article().setValue(null);
-        view.amount().setValue(null);
-        view.params().setValue(null);
+        commonInfoView.type().setValue(null);
+        commonInfoView.number().setValue(null);
+        commonInfoView.article().setValue(null);
+        commonInfoView.amount().setValue(null);
+        commonInfoView.params().setValue(null);
+        commonInfoView.hidePrevCardBatchInfo();
         fillStateSelector(CrmConstants.State.PRELIMINARY);
     }
 
     private CardBatch fillDto() {
         CardBatch cardBatch = new CardBatch();
-        cardBatch.setTypeId(view.type().getValue().getId());
-        cardBatch.setNumber(view.number().getValue());
-        cardBatch.setArticle(view.article().getValue());
-        cardBatch.setAmount(view.amount().getValue());
-        cardBatch.setParams(view.params().getValue());
+        cardBatch.setTypeId(commonInfoView.type().getValue().getId());
+        cardBatch.setNumber(commonInfoView.number().getValue());
+        cardBatch.setArticle(commonInfoView.article().getValue());
+        cardBatch.setAmount(commonInfoView.amount().getValue());
+        cardBatch.setParams(commonInfoView.params().getValue());
 //        cardBatch.setStateId(view.state().getValue().getId());
         return cardBatch;
     }
 
     private void showValidationError(String error) {
-        fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
+        fireEvent(new NotifyEvents.Show(error, ERROR));
     }
 
     private String getValidationError() {
-        if (null == view.type().getValue()) {
+        if (null == commonInfoView.type().getValue()) {
             return "Тип не может быть пустым";
         }
 
-        if (ru.protei.portal.core.model.helper.StringUtils.isNotEmpty(view.article().getValue()) && !view.isArticleValid()) {
+        if (isEmpty(commonInfoView.number().getValue()) || !commonInfoView.isNumberValid()) {
+            return "Номер должен быть валиден";
+        }
+
+        if (isEmpty(commonInfoView.article().getValue()) || !commonInfoView.isArticleValid()) {
             return "Артикул должен быть валиден";
         }
 
-        if (null == view.amount().getValue() || view.amount().getValue() > 0) {
+        if (null == commonInfoView.amount().getValue() || commonInfoView.amount().getValue() > 0) {
             return "Количество должно быть больше нуля";
         }
 
-        String error = commonMeta.getValidationError();
-        if (error != null) {
-            return error;
-        }
+//        String error = commonMeta.getValidationError();
+//        if (error != null) {
+//            return error;
+//        }
 //        CaseState state = view.state().getValue();
 //         if (!Objects.equals(CrmConstants.State.PRELIMINARY, state.getId())) {
 //            return lang.deliveryValidationInvalidStateAtCreate();
@@ -170,24 +174,54 @@ public abstract class CardBatchCreateActivity implements Activity, AbstractCardB
 //        getCaseState(id, caseState -> view.state().setValue(caseState));
     }
 
-    Consumer<String> getLastNumberConsumer = new Consumer<String>() {
+    Consumer<CardBatch> getLastCardBatchConsumer = new Consumer<CardBatch>() {
         @Override
-        public void accept(String lastNumberStr) {
+        public void accept(CardBatch lastNumberCardBatch) {
+            String releaseNumber = START_CARD_BATCH_NUMBER;
 
-            Integer lastNumber = null;
-            try {
-                lastNumber = Integer.valueOf(lastNumberStr);
-            } catch (NumberFormatException e){
-                fireEvent(new NotifyEvents.Show("Ошибка при получении последнего номера", NotifyEvents.NotifyType.ERROR));
+            if (isNotEmpty(lastNumberCardBatch.getNumber())){
+                releaseNumber = getNextNumber(lastNumberCardBatch.getNumber());
             }
 
-            view.number().setValue(String.valueOf(lastNumber++));
+            commonInfoView.number().setValue(releaseNumber);
+
+            if (isEmpty(releaseNumber)){
+                commonInfoView.hidePrevCardBatchInfo();
+                return;
+            }
+
+            commonInfoView.setPrevCardBatchInfo(lastNumberCardBatch.getNumber(), lastNumberCardBatch.getAmount(), lastNumberCardBatch.getState().getState());
         }
     };
+
+    private String getNextNumber(String lastNumberStr) {
+
+        int lastNumber;
+        try {
+            lastNumber = Integer.parseInt(lastNumberStr) + 1;
+        } catch (NumberFormatException e){
+            fireEvent(new NotifyEvents.Show("Ошибка при получении следующего номера партии плат", ERROR));
+            return "";
+        }
+
+        if (lastNumber >= CARD_BATCH_MAX_NUMBER){
+            fireEvent(new NotifyEvents.Show("Невозможно выделить следующий номер партии плат. Превышено ограничение по номерам: " + CARD_BATCH_MAX_NUMBER, ERROR));
+            return "";
+        }
+
+        return addLeadingZeros(lastNumber, CARD_BATCH_NUMBER_LENGTH);
+    }
+
+    public static native String addLeadingZeros(int num, int number_length) /*-{
+        return num.toString().padStart(number_length, "0");
+    }-*/;
+
     @Inject
     private Lang lang;
     @Inject
     private AbstractCardBatchCreateView view;
+    @Inject
+    AbstractCardBatchCommonInfoView commonInfoView;
     @Inject
     private DeliveryCommonMeta commonMeta;
     @Inject
@@ -201,4 +235,7 @@ public abstract class CardBatchCreateActivity implements Activity, AbstractCardB
     private DefaultErrorHandler defaultErrorHandler;
 
     private AppEvents.InitDetails initDetails;
+    private static final String START_CARD_BATCH_NUMBER = "001";
+    private static final int CARD_BATCH_MAX_NUMBER = 999;
+    private static final int CARD_BATCH_NUMBER_LENGTH = 3;
 }

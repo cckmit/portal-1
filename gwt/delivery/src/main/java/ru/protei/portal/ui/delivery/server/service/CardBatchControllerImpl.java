@@ -33,9 +33,9 @@ public class CardBatchControllerImpl implements CardBatchController {
     }
 
     @Override
-    public String getLastNumber(Long typeId) throws RequestFailedException {
+    public CardBatch getLastCardBatch(Long typeId) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
-        return checkResultAndGetData(cardBatchService.getLastNumber(token, typeId));
+        return checkResultAndGetData(cardBatchService.getLastCardBatch(token, typeId));
     }
 
     @Override

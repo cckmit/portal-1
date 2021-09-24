@@ -1,15 +1,13 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:cardbatch="urn:import:ru.protei.portal.ui.delivery.client.view.cardbatch">
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
         <div class="card-body row no-margin">
-            <cardbatch:common.CardBatchCommonInfoView styleName="col-lg-8" ui:field="commonInfoView"/>
-            <div class="col-lg-4">
-<!--                <cardbatch:meta.DeliveryMetaView ui:field="meta"/>-->
-            </div>
+            <g:HTMLPanel ui:field="commonInfoContainer" styleName="col-lg-8"/>
+            <g:HTMLPanel ui:field="metaContainer" styleName="col-lg-4"/>
         </div>
         <div class="card-footer text-right">
             <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>

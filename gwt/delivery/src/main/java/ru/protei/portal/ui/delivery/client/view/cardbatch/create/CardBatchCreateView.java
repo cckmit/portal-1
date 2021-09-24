@@ -35,23 +35,13 @@ public class CardBatchCreateView extends Composite implements AbstractCardBatchC
     }
 
     @Override
-    public HasValue<EntityOption> type() { return commonInfoView.type(); }
+    public HTMLPanel getCommonInfoContainer() {
+        return commonInfoContainer;
+    }
 
     @Override
-    public HasValue<String> number() { return commonInfoView.number(); }
-
-    @Override
-    public HasValue<String> article() { return commonInfoView.article(); }
-
-    @Override
-    public HasValue<Integer> amount() { return commonInfoView.amount(); }
-
-    @Override
-    public HasValue<String> params() { return commonInfoView.params(); }
-
-    @Override
-    public boolean isArticleValid() {
-        return commonInfoView.isArticleValid();
+    public HTMLPanel getMetaContainer() {
+        return metaContainer;
     }
 
     @UiHandler("saveButton")
@@ -78,13 +68,10 @@ public class CardBatchCreateView extends Composite implements AbstractCardBatchC
 
     @UiField
     HTMLPanel root;
-    @Inject
-    @UiField(provided = true)
-    CardBatchCommonInfoView commonInfoView;
-//    @Inject
-//    @UiField(provided = true)
-//    DeliveryMetaView meta;
-
+    @UiField
+    HTMLPanel commonInfoContainer;
+    @UiField
+    HTMLPanel metaContainer;
     @UiField
     Button saveButton;
     @UiField

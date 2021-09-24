@@ -18,5 +18,5 @@ public interface CardBatchService {
     @Auditable( En_AuditType.DELIVERY_MODIFY )
     Result<CardBatch> updateMeta(AuthToken token, CardBatch meta);
 
-    Result<String> getLastNumber(AuthToken token, Long typeId);
+    Result<CardBatch> getLastCardBatch(AuthToken token, Long typeId);
 }

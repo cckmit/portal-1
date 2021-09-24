@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.delivery.client.activity.cardbatch.create;
 
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -11,15 +12,7 @@ public interface AbstractCardBatchCreateView extends IsWidget {
 
     HasEnabled saveEnabled();
 
-    HasValue<EntityOption> type();
+    HTMLPanel getCommonInfoContainer();
 
-    HasValue<String> number();
-
-    HasValue<String> article();
-
-    HasValue<Integer> amount();
-
-    HasValue<String> params();
-
-    boolean isArticleValid();
+    HTMLPanel getMetaContainer();
 }
