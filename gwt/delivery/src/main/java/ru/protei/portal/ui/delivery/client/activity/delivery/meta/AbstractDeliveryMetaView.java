@@ -47,8 +47,6 @@ public interface AbstractDeliveryMetaView extends IsWidget {
 
     void setContractCompany(String value);
 
-    void setManager(String value);
-
     HasValue<En_DeliveryAttribute> attribute();
 
     HasEnabled attributeEnabled();
@@ -56,8 +54,6 @@ public interface AbstractDeliveryMetaView extends IsWidget {
     HasValue<ContractInfo> contract();
 
     HasEnabled contractEnable();
-
-    void setContractFieldMandatory(boolean isMandatory);
 
     void updateContractModel(Long projectId);
 
@@ -77,7 +73,5 @@ public interface AbstractDeliveryMetaView extends IsWidget {
 
     HasEnabled subscribersEnabled();
 
-    HasValue<PersonShortView> hwManager();
-
-    HasValue<PersonShortView> qcManager();
+    void setTeam( String value );
 }

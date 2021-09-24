@@ -121,14 +121,6 @@ public class AssembledDeliveryEvent extends ApplicationEvent implements HasCaseC
         return isEditEvent() && !Objects.equals(oldDeliveryState.getProjectId(), newDeliveryState.getProjectId());
     }
 
-    public boolean isHwManagerChanged() {
-        return isEditEvent() && !Objects.equals(oldDeliveryState.getHwManagerId(), newDeliveryState.getHwManagerId());
-    }
-
-    public boolean isQcManagerChanged() {
-        return isEditEvent() && !Objects.equals(oldDeliveryState.getQcManagerId(), newDeliveryState.getQcManagerId());
-    }
-
     public DiffCollectionResult<DevUnit> getProductDiffs() {
         if (isEditEvent()) {
             return diffCollection(

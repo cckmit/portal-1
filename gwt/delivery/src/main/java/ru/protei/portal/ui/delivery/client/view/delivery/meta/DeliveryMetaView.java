@@ -2,14 +2,12 @@ package ru.protei.portal.ui.delivery.client.view.delivery.meta;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
@@ -28,7 +26,6 @@ import ru.protei.portal.ui.common.client.widget.selector.contract.ContractModel;
 import ru.protei.portal.ui.common.client.widget.selector.delivery.attribute.DeliveryAttributeFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.delivery.state.DeliveryStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.delivery.type.DeliveryTypeFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
@@ -66,8 +63,6 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
         this.commonActivity = activity;
         state.addValueChangeHandler(event -> activity.onStateChange());
         type.addValueChangeHandler(event -> activity.onTypeChange());
-        hwManager.addValueChangeHandler(event -> activity.onHwManagerChange());
-        qcManager.addValueChangeHandler(event -> activity.onQcManagerChange());
         customerInitiator.addValueChangeHandler(event -> activity.onInitiatorChange());
         contract.addValueChangeHandler(event -> activity.onContractChanged());
         subscribers.addValueChangeHandler(event -> activity.onCaseMetaNotifiersChanged());
@@ -134,11 +129,6 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     }
 
     @Override
-    public void setManager(String value) {
-        manager.setValue(value);
-    }
-
-    @Override
     public HasValue<En_DeliveryAttribute> attribute() {
         return attribute;
     }
@@ -159,11 +149,6 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     }
 
     @Override
-    public void setContractFieldMandatory(boolean isMandatory) {
-        contract.setMandatory(isMandatory);
-    }
-
-    @Override
     public void updateContractModel(Long projectId) {
         contractModel.updateProject(null, projectId);
     }
@@ -172,6 +157,9 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     public void setProducts(String value) {
         products.setValue(value);
     }
+
+    @Override
+    public void setTeam(String value) { this.team.setInnerHTML(value); }
 
     @Override
     public HasValue<Date> departureDate() {
@@ -208,16 +196,6 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
         return subscribers;
     }
 
-    @Override
-    public HasValue<PersonShortView> hwManager() {
-        return hwManager;
-    }
-
-    @Override
-    public HasValue<PersonShortView> qcManager() {
-        return qcManager;
-    }
-
     @UiHandler("projectWidget")
     public void onProjectWidgetChanged(ValueChangeEvent<ProjectInfo> event) {
         commonActivity.onProjectChanged();
@@ -244,12 +222,10 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
         customerCompany.ensureDebugId(DebugIds.DELIVERY.CUSTOMER_COMPANY);
         customerInitiator.ensureDebugId(DebugIds.DELIVERY.CUSTOMER_INITIATOR);
         contractCompany.ensureDebugId(DebugIds.DELIVERY.CONTRACT_COMPANY);
-        manager.ensureDebugId(DebugIds.DELIVERY.MANAGER);
-        hwManager.ensureLabelDebugId(DebugIds.DELIVERY.HW_MANAGER);
-        qcManager.ensureLabelDebugId(DebugIds.DELIVERY.QC_MANAGER);
         attribute.ensureDebugId(DebugIds.DELIVERY.ATTRIBUTE);
         contract.ensureDebugId(DebugIds.DELIVERY.CONTRACT);
         products.ensureDebugId(DebugIds.DELIVERY.PRODUCTS);
+        team.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DELIVERY.TEAM);
         departureDate.ensureDebugId(DebugIds.DELIVERY.DEPARTURE_DATE);
         subscribers.setItemContainerEnsureDebugId(DebugIds.DELIVERY.SUBSCRIBERS);
     }
@@ -265,25 +241,15 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     @Inject
     @UiField(provided = true)
     ProjectWidget projectWidget;
-    @UiField
-    ValidableTextBox customerCompany;
-    @UiField
-    ValidableTextBox customerType;
     @Inject
     @UiField( provided = true )
     PersonFormSelector customerInitiator;
-    @UiField
-    ValidableTextBox contractCompany;
-    @UiField
-    ValidableTextBox manager;
     @Inject
     @UiField( provided = true )
     DeliveryAttributeFormSelector attribute;
     @Inject
     @UiField(provided = true)
     ContractFormSelector contract;
-    @UiField
-    ValidableTextBox products;
     @Inject
     @UiField(provided = true)
     SinglePicker departureDate;
@@ -291,14 +257,18 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
     @UiField( provided = true )
     EmployeeMultiSelector subscribers;
     @Inject
-    @UiField(provided = true)
-    EmployeeFormSelector hwManager;
-    @Inject
-    @UiField(provided = true)
-    EmployeeFormSelector qcManager;
-    @Inject
     @UiField
     Lang lang;
+    @UiField
+    DivElement team;
+    @UiField
+    TextBox contractCompany;
+    @UiField
+    TextBox customerType;
+    @UiField
+    TextBox customerCompany;
+    @UiField
+    TextBox products;
     @Inject
     PersonModel customerInitiatorModel;
     @Inject

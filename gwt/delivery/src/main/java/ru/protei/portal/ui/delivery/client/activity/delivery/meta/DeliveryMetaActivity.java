@@ -30,7 +30,7 @@ import ru.protei.portal.ui.delivery.client.view.delivery.meta.DeliveryMetaView;
 import java.util.Date;
 import java.util.Objects;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements Activity, AbstractDeliveryMetaActivity {
 
@@ -81,22 +81,6 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
     }
 
     @Override
-    public void onHwManagerChange() {
-        PersonShortView hwManager = deliveryMetaView.hwManager().getValue();
-        delivery.setHwManagerId(hwManager == null ? null : hwManager.getId());
-        delivery.setHwManager(hwManager);
-        onCaseMetaChanged(delivery);
-    }
-
-    @Override
-    public void onQcManagerChange() {
-        PersonShortView qcManager = deliveryMetaView.qcManager().getValue();
-        delivery.setQcManagerId(qcManager == null ? null : qcManager.getId());
-        delivery.setQcManager(qcManager);
-        onCaseMetaChanged(delivery);
-    }
-
-    @Override
     public void onInitiatorChange() {
         PersonShortView initiator = deliveryMetaView.initiator().getValue();
         delivery.setInitiatorId(initiator == null ? null : initiator.getId());
@@ -124,11 +108,13 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
     @Override
     public void onDepartureDateChanged() {
         super.onDepartureDateChanged();
-        if (!isDepartureDateFieldValid() ||
-             isDateEquals(deliveryMetaView.departureDate().getValue(), delivery.getDepartureDate())) {
+        if (!isDepartureDateFieldValid()) {
             return;
         }
 
+        if (isDateEquals(deliveryMetaView.departureDate().getValue(), delivery.getDepartureDate())) {
+            return;
+        }
         delivery.setDepartureDate(deliveryMetaView.departureDate().getValue());
         onCaseMetaChanged(delivery);
     }
@@ -164,8 +150,6 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         deliveryMetaView.stateEnable().setEnabled(hasEditPrivileges() && hasPrivilegesChangeStatus(delivery.getState()));
         deliveryMetaView.type().setValue(delivery.getType());
         deliveryMetaView.typeEnabled().setEnabled(hasEditPrivileges());
-        deliveryMetaView.hwManager().setValue(delivery.getHwManager());
-        deliveryMetaView.qcManager().setValue(delivery.getQcManager());
 
         ProjectInfo projectInfo = ProjectInfo.fromProject(delivery.getProject());
         deliveryMetaView.project().setValue(projectInfo);
@@ -174,9 +158,9 @@ public abstract class DeliveryMetaActivity extends DeliveryCommonMeta implements
         deliveryMetaView.updateInitiatorModel(projectInfo.getContragent().getId());
         deliveryMetaView.initiator().setValue(delivery.getInitiator());
         deliveryMetaView.initiatorEnable().setEnabled(hasEditPrivileges());
-        deliveryMetaView.setManager(delivery.getProject().getManagerFullName());
         deliveryMetaView.setProducts(joining(projectInfo.getProducts(), ", ", ProductShortView::getName));
         deliveryMetaView.updateContractModel(projectInfo.getId());
+        deliveryMetaView.setTeam(makeTeam(projectInfo));
 
         Contract contract = delivery.getContract();
         deliveryMetaView.contract().setValue(contract != null ? new ContractInfo(delivery.getContract().getId(), contract.getNumber(), contract.getOrganizationName()) : null);

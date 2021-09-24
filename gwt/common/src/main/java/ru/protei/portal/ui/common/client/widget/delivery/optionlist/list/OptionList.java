@@ -24,7 +24,6 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import java.util.*;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.StringUtils.length;
 
 /**
  * Список комплектов поставки
@@ -78,7 +77,7 @@ public class OptionList<T extends HasLongId>
         itemView.setNumber( number );
         itemView.setStatusTitle( status );
         itemView.setStatusColor( statusColor );
-        itemView.setName( getName(name), name );
+        itemView.setName( name, name );
         itemView.setAmount(amount);
 
         itemView.addValueChangeHandler( this );
@@ -97,15 +96,17 @@ public class OptionList<T extends HasLongId>
         container.add( itemView.asWidget() );
     }
 
-    private String getName(String name) {
-        if (isShortNameEnabled && length(name)>10) {
-            return name.substring(0, 10) + "...";
-        }
-        return name;
-    }
-
     public void addOption( String name, T value ) {
         addOption( null, null, null, null, name, value );
+    }
+
+    public void updateOption(String status, String statusColor, String name, T value) {
+        OptionItem optionItem = itemToViewModel.get(value);
+        if (optionItem != null) {
+            optionItem.setStatusTitle(status);
+            optionItem.setStatusColor(statusColor);
+            optionItem.setName(name, name);
+        }
     }
 
     @Override
@@ -203,11 +204,6 @@ public class OptionList<T extends HasLongId>
         selected.addAll(mandatoryOptions);
     }
 
-
-    public void setShortNameEnabled(boolean isShortNameEnabled){
-        this.isShortNameEnabled = isShortNameEnabled;
-    }
-
     private void onSelectItem(OptionItem itemView, T value, String name) {
         unselectItems();
         itemView.setActive(true);
@@ -231,9 +227,6 @@ public class OptionList<T extends HasLongId>
     }
 
     protected void makeItemSelected(Long kitId) {
-        if (isEmpty(itemToViewModel)){
-            return;
-        }
         itemToViewModel.entrySet().stream()
                 .filter(entry -> Objects.equals(entry.getKey().getId(), kitId))
                 .findAny().ifPresent(entry -> entry.getValue().setActive(true));
@@ -254,9 +247,7 @@ public class OptionList<T extends HasLongId>
     protected Selector.SelectorFilter<T> filter = null;
     private List<T> mandatoryOptions;
     private SelectorModel<T> selectorModel;
-    private boolean isShortNameEnabled;
 
     interface OptionListUiBinder extends UiBinder< FlowPanel, OptionList > {}
     private static OptionListUiBinder ourUiBinder = GWT.create( OptionListUiBinder.class );
-
 }

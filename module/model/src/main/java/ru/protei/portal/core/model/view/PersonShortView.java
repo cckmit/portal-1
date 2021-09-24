@@ -51,11 +51,6 @@ public class PersonShortView implements Serializable, HasLongId {
         this(name, id, false);
     }
 
-    public PersonShortView(String name, String fullName, Long id) {
-        this(name, id, false);
-        this.displayName = fullName;
-    }
-
     public PersonShortView(EntityOption entityOption) {
         this(entityOption.getDisplayText(), entityOption.getId());
     }
@@ -129,7 +124,7 @@ public class PersonShortView implements Serializable, HasLongId {
     public boolean equals( Object obj ) {
         if (obj instanceof PersonShortView) {
             Long oid = ((PersonShortView)obj).getId();
-            return this.id == null ? oid == null : oid != null && this.id.equals(oid);
+            return this.id == null ? oid == null : this.id.equals(oid);
         }
 
         return false;

@@ -4,15 +4,13 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel>
-        <p class="menu-title inline"><ui:text from="{lang.deliveryKits}"/></p>
-        <div class="pull-right menu-controls">
-            <g:Anchor ui:field="kitsActionsBtn" href="#" styleName="p-r-15">
-                <i class="fas fa-ellipsis-h"/>
-            </g:Anchor>
-            <g:Anchor ui:field="reloadKitsBtn" title="{lang.buttonReload}" href="#" styleName="p-r-15">
-                <i class="fa fa-redo-alt"/>
-            </g:Anchor>
-        </div>
+    <g:HTMLPanel styleName="kit-menu-header">
+        <g:Anchor ui:field="backBtn" href="#" styleName="menu-controls p-r-0" title="{lang.buttonBack}">
+            <i class="fa fa-arrow-left"/>
+        </g:Anchor>
+        <div class="menu-title"><ui:text from="{lang.deliveryKits}"/></div>
+        <g:Anchor ui:field="actionsBtn" href="#" styleName="menu-controls p-l-0">
+            <i class="fas fa-ellipsis-h"/>
+        </g:Anchor>
     </g:HTMLPanel>
 </ui:UiBinder>

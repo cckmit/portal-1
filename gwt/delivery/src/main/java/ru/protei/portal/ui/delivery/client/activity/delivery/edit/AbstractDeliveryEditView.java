@@ -32,6 +32,8 @@ public interface AbstractDeliveryEditView extends IsWidget {
 
     void fillKits(List<Kit> kitSet);
 
+    void updateKit(Kit kit);
+
     HasVisibility nameAndDescriptionEditButtonVisibility();
 
     void setCreatedBy(String value);
@@ -40,7 +42,7 @@ public interface AbstractDeliveryEditView extends IsWidget {
 
     void setKitsActionHandler(KitActionsHandler handler);
 
-    void setKitsActionsEnabled(boolean hasEditPrivileges);
+    void setKitActionsEnabled(boolean hasEditPrivileges);
 
     Set<Kit> getKitsSelected();
 }

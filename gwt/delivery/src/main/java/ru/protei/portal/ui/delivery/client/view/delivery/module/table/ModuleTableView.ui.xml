@@ -4,28 +4,28 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel>
-        <div class="row">
-            <div class="actions-wrapper menu-clipper">
-                <div class="actions menu-clipper-menu">
-                    <g:Anchor styleName="" ui:field="addButton" title="{lang.buttonAdd}">
-                        <i class="fa fa-plus"/>
-                    </g:Anchor>
-                    <g:Anchor styleName="" ui:field="copyButton" title="{lang.buttonCopy}">
-                        <i class="far fa-clone"/>
-                    </g:Anchor>
-                    <g:Anchor styleName="" ui:field="stateButton" title="{lang.buttonState}">
-                        <i class="far fa-circle"/>
-                    </g:Anchor>
-                    <g:Anchor styleName="" ui:field="deleteButton" title="{lang.buttonRemove}">
-                        <i class="fa fa-trash-alt"/>
-                    </g:Anchor>
-                    <g:Anchor styleName="" ui:field="reloadButton" title="{lang.buttonReload}">
-                        <i class="fa fa-redo-alt"/>
-                    </g:Anchor>
-                </div>
+    <g:HTMLPanel styleName="list-view">
+        <div class="actions-wrapper">
+            <g:Anchor styleName="" ui:field="addButton" title="{lang.buttonAddModule}" href="#">
+                <i class="fa fa-plus"/>
+            </g:Anchor>
+            <g:Anchor styleName="" ui:field="copyButton" title="{lang.buttonCopyModule}" href="#">
+                <i class="far fa-clone"/>
+            </g:Anchor>
+            <g:Anchor styleName="" ui:field="stateButton" title="{lang.buttonStateModule}" href="#">
+                <i class="far fa-circle"/>
+            </g:Anchor>
+            <g:Anchor styleName="" ui:field="deleteButton" title="{lang.buttonRemoveModule}" href="#">
+                <i class="fa fa-trash-alt"/>
+            </g:Anchor>
+            <g:Anchor styleName="" ui:field="reloadButton" title="{lang.buttonReloadModule}" href="#">
+                <i class="fa fa-redo-alt"/>
+            </g:Anchor>
+        </div>
+        <div class="list-view-wrapper">
+            <div class="list-view-group-container">
+                <table:TableWidget ui:field="table" styleName="table table-hover module-table"/>
             </div>
-            <table:TableWidget ui:field="table" styleName="table table-hover module-table"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>
