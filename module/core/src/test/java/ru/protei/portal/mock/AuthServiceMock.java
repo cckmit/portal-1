@@ -33,6 +33,7 @@ public class AuthServiceMock implements AuthService {
             En_Privilege.SITE_FOLDER_CREATE, En_Privilege.SITE_FOLDER_REMOVE, En_Privilege.SITE_FOLDER_EDIT,
             En_Privilege.ABSENCE_CREATE,
             En_Privilege.DOCUMENT_CREATE, En_Privilege.DOCUMENT_REMOVE,
+            En_Privilege.DELIVERY_CREATE
     };
 
     private UserLogin stubUserLogin;
