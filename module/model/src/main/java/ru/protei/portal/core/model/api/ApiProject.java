@@ -213,7 +213,7 @@ public class ApiProject implements Serializable {
     }
 
     private boolean pauseDateFilled(Long stateId) {
-        return stateId != null && stateId.equals(PAUSED) ? pauseDate != null : true;
+        return stateId == null || !stateId.equals(PAUSED) || pauseDate != null;
     }
 
     @Override

@@ -1,10 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:module="urn:import:ru.protei.portal.ui.common.client.widget.selector.module"
-             xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.project"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
-             xmlns:contract="urn:import:ru.protei.portal.ui.common.client.widget.selector.contract"
              xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
 >
 

@@ -47,20 +47,6 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
     }
 
     @Event
-    public void onShow(ModuleEvents.Show event) {
-        if (!hasViewPrivileges()) {
-            fireEvent(new ErrorPageEvents.ShowForbidden(event.parent));
-            return;
-        }
-        moduleService.getModule(event.id, new FluentCallback<Module>()
-                .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
-                .withSuccess(module -> {
-                    this.module = module;
-                    switchNameDescriptionToEdit(false);
-                    fillView(module);
-                    showMeta(module);
-                    attachToContainer(event.parent);
-                }));
     public void onInitDetails(AppEvents.InitDetails initDetails) {
         this.initDetails = initDetails;
     }
@@ -115,7 +101,7 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
                     requestedNameDescription = false;
 
                     fireEvent( new NotifyEvents.Show( lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS ));
-                    fireEvent( new ModuleEvents.Changed(changeRequest.getId()) );
+                    fireEvent( new ModuleEvents.Changed(changeRequest.getId()));
                     onNameDescriptionChanged();
                 } ) );
     }

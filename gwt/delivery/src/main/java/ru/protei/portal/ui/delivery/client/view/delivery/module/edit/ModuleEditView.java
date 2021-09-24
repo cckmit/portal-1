@@ -97,6 +97,8 @@ public class ModuleEditView extends Composite implements AbstractModuleEditView 
 
     @UiHandler("backButton")
     public void onBackClicked(ClickEvent event) {
+        event.preventDefault();
+        event.stopPropagation();
         if (activity != null) {
             activity.onBackClicked();
         }
@@ -104,6 +106,8 @@ public class ModuleEditView extends Composite implements AbstractModuleEditView 
 
     @UiHandler("showEditViewButton")
     public void onShowEditViewModeButtonClick(ClickEvent event) {
+        event.preventDefault();
+        event.stopPropagation();
         if (activity != null) {
             activity.onOpenEditViewClicked();
         }
@@ -112,6 +116,7 @@ public class ModuleEditView extends Composite implements AbstractModuleEditView 
     @UiHandler("nameAndDescriptionEditButton")
     public void onNameAndDescriptionEditButtonClicked(ClickEvent event) {
         event.preventDefault();
+        event.stopPropagation();
         if (activity != null) {
             activity.onNameAndDescriptionEditClicked();
         }

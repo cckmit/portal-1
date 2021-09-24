@@ -29,7 +29,6 @@ import ru.protei.portal.ui.common.client.widget.selector.delivery.type.DeliveryT
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
-import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.delivery.client.activity.delivery.meta.AbstractDeliveryCommonMeta;
 import ru.protei.portal.ui.delivery.client.activity.delivery.meta.AbstractDeliveryMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.delivery.meta.AbstractDeliveryMetaView;

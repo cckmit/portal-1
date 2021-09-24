@@ -361,6 +361,7 @@ public class Module extends AuditableObject {
                 "id=" + id +
                 ", created=" + created +
                 ", creatorId=" + creatorId +
+                ", creator=" + creator +
                 ", modified=" + modified +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
@@ -368,12 +369,16 @@ public class Module extends AuditableObject {
                 ", state=" + state +
                 ", serialNumber='" + serialNumber + '\'' +
                 ", kitId=" + kitId +
+                ", kitStateId=" + kitStateId +
+                ", deliveryId=" + deliveryId +
                 ", parentModuleId=" + parentModuleId +
                 ", customerName='" + customerName + '\'' +
+                ", manager=" + manager +
                 ", deleted=" + deleted +
-                ", managerName='" + manager + '\'' +
                 ", hwManagerId=" + hwManagerId +
+                ", hwManager=" + hwManager +
                 ", qcManagerId=" + qcManagerId +
+                ", qcManager=" + qcManager +
                 ", departureDate=" + departureDate +
                 ", buildDate=" + buildDate +
                 '}';

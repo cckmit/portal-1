@@ -73,5 +73,5 @@ public interface AbstractDeliveryMetaView extends IsWidget {
 
     HasEnabled subscribersEnabled();
 
-    void setTeam( String value );
+    void setTeam(String value);
 }

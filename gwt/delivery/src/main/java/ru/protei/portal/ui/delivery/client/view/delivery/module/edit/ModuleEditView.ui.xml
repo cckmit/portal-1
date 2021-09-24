@@ -6,6 +6,9 @@
 
     <g:HTMLPanel ui:field="root" styleName="col-md-12 module-content-wrapper">
         <div class="actions-wrapper">
+            <g:Anchor ui:field="backButton" title="{lang.backToModules}" href="#">
+                <i class="fa fa-arrow-left"/>
+            </g:Anchor>
             <g:Anchor styleName="" ui:field="showEditViewButton" title="{lang.openFullScreen}" href="#">
                 <i class="fas fa-expand-arrows-alt"/>
             </g:Anchor>
@@ -20,7 +23,7 @@
                     <span ui:field="serialNumber"/>
                 </h5>
                 <g:HTMLPanel ui:field="nameContainer"/>
-                <div class="row m-0">
+                <div class="row">
                     <div class="form-group col-md-12">
                         <tab:multi.MultiTabWidget ui:field="multiTabWidget" styleName="issue-info-tab-widget"/>
                     </div>

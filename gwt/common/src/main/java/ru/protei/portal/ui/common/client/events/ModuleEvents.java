@@ -29,7 +29,7 @@ public class ModuleEvents {
     }
 
     public static class EditMeta {
-        public EditMeta(HasWidgets parent, Module module) {
+        public EditMeta(HasWidgets parent, Module module, boolean isReadOnly) {
             this.parent = parent;
             this.module = module;
             this.isReadOnly = isReadOnly;

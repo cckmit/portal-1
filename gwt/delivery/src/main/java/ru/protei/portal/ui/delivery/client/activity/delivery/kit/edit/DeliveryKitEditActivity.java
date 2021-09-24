@@ -142,9 +142,7 @@ public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliv
 
         caseCommentController.getCommentsAndHistories(En_CaseType.KIT, kit.getId(), new FluentCallback<CommentsAndHistories>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
-                .withSuccess(commentsAndHistories -> {
-                    fillHistoryView(commentsAndHistories);
-                })
+                .withSuccess(this::fillHistoryView)
         );
     }
 
@@ -155,7 +153,7 @@ public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliv
 
         List<History> histories = stream(commentOrHistoryList)
                 .filter(o -> o.getHistory() != null)
-                .map(o -> o.getHistory())
+                .map(CommentsAndHistories.CommentOrHistory::getHistory)
                 .collect(Collectors.toList());
 
         List<CaseHistoryItemsContainer> caseHistoryItemsContainers = CommentOrHistoryUtils.fillView(
