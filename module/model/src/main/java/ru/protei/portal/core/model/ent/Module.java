@@ -8,8 +8,6 @@ import ru.protei.winter.jdbc.annotations.*;
 import java.util.Date;
 import java.util.Objects;
 
-import static ru.protei.portal.core.model.ent.Delivery.Columns.HW_MANAGER;
-import static ru.protei.portal.core.model.ent.Delivery.Columns.QC_MANAGER;
 import static ru.protei.portal.core.model.ent.Module.Columns.*;
 
 
@@ -372,5 +370,7 @@ public class Module extends AuditableObject {
         String ID = "id";
         String SERIAL_NUMBER = "serial_number";
         String KIT_ID = "kit_id";
+        String HW_MANAGER = "hw_manager_id";
+        String QC_MANAGER = "qc_manager_id";
     }
 }

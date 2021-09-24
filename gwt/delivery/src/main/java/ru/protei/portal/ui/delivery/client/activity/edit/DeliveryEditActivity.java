@@ -294,15 +294,14 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     }
 
     private void updateKit(final Kit newKit) {
-        Optional<Kit> optionalKit = delivery.getKits().stream()
+        delivery.getKits().stream()
                 .filter(kit -> Objects.equals(kit, newKit))
-                .findFirst();
-        if (optionalKit.isPresent()) {
-            Kit kit = optionalKit.get();
-            kit.setState(newKit.getState());
-            kit.setName(newKit.getName());
-            view.updateKit(kit);
-        }
+                .findFirst()
+                .ifPresent(kit -> {
+                    kit.setState(newKit.getState());
+                    kit.setName(newKit.getName());
+                    view.updateKit(kit);
+                });
     }
 
     private KitActionsHandler kitActionsHandler = new KitActionsHandler() {

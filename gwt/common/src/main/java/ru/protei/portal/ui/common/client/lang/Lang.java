@@ -1298,24 +1298,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectOfficialProduct();
 
-    String personDecisionCenter();
-
-    String personChiefDecisionMaker();
-
-    String personDecisionKeeper();
-
-    String personTechSpecialist();
-
-    String personInfluenceMaker();
-
-    String personChielInfluenceMaker();
-
-    String personEconomist();
-
-    String personWellWisher();
-
-    String personReceptivityCenter();
-
     String personCreateNew();
 
     String personHardwareCurator();

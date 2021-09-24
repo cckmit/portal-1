@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import static ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType.HEAD_MANAGER;
+import static ru.protei.portal.core.model.dict.En_PersonRoleType.HEAD_MANAGER;
 import static ru.protei.portal.core.model.util.CrmConstants.State.PAUSED;
 
 @JsonAutoDetect(

@@ -91,17 +91,37 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
     @UiHandler("addButton")
     public void onClickAddButton(ClickEvent event) {
         event.preventDefault();
+        event.stopPropagation();
         if (activity != null) {
             activity.onAddModuleClicked();
         }
     }
 
+    @UiHandler("copyButton")
+    public void onCopyClicked(ClickEvent event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    @UiHandler("stateButton")
+    public void onStateClicked(ClickEvent event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
     @UiHandler("deleteButton")
     public void onRemoveClicked(ClickEvent event) {
         event.preventDefault();
+        event.stopPropagation();
         if (activity != null) {
             activity.onRemoveModuleClicked(this);
         }
+    }
+
+    @UiHandler("reloadButton")
+    public void onReloadClicked(ClickEvent event) {
+        event.preventDefault();
+        event.stopPropagation();
     }
 
     @Override

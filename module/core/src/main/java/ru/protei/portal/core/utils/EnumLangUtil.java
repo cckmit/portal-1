@@ -15,7 +15,7 @@ public class EnumLangUtil {
         this.lang = lang;
     }
 
-    public String getPersonRoleType(En_DevUnitPersonRoleType type, String langCode) {
+    public String getPersonRoleType(En_PersonRoleType type, String langCode) {
         if (localizedLang == null) {
             localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         }
@@ -25,24 +25,6 @@ public class EnumLangUtil {
                 return localizedLang.get("personHeadManager");
             case DEPLOY_MANAGER:
                 return localizedLang.get("personDeployManager");
-            case DECISION_CENTER:
-                return localizedLang.get("personDecisionCenter");
-            case CHIEF_DECISION_MAKER:
-                return localizedLang.get("personChiefDecisionMaker");
-            case KEEPER:
-                return localizedLang.get("personDecisionKeeper");
-            case TECH_SPECIALIST:
-                return localizedLang.get("personTechSpecialist");
-            case INFLUENCE_MAKER:
-                return localizedLang.get("personInfluenceMaker");
-            case CHIEF_INFLUENCE_MAKER:
-                return localizedLang.get("personChiefInfluenceMaker");
-            case ECONOMIST:
-                return localizedLang.get("personEconomist");
-            case WELL_WISHER:
-                return localizedLang.get("personWellWisher");
-            case RECEPTIVITY_CENTER:
-                return localizedLang.get("personReceptivityCenter");
             case HARDWARE_CURATOR:
                 return localizedLang.get("personHardwareCurator");
             case SOFTWARE_CURATOR:

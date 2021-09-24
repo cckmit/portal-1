@@ -1,7 +1,7 @@
 package ru.protei.portal.core.model.dto;
 
 import ru.protei.portal.core.model.dict.En_CustomerType;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.AuditableObject;
@@ -312,7 +312,7 @@ public class Project extends AuditableObject {
     public List<PersonProjectMemberView> getTeam() {
         if ( team == null && !isEmpty( members ) ) {
             team = CollectionUtils.stream( members )
-                    .filter( member -> En_DevUnitPersonRoleType.isProjectRole( member.getRole() ) )
+                    .filter( member -> En_PersonRoleType.isProjectRole( member.getRole() ) )
                     .map( member -> new PersonProjectMemberView( member.getMember(), member.getRole() ) )
                     .collect( Collectors.toList() );
         }
@@ -321,21 +321,21 @@ public class Project extends AuditableObject {
 
     public PersonProjectMemberView getLeader() {
         return stream(getTeam())
-                .filter(member -> En_DevUnitPersonRoleType.HEAD_MANAGER.equals(member.getRole()))
+                .filter(member -> En_PersonRoleType.HEAD_MANAGER.equals(member.getRole()))
                 .findFirst()
                 .orElse(null);
     }
 
     public PersonProjectMemberView getHardwareCurator() {
         return stream(getTeam())
-                .filter(member -> En_DevUnitPersonRoleType.HARDWARE_CURATOR.equals(member.getRole()))
+                .filter(member -> En_PersonRoleType.HARDWARE_CURATOR.equals(member.getRole()))
                 .findFirst()
                 .orElse(null);
     }
 
     public PersonProjectMemberView getQualityControlCurator() {
         return stream(getTeam())
-                .filter(member -> En_DevUnitPersonRoleType.QUALITY_CONTROL_SMK.equals(member.getRole()))
+                .filter(member -> En_PersonRoleType.QUALITY_CONTROL_SMK.equals(member.getRole()))
                 .findFirst()
                 .orElse(null);
     }
@@ -558,5 +558,8 @@ public class Project extends AuditableObject {
     public interface Fields {
         String PROJECT_PLANS = "projectPlans";
         String PROJECT_SUBCONTRACTORS = "subcontractors";
+        String PROJECT_MEMBERS = "members";
+        String PROJECT_LOCATIONS = "locations";
+        String PROJECT_SLAS = "projectSlas";
     }
 }

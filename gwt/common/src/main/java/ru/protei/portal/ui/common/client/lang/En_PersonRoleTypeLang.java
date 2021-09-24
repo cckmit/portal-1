@@ -1,36 +1,18 @@
 package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 
 
 public class En_PersonRoleTypeLang {
 
-    public String getName(En_DevUnitPersonRoleType type) {
+    public String getName(En_PersonRoleType type) {
 
         switch (type) {
             case HEAD_MANAGER:
                 return lang.personHeadManager();
             case DEPLOY_MANAGER:
                 return lang.personDeployManager() + " (" + lang.personDeployManagerShort() + ")";
-            case DECISION_CENTER:
-                return lang.personDecisionCenter();
-            case CHIEF_DECISION_MAKER:
-                return lang.personChiefDecisionMaker();
-            case KEEPER:
-                return lang.personDecisionKeeper();
-            case TECH_SPECIALIST:
-                return lang.personTechSpecialist();
-            case INFLUENCE_MAKER:
-                return lang.personInfluenceMaker();
-            case CHIEF_INFLUENCE_MAKER:
-                return lang.personChielInfluenceMaker();
-            case ECONOMIST:
-                return lang.personEconomist();
-            case WELL_WISHER:
-                return lang.personWellWisher();
-            case RECEPTIVITY_CENTER:
-                return lang.personReceptivityCenter();
             case HARDWARE_CURATOR:
                 return lang.personHardwareCurator() + " (" + lang.personHardwareCuratorShort() + ")";
             case SOFTWARE_CURATOR:
@@ -90,7 +72,7 @@ public class En_PersonRoleTypeLang {
         return null;
     }
 
-    public String getShortName(En_DevUnitPersonRoleType type) {
+    public String getShortName(En_PersonRoleType type) {
 
         switch (type) {
             case HEAD_MANAGER:

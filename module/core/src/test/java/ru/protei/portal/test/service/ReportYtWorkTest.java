@@ -68,7 +68,7 @@ public class ReportYtWorkTest extends BaseServiceTest {
         makePerson(person1);
 
         PersonProjectMemberView personProjectMemberView =
-                new PersonProjectMemberView(person1.getDisplayShortName(), person1.getId(), person1.isFired(), En_DevUnitPersonRoleType.HEAD_MANAGER);
+                new PersonProjectMemberView(person1.getDisplayShortName(), person1.getId(), person1.isFired(), En_PersonRoleType.HEAD_MANAGER);
 
         Company customerCompany = makeCompany(En_CompanyCategory.CUSTOMER);
         Project project1 = new Project();

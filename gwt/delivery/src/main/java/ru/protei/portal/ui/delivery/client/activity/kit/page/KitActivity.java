@@ -203,7 +203,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     }
 
     private boolean hasRemovePrivileges() {
-        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_REMOVE);
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE);
     }
 
     private Runnable removeModuleAction(AbstractModuleTableView modulesTableView) {
@@ -228,15 +228,14 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     }
 
     private void updateKit(final Kit newKit) {
-        Optional<Kit> optionalKit = delivery.getKits().stream()
+        delivery.getKits().stream()
                 .filter(kit -> Objects.equals(kit, newKit))
-                .findFirst();
-        if (optionalKit.isPresent()) {
-            Kit kit = optionalKit.get();
-            kit.setState(newKit.getState());
-            kit.setName(newKit.getName());
-            view.updateKit(kit);
-        }
+                .findFirst()
+                .ifPresent(kit -> {
+                    kit.setState(newKit.getState());
+                    kit.setName(newKit.getName());
+                    view.updateKit(kit);
+                });
     }
 
     private KitActionsHandler kitActionsHandler = new KitActionsHandler() {

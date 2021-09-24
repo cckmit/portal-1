@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Kit;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.events.EditEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.delivery.optionlist.kit.KitList;
@@ -83,18 +84,18 @@ public class KitView extends Composite implements AbstractKitView {
     @Override
     public void setModuleNotSelectedMessageVisible(boolean isVisible) {
         if (isVisible) {
-            moduleNotSelectedMessage.removeClassName("hide");
+            moduleNotSelectedMessage.removeClassName(CrmConstants.Style.HIDE);
         } else {
-            moduleNotSelectedMessage.addClassName("hide");
+            moduleNotSelectedMessage.addClassName(CrmConstants.Style.HIDE);
         }
     }
 
     @Override
     public void setKitNotSelectedMessageVisible(boolean isVisible) {
         if (isVisible) {
-            kitNotSelectedMessage.removeClassName("hide");
+            kitNotSelectedMessage.removeClassName(CrmConstants.Style.HIDE);
         } else {
-            kitNotSelectedMessage.addClassName("hide");
+            kitNotSelectedMessage.addClassName(CrmConstants.Style.HIDE);
         }
     }
 

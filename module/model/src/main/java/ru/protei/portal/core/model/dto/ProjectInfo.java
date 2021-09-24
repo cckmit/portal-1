@@ -1,7 +1,7 @@
 package ru.protei.portal.core.model.dto;
 
 import ru.protei.portal.core.model.dict.En_CustomerType;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -132,7 +132,7 @@ public class ProjectInfo implements Serializable {
                 project.getProducts() == null ? null : project.getProducts().stream().map(ProductShortView::fromProduct).collect(Collectors.toSet()),
                 project.getTechnicalSupportValidity(),
                 CollectionUtils.stream(project.getMembers())
-                        .filter(member -> En_DevUnitPersonRoleType.isProjectRole(member.getRole()))
+                        .filter(member -> En_PersonRoleType.isProjectRole(member.getRole()))
                         .map(member -> new PersonProjectMemberView(member.getMember(), member.getRole()))
                         .collect(Collectors.toList()));
     }

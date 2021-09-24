@@ -1918,7 +1918,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         List<PersonProjectMemberView> team = new ArrayList<>();
         PersonProjectMemberView headManager = new PersonProjectMemberView();
-        headManager.setRole(En_DevUnitPersonRoleType.HEAD_MANAGER);
+        headManager.setRole(En_PersonRoleType.HEAD_MANAGER);
         team.add(headManager);
         apiProject.setTeam(team);
 

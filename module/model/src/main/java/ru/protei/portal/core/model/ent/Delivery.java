@@ -9,8 +9,6 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.*;
 
-import static ru.protei.portal.core.model.ent.Delivery.Columns.HW_MANAGER;
-import static ru.protei.portal.core.model.ent.Delivery.Columns.QC_MANAGER;
 import static ru.protei.portal.core.model.ent.Delivery.Columns.ID;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
@@ -324,11 +322,11 @@ public class Delivery extends AuditableObject {
 
     public interface Columns {
         String ID = "id";
+    }
+
+    public interface Fields {
         String KITS = "kits";
         String SUBSCRIBERS = "subscribers";
-        String HW_MANAGER = "hw_manager_id";
-        String QC_MANAGER = "qc_manager_id";
-        String PROJECT_MEMBERS = "members";
     }
 
     public boolean isDeleted() {

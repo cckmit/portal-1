@@ -37,7 +37,8 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
     @Event
     public void onShow(KitEvents.Add event) {
 
-        if (!hasEditPrivileges()) {
+        if (!hasCreatePrivileges()) {
+            fireEvent(new NotifyEvents.Show(lang.errAccessDenied(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -96,8 +97,8 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
         dialog.removeButtonVisibility().setVisible(false);
     }
 
-    private boolean hasEditPrivileges() {
-        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
+    private boolean hasCreatePrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE);
     }
 
     private void create(List<Kit> kits) {

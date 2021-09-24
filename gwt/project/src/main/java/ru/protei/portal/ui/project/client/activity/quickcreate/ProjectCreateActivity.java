@@ -1,11 +1,10 @@
 package ru.protei.portal.ui.project.client.activity.quickcreate;
 
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.Project;
@@ -174,7 +173,7 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         return CollectionUtils.emptyIfNull(persons)
                 .stream()
                 .map(personShortView ->
-                        new PersonProjectMemberView(personShortView.getName(), personShortView.getId(), personShortView.isFired(), En_DevUnitPersonRoleType.HEAD_MANAGER))
+                        new PersonProjectMemberView(personShortView.getName(), personShortView.getId(), personShortView.isFired(), En_PersonRoleType.HEAD_MANAGER))
                 .collect(Collectors.toList());
     }
 

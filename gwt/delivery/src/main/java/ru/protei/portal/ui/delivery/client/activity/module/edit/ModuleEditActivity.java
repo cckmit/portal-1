@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.ModuleEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -36,6 +37,10 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
 
     @Event
     public void onShow(ModuleEvents.Show event) {
+        if (!hasViewPrivileges()) {
+            fireEvent(new ErrorPageEvents.ShowForbidden(event.parent));
+            return;
+        }
         moduleService.getModule(event.id, new FluentCallback<Module>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
                 .withSuccess(module -> {
@@ -127,6 +132,10 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
 
     private boolean hasEditPrivileges() {
         return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
+    }
+
+    private boolean hasViewPrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW);
     }
 
     @Inject

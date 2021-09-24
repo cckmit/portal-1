@@ -31,7 +31,8 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.ent.Delivery.Columns.*;
+import static ru.protei.portal.core.model.ent.Delivery.Fields.*;
+import static ru.protei.portal.core.model.dto.Project.Fields.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.DELIVERY_KIT_SERIAL_NUMBER_PATTERN;
@@ -421,7 +422,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public Result<Long> getDeliveryStateId(AuthToken token, Long deliveryId) {
-        CaseObject deliveryCaseObject = caseObjectDAO.partialGet(deliveryId, "STATE");
+        CaseObject deliveryCaseObject = caseObjectDAO.partialGet(deliveryId, CaseObject.Columns.STATE);
         if (deliveryCaseObject == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }

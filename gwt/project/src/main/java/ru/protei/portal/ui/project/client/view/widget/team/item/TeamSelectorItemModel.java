@@ -1,6 +1,6 @@
 package ru.protei.portal.ui.project.client.view.widget.team.item;
 
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 
@@ -8,24 +8,24 @@ import java.util.*;
 
 public class TeamSelectorItemModel {
 
-    public En_DevUnitPersonRoleType role;
+    public En_PersonRoleType role;
     public Set<PersonShortView> members;
     public boolean allowEmptyMembers;
     public boolean singleMember;
 
-    public TeamSelectorItemModel(En_DevUnitPersonRoleType role) {
+    public TeamSelectorItemModel(En_PersonRoleType role) {
         this(role, new HashSet<>());
     }
 
-    public TeamSelectorItemModel(En_DevUnitPersonRoleType role, boolean allowEmptyMembers) {
+    public TeamSelectorItemModel(En_PersonRoleType role, boolean allowEmptyMembers) {
         this(role, new HashSet<>(), allowEmptyMembers);
     }
 
-    public TeamSelectorItemModel(En_DevUnitPersonRoleType role, Set<PersonShortView> members) {
+    public TeamSelectorItemModel(En_PersonRoleType role, Set<PersonShortView> members) {
         this(role, members, false);
     }
 
-    public TeamSelectorItemModel(En_DevUnitPersonRoleType role, Set<PersonShortView> members, boolean allowEmptyMembers) {
+    public TeamSelectorItemModel(En_PersonRoleType role, Set<PersonShortView> members, boolean allowEmptyMembers) {
         this.role = role;
         this.members = members;
         this.allowEmptyMembers = allowEmptyMembers;
@@ -58,7 +58,7 @@ public class TeamSelectorItemModel {
         return values;
     }
 
-    private static TeamSelectorItemModel getModelItemWithRole(Collection<TeamSelectorItemModel> model, En_DevUnitPersonRoleType role) {
+    private static TeamSelectorItemModel getModelItemWithRole(Collection<TeamSelectorItemModel> model, En_PersonRoleType role) {
         for (TeamSelectorItemModel item : model) {
             if (Objects.equals(item.role, role)) {
                 return item;

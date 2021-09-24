@@ -3,7 +3,7 @@ package ru.protei.portal.ui.delivery.client.activity.meta;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DeliveryAttribute;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.struct.ContractInfo;
@@ -105,7 +105,7 @@ public class DeliveryCommonMeta implements AbstractDeliveryCommonMeta {
         }
         StringBuilder teamBuilder = new StringBuilder();
         projectInfo.getTeam().stream()
-                .filter(personProjectMemberView -> En_DevUnitPersonRoleType.isDeliveryRole(personProjectMemberView.getRole()))
+                .filter(personProjectMemberView -> En_PersonRoleType.isDeliveryRole(personProjectMemberView.getRole()))
                 .collect(Collectors.groupingBy(PersonProjectMemberView::getRole,
                         Collectors.mapping(PersonProjectMemberView::getDisplayShortName, Collectors.joining(", "))))
                 .forEach((role, team) ->
