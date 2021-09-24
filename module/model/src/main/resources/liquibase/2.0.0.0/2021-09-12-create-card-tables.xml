@@ -257,4 +257,12 @@
             <column name="info" value="Списание"/>
         </insert>
     </changeSet>
+
+    <changeSet id="drop-card-batch-columns" author="butusov">
+        <dropColumn tableName="card_batch" columnName="priority"/>
+        <dropColumn tableName="card_batch" columnName="is_control"/>
+        <dropColumn tableName="card_batch" columnName="order_date"/>
+        <dropColumn tableName="card_batch" columnName="executor_id"/>
+        <dropColumn tableName="card_batch" columnName="comment"/>
+    </changeSet>
 </databaseChangeLog>

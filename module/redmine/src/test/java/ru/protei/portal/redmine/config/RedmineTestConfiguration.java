@@ -192,6 +192,11 @@ public class RedmineTestConfiguration {
     }
 
     @Bean
+    public CardBatchService getCardBatchService() {
+        return new CardBatchServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
     }

@@ -26,11 +26,17 @@ public abstract class CardTypeModel extends BaseSelectorModel<EntityOption> impl
 
     @Override
     protected void requestData( LoadingHandler selector, String searchText ) {
-        cardController.getCardTypeOptionList(new CardTypeQuery(searchText, En_SortField.card_type_name, En_SortDir.ASC),
+        cardController.getCardTypeOptionList(new CardTypeQuery(searchText, En_SortField.card_type_name, En_SortDir.ASC, isDisplay),
                 new FluentCallback<List<EntityOption>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess( result -> updateElements( result, selector ) ));
     }
+
+    public void setDisplay(Boolean isDisplay) {
+        this.isDisplay = isDisplay;
+    }
+
+    Boolean isDisplay;
 
     @Inject
     CardControllerAsync cardController;

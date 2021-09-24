@@ -634,6 +634,7 @@ public class CaseObject extends AuditableObject {
         String WORK_TRIGGER = "work_trigger";
         String INITIATOR_COMPANY = "initiator_company";
         String INITIATOR = "initiator";
+        String IMPORTANCE = "IMPORTANCE";
     }
 
     public static final int NOT_DELETED = 0;

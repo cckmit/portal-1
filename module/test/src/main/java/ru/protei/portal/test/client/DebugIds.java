@@ -1366,4 +1366,15 @@ public class DebugIds {
             String PROJECTS_ITEM_CONTAINER = "youtrack-work-report-dialog-projects-item-container";
         }
     }
+
+    public interface CARD_BATCH {
+        String BACK_BUTTON = "card-batch-back-button";
+        String SAVE_BUTTON = "card-batch-save-button";
+        String CANCEL_BUTTON = "card-batch-cancel-button";
+        String TYPE = "card-batch-type-selector";
+        String NUMBER = "card-batch-number-input";
+        String ARTICLE = "card-batch-article-input";
+        String AMOUNT = "card-batch-amount-input";
+        String PARAMS = "card-batch-params-input";
+    }
 }
