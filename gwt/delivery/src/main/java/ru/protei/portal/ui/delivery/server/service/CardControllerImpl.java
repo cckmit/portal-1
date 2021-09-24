@@ -10,11 +10,11 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.CardService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.CardController;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.List;
 
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
@@ -48,5 +48,17 @@ public class CardControllerImpl implements CardController {
     public List<EntityOption> getCardTypeOptionList(CardTypeQuery query) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         return checkResultAndGetData(cardService.getCardTypeOptionList(token, query));
+    }
+
+    @Override
+    public Card createCard(Card card) throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(cardService.createCard(token, card));
+    }
+
+    @Override
+    public Card updateMeta(Card card) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(cardService.updateMeta(token, card));
     }
 }

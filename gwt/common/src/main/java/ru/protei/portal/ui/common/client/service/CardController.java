@@ -19,4 +19,8 @@ public interface CardController extends RemoteService {
     Card getCard(Long id) throws RequestFailedException;
 
     List<EntityOption> getCardTypeOptionList(CardTypeQuery query) throws RequestFailedException;
+
+    Card createCard(Card card) throws RequestFailedException;;
+
+    Card updateMeta(Card card) throws RequestFailedException;;
 }

@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
@@ -76,7 +77,7 @@ public class Card extends AuditableObject {
     @JdbcJoinedObject(joinPath = {
             @JdbcJoinPath(localColumn = Card.Columns.ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
             @JdbcJoinPath(localColumn = CaseObject.Columns.MANAGER, remoteColumn = "id", table = "person")})
-    private Person manager;
+    private PersonShortView manager;
 
     @JdbcJoinedColumn(localColumn = Card.Columns.ID, remoteColumn = CaseObject.Columns.ID,
             mappedColumn = CaseObject.Columns.INFO, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
@@ -197,11 +198,11 @@ public class Card extends AuditableObject {
         this.state = state;
     }
 
-    public Person getManager() {
+    public PersonShortView getManager() {
         return manager;
     }
 
-    public void setManager(Person manager) {
+    public void setManager(PersonShortView manager) {
         this.manager = manager;
     }
 

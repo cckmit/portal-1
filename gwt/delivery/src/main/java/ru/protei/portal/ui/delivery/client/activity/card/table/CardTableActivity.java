@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CardControllerAsync;
@@ -43,6 +44,8 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         pagerView.setActivity( this );
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
+
+        CREATE_ACTION = lang.buttonCreate();
     }
 
     @Event
@@ -69,10 +72,30 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
 
         fireEvent(new ActionBarEvents.Clear());
 
+        if (policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE)) {
+            fireEvent(new ActionBarEvents.Add( CREATE_ACTION , null, UiConstants.ActionBarIdentity.CARD_CREATE ));
+        }
+
         this.preScroll = event.preScroll;
 
         loadTable();
     }
+
+    @Event
+    public void onCreateClicked(ActionBarEvents.Clicked event) {
+        if (!(UiConstants.ActionBarIdentity.CARD_CREATE.equals(event.identity)) ) {
+            return;
+        }
+
+        view.clearSelection();
+        animation.showDetails();
+
+        fireEvent(new CardEvents.Create(view.getPreviewContainer(), 193111L, () -> {
+            animation.closeDetails();
+            loadTable();
+        }));
+    }
+
 
     @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Card>> asyncCallback) {
@@ -160,4 +183,6 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
     private AppEvents.InitDetails initDetails;
     private Integer scrollTo = 0;
     private Boolean preScroll = false;
+
+    private static String CREATE_ACTION;
 }

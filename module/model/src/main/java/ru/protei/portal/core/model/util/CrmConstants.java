@@ -203,6 +203,7 @@ public class CrmConstants {
         long CANCELED = 33;
         long ACTIVE = 16;
         long TEST_LOCAL = 19;
+        long TESTING = 28;
         long INFO_REQUEST = 31;
         long NX_REQUEST = 35;
         long CUST_REQUEST = 36;

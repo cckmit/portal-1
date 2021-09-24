@@ -12,8 +12,10 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.Card;
+import ru.protei.portal.core.model.ent.CardType;
+import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CardQuery;
 import ru.protei.portal.core.model.query.CardTypeQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -95,7 +97,7 @@ public class CardServiceImpl implements CardService {
             log.warn("create(): card not created, card={}", card);
             throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
-        return null;
+        return getCard(token, cardId);
     }
 
     @Override
@@ -134,9 +136,9 @@ public class CardServiceImpl implements CardService {
         if (card.getTypeId() == null) {
             return false;
         }
-        if (StringUtils.isEmpty(card.getSerialNumber())) {
-            return false;
-        }
+//        if (StringUtils.isEmpty(card.getSerialNumber())) {
+//            return false;
+//        }
         if (card.getStateId() == null) {
             return false;
         }
@@ -165,6 +167,7 @@ public class CardServiceImpl implements CardService {
             caseObject.setModified(modified);
         }
 
+        caseObject.setName(Card.AUDIT_TYPE);
         caseObject.setId(card.getId());
         caseObject.setInfo(card.getNote());
         caseObject.setManagerId(card.getManager().getId());

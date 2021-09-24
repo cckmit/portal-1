@@ -16,4 +16,8 @@ public interface CardControllerAsync {
     void getCard(Long id, AsyncCallback<Card> async);
 
     void getCardTypeOptionList(CardTypeQuery query, AsyncCallback<List<EntityOption>> async);
+
+    void createCard(Card card, AsyncCallback<Card> async);
+
+    void updateMeta(Card card, AsyncCallback<Card> async);
 }

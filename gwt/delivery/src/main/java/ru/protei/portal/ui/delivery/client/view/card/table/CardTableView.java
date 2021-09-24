@@ -69,6 +69,11 @@ public class CardTableView extends Composite implements AbstractCardTableView {
     }
 
     @Override
+    public HasWidgets getPreviewContainer() {
+        return previewContainer;
+    }
+
+    @Override
     public HasWidgets getFilterContainer() {
         return filterContainer;
     }

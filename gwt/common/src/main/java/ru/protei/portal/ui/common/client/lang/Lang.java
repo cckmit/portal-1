@@ -3684,5 +3684,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardNote();
 
+    String cardComment();
+
     String cardManager();
+
+    String cardSelectManager();
 }

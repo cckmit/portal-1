@@ -3,8 +3,8 @@
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
-             xmlns:state='urn:import:ru.protei.portal.ui.delivery.client.widget.card.state'
-             xmlns:cardtype='urn:import:ru.protei.portal.ui.delivery.client.widget.card.selector'>
+             xmlns:state='urn:import:ru.protei.portal.ui.common.client.widget.selector.card.state'
+             xmlns:cardtype='urn:import:ru.protei.portal.ui.common.client.widget.selector.card.type'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="card card-default no-border card-fixed">
@@ -30,7 +30,7 @@
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.cardState}"/></label>
-                    <state:CardStatesOptionList ui:field="states"/>
+                    <state:CardStateOptionSelector ui:field="states"/>
                 </div>
             </div>
         </div>

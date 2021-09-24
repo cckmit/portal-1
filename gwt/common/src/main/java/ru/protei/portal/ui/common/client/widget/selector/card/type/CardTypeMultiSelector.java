@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.widget.card.selector;
+package ru.protei.portal.ui.common.client.widget.selector.card.type;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.CollectionUtils;
