@@ -157,16 +157,25 @@ public class CardBatchServiceImpl implements CardBatchService {
         if (isNew && cardBatch.getId() != null) {
             return false;
         }
-        if (isNumberValid(cardBatch.getNumber())) {
+        if (!isNumberValid(cardBatch.getNumber())) {
             return false;
         }
-        if (isArticleValid(cardBatch.getArticle())) {
+        if (!isArticleValid(cardBatch.getArticle())) {
             return false;
         }
         if (isNew && CrmConstants.State.PRELIMINARY != cardBatch.getStateId()) {
             return false;
         }
+        if (cardBatch.getAmount() != null && cardBatch.getAmount() <= 0) {
+            return false;
+        }
         if (cardBatch.getTypeId() == null) {
+            return false;
+        }
+        if (cardBatch.getDeadline() == null) {
+            return false;
+        }
+        if (cardBatch.getImportance() == null) {
             return false;
         }
         return true;
@@ -201,6 +210,7 @@ public class CardBatchServiceImpl implements CardBatchService {
         caseObject.setName("");
         caseObject.setInfo(cardBatch.getParams());
         caseObject.setStateId(cardBatch.getStateId());
+        caseObject.setDeadline(cardBatch.getDeadline());
 
         return caseObject;
     }

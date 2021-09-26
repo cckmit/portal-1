@@ -19,21 +19,26 @@ import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoView;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaActivity;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaView;
 import ru.protei.portal.ui.delivery.client.activity.delivery.meta.DeliveryCommonMeta;
 
+import java.util.Date;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.ERROR;
+import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.SUCCESS;
 
-public abstract class CardBatchCreateActivity implements Activity, AbstractCardBatchCreateActivity, AbstractCardBatchCommonInfoActivity {
+public abstract class CardBatchCreateActivity implements Activity,
+        AbstractCardBatchCreateActivity, AbstractCardBatchCommonInfoActivity, AbstractCardBatchMetaActivity {
 
     @Inject
     public void onInit() {
         view.setActivity(this);
         commonInfoView.setActivity(this);
-
+        metaView.setActivity(this);
 
 //        DeliveryMetaView metaView = view.getMetaView();
 //        commonMeta.setDeliveryMetaView(metaView);
@@ -56,6 +61,7 @@ public abstract class CardBatchCreateActivity implements Activity, AbstractCardB
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
         view.getCommonInfoContainer().add(commonInfoView);
+        view.getMetaContainer().add(metaView);
 
         prepare();
     }
@@ -91,6 +97,16 @@ public abstract class CardBatchCreateActivity implements Activity, AbstractCardB
                 .withSuccess(success));
     }
 
+    @Override
+    public void onStateChange() {
+
+    }
+
+    @Override
+    public void onDeadlineChanged() {
+
+    }
+
     private void prepare() {
         commonInfoView.type().setValue(null);
         commonInfoView.number().setValue(null);
@@ -98,6 +114,8 @@ public abstract class CardBatchCreateActivity implements Activity, AbstractCardB
         commonInfoView.amount().setValue(null);
         commonInfoView.params().setValue(null);
         commonInfoView.hidePrevCardBatchInfo();
+        metaView.deadline().setValue(null);
+        metaView.stateEnable().setEnabled(false);
         fillStateSelector(CrmConstants.State.PRELIMINARY);
     }
 
@@ -108,7 +126,12 @@ public abstract class CardBatchCreateActivity implements Activity, AbstractCardB
         cardBatch.setArticle(commonInfoView.article().getValue());
         cardBatch.setAmount(commonInfoView.amount().getValue());
         cardBatch.setParams(commonInfoView.params().getValue());
-//        cardBatch.setStateId(view.state().getValue().getId());
+        cardBatch.setStateId(metaView.state().getValue().getId());
+        cardBatch.setDeadline(metaView.deadline().getValue() != null? metaView.deadline().getValue().getTime() : null);
+
+        //TODO remove stub
+        cardBatch.setImportance(1L);
+
         return cardBatch;
     }
 
@@ -129,7 +152,7 @@ public abstract class CardBatchCreateActivity implements Activity, AbstractCardB
             return "Артикул должен быть валиден";
         }
 
-        if (null == commonInfoView.amount().getValue() || commonInfoView.amount().getValue() > 0) {
+        if (null == commonInfoView.amount().getValue() || commonInfoView.amount().getValue() <= 0) {
             return "Количество должно быть больше нуля";
         }
 
@@ -161,6 +184,7 @@ public abstract class CardBatchCreateActivity implements Activity, AbstractCardB
             })
             .withSuccess(id -> {
                 view.saveEnabled().setEnabled(true);
+                fireEvent(new NotifyEvents.Show(lang.cardBatchCreated(), SUCCESS));
                 onSuccess.run();
             }));
     }
@@ -170,8 +194,8 @@ public abstract class CardBatchCreateActivity implements Activity, AbstractCardB
     }
 
     private void fillStateSelector(Long id) {
-//        view.state().setValue(new CaseState(id));
-//        getCaseState(id, caseState -> view.state().setValue(caseState));
+        metaView.state().setValue(new CaseState(id));
+        getCaseState(id, caseState -> metaView.state().setValue(caseState));
     }
 
     Consumer<CardBatch> getLastCardBatchConsumer = new Consumer<CardBatch>() {
@@ -223,7 +247,7 @@ public abstract class CardBatchCreateActivity implements Activity, AbstractCardB
     @Inject
     AbstractCardBatchCommonInfoView commonInfoView;
     @Inject
-    private DeliveryCommonMeta commonMeta;
+    AbstractCardBatchMetaView metaView;
     @Inject
     private CardBatchControllerAsync cardBatchService;
     @Inject
