@@ -1403,7 +1403,8 @@ public class MailNotificationProcessor {
         return stream(new ArrayList<Person>() {{
             addAll(event.getNotifiers());
             add(event.getInitiator());
-        }}).map(this::fetchNotificationEntryFromPerson)
+        }}).map(this::fetchNotificationEntriesFromPerson)
+                .flatMap(Collection::stream)
                 .filter(Objects::nonNull)
                 .distinct()
                 .collect(Collectors.toList());
@@ -1501,6 +1502,18 @@ public class MailNotificationProcessor {
         }
         String locale = person.getLocale() == null ? "ru" : person.getLocale();
         return NotificationEntry.email(email, locale);
+    }
+
+    private Set<NotificationEntry> fetchNotificationEntriesFromPerson(Person person) {
+        if (person == null || person.isFired() || person.isDeleted()) {
+            return null;
+        }
+        String locale = person.getLocale() == null ? "ru" : person.getLocale();
+        return new PlainContactInfoFacade(person.getContactInfo())
+                .emailsStream()
+                .filter(contactItem -> contactItem.isPublicItem() || contactItem.isInternalItem())
+                .map(contactItem -> NotificationEntry.email(contactItem.value(), locale))
+                .collect(Collectors.toSet());
     }
 
     private String getEmployeeRegistrationUrl() {
