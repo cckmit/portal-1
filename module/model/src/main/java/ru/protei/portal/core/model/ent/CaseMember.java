@@ -1,6 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -53,11 +53,11 @@ public class CaseMember implements Serializable{
         this.memberId = memberId;
     }
 
-    public En_DevUnitPersonRoleType getRole() {
-        return En_DevUnitPersonRoleType.forId( roleId );
+    public En_PersonRoleType getRole() {
+        return En_PersonRoleType.forId( roleId );
     }
 
-    public void setRole( En_DevUnitPersonRoleType role ) {
+    public void setRole( En_PersonRoleType role ) {
         this.roleId = role.getId();
     }
 

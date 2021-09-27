@@ -37,15 +37,19 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
     @Event
     public void onShow(KitEvents.Add event) {
 
-        if (!hasEditPrivileges()) {
+        if (!hasCreatePrivileges()) {
+            fireEvent(new NotifyEvents.Show(lang.errAccessDenied(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
         this.deliveryId = event.deliveryId;
+        this.backHandler = event.backHandler;
 
         kitList.clear();
-        kitList.setAllowChangingState(event.stateId != CrmConstants.State.PRELIMINARY);
+        kitList.updateAllowChangingState(false);
         kitList.updateSerialNumbering(true);
+
+        getDeliveryStateId(deliveryId, stateId -> kitList.updateAllowChangingState(stateId != CrmConstants.State.PRELIMINARY));
 
         dialogView.showPopup();
     }
@@ -78,6 +82,12 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
         dialogView.hidePopup();
     }
 
+    private void getDeliveryStateId(Long deliveryId, Consumer<Long> success) {
+        deliveryController.getDeliveryStateId(deliveryId, new FluentCallback<Long>()
+                .withError(defaultErrorHandler)
+                .withSuccess(success));
+    }
+
     private void prepareDialog(AbstractDialogDetailsView dialog) {
         dialog.setActivity(this);
         dialog.addStyleName(XL_MODAL);
@@ -87,8 +97,8 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
         dialog.removeButtonVisibility().setVisible(false);
     }
 
-    private boolean hasEditPrivileges() {
-        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
+    private boolean hasCreatePrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE);
     }
 
     private void create(List<Kit> kits) {
@@ -101,8 +111,10 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
                 .withSuccess(list -> {
                     dialogView.saveButtonEnabled().setEnabled(true);
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new KitEvents.Added(list, deliveryId));
                     dialogView.hidePopup();
+                    if (backHandler != null) {
+                        backHandler.accept(list);
+                    }
                 }));
     }
 
@@ -122,4 +134,5 @@ public abstract class DeliveryKitAddActivity implements Activity, AbstractDelive
     Lang lang;
 
     private Long deliveryId;
+    private Consumer<List<Kit>> backHandler;
 }

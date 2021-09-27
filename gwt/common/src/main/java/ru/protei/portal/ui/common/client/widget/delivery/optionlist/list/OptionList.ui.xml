@@ -3,5 +3,5 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:FlowPanel ui:field="container" tag="ul" styleName="kit-list main-menu"/>
+    <g:FlowPanel ui:field="container" tag="ul" styleName="main-menu"/>
 </ui:UiBinder>

@@ -1,0 +1,23 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="drop-delivery_hw_manager_id_to_person_fk" author="turik">
+        <dropForeignKeyConstraint baseTableName="delivery" constraintName="delivery_hw_manager_id_to_person_fk"/>
+    </changeSet>
+
+    <changeSet id="drop-hw_manager_id-from-delivery" author="turik">
+        <dropColumn tableName="delivery" columnName="hw_manager_id"/>
+    </changeSet>
+
+    <changeSet id="drop-delivery_qc_manager_id_to_person_fk" author="turik">
+        <dropForeignKeyConstraint baseTableName="delivery" constraintName="delivery_qc_manager_id_to_person_fk"/>
+    </changeSet>
+
+    <changeSet id="drop-qc_manager_id-from-delivery" author="turik">
+        <dropColumn tableName="delivery" columnName="qc_manager_id"/>
+    </changeSet>
+
+</databaseChangeLog>

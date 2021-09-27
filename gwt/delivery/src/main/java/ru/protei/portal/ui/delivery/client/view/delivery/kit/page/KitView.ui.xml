@@ -6,16 +6,20 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel>
-        <div class="kit row m-0">
-
-            <nav class="col-xs-12 col-md-2 secondary-sidebar">
-                <kitsmenu:KitMenu ui:field="kitsMenu"/>
-                <kits:KitList ui:field="kits" shortNameEnabled="true"/>
-            </nav>
-
-            <g:HTMLPanel ui:field="modulesContainer" styleName="col-xs-12 col-md-3 p-15 m-0"/>
-            <g:HTMLPanel ui:field="moduleEditContainer" styleName="col-xs-12 col-md-7 p-0 m-0"/>
+    <g:HTMLPanel styleName="full-height">
+        <nav class="secondary-sidebar">
+            <kitsmenu:KitMenu ui:field="kitsMenu"/>
+            <kits:KitList ui:field="kits"/>
+        </nav>
+        <div class="inner-content full-height">
+            <div class="split-view">
+                <g:HTMLPanel ui:field="modulesContainer" styleName="split-list">
+                    <h4 ui:field="kitNotSelectedMessage" class="no-result"><ui:text from="{lang.kitNotSelectedMessage}"/></h4>
+                </g:HTMLPanel>
+                <g:HTMLPanel ui:field="moduleEditContainer" styleName="split-details">
+                    <h2 ui:field="moduleNotSelectedMessage" class="no-result"><ui:text from="{lang.moduleNotSelectedMessage}"/></h2>
+                </g:HTMLPanel>
+            </div>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -1,10 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:module="urn:import:ru.protei.portal.ui.common.client.widget.selector.module"
-             xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.project"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
-             xmlns:contract="urn:import:ru.protei.portal.ui.common.client.widget.selector.contract"
              xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
 >
 
@@ -31,8 +28,7 @@
             <div class="form-group-attached form-group">
                 <div class="form-group form-group-default">
                     <label class="fade"><ui:text from="{lang.deliveryManager}"/></label>
-                    <validablefield:ValidableTextBox ui:field="manager" styleName="form-control"
-                                                     enabled="false" notNull="false"/>
+                    <g:TextBox ui:field="manager" styleName="form-control" enabled="false"/>
                 </div>
                 <person:EmployeeFormSelector ui:field="hwManager" header="{lang.deliveryHwManager}"
                                              hasNullValue="true" defaultValue="{lang.selectIssueManager}"/>
@@ -48,8 +44,7 @@
             <div class="form-group-attached form-group">
                 <div class="form-group form-group-default">
                     <label class="fade"><ui:text from="{lang.deliveryCustomerCompany}"/></label>
-                    <validablefield:ValidableTextBox ui:field="customerCompany" styleName="form-control"
-                                                     enabled="false" notNull="false"/>
+                    <g:TextBox ui:field="customerCompany" styleName="form-control" enabled="false"/>
                 </div>
             </div>
 

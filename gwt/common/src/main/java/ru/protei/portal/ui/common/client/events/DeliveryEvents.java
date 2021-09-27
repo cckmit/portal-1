@@ -11,7 +11,7 @@ import ru.protei.portal.core.model.query.DeliveryQuery;
 
 public class DeliveryEvents {
 
-    @Url( value = "deliveries", primary = true )
+    @Url(value = "deliveries", primary = true)
     public static class Show {
         public Show () {}
         public Show (Boolean preScroll) {
@@ -34,7 +34,7 @@ public class DeliveryEvents {
         public Create() {}
     }
 
-    @Url( value = "delivery")
+    @Url(value = "delivery")
     public static class Edit {
         public Edit() {}
 

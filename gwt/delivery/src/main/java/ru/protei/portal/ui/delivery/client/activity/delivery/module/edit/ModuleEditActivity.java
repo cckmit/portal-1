@@ -16,6 +16,9 @@ import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
+import ru.protei.portal.ui.common.client.events.ModuleEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -98,7 +101,7 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
                     requestedNameDescription = false;
 
                     fireEvent( new NotifyEvents.Show( lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS ));
-                    fireEvent( new ModuleEvents.ChangeModule(changeRequest.getId()) );
+                    fireEvent( new ModuleEvents.Changed(changeRequest.getId()));
                     onNameDescriptionChanged();
                 } ) );
     }
@@ -159,7 +162,7 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
     }
 
     private void showMeta(Module module) {
-        fireEvent(new ModuleEvents.EditModuleMeta(view.getMetaContainer(), module, !hasEditPrivileges()));
+        fireEvent(new ModuleEvents.EditMeta(view.getMetaContainer(), module, !hasEditPrivileges()));
     }
 
     private void attachToContainer(HasWidgets container) {

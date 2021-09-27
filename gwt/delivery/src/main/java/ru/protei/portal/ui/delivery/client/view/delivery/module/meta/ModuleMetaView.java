@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.ent.CaseState;
@@ -18,7 +19,6 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.module.ModuleStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
-import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.delivery.client.activity.delivery.module.meta.AbstractModuleMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.delivery.module.meta.AbstractModuleMetaView;
 
@@ -164,7 +164,7 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
     @UiField( provided = true )
     ModuleStateFormSelector state;
     @UiField
-    ValidableTextBox manager;
+    TextBox manager;
     @Inject
     @UiField(provided = true)
     EmployeeFormSelector hwManager;
@@ -172,7 +172,7 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
     @UiField(provided = true)
     EmployeeFormSelector qcManager;
     @UiField
-    ValidableTextBox customerCompany;
+    TextBox customerCompany;
     @Inject
     @UiField(provided = true)
     SinglePicker buildDate;

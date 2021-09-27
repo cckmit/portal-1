@@ -16,7 +16,6 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectTSVReportInfo;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
@@ -97,17 +96,17 @@ public class ProjectTechnicalSupportValidityReportTest extends BaseServiceTest {
         personDAO.persist(personNo);
 
         PersonProjectMemberView headManagerLess7 =
-                new PersonProjectMemberView(personLess7.getDisplayShortName(), personLess7.getId(), personLess7.isFired(), En_DevUnitPersonRoleType.HEAD_MANAGER);
+                new PersonProjectMemberView(personLess7.getDisplayShortName(), personLess7.getId(), personLess7.isFired(), En_PersonRoleType.HEAD_MANAGER);
         PersonProjectMemberView headManager =
-                new PersonProjectMemberView(person.getDisplayShortName(), person.getId(), person.isFired(), En_DevUnitPersonRoleType.HEAD_MANAGER);
+                new PersonProjectMemberView(person.getDisplayShortName(), person.getId(), person.isFired(), En_PersonRoleType.HEAD_MANAGER);
         PersonProjectMemberView headManagerBetween7And14 =
-                new PersonProjectMemberView(personBetween7and14.getDisplayShortName(), personBetween7and14.getId(), personBetween7and14.isFired(), En_DevUnitPersonRoleType.HEAD_MANAGER);
+                new PersonProjectMemberView(personBetween7and14.getDisplayShortName(), personBetween7and14.getId(), personBetween7and14.isFired(), En_PersonRoleType.HEAD_MANAGER);
         PersonProjectMemberView headManagerBetween14And30 =
-                new PersonProjectMemberView(personBetween14And30.getDisplayShortName(), personBetween14And30.getId(), personBetween14And30.isFired(), En_DevUnitPersonRoleType.HEAD_MANAGER);
+                new PersonProjectMemberView(personBetween14And30.getDisplayShortName(), personBetween14And30.getId(), personBetween14And30.isFired(), En_PersonRoleType.HEAD_MANAGER);
         PersonProjectMemberView headManagerMore30 =
-                new PersonProjectMemberView(personMore30.getDisplayShortName(), personMore30.getId(), personMore30.isFired(), En_DevUnitPersonRoleType.HEAD_MANAGER);
+                new PersonProjectMemberView(personMore30.getDisplayShortName(), personMore30.getId(), personMore30.isFired(), En_PersonRoleType.HEAD_MANAGER);
         PersonProjectMemberView headManagerNo =
-                new PersonProjectMemberView(personNo.getDisplayShortName(), personNo.getId(), personNo.isFired(), En_DevUnitPersonRoleType.HEAD_MANAGER);
+                new PersonProjectMemberView(personNo.getDisplayShortName(), personNo.getId(), personNo.isFired(), En_PersonRoleType.HEAD_MANAGER);
 
         Project projectLess7 = new Project();
 

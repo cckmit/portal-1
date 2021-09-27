@@ -11,7 +11,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
@@ -36,12 +36,12 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
     }
 
     @Override
-    public void setAvailableRoles(List<En_DevUnitPersonRoleType> availableRoles) {
+    public void setAvailableRoles(List<En_PersonRoleType> availableRoles) {
         this.availableRoles = availableRoles;
         if (availableRoles == null || availableRoles.size() == 0) {
             return;
         }
-        availableRoles.sort(Comparator.comparingInt(En_DevUnitPersonRoleType::getId));
+        availableRoles.sort(Comparator.comparingInt(En_PersonRoleType::getId));
         role.fillOptions(availableRoles);
     }
 
@@ -58,7 +58,7 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
     }
 
     @Override
-    public List<En_DevUnitPersonRoleType> getAvailableRoles() {
+    public List<En_PersonRoleType> getAvailableRoles() {
         return availableRoles;
     }
 
@@ -78,14 +78,14 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
     }
 
     @Override
-    public HasValue<En_DevUnitPersonRoleType> role() {
+    public HasValue<En_PersonRoleType> role() {
         return role;
     }
 
     @UiHandler("role")
-    public void onRoleChanged(ValueChangeEvent<En_DevUnitPersonRoleType> event) {
-        En_DevUnitPersonRoleType roleValue = event.getValue();
-        En_DevUnitPersonRoleType previousRoleValue = model.role;
+    public void onRoleChanged(ValueChangeEvent<En_PersonRoleType> event) {
+        En_PersonRoleType roleValue = event.getValue();
+        En_PersonRoleType previousRoleValue = model.role;
         if (roleValue == null) {
             return;
         }
@@ -109,7 +109,7 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
         }
     }
 
-    private void fireRoleChanged(En_DevUnitPersonRoleType previous, En_DevUnitPersonRoleType actual) {
+    private void fireRoleChanged(En_PersonRoleType previous, En_PersonRoleType actual) {
         if (teamSelector != null) {
             teamSelector.onRoleChanged(model, previous, actual);
         }
@@ -139,7 +139,7 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
 
     private TeamSelectorItemModel model = null;
     private AbstractTeamSelector teamSelector = null;
-    private List<En_DevUnitPersonRoleType> availableRoles = null;
+    private List<En_PersonRoleType> availableRoles = null;
 
     interface TeamSelectorItemUiBinder extends UiBinder<HTMLPanel, TeamSelectorItem> {}
     private static TeamSelectorItemUiBinder ourUiBinder = GWT.create(TeamSelectorItemUiBinder.class);
