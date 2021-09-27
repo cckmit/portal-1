@@ -13,12 +13,14 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.cardbatch.state.CardBatchStateFormSelector;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaView;
+import ru.protei.portal.ui.delivery.client.widget.cardbatch.priority.PrioritySelector;
 
 import java.util.Date;
 
@@ -43,6 +45,11 @@ public class CardBatchMetaView extends Composite implements AbstractCardBatchMet
     @Override
     public HasEnabled stateEnable() {
         return state;
+    }
+
+    @Override
+    public HasValue<ImportanceLevel> priority() {
+        return priority;
     }
 
     @Override
@@ -75,6 +82,7 @@ public class CardBatchMetaView extends Composite implements AbstractCardBatchMet
             return;
         }
         state.setEnsureDebugId(DebugIds.CARD_BATCH.STATE_SELECTOR);
+        priority.setEnsureDebugId(DebugIds.CARD_BATCH.PRIORITY_SELECTOR);
         deadline.ensureDebugId(DebugIds.CARD_BATCH.DEADLINE_DATE);
     }
 
@@ -83,6 +91,9 @@ public class CardBatchMetaView extends Composite implements AbstractCardBatchMet
     @Inject
     @UiField( provided = true )
     CardBatchStateFormSelector state;
+    @Inject
+    @UiField( provided = true )
+    PrioritySelector priority;
     @Inject
     @UiField(provided = true)
     SinglePicker deadline;

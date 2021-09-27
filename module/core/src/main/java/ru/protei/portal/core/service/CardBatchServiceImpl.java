@@ -175,7 +175,7 @@ public class CardBatchServiceImpl implements CardBatchService {
         if (cardBatch.getDeadline() == null) {
             return false;
         }
-        if (cardBatch.getImportance() == null) {
+        if (cardBatch.getPriority() == null) {
             return false;
         }
         return true;

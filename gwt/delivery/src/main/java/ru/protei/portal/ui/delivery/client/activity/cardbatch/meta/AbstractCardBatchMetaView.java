@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.ImportanceLevel;
 
 import java.util.Date;
 
@@ -14,6 +15,8 @@ public interface AbstractCardBatchMetaView extends IsWidget {
     HasValue<CaseState> state();
 
     HasEnabled stateEnable();
+
+    HasValue<ImportanceLevel> priority();
 
     HasValue<Date> deadline();
 

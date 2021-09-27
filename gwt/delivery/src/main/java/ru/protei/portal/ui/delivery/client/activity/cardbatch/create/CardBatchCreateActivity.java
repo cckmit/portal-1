@@ -9,25 +9,26 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CardBatch;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CardBatchControllerAsync;
 import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
+import ru.protei.portal.ui.common.client.service.ImportanceLevelControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoView;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaView;
-import ru.protei.portal.ui.delivery.client.activity.delivery.meta.DeliveryCommonMeta;
 
-import java.util.Date;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
+import static ru.protei.portal.core.model.util.CrmConstants.ImportanceLevel.BASIC;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.ERROR;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.SUCCESS;
 
@@ -39,10 +40,6 @@ public abstract class CardBatchCreateActivity implements Activity,
         view.setActivity(this);
         commonInfoView.setActivity(this);
         metaView.setActivity(this);
-
-//        DeliveryMetaView metaView = view.getMetaView();
-//        commonMeta.setDeliveryMetaView(metaView);
-//        view.getMetaView().setActivity(commonMeta);
     }
 
     @Event
@@ -116,6 +113,7 @@ public abstract class CardBatchCreateActivity implements Activity,
         commonInfoView.hidePrevCardBatchInfo();
         metaView.deadline().setValue(null);
         metaView.stateEnable().setEnabled(false);
+        fillPrioritySelector(BASIC);
         fillStateSelector(CrmConstants.State.PRELIMINARY);
     }
 
@@ -127,10 +125,8 @@ public abstract class CardBatchCreateActivity implements Activity,
         cardBatch.setAmount(commonInfoView.amount().getValue());
         cardBatch.setParams(commonInfoView.params().getValue());
         cardBatch.setStateId(metaView.state().getValue().getId());
+        cardBatch.setPriority(metaView.priority().getValue().getId());
         cardBatch.setDeadline(metaView.deadline().getValue() != null? metaView.deadline().getValue().getTime() : null);
-
-        //TODO remove stub
-        cardBatch.setImportance(1L);
 
         return cardBatch;
     }
@@ -198,6 +194,12 @@ public abstract class CardBatchCreateActivity implements Activity,
         getCaseState(id, caseState -> metaView.state().setValue(caseState));
     }
 
+    private void fillPrioritySelector(Integer id) {
+        importanceService.getImportanceLevel( id, new FluentCallback<ImportanceLevel>()
+                        .withError(defaultErrorHandler)
+                        .withSuccess(level -> metaView.priority().setValue(level)));
+    }
+
     Consumer<CardBatch> getLastCardBatchConsumer = new Consumer<CardBatch>() {
         @Override
         public void accept(CardBatch lastNumberCardBatch) {
@@ -254,6 +256,8 @@ public abstract class CardBatchCreateActivity implements Activity,
     private CaseStateControllerAsync caseStateService;
     @Inject
     private PolicyService policyService;
+    @Inject
+    ImportanceLevelControllerAsync importanceService;
 
     @Inject
     private DefaultErrorHandler defaultErrorHandler;

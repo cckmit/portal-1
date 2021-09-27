@@ -1377,7 +1377,7 @@ public class DebugIds {
         String AMOUNT = "card-batch-amount-input";
         String PARAMS = "card-batch-params-input";
         String STATE_SELECTOR = "card-batch-state-selector";
-        String PRIORITY = "card-batch-priority";
+        String PRIORITY_SELECTOR = "card-batch-priority-selector";
         String DEADLINE_DATE = "card-batch-deadline-date-container";
         String CONTRACTOR_SELECTOR = "card-batch-contractor-selector";
     }

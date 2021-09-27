@@ -3,7 +3,6 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Objects;
 
 @JdbcEntity(table = "card_batch")
@@ -51,7 +50,7 @@ public class CardBatch implements Serializable {
 
     @JdbcJoinedColumn(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID, mappedColumn = CaseObject.Columns.IMPORTANCE,
             table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
-    private Long importance;
+    private Integer priority;
 
     public CardBatch() {
     }
@@ -136,12 +135,12 @@ public class CardBatch implements Serializable {
         this.deadline = deadline;
     }
 
-    public Long getImportance() {
-        return importance;
+    public Integer getPriority() {
+        return priority;
     }
 
-    public void setImportance(Long importance) {
-        this.importance = importance;
+    public void setPriority(Integer priority) {
+        this.priority = priority;
     }
 
     @Override
@@ -170,7 +169,7 @@ public class CardBatch implements Serializable {
                 ", state=" + state +
                 ", info='" + params + '\'' +
                 ", deadline=" + deadline +
-                ", importance=" + importance +
+                ", priority=" + priority +
                 '}';
     }
 
