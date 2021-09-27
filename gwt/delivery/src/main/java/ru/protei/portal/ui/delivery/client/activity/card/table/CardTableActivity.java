@@ -38,14 +38,14 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
 
     @PostConstruct
     public void onInit() {
+        CREATE_ACTION = lang.buttonCreate();
+
         view.setActivity( this );
         view.setAnimation( animation );
 
         pagerView.setActivity( this );
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
-
-        CREATE_ACTION = lang.buttonCreate();
     }
 
     @Event
@@ -61,7 +61,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
     @Event(Type.FILL_CONTENT)
     public void onShow( CardEvents.Show event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW)) {
-            fireEvent(new ErrorPageEvents.ShowForbidden());
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
 
@@ -96,6 +96,22 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         }));
     }
 
+    @Event
+    public void onUpdate(CardEvents.Change event) {
+        if (view.asWidget().isAttached()) {
+            loadTable();
+        }
+    }
+
+    @Override
+    public void onItemClicked(Card value) {
+        if (value == null) {
+            animation.closeDetails();
+        } else {
+            fireEvent( new CardEvents.Edit( value, view.getPreviewContainer(), () -> animation.closeDetails()) );
+            animation.showDetails();
+        }
+    }
 
     @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Card>> asyncCallback) {

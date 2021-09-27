@@ -31,25 +31,24 @@ public class CardEvents {
     }
 
     public static class Edit {
-        public Edit() {}
-
-        public Edit(Long id) {
-            this.id = id;
-        }
-
-        public Long id;
-    }
-
-    public static class EditMeta {
-        public EditMeta(HasWidgets parent, Card card, boolean isReadOnly) {
-            this.parent = parent;
+        public Edit(Card card, HasWidgets parent, Runnable closeHandle) {
             this.card = card;
-            this.isReadOnly = isReadOnly;
+            this.parent = parent;
+            this.closeHandle = closeHandle;
         }
 
         public Card card;
         public HasWidgets parent;
-        public boolean isReadOnly;
+        public Runnable closeHandle;
+    }
+
+    public static class EditMeta {
+        public EditMeta(Card card, HasWidgets parent) {
+            this.card = card;
+            this.parent = parent;
+        }
+        public Card card;
+        public HasWidgets parent;
     }
 
     public static class Change {

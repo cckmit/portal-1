@@ -4,8 +4,11 @@ import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.delivery.client.activity.card.create.AbstractCardCreateView;
 import ru.protei.portal.ui.delivery.client.activity.card.create.CardCreateActivity;
+import ru.protei.portal.ui.delivery.client.activity.card.edit.AbstractCardEditView;
+import ru.protei.portal.ui.delivery.client.activity.card.edit.CardEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.card.filter.AbstractCardFilterView;
 import ru.protei.portal.ui.delivery.client.activity.card.meta.AbstractCardMetaView;
+import ru.protei.portal.ui.delivery.client.activity.card.meta.CardMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.card.table.AbstractCardTableView;
 import ru.protei.portal.ui.delivery.client.activity.card.table.CardTableActivity;
 import ru.protei.portal.ui.delivery.client.activity.delivery.create.AbstractDeliveryCreateView;
@@ -33,6 +36,7 @@ import ru.protei.portal.ui.delivery.client.page.CardPage;
 import ru.protei.portal.ui.delivery.client.page.DeliveryPage;
 import ru.protei.portal.ui.delivery.client.page.StoreAndDeliveryPage;
 import ru.protei.portal.ui.delivery.client.view.card.create.CardCreateView;
+import ru.protei.portal.ui.delivery.client.view.card.edit.CardEditView;
 import ru.protei.portal.ui.delivery.client.view.card.filter.CardFilterView;
 import ru.protei.portal.ui.delivery.client.view.card.meta.CardMetaView;
 import ru.protei.portal.ui.delivery.client.view.card.table.CardTableView;
@@ -89,6 +93,11 @@ public class DeliveryClientModule extends AbstractGinModule {
 
         bind(CardCreateActivity.class).asEagerSingleton();
         bind(AbstractCardCreateView.class).to(CardCreateView.class).in(Singleton.class);
+
+        bind(CardEditActivity.class).asEagerSingleton();
+        bind(AbstractCardEditView.class).to(CardEditView.class).in(Singleton.class);
+
+        bind(CardMetaActivity.class).asEagerSingleton();
         bind(AbstractCardMetaView.class).to(CardMetaView.class).in(Singleton.class);
     }
 }

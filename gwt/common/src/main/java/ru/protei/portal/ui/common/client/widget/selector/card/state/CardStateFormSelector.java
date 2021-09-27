@@ -2,7 +2,7 @@ package ru.protei.portal.ui.common.client.widget.selector.card.state;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.ui.common.client.lang.DeliveryStateLang;
+import ru.protei.portal.ui.common.client.lang.CardStateLang;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
@@ -33,7 +33,7 @@ public class CardStateFormSelector extends FormPopupSingleSelector<CaseState> {
     }
 
     public String getStateName(CaseState state) {
-        return deliveryStateLang.getStateName(state);
+        return stateLang.getStateName(state);
     }
 
     public void setDefaultValue(String value) {
@@ -41,7 +41,7 @@ public class CardStateFormSelector extends FormPopupSingleSelector<CaseState> {
     }
 
     @Inject
-    DeliveryStateLang deliveryStateLang;
+    CardStateLang stateLang;
 
     private String defaultValue;
 }

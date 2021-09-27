@@ -866,7 +866,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String commentSendMessage();
 
-    String commentAddMessagePlaceholder();
+    String markupPlaceholder();
 
     String issueCommentChangeStatusTo();
 
@@ -3689,4 +3689,6 @@ public interface Lang extends Messages, ContactItemLang {
     String cardManager();
 
     String cardSelectManager();
+
+    String editNoteAndComment();
 }

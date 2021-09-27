@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.lang.CardStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -19,6 +20,9 @@ import ru.protei.portal.ui.delivery.client.view.card.table.column.InfoColumn;
 import ru.protei.portal.ui.delivery.client.view.card.table.column.ManagerColumn;
 import ru.protei.portal.ui.delivery.client.view.card.table.column.NumberColumn;
 import ru.protei.portal.ui.delivery.client.view.card.table.column.TestDateColumn;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class CardTableView extends Composite implements AbstractCardTableView {
@@ -32,6 +36,12 @@ public class CardTableView extends Composite implements AbstractCardTableView {
     @Override
     public void setActivity(AbstractCardTableActivity activity) {
         this.activity = activity;
+
+        columns.forEach(clickColumn -> {
+            clickColumn.setHandler( activity );
+            clickColumn.setColumnProvider( columnProvider );
+        });
+
         table.setPagerListener(activity);
         table.setLoadHandler(activity);
     }
@@ -39,7 +49,7 @@ public class CardTableView extends Composite implements AbstractCardTableView {
     @Override
     public void setAnimation(TableAnimation animation) {
         animation.setContainers(tableContainer, previewContainer, filterContainer);
-        animation.setStyles("col-md-12", "col-md-9", "col-md-3", "col-md-3", "col-md-9");
+        animation.setStyles("col-md-12", "col-md-9", "col-md-3", "col-md-6", "col-md-6");
     }
 
     @Override
@@ -110,6 +120,11 @@ public class CardTableView extends Composite implements AbstractCardTableView {
         ManagerColumn contact = new ManagerColumn(lang);
         table.addColumn(contact.header, contact.values);
         contact.setColumnProvider(columnProvider);
+
+        columns.add(number);
+        columns.add(info);
+        columns.add(manager);
+        columns.add(contact);
     }
 
     @UiField
@@ -128,7 +143,9 @@ public class CardTableView extends Composite implements AbstractCardTableView {
     @Inject
     CardStateLang cardStateLang;
 
-    private ClickColumnProvider<Card> columnProvider = new ClickColumnProvider<>();
+    private final List<ClickColumn<Card>> columns = new ArrayList<>();
+
+    private final ClickColumnProvider<Card> columnProvider = new ClickColumnProvider<>();
     private AbstractCardTableActivity activity;
 
     private static TableViewUiBinder ourUiBinder = GWT.create(TableViewUiBinder.class);

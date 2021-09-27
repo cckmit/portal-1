@@ -8,13 +8,13 @@
 
     <g:HTMLPanel>
         <g:HTMLPanel ui:field="nameContainer" styleName="form-group form-group-default input-group required">
-                <label class="fade"><ui:text from="{lang.deliveryName}"/></label>
-                <text:ValidableTextBox ui:field="name" styleName="form-control" notNull="false"/>
+            <label class="fade"><ui:text from="{lang.deliveryName}"/></label>
+            <text:ValidableTextBox ui:field="name" styleName="form-control" notNull="false"/>
         </g:HTMLPanel>
 
         <g:HTMLPanel styleName="form-group form-group-default col-md-12">
-                <label class="fade"><ui:text from="{lang.deliveryDescription}"/></label>
-                <markdown:MarkdownAreaWithPreview ui:field="description" minRows="10" maxRows="20"/>
+            <label class="fade"><ui:text from="{lang.deliveryDescription}"/></label>
+            <markdown:MarkdownAreaWithPreview ui:field="description" minRows="10" maxRows="20"/>
         </g:HTMLPanel>
         <g:HTMLPanel ui:field="buttonContainer" styleName="form-group m-b-30"/>
     </g:HTMLPanel>

@@ -39,7 +39,6 @@ import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
-import static ru.protei.portal.ui.common.client.common.DateFormatter.formatDateTime;
 import static ru.protei.portal.ui.common.client.util.AttachmentUtils.getRemoveErrorHandler;
 import static ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils.getSortedCommentOrHistoryList;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
@@ -290,7 +289,7 @@ public abstract class CommentAndHistoryListActivity
         view.setNewCommentDisabled(!isNewCommentEnabled);
 
         view.setCommentPlaceholder(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) ?
-                lang.commentAddMessageMentionPlaceholder() : lang.commentAddMessagePlaceholder());
+                lang.commentAddMessageMentionPlaceholder() : lang.markupPlaceholder());
 
         fireEvent(new CaseCommentItemEvents.Clear());
         fireEvent(new CaseCommentItemEvents.FillComments(comments));
@@ -306,7 +305,7 @@ public abstract class CommentAndHistoryListActivity
         view.setNewCommentDisabled(!isNewCommentEnabled);
 
         view.setCommentPlaceholder(policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) ?
-                lang.commentAddMessageMentionPlaceholder() : lang.commentAddMessagePlaceholder());
+                lang.commentAddMessageMentionPlaceholder() : lang.markupPlaceholder());
 
         List<CommentOrHistory> commentOrHistoryList
                 = getSortedCommentOrHistoryList(commentsAndHistories.getCommentOrHistoryList());

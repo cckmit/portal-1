@@ -3,7 +3,6 @@ package ru.protei.portal.ui.delivery.client.activity.card.meta;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
-import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.core.model.ent.CaseState;
@@ -25,17 +24,6 @@ public abstract class CardMetaActivity implements Activity, AbstractCardMetaActi
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-    }
-
-    @Event
-    public void onShow(CardEvents.EditMeta event) {
-        event.parent.clear();
-        event.parent.add(view.asWidget());
-
-        card = event.card;
-        readOnly = event.isReadOnly;    // ?
-
-        fillView( event.card, false);
     }
 
     @Override
@@ -136,6 +124,4 @@ public abstract class CardMetaActivity implements Activity, AbstractCardMetaActi
 
     @ContextAware
     Card card;
-
-    private boolean readOnly;
 }
