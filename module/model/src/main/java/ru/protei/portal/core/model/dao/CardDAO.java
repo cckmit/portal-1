@@ -4,9 +4,13 @@ import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.core.model.query.CardQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
-import ru.protei.winter.core.utils.beans.SearchResult;
+
+import java.util.List;
+import java.util.Map;
 
 public interface CardDAO extends PortalBaseDAO<Card> {
     @SqlConditionBuilder
     SqlCondition createSqlCondition(CardQuery query);
+
+    Map<Long, Long> countByBatchIds(List<Long> batchIds);
 }

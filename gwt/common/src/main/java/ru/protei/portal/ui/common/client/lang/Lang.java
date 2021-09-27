@@ -3727,4 +3727,26 @@ public interface Lang extends Messages, ContactItemLang {
     String cardBatchStateMounting();
 
     String cardBatchStateMounted();
+
+    String cardBatchColumnType();
+
+    String cardBatchColumnArticle();
+
+    String cardBatchColumnBatchNumber();
+
+    String cardBatchColumnState();
+
+    String cardBatchColumnImportance();
+
+    String cardBatchColumnAmount();
+
+    String cardBatchColumnAmountOrdered();
+
+    String cardBatchColumnAmountManufactured();
+
+    String cardBatchColumnAmountFree();
+
+    String cardBatchColumnDeadline();
+
+    String cardBatchColumnExecutors();
 }

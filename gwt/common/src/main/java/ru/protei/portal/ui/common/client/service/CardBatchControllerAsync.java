@@ -2,6 +2,8 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.CardBatch;
+import ru.protei.portal.core.model.query.CardBatchQuery;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 public interface CardBatchControllerAsync {
 
@@ -10,4 +12,6 @@ public interface CardBatchControllerAsync {
     void getLastCardBatch(Long typeId, AsyncCallback<CardBatch> async);
 
     void updateMeta(CardBatch meta, AsyncCallback<CardBatch> async);
+
+    void getCardBatchesList(CardBatchQuery query, AsyncCallback<SearchResult<CardBatch>> async);
 }

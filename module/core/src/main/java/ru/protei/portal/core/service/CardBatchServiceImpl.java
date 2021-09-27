@@ -14,11 +14,13 @@ import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.CardBatchQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.Collections;
-import java.util.Date;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -30,7 +32,7 @@ import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_ART
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_NUMBER_PATTERN;
 
 /**
- * Реализация сервиса управления поставками
+ * Реализация сервиса управления Партиями плат
  */
 public class CardBatchServiceImpl implements CardBatchService {
 
@@ -46,6 +48,8 @@ public class CardBatchServiceImpl implements CardBatchService {
     CaseNotifierDAO caseNotifierDAO;
     @Autowired
     CardBatchDAO cardBatchDAO;
+    @Autowired
+    CardDAO cardDAO;
     @Autowired
     HistoryService historyService;
     @Autowired
@@ -145,6 +149,26 @@ public class CardBatchServiceImpl implements CardBatchService {
         CardBatch cardBatch = cardBatchDAO.getLastCardBatch(typeId);
         log.debug("getLastCardBatch(): typeId = {}, result = {}", typeId, cardBatch);
         return ok(cardBatch);
+    }
+
+    @Override
+    public Result<SearchResult<CardBatch>> getCardBatches(AuthToken token, CardBatchQuery query) {
+        SearchResult<CardBatch> sr = cardBatchDAO.getSearchResultByQuery(query);
+
+        if (CollectionUtils.isEmpty(sr.getResults())) {
+            return ok();
+        }
+
+        Map<Long, Long> map = cardDAO.countByBatchIds(sr.getResults().stream()
+                                     .map(CardBatch::getId)
+                                     .collect(Collectors.toList()));
+
+        sr.getResults().forEach(cardBatch -> {
+            Long count = map.getOrDefault(cardBatch.getId(), 0L);
+            cardBatch.setManufacturedAmount(count);
+        });
+
+        return ok(sr);
     }
 
 

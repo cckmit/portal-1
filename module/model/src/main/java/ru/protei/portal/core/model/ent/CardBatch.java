@@ -31,6 +31,10 @@ public class CardBatch implements Serializable {
     @JdbcColumn(name = "amount")
     private Integer amount;
 
+    private Long manufacturedAmount;
+
+    private Long freeAmount;
+
     @JdbcJoinedColumn(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID, mappedColumn = CaseObject.Columns.STATE,
             table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long stateId;
@@ -102,6 +106,22 @@ public class CardBatch implements Serializable {
 
     public void setAmount(Integer amount) {
         this.amount = amount;
+    }
+
+    public Long getManufacturedAmount() {
+        return manufacturedAmount;
+    }
+
+    public void setManufacturedAmount(Long manufacturedAmount) {
+        this.manufacturedAmount = manufacturedAmount;
+    }
+
+    public Long getFreeAmount() {
+        return freeAmount;
+    }
+
+    public void setFreeAmount(Long freeAmount) {
+        this.freeAmount = freeAmount;
     }
 
     public Long getStateId() {

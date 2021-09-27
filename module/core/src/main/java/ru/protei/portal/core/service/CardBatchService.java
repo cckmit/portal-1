@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CardBatch;
+import ru.protei.portal.core.model.query.CardBatchQuery;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 public interface CardBatchService {
 
@@ -19,4 +21,7 @@ public interface CardBatchService {
     Result<CardBatch> updateMeta(AuthToken token, CardBatch meta);
 
     Result<CardBatch> getLastCardBatch(AuthToken token, Long typeId);
+
+    @Privileged({ En_Privilege.DELIVERY_VIEW })
+    Result<SearchResult<CardBatch>> getCardBatches(AuthToken token, CardBatchQuery query);
 }
