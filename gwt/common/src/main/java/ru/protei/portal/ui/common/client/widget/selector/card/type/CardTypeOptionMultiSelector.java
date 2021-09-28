@@ -6,10 +6,10 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
 
-public class CardTypeMultiSelector extends InputPopupMultiSelector<EntityOption>{
+public class CardTypeOptionMultiSelector extends InputPopupMultiSelector<EntityOption>{
 
     @Inject
-    public void init(CardTypeModel model, Lang lang) {
+    public void init(CardTypeOptionModel model, Lang lang) {
         setAsyncModel(model);
         setAddName(lang.buttonAdd());
         setClearName( lang.buttonClear() );

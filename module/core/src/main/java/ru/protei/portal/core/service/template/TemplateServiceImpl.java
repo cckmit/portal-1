@@ -78,7 +78,7 @@ public class TemplateServiceImpl implements TemplateService {
             DiffCollectionResult<LinkData> mergeLinks, boolean isProteiRecipients, String urlTemplate, Collection<String> recipients,
             EnumLangUtil enumLangUtil, String issueCommentHelpUrl) {
         CaseObject newState = event.getCaseObject();
-        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(newState);
+        En_TextMarkup textMarkup = MarkupUtils.recognizeTextMarkup(newState);
 
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.putAll(makeTemplateModelUtils(enumLangUtil));

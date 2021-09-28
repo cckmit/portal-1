@@ -46,8 +46,8 @@ public class Card extends AuditableObject {
     @JdbcColumn(name = "type_id")
     private Long typeId;
 
-    @JdbcJoinedColumn(localColumn = Card.Columns.TYPE_ID, remoteColumn = "id", mappedColumn = "name", table = "card_type")
-    private String typeName;
+    @JdbcJoinedObject(localColumn = Card.Columns.TYPE_ID, remoteColumn = "id", table = "card_type")
+    private CardType cardType;
 
     @JdbcColumn(name = "serial_number")
     private String serialNumber;
@@ -134,12 +134,12 @@ public class Card extends AuditableObject {
         this.typeId = typeId;
     }
 
-    public String getTypeName() {
-        return typeName;
+    public CardType getCardType() {
+        return cardType;
     }
 
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
+    public void setCardType(CardType cardType) {
+        this.cardType = cardType;
     }
 
     public String getSerialNumber() {
@@ -241,7 +241,7 @@ public class Card extends AuditableObject {
                 ", creator=" + creator +
                 ", modified=" + modified +
                 ", typeId=" + typeId +
-                ", typeName='" + typeName + '\'' +
+                ", cardType='" + cardType + '\'' +
                 ", serialNumber='" + serialNumber + '\'' +
                 ", cardBatchId=" + cardBatchId +
                 ", article='" + article + '\'' +

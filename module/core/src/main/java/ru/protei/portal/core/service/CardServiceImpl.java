@@ -76,6 +76,17 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
+    public Result<List<CardType>> getCardTypeList(AuthToken token) {
+        List<CardType> result = cardTypeDAO.getAll();
+
+        if (result == null) {
+            return error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        return ok(result);
+    }
+
+    @Override
     @Transactional
     public Result<Card> createCard(AuthToken token, Card card) {
         if (card == null) {

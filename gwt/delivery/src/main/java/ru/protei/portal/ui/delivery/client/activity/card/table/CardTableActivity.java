@@ -90,7 +90,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         view.clearSelection();
         animation.showDetails();
 
-        fireEvent(new CardEvents.Create(view.getPreviewContainer(), 193111L, () -> {
+        fireEvent(new CardEvents.Create(view.getPreviewContainer(), 198552L, () -> {
             animation.closeDetails();
             loadTable();
         }));
@@ -99,7 +99,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
     @Event
     public void onUpdate(CardEvents.Change event) {
         if (view.asWidget().isAttached()) {
-            loadTable();
+            view.updateRow(event.card);
         }
     }
 

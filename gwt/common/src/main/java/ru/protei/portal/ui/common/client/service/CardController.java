@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.Card;
+import ru.protei.portal.core.model.ent.CardType;
 import ru.protei.portal.core.model.query.CardQuery;
 import ru.protei.portal.core.model.query.CardTypeQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -19,6 +20,8 @@ public interface CardController extends RemoteService {
     Card getCard(Long id) throws RequestFailedException;
 
     List<EntityOption> getCardTypeOptionList(CardTypeQuery query) throws RequestFailedException;
+
+    List<CardType> getCardTypeList() throws RequestFailedException;
 
     Card createCard(Card card) throws RequestFailedException;;
 

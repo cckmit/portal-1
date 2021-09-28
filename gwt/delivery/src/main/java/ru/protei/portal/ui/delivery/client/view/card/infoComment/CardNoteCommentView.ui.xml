@@ -4,7 +4,9 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
     <g:HTMLPanel styleName="no-margin">
+        <h5 class="no-margin"><g:Label text="{lang.cardNote}" styleName="semi-bold large-text"/></h5>
         <div ui:field="noteRO" class="form-group markdown p-t-15"/>
+        <h5 class="no-margin"><g:Label text="{lang.cardComment}" styleName="semi-bold large-text"/></h5>
         <div ui:field="commentRO" class="form-group markdown p-t-15"/>
     </g:HTMLPanel>
 </ui:UiBinder>

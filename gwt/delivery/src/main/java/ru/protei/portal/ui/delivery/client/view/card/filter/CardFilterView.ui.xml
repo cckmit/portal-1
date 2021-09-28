@@ -16,9 +16,9 @@
                                               header="{lang.cardManager}"
                                               addStyleNames="form-group col-md-12"/>
 
-                <cardtype:CardTypeMultiSelector ui:field="types"
-                                                header="{lang.cardType}"
-                                                addStyleNames="form-group col-md-12" showAll="true"/>
+                <cardtype:CardTypeOptionMultiSelector ui:field="types"
+                                                      header="{lang.cardType}"
+                                                      addStyleNames="form-group col-md-12" showAll="true"/>
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>

@@ -3,10 +3,10 @@ package ru.protei.portal.ui.delivery.client.activity.card.meta;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
+import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.CardEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -26,11 +26,31 @@ public abstract class CardMetaActivity implements Activity, AbstractCardMetaActi
         view.setActivity(this);
     }
 
+    @Event
+    public void onShow(CardEvents.EditMeta event) {
+        event.parent.clear();
+        event.parent.add(view.asWidget());
+
+        card = event.card;
+
+        fillView( card, false );
+    }
+
     @Override
     public void onStateChanged() {
         CaseState caseState = view.state().getValue();
         card.setState(caseState);
         card.setStateId(caseState.getId());
+        onCaseMetaChanged();
+    }
+
+    @Override
+    public void onTypeChanged() {
+        if (card.getTypeId().equals(view.type().getValue().getId())) {
+            return;
+        }
+        card.setTypeId(view.type().getValue().getId());
+        card.setCardType(view.type().getValue());
         onCaseMetaChanged();
     }
 
@@ -69,7 +89,7 @@ public abstract class CardMetaActivity implements Activity, AbstractCardMetaActi
     private void fillView(Card updatedCard, boolean afterUpdate) {
         card = updatedCard;
         view.state().setValue(card.getState());
-        view.type().setValue(new EntityOption(card.getTypeId()));
+        view.type().setValue(card.getCardType());
         view.article().setValue(card.getArticle());
         view.manager().setValue(card.getManager());
 
@@ -87,10 +107,10 @@ public abstract class CardMetaActivity implements Activity, AbstractCardMetaActi
         }
 
         controller.updateMeta(card, new FluentCallback<Card>()
-                .withSuccess(caseMetaUpdated -> {
+                .withSuccess(metaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new CardEvents.Change(caseMetaUpdated.getId()));
-                    fillView( caseMetaUpdated, true );
+                    fireEvent(new CardEvents.Change(metaUpdated));
+                    fillView( metaUpdated, true );
                 }));
     }
 

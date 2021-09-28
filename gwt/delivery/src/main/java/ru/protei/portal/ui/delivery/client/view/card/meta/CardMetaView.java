@@ -11,9 +11,9 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
+import ru.protei.portal.core.model.ent.CardType;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.selector.card.state.CardStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.card.type.CardTypeFormSelector;
@@ -43,7 +43,7 @@ public class CardMetaView extends Composite implements AbstractCardMetaView {
     }
 
     @Override
-    public HasValue<EntityOption> type() {
+    public HasValue<CardType> type() {
         return type;
     }
 
@@ -93,6 +93,11 @@ public class CardMetaView extends Composite implements AbstractCardMetaView {
     @UiHandler("state")
     public void onStateChanged(ValueChangeEvent<CaseState> event) {
         if (activity != null) activity.onStateChanged();
+    }
+
+    @UiHandler("type")
+    public void onTypeChanged(ValueChangeEvent<CardType> event) {
+        if (activity != null) activity.onTypeChanged();
     }
 
     @UiHandler("article")

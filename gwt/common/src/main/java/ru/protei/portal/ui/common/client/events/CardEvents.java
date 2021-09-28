@@ -52,10 +52,10 @@ public class CardEvents {
     }
 
     public static class Change {
-        public Change(Long id) {
-            this.id = id;
+        public Change(Card card) {
+            this.card = card;
         }
 
-        public Long id;
+        public Card card;
     }
 }

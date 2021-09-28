@@ -78,7 +78,7 @@ public abstract class CardCreateActivity implements Activity, AbstractCardCreate
     private Card fillDto() {
         Card card = new Card();
         card.setTypeId(view.type().getValue().getId());
-        card.setTypeName(view.type().getValue().getDisplayText());
+        card.setCardType(view.type().getValue());
         card.setSerialNumber(String.valueOf(new Date().getTime()));
         card.setCardBatchId(batchId);
         card.setArticle(view.article().getValue());
