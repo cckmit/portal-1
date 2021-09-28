@@ -3,8 +3,10 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.List;
 import java.util.Objects;
+
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.ID;
 
 @JdbcEntity(table = "card_batch")
 public class CardBatch implements Serializable {
@@ -49,13 +51,26 @@ public class CardBatch implements Serializable {
             mappedColumn = CaseObject.Columns.INFO, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private String params;
 
-    @JdbcJoinedColumn(localColumn = CardBatch.Columns.ID, table = CASE_OBJECT_TABLE, remoteColumn = CaseObject.Columns.ID,
-            mappedColumn = CaseObject.Columns.DEADLINE, sqlTableAlias = CASE_OBJECT_ALIAS)
+    @JdbcJoinedColumn(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.DEADLINE, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long deadline;
 
     @JdbcJoinedColumn(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID, mappedColumn = CaseObject.Columns.IMPORTANCE,
             table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long importance;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = CaseObject.Columns.IMPORTANCE, remoteColumn = ID, table = "importance_level")}, mappedColumn = "code")
+    private String importanceCode;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = CaseObject.Columns.IMPORTANCE, remoteColumn = ID, table = "importance_level")}, mappedColumn = "color")
+    private String importanceColor;
+
+    @JdbcOneToMany( table = "case_member", localColumn = "id", remoteColumn = "CASE_ID" )
+    private List<CaseMember> members;
 
     public CardBatch() {
     }
@@ -164,6 +179,30 @@ public class CardBatch implements Serializable {
         this.importance = importance;
     }
 
+    public String getImportanceCode() {
+        return importanceCode;
+    }
+
+    public void setImportanceCode(String importanceCode) {
+        this.importanceCode = importanceCode;
+    }
+
+    public String getImportanceColor() {
+        return importanceColor;
+    }
+
+    public void setImportanceColor(String importanceColor) {
+        this.importanceColor = importanceColor;
+    }
+
+    public List<CaseMember> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<CaseMember> members) {
+        this.members = members;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -186,11 +225,16 @@ public class CardBatch implements Serializable {
                 ", number='" + number + '\'' +
                 ", article='" + article + '\'' +
                 ", amount=" + amount +
+                ", manufacturedAmount=" + manufacturedAmount +
+                ", freeAmount=" + freeAmount +
                 ", stateId=" + stateId +
                 ", state=" + state +
-                ", info='" + params + '\'' +
+                ", params='" + params + '\'' +
                 ", deadline=" + deadline +
                 ", importance=" + importance +
+                ", importanceCode='" + importanceCode + '\'' +
+                ", importanceColor='" + importanceColor + '\'' +
+                ", members=" + members +
                 '}';
     }
 

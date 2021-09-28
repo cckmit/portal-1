@@ -3728,11 +3728,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardBatchStateMounted();
 
-    String cardBatchColumnType();
+    String cardBatchColumnNumber();
 
-    String cardBatchColumnArticle();
-
-    String cardBatchColumnBatchNumber();
+    String cardBatchColumnInfo();
 
     String cardBatchColumnState();
 
@@ -3745,6 +3743,8 @@ public interface Lang extends Messages, ContactItemLang {
     String cardBatchColumnAmountManufactured();
 
     String cardBatchColumnAmountFree();
+
+    String cardBatchColumnInstallParams();
 
     String cardBatchColumnDeadline();
 

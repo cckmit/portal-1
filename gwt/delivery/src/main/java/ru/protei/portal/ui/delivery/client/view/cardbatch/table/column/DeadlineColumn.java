@@ -34,18 +34,14 @@ public class DeadlineColumn extends ClickColumn<CardBatch> {
         cell.addClassName(CLASS_NAME);
 
         Long deadline = card.getDeadline();
-        if (deadline == null) {
-            deadline = new Date().getTime();
-        }
-
-//        if (deadline != null) {
+        if (deadline != null) {
             com.google.gwt.dom.client.Element root = DOM.createDiv();
             String dateTime = formatDateOnly(new Date(deadline));
             root.setInnerHTML(dateTime);
             cell.appendChild(root);
-//        }
+        }
     }
 
     Lang lang;
-    private static final String CLASS_NAME = "info";
+    private static final String CLASS_NAME = "deadline";
 }

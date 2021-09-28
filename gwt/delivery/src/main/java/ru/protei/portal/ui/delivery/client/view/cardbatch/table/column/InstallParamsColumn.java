@@ -7,12 +7,10 @@ import ru.protei.portal.core.model.ent.CardBatch;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
-import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
-
-public class TypeColumn extends ClickColumn<CardBatch> {
+public class InstallParamsColumn extends ClickColumn<CardBatch> {
 
     @Inject
-    public TypeColumn(Lang lang) {
+    public InstallParamsColumn(Lang lang) {
         this.lang = lang;
         setStopPropogationElementClassName(CLASS_NAME);
     }
@@ -20,7 +18,7 @@ public class TypeColumn extends ClickColumn<CardBatch> {
     @Override
     protected void fillColumnHeader(Element columnHeader) {
         columnHeader.addClassName(CLASS_NAME);
-        columnHeader.setInnerText(lang.cardBatchColumnType());
+        columnHeader.setInnerText(lang.cardBatchColumnInstallParams());
     }
 
     @Override
@@ -32,18 +30,10 @@ public class TypeColumn extends ClickColumn<CardBatch> {
         cell.addClassName(CLASS_NAME);
 
         com.google.gwt.dom.client.Element root = DOM.createDiv();
-        StringBuilder sb = new StringBuilder();
-        sb.append("<b>").append(lang.cardType())
-                        .append(":</b> ")
-                        .append(sanitizeHtml(card.getTypeName()))
-                        .append("<br/>").append("<b>")
-                        .append(lang.id()).append(":</b> ")
-                        .append(card.getId()).append("<br/>");
-
-        root.setInnerHTML(sb.toString());
+        root.setInnerHTML(card.getParams());
         cell.appendChild(root);
     }
 
     Lang lang;
-    private static final String CLASS_NAME = "info";
+    private static final String CLASS_NAME = "install_params";
 }

@@ -54,5 +54,5 @@ public class AmountColumn extends ClickColumn<CardBatch> {
     }
 
     Lang lang;
-    private static final String CLASS_NAME = "info";
+    private static final String CLASS_NAME = "amount";
 }

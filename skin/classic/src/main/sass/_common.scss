@@ -5577,3 +5577,54 @@ div.form-group-default.form-group-default-selectFx:focus {
     }
   }
 }
+
+.cards_batch {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 70px;
+
+          div {
+            height: 70px;
+            max-height: 70px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          p {
+            margin: 0;
+            font-size: 85%;
+            line-height: 1.3em;
+          }
+
+          label {
+            font-weight: 600;
+            line-height: 1.2em;
+            vertical-align: inherit;
+            font-size: 0.9em;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+    .number {
+      width: 15%;
+      text-align: center;
+      .number-size {
+        font-size: 22px;
+      }
+    }
+    .info {
+      font-size: 85%;
+      width: 20%;
+    }
+    .install_params {
+      width: 20%;
+    }
+    .amount, .deadline, .executors {
+      width: 15%;
+    }
+  }
+}
