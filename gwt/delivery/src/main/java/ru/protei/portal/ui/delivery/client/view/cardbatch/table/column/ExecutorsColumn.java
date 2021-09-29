@@ -32,20 +32,16 @@ public class ExecutorsColumn extends ClickColumn<CardBatch> {
 
         cell.addClassName(CLASS_NAME);
 
-        StringBuilder sb = new StringBuilder();
-
         List<CaseMember> members = card.getMembers();
         if (members != null) {
-            sb.append("TEST");
-            for (CaseMember member: members) {
-                sb.append(member.getMember().getDisplayName())
-                  .append("<br/>");
-            }
-        }
+            StringBuilder sb = new StringBuilder();
 
-        com.google.gwt.dom.client.Element root = DOM.createDiv();
-        root.setInnerHTML(sb.toString());
-        cell.appendChild(root);
+            //todo collect members by their roles
+
+            com.google.gwt.dom.client.Element root = DOM.createDiv();
+            root.setInnerHTML(sb.toString());
+            cell.appendChild(root);
+        }
     }
 
     Lang lang;

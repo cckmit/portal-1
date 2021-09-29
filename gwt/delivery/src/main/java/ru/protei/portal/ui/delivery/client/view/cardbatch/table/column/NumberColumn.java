@@ -4,13 +4,9 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CardBatch;
-import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.lang.CardStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-
-import static ru.protei.portal.core.model.helper.StringUtils.firstUppercaseChar;
-import static ru.protei.portal.ui.common.client.util.ColorUtils.makeContrastColor;
 
 public class NumberColumn extends ClickColumn<CardBatch> {
 
@@ -18,12 +14,12 @@ public class NumberColumn extends ClickColumn<CardBatch> {
     public NumberColumn(Lang lang, CardStateLang stateLang) {
         this.lang = lang;
         this.stateLang = stateLang;
-        setStopPropogationElementClassName(NUMBER_SIZE);
+        setStopPropogationElementClassName(CLASS_NAME);
     }
 
     @Override
     protected void fillColumnHeader(Element columnHeader) {
-        columnHeader.addClassName(NUMBER_SIZE);
+        columnHeader.addClassName(CLASS_NAME);
         columnHeader.setInnerText(lang.cardBatchColumnNumber());
     }
 
@@ -33,34 +29,13 @@ public class NumberColumn extends ClickColumn<CardBatch> {
             return;
         }
 
-        cell.addClassName("number");
-        com.google.gwt.dom.client.Element divElement = DOM.createDiv();
-
-        if (card.getImportance() != null) {
-            com.google.gwt.dom.client.Element importanceElement = DOM.createElement("i");
-            importanceElement.addClassName("case-importance");
-            importanceElement.setInnerText(firstUppercaseChar(String.valueOf(card.getImportanceCode())));
-            importanceElement.getStyle().setBackgroundColor(card.getImportanceColor());
-            importanceElement.getStyle().setColor(makeContrastColor(card.getImportanceColor()));
-            divElement.appendChild(importanceElement);
-        }
-
-        com.google.gwt.dom.client.Element numberElement = DOM.createElement("p");
-        numberElement.addClassName(NUMBER_SIZE);
+        cell.addClassName(CLASS_NAME);
+        com.google.gwt.dom.client.Element numberElement = DOM.createDiv();
         numberElement.setInnerText(String.valueOf(card.getNumber()));
-        divElement.appendChild(numberElement);
-
-        com.google.gwt.dom.client.Element stateElement = DOM.createElement("p");
-        stateElement.addClassName("label");
-        CaseState state = card.getState();
-        stateElement.getStyle().setBackgroundColor(state == null ? null : state.getColor());
-        stateElement.setInnerText(state == null ? null : stateLang.getStateName(state));
-
-        divElement.appendChild(stateElement);
-        cell.appendChild(divElement);
+        cell.appendChild(numberElement);
     }
 
     Lang lang;
     CardStateLang stateLang;
-    private static final String NUMBER_SIZE = "number-size";
+    private static final String CLASS_NAME = "number";
 }

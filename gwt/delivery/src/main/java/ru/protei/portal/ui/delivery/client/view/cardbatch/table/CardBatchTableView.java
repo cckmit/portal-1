@@ -95,10 +95,10 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
     }
 
     private void initTable() {
+        columns.add(new TypeColumn(lang, cardStateLang));
+        columns.add(new ArticleColumn(lang));
         columns.add(new NumberColumn(lang, cardStateLang));
-        columns.add(new InfoColumn(lang));
         columns.add(new AmountColumn(lang));
-        columns.add(new InstallParamsColumn(lang));
         columns.add(new DeadlineColumn(lang));
         columns.add(new ExecutorsColumn(lang));
         columns.forEach(clickColumn -> {

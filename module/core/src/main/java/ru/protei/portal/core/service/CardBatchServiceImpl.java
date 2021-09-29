@@ -163,6 +163,8 @@ public class CardBatchServiceImpl implements CardBatchService {
                                      .map(CardBatch::getId)
                                      .collect(Collectors.toList()));
 
+        jdbcManyRelationsHelper.fill(sr.getResults(), "members");
+
         sr.getResults().forEach(cardBatch -> {
             Long count = map.getOrDefault(cardBatch.getId(), 0L);
             cardBatch.setManufacturedAmount(count);

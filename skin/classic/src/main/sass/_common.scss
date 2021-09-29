@@ -5578,19 +5578,14 @@ div.form-group-default.form-group-default-selectFx:focus {
   }
 }
 
-.cards_batch {
+.card_batch {
   table {
     tbody {
       tr {
         td {
-          height: 70px;
 
           div {
-            height: 70px;
             max-height: 70px;
-            white-space: pre-line;
-            overflow: hidden;
-            text-overflow: ellipsis;
           }
 
           p {
@@ -5602,29 +5597,26 @@ div.form-group-default.form-group-default-selectFx:focus {
           label {
             font-weight: 600;
             line-height: 1.2em;
-            vertical-align: inherit;
+            vertical-align: middle;
             font-size: 0.9em;
             cursor: pointer;
           }
         }
       }
     }
-    .number {
+    .type {
       width: 15%;
       text-align: center;
-      .number-size {
-        font-size: 22px;
-      }
     }
-    .info {
-      font-size: 85%;
-      width: 20%;
-    }
-    .install_params {
-      width: 20%;
-    }
-    .amount, .deadline, .executors {
+    .article, .number, .amount, .deadline {
       width: 15%;
+    }
+    .executors,  {
+      font-size: 85%;
+      width: 40%;
+    }
+    .type-size, .article-size {
+      font-size: 14px;
     }
   }
 }

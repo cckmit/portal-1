@@ -24,6 +24,9 @@ public class CardBatch implements Serializable {
     @JdbcJoinedColumn(localColumn = CardBatch.Columns.TYPE_ID, remoteColumn = "id", mappedColumn = "name", table = "card_type")
     private String typeName;
 
+    @JdbcJoinedColumn(localColumn = CardBatch.Columns.TYPE_ID, remoteColumn = "id", mappedColumn = "code", table = "card_type")
+    private String code;
+
     @JdbcColumn(name = "number")
     private String number;
 
@@ -89,6 +92,14 @@ public class CardBatch implements Serializable {
 
     public void setTypeId(Long typeId) {
         this.typeId = typeId;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getTypeName() {
