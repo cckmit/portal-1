@@ -27,6 +27,8 @@ import ru.protei.portal.ui.common.client.selector.pageable.SingleValuePageableSe
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
+import java.util.function.Supplier;
+
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 /**
@@ -149,7 +151,12 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
 
     public void onShowPopupClicked(HTMLPanel button) {
         getPopup().getContainer().clear();
-        getSelector().fillFromBegin(this);
+        String externalMessage = externalPopupMessage.get();
+        if (externalMessage != null) {
+            getPopup().setNoElements(true, externalMessage);
+        } else {
+            getSelector().fillFromBegin(this);
+        }
         getPopup().showNear(button.getElement());
     }
 
@@ -204,6 +211,10 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
         this.defaultValue = value;
     }
 
+    public void setExternalPopupMessage(Supplier<String> externalPopupMessage) {
+        this.externalPopupMessage = externalPopupMessage;
+    }
+
     protected String defaultValue = null;
 
     @UiField
@@ -224,6 +235,7 @@ public class FormPopupSingleSelector<T> extends AbstractPopupSelector<T>
     private SingleValuePageableSelector<T> selector = new SingleValuePageableSelector<T>();
     private boolean isValidable;
     private SelectedValueRenderer<T> selectedValueRenderer = selector::makeElementHtml;
+    private Supplier<String> externalPopupMessage = () -> null;
 
     private static final String ERROR_STYLENAME ="has-error";
     private static final String REQUIRED_STYLENAME ="required";

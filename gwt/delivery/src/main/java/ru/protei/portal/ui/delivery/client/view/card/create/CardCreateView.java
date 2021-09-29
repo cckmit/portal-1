@@ -8,6 +8,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.ent.CardBatch;
 import ru.protei.portal.core.model.ent.CardType;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -40,8 +41,8 @@ public class CardCreateView extends Composite implements AbstractCardCreateView 
     }
 
     @Override
-    public HasValue<String> serialNumber() {
-        return serialNumber;
+    public String getSerialNumber() {
+        return serialNumber.getValue();
     }
 
     @Override
@@ -65,6 +66,11 @@ public class CardCreateView extends Composite implements AbstractCardCreateView 
     }
 
     @Override
+    public HasValue<CardBatch> cardBatch() {
+        return meta.cardBatch();
+    }
+
+    @Override
     public HasValue<String> article() {
         return meta.article();
     }
@@ -77,6 +83,11 @@ public class CardCreateView extends Composite implements AbstractCardCreateView 
     @Override
     public HasValue<Date> testDate() {
         return meta.testDate();
+    }
+
+    @Override
+    public void setTestDateValid(boolean value) {
+        meta.setTestDateValid(value);
     }
 
     private void ensureDebugIds() {

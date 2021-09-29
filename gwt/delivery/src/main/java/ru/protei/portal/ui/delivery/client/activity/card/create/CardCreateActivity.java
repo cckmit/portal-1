@@ -17,7 +17,6 @@ import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.Date;
 import java.util.function.Consumer;
 
 public abstract class CardCreateActivity implements Activity, AbstractCardCreateActivity {
@@ -39,7 +38,6 @@ public abstract class CardCreateActivity implements Activity, AbstractCardCreate
             return;
         }
 
-        batchId = event.batchId;
         closeHandle = event.closeHandle;
 
         event.parent.clear();
@@ -66,9 +64,10 @@ public abstract class CardCreateActivity implements Activity, AbstractCardCreate
 
     private void prepare() {
         view.type().setValue(null);
-        view.serialNumber().setValue(null);
+        view.cardBatch().setValue(null);
         view.article().setValue(null);
         view.testDate().setValue(null);
+        view.setTestDateValid(true);
         view.comment().setValue(null);
         fillStateSelector(CrmConstants.State.TESTING);
         view.manager().setValue(null);
@@ -79,8 +78,8 @@ public abstract class CardCreateActivity implements Activity, AbstractCardCreate
         Card card = new Card();
         card.setTypeId(view.type().getValue().getId());
         card.setCardType(view.type().getValue());
-        card.setSerialNumber(String.valueOf(new Date().getTime()));
-        card.setCardBatchId(batchId);
+        card.setSerialNumber(view.getSerialNumber());
+        card.setCardBatchId(view.cardBatch().getValue().getId());
         card.setArticle(view.article().getValue());
         card.setTestDate(view.testDate().getValue());
         card.setComment(view.comment().getValue());
@@ -155,6 +154,5 @@ public abstract class CardCreateActivity implements Activity, AbstractCardCreate
     private DefaultErrorHandler defaultErrorHandler;
 
     private AppEvents.InitDetails initDetails;
-    private Long batchId;
     private Runnable closeHandle;
 }

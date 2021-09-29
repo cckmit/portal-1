@@ -6,7 +6,7 @@ import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 
-public class CardTypeSelector extends FormPopupSingleSelector<EntityOption>
+public class CardTypeOptionSelector extends FormPopupSingleSelector<EntityOption>
 {
 
     @Inject

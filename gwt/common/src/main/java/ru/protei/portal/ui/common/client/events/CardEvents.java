@@ -19,14 +19,12 @@ public class CardEvents {
     }
 
     public static class Create {
-        public Create(HasWidgets parent, Long batchId, Runnable closeHandle) {
+        public Create(HasWidgets parent, Runnable closeHandle) {
             this.parent = parent;
-            this.batchId = batchId;
             this.closeHandle = closeHandle;
         }
 
         public HasWidgets parent;
-        public Long batchId;
         public Runnable closeHandle;
     }
 

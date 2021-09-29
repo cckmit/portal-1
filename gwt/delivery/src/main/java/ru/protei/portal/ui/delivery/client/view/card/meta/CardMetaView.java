@@ -11,12 +11,15 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
+import ru.protei.portal.core.model.ent.CardBatch;
 import ru.protei.portal.core.model.ent.CardType;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.selector.card.state.CardStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.card.type.CardTypeFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.cardbatch.CardBatchFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.cardbatch.CardBatchModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.delivery.client.activity.card.meta.AbstractCardMetaActivity;
@@ -29,6 +32,7 @@ public class CardMetaView extends Composite implements AbstractCardMetaView {
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        cardBatch.setModel(cardBatchModel);
         ensureDebugIds();
     }
 
@@ -45,6 +49,11 @@ public class CardMetaView extends Composite implements AbstractCardMetaView {
     @Override
     public HasValue<CardType> type() {
         return type;
+    }
+
+    @Override
+    public HasValue<CardBatch> cardBatch() {
+        return cardBatch;
     }
 
     @Override
@@ -97,6 +106,11 @@ public class CardMetaView extends Composite implements AbstractCardMetaView {
 
     @UiHandler("type")
     public void onTypeChanged(ValueChangeEvent<CardType> event) {
+        CardType cardType = type.getValue();
+        if (!cardType.equals(cardBatchModel.getCardType())) {
+            cardBatch.setValue(null);
+            cardBatchModel.updateCardType(cardType);
+        }
         if (activity != null) activity.onTypeChanged();
     }
 
@@ -121,6 +135,9 @@ public class CardMetaView extends Composite implements AbstractCardMetaView {
     @Inject
     @UiField( provided = true )
     CardTypeFormSelector type;
+    @Inject
+    @UiField( provided = true )
+    CardBatchFormSelector cardBatch;
     @UiField
     ValidableTextBox article;
     @Inject
@@ -129,6 +146,9 @@ public class CardMetaView extends Composite implements AbstractCardMetaView {
     @Inject
     @UiField(provided = true)
     SinglePicker testDate;
+
+    @Inject
+    CardBatchModel cardBatchModel;
 
     private AbstractCardMetaActivity activity;
 

@@ -3754,6 +3754,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardManager();
 
+    String cardSelectType();
+
+    String cardSelectBatch();
+
     String cardSelectManager();
 
     String editNoteAndComment();

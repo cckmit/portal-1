@@ -10,7 +10,7 @@
     <g:HTMLPanel>
         <form>
             <div class="row">
-                <sel:CardTypeSelector ui:field="type" styleName="col-md-6" mandatory="true" header="{lang.cardBatchType}"/>
+                <sel:CardTypeOptionSelector ui:field="type" styleName="col-md-6" mandatory="true" header="{lang.cardBatchType}"/>
 
                 <div class="col-md-6">
                     <div class="form-group form-group-default required">

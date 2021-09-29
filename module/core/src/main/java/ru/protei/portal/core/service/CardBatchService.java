@@ -7,6 +7,9 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CardBatch;
+import ru.protei.portal.core.model.ent.CardType;
+
+import java.util.List;
 
 public interface CardBatchService {
 
@@ -19,4 +22,6 @@ public interface CardBatchService {
     Result<CardBatch> updateMeta(AuthToken token, CardBatch meta);
 
     Result<CardBatch> getLastCardBatch(AuthToken token, Long typeId);
+
+    Result<List<CardBatch>> getListCardBatchByType(AuthToken token, CardType cardType);
 }

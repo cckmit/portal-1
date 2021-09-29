@@ -19,12 +19,14 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.dict.En_ResultStatus.INCORRECT_PARAMS;
+import static ru.protei.portal.core.model.ent.CardBatch.Columns.TYPE_ID;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_ARTICLE_PATTERN;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_NUMBER_PATTERN;
@@ -147,6 +149,14 @@ public class CardBatchServiceImpl implements CardBatchService {
         return ok(cardBatch);
     }
 
+    @Override
+    public Result<List<CardBatch>> getListCardBatchByType(AuthToken token, CardType cardType) {
+        if (cardType == null) {
+            return error(INCORRECT_PARAMS);
+        }
+        List<CardBatch> list = cardBatchDAO.getListByCondition(TYPE_ID + " = ?", cardType.getId());
+        return ok(list);
+    }
 
     private Result<Long> addCardBatchStateHistory(AuthToken authToken, Long caseObjectId, Long stateId, String stateName) {
         return historyService.createHistory(authToken, caseObjectId, En_HistoryAction.ADD, En_HistoryType.CARD_BATCH_STATE, null, null, stateId, stateName);

@@ -2,6 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:card="urn:import:ru.protei.portal.ui.common.client.widget.selector.card"
+             xmlns:cardbatch="urn:import:ru.protei.portal.ui.common.client.widget.selector.cardbatch"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
 >
@@ -14,24 +15,32 @@
                 <div class="row clearfix reset-no-padding">
                     <div class="col-md-12">
                         <card:state.CardStateFormSelector ui:field="state" header="{lang.cardState}" searchEnabled="false"
-                                                        hasNullValue="false"/>
-                    </div>
-                </div>
-                <div class="row clearfix reset-no-padding">
-                    <div class="col-md-12">
-                        <card:type.CardTypeFormSelector ui:field="type" header="{lang.cardType}" searchEnabled="true"
-                                                          hasNullValue="false"/>
+                                                        hasNullValue="true" mandatory="true"/>
                     </div>
                 </div>
             </div>
             <div class="form-group-attached form-group">
-                <div class="form-group form-group-default">
+                <div class="row clearfix reset-no-padding">
+                    <div class="col-md-12">
+                        <card:type.CardTypeFormSelector ui:field="type" header="{lang.cardType}" searchEnabled="true"
+                                                          hasNullValue="true" defaultValue="{lang.cardSelectType}" mandatory="true"/>
+                    </div>
+                </div>
+                <div class="row clearfix reset-no-padding">
+                    <div class="col-md-12">
+                        <cardbatch:CardBatchFormSelector ui:field="cardBatch" header="{lang.cardBatch}" searchEnabled="true"
+                                                        hasNullValue="false" defaultValue="{lang.cardSelectBatch}" mandatory="true"/>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group-attached form-group">
+                <div class="form-group form-group-default required">
                     <label class="fade"><ui:text from="{lang.cardArticle}"/></label>
-                    <validablefield:ValidableTextBox ui:field="article" styleName="form-control" notNull="true"/>
+                    <validablefield:ValidableTextBox ui:field="article" styleName="form-control" notNull="false"/>
                 </div>
                 <person:EmployeeFormSelector ui:field="manager" header="{lang.cardManager}"
-                                             hasNullValue="false" defaultValue="{lang.cardSelectManager}"/>
-                <div class="form-group form-group-default date-picker">
+                                             hasNullValue="false" defaultValue="{lang.cardSelectManager}" mandatory="true"/>
+                <div class="form-group form-group-default date-picker required">
                     <label class="fade" ><ui:text from="{lang.cardTestDate}"/></label>
                     <datepicker:SinglePicker ui:field="testDate" type="DATE"
                                              formatValue="dd-MM-yyyy" styleName="clearfix"/>

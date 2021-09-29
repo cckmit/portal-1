@@ -8,6 +8,6 @@ public class CardTypeFormSelector extends FormPopupSingleSelector<CardType> {
     @Inject
     public void init(CardTypeModel model) {
         setAsyncModel(model);
-        setItemRenderer( value -> value == null ? "" : value.getName() );
+        setItemRenderer( value -> value == null ? defaultValue : value.getName() );
     }
 }
