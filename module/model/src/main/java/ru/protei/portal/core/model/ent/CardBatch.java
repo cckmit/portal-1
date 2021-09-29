@@ -1,9 +1,16 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 @JdbcEntity(table = "card_batch")
 public class CardBatch implements Serializable {
@@ -51,6 +58,15 @@ public class CardBatch implements Serializable {
     @JdbcJoinedColumn(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID, mappedColumn = CaseObject.Columns.IMPORTANCE,
             table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Integer priority;
+
+    @JdbcOneToMany( table = "case_member", localColumn = "id", remoteColumn = "CASE_ID" )
+    private List<CaseMember> members;
+
+    /**
+     * Исполнители
+     */
+    private List<PersonProjectMemberView> сontractors;
+
 
     public CardBatch() {
     }
@@ -141,6 +157,20 @@ public class CardBatch implements Serializable {
 
     public void setPriority(Integer priority) {
         this.priority = priority;
+    }
+
+    public List<PersonProjectMemberView> getContractors() {
+        if ( сontractors == null && !isEmpty( members ) ) {
+            сontractors = CollectionUtils.stream( members )
+                    .filter( member -> En_PersonRoleType.isCardBatchRole( member.getRole() ) )
+                    .map( member -> new PersonProjectMemberView( member.getMember(), member.getRole() ) )
+                    .collect( Collectors.toList() );
+        }
+        return сontractors;
+    }
+
+    public void setContractors(List<PersonProjectMemberView> сontractors) {
+        this.сontractors = сontractors;
     }
 
     @Override

@@ -36,7 +36,10 @@ public enum En_PersonRoleType {
     EQUIPMENT_SETUP(35),
     ENTRANCE_CONTROL(36),
     QAD_DOCUMENTATION(37),
-    OPERATIONAL_DOCUMENTATION(38);
+    OPERATIONAL_DOCUMENTATION(38),
+    AUTOMATIC_MOUNTING(39),
+    MANUAL_MOUNTING(40),
+    OUTPUT_CONTROL(41);
 
     En_PersonRoleType(int typeId ) {
         this.id = typeId;
@@ -56,6 +59,9 @@ public enum En_PersonRoleType {
             HEAD_MANAGER, HARDWARE_CURATOR, SOFTWARE_CURATOR, LIABLE_FOR_AUTO_TESTING, TECH_SUPPORT_CURATOR,
             PRODUCT_ASSEMBLER, ENGINEER_DOC_DEV, QUALITY_CONTROL_SMK, PROJECT_DOCUMENTATION, DELIVERY_PACKING,
             SPECIAL_CHECK_SPECIAL_RESEARCH, EQUIPMENT_SETUP, ENTRANCE_CONTROL, QAD_DOCUMENTATION, OPERATIONAL_DOCUMENTATION ) );
+
+    private static final List<En_PersonRoleType> cardBatchRoles = Collections.unmodifiableList( Arrays.asList(
+            AUTOMATIC_MOUNTING, MANUAL_MOUNTING, OUTPUT_CONTROL ) );
 
     public int getId() {
         return id;
@@ -77,7 +83,15 @@ public enum En_PersonRoleType {
         return deliveryRoles.contains(type);
     }
 
+    public static boolean isCardBatchRole(En_PersonRoleType type) {
+        return cardBatchRoles.contains(type);
+    }
+
     public static List<En_PersonRoleType> getProjectRoles() {
         return projectRoles;
+    }
+
+    public static List<En_PersonRoleType> getCardBatchRoles() {
+        return cardBatchRoles;
     }
 }

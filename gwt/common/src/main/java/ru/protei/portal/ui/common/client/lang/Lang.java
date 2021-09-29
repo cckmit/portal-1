@@ -3793,4 +3793,16 @@ public interface Lang extends Messages, ContactItemLang {
     String cardBatchStateMounting();
 
     String cardBatchStateMounted();
+
+    String personAutomaticMounting();
+
+    String personManualMounting();
+
+    String personOutputControl();
+
+    String personAutomaticMountingShort();
+
+    String personManualMountingShort();
+
+    String personOutputControlShort();
 }

@@ -67,7 +67,12 @@ public class En_PersonRoleTypeLang {
                 return lang.personQadDocumentation() + " (" + lang.personQadDocumentationShort() + ")";
             case SPECIAL_CHECK_SPECIAL_RESEARCH:
                 return lang.personSpecialCheckSpecialResearch() + " (" + lang.personSpecialCheckSpecialResearchShort() + ")";
-
+            case AUTOMATIC_MOUNTING:
+                return  lang.personAutomaticMounting() + " (" + lang.personAutomaticMountingShort() + ")";
+            case MANUAL_MOUNTING:
+                return  lang.personManualMounting() + " (" + lang.personManualMountingShort() + ")";
+            case OUTPUT_CONTROL:
+                return  lang.personOutputControl() + " (" + lang.personOutputControlShort() + ")";
         }
         return null;
     }
@@ -133,6 +138,12 @@ public class En_PersonRoleTypeLang {
                 return lang.personQadDocumentationShort();
             case SPECIAL_CHECK_SPECIAL_RESEARCH:
                 return lang.personSpecialCheckSpecialResearchShort();
+            case AUTOMATIC_MOUNTING:
+                return lang.personAutomaticMountingShort();
+            case MANUAL_MOUNTING:
+                return lang.personManualMountingShort();
+            case OUTPUT_CONTROL:
+                return lang.personOutputControlShort();
         }
         return null;
     }

@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.project.client.view.widget.team.item;
+package ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
@@ -16,14 +16,14 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.personrole.ProjectRoleFormSelector;
-import ru.protei.portal.ui.project.client.view.widget.team.AbstractTeamSelector;
+import ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.AbstractContractorsSelector;
 
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class TeamSelectorItem extends Composite implements AbstractTeamSelectorItem {
+public class ContractorsSelectorItem extends Composite implements AbstractContractorsSelectorItem {
 
     @Inject
     public void init() {
@@ -31,7 +31,7 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
     }
 
     @Override
-    public void setActivity(AbstractTeamSelector teamSelector) {
+    public void setActivity(AbstractContractorsSelector teamSelector) {
         this.teamSelector = teamSelector;
     }
 
@@ -46,7 +46,7 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
     }
 
     @Override
-    public void setModel(TeamSelectorItemModel model) {
+    public void setModel(ContractorsSelectorItemModel model) {
         if (model == null) {
             return;
         }
@@ -137,10 +137,10 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
     @UiField(provided = true)
     EmployeeMultiSelector members;
 
-    private TeamSelectorItemModel model = null;
-    private AbstractTeamSelector teamSelector = null;
+    private ContractorsSelectorItemModel model = null;
+    private AbstractContractorsSelector teamSelector = null;
     private List<En_PersonRoleType> availableRoles = null;
 
-    interface TeamSelectorItemUiBinder extends UiBinder<HTMLPanel, TeamSelectorItem> {}
+    interface TeamSelectorItemUiBinder extends UiBinder<HTMLPanel, ContractorsSelectorItem> {}
     private static TeamSelectorItemUiBinder ourUiBinder = GWT.create(TeamSelectorItemUiBinder.class);
 }

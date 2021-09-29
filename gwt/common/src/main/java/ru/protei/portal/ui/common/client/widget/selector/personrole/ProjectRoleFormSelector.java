@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.project.client.view.widget.selector;
+package ru.protei.portal.ui.common.client.widget.selector.personrole;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_PersonRoleType;

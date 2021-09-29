@@ -1,16 +1,21 @@
 package ru.protei.portal.ui.delivery.client.activity.cardbatch.create;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CardBatch;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.ImportanceLevel;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -24,7 +29,12 @@ import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCar
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaView;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
@@ -113,6 +123,7 @@ public abstract class CardBatchCreateActivity implements Activity,
         commonInfoView.hidePrevCardBatchInfo();
         metaView.deadline().setValue(null);
         metaView.stateEnable().setEnabled(false);
+        metaView.contractors().setValue(null);
         fillPrioritySelector(BASIC);
         fillStateSelector(CrmConstants.State.PRELIMINARY);
     }
@@ -127,8 +138,17 @@ public abstract class CardBatchCreateActivity implements Activity,
         cardBatch.setStateId(metaView.state().getValue().getId());
         cardBatch.setPriority(metaView.priority().getValue().getId());
         cardBatch.setDeadline(metaView.deadline().getValue() != null? metaView.deadline().getValue().getTime() : null);
+        cardBatch.setContractors(new ArrayList<>(metaView.contractors().getValue()));
 
         return cardBatch;
+    }
+
+    private List<PersonProjectMemberView> toPersonProjectMemberViewList(Collection<PersonShortView> persons) {
+        return CollectionUtils.emptyIfNull(persons)
+                .stream()
+                .map(personShortView ->
+                        new PersonProjectMemberView(personShortView.getName(), personShortView.getId(), personShortView.isFired(), En_PersonRoleType.HEAD_MANAGER))
+                .collect(Collectors.toList());
     }
 
     private void showValidationError(String error) {
@@ -152,14 +172,13 @@ public abstract class CardBatchCreateActivity implements Activity,
             return "Количество должно быть больше нуля";
         }
 
-//        String error = commonMeta.getValidationError();
-//        if (error != null) {
-//            return error;
-//        }
-//        CaseState state = view.state().getValue();
-//         if (!Objects.equals(CrmConstants.State.PRELIMINARY, state.getId())) {
-//            return lang.deliveryValidationInvalidStateAtCreate();
-//        }
+        if (CollectionUtils.isEmpty(metaView.contractors().getValue())) {
+            return "Исполнители должны быть заданы";
+        }
+
+        if (metaView.deadline().getValue().before(new Date())) {
+            return "Дедлайн должен быть позже текущего времени";
+        }
 
         return null;
     }
