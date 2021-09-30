@@ -40,6 +40,9 @@ public abstract class CardEditMetaActivity extends CardCommonMeta implements Act
     @Override
     public void onStateChanged() {
         CaseState caseState = view.state().getValue();
+        if (Objects.equals(caseState.getId(), card.getStateId())) {
+            return;
+        }
         card.setState(caseState);
         card.setStateId(caseState.getId());
         onCaseMetaChanged();
@@ -47,6 +50,9 @@ public abstract class CardEditMetaActivity extends CardCommonMeta implements Act
 
     @Override
     public void onArticleChanged() {
+        if (Objects.equals(view.article().getValue(), card.getArticle())) {
+            return;
+        }
         card.setArticle(view.article().getValue());
         onCaseMetaChanged();
     }
@@ -54,6 +60,9 @@ public abstract class CardEditMetaActivity extends CardCommonMeta implements Act
     @Override
     public void onManagerChanged() {
         PersonShortView manager = view.manager().getValue();
+        if (Objects.equals(manager, card.getManager())) {
+            return;
+        }
         card.setManager(manager);
         onCaseMetaChanged();
     }

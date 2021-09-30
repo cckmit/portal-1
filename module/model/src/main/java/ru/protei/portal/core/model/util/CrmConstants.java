@@ -97,7 +97,7 @@ public class CrmConstants {
         String WORK_PHONE_NUMBER_PATTERN = "^\\d*#?\\d+$";
         String DELIVERY_KIT_SERIAL_NUMBER_PATTERN = "^\\d{3}\\.\\d{3}$";
         String CARD_BATCH_NUMBER_PATTERN = "^\\d{3}$";
-        String CARD_BATCH_ARTICLE_PATTERN = "^\\d{3}[a-zA-Z]?-\\d{2}-\\d{3}$";  // "XXXXA-XX-XXX" (X-цифра, A-буква(необязательна))
+        String CARD_BATCH_ARTICLE_PATTERN = "^\\d{4}[a-zA-Z]?-\\d{2}-\\d{3}$";  // "XXXXA-XX-XXX" (X-цифра, A-буква(необязательна))
     }
 
     public interface Time {

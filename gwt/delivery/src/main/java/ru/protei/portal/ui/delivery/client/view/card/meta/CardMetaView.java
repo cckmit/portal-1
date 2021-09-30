@@ -30,12 +30,15 @@ import ru.protei.portal.ui.delivery.client.activity.card.meta.AbstractCardMetaVi
 
 import java.util.Date;
 
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_ARTICLE_PATTERN;
+
 public class CardMetaView extends Composite implements AbstractCardMetaView {
 
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         cardBatch.setModel(cardBatchModel);
+        article.setRegexp(CARD_BATCH_ARTICLE_PATTERN);
         ensureDebugIds();
     }
 
@@ -50,7 +53,6 @@ public class CardMetaView extends Composite implements AbstractCardMetaView {
     public void setEditActivity(AbstractCardEditMetaActivity activity) {
         this.commonActivity = activity;
         state.addValueChangeHandler(event -> activity.onStateChanged());
-        article.addValueChangeHandler(event -> activity.onArticleChanged());
         manager.addValueChangeHandler(event -> activity.onManagerChanged());
     }
 
@@ -121,6 +123,11 @@ public class CardMetaView extends Composite implements AbstractCardMetaView {
         qcManager.ensureLabelDebugId(DebugIds.DELIVERY.KIT.MODULE.QC_MANAGER);
         buildDate.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.BUILD_DATE);
         departureDate.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.DEPARTURE_DATE);*/
+    }
+
+    @UiHandler("article")
+    public void onArticleChanged(ValueChangeEvent<String> event) {
+        commonActivity.onArticleChanged();
     }
 
     @UiHandler("testDate")

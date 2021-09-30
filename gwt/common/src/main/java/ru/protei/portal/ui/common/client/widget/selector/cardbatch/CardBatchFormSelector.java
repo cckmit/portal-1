@@ -7,7 +7,7 @@ import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 public class CardBatchFormSelector extends FormPopupSingleSelector<CardBatch> {
     @Inject
     public void init() {
-        setItemRenderer( value -> value == null ? defaultValue : value.getArticle() );
+        setItemRenderer( value -> value == null ? defaultValue : value.getNumber() );
         setExternalPopupMessage( () -> model.isTypePresent() ? null : lang.cardSelectType() );
     }
 

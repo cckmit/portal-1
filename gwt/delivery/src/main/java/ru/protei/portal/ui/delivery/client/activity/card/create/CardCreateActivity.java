@@ -83,7 +83,16 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
 
     @Override
     public void onCardBatchChange() {
+        if (isCanPresetArticle) {
+            view.article().setValue(view.cardBatch().getValue().getArticle());
+            isCanPresetArticle = false;
+        }
         setSerialNumber();
+    }
+
+    @Override
+    public void onArticleChanged() {
+        isCanPresetArticle = false;
     }
 
     private void setSerialNumber() {
@@ -103,6 +112,7 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
         view.type().setValue(null);
         view.cardBatch().setValue(null);
         view.article().setValue(null);
+        isCanPresetArticle = true;
         view.testDate().setValue(null);
         view.setTestDateValid(true);
         view.comment().setValue(null);
@@ -192,6 +202,7 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
     @Inject
     private CardCommonMeta commonMeta;
 
+    private boolean isCanPresetArticle;
     private AppEvents.InitDetails initDetails;
     private Runnable closeHandle;
 }
