@@ -37,25 +37,12 @@
                                        addStyleNames="form-group form-group-default"/>
                 <div class="form-group form-group-default">
                     <label class="fade"><ui:text from="{lang.deliveryProducts}"/></label>
-                    <validablefield:ValidableTextBox ui:field="products" styleName="form-control"
-                                                     enabled="false" notNull="false"/>
+                    <g:TextBox ui:field="products" styleName="form-control" enabled="false"/>
                 </div>
-            </div>
-
-            <div class="form-group m-t-10 m-b-0">
-                <label><ui:text from="{lang.deliveryManagerInfo}"/></label>
-            </div>
-
-            <div class="form-group-attached form-group">
                 <div class="form-group form-group-default">
-                    <label class="fade"><ui:text from="{lang.deliveryManager}"/></label>
-                    <validablefield:ValidableTextBox ui:field="manager" styleName="form-control"
-                                                     enabled="false" notNull="false"/>
+                    <label class="fade"><ui:text from="{lang.projectTeam}"/></label>
+                    <div ui:field="team" class="form-block"/>
                 </div>
-                <person:EmployeeFormSelector ui:field="hwManager" header="{lang.deliveryHwManager}"
-                                             hasNullValue="true" defaultValue="{lang.selectIssueManager}"/>
-                <person:EmployeeFormSelector ui:field="qcManager" header="{lang.deliveryQcManager}"
-                                             hasNullValue="true" defaultValue="{lang.selectIssueManager}"/>
             </div>
 
             <div class="form-group m-t-10 m-b-0">
@@ -65,13 +52,11 @@
             <div class="form-group-attached form-group">
                 <div class="form-group form-group-default">
                     <label class="fade"><ui:text from="{lang.deliveryCustomerType}"/></label>
-                    <validablefield:ValidableTextBox ui:field="customerType" styleName="form-control"
-                                                     enabled="false" notNull="false"/>
+                    <g:TextBox ui:field="customerType" styleName="form-control" enabled="false"/>
                 </div>
                 <div class="form-group form-group-default">
                     <label class="fade"><ui:text from="{lang.deliveryCustomerCompany}"/></label>
-                    <validablefield:ValidableTextBox ui:field="customerCompany" styleName="form-control"
-                                                     enabled="false" notNull="false"/>
+                    <g:TextBox ui:field="customerCompany" styleName="form-control" enabled="false"/>
                 </div>
                 <person:PersonFormSelector hasNullValue="true"
                                            validation="false"
@@ -110,8 +95,7 @@
                                                header="{lang.deliveryContract}"/>
                 <div class="form-group form-group-default">
                     <label class="fade"><ui:text from="{lang.deliveryContractCompany}"/></label>
-                    <validablefield:ValidableTextBox ui:field="contractCompany" styleName="form-control"
-                                                     enabled="false" notNull="false"/>
+                    <g:TextBox ui:field="contractCompany" styleName="form-control" enabled="false"/>
                 </div>
             </div>
 

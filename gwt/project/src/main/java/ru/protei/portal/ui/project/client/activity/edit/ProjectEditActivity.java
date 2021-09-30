@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -417,7 +416,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     }
 
     private boolean hasHeadManager(Set<PersonProjectMemberView> team) {
-        return team.stream().anyMatch(personProjectMemberView -> En_DevUnitPersonRoleType.HEAD_MANAGER.equals(personProjectMemberView.getRole()));
+        return team.stream().anyMatch(personProjectMemberView -> En_PersonRoleType.HEAD_MANAGER.equals(personProjectMemberView.getRole()));
     }
 
     @Inject

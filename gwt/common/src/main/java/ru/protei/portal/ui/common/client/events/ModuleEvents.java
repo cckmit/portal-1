@@ -28,8 +28,8 @@ public class ModuleEvents {
         public Long id;
     }
 
-    public static class EditModuleMeta {
-        public EditModuleMeta(HasWidgets parent, Module module, boolean isReadOnly) {
+    public static class EditMeta {
+        public EditMeta(HasWidgets parent, Module module, boolean isReadOnly) {
             this.parent = parent;
             this.module = module;
             this.isReadOnly = isReadOnly;
@@ -40,8 +40,8 @@ public class ModuleEvents {
         public boolean isReadOnly;
     }
 
-    public static class ChangeModule {
-        public ChangeModule(Long id) {
+    public static class Changed {
+        public Changed(Long id) {
             this.id = id;
         }
 
@@ -59,4 +59,6 @@ public class ModuleEvents {
         public Long kitId;
         public Long deliveryId;
     }
+
+    public static class CancelCreating {}
 }

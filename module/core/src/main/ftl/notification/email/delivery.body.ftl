@@ -12,8 +12,6 @@
 <@set name="_deliveryType" value="${deliveryType}"/>
 <@set name="_deliveryProject" value="${deliveryProject}"/>
 <@set name="_deliveryManager" value="${deliveryManager}"/>
-<@set name="_deliveryHwManager" value="${deliveryHwManager}"/>
-<@set name="_deliveryQcManager" value="${deliveryQcManager}"/>
 <@set name="_deliveryAttribute" value="${deliveryAttribute}"/>
 <@set name="_deliveryContract" value="${deliveryContract}"/>
 <@set name="_deliveryCompany" value="${deliveryCompany}"/>
@@ -229,40 +227,6 @@
                     />
                     <#else>
                     ${newManager}
-                </#if>
-                </td>
-            </tr>
-
-<#--HARDWARE MANAGER-->
-            <tr>
-                <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                    ${_deliveryHwManager}
-                </td>
-                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                    <#if hwManagerChanged>
-                    <@changeTo
-                    old="${oldHwManager!'?'}"
-                    new="${newHwManager!'?'}"
-                    />
-                    <#else>
-                    ${newHwManager!'?'}
-                </#if>
-                </td>
-            </tr>
-
-<#--QUALITY CONTROL MANAGER-->
-            <tr>
-                <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                    ${_deliveryQcManager}
-                </td>
-                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                    <#if qcManagerChanged>
-                    <@changeTo
-                    old="${oldQcManager!'?'}"
-                    new="${newQcManager!'?'}"
-                    />
-                    <#else>
-                    ${newQcManager!'?'}
                 </#if>
                 </td>
             </tr>

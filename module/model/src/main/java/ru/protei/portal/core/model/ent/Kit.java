@@ -56,6 +56,11 @@ public class Kit extends AuditableObject implements HasLongId {
     @JdbcColumn(name = DELIVERY_ID)
     private Long deliveryId;
 
+
+    @JdbcJoinedColumn(localColumn = DELIVERY_ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.STATE, table = CASE_OBJECT_TABLE, sqlTableAlias = "DCO")
+    private Long deliveryStateId;
+
     /**
      * Серийный номер
      */
@@ -182,6 +187,14 @@ public class Kit extends AuditableObject implements HasLongId {
 
     public void setModulesCount(Integer modulesCount) {
         this.modulesCount = modulesCount;
+    }
+
+    public Long getDeliveryStateId() {
+        return deliveryStateId;
+    }
+
+    public void setDeliveryStateId(Long deliveryStateId) {
+        this.deliveryStateId = deliveryStateId;
     }
 
     @Override

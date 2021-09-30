@@ -1,0 +1,27 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-new-project-roles" author="turik">
+        <insert tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="delivery_packing"/>
+        </insert>
+        <insert tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="special_check_special_research"/>
+        </insert>
+        <insert tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="equipment_setup"/>
+        </insert>
+        <insert tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="entrance_control"/>
+        </insert>
+        <insert tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="qad_documentation"/>
+        </insert>
+        <insert tableName="dev_unit_mrole">
+            <column name="UROLE_CODE" value="operational_documentation"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

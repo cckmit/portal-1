@@ -37,5 +37,7 @@ public interface DeliveryController extends RemoteService {
 
     Kit getKit(long kitId) throws RequestFailedException;
 
-    void updateKit(Kit kit) throws RequestFailedException;
+    Kit updateKit(Kit kit) throws RequestFailedException;
+
+    Long getDeliveryStateId(long id) throws RequestFailedException;
 }

@@ -38,7 +38,7 @@ public interface DeliveryService {
     Result<String> getLastSerialNumber(AuthToken token, boolean isMilitaryNumbering);
     Result<String> getLastSerialNumber(AuthToken token, Long deliveryId);
 
-    @Privileged({ En_Privilege.DELIVERY_EDIT })
+    @Privileged({ En_Privilege.DELIVERY_CREATE })
     @Auditable( En_AuditType.KIT_CREATE )
     Result<List<Kit>> addKits(AuthToken token, List<Kit> kits, Long deliveryId);
 
@@ -48,4 +48,7 @@ public interface DeliveryService {
     @Privileged({ En_Privilege.DELIVERY_EDIT })
     @Auditable( En_AuditType.KIT_MODIFY )
     Result<Kit> updateKit(AuthToken token, Kit kit);
+
+    @Privileged({ En_Privilege.DELIVERY_VIEW })
+    Result<Long> getDeliveryStateId(AuthToken token, Long deliveryId);
 }

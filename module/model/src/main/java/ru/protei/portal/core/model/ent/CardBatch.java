@@ -1,11 +1,16 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.ent.CaseObject.Columns.ID;
 
 @JdbcEntity(table = "card_batch")
@@ -60,7 +65,7 @@ public class CardBatch implements Serializable {
 
     @JdbcJoinedColumn(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID, mappedColumn = CaseObject.Columns.IMPORTANCE,
             table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
-    private Long importance;
+    private Integer importance;
 
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
@@ -74,6 +79,11 @@ public class CardBatch implements Serializable {
 
     @JdbcOneToMany( table = "case_member", localColumn = "id", remoteColumn = "CASE_ID" )
     private List<CaseMember> members;
+
+    /**
+     * Исполнители
+     */
+    private List<PersonProjectMemberView> сontractors;
 
     public CardBatch() {
     }
@@ -182,12 +192,26 @@ public class CardBatch implements Serializable {
         this.deadline = deadline;
     }
 
-    public Long getImportance() {
+    public Integer getImportance() {
         return importance;
     }
 
-    public void setImportance(Long importance) {
+    public void setImportance(Integer importance) {
         this.importance = importance;
+    }
+
+    public List<PersonProjectMemberView> getContractors() {
+        if ( сontractors == null && !isEmpty( members ) ) {
+            сontractors = CollectionUtils.stream( members )
+                    .filter( member -> En_PersonRoleType.isCardBatchRole( member.getRole() ) )
+                    .map( member -> new PersonProjectMemberView( member.getMember(), member.getRole() ) )
+                    .collect( Collectors.toList() );
+        }
+        return сontractors;
+    }
+
+    public void setContractors(List<PersonProjectMemberView> сontractors) {
+        this.сontractors = сontractors;
     }
 
     public String getImportanceCode() {
@@ -242,7 +266,7 @@ public class CardBatch implements Serializable {
                 ", state=" + state +
                 ", params='" + params + '\'' +
                 ", deadline=" + deadline +
-                ", importance=" + importance +
+                ", importance=" + importanceCode +
                 ", importanceCode='" + importanceCode + '\'' +
                 ", importanceColor='" + importanceColor + '\'' +
                 ", members=" + members +

@@ -1289,9 +1289,7 @@ public class DebugIds {
         String CUSTOMER_COMPANY = "delivery-customer-company";
         String CUSTOMER_INITIATOR = "delivery-customer-initiator-selector";
         String CONTRACT_COMPANY = "delivery-contract-company";
-        String MANAGER = "delivery-manager";
-        String HW_MANAGER = "delivery-hw-manager-selector";
-        String QC_MANAGER = "delivery-qc-manager-selector";
+        String TEAM = "delivery-team";
         String ATTRIBUTE = "delivery-attribute-selector";
         String CONTRACT = "delivery-contract-selector";
         String PRODUCTS = "delivery-products-selector";
@@ -1316,9 +1314,8 @@ public class DebugIds {
             String REMOVE_BUTTON = "kit-item-remove-button";
             String SAVE_BUTTON = "kit-item-save-button";
             String CANCEL_BUTTON = "kit-item-cancel-button";
-            String BACK_BUTTON = "kit-item-back-button";
             String TAB_HISTORY = "kit-item-tab-history";
-            String RELOAD_BUTTON = "kit-reload-button";
+            String BACK_BUTTON = "kit-back-button";
             String ACTION_MENU_BUTTON = "kit-action-menu-button";
 
             interface MODULE {
@@ -1333,6 +1330,7 @@ public class DebugIds {
                 String DEPARTURE_DATE = "module-departure-date-container";
                 String ADD_BUTTON = "module-add-button";
                 String SAVE_BUTTON = "module-save-button";
+                String CANCEL_BUTTON = "module-cancel-button";
                 String EDIT_NAME_AND_DESCRIPTION_BUTTON = "module-edit-name-and-desc-button";
                 String EDIT_NAME_AND_DESC_ACCEPT = "module-edit-name-and-desc-accept";
                 String EDIT_NAME_AND_DESC_REJECT = "module-edit-name-and-desc-reject";
@@ -1377,7 +1375,7 @@ public class DebugIds {
         String AMOUNT = "card-batch-amount-input";
         String PARAMS = "card-batch-params-input";
         String STATE_SELECTOR = "card-batch-state-selector";
-        String PRIORITY = "card-batch-priority";
+        String PRIORITY_SELECTOR = "card-batch-priority-selector";
         String DEADLINE_DATE = "card-batch-deadline-date-container";
         String CONTRACTOR_SELECTOR = "card-batch-contractor-selector";
     }

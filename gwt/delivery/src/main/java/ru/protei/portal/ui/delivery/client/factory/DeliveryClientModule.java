@@ -53,6 +53,10 @@ import ru.protei.portal.ui.delivery.client.view.delivery.module.edit.ModuleEditV
 import ru.protei.portal.ui.delivery.client.view.delivery.module.meta.ModuleMetaView;
 import ru.protei.portal.ui.delivery.client.view.delivery.module.table.ModuleTableView;
 import ru.protei.portal.ui.delivery.client.view.delivery.table.DeliveryTableView;
+import ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.AbstractContractorsSelector;
+import ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.ContractorsSelector;
+import ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.item.AbstractContractorsSelectorItem;
+import ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.item.ContractorsSelectorItem;
 
 public class DeliveryClientModule extends AbstractGinModule {
     @Override
@@ -102,6 +106,9 @@ public class DeliveryClientModule extends AbstractGinModule {
         bind(CardBatchTableActivity.class).asEagerSingleton();
         bind(AbstractCardBatchTableView.class).to(CardBatchTableView.class).in(Singleton.class);
         bind(AbstractCardBatchFilterView.class).to(CardBatchFilterView.class).in(Singleton.class);
+
+        bind( AbstractContractorsSelector.class ).to( ContractorsSelector.class );
+        bind( AbstractContractorsSelectorItem.class ).to( ContractorsSelectorItem.class );
     }
 }
 

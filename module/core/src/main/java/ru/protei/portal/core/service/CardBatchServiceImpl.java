@@ -9,18 +9,20 @@ import ru.protei.portal.core.event.CardBatchCreateEvent;
 import ru.protei.portal.core.event.CardBatchUpdateEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_HistoryAction;
-import ru.protei.portal.core.model.dict.En_HistoryType;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CardBatchQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -28,6 +30,7 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.dict.En_ResultStatus.INCORRECT_PARAMS;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_ARTICLE_PATTERN;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_NUMBER_PATTERN;
 
@@ -54,6 +57,8 @@ public class CardBatchServiceImpl implements CardBatchService {
     HistoryService historyService;
     @Autowired
     CaseStateDAO caseStateDAO;
+    @Autowired
+    CaseMemberDAO caseMemberDAO;
 
     private final Pattern cardBatchNumber = Pattern.compile(CARD_BATCH_NUMBER_PATTERN);
     private final Pattern cardBatchArticle = Pattern.compile(CARD_BATCH_ARTICLE_PATTERN);
@@ -77,6 +82,14 @@ public class CardBatchServiceImpl implements CardBatchService {
             throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
         cardBatch.setId(cardBatchCaseId);
+
+        try {
+            updateContractors(cardBatchCaseObject, cardBatch.getContractors());
+        } catch (Throwable e) {
+            log.error("createCardBatch(): error during create card batch when set contractors;", e);
+            throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
+        }
+
         Long cardBatchId = cardBatchDAO.persist(cardBatch);
         if (cardBatchId == null) {
             log.warn("createCardBatch(): cardBatch not created, cardBatch={}", cardBatch);
@@ -129,6 +142,13 @@ public class CardBatchServiceImpl implements CardBatchService {
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
+        try {
+            updateContractors(caseObject, meta.getContractors());
+        } catch (Throwable e) {
+            log.error("updateMeta(): error during save card batch meta when update contractors;", e);
+            throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
+        }
+
         isUpdated = cardBatchDAO.merge(meta);
         if (!isUpdated) {
             log.warn("updateMeta(): cardBatch not updated. cardBatch={}",  meta.getId());
@@ -173,6 +193,44 @@ public class CardBatchServiceImpl implements CardBatchService {
         return ok(sr);
     }
 
+    //обновление исполнителей партии плат
+    private void updateContractors(CaseObject caseObject, List<PersonProjectMemberView> contractors) {
+
+        List<PersonProjectMemberView> toAdd = listOf(contractors);
+        List<Long> toRemove = new ArrayList<>();
+        List<En_PersonRoleType> cardBatchRoles = En_PersonRoleType.getCardBatchRoles();
+
+        if (caseObject.getMembers() != null) {
+            for (CaseMember member : caseObject.getMembers()) {
+                if (!cardBatchRoles.contains(member.getRole())) {
+                    continue;
+                }
+                int nPos = toAdd.indexOf(new PersonProjectMemberView(member.getMember(), member.getRole()));
+                if (nPos == -1) {
+                    toRemove.add(member.getId());
+                } else {
+                    toAdd.remove(nPos);
+                }
+            }
+        }
+
+        if (toRemove.size() > 0) {
+            caseMemberDAO.removeByKeys(toRemove);
+        }
+
+        if (toAdd.size() > 0) {
+            caseMemberDAO.persistBatch(toAdd.stream()
+                    .map(ppm -> {
+                        CaseMember caseMember = new CaseMember();
+                        caseMember.setMemberId(ppm.getId());
+                        caseMember.setRole(ppm.getRole());
+                        caseMember.setCaseId(caseObject.getId());
+                        return caseMember;
+                    })
+                    .collect(Collectors.toList())
+            );
+        }
+    }
 
     private Result<Long> addCardBatchStateHistory(AuthToken authToken, Long caseObjectId, Long stateId, String stateName) {
         return historyService.createHistory(authToken, caseObjectId, En_HistoryAction.ADD, En_HistoryType.CARD_BATCH_STATE, null, null, stateId, stateName);

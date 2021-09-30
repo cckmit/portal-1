@@ -2,6 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:cardbatch="urn:import:ru.protei.portal.ui.common.client.widget.selector.cardbatch"
              xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
+             xmlns:priority="urn:import:ru.protei.portal.ui.delivery.client.widget.cardbatch.priority"
+             xmlns:contractors="urn:import:ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -9,25 +11,30 @@
     <g:HTMLPanel ui:field="root" styleName="card card-default">
         <div class="card-body">
             <div class="form-group form-group-attached">
-                <div class="row clearfix reset-no-padding">
-                    <div class="col-md-12">
-                        <cardbatch:state.CardBatchStateFormSelector ui:field="state"
-                                                                  header="{lang.cardBatchState}"
-                                                                  searchEnabled="false"
-                                                                  hasNullValue="false"
-                                                                  mandatory="false"
-                                                                  enabled="true"/>
-                    </div>
+                <cardbatch:state.CardBatchStateFormSelector ui:field="state"
+                                                            header="{lang.cardBatchState}"
+                                                            searchEnabled="false"
+                                                            hasNullValue="false"
+                                                            mandatory="false"
+                                                            enabled="true"/>
+
+                <priority:PrioritySelector ui:field="priority"
+                                           validation="true"
+                                           header="{lang.cardBatchPriority}"
+                                           mandatory="false" fixedStrategy="false"/>
+
+                <div class="form-group form-group-default date-picker">
+                    <label class="fade" ><ui:text from="{lang.cardBatchDeadline}"/></label>
+                    <datepicker:SinglePicker ui:field="deadline" type="DATE"
+                                             formatValue="dd-MM-yyyy" styleName="clearfix"/>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group form-group-default date-picker">
-                            <label class="fade" ><ui:text from="{lang.cardBatchDeadline}"/></label>
-                            <datepicker:SinglePicker ui:field="deadline" type="DATE"
-                                                     formatValue="dd-MM-yyyy" styleName="clearfix"/>
-                        </div>
-                    </div>
+                <div class="form-group col-md-12 card card-default project-team">
+                    <label class="fade">
+                        <ui:text from="{lang.cardBatchContractors}"/>
+                    </label>
+
+                    <contractors:ContractorsSelector ui:field="contractors"/>
                 </div>
 
             </div>

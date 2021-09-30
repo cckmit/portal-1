@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Label;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseState;
@@ -178,7 +178,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
                     if (isEmpty(value.getTeam())) return null;
 
                     Optional<PersonProjectMemberView> leader = value.getTeam().stream()
-                            .filter(ppm -> En_DevUnitPersonRoleType.HEAD_MANAGER.equals(ppm.getRole()))
+                            .filter(ppm -> En_PersonRoleType.HEAD_MANAGER.equals(ppm.getRole()))
                             .findFirst();
 
                     int teamSize = value.getTeam().size() - (leader.isPresent() ? 1 : 0);
