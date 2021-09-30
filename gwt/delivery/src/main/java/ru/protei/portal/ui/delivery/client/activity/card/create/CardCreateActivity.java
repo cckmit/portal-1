@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.delivery.client.activity.card.create;
 
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -21,7 +22,6 @@ import ru.protei.portal.ui.delivery.client.activity.card.meta.AbstractCardCreate
 import ru.protei.portal.ui.delivery.client.activity.card.meta.CardCommonMeta;
 import ru.protei.portal.ui.delivery.client.view.card.meta.CardMetaView;
 
-import java.util.Date;
 import java.util.function.Consumer;
 
 public abstract class CardCreateActivity extends CardCommonMeta implements Activity, AbstractCardCreateActivity, AbstractCardCreateMetaActivity {
@@ -87,10 +87,15 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
     }
 
     private void setSerialNumber() {
-        String serialNumber = view.type().getValue().getCode() + "." +
-                view.cardBatch().getValue().getNumber() + "." +
-                new Date().getTime() % 10000;
-        view.serialNumber().setValue(serialNumber);
+        cardController.getSizeByBatchId(view.cardBatch().getValue().getId(), new FluentCallback<Long>()
+                .withError(throwable -> defaultErrorHandler.accept(throwable))
+                .withSuccess(size -> {
+                    String serialNumber =
+                            view.type().getValue().getCode() + "." +
+                            view.cardBatch().getValue().getNumber() + "." +
+                            NumberFormat.getFormat("000").format(size + 1);
+                    view.serialNumber().setValue(serialNumber);
+                }));
     }
 
     private void prepare() {

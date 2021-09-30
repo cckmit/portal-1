@@ -28,6 +28,7 @@ public class CardCreateView extends Composite implements AbstractCardCreateView 
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        serialNumber.getElement().setAttribute("placeholder", lang.cardSerialNumberPlaceholder());
         ensureDebugIds();
     }
 

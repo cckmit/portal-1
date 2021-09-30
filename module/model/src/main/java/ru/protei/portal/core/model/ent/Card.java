@@ -54,11 +54,11 @@ public class Card extends AuditableObject {
     @JdbcColumn(name = "serial_number")
     private String serialNumber;
 
-    @JdbcColumn(name = "card_batch_id")
+    @JdbcColumn(name = Columns.CARD_BATCH_ID)
     private Long cardBatchId;
 
     @JdbcJoinedObject(joinPath = {
-            @JdbcJoinPath(localColumn = Card.Columns.BATCH_ID, remoteColumn = CaseObject.Columns.ID,
+            @JdbcJoinPath(localColumn = Card.Columns.CARD_BATCH_ID, remoteColumn = CaseObject.Columns.ID,
                     table = CARD_BATCH_TABLE, sqlTableAlias = CARD_BATCH_ALIAS),
     })
     private CardBatch cardBatch;
@@ -273,7 +273,7 @@ public class Card extends AuditableObject {
 
     public interface Columns {
         String ID = "id";
-        String BATCH_ID = "card_batch_id";
+        String CARD_BATCH_ID = "card_batch_id";
         String TYPE_ID = "type_id";
     }
 }

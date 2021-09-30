@@ -146,6 +146,14 @@ public class CardServiceImpl implements CardService {
         return getCard(token, meta.getId());
     }
 
+    @Override
+    public Result<Long> getSizeByBatchId(AuthToken token, Long cardBatchId) {
+        if (cardBatchId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        return ok(cardDAO.countByExpression(Card.Columns.CARD_BATCH_ID + "= ?", cardBatchId));
+    }
+
     private boolean isValid(Card card) {
         if (card.getTypeId() == null) {
             return false;

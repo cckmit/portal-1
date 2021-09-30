@@ -23,7 +23,9 @@ public interface CardController extends RemoteService {
 
     List<CardType> getCardTypeList() throws RequestFailedException;
 
-    Card createCard(Card card) throws RequestFailedException;;
+    Card createCard(Card card) throws RequestFailedException;
 
-    Card updateMeta(Card card) throws RequestFailedException;;
+    Card updateMeta(Card card) throws RequestFailedException;
+
+    Long getSizeByBatchId(Long cardBatchId) throws RequestFailedException;
 }

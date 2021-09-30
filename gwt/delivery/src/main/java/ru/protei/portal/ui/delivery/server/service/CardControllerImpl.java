@@ -68,4 +68,10 @@ public class CardControllerImpl implements CardController {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         return checkResultAndGetData(cardService.updateMeta(token, card));
     }
+
+    @Override
+    public Long getSizeByBatchId(Long cardBatchId) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(cardService.getSizeByBatchId(token, cardBatchId));
+    }
 }

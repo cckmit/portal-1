@@ -23,4 +23,6 @@ public interface CardControllerAsync {
     void createCard(Card card, AsyncCallback<Card> async);
 
     void updateMeta(Card card, AsyncCallback<Card> async);
+
+    void getSizeByBatchId(Long cardBatchId, AsyncCallback<Long> async);
 }
