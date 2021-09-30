@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.ent.CardBatch;
 import ru.protei.portal.core.model.ent.CardType;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.selector.cardbatch.CardBatchModel;
+import ru.protei.portal.ui.delivery.client.view.card.meta.CardMetaView;
 
 import java.util.Date;
 
@@ -19,7 +21,7 @@ public interface AbstractCardCreateView extends IsWidget {
 
     HasEnabled saveEnabled();
 
-    String getSerialNumber();
+    HasValue<String> serialNumber();
 
     HasValue<String> note();
 
@@ -31,6 +33,8 @@ public interface AbstractCardCreateView extends IsWidget {
 
     HasValue<CardBatch> cardBatch();
 
+    CardBatchModel cardBatchModel();
+
     HasValue<String> article();
 
     HasValue<PersonShortView> manager();
@@ -38,4 +42,6 @@ public interface AbstractCardCreateView extends IsWidget {
     HasValue<Date> testDate();
 
     void setTestDateValid(boolean value);
+
+    CardMetaView getMetaView();
 }

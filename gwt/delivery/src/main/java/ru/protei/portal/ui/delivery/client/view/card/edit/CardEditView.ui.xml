@@ -10,7 +10,7 @@
                 <div class="btn-toolbar flex-wrap">
                     <div class="btn-group form-group">
                         <g:Button ui:field="noteCommentEditButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
-                                  title="{lang.editNoteAndComment}">
+                                  title="{lang.cardEditNoteAndComment}">
                             <i class="fa fa-pencil-alt"/>
                         </g:Button>
                     </div>

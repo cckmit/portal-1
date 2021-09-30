@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.cardbatch.CardBatchModel;
 import ru.protei.portal.ui.delivery.client.activity.card.create.AbstractCardCreateActivity;
 import ru.protei.portal.ui.delivery.client.activity.card.create.AbstractCardCreateView;
 import ru.protei.portal.ui.delivery.client.view.card.infoComment.CardNoteCommentEditView;
@@ -41,8 +42,8 @@ public class CardCreateView extends Composite implements AbstractCardCreateView 
     }
 
     @Override
-    public String getSerialNumber() {
-        return serialNumber.getValue();
+    public HasValue<String> serialNumber() {
+        return serialNumber;
     }
 
     @Override
@@ -71,6 +72,11 @@ public class CardCreateView extends Composite implements AbstractCardCreateView 
     }
 
     @Override
+    public CardBatchModel cardBatchModel() {
+        return meta.cardBatchModel();
+    }
+
+    @Override
     public HasValue<String> article() {
         return meta.article();
     }
@@ -88,6 +94,11 @@ public class CardCreateView extends Composite implements AbstractCardCreateView 
     @Override
     public void setTestDateValid(boolean value) {
         meta.setTestDateValid(value);
+    }
+
+    @Override
+    public CardMetaView getMetaView() {
+        return meta;
     }
 
     private void ensureDebugIds() {

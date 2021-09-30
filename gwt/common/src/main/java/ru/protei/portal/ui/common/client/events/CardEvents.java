@@ -29,13 +29,13 @@ public class CardEvents {
     }
 
     public static class Edit {
-        public Edit(Card card, HasWidgets parent, Runnable closeHandle) {
-            this.card = card;
+        public Edit(Long cardId, HasWidgets parent, Runnable closeHandle) {
+            this.cardId = cardId;
             this.parent = parent;
             this.closeHandle = closeHandle;
         }
 
-        public Card card;
+        public Long cardId;
         public HasWidgets parent;
         public Runnable closeHandle;
     }

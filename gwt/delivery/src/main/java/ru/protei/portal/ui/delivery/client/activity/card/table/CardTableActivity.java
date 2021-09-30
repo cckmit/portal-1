@@ -90,7 +90,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         view.clearSelection();
         animation.showDetails();
 
-        fireEvent(new CardEvents.Create(view.getPreviewContainer(), 193111L, () -> {
+        fireEvent(new CardEvents.Create(view.getPreviewContainer(), () -> {
             animation.closeDetails();
             loadTable();
         }));
@@ -108,7 +108,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         if (value == null) {
             animation.closeDetails();
         } else {
-            fireEvent( new CardEvents.Edit( value, view.getPreviewContainer(), () -> animation.closeDetails()) );
+            fireEvent( new CardEvents.Edit( value.getId(), view.getPreviewContainer(), () -> animation.closeDetails()) );
             animation.showDetails();
         }
     }

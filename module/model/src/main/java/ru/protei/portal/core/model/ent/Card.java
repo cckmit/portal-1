@@ -14,6 +14,8 @@ public class Card extends AuditableObject {
     public static final String AUDIT_TYPE = "Card";
     public static final String CASE_OBJECT_TABLE = "case_object";
     public static final String CASE_OBJECT_ALIAS = "CO";
+    public static final String CARD_BATCH_TABLE = "card_batch";
+    public static final String CARD_BATCH_ALIAS = "CB";
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -54,6 +56,12 @@ public class Card extends AuditableObject {
 
     @JdbcColumn(name = "card_batch_id")
     private Long cardBatchId;
+
+    @JdbcJoinedObject(joinPath = {
+            @JdbcJoinPath(localColumn = Card.Columns.BATCH_ID, remoteColumn = CaseObject.Columns.ID,
+                    table = CARD_BATCH_TABLE, sqlTableAlias = CARD_BATCH_ALIAS),
+    })
+    private CardBatch cardBatch;
 
     @JdbcColumn(name = "article")
     private String article;
@@ -158,6 +166,14 @@ public class Card extends AuditableObject {
         this.cardBatchId = cardBatchId;
     }
 
+    public CardBatch getCardBatch() {
+        return cardBatch;
+    }
+
+    public void setCardBatch(CardBatch cardBatch) {
+        this.cardBatch = cardBatch;
+    }
+
     public String getArticle() {
         return article;
     }
@@ -244,6 +260,7 @@ public class Card extends AuditableObject {
                 ", cardType='" + cardType + '\'' +
                 ", serialNumber='" + serialNumber + '\'' +
                 ", cardBatchId=" + cardBatchId +
+                ", cardBatch=" + cardBatch +
                 ", article='" + article + '\'' +
                 ", testDate=" + testDate +
                 ", comment='" + comment + '\'' +
@@ -256,6 +273,7 @@ public class Card extends AuditableObject {
 
     public interface Columns {
         String ID = "id";
+        String BATCH_ID = "card_batch_id";
         String TYPE_ID = "type_id";
     }
 }

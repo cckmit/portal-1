@@ -3760,7 +3760,17 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardSelectManager();
 
-    String editNoteAndComment();
+    String cardEditNoteAndComment();
+
+    String cardValidationErrorState();
+
+    String cardValidationErrorType();
+
+    String cardValidationErrorArticle();
+
+    String cardValidationErrorManager();
+
+    String cardValidationErrorTestDate();
 
     String cardBatchNumber();
 

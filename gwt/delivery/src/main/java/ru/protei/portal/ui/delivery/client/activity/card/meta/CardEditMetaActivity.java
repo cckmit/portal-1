@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -18,12 +17,14 @@ import ru.protei.portal.ui.delivery.client.view.card.meta.CardMetaView;
 import java.util.Date;
 import java.util.Objects;
 
+public abstract class CardEditMetaActivity extends CardCommonMeta implements Activity, AbstractCardEditMetaActivity {
 
-public abstract class CardMetaActivity implements Activity, AbstractCardMetaActivity {
-
-    @PostConstruct
+    @Inject
     public void onInit() {
-        view.setActivity(this);
+        view.setEditActivity(this);
+        view.typeEnable().setEnabled(false);
+        view.cardBatchEnable().setEnabled(false);
+        setMetaView(view);
     }
 
     @Event
@@ -33,7 +34,7 @@ public abstract class CardMetaActivity implements Activity, AbstractCardMetaActi
 
         card = event.card;
 
-        fillView( card, false );
+        fillView( card);
     }
 
     @Override
@@ -41,16 +42,6 @@ public abstract class CardMetaActivity implements Activity, AbstractCardMetaActi
         CaseState caseState = view.state().getValue();
         card.setState(caseState);
         card.setStateId(caseState.getId());
-        onCaseMetaChanged();
-    }
-
-    @Override
-    public void onTypeChanged() {
-        if (card.getTypeId().equals(view.type().getValue().getId())) {
-            return;
-        }
-        card.setTypeId(view.type().getValue().getId());
-        card.setCardType(view.type().getValue());
         onCaseMetaChanged();
     }
 
@@ -69,34 +60,16 @@ public abstract class CardMetaActivity implements Activity, AbstractCardMetaActi
 
     @Override
     public void onTestDateChanged() {
-        view.setTestDateValid(isTestDateFieldValid());
+        super.onTestDateChanged();
+        if (!isTestDateFieldValid()) {
+            return;
+        }
+
         if (isDateEquals(view.testDate().getValue(), card.getTestDate())) {
             return;
         }
         card.setTestDate(view.testDate().getValue());
         onCaseMetaChanged();
-    }
-
-    private String getValidationError() {
-/*        CaseState state = view.state().getValue();
-        if (state == null) {
-            return lang.deliveryValidationEmptyState();
-        }*/
-
-        return null;
-    }
-
-    private void fillView(Card updatedCard, boolean afterUpdate) {
-        card = updatedCard;
-        view.state().setValue(card.getState());
-        view.type().setValue(card.getCardType());
-        view.article().setValue(card.getArticle());
-        view.manager().setValue(card.getManager());
-
-        if (!afterUpdate) {
-            view.testDate().setValue(card.getTestDate());
-//            view.setBuildDateValid(true);
-        }
     }
 
     private void onCaseMetaChanged() {
@@ -110,20 +83,22 @@ public abstract class CardMetaActivity implements Activity, AbstractCardMetaActi
                 .withSuccess(metaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new CardEvents.Change(metaUpdated));
-                    fillView( metaUpdated, true );
+                    fillView( metaUpdated );
                 }));
+    }
+
+    private void fillView(Card card) {
+        view.state().setValue(card.getState());
+        view.type().setValue(card.getCardType());
+        view.cardBatch().setValue(card.getCardBatch());
+        view.article().setValue(card.getArticle());
+        view.manager().setValue(card.getManager());
+        view.testDate().setValue(card.getTestDate());
+        view.setTestDateValid(true);
     }
 
     private void showValidationError(String error) {
         fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
-    }
-
-    private boolean isDateEquals(Date dateField, Date dateMeta) {
-        if (dateField == null) {
-            return dateMeta == null;
-        } else {
-            return Objects.equals(dateField, dateMeta);
-        }
     }
 
     public boolean isTestDateFieldValid() {
@@ -133,6 +108,14 @@ public abstract class CardMetaActivity implements Activity, AbstractCardMetaActi
         }
 
         return date.getTime() > System.currentTimeMillis();
+    }
+
+    private boolean isDateEquals(Date dateField, Date dateMeta) {
+        if (dateField == null) {
+            return dateMeta == null;
+        } else {
+            return Objects.equals(dateField, dateMeta);
+        }
     }
 
     @Inject

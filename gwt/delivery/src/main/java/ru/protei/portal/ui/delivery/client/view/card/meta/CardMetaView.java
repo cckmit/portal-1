@@ -8,6 +8,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
@@ -22,7 +23,9 @@ import ru.protei.portal.ui.common.client.widget.selector.cardbatch.CardBatchForm
 import ru.protei.portal.ui.common.client.widget.selector.cardbatch.CardBatchModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
-import ru.protei.portal.ui.delivery.client.activity.card.meta.AbstractCardMetaActivity;
+import ru.protei.portal.ui.delivery.client.activity.card.meta.AbstractCardCommonMeta;
+import ru.protei.portal.ui.delivery.client.activity.card.meta.AbstractCardCreateMetaActivity;
+import ru.protei.portal.ui.delivery.client.activity.card.meta.AbstractCardEditMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.card.meta.AbstractCardMetaView;
 
 import java.util.Date;
@@ -37,8 +40,18 @@ public class CardMetaView extends Composite implements AbstractCardMetaView {
     }
 
     @Override
-    public void setActivity(AbstractCardMetaActivity activity) {
-        this.activity = activity;
+    public void setCreateActivity(AbstractCardCreateMetaActivity activity) {
+        this.commonActivity = activity;
+        type.addValueChangeHandler(event -> activity.onTypeChange());
+        cardBatch.addValueChangeHandler(event -> activity.onCardBatchChange());
+    }
+
+    @Override
+    public void setEditActivity(AbstractCardEditMetaActivity activity) {
+        this.commonActivity = activity;
+        state.addValueChangeHandler(event -> activity.onStateChanged());
+        article.addValueChangeHandler(event -> activity.onArticleChanged());
+        manager.addValueChangeHandler(event -> activity.onManagerChanged());
     }
 
     @Override
@@ -52,8 +65,23 @@ public class CardMetaView extends Composite implements AbstractCardMetaView {
     }
 
     @Override
+    public HasEnabled typeEnable() {
+        return type;
+    }
+
+    @Override
     public HasValue<CardBatch> cardBatch() {
         return cardBatch;
+    }
+
+    @Override
+    public HasEnabled cardBatchEnable() {
+        return cardBatch;
+    }
+
+    @Override
+    public CardBatchModel cardBatchModel() {
+        return cardBatchModel;
     }
 
     @Override
@@ -81,15 +109,11 @@ public class CardMetaView extends Composite implements AbstractCardMetaView {
         testDate.markInputValid(isValid);
     }
 
-    @Override
-    public void setAllowChangingState(boolean isAllow) {
-        // ???
-    }
-
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
+        // todo
 /*        state.setEnsureDebugId(DebugIds.DELIVERY.KIT.MODULE.STATE);
         customerCompany.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.CUSTOMER_COMPANY);
         manager.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.MANAGER);
@@ -99,34 +123,9 @@ public class CardMetaView extends Composite implements AbstractCardMetaView {
         departureDate.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.DEPARTURE_DATE);*/
     }
 
-    @UiHandler("state")
-    public void onStateChanged(ValueChangeEvent<CaseState> event) {
-        if (activity != null) activity.onStateChanged();
-    }
-
-    @UiHandler("type")
-    public void onTypeChanged(ValueChangeEvent<CardType> event) {
-        CardType cardType = type.getValue();
-        if (!cardType.equals(cardBatchModel.getCardType())) {
-            cardBatch.setValue(null);
-            cardBatchModel.updateCardType(cardType);
-        }
-        if (activity != null) activity.onTypeChanged();
-    }
-
-    @UiHandler("article")
-    public void onArticleChanged(ValueChangeEvent<String> event) {
-        if (activity != null) activity.onArticleChanged();
-    }
-
-    @UiHandler("manager")
-    public void onManagerChanged(ValueChangeEvent<PersonShortView> event) {
-        if (activity != null) activity.onManagerChanged();
-    }
-
     @UiHandler("testDate")
     public void onTestDateChanged(ValueChangeEvent<Date> event) {
-        if (activity != null) activity.onTestDateChanged();
+        commonActivity.onTestDateChanged();
     }
 
     @Inject
@@ -150,7 +149,7 @@ public class CardMetaView extends Composite implements AbstractCardMetaView {
     @Inject
     CardBatchModel cardBatchModel;
 
-    private AbstractCardMetaActivity activity;
+    private AbstractCardCommonMeta commonActivity;
 
     private static ViewUiBinder ourUiBinder = GWT.create(ViewUiBinder.class);
     interface ViewUiBinder extends UiBinder<HTMLPanel, CardMetaView> {}

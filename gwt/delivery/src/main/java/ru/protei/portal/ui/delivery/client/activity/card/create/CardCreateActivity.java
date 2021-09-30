@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Card;
+import ru.protei.portal.core.model.ent.CardType;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -16,14 +17,22 @@ import ru.protei.portal.ui.common.client.service.CardControllerAsync;
 import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.delivery.client.activity.card.meta.AbstractCardCreateMetaActivity;
+import ru.protei.portal.ui.delivery.client.activity.card.meta.CardCommonMeta;
+import ru.protei.portal.ui.delivery.client.view.card.meta.CardMetaView;
 
+import java.util.Date;
 import java.util.function.Consumer;
 
-public abstract class CardCreateActivity implements Activity, AbstractCardCreateActivity {
+public abstract class CardCreateActivity extends CardCommonMeta implements Activity, AbstractCardCreateActivity, AbstractCardCreateMetaActivity {
 
     @Inject
     public void onInit() {
         view.setActivity(this);
+
+        CardMetaView metaView = view.getMetaView();
+        commonMeta.setMetaView(metaView);
+        view.getMetaView().setCreateActivity(this);
     }
 
     @Event
@@ -62,7 +71,30 @@ public abstract class CardCreateActivity implements Activity, AbstractCardCreate
         closeHandle.run();
     }
 
+    @Override
+    public void onTypeChange() {
+        CardType cardType = view.type().getValue();
+        if (!cardType.equals(view.cardBatchModel().getCardType())) {
+            view.cardBatch().setValue(null);
+            view.cardBatchModel().updateCardType(cardType);
+            view.serialNumber().setValue(null);
+        }
+    }
+
+    @Override
+    public void onCardBatchChange() {
+        setSerialNumber();
+    }
+
+    private void setSerialNumber() {
+        String serialNumber = view.type().getValue().getCode() + "." +
+                view.cardBatch().getValue().getNumber() + "." +
+                new Date().getTime() % 10000;
+        view.serialNumber().setValue(serialNumber);
+    }
+
     private void prepare() {
+        view.serialNumber().setValue(null);
         view.type().setValue(null);
         view.cardBatch().setValue(null);
         view.article().setValue(null);
@@ -78,7 +110,7 @@ public abstract class CardCreateActivity implements Activity, AbstractCardCreate
         Card card = new Card();
         card.setTypeId(view.type().getValue().getId());
         card.setCardType(view.type().getValue());
-        card.setSerialNumber(view.getSerialNumber());
+        card.setSerialNumber(view.serialNumber().getValue());
         card.setCardBatchId(view.cardBatch().getValue().getId());
         card.setArticle(view.article().getValue());
         card.setTestDate(view.testDate().getValue());
@@ -94,7 +126,7 @@ public abstract class CardCreateActivity implements Activity, AbstractCardCreate
         fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
     }
 
-    private String getValidationError() {
+    public String getValidationError() {
 /*        if (isBlank(view.name().getValue())) {
             return lang.deliveryValidationEmptyName();
         }
@@ -152,6 +184,8 @@ public abstract class CardCreateActivity implements Activity, AbstractCardCreate
     private PolicyService policyService;
     @Inject
     private DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    private CardCommonMeta commonMeta;
 
     private AppEvents.InitDetails initDetails;
     private Runnable closeHandle;

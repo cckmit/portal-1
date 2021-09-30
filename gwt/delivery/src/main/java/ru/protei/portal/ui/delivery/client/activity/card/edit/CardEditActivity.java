@@ -12,9 +12,7 @@ import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.CardEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CardControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
@@ -45,22 +43,14 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
 
     @Event
     public void onShow( CardEvents.Edit event ) {
-        if (event.card == null || event.card.getId() == null ) {
-            return;
-        }
-
-        if (!hasAccess()) {
+        HasWidgets container = event.parent;
+        if (event.cardId == null || !hasAccess()) {
+            fireEvent(new ErrorPageEvents.ShowForbidden(container));
             event.closeHandle.run();
             return;
         }
 
-        event.parent.clear();
-        event.parent.add(view.asWidget());
-
-        card = event.card;
-
-        fillView(card);
-        showMeta(card);
+        request(event.cardId, container);
     }
 
     @Override
@@ -89,6 +79,23 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
         noteCommentEditView.comment().setValue(card.getComment());
         view.noteCommentEditButtonVisibility().setVisible(false);
         switchNameDescriptionToEdit(true);
+    }
+
+    private void request(Long id, HasWidgets container) {
+        controller.getCard(id, new FluentCallback<Card>()
+                .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
+                .withSuccess(card -> {
+                    this.card = card;
+                    switchNameDescriptionToEdit(false);
+                    fillView(card);
+                    showMeta(card);
+                    attachToContainer(container);
+                }));
+    }
+
+    private void attachToContainer(HasWidgets container) {
+        container.clear();
+        container.add(view.asWidget());
     }
 
     private void fillView(Card card) {
