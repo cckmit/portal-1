@@ -39,8 +39,8 @@ public class CardNoteCommentButtonsView extends Composite {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        saveButton.ensureDebugId(DebugIds.ISSUE.EDIT_NAME_AND_DESC_ACCEPT);
-        cancelButton.ensureDebugId(DebugIds.ISSUE.EDIT_NAME_AND_DESC_REJECT);
+        saveButton.ensureDebugId(DebugIds.CARD.NOTE_COMMENT_SAVE_BUTTON);
+        cancelButton.ensureDebugId(DebugIds.CARD.NOTE_COMMENT_CANCEL_BUTTON);
     }
 
     @UiField

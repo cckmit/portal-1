@@ -107,8 +107,9 @@ public class CardCreateView extends Composite implements AbstractCardCreateView 
             return;
         }
 
-        // todo fill
-        saveButton.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.SAVE_BUTTON);
+        saveButton.ensureDebugId(DebugIds.CARD.SAVE_BUTTON);
+        cancelButton.ensureDebugId(DebugIds.CARD.CANCEL_BUTTON);
+        serialNumber.ensureDebugId(DebugIds.CARD.SERIAL_NUMBER);
     }
 
     @UiHandler("saveButton")
@@ -137,6 +138,8 @@ public class CardCreateView extends Composite implements AbstractCardCreateView 
     CardMetaView meta;
     @UiField
     Button saveButton;
+    @UiField
+    Button cancelButton;
 
     private AbstractCardCreateActivity activity;
 

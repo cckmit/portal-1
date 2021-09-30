@@ -182,7 +182,7 @@ public class CardServiceImpl implements CardService {
 
     private boolean isValid(Card oldCard, Card card) {
         return Objects.equals(oldCard.getTypeId(), card.getTypeId()) &&
-                Objects.equals(oldCard.getCardBatchId(), card.getCardBatchId())
+                Objects.equals(oldCard.getCardBatchId(), card.getCardBatchId());
     }
 
     private CaseObject createCaseObject(CaseObject caseObject, Card card,

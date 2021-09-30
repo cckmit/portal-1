@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.ent.CardType;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.card.state.CardStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.card.type.CardTypeFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.cardbatch.CardBatchFormSelector;
@@ -120,14 +121,12 @@ public class CardMetaView extends Composite implements AbstractCardMetaView {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        // todo
-/*        state.setEnsureDebugId(DebugIds.DELIVERY.KIT.MODULE.STATE);
-        customerCompany.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.CUSTOMER_COMPANY);
-        manager.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.MANAGER);
-        hwManager.ensureLabelDebugId(DebugIds.DELIVERY.KIT.MODULE.HW_MANAGER);
-        qcManager.ensureLabelDebugId(DebugIds.DELIVERY.KIT.MODULE.QC_MANAGER);
-        buildDate.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.BUILD_DATE);
-        departureDate.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.DEPARTURE_DATE);*/
+        state.setEnsureDebugId(DebugIds.CARD.STATE);
+        type.ensureDebugId(DebugIds.CARD.TYPE);
+        cardBatch.ensureLabelDebugId(DebugIds.CARD.CARD_BATCH);
+        article.ensureDebugId(DebugIds.CARD.ARTICLE);
+        manager.ensureDebugId(DebugIds.CARD.MANAGER);
+        testDate.ensureDebugId(DebugIds.CARD.TEST_DATE);
     }
 
     @UiHandler("article")

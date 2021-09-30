@@ -3,13 +3,13 @@ package ru.protei.portal.ui.delivery.client.view.card.edit;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.delivery.client.activity.card.edit.AbstractCardEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.card.edit.AbstractCardEditView;
@@ -22,7 +22,6 @@ public class CardEditView extends Composite implements AbstractCardEditView {
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-
         ensureDebugIds();
     }
 
@@ -33,7 +32,7 @@ public class CardEditView extends Composite implements AbstractCardEditView {
 
     @Override
     public void setSerialNumber(String value) {
-        serialNumber.setInnerText(value);
+        serialNumber.setText(value);
     }
 
     public HasWidgets getNoteCommentContainer() {
@@ -67,14 +66,15 @@ public class CardEditView extends Composite implements AbstractCardEditView {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        // todo
-//        noteCommentEditButton.ensureDebugId(DebugIds.DELIVERY.EDIT_NAME_AND_DESCRIPTION_BUTTON);
+
+        noteCommentEditButton.ensureDebugId(DebugIds.CARD.EDIT_NOTE_COMMENT_BUTTON);
+        serialNumber.ensureDebugId(DebugIds.CARD.SERIAL_NUMBER);
     }
 
     @UiField
     HTMLPanel root;
     @UiField
-    LabelElement serialNumber;
+    Label serialNumber;
     @UiField
     HTMLPanel noteCommentContainer;
     @UiField

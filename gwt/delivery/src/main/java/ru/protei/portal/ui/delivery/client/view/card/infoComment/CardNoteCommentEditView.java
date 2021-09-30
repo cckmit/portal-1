@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
@@ -47,9 +48,8 @@ public class CardNoteCommentEditView extends Composite {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        // todo
-//        note.ensureDebugId( DebugIds.ISSUE.NAME_INPUT );
-//        comment.setEnsureDebugId( DebugIds.ISSUE.DESCRIPTION_INPUT );
+        note.ensureDebugId( DebugIds.CARD.NOTE );
+        comment.setEnsureDebugId( DebugIds.CARD.COMMENT );
     }
 
     private void renderMarkupText(String text, Consumer<String> consumer ) {

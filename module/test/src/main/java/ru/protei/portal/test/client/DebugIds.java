@@ -1365,6 +1365,26 @@ public class DebugIds {
         }
     }
 
+    public interface CARD {
+        String SAVE_BUTTON = "card-save-button";
+        String CANCEL_BUTTON = "card-cancel-button";
+
+        String SERIAL_NUMBER = "card-serial-number";
+
+        String EDIT_NOTE_COMMENT_BUTTON = "card-edit-note-comment-button";
+        String NOTE_COMMENT_SAVE_BUTTON = "card-note-comment-save-button";
+        String NOTE_COMMENT_CANCEL_BUTTON = "card-note-comment-cancel-button";
+        String NOTE = "card-note";
+        String COMMENT = "card-comment";
+
+        String STATE = "card-state-selector";
+        String TYPE = "card-type-selector";
+        String CARD_BATCH = "card-card-batch-selector";
+        String ARTICLE = "card-article-input";
+        String MANAGER = "card-manager-selector";
+        String TEST_DATE = "card-test-date-container";
+    }
+
     public interface CARD_BATCH {
         String BACK_BUTTON = "card-batch-back-button";
         String SAVE_BUTTON = "card-batch-save-button";

@@ -17,7 +17,7 @@
                 </div>
                 <small ui:field="createdBy" class="pull-right text-right"/>
 
-                <h5 class="no-margin"><label ui:field="serialNumber" class="semi-bold large-text"/></h5>
+                <h5 class="no-margin"><g:Label ui:field="serialNumber" class="semi-bold large-text"/></h5>
 
                 <g:HTMLPanel ui:field="noteCommentContainer"/>
             </div>

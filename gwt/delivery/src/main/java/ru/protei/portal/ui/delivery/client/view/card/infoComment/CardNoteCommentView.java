@@ -8,6 +8,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 public class CardNoteCommentView extends Composite  {
@@ -31,8 +32,8 @@ public class CardNoteCommentView extends Composite  {
             return;
         }
 
-//        nameRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DELIVERY.NAME);
-//        descriptionRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DELIVERY.DESCRIPTION);
+        noteRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CARD.NOTE);
+        commentRO.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CARD.COMMENT);
     }
 
     @UiField
