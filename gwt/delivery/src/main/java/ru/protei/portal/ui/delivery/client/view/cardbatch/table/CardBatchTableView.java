@@ -13,6 +13,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.lang.CardStateLang;
+import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.table.AbstractCardBatchTableActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.table.AbstractCardBatchTableView;
@@ -100,7 +101,7 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
         columns.add(new NumberColumn(lang, cardStateLang));
         columns.add(new AmountColumn(lang));
         columns.add(new DeadlineColumn(lang));
-        columns.add(new ExecutorsColumn(lang));
+        columns.add(new ContractorsColumn(lang, personRoleTypeLang));
         columns.forEach(clickColumn -> {
             table.addColumn(clickColumn.header, clickColumn.values);
         });
@@ -121,6 +122,8 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
 
     @Inject
     CardStateLang cardStateLang;
+    @Inject
+    En_PersonRoleTypeLang personRoleTypeLang;
 
     private List<ClickColumn> columns = new ArrayList<>();
     private ClickColumnProvider<CardBatch> columnProvider = new ClickColumnProvider<>();

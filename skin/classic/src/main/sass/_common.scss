@@ -5654,7 +5654,10 @@ div.form-group-default.form-group-default-selectFx:focus {
         td {
 
           div {
-            max-height: 70px;
+            max-height: 150px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
 
           p {
@@ -5666,7 +5669,7 @@ div.form-group-default.form-group-default-selectFx:focus {
           label {
             font-weight: 600;
             line-height: 1.2em;
-            vertical-align: middle;
+            vertical-align: inherit;
             font-size: 0.9em;
             cursor: pointer;
           }
@@ -5677,12 +5680,14 @@ div.form-group-default.form-group-default-selectFx:focus {
       width: 15%;
       text-align: center;
     }
-    .article, .number, .amount, .deadline {
+    .number, .deadline {
+      width: 5%;
+    }
+    .article, .amount, {
       width: 15%;
     }
-    .executors,  {
-      font-size: 85%;
-      width: 40%;
+    .contractors,  {
+      width: 45%;
     }
     .type-size, .article-size {
       font-size: 14px;

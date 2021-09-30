@@ -3810,7 +3810,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardBatchColumnDeadline();
 
-    String cardBatchColumnExecutors();
+    String cardBatchColumnContractors();
 
     String personAutomaticMounting();
 
