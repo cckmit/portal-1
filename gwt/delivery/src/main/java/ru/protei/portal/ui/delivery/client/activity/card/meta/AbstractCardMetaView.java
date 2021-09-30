@@ -30,6 +30,8 @@ public interface AbstractCardMetaView extends IsWidget {
 
     HasValue<String> article();
 
+    boolean articleIsValid();
+
     HasValue<PersonShortView> manager();
 
     HasValue<Date> testDate();

@@ -20,7 +20,6 @@ import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.activity.card.meta.AbstractCardCreateMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.card.meta.CardCommonMeta;
-import ru.protei.portal.ui.delivery.client.view.card.meta.CardMetaView;
 
 import java.util.function.Consumer;
 
@@ -30,8 +29,7 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
     public void onInit() {
         view.setActivity(this);
 
-        CardMetaView metaView = view.getMetaView();
-        commonMeta.setMetaView(metaView);
+        setMetaView(view.getMetaView());
         view.getMetaView().setCreateActivity(this);
     }
 
@@ -74,7 +72,7 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
     @Override
     public void onTypeChange() {
         CardType cardType = view.type().getValue();
-        if (!cardType.equals(view.cardBatchModel().getCardType())) {
+        if (cardType == null || !cardType.equals(view.cardBatchModel().getCardType())) {
             view.cardBatch().setValue(null);
             view.cardBatchModel().updateCardType(cardType);
             view.serialNumber().setValue(null);
@@ -111,6 +109,7 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
         view.serialNumber().setValue(null);
         view.type().setValue(null);
         view.cardBatch().setValue(null);
+        view.cardBatchModel().updateCardType(null);
         view.article().setValue(null);
         isCanPresetArticle = true;
         view.testDate().setValue(null);
@@ -142,21 +141,13 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
     }
 
     public String getValidationError() {
-/*        if (isBlank(view.name().getValue())) {
-            return lang.deliveryValidationEmptyName();
-        }
-
-        String error = commonMeta.getValidationError();
+        String error = super.getValidationError();
         if (error != null) {
             return error;
         }
-        CaseState state = view.state().getValue();
-         if (!Objects.equals(CrmConstants.State.PRELIMINARY, state.getId())) {
-            return lang.deliveryValidationInvalidStateAtCreate();
+        if (view.serialNumber().getValue() == null) {
+            return lang.cardValidationErrorSerialNumber();
         }
-        if (!kitList.isValid()) {
-            return lang.deliveryValidationInvalidKits();
-        }*/
 
         return null;
     }
@@ -199,8 +190,6 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
     private PolicyService policyService;
     @Inject
     private DefaultErrorHandler defaultErrorHandler;
-    @Inject
-    private CardCommonMeta commonMeta;
 
     private boolean isCanPresetArticle;
     private AppEvents.InitDetails initDetails;

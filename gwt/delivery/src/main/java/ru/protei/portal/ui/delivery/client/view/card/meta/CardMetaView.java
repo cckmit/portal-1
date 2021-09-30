@@ -92,6 +92,11 @@ public class CardMetaView extends Composite implements AbstractCardMetaView {
     }
 
     @Override
+    public boolean articleIsValid() {
+        return article.isValid();
+    }
+
+    @Override
     public HasValue<PersonShortView> manager() {
         return manager;
     }

@@ -23,13 +23,19 @@ public abstract class CardCommonMeta implements Activity, AbstractCardCommonMeta
         if (view.state().getValue() == null) {
             return lang.cardValidationErrorState();
         }
-        if (view.article().getValue() == null) {
+        if (view.type().getValue() == null) {
+            return lang.cardValidationErrorType();
+        }
+        if (view.cardBatch().getValue() == null) {
+            return lang.cardValidationErrorCardBatch();
+        }
+        if (view.article().getValue() == null || !view.articleIsValid()) {
             return lang.cardValidationErrorArticle();
         }
         if (view.manager().getValue() == null) {
             return lang.cardValidationErrorManager();
         }
-        if (view.testDate().getValue() == null) {
+        if (view.testDate().getValue() == null || !isTestDateFieldValid()) {
             return lang.cardValidationErrorTestDate();
         }
         return null;
@@ -45,7 +51,7 @@ public abstract class CardCommonMeta implements Activity, AbstractCardCommonMeta
     }
 
     @Inject
-    private Lang lang;
+    protected Lang lang;
     @Inject
-    private CardMetaView view;
+    protected CardMetaView view;
 }

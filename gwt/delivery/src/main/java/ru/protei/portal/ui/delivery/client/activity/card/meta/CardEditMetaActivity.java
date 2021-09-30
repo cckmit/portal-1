@@ -9,10 +9,8 @@ import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.CardEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CardControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.delivery.client.view.card.meta.CardMetaView;
 
 import java.util.Date;
 import java.util.Objects;
@@ -51,6 +49,9 @@ public abstract class CardEditMetaActivity extends CardCommonMeta implements Act
     @Override
     public void onArticleChanged() {
         if (Objects.equals(view.article().getValue(), card.getArticle())) {
+            return;
+        }
+        if (!view.articleIsValid()) {
             return;
         }
         card.setArticle(view.article().getValue());
@@ -110,15 +111,6 @@ public abstract class CardEditMetaActivity extends CardCommonMeta implements Act
         fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
     }
 
-    public boolean isTestDateFieldValid() {
-        Date date = view.testDate().getValue();
-        if (date == null) {
-            return view.isTestDateEmpty();
-        }
-
-        return date.getTime() > System.currentTimeMillis();
-    }
-
     private boolean isDateEquals(Date dateField, Date dateMeta) {
         if (dateField == null) {
             return dateMeta == null;
@@ -127,10 +119,6 @@ public abstract class CardEditMetaActivity extends CardCommonMeta implements Act
         }
     }
 
-    @Inject
-    private Lang lang;
-    @Inject
-    private CardMetaView view;
     @Inject
     private CardControllerAsync controller;
 

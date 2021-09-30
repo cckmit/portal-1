@@ -3764,9 +3764,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardEditNoteAndComment();
 
+    String cardValidationErrorSerialNumber();
+
     String cardValidationErrorState();
 
     String cardValidationErrorType();
+
+    String cardValidationErrorCardBatch();
 
     String cardValidationErrorArticle();
 

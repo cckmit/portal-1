@@ -129,6 +129,10 @@ public class CardServiceImpl implements CardService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
+        if (!isValid(oldMeta, meta)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
         CaseObject caseObject = caseObjectDAO.get(meta.getId());
         caseObject = createCaseObject(caseObject, meta, null, null, new Date());
         boolean isUpdated = caseObjectDAO.merge(caseObject);
@@ -155,13 +159,13 @@ public class CardServiceImpl implements CardService {
     }
 
     private boolean isValid(Card card) {
-        if (card.getTypeId() == null) {
-            return false;
-        }
         if (StringUtils.isEmpty(card.getSerialNumber())) {
             return false;
         }
         if (card.getStateId() == null) {
+            return false;
+        }
+        if (card.getTypeId() == null) {
             return false;
         }
         if (card.getCardBatchId() == null) {
@@ -174,6 +178,11 @@ public class CardServiceImpl implements CardService {
             return false;
         }
         return true;
+    }
+
+    private boolean isValid(Card oldCard, Card card) {
+        return Objects.equals(oldCard.getTypeId(), card.getTypeId()) &&
+                Objects.equals(oldCard.getCardBatchId(), card.getCardBatchId())
     }
 
     private CaseObject createCaseObject(CaseObject caseObject, Card card,
