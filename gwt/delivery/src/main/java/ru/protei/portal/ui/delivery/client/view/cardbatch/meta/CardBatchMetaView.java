@@ -16,11 +16,9 @@ import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
-import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.cardbatch.state.CardBatchStateFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaView;
 import ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.ContractorsSelector;
@@ -83,6 +81,21 @@ public class CardBatchMetaView extends Composite implements AbstractCardBatchMet
     @UiHandler("deadline")
     public void onDeadlineChanged(ValueChangeEvent<Date> event) {
         activity.onDeadlineChanged();
+    }
+
+    @UiHandler("state")
+    public void onStateChanged(ValueChangeEvent<CaseState> event) {
+        activity.onStateChange();
+    }
+
+    @UiHandler("priority")
+    public void onPriorityChanged(ValueChangeEvent<ImportanceLevel> event) {
+        activity.onPriorityChange();
+    }
+
+    @UiHandler("contractors")
+    public void onContractorsChanged(ValueChangeEvent<Set<PersonProjectMemberView>> event) {
+        activity.onContractorsChange();
     }
 
     private void ensureDebugIds() {

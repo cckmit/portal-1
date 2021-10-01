@@ -3817,4 +3817,8 @@ public interface Lang extends Messages, ContactItemLang {
     String cardBatchDeadlineValidationError();
 
     String cardBatchContractorsValidationError();
+
+    String cardBatchGetLastNumberError();
+
+    String cardBatchNumberExceedLimitError();
 }

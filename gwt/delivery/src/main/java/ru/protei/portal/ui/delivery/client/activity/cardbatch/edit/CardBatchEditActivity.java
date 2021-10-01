@@ -6,15 +6,12 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
-import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CardBatch;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.PersonProjectMemberView;
-import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CardBatchEvents;
@@ -28,20 +25,15 @@ import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoView;
-import ru.protei.portal.ui.delivery.client.activity.cardbatch.create.AbstractCardBatchCreateView;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaView;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
-import static ru.protei.portal.core.model.util.CrmConstants.ImportanceLevel.BASIC;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.ERROR;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.SUCCESS;
 
@@ -62,7 +54,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
 
     @Event(Type.FILL_CONTENT)
     public void onShow(CardBatchEvents.Edit event) {
-        if (!hasPrivileges()) {
+        if (!hasViewPrivileges()) {
             fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
@@ -70,17 +62,21 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         initDetails.parent.clear();
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
+
         view.getCommonInfoContainer().add(commonInfoView);
         view.getMetaContainer().add(metaView);
+        commonInfoView.hidePrevCardBatchInfo();
+        commonInfoView.typeEnabled().setEnabled(false);
+        commonInfoView.numberEnabled().setEnabled(false);
 
-        prepare();
+        requestCardBatch(event.id, this::fillView);
     }
 
     @Override
     public void onSaveClicked() {
         String error = getValidationError();
         if (error != null) {
-            showValidationError(error);
+            showError(error);
             return;
         }
         CardBatch cardBatch = fillDto();
@@ -93,14 +89,6 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
     }
 
     @Override
-    public void onCardTypeChanged(Long cardTypeId) {
-
-        cardBatchService.getLastCardBatch(cardTypeId, new FluentCallback<CardBatch>()
-                .withError(defaultErrorHandler)
-                .withSuccess(getLastCardBatchConsumer));
-    }
-
-    @Override
     public void getCaseState(Long id, Consumer<CaseState> success) {
         caseStateService.getCaseStateWithoutCompaniesOmitPrivileges(id, new FluentCallback<CaseState>()
                 .withError(defaultErrorHandler)
@@ -109,12 +97,59 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
 
     @Override
     public void onStateChange() {
-
+        if (null == metaView.state().getValue()) {
+            return;
+        }
+        cardBatch.setStateId(metaView.state().getValue().getId());
+        onMetaChanged();
     }
 
     @Override
     public void onDeadlineChanged() {
-        validateDeadline();
+        if (!validateDeadline()) {
+            return;
+        }
+        cardBatch.setDeadline(metaView.deadline().getValue() != null? metaView.deadline().getValue().getTime() : null);
+        onMetaChanged();
+    }
+
+    @Override
+    public void onPriorityChange() {
+        cardBatch.setPriority(metaView.priority().getValue().getId());
+        onMetaChanged();
+    }
+
+    @Override
+    public void onContractorsChange() {
+        if (CollectionUtils.isEmpty(metaView.contractors().getValue())) {
+            return;
+        }
+        cardBatch.setContractors(new ArrayList<>(metaView.contractors().getValue()));
+        onMetaChanged();
+    }
+
+    private void onMetaChanged() {
+        if (!hasEditPrivileges()) {
+            showError(lang.errPermissionDenied());
+            return;
+        }
+
+        String error = getValidationError();
+        if (error != null) {
+            showError(error);
+            return;
+        }
+
+        cardBatchService.updateMeta(cardBatch, new FluentCallback<CardBatch>()
+                .withSuccess(caseState -> {
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fillView( caseState );
+                }));
+    }
+
+    private void requestCardBatch(Long cardBatchId, Consumer<CardBatch> cardBatchConsumer) {
+        cardBatchService.getCardBatch(cardBatchId, new FluentCallback<CardBatch>()
+                .withSuccess(cardBatchConsumer));
     }
 
     private boolean validateDeadline() {
@@ -123,44 +158,33 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         return isValid;
     }
 
-    private void prepare() {
-        commonInfoView.type().setValue(null);
-        commonInfoView.number().setValue(null);
-        commonInfoView.article().setValue(null);
-        commonInfoView.amount().setValue(null);
-        commonInfoView.params().setValue(null);
-        commonInfoView.hidePrevCardBatchInfo();
-        metaView.deadline().setValue(null);
-        metaView.stateEnable().setEnabled(false);
-        metaView.contractors().setValue(null);
-        fillPrioritySelector(BASIC);
-        fillStateSelector(CrmConstants.State.PRELIMINARY);
+    private void fillView(CardBatch cardBatch) {
+
+        this.cardBatch = cardBatch;
+        if (cardBatch == null) return;
+
+        commonInfoView.type().setValue(new EntityOption(cardBatch.getTypeName(), cardBatch.getTypeId()));
+        commonInfoView.number().setValue(cardBatch.getNumber());
+        commonInfoView.article().setValue(cardBatch.getArticle());
+        commonInfoView.amount().setValue(cardBatch.getAmount());
+        commonInfoView.params().setValue(cardBatch.getParams());
+        metaView.state().setValue(cardBatch.getState());
+        fillPrioritySelector(cardBatch.getPriority());
+        metaView.deadline().setValue(new Date(cardBatch.getDeadline()));
+        metaView.contractors().setValue(new HashSet<>(cardBatch.getContractors()));
     }
 
     private CardBatch fillDto() {
-        CardBatch cardBatch = new CardBatch();
         cardBatch.setTypeId(commonInfoView.type().getValue().getId());
         cardBatch.setNumber(commonInfoView.number().getValue());
         cardBatch.setArticle(commonInfoView.article().getValue());
         cardBatch.setAmount(commonInfoView.amount().getValue());
         cardBatch.setParams(commonInfoView.params().getValue());
-        cardBatch.setStateId(metaView.state().getValue().getId());
-        cardBatch.setPriority(metaView.priority().getValue().getId());
-        cardBatch.setDeadline(metaView.deadline().getValue() != null? metaView.deadline().getValue().getTime() : null);
-        cardBatch.setContractors(new ArrayList<>(metaView.contractors().getValue()));
 
         return cardBatch;
     }
 
-    private List<PersonProjectMemberView> toPersonProjectMemberViewList(Collection<PersonShortView> persons) {
-        return CollectionUtils.emptyIfNull(persons)
-                .stream()
-                .map(personShortView ->
-                        new PersonProjectMemberView(personShortView.getName(), personShortView.getId(), personShortView.isFired(), En_PersonRoleType.HEAD_MANAGER))
-                .collect(Collectors.toList());
-    }
-
-    private void showValidationError(String error) {
+    private void showError(String error) {
         fireEvent(new NotifyEvents.Show(error, ERROR));
     }
 
@@ -200,7 +224,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
 
     private void save(CardBatch cardBatch, Consumer<Throwable> onFailure, Runnable onSuccess) {
         view.saveEnabled().setEnabled(false);
-        cardBatchService.saveCardBatch(cardBatch, new FluentCallback<CardBatch>()
+        cardBatchService.updateMeta(cardBatch, new FluentCallback<CardBatch>()
                 .withError(throwable -> {
                     view.saveEnabled().setEnabled(true);
                     defaultErrorHandler.accept(throwable);
@@ -208,62 +232,27 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
                 })
                 .withSuccess(id -> {
                     view.saveEnabled().setEnabled(true);
-                    fireEvent(new NotifyEvents.Show(lang.cardBatchCreated(), SUCCESS));
+                    fireEvent(new NotifyEvents.Show(lang.cardBatchSaved(), SUCCESS));
                     onSuccess.run();
                 }));
     }
 
-    private boolean hasPrivileges() {
-        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE);
+    private boolean hasViewPrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW);
     }
 
-    private void fillStateSelector(Long id) {
-        metaView.state().setValue(new CaseState(id));
-        getCaseState(id, caseState -> metaView.state().setValue(caseState));
+    private boolean hasEditPrivileges() {
+        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
     }
 
     private void fillPrioritySelector(Integer id) {
         importanceService.getImportanceLevel( id, new FluentCallback<ImportanceLevel>()
-                .withError(defaultErrorHandler)
-                .withSuccess(level -> metaView.priority().setValue(level)));
-    }
-
-    Consumer<CardBatch> getLastCardBatchConsumer = new Consumer<CardBatch>() {
-        @Override
-        public void accept(CardBatch lastNumberCardBatch) {
-            String releaseNumber = START_CARD_BATCH_NUMBER;
-
-            if (lastNumberCardBatch != null && isNotEmpty(lastNumberCardBatch.getNumber())){
-                releaseNumber = getNextNumber(lastNumberCardBatch.getNumber());
-            }
-
-            commonInfoView.number().setValue(releaseNumber);
-
-            if (lastNumberCardBatch == null || isEmpty(releaseNumber)){
-                commonInfoView.hidePrevCardBatchInfo();
-                return;
-            }
-
-            commonInfoView.setPrevCardBatchInfo(lastNumberCardBatch.getNumber(), lastNumberCardBatch.getAmount(), lastNumberCardBatch.getState().getState());
-        }
-    };
-
-    private String getNextNumber(String lastNumberStr) {
-
-        int lastNumber;
-        try {
-            lastNumber = Integer.parseInt(lastNumberStr) + 1;
-        } catch (NumberFormatException e){
-            fireEvent(new NotifyEvents.Show("Ошибка при получении следующего номера партии плат", ERROR));
-            return "";
-        }
-
-        if (lastNumber >= CARD_BATCH_MAX_NUMBER){
-            fireEvent(new NotifyEvents.Show("Невозможно выделить следующий номер партии плат. Превышено ограничение по номерам: " + CARD_BATCH_MAX_NUMBER, ERROR));
-            return "";
-        }
-
-        return addLeadingZeros(lastNumber, CARD_BATCH_NUMBER_LENGTH);
+                .withSuccess(new Consumer<ImportanceLevel>() {
+                    @Override
+                    public void accept(ImportanceLevel level) {
+                        metaView.priority().setValue(level);
+                    }
+                }));
     }
 
     public static native String addLeadingZeros(int num, int number_length) /*-{
@@ -290,8 +279,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
     @Inject
     private DefaultErrorHandler defaultErrorHandler;
 
+    CardBatch cardBatch;
+
     private AppEvents.InitDetails initDetails;
-    private static final String START_CARD_BATCH_NUMBER = "001";
-    private static final int CARD_BATCH_MAX_NUMBER = 999;
-    private static final int CARD_BATCH_NUMBER_LENGTH = 3;
 }

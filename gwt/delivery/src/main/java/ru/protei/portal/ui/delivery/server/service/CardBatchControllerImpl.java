@@ -43,4 +43,16 @@ public class CardBatchControllerImpl implements CardBatchController {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         return checkResultAndGetData(cardBatchService.updateMeta(token, meta));
     }
+
+    @Override
+    public CardBatch getCardBatch(Long id) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(cardBatchService.getCardBatch(token, id));
+    }
+
+    @Override
+    public CardBatch updateCardBatch(CardBatch cardBatch) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(cardBatchService.updateCardBatch(token, cardBatch));
+    }
 }

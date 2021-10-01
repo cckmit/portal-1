@@ -6,15 +6,12 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
-import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CardBatch;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.PersonProjectMemberView;
-import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CardBatchEvents;
@@ -32,11 +29,8 @@ import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardB
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaView;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
@@ -107,11 +101,6 @@ public abstract class CardBatchCreateActivity implements Activity,
     }
 
     @Override
-    public void onStateChange() {
-
-    }
-
-    @Override
     public void onDeadlineChanged() {
         validateDeadline();
     }
@@ -149,14 +138,6 @@ public abstract class CardBatchCreateActivity implements Activity,
         cardBatch.setContractors(new ArrayList<>(metaView.contractors().getValue()));
 
         return cardBatch;
-    }
-
-    private List<PersonProjectMemberView> toPersonProjectMemberViewList(Collection<PersonShortView> persons) {
-        return CollectionUtils.emptyIfNull(persons)
-                .stream()
-                .map(personShortView ->
-                        new PersonProjectMemberView(personShortView.getName(), personShortView.getId(), personShortView.isFired(), En_PersonRoleType.HEAD_MANAGER))
-                .collect(Collectors.toList());
     }
 
     private void showValidationError(String error) {
@@ -253,12 +234,12 @@ public abstract class CardBatchCreateActivity implements Activity,
         try {
             lastNumber = Integer.parseInt(lastNumberStr) + 1;
         } catch (NumberFormatException e){
-            fireEvent(new NotifyEvents.Show("Ошибка при получении следующего номера партии плат", ERROR));
+            fireEvent(new NotifyEvents.Show(lang.cardBatchGetLastNumberError(), ERROR));
             return "";
         }
 
         if (lastNumber >= CARD_BATCH_MAX_NUMBER){
-            fireEvent(new NotifyEvents.Show("Невозможно выделить следующий номер партии плат. Превышено ограничение по номерам: " + CARD_BATCH_MAX_NUMBER, ERROR));
+            fireEvent(new NotifyEvents.Show(lang.cardBatchNumberExceedLimitError() + CARD_BATCH_MAX_NUMBER, ERROR));
             return "";
         }
 
