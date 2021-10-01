@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dao.impl.CardSqlBuilder;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static org.mockito.Mockito.mock;
@@ -477,5 +478,20 @@ public class DaoMockTestConfiguration {
     @Bean
     public CardTypeDAO getCardTypeDAO() {
         return mock(CardTypeDAO.class);
+    }
+
+    @Bean
+    public CardSqlBuilder cardSqlBuilder() {
+        return mock(CardSqlBuilder.class);
+    }
+
+    @Bean
+    public CardDAO getCardDAO() {
+        return mock(CardDAO.class);
+    }
+
+    @Bean
+    public CardBatchDAO getCardBatchDAO() {
+        return mock(CardBatchDAO.class);
     }
 }
