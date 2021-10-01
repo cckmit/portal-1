@@ -8,11 +8,13 @@ import java.io.Serializable;
 public class ClientConfigData implements Serializable {
 
     public String appVersion;
+    public Long cardbatchCompanyPartnerId;
 
     @Override
     public String toString() {
         return "ClientConfigData{" +
                 "appVersion='" + appVersion + '\'' +
+                "cardbatchCompanyPartnerId='" + cardbatchCompanyPartnerId + '\'' +
                 '}';
     }
 }

@@ -11,7 +11,7 @@
                 <personrole:ProjectRoleFormSelector ui:field="role" header="{lang.projectTeamRole}" mandatory="false"/>
             </div>
             <div class="col-md-8">
-                <person:EmployeeMultiSelector ui:field="members" firedEmployeesVisible="false"/>
+                <person:PersonMultiSelector ui:field="members"/>
             </div>
         </div>
     </g:HTMLPanel>
