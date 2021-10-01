@@ -31,9 +31,8 @@ public interface CardService {
     Result<Card> updateMeta(AuthToken token, Card card);
 
     Result<List<EntityOption>> getCardTypeOptionList(AuthToken token, CardTypeQuery query);
+
     Result<List<CardType>> getCardTypeList(AuthToken token);
 
-    @Privileged({ En_Privilege.DELIVERY_CREATE })
-    @Auditable( En_AuditType.CARD_CREATE )
     Result<Long> getSizeByBatchId(AuthToken token, Long cardBatchId);
 }

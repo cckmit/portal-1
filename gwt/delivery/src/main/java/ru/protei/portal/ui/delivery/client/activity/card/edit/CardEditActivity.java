@@ -46,7 +46,6 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
         HasWidgets container = event.parent;
         if (event.cardId == null || !hasAccess()) {
             fireEvent(new ErrorPageEvents.ShowForbidden(container));
-            event.closeHandle.run();
             return;
         }
 
@@ -106,7 +105,7 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
         noteCommentView.setNote(card.getNote());
         noteCommentView.setComment(card.getComment());
 
-        view.noteCommentEditButtonVisibility().setVisible(hasEditPrivileges() && isSelfDelivery(card.getCreatorId()));
+        view.noteCommentEditButtonVisibility().setVisible(hasEditPrivileges() && isSelf(card.getCreatorId()));
 
         renderMarkupText(card.getNote(), En_TextMarkup.MARKDOWN, html -> noteCommentView.setNote(html));
         renderMarkupText(card.getComment(), En_TextMarkup.MARKDOWN, html -> noteCommentView.setComment(html));
@@ -116,7 +115,7 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
         fireEvent(new CardEvents.EditMeta(card, view.getMetaContainer()));
     }
 
-    private boolean isSelfDelivery(Long creatorId) {
+    private boolean isSelf(Long creatorId) {
         return Objects.equals(creatorId, authProfile.getId());
     }
 

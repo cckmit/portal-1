@@ -108,7 +108,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         if (value == null) {
             animation.closeDetails();
         } else {
-            fireEvent( new CardEvents.Edit( value.getId(), view.getPreviewContainer(), () -> animation.closeDetails()) );
+            fireEvent( new CardEvents.Edit( value.getId(), view.getPreviewContainer()) );
             animation.showDetails();
         }
     }
