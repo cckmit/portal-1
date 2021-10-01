@@ -105,7 +105,7 @@ public class DeliveryClientModule extends AbstractGinModule {
         bind(CardEditMetaActivity.class).asEagerSingleton();
         bind(AbstractCardEditView.class).to(CardEditView.class).in(Singleton.class);
 
-        bind(AbstractCardMetaView.class).to(CardMetaView.class).in(Singleton.class);
+        bind(AbstractCardMetaView.class).to(CardMetaView.class);
 
         bind(CardBatchCreateActivity.class).asEagerSingleton();
         bind(AbstractCardBatchCreateView.class).to(CardBatchCreateView.class).in(Singleton.class);

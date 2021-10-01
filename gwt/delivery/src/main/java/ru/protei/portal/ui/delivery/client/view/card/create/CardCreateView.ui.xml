@@ -6,8 +6,8 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="col-md-12 card-content-wrapper">
-        <div class="row card-content p-t-15">
+    <g:HTMLPanel styleName="card card-default no-border card-fixed preview-card">
+        <div class="card-body row no-margin">
             <div class="col-lg-6 order-last order-lg-first">
                 <div class="form-group form-group-default">
                     <label class="fade"><ui:text from="{lang.cardSerialNumber}"/></label>
