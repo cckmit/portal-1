@@ -224,13 +224,13 @@ public abstract class CardBatchCreateActivity implements Activity,
         public void accept(CardBatch lastNumberCardBatch) {
             String releaseNumber = START_CARD_BATCH_NUMBER;
 
-            if (isNotEmpty(lastNumberCardBatch.getNumber())){
+            if (lastNumberCardBatch != null && isNotEmpty(lastNumberCardBatch.getNumber())){
                 releaseNumber = getNextNumber(lastNumberCardBatch.getNumber());
             }
 
             commonInfoView.number().setValue(releaseNumber);
 
-            if (isEmpty(releaseNumber)){
+            if (lastNumberCardBatch == null || isEmpty(releaseNumber)){
                 commonInfoView.hidePrevCardBatchInfo();
                 return;
             }

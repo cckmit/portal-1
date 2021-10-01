@@ -67,6 +67,7 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
 
     @Override
     public void hidePrevCardBatchInfo() {
+        prevCardBatchInfo.setText(null);
         prevCardBatchInfo.setVisible(false);
     }
 
