@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.delivery.client.activity.cardbatch.create;
 
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -17,7 +16,10 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.CardBatchEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CardBatchControllerAsync;
 import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
@@ -111,7 +113,13 @@ public abstract class CardBatchCreateActivity implements Activity,
 
     @Override
     public void onDeadlineChanged() {
+        validateDeadline();
+    }
 
+    private boolean validateDeadline() {
+        boolean isValid = metaView.deadline().getValue().after(new Date());
+        metaView.setDeadlineValid(isValid);
+        return isValid;
     }
 
     private void prepare() {
@@ -172,12 +180,12 @@ public abstract class CardBatchCreateActivity implements Activity,
             return "Количество должно быть больше нуля";
         }
 
-        if (CollectionUtils.isEmpty(metaView.contractors().getValue())) {
-            return "Исполнители должны быть заданы";
+        if (!validateDeadline()) {
+            return "Дедлайн должен быть позже текущего времени";
         }
 
-        if (metaView.deadline().getValue().before(new Date())) {
-            return "Дедлайн должен быть позже текущего времени";
+        if (CollectionUtils.isEmpty(metaView.contractors().getValue())) {
+            return "Исполнители должны быть заданы";
         }
 
         return null;
