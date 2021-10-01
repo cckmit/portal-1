@@ -866,7 +866,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String commentSendMessage();
 
-    String commentAddMessagePlaceholder();
+    String markupPlaceholder();
 
     String issueCommentChangeStatusTo();
 
@@ -3750,5 +3750,73 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardNote();
 
+    String cardComment();
+
     String cardManager();
+
+    String cardSelectType();
+
+    String cardSelectBatch();
+
+    String cardSelectManager();
+
+    String cardSerialNumberPlaceholder();
+
+    String cardEditNoteAndComment();
+
+    String cardValidationErrorSerialNumber();
+
+    String cardValidationErrorState();
+
+    String cardValidationErrorType();
+
+    String cardValidationErrorCardBatch();
+
+    String cardValidationErrorArticle();
+
+    String cardValidationErrorManager();
+
+    String cardValidationErrorTestDate();
+
+    String cardBatchNumber();
+
+    String cardBatchType();
+
+    String cardBatchArticle();
+
+    String cardBatchAmount();
+
+    String cardBatchParams();
+
+    String cardBatchArticlePlaceholder();
+
+    String cardBatchNumberPlaceholder();
+
+    String cardBatchPreviousInfo(String number, int amount, String state);
+
+    String cardBatchState();
+
+    String cardBatchPriority();
+
+    String cardBatchDeadline();
+
+    String cardBatchContractors();
+
+    String cardBatchRemoved();
+
+    String cardBatchSaved();
+
+    String cardBatchCreated();
+
+    String cardBatchStatePreliminary();
+
+    String cardBatchStateActual();
+
+    String cardBatchStateOrdered();
+
+    String cardBatchStateReserved();
+
+    String cardBatchStateMounting();
+
+    String cardBatchStateMounted();
 }

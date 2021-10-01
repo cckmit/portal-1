@@ -1,0 +1,29 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel ui:field="root" styleName="card card-default no-border card-fixed preview-card">
+    <div class="card-body row no-margin">
+        <div class="col-lg-6 order-last order-lg-first p-l-25 p-r-5">
+            <div class="btn-toolbar flex-wrap">
+                <div class="btn-group form-group">
+                    <g:Button ui:field="noteCommentEditButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
+                              title="{lang.cardEditNoteAndComment}">
+                        <i class="fa fa-pencil-alt"/>
+                    </g:Button>
+                </div>
+            </div>
+            <small ui:field="createdBy" class="pull-right text-right"/>
+
+            <h5 class="no-margin"><g:Label ui:field="serialNumber" styleName="semi-bold large-text"/></h5>
+
+            <g:HTMLPanel ui:field="noteCommentContainer"/>
+        </div>
+        <div class="col-lg-6">
+            <g:HTMLPanel ui:field="metaContainer"/>
+        </div>
+    </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

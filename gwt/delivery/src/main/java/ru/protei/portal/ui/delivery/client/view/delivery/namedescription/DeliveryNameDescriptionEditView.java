@@ -108,6 +108,6 @@ public class DeliveryNameDescriptionEditView extends Composite {
 
     private final String DESCRIPTION = "description";
 
-    interface IssueNameWidgetUiBinder extends UiBinder<HTMLPanel, DeliveryNameDescriptionEditView> {}
-    private static IssueNameWidgetUiBinder ourUiBinder = GWT.create( IssueNameWidgetUiBinder.class );
+    interface WidgetUiBinder extends UiBinder<HTMLPanel, DeliveryNameDescriptionEditView> {}
+    private static WidgetUiBinder ourUiBinder = GWT.create( WidgetUiBinder.class );
 }

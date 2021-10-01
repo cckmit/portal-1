@@ -81,8 +81,6 @@ import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
-import ru.protei.portal.core.service.UitsService;
-import ru.protei.portal.core.service.UitsServiceImpl;
 
 import java.util.concurrent.Executor;
 
@@ -523,6 +521,16 @@ public class ServiceTestsConfiguration {
     @Bean
     public DeliveryService getDeliveryService() {
         return new DeliveryServiceImpl();
+    }
+
+    @Bean
+    public CardService getCardService() {
+        return new CardServiceImpl();
+    }
+
+    @Bean
+    public CardBatchService getCardBatchService() {
+        return new CardBatchServiceImpl();
     }
 
     /* ASPECT/INTERCEPTORS */

@@ -21,7 +21,7 @@ public class ModuleStateFormSelector extends FormPopupSingleSelector<CaseState> 
 
     @Override
     protected SelectorItem<CaseState> makeSelectorItem(CaseState element, String elementHtml) {
-        PopupSelectorItem<CaseState> item = new PopupSelectorItem();
+        PopupSelectorItem<CaseState> item = new PopupSelectorItem<>();
         item.setName(elementHtml);
         if (element != null) {
             item.setTitle(getStateName(element));

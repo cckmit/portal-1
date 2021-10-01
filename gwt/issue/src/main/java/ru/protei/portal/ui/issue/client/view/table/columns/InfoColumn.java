@@ -3,6 +3,7 @@ package ru.protei.portal.ui.issue.client.view.table.columns;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.util.MarkupUtils;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
@@ -71,7 +72,7 @@ public class InfoColumn extends ClickColumn<CaseShortView>{
 
         Element infoElement = DOM.createElement( "p" );
         infoElement.addClassName( "issue-description" );
-        infoElement.setInnerText( value == null ? "" : value.getInfo() == null? "" : value.getInfo().replaceAll("!\\[.+\\](.+)", "[pic]") );
+        infoElement.setInnerText( value == null ? "" : value.getInfo() == null? "" : MarkupUtils.removePictureTag(value.getInfo()) );
         infoElement.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.ISSUE.DESCRIPTION );
         divElement.appendChild( infoElement );
 

@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.widget.card.state;
+package ru.protei.portal.ui.common.client.widget.selector.card.state;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -13,10 +13,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
 
-/**
- * Модель статусов плат
- */
-public abstract class CardStateOptionsModel extends LifecycleSelectorModel<CaseState> {
+public abstract class CardStateOptionModel extends LifecycleSelectorModel<CaseState> {
 
     @Event
     public void onInit(AuthEvents.Success event) {

@@ -226,13 +226,13 @@ public class DeliveryServiceImpl implements DeliveryService {
         caseObject = createDeliveryCaseObject(caseObject, meta, null, null, new Date());
         boolean isUpdated = caseObjectDAO.merge(caseObject);
         if (!isUpdated) {
-            log.info("Failed to update delivery meta data {} at db", caseObject.getId());
+            log.info("Failed to update delivery meta data {} at db", meta);
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         isUpdated = deliveryDAO.merge(meta);
         if (!isUpdated) {
-            log.warn("createDelivery(): delivery not created. delivery={}",  caseObject.getId());
+            log.warn("updateMeta(): delivery not updated. delivery={}",  meta);
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 

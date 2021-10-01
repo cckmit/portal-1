@@ -2,9 +2,19 @@ package ru.protei.portal.ui.delivery.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
+import ru.protei.portal.ui.delivery.client.activity.card.create.AbstractCardCreateView;
+import ru.protei.portal.ui.delivery.client.activity.card.create.CardCreateActivity;
+import ru.protei.portal.ui.delivery.client.activity.card.edit.AbstractCardEditView;
+import ru.protei.portal.ui.delivery.client.activity.card.edit.CardEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.card.filter.AbstractCardFilterView;
+import ru.protei.portal.ui.delivery.client.activity.card.meta.AbstractCardMetaView;
+import ru.protei.portal.ui.delivery.client.activity.card.meta.CardEditMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.card.table.AbstractCardTableView;
 import ru.protei.portal.ui.delivery.client.activity.card.table.CardTableActivity;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoView;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.create.AbstractCardBatchCreateView;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.create.CardBatchCreateActivity;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaView;
 import ru.protei.portal.ui.delivery.client.activity.delivery.create.AbstractDeliveryCreateView;
 import ru.protei.portal.ui.delivery.client.activity.delivery.create.DeliveryCreateActivity;
 import ru.protei.portal.ui.delivery.client.activity.delivery.edit.AbstractDeliveryEditView;
@@ -23,14 +33,20 @@ import ru.protei.portal.ui.delivery.client.activity.delivery.module.edit.Abstrac
 import ru.protei.portal.ui.delivery.client.activity.delivery.module.edit.ModuleEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.delivery.module.meta.AbstractModuleMetaView;
 import ru.protei.portal.ui.delivery.client.activity.delivery.module.meta.ModuleMetaActivity;
+import ru.protei.portal.ui.delivery.client.activity.delivery.table.AbstractDeliveryTableView;
+import ru.protei.portal.ui.delivery.client.activity.delivery.table.DeliveryTableActivity;
 import ru.protei.portal.ui.delivery.client.page.CardBatchPage;
 import ru.protei.portal.ui.delivery.client.page.CardPage;
 import ru.protei.portal.ui.delivery.client.page.DeliveryPage;
 import ru.protei.portal.ui.delivery.client.page.StoreAndDeliveryPage;
-import ru.protei.portal.ui.delivery.client.activity.delivery.table.AbstractDeliveryTableView;
-import ru.protei.portal.ui.delivery.client.activity.delivery.table.DeliveryTableActivity;
+import ru.protei.portal.ui.delivery.client.view.card.create.CardCreateView;
+import ru.protei.portal.ui.delivery.client.view.card.edit.CardEditView;
 import ru.protei.portal.ui.delivery.client.view.card.filter.CardFilterView;
+import ru.protei.portal.ui.delivery.client.view.card.meta.CardMetaView;
 import ru.protei.portal.ui.delivery.client.view.card.table.CardTableView;
+import ru.protei.portal.ui.delivery.client.view.cardbatch.common.CardBatchCommonInfoView;
+import ru.protei.portal.ui.delivery.client.view.cardbatch.create.CardBatchCreateView;
+import ru.protei.portal.ui.delivery.client.view.cardbatch.meta.CardBatchMetaView;
 import ru.protei.portal.ui.delivery.client.view.delivery.create.DeliveryCreateView;
 import ru.protei.portal.ui.delivery.client.view.delivery.edit.DeliveryEditView;
 import ru.protei.portal.ui.delivery.client.view.delivery.kit.edit.DeliveryKitEditView;
@@ -81,6 +97,20 @@ public class DeliveryClientModule extends AbstractGinModule {
         bind(CardTableActivity.class).asEagerSingleton();
         bind(AbstractCardTableView.class).to(CardTableView.class).in(Singleton.class);
         bind(AbstractCardFilterView.class).to(CardFilterView.class).in(Singleton.class);
+
+        bind(CardCreateActivity.class).asEagerSingleton();
+        bind(AbstractCardCreateView.class).to(CardCreateView.class).in(Singleton.class);
+
+        bind(CardEditActivity.class).asEagerSingleton();
+        bind(CardEditMetaActivity.class).asEagerSingleton();
+        bind(AbstractCardEditView.class).to(CardEditView.class).in(Singleton.class);
+
+        bind(AbstractCardMetaView.class).to(CardMetaView.class);
+
+        bind(CardBatchCreateActivity.class).asEagerSingleton();
+        bind(AbstractCardBatchCreateView.class).to(CardBatchCreateView.class).in(Singleton.class);
+        bind(AbstractCardBatchCommonInfoView.class).to(CardBatchCommonInfoView.class).in(Singleton.class);
+        bind(AbstractCardBatchMetaView.class).to(CardBatchMetaView.class).in(Singleton.class);
     }
 }
 

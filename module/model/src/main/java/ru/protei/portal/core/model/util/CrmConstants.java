@@ -96,6 +96,8 @@ public class CrmConstants {
         String RUS_PHONE_NUMBER_PATTERN = "^((\\+7|8)[0-9]{9,10}|[0-9]{6,7})$"; // [+7 или 8] + [3 код региона] + [6-7 номер] ИЛИ [6-7 номер]
         String WORK_PHONE_NUMBER_PATTERN = "^\\d*#?\\d+$";
         String DELIVERY_KIT_SERIAL_NUMBER_PATTERN = "^\\d{3}\\.\\d{3}$";
+        String CARD_BATCH_NUMBER_PATTERN = "^\\d{3}$";
+        String CARD_BATCH_ARTICLE_PATTERN = "^\\d{4}[a-zA-Z]?-\\d{2}-\\d{3}$";  // "XXXXA-XX-XXX" (X-цифра, A-буква(необязательна))
     }
 
     public interface Time {
@@ -203,6 +205,7 @@ public class CrmConstants {
         long CANCELED = 33;
         long ACTIVE = 16;
         long TEST_LOCAL = 19;
+        long TESTING = 28;
         long INFO_REQUEST = 31;
         long NX_REQUEST = 35;
         long CUST_REQUEST = 36;

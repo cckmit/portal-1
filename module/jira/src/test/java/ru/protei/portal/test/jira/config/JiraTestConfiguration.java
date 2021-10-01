@@ -386,6 +386,16 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public CardService getCardService() {
+        return new CardServiceImpl();
+    }
+
+    @Bean
+    public CardBatchService getCardBatchService() {
+        return new CardBatchServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
     }
@@ -624,6 +634,26 @@ public class JiraTestConfiguration {
     @Bean
     public ProjectTechnicalSupportValidityReportInfoDAO getProjectTechnicalSupportValidityReportInfoDAO() {
         return new ProjectTechnicalSupportValidityReportInfoDAO_Impl();
+    }
+
+    @Bean
+    public CardSqlBuilder cardSqlBuilder() {
+        return new CardSqlBuilder();
+    }
+
+    @Bean
+    public CardTypeDAO getCardTypeDAO() {
+        return new CardTypeDAO_Impl();
+    }
+
+    @Bean
+    public CardDAO getCardDAO() {
+        return new CardDAO_Impl();
+    }
+
+    @Bean
+    public CardBatchDAO getCardBatchDAO() {
+        return new CardBatchDAO_Impl();
     }
 
     /* DAO converters */
