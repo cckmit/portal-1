@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.activity.cardbatch.create;
+package ru.protei.portal.ui.delivery.client.activity.cardbatch.edit;
 
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
@@ -28,6 +28,7 @@ import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoView;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.create.AbstractCardBatchCreateView;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaView;
 
@@ -44,8 +45,8 @@ import static ru.protei.portal.core.model.util.CrmConstants.ImportanceLevel.BASI
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.ERROR;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.SUCCESS;
 
-public abstract class CardBatchCreateActivity implements Activity,
-        AbstractCardBatchCreateActivity, AbstractCardBatchCommonInfoActivity, AbstractCardBatchMetaActivity {
+public abstract class CardBatchEditActivity implements Activity, AbstractCardBatchEditActivity,
+        AbstractCardBatchCommonInfoActivity, AbstractCardBatchMetaActivity {
 
     @Inject
     public void onInit() {
@@ -60,7 +61,7 @@ public abstract class CardBatchCreateActivity implements Activity,
     }
 
     @Event(Type.FILL_CONTENT)
-    public void onShow(CardBatchEvents.Create event) {
+    public void onShow(CardBatchEvents.Edit event) {
         if (!hasPrivileges()) {
             fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
@@ -95,8 +96,8 @@ public abstract class CardBatchCreateActivity implements Activity,
     public void onCardTypeChanged(Long cardTypeId) {
 
         cardBatchService.getLastCardBatch(cardTypeId, new FluentCallback<CardBatch>()
-                        .withError(defaultErrorHandler)
-                        .withSuccess(getLastCardBatchConsumer));
+                .withError(defaultErrorHandler)
+                .withSuccess(getLastCardBatchConsumer));
     }
 
     @Override
@@ -200,16 +201,16 @@ public abstract class CardBatchCreateActivity implements Activity,
     private void save(CardBatch cardBatch, Consumer<Throwable> onFailure, Runnable onSuccess) {
         view.saveEnabled().setEnabled(false);
         cardBatchService.saveCardBatch(cardBatch, new FluentCallback<CardBatch>()
-            .withError(throwable -> {
-                view.saveEnabled().setEnabled(true);
-                defaultErrorHandler.accept(throwable);
-                onFailure.accept(throwable);
-            })
-            .withSuccess(id -> {
-                view.saveEnabled().setEnabled(true);
-                fireEvent(new NotifyEvents.Show(lang.cardBatchCreated(), SUCCESS));
-                onSuccess.run();
-            }));
+                .withError(throwable -> {
+                    view.saveEnabled().setEnabled(true);
+                    defaultErrorHandler.accept(throwable);
+                    onFailure.accept(throwable);
+                })
+                .withSuccess(id -> {
+                    view.saveEnabled().setEnabled(true);
+                    fireEvent(new NotifyEvents.Show(lang.cardBatchCreated(), SUCCESS));
+                    onSuccess.run();
+                }));
     }
 
     private boolean hasPrivileges() {
@@ -223,8 +224,8 @@ public abstract class CardBatchCreateActivity implements Activity,
 
     private void fillPrioritySelector(Integer id) {
         importanceService.getImportanceLevel( id, new FluentCallback<ImportanceLevel>()
-                        .withError(defaultErrorHandler)
-                        .withSuccess(level -> metaView.priority().setValue(level)));
+                .withError(defaultErrorHandler)
+                .withSuccess(level -> metaView.priority().setValue(level)));
     }
 
     Consumer<CardBatch> getLastCardBatchConsumer = new Consumer<CardBatch>() {
@@ -272,7 +273,7 @@ public abstract class CardBatchCreateActivity implements Activity,
     @Inject
     private Lang lang;
     @Inject
-    private AbstractCardBatchCreateView view;
+    private AbstractCardBatchEditView view;
     @Inject
     AbstractCardBatchCommonInfoView commonInfoView;
     @Inject

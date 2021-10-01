@@ -3805,4 +3805,16 @@ public interface Lang extends Messages, ContactItemLang {
     String personManualMountingShort();
 
     String personOutputControlShort();
+
+    String cardBatchTypeValidationError();
+
+    String cardBatchNumberValidationError();
+
+    String cardBatchArticleValidationError();
+
+    String cardBatchAmountValidationError();
+
+    String cardBatchDeadlineValidationError();
+
+    String cardBatchContractorsValidationError();
 }

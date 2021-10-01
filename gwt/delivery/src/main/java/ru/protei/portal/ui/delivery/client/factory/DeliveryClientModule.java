@@ -8,6 +8,8 @@ import ru.protei.portal.ui.delivery.client.activity.card.table.CardTableActivity
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoView;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.create.AbstractCardBatchCreateView;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.create.CardBatchCreateActivity;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.edit.AbstractCardBatchEditView;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.edit.CardBatchEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaView;
 import ru.protei.portal.ui.delivery.client.activity.delivery.create.AbstractDeliveryCreateView;
 import ru.protei.portal.ui.delivery.client.activity.delivery.create.DeliveryCreateActivity;
@@ -37,6 +39,7 @@ import ru.protei.portal.ui.delivery.client.view.card.filter.CardFilterView;
 import ru.protei.portal.ui.delivery.client.view.card.table.CardTableView;
 import ru.protei.portal.ui.delivery.client.view.cardbatch.common.CardBatchCommonInfoView;
 import ru.protei.portal.ui.delivery.client.view.cardbatch.create.CardBatchCreateView;
+import ru.protei.portal.ui.delivery.client.view.cardbatch.edit.CardBatchEditView;
 import ru.protei.portal.ui.delivery.client.view.cardbatch.meta.CardBatchMetaView;
 import ru.protei.portal.ui.delivery.client.view.delivery.create.DeliveryCreateView;
 import ru.protei.portal.ui.delivery.client.view.delivery.edit.DeliveryEditView;
@@ -97,6 +100,9 @@ public class DeliveryClientModule extends AbstractGinModule {
         bind(AbstractCardBatchCreateView.class).to(CardBatchCreateView.class).in(Singleton.class);
         bind(AbstractCardBatchCommonInfoView.class).to(CardBatchCommonInfoView.class).in(Singleton.class);
         bind(AbstractCardBatchMetaView.class).to(CardBatchMetaView.class).in(Singleton.class);
+
+        bind(CardBatchEditActivity.class).asEagerSingleton();
+        bind(AbstractCardBatchEditView.class).to(CardBatchEditView.class).in(Singleton.class);
 
         bind( AbstractContractorsSelector.class ).to( ContractorsSelector.class );
         bind( AbstractContractorsSelectorItem.class ).to( ContractorsSelectorItem.class );
