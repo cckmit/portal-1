@@ -116,7 +116,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonNotDefined();
 
-    String buttonSettings();
+    String buttonProfile();
 
     String buttonSearch();
 
@@ -3751,4 +3751,6 @@ public interface Lang extends Messages, ContactItemLang {
     String cardNote();
 
     String cardManager();
+
+    String newEmployeeBook();
 }
