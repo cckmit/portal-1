@@ -1506,7 +1506,7 @@ public class MailNotificationProcessor {
 
     private Set<NotificationEntry> fetchNotificationEntriesFromPerson(Person person) {
         if (person == null || person.isFired() || person.isDeleted()) {
-            return null;
+            return Collections.emptySet();
         }
         String locale = person.getLocale() == null ? "ru" : person.getLocale();
         return new PlainContactInfoFacade(person.getContactInfo())
