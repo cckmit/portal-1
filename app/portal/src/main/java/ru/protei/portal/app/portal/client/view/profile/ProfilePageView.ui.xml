@@ -21,7 +21,7 @@
                                 <small ui:field="company"/>
                             </h4>
 
-                            <tab:TabWidget ui:field="tabs" styleName="">
+                            <tab:TabWidget ui:field="tabs">
                                 <tab:pane.TabWidgetPane tabName="{lang.profileGeneral}">
                                     <g:HTMLPanel ui:field="generalContainer"/>
                                 </tab:pane.TabWidgetPane>

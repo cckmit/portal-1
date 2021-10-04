@@ -14,12 +14,12 @@
 
                 <g:HTMLPanel ui:field="closedSidebarControlsContainer" styleName="sidebar-header-controls closed-sidebar-controls">
                     <g:Button ui:field="fixClosedSidebarButton" styleName="fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none">
-                        <i class="far fs-12"></i>
+                        <i class="far fs-12"/>
                     </g:Button>
                 </g:HTMLPanel>
                 <div ui:field="openedSidebarControlsContainer" class="sidebar-header-controls">
                     <g:Button ui:field="fixOpenedSidebarButton" styleName="hide fix-sidebar-button btn btn-link d-lg-inline-block d-xlg-inline-block d-md-inline-block d-sm-none d-none">
-                        <i class="far fs-12"></i>
+                        <i class="far fs-12"/>
                     </g:Button>
                 </div>
             </div>
@@ -57,7 +57,7 @@
                     <g:PopupPanel ui:field="menuBarPopup" autoHideEnabled="true" visible="false">
                         <g:HTMLPanel styleName="dropdown-menu dropdown-menu-right profile-dropdown show">
                             <g:Anchor ui:field="settings" styleName="clearfix dropdown-item" href="#">
-                                <ui:text from="{lang.buttonSettings}"/>
+                                <ui:text from="{lang.buttonProfile}"/>
                             </g:Anchor>
                             <g:Anchor ui:field="logout" styleName="clearfix dropdown-item" title="{lang.logoutHotKey}" href="#">
                                 <ui:text from="{lang.buttonLogout}"/>
