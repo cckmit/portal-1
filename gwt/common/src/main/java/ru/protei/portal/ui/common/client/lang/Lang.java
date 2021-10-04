@@ -3823,4 +3823,38 @@ public interface Lang extends Messages, ContactItemLang {
     String personManualMountingShort();
 
     String personOutputControlShort();
+
+    String cardBatchTypeValidationError();
+
+    String cardBatchNumberValidationError();
+
+    String cardBatchArticleValidationError();
+
+    String cardBatchAmountValidationError();
+
+    String cardBatchDeadlineValidationError();
+
+    String cardBatchContractorsValidationError();
+
+    String cardBatchGetLastNumberError();
+
+    String cardBatchNumberExceedLimitError();
+
+    String cardBatchStateBuildEquipmentInQueue();
+
+    String cardBatchStateBuildEquipment();
+
+    String cardBatchStateAutomaticMountingInQueue();
+
+    String cardBatchStateAutomaticMounting();
+
+    String cardBatchStateManualMountingInQueue();
+
+    String cardBatchStateManualMounting();
+
+    String cardBatchStateStickerLabelingInQueue();
+
+    String cardBatchStateStickerLabeling();
+
+    String cardBatchStateTransferredForTesting();
 }

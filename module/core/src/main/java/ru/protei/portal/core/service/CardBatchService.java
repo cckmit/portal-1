@@ -20,8 +20,14 @@ public interface CardBatchService {
     @Auditable( En_AuditType.DELIVERY_MODIFY )
     Result<CardBatch> updateMeta(AuthToken token, CardBatch meta);
 
+    @Privileged({ En_Privilege.DELIVERY_EDIT })
+    @Auditable( En_AuditType.DELIVERY_MODIFY )
+    Result<CardBatch> updateCardBatch(AuthToken token, CardBatch cardBatch);
+
     Result<CardBatch> getLastCardBatch(AuthToken token, Long typeId);
 
     @Privileged({ En_Privilege.DELIVERY_VIEW })
     Result<SearchResult<CardBatch>> getCardBatches(AuthToken token, CardBatchQuery query);
+
+    Result<CardBatch> getCardBatch(AuthToken token, Long id);
 }

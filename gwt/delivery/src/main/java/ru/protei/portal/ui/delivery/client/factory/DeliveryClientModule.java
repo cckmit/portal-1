@@ -9,6 +9,8 @@ import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCar
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.create.AbstractCardBatchCreateView;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.create.CardBatchCreateActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.filter.AbstractCardBatchFilterView;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.edit.AbstractCardBatchEditView;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.edit.CardBatchEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaView;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.table.AbstractCardBatchTableView;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.table.CardBatchTableActivity;
@@ -41,6 +43,7 @@ import ru.protei.portal.ui.delivery.client.view.card.table.CardTableView;
 import ru.protei.portal.ui.delivery.client.view.cardbatch.common.CardBatchCommonInfoView;
 import ru.protei.portal.ui.delivery.client.view.cardbatch.create.CardBatchCreateView;
 import ru.protei.portal.ui.delivery.client.view.cardbatch.filter.CardBatchFilterView;
+import ru.protei.portal.ui.delivery.client.view.cardbatch.edit.CardBatchEditView;
 import ru.protei.portal.ui.delivery.client.view.cardbatch.meta.CardBatchMetaView;
 import ru.protei.portal.ui.delivery.client.view.cardbatch.table.CardBatchTableView;
 import ru.protei.portal.ui.delivery.client.view.delivery.create.DeliveryCreateView;
@@ -106,6 +109,9 @@ public class DeliveryClientModule extends AbstractGinModule {
         bind(CardBatchTableActivity.class).asEagerSingleton();
         bind(AbstractCardBatchTableView.class).to(CardBatchTableView.class).in(Singleton.class);
         bind(AbstractCardBatchFilterView.class).to(CardBatchFilterView.class).in(Singleton.class);
+
+        bind(CardBatchEditActivity.class).asEagerSingleton();
+        bind(AbstractCardBatchEditView.class).to(CardBatchEditView.class).in(Singleton.class);
 
         bind( AbstractContractorsSelector.class ).to( ContractorsSelector.class );
         bind( AbstractContractorsSelectorItem.class ).to( ContractorsSelectorItem.class );

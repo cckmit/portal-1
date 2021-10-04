@@ -181,6 +181,7 @@ public class PortalConfigData {
             isProductionServer = properties.getProperty( "is.production.server", Boolean.class, false );
             systemId = properties.getProperty( "system.id", "" );
             systemUserId = properties.getProperty("system.user.id", Long.class, null);
+            cardbatchCompanyPartnerId = properties.getProperty("cardbatch.company.partner.id", Long.class, null);
         }
         public String getCrmUrlInternal() {
             return crmUrlInternal;
@@ -210,6 +211,10 @@ public class PortalConfigData {
             return systemUserId;
         }
 
+        public Long getCardbatchCompanyPartnerId() {
+            return cardbatchCompanyPartnerId;
+        }
+
         private final String crmUrlInternal;
         private final String crmUrlExternal;
         private final String crmUrlCurrent;
@@ -217,6 +222,7 @@ public class PortalConfigData {
         private final Boolean isProductionServer;
         private final String systemId;
         private final Long systemUserId;
+        private final Long cardbatchCompanyPartnerId;
     }
 
     public static class MailNotificationConfig extends CommonConfig {

@@ -17,4 +17,8 @@ public interface CardBatchController extends RemoteService {
     CardBatch updateMeta(CardBatch meta) throws RequestFailedException;
 
     SearchResult<CardBatch> getCardBatchesList(CardBatchQuery query) throws RequestFailedException;
+
+    CardBatch getCardBatch(Long id) throws RequestFailedException;
+
+    CardBatch updateCardBatch(CardBatch cardBatch) throws RequestFailedException;
 }

@@ -11,7 +11,11 @@ public interface CardBatchControllerAsync {
 
     void getLastCardBatch(Long typeId, AsyncCallback<CardBatch> async);
 
+    void getCardBatch(Long id, AsyncCallback<CardBatch> async);
+
     void updateMeta(CardBatch meta, AsyncCallback<CardBatch> async);
 
     void getCardBatchesList(CardBatchQuery query, AsyncCallback<SearchResult<CardBatch>> async);
+
+    void updateCardBatch(CardBatch meta, AsyncCallback<CardBatch> async);
 }

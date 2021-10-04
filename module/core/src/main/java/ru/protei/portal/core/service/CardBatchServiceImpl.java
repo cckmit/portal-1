@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.query.CardBatchQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
+import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -59,6 +60,8 @@ public class CardBatchServiceImpl implements CardBatchService {
     CaseStateDAO caseStateDAO;
     @Autowired
     CaseMemberDAO caseMemberDAO;
+    @Autowired
+    PolicyService policyService;
 
     private final Pattern cardBatchNumber = Pattern.compile(CARD_BATCH_NUMBER_PATTERN);
     private final Pattern cardBatchArticle = Pattern.compile(CARD_BATCH_ARTICLE_PATTERN);
@@ -66,6 +69,7 @@ public class CardBatchServiceImpl implements CardBatchService {
     @Override
     @Transactional
     public Result<CardBatch> createCardBatch(AuthToken token, CardBatch cardBatch) {
+
         if (cardBatch == null) {
             return error(INCORRECT_PARAMS);
         }
@@ -121,6 +125,7 @@ public class CardBatchServiceImpl implements CardBatchService {
     @Override
     @Transactional
     public Result<CardBatch> updateMeta(AuthToken token, CardBatch meta) {
+
         if (meta == null || meta.getId() == null) {
             return error(INCORRECT_PARAMS);
         }
@@ -162,12 +167,53 @@ public class CardBatchServiceImpl implements CardBatchService {
     }
 
     @Override
+    @Transactional
+    public Result<CardBatch> updateCardBatch(AuthToken token, CardBatch cardBatch) {
+
+        Long cardBatchId = cardBatch != null ? cardBatch.getId() : null;
+
+        if (cardBatchId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CardBatch oldCardBatch = cardBatchDAO.get(cardBatch.getId());
+        if (oldCardBatch == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        boolean isUpdated = cardBatchDAO.merge(cardBatch);
+        if (!isUpdated) {
+            log.warn("updateCardBatch(): cardBatch not updated = {}",  cardBatch.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        return ok(cardBatch);
+    }
+
+        @Override
     public Result<CardBatch> getLastCardBatch(AuthToken token, Long typeId) {
         if (typeId == null) {
             return error(INCORRECT_PARAMS);
         }
         CardBatch cardBatch = cardBatchDAO.getLastCardBatch(typeId);
         log.debug("getLastCardBatch(): typeId = {}, result = {}", typeId, cardBatch);
+        return ok(cardBatch);
+    }
+
+    @Override
+    public Result<CardBatch> getCardBatch(AuthToken token, Long id) {
+        if (id == null) {
+            return error(INCORRECT_PARAMS);
+        }
+        CardBatch cardBatch = cardBatchDAO.get(id);
+
+        if (cardBatch == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        jdbcManyRelationsHelper.fillAll(cardBatch);
+
+        log.debug("getCardBatch(): id = {}, result = {}", id, cardBatch);
         return ok(cardBatch);
     }
 
@@ -247,7 +293,7 @@ public class CardBatchServiceImpl implements CardBatchService {
         if (!isArticleValid(cardBatch.getArticle())) {
             return false;
         }
-        if (isNew && CrmConstants.State.PRELIMINARY != cardBatch.getStateId()) {
+        if (isNew && CrmConstants.State.BUILD_EQUIPMENT_IN_QUEUE != cardBatch.getStateId()) {
             return false;
         }
         if (cardBatch.getAmount() != null && cardBatch.getAmount() <= 0) {
@@ -294,6 +340,7 @@ public class CardBatchServiceImpl implements CardBatchService {
         caseObject.setName("");
         caseObject.setInfo(cardBatch.getParams());
         caseObject.setStateId(cardBatch.getStateId());
+        caseObject.setImpLevel(cardBatch.getImportance());
         caseObject.setDeadline(cardBatch.getDeadline());
 
         return caseObject;

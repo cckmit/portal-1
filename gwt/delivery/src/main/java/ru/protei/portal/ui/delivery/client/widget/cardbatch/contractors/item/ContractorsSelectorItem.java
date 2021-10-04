@@ -14,7 +14,9 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.personrole.ProjectRoleFormSelector;
 import ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.AbstractContractorsSelector;
 
@@ -26,8 +28,12 @@ import java.util.Set;
 public class ContractorsSelectorItem extends Composite implements AbstractContractorsSelectorItem {
 
     @Inject
-    public void init() {
+    public void init(PersonModel personModel) {
         initWidget(ourUiBinder.createAndBindUi(this));
+        Set<Long> companyIds = new HashSet<>();
+        companyIds.add(configStorage.getConfigData().cardbatchCompanyPartnerId);
+        personModel.updateCompanies( members, companyIds );
+        members.setPersonModel(personModel);
     }
 
     @Override
@@ -128,6 +134,8 @@ public class ContractorsSelectorItem extends Composite implements AbstractContra
         members.setItemContainerEnsureDebugId(DebugIds.PROJECT.TEAM_MEMBER_ITEM_CONTAINER);
     }
 
+    @Inject
+    ConfigStorage configStorage;
     @UiField
     HTMLPanel root;
     @Inject
@@ -135,7 +143,7 @@ public class ContractorsSelectorItem extends Composite implements AbstractContra
     ProjectRoleFormSelector role;
     @Inject
     @UiField(provided = true)
-    EmployeeMultiSelector members;
+    PersonMultiSelector members;
 
     private ContractorsSelectorItemModel model = null;
     private AbstractContractorsSelector teamSelector = null;

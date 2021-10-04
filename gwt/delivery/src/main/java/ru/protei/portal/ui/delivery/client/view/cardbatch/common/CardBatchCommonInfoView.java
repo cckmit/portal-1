@@ -36,7 +36,17 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
     }
 
     @Override
+    public HasEnabled typeEnabled() {
+        return type;
+    }
+
+    @Override
     public HasValue<String> number() {
+        return number;
+    }
+
+    @Override
+    public HasEnabled numberEnabled() {
         return number;
     }
 
@@ -67,6 +77,7 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
 
     @Override
     public void hidePrevCardBatchInfo() {
+        prevCardBatchInfo.setText(null);
         prevCardBatchInfo.setVisible(false);
     }
 
