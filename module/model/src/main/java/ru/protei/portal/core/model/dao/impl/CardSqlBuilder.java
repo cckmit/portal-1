@@ -4,7 +4,6 @@ import ru.protei.portal.core.model.query.CardQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
-import ru.protei.winter.jdbc.JdbcHelper;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;

@@ -105,4 +105,5 @@
   <include file="2021-09-12-create-card-tables.xml" relativeToChangelogFile="true"/>
   <include file="2021-09-17-add-new-project-roles.xml" relativeToChangelogFile="true"/>
   <include file="2021-09-23-rename-dev_unit_mrole-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-10-04-rework-fk_history_case_object_id_to_case_object.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

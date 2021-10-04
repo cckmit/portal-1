@@ -24,5 +24,7 @@ public interface CardControllerAsync {
 
     void updateMeta(Card card, AsyncCallback<Card> async);
 
+    void removeCard(Card card, AsyncCallback<Card> async);
+
     void getSizeByBatchId(Long cardBatchId, AsyncCallback<Long> async);
 }

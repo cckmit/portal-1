@@ -151,6 +151,21 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
+    public Result<Card> removeCard(AuthToken token, Card card) {
+        if (card == null || card.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        CaseObject caseObject = caseObjectDAO.get(card.getId());
+        if (caseObject == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        caseObjectDAO.remove(caseObject);
+
+        return ok(card);
+    }
+
+    @Override
     public Result<Long> getSizeByBatchId(AuthToken token, Long cardBatchId) {
         if (cardBatchId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
