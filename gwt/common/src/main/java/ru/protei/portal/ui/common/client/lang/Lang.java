@@ -3782,18 +3782,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardBatchCreated();
 
-    String cardBatchStatePreliminary();
-
-    String cardBatchStateActual();
-
-    String cardBatchStateOrdered();
-
-    String cardBatchStateReserved();
-
-    String cardBatchStateMounting();
-
-    String cardBatchStateMounted();
-
     String personAutomaticMounting();
 
     String personManualMounting();
@@ -3821,4 +3809,22 @@ public interface Lang extends Messages, ContactItemLang {
     String cardBatchGetLastNumberError();
 
     String cardBatchNumberExceedLimitError();
+
+    String cardBatchStateBuildEquipmentInQueue();
+
+    String cardBatchStateBuildEquipment();
+
+    String cardBatchStateAutomaticMountingInQueue();
+
+    String cardBatchStateAutomaticMounting();
+
+    String cardBatchStateManualMountingInQueue();
+
+    String cardBatchStateManualMounting();
+
+    String cardBatchStateStickerLabelingInQueue();
+
+    String cardBatchStateStickerLabeling();
+
+    String cardBatchStateTransferredForTesting();
 }

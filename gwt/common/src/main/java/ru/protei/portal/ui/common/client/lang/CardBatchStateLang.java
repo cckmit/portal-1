@@ -11,12 +11,15 @@ public class CardBatchStateLang {
         }
 
         switch (state.getState().toLowerCase()) {
-            case "preliminary": return lang.cardBatchStatePreliminary();
-            case "actual": return lang.cardBatchStateActual();
-            case "ordered": return lang.cardBatchStateOrdered();
-            case "reserved": return lang.cardBatchStateReserved();
-            case "mounting": return lang.cardBatchStateMounting();
-            case "mounted": return lang.cardBatchStateMounted();
+            case "in queue: build equipment": return lang.cardBatchStateBuildEquipmentInQueue();
+            case "build equipment": return lang.cardBatchStateBuildEquipment();
+            case "in queue: automatic mounting": return lang.cardBatchStateAutomaticMountingInQueue();
+            case "automatic mounting": return lang.cardBatchStateAutomaticMounting();
+            case "in queue: manual mounting": return lang.cardBatchStateManualMountingInQueue();
+            case "manual mounting": return lang.cardBatchStateManualMounting();
+            case "in queue: sticker labeling": return lang.cardBatchStateStickerLabelingInQueue();
+            case "sticker labeling": return lang.cardBatchStateStickerLabeling();
+            case "transferred for testing": return lang.cardBatchStateTransferredForTesting();
             default: return state.getState();
         }
     }

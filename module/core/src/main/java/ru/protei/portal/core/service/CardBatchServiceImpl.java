@@ -16,7 +16,10 @@ import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -262,7 +265,7 @@ public class CardBatchServiceImpl implements CardBatchService {
         if (!isArticleValid(cardBatch.getArticle())) {
             return false;
         }
-        if (isNew && CrmConstants.State.PRELIMINARY != cardBatch.getStateId()) {
+        if (isNew && CrmConstants.State.BUILD_EQUIPMENT_IN_QUEUE != cardBatch.getStateId()) {
             return false;
         }
         if (cardBatch.getAmount() != null && cardBatch.getAmount() <= 0) {

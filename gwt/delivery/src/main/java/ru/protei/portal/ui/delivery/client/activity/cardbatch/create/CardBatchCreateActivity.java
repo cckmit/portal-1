@@ -122,7 +122,7 @@ public abstract class CardBatchCreateActivity implements Activity,
         metaView.stateEnable().setEnabled(false);
         metaView.contractors().setValue(null);
         fillPrioritySelector(BASIC);
-        fillStateSelector(CrmConstants.State.PRELIMINARY);
+        fillStateSelector(CrmConstants.State.BUILD_EQUIPMENT_IN_QUEUE);
     }
 
     private CardBatch fillDto() {
