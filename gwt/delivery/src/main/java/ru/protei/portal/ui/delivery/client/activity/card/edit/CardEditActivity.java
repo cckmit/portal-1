@@ -110,6 +110,7 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
                     this.card = card;
                     switchNameDescriptionToEdit(false);
                     fillView(card);
+                    fillHistory();
                     showMeta(card);
                     attachToContainer(container);
                 }));
@@ -132,8 +133,6 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
 
         renderMarkupText(card.getNote(), html -> noteCommentView.setNote(html));
         renderMarkupText(card.getComment(), html -> noteCommentView.setComment(html));
-
-        fillHistory();
     }
 
     private void showMeta(Card card) {
