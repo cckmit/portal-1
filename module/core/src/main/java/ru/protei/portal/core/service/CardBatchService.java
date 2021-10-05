@@ -14,15 +14,15 @@ import java.util.List;
 public interface CardBatchService {
 
     @Privileged({ En_Privilege.DELIVERY_CREATE })
-    @Auditable( En_AuditType.DELIVERY_CREATE )
+    @Auditable( En_AuditType.CARD_BATCH_CREATE )
     Result<CardBatch> createCardBatch(AuthToken token, CardBatch cardBatch);
 
     @Privileged({ En_Privilege.DELIVERY_EDIT })
-    @Auditable( En_AuditType.DELIVERY_MODIFY )
+    @Auditable( En_AuditType.CARD_BATCH_MODIFY )
     Result<CardBatch> updateMeta(AuthToken token, CardBatch meta);
 
     @Privileged({ En_Privilege.DELIVERY_EDIT })
-    @Auditable( En_AuditType.DELIVERY_MODIFY )
+    @Auditable( En_AuditType.CARD_BATCH_MODIFY )
     Result<CardBatch> updateCardBatch(AuthToken token, CardBatch cardBatch);
 
     Result<CardBatch> getLastCardBatch(AuthToken token, Long typeId);

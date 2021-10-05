@@ -150,6 +150,10 @@ public enum En_AuditType implements HasId {
     CARD_CREATE(101),
     CARD_MODIFY(102),
     CARD_REMOVE(103),
+
+    CARD_BATCH_CREATE(104),
+    CARD_BATCH_MODIFY(105),
+    CARD_BATCH_REMOVE(106),
     ;
 
     En_AuditType(int id ) {

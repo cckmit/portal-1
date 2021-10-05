@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -13,7 +14,8 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 @JdbcEntity(table = "card_batch")
-public class CardBatch implements Serializable {
+public class CardBatch extends AuditableObject {
+    public static final String AUDIT_TYPE = "CardBatch";
     public static final String CASE_OBJECT_TABLE = "case_object";
     public static final String CASE_STATE_TABLE = "case_state";
     public static final String CASE_OBJECT_ALIAS = "CO";
@@ -171,6 +173,11 @@ public class CardBatch implements Serializable {
 
     public void setContractors(List<PersonProjectMemberView> сontractors) {
         this.сontractors = сontractors;
+    }
+
+    @Override
+    public String getAuditType() {
+        return AUDIT_TYPE;
     }
 
     @Override

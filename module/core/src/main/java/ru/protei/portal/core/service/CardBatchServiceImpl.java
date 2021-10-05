@@ -11,7 +11,6 @@ import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -27,9 +26,8 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.dict.En_ResultStatus.INCORRECT_PARAMS;
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.ent.CardBatch.Columns.TYPE_ID;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_ARTICLE_PATTERN;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_NUMBER_PATTERN;
 
@@ -331,7 +329,7 @@ public class CardBatchServiceImpl implements CardBatchService {
         }
 
         caseObject.setId(cardBatch.getId());
-        caseObject.setName("");
+        caseObject.setName(CardBatch.AUDIT_TYPE);
         caseObject.setInfo(cardBatch.getParams());
         caseObject.setStateId(cardBatch.getStateId());
         caseObject.setImpLevel(cardBatch.getPriority());
