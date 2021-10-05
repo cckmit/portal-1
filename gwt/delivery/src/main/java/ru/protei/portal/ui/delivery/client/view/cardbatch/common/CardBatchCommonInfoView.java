@@ -19,8 +19,6 @@ import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCar
 import ru.protei.portal.ui.delivery.client.widget.card.selector.CardTypeSelector;
 
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_ARTICLE_PATTERN;
-import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_NUMBER_PATTERN;
-import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HAS_ERROR;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
 public class CardBatchCommonInfoView extends Composite implements AbstractCardBatchCommonInfoView {
@@ -28,7 +26,6 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
     @Inject
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        number.setRegexp(CARD_BATCH_NUMBER_PATTERN);
         article.setRegexp(CARD_BATCH_ARTICLE_PATTERN);
         ensureDebugIds();
     }
@@ -45,11 +42,6 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
 
     @Override
     public HasValue<String> number() {
-        return number;
-    }
-
-    @Override
-    public HasEnabled numberEnabled() {
         return number;
     }
 

@@ -67,7 +67,6 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         view.getMetaContainer().add(metaView);
         commonInfoView.hidePrevCardBatchInfo();
         commonInfoView.typeEnabled().setEnabled(false);
-        commonInfoView.numberEnabled().setEnabled(false);
 
         requestCardBatch(event.id, this::fillView);
     }

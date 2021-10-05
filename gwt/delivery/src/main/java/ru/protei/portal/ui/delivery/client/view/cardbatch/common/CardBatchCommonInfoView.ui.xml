@@ -16,7 +16,7 @@
                 <div class="col-md-6">
                     <div class="form-group form-group-default required disabled">
                         <label class="fade"><ui:text from="{lang.cardBatchNumber}"/></label>
-                        <text:ValidableTextBox ui:field="number" enabled="false"
+                        <text:ValidableTextBox ui:field="number" enabled="false" notNull="false"
                                                placeholder="{lang.cardBatchNumberPlaceholder}" styleName="form-control"/>
                     </div>
                 </div>

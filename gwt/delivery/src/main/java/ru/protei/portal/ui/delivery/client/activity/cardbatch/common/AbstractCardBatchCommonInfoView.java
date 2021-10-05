@@ -13,8 +13,6 @@ public interface AbstractCardBatchCommonInfoView extends IsWidget {
 
     HasValue<String> number();
 
-    HasEnabled numberEnabled();
-
     HasValue<String> article();
 
     HasValue<Integer> amount();

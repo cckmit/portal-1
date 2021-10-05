@@ -25,7 +25,7 @@
 
                 <div class="form-group form-group-default date-picker required">
                     <label class="fade" ><ui:text from="{lang.cardBatchDeadline}"/></label>
-                    <datepicker:SinglePicker ui:field="deadline" type="DATE"
+                    <datepicker:SinglePicker ui:field="deadline" type="DATE" mandatory="false"
                                              formatValue="dd-MM-yyyy" styleName="clearfix"/>
                 </div>
 

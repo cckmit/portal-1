@@ -67,7 +67,6 @@ public abstract class CardBatchCreateActivity implements Activity,
         view.getCommonInfoContainer().add(commonInfoView);
         view.getMetaContainer().add(metaView);
         commonInfoView.typeEnabled().setEnabled(true);
-        commonInfoView.numberEnabled().setEnabled(false);
 
         prepare();
     }
