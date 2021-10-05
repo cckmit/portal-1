@@ -2,6 +2,7 @@ package ru.protei.portal.ui.delivery.client.view.cardbatch.common;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -38,6 +39,11 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
     @Override
     public HasEnabled typeEnabled() {
         return type;
+    }
+
+    @Override
+    public HasVisibility buttonsContainerVisibility() {
+        return buttonsContainer;
     }
 
     @Override
@@ -102,15 +108,32 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
         activity.onAmountChanged();
     }
 
+    @UiHandler("saveButton")
+    void onSaveButtonClick(ClickEvent event ) {
+        activity.onSaveMainInfoClicked();
+    }
+
+    @Override
+    public HasEnabled saveEnabled(){
+        return saveButton;
+    }
+
+    @UiHandler("cancelButton")
+    void onCancelButtonClick(ClickEvent event ) {
+        activity.onCancelSaveMainInfoClicked();
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
         type.ensureDebugId( DebugIds.CARD_BATCH.TYPE );
-        number.ensureDebugId( DebugIds.CARD_BATCH.NUMBER );
+        number.ensureDebugId( DebugIds.CARD_BATCH.NUMBER_INPUT);
         article.ensureDebugId( DebugIds.CARD_BATCH.ARTICLE );
         amount.ensureDebugId( DebugIds.CARD_BATCH.AMOUNT );
         params.ensureDebugId( DebugIds.CARD_BATCH.PARAMS );
+        saveButton.ensureDebugId(DebugIds.CARD_BATCH.SAVE_BUTTON);
+        cancelButton.ensureDebugId(DebugIds.CARD_BATCH.CANCEL_BUTTON);
     }
 
     AbstractCardBatchCommonInfoActivity activity;
@@ -131,6 +154,12 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
     AutoResizeTextArea params;
     @UiField
     Label prevCardBatchInfo;
+    @UiField
+    HTMLPanel buttonsContainer;
+    @UiField
+    Button saveButton;
+    @UiField
+    Button cancelButton;
 
     interface CommonUiBinder extends UiBinder<HTMLPanel, CardBatchCommonInfoView> {}
     private static CommonUiBinder ourUiBinder = GWT.create( CommonUiBinder.class );

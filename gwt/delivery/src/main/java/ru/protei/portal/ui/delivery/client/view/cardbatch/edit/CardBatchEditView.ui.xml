@@ -6,12 +6,37 @@
 
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
         <div class="card-body row no-margin">
-            <g:HTMLPanel ui:field="commonInfoContainer" styleName="col-lg-8"/>
-            <g:HTMLPanel ui:field="metaContainer" styleName="col-lg-4"/>
-        </div>
-        <div class="card-footer text-right">
-            <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
-            <g:Button ui:field="cancelButton" styleName="btn btn-default close_button" text="{lang.buttonCancel}"/>
+            <div class="col-lg-6 order-last order-lg-first p-l-25 p-r-5">
+                <div class="btn-toolbar flex-wrap">
+                    <div class="btn-group form-group">
+                        <g:Button ui:field="noteCommentEditButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
+                                  title="{lang.cardEditNoteAndComment}">
+                            <i class="fa fa-pencil-alt"/>
+                        </g:Button>
+                    </div>
+                </div>
+
+                <g:HTMLPanel ui:field="commonInfoContainer">
+
+                    <small ui:field="createdBy" class="pull-right text-right"/>
+
+                    <h5 class="no-margin"><g:Label ui:field="numberRO" styleName="semi-bold large-text"/></h5>
+
+                    <br/>
+                    <h5 class="no-margin"><g:Label text="{lang.cardBatchType}" styleName="semi-bold large-text"/></h5>
+                    <div ui:field="typeRO" class="form-group markdown p-t-15"/>
+                    <h5 class="no-margin"><g:Label text="{lang.cardBatchArticle}" styleName="semi-bold large-text"/></h5>
+                    <div ui:field="articleRO" class="form-group markdown p-t-15"/>
+                    <h5 class="no-margin"><g:Label text="{lang.cardBatchAmount}" styleName="semi-bold large-text"/></h5>
+                    <div ui:field="amountRO" class="form-group markdown p-t-15"/>
+                    <h5 class="no-margin"><g:Label text="{lang.cardBatchParams}" styleName="semi-bold large-text"/></h5>
+                    <div ui:field="paramsRO" class="form-group markdown p-t-15"/>
+
+                </g:HTMLPanel>
+
+                <g:HTMLPanel ui:field="commonInfoEditContainer"/>
+            </div>
+            <g:HTMLPanel ui:field="metaContainer" styleName="col-lg-6"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

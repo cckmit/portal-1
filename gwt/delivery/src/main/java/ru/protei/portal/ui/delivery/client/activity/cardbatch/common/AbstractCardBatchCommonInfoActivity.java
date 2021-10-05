@@ -5,4 +5,8 @@ public interface AbstractCardBatchCommonInfoActivity {
     default void onCardTypeChanged(Long cardTypeId){}
 
     void onAmountChanged();
+
+    default void onSaveMainInfoClicked(){}
+
+    default void onCancelSaveMainInfoClicked(){}
 }
