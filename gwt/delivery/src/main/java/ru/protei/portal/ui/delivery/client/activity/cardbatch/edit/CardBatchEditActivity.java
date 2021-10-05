@@ -43,8 +43,6 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
     @Inject
     public void onInit() {
         view.setActivity(this);
-        commonInfoView.setActivity(this);
-        metaView.setActivity(this);
     }
 
     @Event
@@ -59,6 +57,8 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
             return;
         }
 
+        commonInfoView.setActivity(this);
+        metaView.setActivity(this);
         initDetails.parent.clear();
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());

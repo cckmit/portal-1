@@ -209,7 +209,6 @@ public class CardBatchServiceImpl implements CardBatchService {
         }
 
         jdbcManyRelationsHelper.fillAll(cardBatch);
-//        cardBatch.setContractors(cardBatch.getContractors());
 
         log.debug("getCardBatch(): id = {}, result = {}", id, cardBatch);
         return ok(cardBatch);

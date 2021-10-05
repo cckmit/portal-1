@@ -17,6 +17,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CardBatchEvents;
 import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.lang.CardBatchStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CardBatchControllerAsync;
 import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
@@ -44,8 +45,6 @@ public abstract class CardBatchCreateActivity implements Activity,
     @Inject
     public void onInit() {
         view.setActivity(this);
-        commonInfoView.setActivity(this);
-        metaView.setActivity(this);
     }
 
     @Event
@@ -60,6 +59,8 @@ public abstract class CardBatchCreateActivity implements Activity,
             return;
         }
 
+        commonInfoView.setActivity(this);
+        metaView.setActivity(this);
         initDetails.parent.clear();
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
@@ -237,7 +238,7 @@ public abstract class CardBatchCreateActivity implements Activity,
                 return;
             }
 
-            commonInfoView.setPrevCardBatchInfo(lastNumberCardBatch.getNumber(), lastNumberCardBatch.getAmount(), lastNumberCardBatch.getState().getState());
+            commonInfoView.setPrevCardBatchInfo(lastNumberCardBatch.getNumber(), lastNumberCardBatch.getAmount(), cardBatchStateLang.getStateName(lastNumberCardBatch.getState()));
         }
     };
 
@@ -279,7 +280,8 @@ public abstract class CardBatchCreateActivity implements Activity,
     private PolicyService policyService;
     @Inject
     ImportanceLevelControllerAsync importanceService;
-
+    @Inject
+    CardBatchStateLang cardBatchStateLang;
     @Inject
     private DefaultErrorHandler defaultErrorHandler;
 
