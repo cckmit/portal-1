@@ -1377,6 +1377,8 @@ public class DebugIds {
         String NOTE = "card-note";
         String COMMENT = "card-comment";
 
+        String TAB_HISTORY = "card-tab-history";
+
         String STATE = "card-state-selector";
         String TYPE = "card-type-selector";
         String CARD_BATCH = "card-card-batch-selector";

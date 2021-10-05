@@ -581,6 +581,10 @@ public abstract class CommentAndHistoryListActivity
             return true;
         }
 
+        if (En_CaseType.CARD.equals(caseType)) {
+            return true;
+        }
+
         return false;
     }
 
