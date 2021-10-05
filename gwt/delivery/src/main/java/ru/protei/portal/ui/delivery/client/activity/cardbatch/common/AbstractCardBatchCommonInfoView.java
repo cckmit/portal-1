@@ -19,6 +19,8 @@ public interface AbstractCardBatchCommonInfoView extends IsWidget {
 
     HasValue<Integer> amount();
 
+    void setAmountValid(boolean isValid);
+
     HasValue<String> params();
 
     boolean isNumberValid();

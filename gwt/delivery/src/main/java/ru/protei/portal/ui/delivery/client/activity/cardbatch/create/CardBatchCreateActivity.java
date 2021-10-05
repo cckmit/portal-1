@@ -65,6 +65,8 @@ public abstract class CardBatchCreateActivity implements Activity,
         initDetails.parent.add(view.asWidget());
         view.getCommonInfoContainer().add(commonInfoView);
         view.getMetaContainer().add(metaView);
+        commonInfoView.typeEnabled().setEnabled(true);
+        commonInfoView.numberEnabled().setEnabled(false);
 
         prepare();
     }
@@ -105,9 +107,20 @@ public abstract class CardBatchCreateActivity implements Activity,
         validateDeadline();
     }
 
+    @Override
+    public void onAmountChanged() {
+        validateAmount();
+    }
+
     private boolean validateDeadline() {
         boolean isValid = metaView.deadline().getValue().after(new Date());
         metaView.setDeadlineValid(isValid);
+        return isValid;
+    }
+
+    private boolean validateAmount() {
+        boolean isValid = null == commonInfoView.amount().getValue() || commonInfoView.amount().getValue() > 0;
+        commonInfoView.setAmountValid(isValid);
         return isValid;
     }
 
@@ -157,7 +170,7 @@ public abstract class CardBatchCreateActivity implements Activity,
             return lang.cardBatchArticleValidationError();
         }
 
-        if (null == commonInfoView.amount().getValue() || commonInfoView.amount().getValue() <= 0) {
+        if (!validateAmount()) {
             return lang.cardBatchAmountValidationError();
         }
 

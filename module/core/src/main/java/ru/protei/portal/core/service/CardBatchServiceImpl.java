@@ -11,6 +11,7 @@ import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -26,8 +27,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.dict.En_ResultStatus.INCORRECT_PARAMS;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_ARTICLE_PATTERN;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_NUMBER_PATTERN;
 
@@ -124,7 +124,7 @@ public class CardBatchServiceImpl implements CardBatchService {
             return error(INCORRECT_PARAMS);
         }
 
-        if (!isValid(meta, false)) {
+        if (!isMetaValid(meta, false)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
@@ -134,6 +134,7 @@ public class CardBatchServiceImpl implements CardBatchService {
         }
 
         CaseObject caseObject = caseObjectDAO.get(meta.getId());
+        jdbcManyRelationsHelper.fill( caseObject, "members" );
         caseObject = createCardBatchCaseObject(caseObject, meta, null, null, new Date());
         boolean isUpdated = caseObjectDAO.merge(caseObject);
         if (!isUpdated) {
@@ -157,7 +158,9 @@ public class CardBatchServiceImpl implements CardBatchService {
         //TODO доделать логику оповещения о редактировании партии плат
         CardBatchUpdateEvent updateEvent = new CardBatchUpdateEvent(this, oldMeta, meta, token.getPersonId());
 
-        return ok(cardBatchDAO.get(caseObject.getId()), Collections.singletonList(updateEvent));
+        CardBatch cardBatch = cardBatchDAO.get(caseObject.getId());
+        jdbcManyRelationsHelper.fillAll(cardBatch);
+        return ok(cardBatch, Collections.singletonList(updateEvent));
     }
 
     @Override
@@ -206,6 +209,7 @@ public class CardBatchServiceImpl implements CardBatchService {
         }
 
         jdbcManyRelationsHelper.fillAll(cardBatch);
+//        cardBatch.setContractors(cardBatch.getContractors());
 
         log.debug("getCardBatch(): id = {}, result = {}", id, cardBatch);
         return ok(cardBatch);
@@ -259,25 +263,33 @@ public class CardBatchServiceImpl implements CardBatchService {
         if (isNew && cardBatch.getId() != null) {
             return false;
         }
+        if (cardBatch.getTypeId() == null) {
+            return false;
+        }
         if (!isNumberValid(cardBatch.getNumber())) {
             return false;
         }
         if (!isArticleValid(cardBatch.getArticle())) {
             return false;
         }
-        if (isNew && CrmConstants.State.BUILD_EQUIPMENT_IN_QUEUE != cardBatch.getStateId()) {
-            return false;
-        }
         if (cardBatch.getAmount() != null && cardBatch.getAmount() <= 0) {
             return false;
         }
-        if (cardBatch.getTypeId() == null) {
+
+        return isMetaValid(cardBatch, isNew);
+    }
+
+    private boolean isMetaValid(CardBatch cardBatch, boolean isNew) {
+        if (isNew && CrmConstants.State.BUILD_EQUIPMENT_IN_QUEUE != cardBatch.getStateId()) {
             return false;
         }
         if (cardBatch.getDeadline() == null) {
             return false;
         }
         if (cardBatch.getPriority() == null) {
+            return false;
+        }
+        if (isEmpty(cardBatch.getContractors())) {
             return false;
         }
         return true;

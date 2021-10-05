@@ -74,7 +74,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
 
     @Override
     public void onSaveClicked() {
-        String error = getValidationError();
+        String error = getCommonValidationError();
         if (error != null) {
             showError(error);
             return;
@@ -107,6 +107,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
     @Override
     public void onDeadlineChanged() {
         if (!validateDeadline()) {
+            showError(lang.cardBatchDeadlineValidationError());
             return;
         }
         cardBatch.setDeadline(metaView.deadline().getValue() != null? metaView.deadline().getValue().getTime() : null);
@@ -122,6 +123,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
     @Override
     public void onContractorsChange() {
         if (CollectionUtils.isEmpty(metaView.contractors().getValue())) {
+            showError(lang.cardBatchContractorsValidationError());
             return;
         }
         cardBatch.setContractors(new ArrayList<>(metaView.contractors().getValue()));
@@ -134,7 +136,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
             return;
         }
 
-        String error = getValidationError();
+        String error = getMetaValidationError();
         if (error != null) {
             showError(error);
             return;
@@ -155,6 +157,18 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
     private boolean validateDeadline() {
         boolean isValid = metaView.deadline().getValue().after(new Date());
         metaView.setDeadlineValid(isValid);
+        return isValid;
+    }
+
+
+    @Override
+    public void onAmountChanged() {
+        validateAmount();
+    }
+
+    private boolean validateAmount() {
+        boolean isValid = null == commonInfoView.amount().getValue() || commonInfoView.amount().getValue() > 0;
+        commonInfoView.setAmountValid(isValid);
         return isValid;
     }
 
@@ -188,7 +202,19 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         fireEvent(new NotifyEvents.Show(error, ERROR));
     }
 
-    private String getValidationError() {
+    private String getMetaValidationError() {
+        if (!validateDeadline()) {
+            return lang.cardBatchDeadlineValidationError();
+        }
+
+        if (CollectionUtils.isEmpty(metaView.contractors().getValue())) {
+            return lang.cardBatchContractorsValidationError();
+        }
+
+        return null;
+    }
+
+    private String getCommonValidationError() {
         if (null == commonInfoView.type().getValue()) {
             return lang.cardBatchTypeValidationError();
         }
@@ -201,16 +227,8 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
             return lang.cardBatchArticleValidationError();
         }
 
-        if (null == commonInfoView.amount().getValue() || commonInfoView.amount().getValue() <= 0) {
+        if (!validateAmount()) {
             return lang.cardBatchAmountValidationError();
-        }
-
-        if (!validateDeadline()) {
-            return lang.cardBatchDeadlineValidationError();
-        }
-
-        if (CollectionUtils.isEmpty(metaView.contractors().getValue())) {
-            return lang.cardBatchContractorsValidationError();
         }
 
         return null;

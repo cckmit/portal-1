@@ -2,6 +2,7 @@ package ru.protei.portal.ui.delivery.client.view.cardbatch.common;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -19,6 +20,8 @@ import ru.protei.portal.ui.delivery.client.widget.card.selector.CardTypeSelector
 
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_ARTICLE_PATTERN;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_NUMBER_PATTERN;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HAS_ERROR;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
 public class CardBatchCommonInfoView extends Composite implements AbstractCardBatchCommonInfoView {
 
@@ -61,6 +64,11 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
     }
 
     @Override
+    public void setAmountValid(boolean isValid) {
+        amount.setStyleName(REQUIRED, !isValid);
+    }
+
+    @Override
     public HasValue<String> params(){
         return params;
     }
@@ -95,6 +103,11 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
     @UiHandler("type")
     public void onTypeChanged(ValueChangeEvent<EntityOption> event) {
         activity.onCardTypeChanged(event.getValue().getId());
+    }
+
+    @UiHandler("amount")
+    public void onAmountChanged(KeyUpEvent event) {
+        activity.onAmountChanged();
     }
 
     private void ensureDebugIds() {

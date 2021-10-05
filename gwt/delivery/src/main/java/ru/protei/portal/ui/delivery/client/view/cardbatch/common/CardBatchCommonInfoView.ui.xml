@@ -10,10 +10,11 @@
     <g:HTMLPanel>
         <form>
             <div class="row">
-                <sel:CardTypeSelector ui:field="type" styleName="col-md-6" mandatory="true" header="{lang.cardBatchType}"/>
+                <sel:CardTypeSelector ui:field="type" styleName="col-md-6" mandatory="true"
+                                      header="{lang.cardBatchType}" defaultValue="{lang.cardBatchNumberPlaceholder}"/>
 
                 <div class="col-md-6">
-                    <div class="form-group form-group-default required">
+                    <div class="form-group form-group-default required disabled">
                         <label class="fade"><ui:text from="{lang.cardBatchNumber}"/></label>
                         <text:ValidableTextBox ui:field="number" enabled="false"
                                                placeholder="{lang.cardBatchNumberPlaceholder}" styleName="form-control"/>
