@@ -7,10 +7,12 @@ import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.ent.Delivery.Columns.ID;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 @JdbcEntity(table = "card_batch")
@@ -60,6 +62,15 @@ public class CardBatch extends AuditableObject {
     @JdbcJoinedColumn(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID, mappedColumn = CaseObject.Columns.IMPORTANCE,
             table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Integer priority;
+
+    @JdbcJoinedObject(joinPath = {
+            @JdbcJoinPath(localColumn = ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = CaseObject.Columns.CREATOR, remoteColumn = "id", table = "person")})
+    private Person creator;
+
+    @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.CREATED, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
+    private Date created;
 
     @JdbcOneToMany( table = "case_member", localColumn = "id", remoteColumn = "CASE_ID" )
     private List<CaseMember> members;
@@ -159,6 +170,14 @@ public class CardBatch extends AuditableObject {
 
     public void setPriority(Integer priority) {
         this.priority = priority;
+    }
+
+    public Person getCreator() {
+        return creator;
+    }
+
+    public Date getCreated() {
+        return created;
     }
 
     public List<PersonProjectMemberView> getContractors() {

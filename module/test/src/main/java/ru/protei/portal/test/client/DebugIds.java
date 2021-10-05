@@ -1390,7 +1390,7 @@ public class DebugIds {
         String SAVE_BUTTON = "card-batch-save-button";
         String CANCEL_BUTTON = "card-batch-cancel-button";
         String TYPE = "card-batch-type-selector";
-        String NUMBER = "card-batch-number-input";
+        String NUMBER_INPUT = "card-batch-number-input";
         String ARTICLE = "card-batch-article-input";
         String AMOUNT = "card-batch-amount-input";
         String PARAMS = "card-batch-params-input";
@@ -1398,5 +1398,7 @@ public class DebugIds {
         String PRIORITY_SELECTOR = "card-batch-priority-selector";
         String DEADLINE_DATE = "card-batch-deadline-date-container";
         String CONTRACTOR_SELECTOR = "card-batch-contractor-selector";
+        String NUMBER = "card-batch-number";
+        String EDIT_NOTE_COMMENT_BUTTON = "card-batch-edit-note-comment-button";
     }
 }

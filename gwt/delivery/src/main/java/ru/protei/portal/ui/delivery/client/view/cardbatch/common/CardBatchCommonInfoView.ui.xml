@@ -46,5 +46,10 @@
             </div>
         </form>
 
+        <g:HTMLPanel ui:field="buttonsContainer" visible="false">
+            <g:Button ui:field="saveButton" styleName="btn btn-xs btn-complete" text="{lang.buttonApply}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-xs btn-default" text="{lang.buttonCancel}"/>
+        </g:HTMLPanel>
+
     </g:HTMLPanel>
 </ui:UiBinder>
