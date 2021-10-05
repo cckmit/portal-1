@@ -36,12 +36,7 @@ public class ModuleStateFormSelector extends FormPopupSingleSelector<CaseState> 
         return moduleStateLang.getStateName(state);
     }
 
-    public void setDefaultValue(String value) {
-        this.defaultValue = value;
-    }
-
     @Inject
     ModuleStateLang moduleStateLang;
 
-    private String defaultValue;
 }

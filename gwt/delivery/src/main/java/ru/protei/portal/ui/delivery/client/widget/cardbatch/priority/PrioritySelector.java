@@ -35,10 +35,4 @@ public class PrioritySelector extends FormPopupSingleSelector<ImportanceLevel> {
         item.setIconColor(makeContrastColor(element.getColor()), element.getColor());
         return item;
     }
-
-    public void setDefaultValue(String value) {
-        this.defaultValue = value;
-    }
-
-    private String defaultValue;
 }
