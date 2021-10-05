@@ -5,14 +5,26 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="row">
-        <div class="form-group col-md-12">
-            <label><ui:text from="{lang.profileSubscriptionCaseFilter}"/></label>
-            <casefilter:PersonCaseFilterWidget ui:field="personCaseFilterWidget"/>
+    <g:HTMLPanel styleName="form-horizontal">
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <label><ui:text from="{lang.profileSubscriptionCaseFilter}"/></label>
+            </div>
+            <div class="col-md-9">
+                <casefilter:PersonCaseFilterWidget ui:field="personCaseFilterWidget"/>
+            </div>
         </div>
-        <person:EmployeeMultiSelector ui:field="persons"
-                                      header="{lang.profileSubscriptionEmployees}"
-                                      addStyleNames="form-group col-md-12 person-subscribers"
-                                      buttonStyle="btn-info btn-xs"/>
+
+        <div class="form-group row">
+            <div class="col-md-3">
+                <label><ui:text from="{lang.profileSubscriptionEmployees}"/></label>
+            </div>
+            <div class="col-md-9">
+                <person:EmployeeMultiSelector ui:field="persons"
+                                              addStyleNames="person-subscribers"
+                                              buttonStyle="btn-info btn-xs"/>
+            </div>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

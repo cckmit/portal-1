@@ -4,8 +4,13 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.app.portal.client.activity.profile.general.changepassword.AbstractChangePasswordView;
 import ru.protei.portal.core.model.dict.En_AuthType;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
+import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -20,11 +25,13 @@ import java.util.Objects;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.REMEMBER_ME_PREFIX;
 
-public abstract class ProfileGeneralActivity implements AbstractProfileGeneralActivity, Activity {
+public abstract class ProfileGeneralActivity implements AbstractProfileGeneralActivity,
+        AbstractDialogDetailsActivity, Activity {
 
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+        prepareDialog(dialogView);
     }
 
     @Event
@@ -36,12 +43,16 @@ public abstract class ProfileGeneralActivity implements AbstractProfileGeneralAc
 
     @Override
     public void onChangePasswordButtonClicked() {
-        view.passwordContainerVisibility().setVisible(!view.passwordContainerVisibility().isVisible());
-        view.changePasswordButtonVisibility().setVisible(false);
+        dialogView.showPopup();
     }
 
     @Override
-    public void onSavePasswordButtonClicked() {
+    public void onCancelClicked() {
+        dialogView.hidePopup();
+    }
+
+    @Override
+    public void onSaveClicked() {
         if (profile.getAuthType() != En_AuthType.LOCAL) {
             fireEvent(new NotifyEvents.Show(lang.errPermissionDenied(), NotifyEvents.NotifyType.ERROR));
             return;
@@ -49,34 +60,48 @@ public abstract class ProfileGeneralActivity implements AbstractProfileGeneralAc
 
         if (!isConfirmValidate()) {
             fireEvent(new NotifyEvents.Show(lang.errEditProfile(), NotifyEvents.NotifyType.ERROR));
-        } else if (!HelperFunc.isEmpty(view.currentPassword().getValue())) {
-            accountService.updateAccountPassword(profile.getLoginId(), view.currentPassword().getValue(), view.newPassword().getValue(), new FluentCallback<Void>()
+        } else if (!HelperFunc.isEmpty(changePasswordView.currentPassword().getValue())) {
+            accountService.updateAccountPassword(profile.getLoginId(), changePasswordView.currentPassword().getValue(), changePasswordView.newPassword().getValue(), new FluentCallback<Void>()
                     .withSuccess(res -> {
                         if (storage.contains(REMEMBER_ME_PREFIX + "login")) {
-                            storage.set(REMEMBER_ME_PREFIX + "pwd", PasswordUtils.encrypt(view.newPassword().getValue()));
+                            storage.set(REMEMBER_ME_PREFIX + "pwd", PasswordUtils.encrypt(changePasswordView.newPassword().getValue()));
                         }
 
                         fireEvent(new NotifyEvents.Show(lang.passwordUpdatedSuccessful(), NotifyEvents.NotifyType.SUCCESS));
                         view.changePasswordButtonVisibility().setVisible(isAvailableChangePassword());
-                        view.passwordContainerVisibility().setVisible(false);
+                        dialogView.hidePopup();
                     }));
         }
     }
 
+    private void prepareDialog(AbstractDialogDetailsView dialog) {
+        dialog.setActivity(this);
+        dialog.getBodyContainer().clear();
+        dialog.getBodyContainer().add(changePasswordView.asWidget());
+        dialog.setHeader(lang.accountPasswordChange());
+        dialog.removeButtonVisibility().setVisible(false);
+    }
+
     private boolean isConfirmValidate() {
-        return !HelperFunc.isEmpty(view.currentPassword().getValue()) &&
-                !HelperFunc.isEmpty(view.newPassword().getValue()) &&
-                Objects.equals(view.newPassword().getValue(), view.confirmPassword().getValue());
+        return !HelperFunc.isEmpty(changePasswordView.currentPassword().getValue()) &&
+                !HelperFunc.isEmpty(changePasswordView.newPassword().getValue()) &&
+                Objects.equals(changePasswordView.newPassword().getValue(), changePasswordView.confirmPassword().getValue());
     }
 
     private void fillView(Profile value) {
         this.profile = value;
+        view.setLogin(value.getLogin());
         view.changePasswordButtonVisibility().setVisible(isAvailableChangePassword());
-        view.passwordContainerVisibility().setVisible(false);
+        view.newEmployeeBookContainerVisibility().setVisible(isShowNewEmployeeBook());
     }
 
     private boolean isAvailableChangePassword() {
         return profile.getAuthType() == En_AuthType.LOCAL;
+    }
+
+    private boolean isShowNewEmployeeBook() {
+        return policyService.hasSystemScopeForPrivilege(En_Privilege.COMMON_PROFILE_VIEW) ||
+                policyService.hasScopeForPrivilege(En_Privilege.COMMON_PROFILE_VIEW, En_Scope.USER);
     }
 
     @Inject
@@ -93,6 +118,12 @@ public abstract class ProfileGeneralActivity implements AbstractProfileGeneralAc
 
     @Inject
     LocalStorageService storage;
+
+    @Inject
+    AbstractDialogDetailsView dialogView;
+
+    @Inject
+    AbstractChangePasswordView changePasswordView;
 
     private Profile profile;
 }

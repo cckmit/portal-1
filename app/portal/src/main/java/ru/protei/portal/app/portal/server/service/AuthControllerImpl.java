@@ -93,6 +93,7 @@ public class AuthControllerImpl implements AuthController {
 
         Profile profile = new Profile();
         profile.setLoginId(token.getUserLoginId());
+        profile.setLogin(userLogin.getUlogin());
         profile.setAuthType(userLogin.getAuthType());
         profile.setRoles(token.getRoles());
         profile.setPrivileges(collectPrivileges(token.getRoles()));

@@ -19,8 +19,8 @@ import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSel
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.delivery.client.activity.card.filter.AbstractCardFilterActivity;
 import ru.protei.portal.ui.delivery.client.activity.card.filter.AbstractCardFilterView;
-import ru.protei.portal.ui.delivery.client.widget.card.selector.CardTypeMultiSelector;
-import ru.protei.portal.ui.delivery.client.widget.card.state.CardStatesOptionList;
+import ru.protei.portal.ui.common.client.widget.selector.card.type.CardTypeOptionMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.card.state.CardStateOptionSelector;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -133,10 +133,10 @@ public class CardFilterView extends Composite implements AbstractCardFilterView 
     EmployeeMultiSelector managers;
     @Inject
     @UiField(provided = true)
-    CardTypeMultiSelector types;
+    CardTypeOptionMultiSelector types;
     @Inject
     @UiField(provided = true)
-    CardStatesOptionList states;
+    CardStateOptionSelector states;
     @Inject
     @UiField( provided = true )
     SortFieldSelector sortField;

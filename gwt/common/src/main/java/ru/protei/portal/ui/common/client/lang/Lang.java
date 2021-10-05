@@ -116,7 +116,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonNotDefined();
 
-    String buttonSettings();
+    String buttonProfile();
 
     String buttonSearch();
 
@@ -866,7 +866,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String commentSendMessage();
 
-    String commentAddMessagePlaceholder();
+    String markupPlaceholder();
 
     String issueCommentChangeStatusTo();
 
@@ -3750,7 +3750,33 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardNote();
 
+    String cardComment();
+
     String cardManager();
+
+    String cardSelectType();
+
+    String cardSelectBatch();
+
+    String cardSelectManager();
+
+    String cardSerialNumberPlaceholder();
+
+    String cardEditNoteAndComment();
+
+    String cardValidationErrorSerialNumber();
+
+    String cardValidationErrorState();
+
+    String cardValidationErrorType();
+
+    String cardValidationErrorCardBatch();
+
+    String cardValidationErrorArticle();
+
+    String cardValidationErrorManager();
+
+    String cardValidationErrorTestDate();
 
     String cardBatchNumber();
 
@@ -3827,4 +3853,6 @@ public interface Lang extends Messages, ContactItemLang {
     String cardBatchStateStickerLabeling();
 
     String cardBatchStateTransferredForTesting();
+
+    String newEmployeeBook();
 }

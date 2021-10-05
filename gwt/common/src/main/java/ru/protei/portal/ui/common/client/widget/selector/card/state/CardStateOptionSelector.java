@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.widget.card.state;
+package ru.protei.portal.ui.common.client.widget.selector.card.state;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CaseState;
@@ -12,10 +12,10 @@ import java.util.List;
 /**
  * Селектор списка состояний плат
  */
-public class CardStatesOptionList extends OptionList<CaseState> implements SelectorWithModel<CaseState> {
+public class CardStateOptionSelector extends OptionList<CaseState> implements SelectorWithModel<CaseState> {
 
     @Inject
-    public void init(CardStateOptionsModel stateModel, CardStateLang lang) {
+    public void init(CardStateOptionModel stateModel, CardStateLang lang) {
         this.lang = lang;
         setSelectorModel(stateModel);
     }

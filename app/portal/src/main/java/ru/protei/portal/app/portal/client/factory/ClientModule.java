@@ -16,6 +16,7 @@ import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageVi
 import ru.protei.portal.app.portal.client.activity.profile.ProfilePageActivity;
 import ru.protei.portal.app.portal.client.activity.profile.general.AbstractProfileGeneralView;
 import ru.protei.portal.app.portal.client.activity.profile.general.ProfileGeneralActivity;
+import ru.protei.portal.app.portal.client.activity.profile.general.changepassword.AbstractChangePasswordView;
 import ru.protei.portal.app.portal.client.activity.profile.subscription.AbstractProfileSubscriptionView;
 import ru.protei.portal.app.portal.client.activity.profile.subscription.ProfileSubscriptionActivity;
 import ru.protei.portal.app.portal.client.view.app.AppView;
@@ -25,6 +26,7 @@ import ru.protei.portal.app.portal.client.view.dashboardblocks.edit.DashboardTab
 import ru.protei.portal.app.portal.client.view.dashboardblocks.table.DashboardTableView;
 import ru.protei.portal.app.portal.client.view.profile.ProfilePageView;
 import ru.protei.portal.app.portal.client.view.profile.general.ProfileGeneralView;
+import ru.protei.portal.app.portal.client.view.profile.general.changepassword.ChangePasswordView;
 import ru.protei.portal.app.portal.client.view.profile.subscription.ProfileSubscriptionView;
 
 /**
@@ -52,6 +54,7 @@ public class ClientModule extends AbstractGinModule {
 
         bind(ProfileGeneralActivity.class).asEagerSingleton();
         bind(AbstractProfileGeneralView.class).to(ProfileGeneralView.class).in(Singleton.class);
+        bind(AbstractChangePasswordView.class).to(ChangePasswordView.class).in(Singleton.class);
 
         bind(ProfileSubscriptionActivity.class).asEagerSingleton();
         bind(AbstractProfileSubscriptionView.class).to(ProfileSubscriptionView.class).in(Singleton.class);

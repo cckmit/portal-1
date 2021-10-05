@@ -13,10 +13,10 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.selector.card.type.CardTypeOptionSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoView;
-import ru.protei.portal.ui.delivery.client.widget.card.selector.CardTypeSelector;
 
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_ARTICLE_PATTERN;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
@@ -120,7 +120,7 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
 
     @Inject
     @UiField(provided = true)
-    CardTypeSelector type;
+    CardTypeOptionSelector type;
     @UiField
     ValidableTextBox number;
     @UiField

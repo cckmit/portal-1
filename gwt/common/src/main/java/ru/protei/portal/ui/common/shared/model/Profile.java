@@ -25,6 +25,8 @@ public class Profile implements Serializable {
 
     private Long loginId;
 
+    private String login;
+
     private En_AuthType authType;
 
     private Set<En_Privilege> privileges;
@@ -70,6 +72,14 @@ public class Profile implements Serializable {
 
     public void setLoginId(Long loginId) {
         this.loginId = loginId;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public En_AuthType getAuthType() {
@@ -158,12 +168,20 @@ public class Profile implements Serializable {
     @Override
     public String toString() {
         return "Profile{" +
-            "roles=" + roles +
-            ", name='" + name + '\'' +
-            ", id=" + id +
-            ", privileges=" + privileges +
-            ", company=" + company +
-            '}';
+                "roles=" + roles +
+                ", name='" + name + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", id=" + id +
+                ", loginId=" + loginId +
+                ", login='" + login + '\'' +
+                ", authType=" + authType +
+                ", privileges=" + privileges +
+                ", gender=" + gender +
+                ", company=" + company +
+                ", shortName='" + shortName + '\'' +
+                ", fired=" + fired +
+                ", privileges2scopes=" + privileges2scopes +
+                '}';
     }
 
     public void setCompany( Company company ) {

@@ -6,14 +6,15 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.create.AbstractCardBatchCreateActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.create.AbstractCardBatchCreateView;
-import ru.protei.portal.ui.delivery.client.view.cardbatch.common.CardBatchCommonInfoView;
 
 public class CardBatchCreateView extends Composite implements AbstractCardBatchCreateView {
 

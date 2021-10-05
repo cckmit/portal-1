@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CardControllerAsync;
@@ -37,6 +38,8 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
 
     @PostConstruct
     public void onInit() {
+        CREATE_ACTION = lang.buttonCreate();
+
         view.setActivity( this );
         view.setAnimation( animation );
 
@@ -58,7 +61,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
     @Event(Type.FILL_CONTENT)
     public void onShow( CardEvents.Show event ) {
         if (!policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW)) {
-            fireEvent(new ErrorPageEvents.ShowForbidden());
+            fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
 
@@ -69,9 +72,45 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
 
         fireEvent(new ActionBarEvents.Clear());
 
+        if (policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE)) {
+            fireEvent(new ActionBarEvents.Add( CREATE_ACTION , null, UiConstants.ActionBarIdentity.CARD_CREATE ));
+        }
+
         this.preScroll = event.preScroll;
 
         loadTable();
+    }
+
+    @Event
+    public void onCreateClicked(ActionBarEvents.Clicked event) {
+        if (!(UiConstants.ActionBarIdentity.CARD_CREATE.equals(event.identity)) ) {
+            return;
+        }
+
+        view.clearSelection();
+        animation.showDetails();
+
+        fireEvent(new CardEvents.Create(view.getPreviewContainer(), () -> {
+            animation.closeDetails();
+            loadTable();
+        }));
+    }
+
+    @Event
+    public void onUpdate(CardEvents.Change event) {
+        if (view.asWidget().isAttached()) {
+            view.updateRow(event.card);
+        }
+    }
+
+    @Override
+    public void onItemClicked(Card value) {
+        if (value == null) {
+            animation.closeDetails();
+        } else {
+            fireEvent( new CardEvents.Edit( value.getId(), view.getPreviewContainer()) );
+            animation.showDetails();
+        }
     }
 
     @Override
@@ -160,4 +199,6 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
     private AppEvents.InitDetails initDetails;
     private Integer scrollTo = 0;
     private Boolean preScroll = false;
+
+    private static String CREATE_ACTION;
 }

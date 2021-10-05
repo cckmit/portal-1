@@ -509,4 +509,19 @@ public class DaoTestsConfiguration {
     public CardTypeDAO getCardTypeDAO() {
         return new CardTypeDAO_Impl();
     }
+
+    @Bean
+    public CardSqlBuilder cardSqlBuilder() {
+        return new CardSqlBuilder();
+    }
+
+    @Bean
+    public CardDAO getCardDAO() {
+        return new CardDAO_Impl();
+    }
+
+    @Bean
+    public CardBatchDAO getCardBatchDAO() {
+        return new CardBatchDAO_Impl();
+    }
 }
