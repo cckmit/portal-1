@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.util.CrmConstants.CardBatch.CARD_BATCH_PRIORITY_IDS;
+
 public abstract class PriorityModel extends BaseSelectorModel<ImportanceLevel> implements Activity {
 
     @Event
@@ -41,6 +43,4 @@ public abstract class PriorityModel extends BaseSelectorModel<ImportanceLevel> i
     Lang lang;
     @Inject
     ImportanceLevelControllerAsync importanceService;
-
-    private static final List<Integer> CARD_BATCH_PRIORITY_IDS = new ArrayList<>(Arrays.asList(1, 2, 3, 8));
 }

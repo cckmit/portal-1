@@ -272,10 +272,6 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
                 }));
     }
 
-    public static native String addLeadingZeros(int num, int number_length) /*-{
-        return num.toString().padStart(number_length, "0");
-    }-*/;
-
     @Inject
     private Lang lang;
     @Inject

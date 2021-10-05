@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -264,5 +265,9 @@ public class CrmConstants {
         String FEEDBACK_EXPECT = "2"; //Ожидание обратной связи
         String WON = "WON"; //Решено (Услуги оказаны)
         String LOSE = "LOSE"; //Отклонено (отказ)
+    }
+
+    public interface CardBatch {
+        List<Integer> CARD_BATCH_PRIORITY_IDS = Arrays.asList(1, 2, 3, 8);
     }
 }

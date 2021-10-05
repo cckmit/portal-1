@@ -21,7 +21,6 @@ public class CardBatchCreateView extends Composite implements AbstractCardBatchC
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-//        meta.stateEnable().setEnabled(false);
     }
 
     @Override
