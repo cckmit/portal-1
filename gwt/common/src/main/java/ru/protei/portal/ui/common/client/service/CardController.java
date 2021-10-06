@@ -29,5 +29,5 @@ public interface CardController extends RemoteService {
 
     Card removeCard(Card card) throws RequestFailedException;
 
-    Long getSizeByBatchId(Long cardBatchId) throws RequestFailedException;
+    Long getLastNumber(Long typeId, Long cardBatchId) throws RequestFailedException;
 }

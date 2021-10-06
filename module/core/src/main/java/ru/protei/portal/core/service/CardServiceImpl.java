@@ -32,6 +32,8 @@ import static ru.protei.portal.api.struct.Result.ok;
 
 public class CardServiceImpl implements CardService {
     private static Logger log = LoggerFactory.getLogger(CardServiceImpl.class);
+    public static final Long START_NUMBER = 0L;
+
     @Autowired
     CardDAO cardDAO;
 
@@ -165,12 +167,13 @@ public class CardServiceImpl implements CardService {
         return ok(card);
     }
 
-    @Override
-    public Result<Long> getSizeByBatchId(AuthToken token, Long cardBatchId) {
+    public Result<Long> getLastNumber(AuthToken token, Long typeId, Long cardBatchId) {
         if (cardBatchId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        return ok(cardDAO.countByExpression(Card.Columns.CARD_BATCH_ID + "= ?", cardBatchId));
+
+        Long number = cardDAO.getLastNumber(typeId, cardBatchId);
+        return ok(number != null? number : START_NUMBER);
     }
 
     private boolean isValid(Card card) {

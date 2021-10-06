@@ -76,8 +76,8 @@ public class CardControllerImpl implements CardController {
     }
 
     @Override
-    public Long getSizeByBatchId(Long cardBatchId) throws RequestFailedException {
+    public Long getLastNumber(Long typeId, Long cardBatchId) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
-        return checkResultAndGetData(cardService.getSizeByBatchId(token, cardBatchId));
+        return checkResultAndGetData(cardService.getLastNumber(token, typeId, cardBatchId));
     }
 }

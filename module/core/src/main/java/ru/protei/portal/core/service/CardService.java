@@ -38,5 +38,5 @@ public interface CardService {
 
     Result<List<CardType>> getCardTypeList(AuthToken token);
 
-    Result<Long> getSizeByBatchId(AuthToken token, Long cardBatchId);
+    Result<Long> getLastNumber(AuthToken token, Long typeId, Long cardBatchId);
 }

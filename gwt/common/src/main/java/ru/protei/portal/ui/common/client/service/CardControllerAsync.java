@@ -26,5 +26,5 @@ public interface CardControllerAsync {
 
     void removeCard(Card card, AsyncCallback<Card> async);
 
-    void getSizeByBatchId(Long cardBatchId, AsyncCallback<Long> async);
+    void getLastNumber(Long typeId, Long cardBatchId, AsyncCallback<Long> async);
 }
