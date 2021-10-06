@@ -15,7 +15,7 @@
                 <div class="row clearfix reset-no-padding">
                     <div class="col-md-12">
                         <card:state.CardStateFormSelector ui:field="state" header="{lang.cardState}" searchEnabled="false"
-                                                        hasNullValue="true" mandatory="true"/>
+                                                        hasNullValue="false" mandatory="true"/>
                     </div>
                 </div>
             </div>

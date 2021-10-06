@@ -151,6 +151,26 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         view.scrollTo(page);
     }
 
+    @Override
+    public void onRemoveClicked(Card value) {
+        if (value == null) {
+            return;
+        }
+
+        fireEvent(new ConfirmDialogEvents.Show(lang.deliveryRemoveConfirmMessage(value.getSerialNumber()),
+                removeAction(value)));
+
+    }
+
+    private Runnable removeAction(Card card) {
+        return () -> cardController.removeCard(card, new FluentCallback<Card>()
+                .withSuccess(result -> {
+                    fireEvent(new NotifyEvents.Show(lang.cardRemoveSucceeded(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new CardEvents.Show(false));
+                })
+        );
+    }
+
     private void loadTable() {
         animation.closeDetails();
         view.clearRecords();

@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:tab='urn:import:ru.protei.portal.ui.common.client.widget.tab'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -20,6 +21,11 @@
                 <h5 class="no-margin"><g:Label ui:field="serialNumber" styleName="semi-bold large-text"/></h5>
 
                 <g:HTMLPanel ui:field="noteCommentContainer"/>
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <tab:multi.MultiTabWidget ui:field="multiTabWidget" styleName="issue-info-tab-widget"/>
+                    </div>
+                </div>
             </div>
             <div class="col-lg-6">
                 <g:HTMLPanel ui:field="metaContainer"/>

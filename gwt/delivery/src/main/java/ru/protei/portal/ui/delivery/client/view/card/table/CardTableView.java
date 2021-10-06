@@ -8,10 +8,13 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Card;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
+import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.lang.CardStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.delivery.client.activity.card.table.AbstractCardTableActivity;
@@ -37,9 +40,13 @@ public class CardTableView extends Composite implements AbstractCardTableView {
     public void setActivity(AbstractCardTableActivity activity) {
         this.activity = activity;
 
+        removeClickColumn.setRemoveHandler(activity);
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_REMOVE));
+
         columns.forEach(clickColumn -> {
             clickColumn.setHandler( activity );
             clickColumn.setColumnProvider( columnProvider );
+            clickColumn.setEnabledPredicate( v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT) );
         });
 
         table.setPagerListener(activity);
@@ -100,8 +107,9 @@ public class CardTableView extends Composite implements AbstractCardTableView {
 
     @Override
     public void updateRow(Card item) {
-        if(item != null)
+        if(item != null) {
             table.updateRow(item);
+        }
     }
 
     private void initTable() {
@@ -121,10 +129,13 @@ public class CardTableView extends Composite implements AbstractCardTableView {
         table.addColumn(contact.header, contact.values);
         contact.setColumnProvider(columnProvider);
 
+        table.addColumn(removeClickColumn.header, removeClickColumn.values);
+
         columns.add(number);
         columns.add(info);
         columns.add(manager);
         columns.add(contact);
+        columns.add(removeClickColumn);
     }
 
     @UiField
@@ -141,7 +152,12 @@ public class CardTableView extends Composite implements AbstractCardTableView {
     HTMLPanel pagerContainer;
 
     @Inject
+    RemoveClickColumn<Card> removeClickColumn;
+
+    @Inject
     CardStateLang cardStateLang;
+    @Inject
+    private PolicyService policyService;
 
     private final List<ClickColumn<Card>> columns = new ArrayList<>();
 
