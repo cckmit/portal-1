@@ -115,7 +115,8 @@ public abstract class CardBatchCreateActivity implements Activity,
     }
 
     private boolean validateDeadline() {
-        boolean isValid = metaView.deadline().getValue().after(new Date());
+        Date deadline = metaView.deadline().getValue();
+        boolean isValid = deadline != null && deadline.after(new Date());
         metaView.setDeadlineValid(isValid);
         return isValid;
     }
