@@ -15,8 +15,8 @@ public class CardSqlBuilder {
 
             if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {
                 Condition searchCondition = SqlQueryBuilder.condition()
-                        .or("serial_number").like(query.getSearchString())
-                        .or("article").like(query.getSearchString())
+                        .or("card.serial_number").like(query.getSearchString())
+                        .or("card.article").like(query.getSearchString())
                         .or("CO.info").like(query.getSearchString());
                 condition.append(" and (")
                         .append(searchCondition.getSqlCondition())
