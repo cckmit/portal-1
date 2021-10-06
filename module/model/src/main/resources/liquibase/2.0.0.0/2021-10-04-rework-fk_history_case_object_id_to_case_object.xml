@@ -1,0 +1,17 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="drop-fk_history_case_object_id_to_case_object" author="porubov">
+        <dropForeignKeyConstraint baseTableName="history" constraintName="fk_history_case_object_id_to_case_object"/>
+    </changeSet>
+
+    <changeSet id="add-new-fk_history_case_object_id_to_case_object" author="porubov">
+        <addForeignKeyConstraint constraintName="fk_history_case_object_id_to_case_object"
+                                 baseTableName="history" baseColumnNames="case_object_id"
+                                 referencedTableName="case_object" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+</databaseChangeLog>

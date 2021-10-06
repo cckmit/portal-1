@@ -94,7 +94,9 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
     }
 
     private void setSerialNumber() {
-        cardController.getSizeByBatchId(view.cardBatch().getValue().getId(), new FluentCallback<Long>()
+        Long typeId = view.type().getValue().getId();
+        Long cardBatchId = view.cardBatch().getValue().getId();
+        cardController.getLastNumber(typeId, cardBatchId, new FluentCallback<Long>()
                 .withError(throwable -> defaultErrorHandler.accept(throwable))
                 .withSuccess(size -> {
                     String serialNumber =

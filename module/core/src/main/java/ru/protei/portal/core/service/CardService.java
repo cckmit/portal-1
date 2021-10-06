@@ -30,9 +30,13 @@ public interface CardService {
     @Auditable( En_AuditType.CARD_MODIFY)
     Result<Card> updateMeta(AuthToken token, Card card);
 
+    @Privileged({ En_Privilege.DELIVERY_REMOVE })
+    @Auditable( En_AuditType.CARD_REMOVE )
+    Result<Card> removeCard(AuthToken token, Card card);
+
     Result<List<EntityOption>> getCardTypeOptionList(AuthToken token, CardTypeQuery query);
 
     Result<List<CardType>> getCardTypeList(AuthToken token);
 
-    Result<Long> getSizeByBatchId(AuthToken token, Long cardBatchId);
+    Result<Long> getLastNumber(AuthToken token, Long typeId, Long cardBatchId);
 }

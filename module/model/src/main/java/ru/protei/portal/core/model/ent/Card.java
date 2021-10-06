@@ -51,7 +51,7 @@ public class Card extends AuditableObject {
     @JdbcJoinedObject(localColumn = Card.Columns.TYPE_ID, remoteColumn = "id", table = "card_type")
     private CardType cardType;
 
-    @JdbcColumn(name = "serial_number")
+    @JdbcColumn(name = Columns.SERIAL_NUMBER)
     private String serialNumber;
 
     @JdbcColumn(name = Columns.CARD_BATCH_ID)
@@ -275,5 +275,6 @@ public class Card extends AuditableObject {
         String ID = "id";
         String CARD_BATCH_ID = "card_batch_id";
         String TYPE_ID = "type_id";
+        String SERIAL_NUMBER = "serial_number";
     }
 }

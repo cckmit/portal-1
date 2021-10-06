@@ -8,4 +8,6 @@ import ru.protei.portal.core.model.query.SqlCondition;
 public interface CardDAO extends PortalBaseDAO<Card> {
     @SqlConditionBuilder
     SqlCondition createSqlCondition(CardQuery query);
+
+    Long getLastNumber(Long typeId, Long batchId);
 }
