@@ -19,7 +19,7 @@ public class ArticleColumn extends ClickColumn<CardBatch> {
     @Override
     protected void fillColumnHeader(Element columnHeader) {
         columnHeader.addClassName(CLASS_NAME);
-        columnHeader.setInnerText(lang.cardBatchColumnArticle());
+        columnHeader.setInnerText(lang.cardBatchArticle());
     }
 
     @Override

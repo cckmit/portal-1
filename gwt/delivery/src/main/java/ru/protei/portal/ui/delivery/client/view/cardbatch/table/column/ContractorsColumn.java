@@ -26,7 +26,7 @@ public class ContractorsColumn extends ClickColumn<CardBatch> {
     @Override
     protected void fillColumnHeader(Element columnHeader) {
         columnHeader.addClassName(CLASS_NAME);
-        columnHeader.setInnerText(lang.cardBatchColumnContractors());
+        columnHeader.setInnerText(lang.cardBatchContractors());
     }
 
     @Override

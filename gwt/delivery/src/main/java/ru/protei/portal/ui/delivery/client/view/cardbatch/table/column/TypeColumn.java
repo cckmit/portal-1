@@ -25,7 +25,7 @@ public class TypeColumn extends ClickColumn<CardBatch> {
     @Override
     protected void fillColumnHeader(Element columnHeader) {
         columnHeader.addClassName(CLASS_NAME);
-        columnHeader.setInnerText(lang.cardBatchColumnType());
+        columnHeader.setInnerText(lang.cardBatchType());
     }
 
     @Override

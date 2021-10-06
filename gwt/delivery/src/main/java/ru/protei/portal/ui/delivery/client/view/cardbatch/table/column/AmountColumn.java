@@ -17,7 +17,7 @@ public class AmountColumn extends ClickColumn<CardBatch> {
     @Override
     protected void fillColumnHeader(Element columnHeader) {
         columnHeader.addClassName(CLASS_NAME);
-        columnHeader.setInnerText(lang.cardBatchColumnAmount());
+        columnHeader.setInnerText(lang.cardBatchAmount());
     }
 
     @Override
@@ -32,20 +32,20 @@ public class AmountColumn extends ClickColumn<CardBatch> {
         StringBuilder sb = new StringBuilder();
 
         Integer amount = card.getAmount();
-        sb.append("<b>").append(lang.cardBatchColumnAmountOrdered())
+        sb.append("<b>").append(lang.cardBatchAmountOrdered())
                         .append(":</b> ")
                         .append(amount != null ? amount : "-")
                         .append("<br/>");
 
         Long manufacturedAmount = card.getManufacturedAmount();
         sb.append("<b>")
-          .append(lang.cardBatchColumnAmountManufactured())
+          .append(lang.cardBatchAmountManufactured())
           .append(":</b> ")
           .append(manufacturedAmount != null ? manufacturedAmount : "-")
           .append("<br/>");
 
         Long freeAmount = card.getFreeAmount();
-        sb.append("<b>").append(lang.cardBatchColumnAmountFree())
+        sb.append("<b>").append(lang.cardBatchAmountFree())
                         .append(":</b> ")
                         .append(freeAmount != null ? freeAmount : "-");
 

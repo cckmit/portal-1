@@ -22,7 +22,7 @@ public class DeadlineColumn extends ClickColumn<CardBatch> {
     @Override
     protected void fillColumnHeader(Element columnHeader) {
         columnHeader.addClassName(CLASS_NAME);
-        columnHeader.setInnerText(lang.cardBatchColumnDeadline());
+        columnHeader.setInnerText(lang.cardBatchDeadline());
     }
 
     @Override

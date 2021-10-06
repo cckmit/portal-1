@@ -26,9 +26,10 @@ import ru.protei.portal.ui.delivery.client.activity.cardbatch.filter.AbstractCar
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
 
 public abstract class CardBatchTableActivity implements AbstractCardBatchTableActivity, AbstractPagerActivity,
         AbstractCardBatchFilterActivity, Activity {
@@ -124,8 +125,14 @@ public abstract class CardBatchTableActivity implements AbstractCardBatchTableAc
     private CardBatchQuery makeQuery() {
         CardBatchQuery query = new CardBatchQuery();
         query.setSearchString(filterView.search().getValue());
-        query.setTypeIds(nullIfEmpty(toList(filterView.types().getValue(), EntityOption::getId)));
-        query.setNumbers(nullIfEmpty(toList(filterView.states().getValue(), CaseState::getState)));
+        query.setTypeIds(nullIfEmpty(toList(filterView.cardTypes().getValue(), EntityOption::getId)));
+        query.setStateIds(nullIfEmpty(toList(filterView.states().getValue(), CaseState::getId)));
+        query.setImportanceIds(nullIfEmpty(filterView.importance().getValue()));
+        query.setContractors(nullIfEmpty(filterView.contractors().getValue()
+                                                                 .stream().map(person -> person.getId())
+                                                                 .collect(Collectors.toList())));
+
+        query.setDeadline(toDateRange(filterView.deadline().getValue()));
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setSortField(filterView.sortField().getValue());
         return query;

@@ -124,6 +124,10 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
             case CARD:
                 addOption(En_SortField.card_serial_number);
                 addOption(En_SortField.card_test_date);
+            case CARD_BATCH:
+                addOption(En_SortField.card_batch_type);
+                addOption(En_SortField.card_batch_number);
+                addOption(En_SortField.card_batch_deadline);
         }
     }
 

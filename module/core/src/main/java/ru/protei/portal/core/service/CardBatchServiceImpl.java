@@ -222,7 +222,7 @@ public class CardBatchServiceImpl implements CardBatchService {
         SearchResult<CardBatch> sr = cardBatchDAO.getSearchResultByQuery(query);
 
         if (CollectionUtils.isEmpty(sr.getResults())) {
-            return ok();
+            return ok(sr);
         }
 
         Map<Long, Long> map = cardDAO.countByBatchIds(sr.getResults().stream()

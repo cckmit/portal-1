@@ -3758,7 +3758,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardBatchArticle();
 
+    String cardBatchSearchByCardTypeAndArticle();
+
     String cardBatchAmount();
+
+    String cardBatchAmountOrdered();
+
+    String cardBatchAmountManufactured();
+
+    String cardBatchAmountFree();
 
     String cardBatchParams();
 
@@ -3793,24 +3801,6 @@ public interface Lang extends Messages, ContactItemLang {
     String cardBatchStateMounting();
 
     String cardBatchStateMounted();
-
-    String cardBatchColumnType();
-
-    String cardBatchColumnNumber();
-
-    String cardBatchColumnArticle();
-
-    String cardBatchColumnAmount();
-
-    String cardBatchColumnAmountOrdered();
-
-    String cardBatchColumnAmountManufactured();
-
-    String cardBatchColumnAmountFree();
-
-    String cardBatchColumnDeadline();
-
-    String cardBatchColumnContractors();
 
     String personAutomaticMounting();
 

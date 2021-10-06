@@ -20,7 +20,7 @@ public class NumberColumn extends ClickColumn<CardBatch> {
     @Override
     protected void fillColumnHeader(Element columnHeader) {
         columnHeader.addClassName(CLASS_NAME);
-        columnHeader.setInnerText(lang.cardBatchColumnNumber());
+        columnHeader.setInnerText(lang.cardBatchNumber());
     }
 
     @Override
