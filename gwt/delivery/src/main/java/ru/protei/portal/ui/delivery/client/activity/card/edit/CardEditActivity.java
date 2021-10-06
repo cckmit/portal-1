@@ -6,24 +6,40 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.Card;
+import ru.protei.portal.core.model.ent.CommentsAndHistories;
+import ru.protei.portal.core.model.ent.History;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.events.CardEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CardControllerAsync;
+import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
+import ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils;
+import ru.protei.portal.ui.common.client.view.casecomment.list.CommentAndHistoryListView;
+import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItemsContainer;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.delivery.client.view.card.infoComment.CardNoteCommentButtonsView;
 import ru.protei.portal.ui.delivery.client.view.card.infoComment.CardNoteCommentEditView;
 import ru.protei.portal.ui.delivery.client.view.card.infoComment.CardNoteCommentView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils.getSortedCommentOrHistoryList;
 
 public abstract class CardEditActivity implements Activity, AbstractCardEditActivity,
         AbstractCardNoteCommentEditActivity {
@@ -80,6 +96,13 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
         switchNameDescriptionToEdit(true);
     }
 
+    @Event
+    public void onUpdate(CardEvents.Change event) {
+        if (view.asWidget().isAttached()) {
+            fillHistory();
+        }
+    }
+
     private void request(Long id, HasWidgets container) {
         controller.getCard(id, new FluentCallback<Card>()
                 .withError((throwable, defaultErrorHandler, status) -> defaultErrorHandler.accept(throwable))
@@ -87,6 +110,7 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
                     this.card = card;
                     switchNameDescriptionToEdit(false);
                     fillView(card);
+                    fillHistory();
                     showMeta(card);
                     attachToContainer(container);
                 }));
@@ -107,8 +131,8 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
 
         view.noteCommentEditButtonVisibility().setVisible(hasEditPrivileges() && isSelf(card.getCreatorId()));
 
-        renderMarkupText(card.getNote(), En_TextMarkup.MARKDOWN, html -> noteCommentView.setNote(html));
-        renderMarkupText(card.getComment(), En_TextMarkup.MARKDOWN, html -> noteCommentView.setComment(html));
+        renderMarkupText(card.getNote(), html -> noteCommentView.setNote(html));
+        renderMarkupText(card.getComment(), html -> noteCommentView.setComment(html));
     }
 
     private void showMeta(Card card) {
@@ -127,8 +151,8 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
         return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
     }
 
-    private void renderMarkupText(String text, En_TextMarkup markup, Consumer<String> consumer ) {
-        textRenderController.render( text, markup, new FluentCallback<String>()
+    private void renderMarkupText(String text, Consumer<String> consumer ) {
+        textRenderController.render( text, En_TextMarkup.MARKDOWN, new FluentCallback<String>()
                 .withError( throwable -> consumer.accept( null ) )
                 .withSuccess( consumer ) );
     }
@@ -147,6 +171,36 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
         return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
+    private void fillHistory(){
+        view.getItemsContainer().clear();
+        view.getItemsContainer().add(commentAndHistoryView.asWidget());
+        commentAndHistoryView.clearItemsContainer();
+
+        caseCommentController.getCommentsAndHistories(En_CaseType.CARD, card.getId(), new FluentCallback<CommentsAndHistories>()
+                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
+                .withSuccess(this::fillHistoryView)
+        );
+    }
+
+    public void fillHistoryView(CommentsAndHistories commentsAndHistories) {
+
+        List<CommentsAndHistories.CommentOrHistory> commentOrHistoryList
+                = getSortedCommentOrHistoryList(commentsAndHistories.getCommentOrHistoryList());
+
+        List<History> histories = stream(commentOrHistoryList)
+                .map(CommentsAndHistories.CommentOrHistory::getHistory)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        List<CaseHistoryItemsContainer> caseHistoryItemsContainers = CommentOrHistoryUtils.fillView(
+                histories, commentAndHistoryView.commentsAndHistoriesContainer());
+
+        historyItemsContainers.addAll(caseHistoryItemsContainers);
+
+        commentAndHistoryView.setNewCommentHidden(true);
+        historyItemsContainers.forEach(historyItemsContainer -> historyItemsContainer.setVisible(true));
+    }
+
     @Inject
     private Lang lang;
     @Inject
@@ -158,6 +212,10 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
     @Inject
     private CardNoteCommentButtonsView noteCommentButtonsView;
     @Inject
+    CommentAndHistoryListView commentAndHistoryView;
+    @Inject
+    CaseCommentControllerAsync caseCommentController;
+    @Inject
     private CardControllerAsync controller;
 
     @Inject
@@ -167,6 +225,6 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
 
     @ContextAware
     Card card;
-
+    private final List<CaseHistoryItemsContainer> historyItemsContainers = new ArrayList<>();
     private Profile authProfile;
 }

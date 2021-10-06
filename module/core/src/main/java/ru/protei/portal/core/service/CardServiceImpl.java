@@ -6,16 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.exception.RollbackTransactionException;
-import ru.protei.portal.core.model.dao.CardDAO;
-import ru.protei.portal.core.model.dao.CardTypeDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.CaseTypeDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_HistoryAction;
+import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Card;
-import ru.protei.portal.core.model.ent.CardType;
-import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CardQuery;
 import ru.protei.portal.core.model.query.CardTypeQuery;
@@ -45,6 +41,12 @@ public class CardServiceImpl implements CardService {
 
     @Autowired
     CaseObjectDAO caseObjectDAO;
+
+    @Autowired
+    HistoryService historyService;
+
+    @Autowired
+    CaseStateDAO caseStateDAO;
 
     @Override
     public Result<Card> getCard(AuthToken token, Long id) {
@@ -113,6 +115,13 @@ public class CardServiceImpl implements CardService {
             log.warn("create(): card not created, card={}", card);
             throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
+
+        addCardStateHistory(token, card.getId(), card.getStateId(), caseStateDAO.get(card.getStateId()).getState())
+                .ifError(ignore -> log.error("State message for the card {} not saved!", card));
+
+        addManagerHistory(token, card.getId(), card.getManager().getId(), card.getManager().getDisplayShortName())
+                .ifError(ignore -> log.error("Manager message for the card {} not saved!", card));
+
         return getCard(token, cardId);
     }
 
@@ -147,6 +156,19 @@ public class CardServiceImpl implements CardService {
         if (!isUpdated) {
             log.warn("updateMeta(): card not updated. card={}",  meta);
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        if (!Objects.equals(meta.getStateId(), oldMeta.getStateId())) {
+            changeCardStateHistory(token, meta.getId(), oldMeta.getStateId(), caseStateDAO.get(oldMeta.getStateId()).getState(),
+                    meta.getStateId(), caseStateDAO.get(meta.getStateId()).getState())
+                        .ifError(ignore -> log.error("Change state message for the card {} not saved!", meta));
+        }
+
+        if (!Objects.equals(meta.getManager(), oldMeta.getManager())) {
+            changeManagerHistory(token, meta.getId(),
+                    oldMeta.getManager().getId(), oldMeta.getManager().getDisplayShortName(),
+                    meta.getManager().getId(), meta.getManager().getDisplayShortName())
+                        .ifError(ignore -> log.error("Change manager message for the card {} not saved!", meta));
         }
 
         return getCard(token, meta.getId());
@@ -223,5 +245,21 @@ public class CardServiceImpl implements CardService {
         caseObject.setStateId(card.getStateId());
 
         return caseObject;
+    }
+
+    private Result<Long> addCardStateHistory(AuthToken authToken, Long caseObjectId, Long stateId, String stateName) {
+        return historyService.createHistory(authToken, caseObjectId, En_HistoryAction.ADD, En_HistoryType.CARD_STATE, null, null, stateId, stateName);
+    }
+
+    private Result<Long> changeCardStateHistory(AuthToken token, Long caseObjectId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
+        return historyService.createHistory(token, caseObjectId, En_HistoryAction.CHANGE, En_HistoryType.CARD_STATE, oldStateId, oldStateName, newStateId, newStateName);
+    }
+
+    private Result<Long> addManagerHistory(AuthToken authToken, Long caseId, Long managerId, String ManagerName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CARD_MANAGER, null, null, managerId, ManagerName);
+    }
+
+    private Result<Long> changeManagerHistory(AuthToken authToken, Long caseId, Long oldManagerId, String oldManagerName, Long newManagerId, String newManagerName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CARD_MANAGER, oldManagerId, oldManagerName, newManagerId, newManagerName);
     }
 }

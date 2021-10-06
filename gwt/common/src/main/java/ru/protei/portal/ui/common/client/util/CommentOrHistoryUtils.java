@@ -106,6 +106,8 @@ public class CommentOrHistoryUtils {
             case DELIVERY_STATE: return makeHistoryItem(history, lang.issueState(), Delivery.class);
             case MODULE_STATE: return makeHistoryItem(history, lang.issueState(), Module.class);
             case BUILD_DATE: return makeHistoryItem(history, lang.moduleBuildDate(), Module.class);
+            case CARD_STATE: return makeHistoryItem(history, lang.cardState(), CaseState.class);
+            case CARD_MANAGER: return makeHistoryItem(history, lang.cardManager(), EmployeeShortView.class);
             default: return null;
         }
     }
@@ -239,6 +241,21 @@ public class CommentOrHistoryUtils {
             caseHistoryDateItemView.setLink(value, null);
 
             return caseHistoryDateItemView;
+        }
+
+        if (En_HistoryType.CARD_STATE.equals(historyType)) {
+            CaseHistoryStateItemView caseHistoryStateItemView = caseHistoryStateItemViewProvider.get();
+            caseHistoryStateItemView.setName(value);
+            caseHistoryStateItemView.setColor(color);
+
+            return caseHistoryStateItemView;
+        }
+
+        if (En_HistoryType.CARD_MANAGER.equals(historyType)) {
+            CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
+            caseHistorySimpleItemView.setLink(transliteration(value), link);
+
+            return caseHistorySimpleItemView;
         }
 
         return null;

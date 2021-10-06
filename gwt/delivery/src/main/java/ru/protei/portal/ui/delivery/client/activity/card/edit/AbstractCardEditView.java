@@ -14,6 +14,8 @@ public interface AbstractCardEditView extends IsWidget {
 
     HasWidgets getNoteCommentContainer();
 
+    HasWidgets getItemsContainer();
+
     HasWidgets getMetaContainer();
 
     HasVisibility noteCommentEditButtonVisibility();
