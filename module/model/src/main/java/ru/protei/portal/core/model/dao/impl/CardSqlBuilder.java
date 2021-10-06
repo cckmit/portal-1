@@ -30,7 +30,7 @@ public class CardSqlBuilder {
             }
 
             if (isNotEmpty(query.getTypeIds())) {
-                condition.append(" and type_id in ")
+                condition.append(" and card.type_id in ")
                         .append(makeInArg(query.getTypeIds()));
             }
 
