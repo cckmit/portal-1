@@ -45,12 +45,6 @@ public class ProjectStateFormSelector extends FormPopupSingleSelector<CaseState>
         return projectStateLang.getStateIcon( state );
     }
 
-    public void setDefaultValue( String value ) {
-        this.defaultValue = value;
-    }
-
     @Inject
     ProjectStateLang projectStateLang;
-
-    private String defaultValue;
 }

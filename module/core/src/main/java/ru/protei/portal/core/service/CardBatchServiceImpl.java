@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.dict.En_ResultStatus.INCORRECT_PARAMS;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
+import static ru.protei.portal.core.model.ent.CardBatch.Columns.TYPE_ID;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_ARTICLE_PATTERN;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_NUMBER_PATTERN;
 
@@ -130,7 +130,7 @@ public class CardBatchServiceImpl implements CardBatchService {
             return error(INCORRECT_PARAMS);
         }
 
-        if (!isValid(meta, false)) {
+        if (!isMetaValid(meta, false)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
@@ -140,6 +140,7 @@ public class CardBatchServiceImpl implements CardBatchService {
         }
 
         CaseObject caseObject = caseObjectDAO.get(meta.getId());
+        jdbcManyRelationsHelper.fill( caseObject, "members" );
         caseObject = createCardBatchCaseObject(caseObject, meta, null, null, new Date());
         boolean isUpdated = caseObjectDAO.merge(caseObject);
         if (!isUpdated) {
@@ -163,7 +164,9 @@ public class CardBatchServiceImpl implements CardBatchService {
         //TODO доделать логику оповещения о редактировании партии плат
         CardBatchUpdateEvent updateEvent = new CardBatchUpdateEvent(this, oldMeta, meta, token.getPersonId());
 
-        return ok(cardBatchDAO.get(caseObject.getId()), Collections.singletonList(updateEvent));
+        CardBatch cardBatch = cardBatchDAO.get(caseObject.getId());
+        jdbcManyRelationsHelper.fillAll(cardBatch);
+        return ok(cardBatch, Collections.singletonList(updateEvent));
     }
 
     @Override
@@ -190,7 +193,7 @@ public class CardBatchServiceImpl implements CardBatchService {
         return ok(cardBatch);
     }
 
-        @Override
+    @Override
     public Result<CardBatch> getLastCardBatch(AuthToken token, Long typeId) {
         if (typeId == null) {
             return error(INCORRECT_PARAMS);
@@ -278,6 +281,15 @@ public class CardBatchServiceImpl implements CardBatchService {
         }
     }
 
+    @Override
+    public Result<List<CardBatch>> getListCardBatchByType(AuthToken token, CardType cardType) {
+        if (cardType == null) {
+            return error(INCORRECT_PARAMS);
+        }
+        List<CardBatch> list = cardBatchDAO.getListByCondition(TYPE_ID + " = ?", cardType.getId());
+        return ok(list);
+    }
+
     private Result<Long> addCardBatchStateHistory(AuthToken authToken, Long caseObjectId, Long stateId, String stateName) {
         return historyService.createHistory(authToken, caseObjectId, En_HistoryAction.ADD, En_HistoryType.CARD_BATCH_STATE, null, null, stateId, stateName);
     }
@@ -287,25 +299,33 @@ public class CardBatchServiceImpl implements CardBatchService {
         if (isNew && cardBatch.getId() != null) {
             return false;
         }
+        if (cardBatch.getTypeId() == null) {
+            return false;
+        }
         if (!isNumberValid(cardBatch.getNumber())) {
             return false;
         }
         if (!isArticleValid(cardBatch.getArticle())) {
             return false;
         }
-        if (isNew && CrmConstants.State.BUILD_EQUIPMENT_IN_QUEUE != cardBatch.getStateId()) {
-            return false;
-        }
         if (cardBatch.getAmount() != null && cardBatch.getAmount() <= 0) {
             return false;
         }
-        if (cardBatch.getTypeId() == null) {
+
+        return isMetaValid(cardBatch, isNew);
+    }
+
+    private boolean isMetaValid(CardBatch cardBatch, boolean isNew) {
+        if (isNew && CrmConstants.State.BUILD_EQUIPMENT_IN_QUEUE != cardBatch.getStateId()) {
             return false;
         }
         if (cardBatch.getDeadline() == null) {
             return false;
         }
         if (cardBatch.getImportance() == null) {
+            return false;
+        }
+        if (isEmpty(cardBatch.getContractors())) {
             return false;
         }
         return true;
@@ -337,7 +357,7 @@ public class CardBatchServiceImpl implements CardBatchService {
         }
 
         caseObject.setId(cardBatch.getId());
-        caseObject.setName("");
+        caseObject.setName(CardBatch.AUDIT_TYPE);
         caseObject.setInfo(cardBatch.getParams());
         caseObject.setStateId(cardBatch.getStateId());
         caseObject.setImpLevel(cardBatch.getImportance());

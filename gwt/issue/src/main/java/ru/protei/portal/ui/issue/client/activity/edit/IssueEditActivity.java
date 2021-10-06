@@ -16,7 +16,7 @@ import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
-import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
+import ru.protei.portal.core.model.util.MarkupUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
@@ -292,7 +292,7 @@ public abstract class IssueEditActivity implements
         issueInfoWidget.descriptionReadOnlyVisibility().setVisible(false);
         view.getInfoContainer().add(issueInfoWidget);
 
-        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
+        En_TextMarkup textMarkup = MarkupUtils.recognizeTextMarkup(issue);
         issueNameDescriptionEditWidget.setIssueIdNameDescription(
                 new CaseNameAndDescriptionChangeRequest(issue.getId(), issue.getName(), issue.getInfo(), issue.getAttachments()), textMarkup);
     }
@@ -443,7 +443,7 @@ public abstract class IssueEditActivity implements
         showCommentsAndHistoriesEvent.isPrivateVisible = !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW );
         showCommentsAndHistoriesEvent.isPrivateCase = issue.isPrivateCase();
         showCommentsAndHistoriesEvent.isNewCommentEnabled = !isTerminalState(issue.getStateId());
-        showCommentsAndHistoriesEvent.textMarkup =  CaseTextMarkupUtil.recognizeTextMarkup( issue );
+        showCommentsAndHistoriesEvent.textMarkup =  MarkupUtils.recognizeTextMarkup( issue );
         showCommentsAndHistoriesEvent.initiatorCompanyId = issue.getInitiatorCompany().getId();
         showCommentsAndHistoriesEvent.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
         showCommentsAndHistoriesEvent.extendedPrivacyType =  selectExtendedPrivacyType( issue );
@@ -492,7 +492,7 @@ public abstract class IssueEditActivity implements
         view.setIntegration(makeIntegrationName(issue));
 
         view.setCaseNumber( issue.getCaseNumber() );
-        issueInfoWidget.setDescription(issue.getInfo(), CaseTextMarkupUtil.recognizeTextMarkup(issue));
+        issueInfoWidget.setDescription(issue.getInfo(), MarkupUtils.recognizeTextMarkup(issue));
 
         issueInfoWidget.setPrivateCase(issue.isPrivateCase());
 

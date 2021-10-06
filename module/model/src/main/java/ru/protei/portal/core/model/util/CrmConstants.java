@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -97,7 +98,7 @@ public class CrmConstants {
         String WORK_PHONE_NUMBER_PATTERN = "^\\d*#?\\d+$";
         String DELIVERY_KIT_SERIAL_NUMBER_PATTERN = "^\\d{3}\\.\\d{3}$";
         String CARD_BATCH_NUMBER_PATTERN = "^\\d{3}$";
-        String CARD_BATCH_ARTICLE_PATTERN = "^\\d{3}[a-zA-Z]?-\\d{2}-\\d{3}$";  // "XXXXA-XX-XXX" (X-цифра, A-буква(необязательна))
+        String CARD_BATCH_ARTICLE_PATTERN = "^\\d{4}[a-zA-Z]?-\\d{2}-\\d{3}$";  // "XXXXA-XX-XXX" (X-цифра, A-буква(необязательна))
     }
 
     public interface Time {
@@ -205,6 +206,7 @@ public class CrmConstants {
         long CANCELED = 33;
         long ACTIVE = 16;
         long TEST_LOCAL = 19;
+        long TESTING = 28;
         long INFO_REQUEST = 31;
         long NX_REQUEST = 35;
         long CUST_REQUEST = 36;
@@ -264,5 +266,9 @@ public class CrmConstants {
         String FEEDBACK_EXPECT = "2"; //Ожидание обратной связи
         String WON = "WON"; //Решено (Услуги оказаны)
         String LOSE = "LOSE"; //Отклонено (отказ)
+    }
+
+    public interface CardBatch {
+        List<Integer> CARD_BATCH_PRIORITY_IDS = Arrays.asList(1, 2, 3, 8);
     }
 }

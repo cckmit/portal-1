@@ -9,19 +9,22 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CardBatch;
 import ru.protei.portal.core.model.query.CardBatchQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.portal.core.model.ent.CardType;
+
+import java.util.List;
 
 public interface CardBatchService {
 
     @Privileged({ En_Privilege.DELIVERY_CREATE })
-    @Auditable( En_AuditType.DELIVERY_CREATE )
+    @Auditable( En_AuditType.CARD_BATCH_CREATE )
     Result<CardBatch> createCardBatch(AuthToken token, CardBatch cardBatch);
 
     @Privileged({ En_Privilege.DELIVERY_EDIT })
-    @Auditable( En_AuditType.DELIVERY_MODIFY )
+    @Auditable( En_AuditType.CARD_BATCH_MODIFY )
     Result<CardBatch> updateMeta(AuthToken token, CardBatch meta);
 
     @Privileged({ En_Privilege.DELIVERY_EDIT })
-    @Auditable( En_AuditType.DELIVERY_MODIFY )
+    @Auditable( En_AuditType.CARD_BATCH_MODIFY )
     Result<CardBatch> updateCardBatch(AuthToken token, CardBatch cardBatch);
 
     Result<CardBatch> getLastCardBatch(AuthToken token, Long typeId);
@@ -30,4 +33,6 @@ public interface CardBatchService {
     Result<SearchResult<CardBatch>> getCardBatches(AuthToken token, CardBatchQuery query);
 
     Result<CardBatch> getCardBatch(AuthToken token, Long id);
+
+    Result<List<CardBatch>> getListCardBatchByType(AuthToken token, CardType cardType);
 }

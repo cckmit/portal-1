@@ -2,7 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:text="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
              xmlns:textarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
-             xmlns:sel="urn:import:ru.protei.portal.ui.delivery.client.widget.card.selector"
+             xmlns:sel="urn:import:ru.protei.portal.ui.common.client.widget.selector.card.type"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -10,12 +10,12 @@
     <g:HTMLPanel>
         <form>
             <div class="row">
-                <sel:CardTypeSelector ui:field="type" styleName="col-md-6" mandatory="true" header="{lang.cardBatchType}"/>
+                <sel:CardTypeOptionSelector ui:field="type" styleName="col-md-6" mandatory="true" header="{lang.cardBatchType}" defaultValue="{lang.cardBatchNumberPlaceholder}"/>
 
                 <div class="col-md-6">
-                    <div class="form-group form-group-default required">
+                    <div class="form-group form-group-default required disabled">
                         <label class="fade"><ui:text from="{lang.cardBatchNumber}"/></label>
-                        <text:ValidableTextBox ui:field="number" enabled="false"
+                        <text:ValidableTextBox ui:field="number" enabled="false" notNull="false"
                                                placeholder="{lang.cardBatchNumberPlaceholder}" styleName="form-control"/>
                     </div>
                 </div>
@@ -45,6 +45,11 @@
                 <textarea:AutoResizeTextArea ui:field="params" minRows="1" styleName="form-control"/>
             </div>
         </form>
+
+        <g:HTMLPanel ui:field="buttonsContainer" visible="false">
+            <g:Button ui:field="saveButton" styleName="btn btn-xs btn-complete" text="{lang.buttonApply}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-xs btn-default" text="{lang.buttonCancel}"/>
+        </g:HTMLPanel>
 
     </g:HTMLPanel>
 </ui:UiBinder>

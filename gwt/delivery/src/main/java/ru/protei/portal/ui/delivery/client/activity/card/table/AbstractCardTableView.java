@@ -15,6 +15,7 @@ public interface AbstractCardTableView extends IsWidget {
     int getPageCount();
     void scrollTo(int page);
 
+    HasWidgets getPreviewContainer();
     HasWidgets getFilterContainer();
     HasWidgets getPagerContainer();
 

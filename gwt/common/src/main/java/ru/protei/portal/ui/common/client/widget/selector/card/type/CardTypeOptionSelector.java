@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.delivery.client.widget.card.selector;
+package ru.protei.portal.ui.common.client.widget.selector.card.type;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -6,11 +6,11 @@ import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 
-public class CardTypeSelector extends FormPopupSingleSelector<EntityOption>
+public class CardTypeOptionSelector extends FormPopupSingleSelector<EntityOption>
 {
 
     @Inject
-    public void init(CardTypeModel model) {
+    public void init(CardTypeOptionModel model) {
         model.setDisplay(true);
         setAsyncModel(model);
         setItemRenderer( value -> value == null ? defaultValue : value.getDisplayText() );

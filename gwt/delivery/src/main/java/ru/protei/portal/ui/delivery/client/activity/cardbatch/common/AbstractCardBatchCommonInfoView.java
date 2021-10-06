@@ -2,6 +2,7 @@ package ru.protei.portal.ui.delivery.client.activity.cardbatch.common;
 
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.view.EntityOption;
 
@@ -11,13 +12,15 @@ public interface AbstractCardBatchCommonInfoView extends IsWidget {
 
     HasEnabled typeEnabled();
 
-    HasValue<String> number();
+    HasVisibility buttonsContainerVisibility();
 
-    HasEnabled numberEnabled();
+    HasValue<String> number();
 
     HasValue<String> article();
 
     HasValue<Integer> amount();
+
+    void setAmountValid(boolean isValid);
 
     HasValue<String> params();
 
@@ -30,4 +33,6 @@ public interface AbstractCardBatchCommonInfoView extends IsWidget {
     void setPrevCardBatchInfo(String number, int amount, String state);
 
     void setActivity(AbstractCardBatchCommonInfoActivity activity);
+
+    HasEnabled saveEnabled();
 }

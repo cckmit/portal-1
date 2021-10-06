@@ -34,7 +34,7 @@ public class TestDateColumn extends ClickColumn<Card> {
 
         if (card.getTestDate() != null) {
             com.google.gwt.dom.client.Element testDateDiv = DOM.createDiv();
-            testDateDiv.setInnerText( DateFormatter.formatDateTime(card.getTestDate()) );
+            testDateDiv.setInnerText( DateFormatter.formatDateOnly(card.getTestDate()) );
             cell.appendChild( testDateDiv );
         }
     }

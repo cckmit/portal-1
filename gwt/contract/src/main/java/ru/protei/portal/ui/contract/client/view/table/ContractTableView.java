@@ -31,6 +31,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 import static ru.protei.portal.core.model.util.ContractSupportService.getContractKind;
 import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
+import static ru.protei.portal.core.model.helper.StringUtils.isNotBlank;
 
 public class ContractTableView extends Composite implements AbstractContractTableView {
 
@@ -211,17 +212,21 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         public void fillColumnValue(Element cell, Contract contract) {
             Element root = DOM.createDiv();
             StringBuilder sb = new StringBuilder();
+            sb.append("<b>")
+                    .append(lang.contractProject())
+                    .append(":</b> ");
             if (isNotEmpty(contract.getProductDirections())) {
-                sb.append("<b>")
+                sb.append("<i>")
                         .append(joining(contract.getProductDirections(), ", ", direction -> sanitizeHtml(direction.getName())))
-                        .append("</b>")
+                        .append("</i>")
                         .append(" ");
             }
-            if (contract.getProjectId() != null) {
-                sb.append(sanitizeHtml(contract.getProjectName()));
-            }
+            sb.append(sanitizeHtml(contract.getProjectName()));
             sb.append("<br/>");
-            sb.append(sanitizeHtml(contract.getDescription()));
+            sb.append("<b>")
+                    .append(lang.contractDescription())
+                    .append(":</b> ")
+                    .append(sanitizeHtml(contract.getDescription()));
             root.setInnerHTML(sb.toString());
             cell.appendChild(root);
         }

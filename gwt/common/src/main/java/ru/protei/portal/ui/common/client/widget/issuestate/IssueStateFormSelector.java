@@ -43,10 +43,6 @@ public class IssueStateFormSelector extends FormPopupSingleSelector<CaseState> {
         return caseState == null ? "" : caseState.getColor();
     }
 
-    public void setDefaultValue(String value ) {
-        this.defaultValue = value;
-    }
-
     @Override
     public void setValue(CaseState value) {
         super.setValue(value);
@@ -58,6 +54,5 @@ public class IssueStateFormSelector extends FormPopupSingleSelector<CaseState> {
         setAsyncModel( model );
     }
 
-    private String defaultValue;
     private StateModel stateModel;
 }

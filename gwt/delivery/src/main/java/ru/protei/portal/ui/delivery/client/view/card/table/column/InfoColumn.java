@@ -5,6 +5,7 @@ import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.util.MarkupUtils;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
@@ -40,7 +41,7 @@ public class InfoColumn extends ClickColumn<Card>{
         sb.append("<b>")
                 .append(lang.cardType())
                 .append(":</b> ")
-                .append(sanitizeHtml(card.getTypeName()))
+                .append(sanitizeHtml(card.getCardType().getName()))
                 .append("<br/>");
         if (StringUtils.isNotEmpty(card.getArticle())) {
             sb.append("<b>")
@@ -53,7 +54,7 @@ public class InfoColumn extends ClickColumn<Card>{
             sb.append("<b>")
                     .append(lang.cardNote())
                     .append(":</b> ")
-                    .append(sanitizeHtml(card.getNote()))
+                    .append(sanitizeHtml(card.getNote() == null ? "" : MarkupUtils.removePictureTag(card.getNote())))
                     .append("<br/>");
         }
 

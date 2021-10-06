@@ -17,10 +17,4 @@ public class ContractFormSelector extends FormPopupSingleSelector<ContractInfo> 
             return lang.contractNum(value.getNumber());
         });
     }
-
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-    }
-
-    protected String defaultValue = null;
 }

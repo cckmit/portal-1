@@ -1,7 +1,5 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:widgets="urn:import:ru.protei.portal.ui.delivery.client.widget"
-             xmlns:view="urn:import:ru.protei.portal.ui.delivery.client.view"
              xmlns:delivery="urn:import:ru.protei.portal.ui.delivery.client.view.delivery">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>

@@ -2,19 +2,23 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.ent.Delivery.Columns.ID;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.ent.CaseObject.Columns.ID;
 
 @JdbcEntity(table = "card_batch")
-public class CardBatch implements Serializable {
+public class CardBatch extends AuditableObject {
+    public static final String AUDIT_TYPE = "CardBatch";
     public static final String CASE_OBJECT_TABLE = "case_object";
     public static final String CASE_STATE_TABLE = "case_state";
     public static final String CASE_OBJECT_ALIAS = "CO";
@@ -76,6 +80,15 @@ public class CardBatch implements Serializable {
             @JdbcJoinPath(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
             @JdbcJoinPath(localColumn = CaseObject.Columns.IMPORTANCE, remoteColumn = ID, table = "importance_level")}, mappedColumn = "color")
     private String importanceColor;
+
+    @JdbcJoinedObject(joinPath = {
+            @JdbcJoinPath(localColumn = ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = CaseObject.Columns.CREATOR, remoteColumn = "id", table = "person")})
+    private Person creator;
+
+    @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.CREATED, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
+    private Date created;
 
     @JdbcOneToMany( table = "case_member", localColumn = "id", remoteColumn = "CASE_ID" )
     private List<CaseMember> members;
@@ -200,6 +213,14 @@ public class CardBatch implements Serializable {
         this.importance = importance;
     }
 
+    public Person getCreator() {
+        return creator;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
     public List<PersonProjectMemberView> getContractors() {
         if ( сontractors == null && !isEmpty( members ) ) {
             сontractors = CollectionUtils.stream( members )
@@ -236,6 +257,11 @@ public class CardBatch implements Serializable {
 
     public void setMembers(List<CaseMember> members) {
         this.members = members;
+    }
+
+    @Override
+    public String getAuditType() {
+        return AUDIT_TYPE;
     }
 
     @Override

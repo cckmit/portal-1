@@ -2,14 +2,12 @@ package ru.protei.portal.app.portal.client.view.profile.general;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.HeadingElement;
-import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
-import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageActivity;
 import ru.protei.portal.app.portal.client.activity.profile.general.AbstractProfileGeneralActivity;
 import ru.protei.portal.app.portal.client.activity.profile.general.AbstractProfileGeneralView;
 import ru.protei.portal.test.client.DebugIds;
@@ -27,28 +25,17 @@ public class ProfileGeneralView extends Composite implements AbstractProfileGene
     }
 
     @Override
-    public HasValue<String> currentPassword() {
-        return currentPassword;
+    public void setLogin(String login) {
+        this.login.setInnerText(login);
     }
-
-    @Override
-    public HasValue<String> newPassword() {
-        return newPassword;
-    }
-
-    @Override
-    public HasValue<String> confirmPassword() {
-        return confirmPassword;
-    }
-
-    @Override
-    public HasVisibility passwordContainerVisibility() {
-        return passwordContainer;
-    }
-
     @Override
     public HasVisibility changePasswordButtonVisibility() {
         return changePasswordButton;
+    }
+
+    @Override
+    public HasVisibility newEmployeeBookContainerVisibility() {
+        return newEmployeeBookContainer;
     }
 
     @UiHandler("changePasswordButton")
@@ -58,48 +45,19 @@ public class ProfileGeneralView extends Composite implements AbstractProfileGene
         }
     }
 
-    @UiHandler("savePasswordButton")
-    public void onSavePasswordButtonClicked(ClickEvent event) {
-        if (activity != null) {
-            activity.onSavePasswordButtonClicked();
-        }
-    }
-
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
         changePasswordButton.ensureDebugId(DebugIds.PROFILE.CHANGE_PASSWORD_BUTTON);
-        changePasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.LABEL.CHANGE_PASSWORD);
-        currentPasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.LABEL.CURRENT_PASSWORD);
-        currentPassword.ensureDebugId(DebugIds.PROFILE.CURRENT_PASSWORD_INPUT);
-        newPasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.LABEL.NEW_PASSWORD);
-        newPassword.ensureDebugId(DebugIds.PROFILE.NEW_PASSWORD_INPUT);
-        confirmPasswordLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROFILE.LABEL.CONFIRM_PASSWORD);
-        confirmPassword.ensureDebugId(DebugIds.PROFILE.CONFIRM_PASSWORD_INPUT);
-        savePasswordButton.ensureDebugId(DebugIds.PROFILE.SAVE_PASSWORD_BUTTON);
     }
 
     @UiField
     Button changePasswordButton;
     @UiField
-    Button savePasswordButton;
+    HTMLPanel newEmployeeBookContainer;
     @UiField
-    HTMLPanel passwordContainer;
-    @UiField
-    PasswordTextBox currentPassword;
-    @UiField
-    PasswordTextBox newPassword;
-    @UiField
-    PasswordTextBox confirmPassword;
-    @UiField
-    LabelElement currentPasswordLabel;
-    @UiField
-    LabelElement newPasswordLabel;
-    @UiField
-    LabelElement confirmPasswordLabel;
-    @UiField
-    HeadingElement changePasswordLabel;
+    SpanElement login;
 
     private AbstractProfileGeneralActivity activity;
 

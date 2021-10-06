@@ -36,12 +36,6 @@ public class CardBatchStateFormSelector extends FormPopupSingleSelector<CaseStat
         return stateLang.getStateName(state);
     }
 
-    public void setDefaultValue(String value) {
-        this.defaultValue = value;
-    }
-
     @Inject
     CardBatchStateLang stateLang;
-
-    private String defaultValue;
 }

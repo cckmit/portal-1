@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.delivery.client.activity.cardbatch.create;
 
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
@@ -17,6 +18,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CardBatchEvents;
 import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.lang.CardBatchStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CardBatchControllerAsync;
 import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
@@ -44,8 +46,6 @@ public abstract class CardBatchCreateActivity implements Activity,
     @Inject
     public void onInit() {
         view.setActivity(this);
-        commonInfoView.setActivity(this);
-        metaView.setActivity(this);
     }
 
     @Event
@@ -60,11 +60,15 @@ public abstract class CardBatchCreateActivity implements Activity,
             return;
         }
 
+        commonInfoView.setActivity(this);
+        metaView.setActivity(this);
         initDetails.parent.clear();
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
         view.getCommonInfoContainer().add(commonInfoView);
         view.getMetaContainer().add(metaView);
+        commonInfoView.typeEnabled().setEnabled(true);
+        commonInfoView.buttonsContainerVisibility().setVisible(false);
 
         prepare();
     }
@@ -90,7 +94,7 @@ public abstract class CardBatchCreateActivity implements Activity,
 
         cardBatchService.getLastCardBatch(cardTypeId, new FluentCallback<CardBatch>()
                         .withError(defaultErrorHandler)
-                        .withSuccess(getLastCardBatchConsumer));
+                        .withSuccess(this::lastCardBatchConsumer));
     }
 
     @Override
@@ -105,9 +109,20 @@ public abstract class CardBatchCreateActivity implements Activity,
         validateDeadline();
     }
 
+    @Override
+    public void onAmountChanged() {
+        validateAmount();
+    }
+
     private boolean validateDeadline() {
         boolean isValid = metaView.deadline().getValue().after(new Date());
         metaView.setDeadlineValid(isValid);
+        return isValid;
+    }
+
+    private boolean validateAmount() {
+        boolean isValid = null == commonInfoView.amount().getValue() || commonInfoView.amount().getValue() > 0;
+        commonInfoView.setAmountValid(isValid);
         return isValid;
     }
 
@@ -157,7 +172,7 @@ public abstract class CardBatchCreateActivity implements Activity,
             return lang.cardBatchArticleValidationError();
         }
 
-        if (null == commonInfoView.amount().getValue() || commonInfoView.amount().getValue() <= 0) {
+        if (!validateAmount()) {
             return lang.cardBatchAmountValidationError();
         }
 
@@ -208,24 +223,21 @@ public abstract class CardBatchCreateActivity implements Activity,
                         .withSuccess(level -> metaView.priority().setValue(level)));
     }
 
-    Consumer<CardBatch> getLastCardBatchConsumer = new Consumer<CardBatch>() {
-        @Override
-        public void accept(CardBatch lastNumberCardBatch) {
-            String releaseNumber = START_CARD_BATCH_NUMBER;
+    private void lastCardBatchConsumer(CardBatch lastNumberCardBatch) {
+        String releaseNumber = START_CARD_BATCH_NUMBER;
 
-            if (lastNumberCardBatch != null && isNotEmpty(lastNumberCardBatch.getNumber())){
-                releaseNumber = getNextNumber(lastNumberCardBatch.getNumber());
-            }
-
-            commonInfoView.number().setValue(releaseNumber);
-
-            if (lastNumberCardBatch == null || isEmpty(releaseNumber)){
-                commonInfoView.hidePrevCardBatchInfo();
-                return;
-            }
-
-            commonInfoView.setPrevCardBatchInfo(lastNumberCardBatch.getNumber(), lastNumberCardBatch.getAmount(), lastNumberCardBatch.getState().getState());
+        if (lastNumberCardBatch != null && isNotEmpty(lastNumberCardBatch.getNumber())){
+            releaseNumber = getNextNumber(lastNumberCardBatch.getNumber());
         }
+
+        commonInfoView.number().setValue(releaseNumber);
+
+        if (lastNumberCardBatch == null || isEmpty(releaseNumber)){
+            commonInfoView.hidePrevCardBatchInfo();
+            return;
+        }
+
+        commonInfoView.setPrevCardBatchInfo(lastNumberCardBatch.getNumber(), lastNumberCardBatch.getAmount(), cardBatchStateLang.getStateName(lastNumberCardBatch.getState()));
     };
 
     private String getNextNumber(String lastNumberStr) {
@@ -243,12 +255,8 @@ public abstract class CardBatchCreateActivity implements Activity,
             return "";
         }
 
-        return addLeadingZeros(lastNumber, CARD_BATCH_NUMBER_LENGTH);
+        return NumberFormat.getFormat(CARD_BATCH_NUMBER_PATTERN).format(lastNumber);
     }
-
-    public static native String addLeadingZeros(int num, int number_length) /*-{
-        return num.toString().padStart(number_length, "0");
-    }-*/;
 
     @Inject
     private Lang lang;
@@ -266,12 +274,13 @@ public abstract class CardBatchCreateActivity implements Activity,
     private PolicyService policyService;
     @Inject
     ImportanceLevelControllerAsync importanceService;
-
+    @Inject
+    CardBatchStateLang cardBatchStateLang;
     @Inject
     private DefaultErrorHandler defaultErrorHandler;
 
     private AppEvents.InitDetails initDetails;
     private static final String START_CARD_BATCH_NUMBER = "001";
     private static final int CARD_BATCH_MAX_NUMBER = 999;
-    private static final int CARD_BATCH_NUMBER_LENGTH = 3;
+    private static final String CARD_BATCH_NUMBER_PATTERN = "000";
 }

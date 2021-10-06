@@ -2,6 +2,8 @@ package ru.protei.portal.ui.delivery.client.view.cardbatch.common;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -12,20 +14,19 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.selector.card.type.CardTypeOptionSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoView;
-import ru.protei.portal.ui.delivery.client.widget.card.selector.CardTypeSelector;
 
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_ARTICLE_PATTERN;
-import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_NUMBER_PATTERN;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
 public class CardBatchCommonInfoView extends Composite implements AbstractCardBatchCommonInfoView {
 
     @Inject
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        number.setRegexp(CARD_BATCH_NUMBER_PATTERN);
         article.setRegexp(CARD_BATCH_ARTICLE_PATTERN);
         ensureDebugIds();
     }
@@ -41,12 +42,12 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
     }
 
     @Override
-    public HasValue<String> number() {
-        return number;
+    public HasVisibility buttonsContainerVisibility() {
+        return buttonsContainer;
     }
 
     @Override
-    public HasEnabled numberEnabled() {
+    public HasValue<String> number() {
         return number;
     }
 
@@ -58,6 +59,11 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
     @Override
     public HasValue<Integer> amount() {
         return amount;
+    }
+
+    @Override
+    public void setAmountValid(boolean isValid) {
+        amount.setStyleName(REQUIRED, !isValid);
     }
 
     @Override
@@ -97,15 +103,37 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
         activity.onCardTypeChanged(event.getValue().getId());
     }
 
+    @UiHandler("amount")
+    public void onAmountChanged(KeyUpEvent event) {
+        activity.onAmountChanged();
+    }
+
+    @UiHandler("saveButton")
+    void onSaveButtonClick(ClickEvent event ) {
+        activity.onSaveMainInfoClicked();
+    }
+
+    @Override
+    public HasEnabled saveEnabled(){
+        return saveButton;
+    }
+
+    @UiHandler("cancelButton")
+    void onCancelButtonClick(ClickEvent event ) {
+        activity.onCancelSaveMainInfoClicked();
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
         type.ensureDebugId( DebugIds.CARD_BATCH.TYPE );
-        number.ensureDebugId( DebugIds.CARD_BATCH.NUMBER );
+        number.ensureDebugId( DebugIds.CARD_BATCH.NUMBER_INPUT);
         article.ensureDebugId( DebugIds.CARD_BATCH.ARTICLE );
         amount.ensureDebugId( DebugIds.CARD_BATCH.AMOUNT );
         params.ensureDebugId( DebugIds.CARD_BATCH.PARAMS );
+        saveButton.ensureDebugId(DebugIds.CARD_BATCH.SAVE_BUTTON);
+        cancelButton.ensureDebugId(DebugIds.CARD_BATCH.CANCEL_BUTTON);
     }
 
     AbstractCardBatchCommonInfoActivity activity;
@@ -115,7 +143,7 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
 
     @Inject
     @UiField(provided = true)
-    CardTypeSelector type;
+    CardTypeOptionSelector type;
     @UiField
     ValidableTextBox number;
     @UiField
@@ -126,6 +154,12 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
     AutoResizeTextArea params;
     @UiField
     Label prevCardBatchInfo;
+    @UiField
+    HTMLPanel buttonsContainer;
+    @UiField
+    Button saveButton;
+    @UiField
+    Button cancelButton;
 
     interface CommonUiBinder extends UiBinder<HTMLPanel, CardBatchCommonInfoView> {}
     private static CommonUiBinder ourUiBinder = GWT.create( CommonUiBinder.class );

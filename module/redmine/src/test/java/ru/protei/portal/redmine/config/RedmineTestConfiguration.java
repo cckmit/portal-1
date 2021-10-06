@@ -17,6 +17,7 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.model.dao.DeliveryDAO;
+import ru.protei.portal.core.model.dao.impl.CardSqlBuilder;
 import ru.protei.portal.core.model.dao.impl.DeliveryDAO_Impl;
 import ru.protei.portal.core.model.dao.impl.DeliverySqlBuilder;
 import ru.protei.portal.core.service.*;
@@ -189,6 +190,16 @@ public class RedmineTestConfiguration {
     @Lazy
     public DeliveryService getDeliveryService() {
         return new DeliveryServiceImpl();
+    }
+
+    @Bean
+    public CardSqlBuilder cardSqlBuilder() {
+        return new CardSqlBuilder();
+    }
+
+    @Bean
+    public CardService getCardService() {
+        return new CardServiceImpl();
     }
 
     @Bean

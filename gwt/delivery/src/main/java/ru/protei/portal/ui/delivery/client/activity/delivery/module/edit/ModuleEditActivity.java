@@ -70,6 +70,7 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
         }
 
         Window.scrollTo(0, 0);
+        fireEvent(new ActionBarEvents.Clear());
         requestModule(event.id, initDetails.parent, false);
     }
 
