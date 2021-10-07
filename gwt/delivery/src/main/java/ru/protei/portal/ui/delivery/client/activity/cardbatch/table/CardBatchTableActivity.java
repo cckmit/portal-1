@@ -17,6 +17,7 @@ import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.service.CardBatchControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
@@ -62,9 +63,13 @@ public abstract class CardBatchTableActivity implements AbstractCardBatchTableAc
         }
 
         initDetails.parent.clear();
-        initDetails.parent.add( view.asWidget() );
-        view.getPagerContainer().add( pagerView.asWidget() );
-        view.getFilterContainer().add( filterView.asWidget() );
+        initDetails.parent.add(view.asWidget());
+
+        if(configStorage.getConfigData().cardbatchCompanyPartnerId != null) {
+            filterView.setContractorFilter(configStorage.getConfigData().cardbatchCompanyPartnerId);
+        }
+        view.getFilterContainer().add(filterView.asWidget());
+        view.getPagerContainer().add(pagerView.asWidget());
 
         fireEvent(new ActionBarEvents.Clear());
 
@@ -163,6 +168,8 @@ public abstract class CardBatchTableActivity implements AbstractCardBatchTableAc
     DefaultErrorHandler errorHandler;
     @Inject
     AbstractPagerView pagerView;
+    @Inject
+    ConfigStorage configStorage;
 
     private AppEvents.InitDetails initDetails;
     private Integer scrollTo = 0;

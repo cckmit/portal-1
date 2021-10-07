@@ -14,24 +14,28 @@ import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.ImportanceLevel;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.card.type.CardTypeOptionMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.filter.AbstractCardBatchFilterActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.filter.AbstractCardBatchFilterView;
-import ru.protei.portal.ui.delivery.client.widget.card.selector.CardTypeMultiSelector;
 import ru.protei.portal.ui.delivery.client.widget.cardbatch.importance.CardBatchImportanceBtnGroupMulti;
 import ru.protei.portal.ui.delivery.client.widget.cardbatch.state.CardBatchStatesOptionList;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 /**
@@ -40,14 +44,15 @@ import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 public class CardBatchFilterView extends Composite implements AbstractCardBatchFilterView {
     @Inject
     public void onInit() {
-        initWidget( ourUiBinder.createAndBindUi( this ) );
+        initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
+        contractors.setPersonModel(contractorModel);
         deadline.fillSelector(En_DateIntervalType.defaultTypes());
         resetFilter();
     }
 
     @Override
-    public void setActivity( AbstractCardBatchFilterActivity activity ) {
+    public void setActivity(AbstractCardBatchFilterActivity activity) {
         this.activity = activity;
     }
 
@@ -95,6 +100,11 @@ public class CardBatchFilterView extends Composite implements AbstractCardBatchF
     @Override
     public HasValue<Set<ImportanceLevel>> importance() {
         return importance;
+    }
+
+    @Override
+    public void setContractorFilter(Long companyId) {
+        contractorModel.updateCompanies(null, setOf(companyId));
     }
 
     @UiHandler( "search" )
@@ -189,10 +199,10 @@ public class CardBatchFilterView extends Composite implements AbstractCardBatchF
     CleanableSearchBox search;
     @Inject
     @UiField(provided = true)
-    EmployeeMultiSelector contractors;
+    PersonMultiSelector contractors;
     @Inject
     @UiField(provided = true)
-    CardTypeMultiSelector types;
+    CardTypeOptionMultiSelector types;
     @Inject
     @UiField(provided = true)
     CardBatchStatesOptionList states;
@@ -213,6 +223,9 @@ public class CardBatchFilterView extends Composite implements AbstractCardBatchF
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    PersonModel contractorModel;
 
     AbstractCardBatchFilterActivity activity;
 

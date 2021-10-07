@@ -6,23 +6,22 @@ import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.ent.Delivery.Columns.ID;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.ent.CaseObject.Columns.ID;
 
 @JdbcEntity(table = "card_batch")
 public class CardBatch extends AuditableObject {
     public static final String AUDIT_TYPE = "CardBatch";
     public static final String CASE_OBJECT_TABLE = "case_object";
     public static final String CASE_STATE_TABLE = "case_state";
+    public static final String CARD_TYPE_TABLE = "card_type";
     public static final String CASE_OBJECT_ALIAS = "CO";
     public static final String CASE_STATE_ALIAS = "CS";
+    public static final String CARD_TYPE_ALIAS = "CT";
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -30,10 +29,10 @@ public class CardBatch extends AuditableObject {
     @JdbcColumn(name = "type_id")
     private Long typeId;
 
-    @JdbcJoinedColumn(localColumn = CardBatch.Columns.TYPE_ID, remoteColumn = "id", mappedColumn = "name", table = "card_type")
+    @JdbcJoinedColumn(localColumn = CardBatch.Columns.TYPE_ID, remoteColumn = "id", mappedColumn = "name", table = CARD_TYPE_TABLE, sqlTableAlias = CARD_TYPE_ALIAS)
     private String typeName;
 
-    @JdbcJoinedColumn(localColumn = CardBatch.Columns.TYPE_ID, remoteColumn = "id", mappedColumn = "code", table = "card_type")
+    @JdbcJoinedColumn(localColumn = CardBatch.Columns.TYPE_ID, remoteColumn = "id", mappedColumn = "code", table = CARD_TYPE_TABLE, sqlTableAlias = CARD_TYPE_ALIAS)
     private String code;
 
     @JdbcColumn(name = "number")
@@ -73,20 +72,20 @@ public class CardBatch extends AuditableObject {
 
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
-            @JdbcJoinPath(localColumn = CaseObject.Columns.IMPORTANCE, remoteColumn = ID, table = "importance_level")}, mappedColumn = "code")
+            @JdbcJoinPath(localColumn = CaseObject.Columns.IMPORTANCE, remoteColumn = "id", table = "importance_level")}, mappedColumn = "code")
     private String importanceCode;
 
     @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
-            @JdbcJoinPath(localColumn = CaseObject.Columns.IMPORTANCE, remoteColumn = ID, table = "importance_level")}, mappedColumn = "color")
+            @JdbcJoinPath(localColumn = CaseObject.Columns.IMPORTANCE, remoteColumn = "id", table = "importance_level")}, mappedColumn = "color")
     private String importanceColor;
 
     @JdbcJoinedObject(joinPath = {
-            @JdbcJoinPath(localColumn = ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
             @JdbcJoinPath(localColumn = CaseObject.Columns.CREATOR, remoteColumn = "id", table = "person")})
     private Person creator;
 
-    @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID,
+    @JdbcJoinedColumn(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID,
             mappedColumn = CaseObject.Columns.CREATED, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Date created;
 

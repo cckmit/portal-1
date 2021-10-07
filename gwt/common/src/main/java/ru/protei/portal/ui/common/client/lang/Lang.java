@@ -3784,7 +3784,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardBatchArticle();
 
-    String cardBatchSearchByCardTypeAndArticle();
+    String cardBatchSearchPlaceholder();
 
     String cardBatchAmount();
 

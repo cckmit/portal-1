@@ -25,4 +25,5 @@ public interface AbstractCardBatchFilterView extends IsWidget {
     HasValue<Set<CaseState>> states();
 
     void resetFilter();
+    void setContractorFilter(Long companyId);
 }

@@ -12,13 +12,14 @@ import java.util.Set;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
+import static ru.protei.portal.core.model.helper.StringUtils.isNotBlank;
 
 public class CardBatchSqlBuilder {
     public SqlCondition createSqlCondition(CardBatchQuery query) {
         return new SqlCondition().build((condition, args) -> {
             condition.append("1=1");
 
-            if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {
+            if (isNotBlank(query.getSearchString())) {
                 Condition searchCondition = SqlQueryBuilder.condition()
                         .or("number").like(query.getSearchString())
                         .or("article").like(query.getSearchString());

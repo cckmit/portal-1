@@ -224,20 +224,18 @@ public class CardBatchServiceImpl implements CardBatchService {
     public Result<SearchResult<CardBatch>> getCardBatches(AuthToken token, CardBatchQuery query) {
         SearchResult<CardBatch> sr = cardBatchDAO.getSearchResultByQuery(query);
 
-        if (CollectionUtils.isEmpty(sr.getResults())) {
-            return ok(sr);
+        List<CardBatch> results = sr.getResults();
+        if (isNotEmpty(results)) {
+            jdbcManyRelationsHelper.fill(results, "members");
+            Map<Long, Long> map = cardDAO.countByBatchIds(results.stream()
+                    .map(CardBatch::getId)
+                    .collect(Collectors.toList()));
+
+            results.forEach(cardBatch -> {
+                Long count = map.getOrDefault(cardBatch.getId(), 0L);
+                cardBatch.setManufacturedAmount(count);
+            });
         }
-
-        Map<Long, Long> map = cardDAO.countByBatchIds(sr.getResults().stream()
-                                     .map(CardBatch::getId)
-                                     .collect(Collectors.toList()));
-
-        jdbcManyRelationsHelper.fill(sr.getResults(), "members");
-
-        sr.getResults().forEach(cardBatch -> {
-            Long count = map.getOrDefault(cardBatch.getId(), 0L);
-            cardBatch.setManufacturedAmount(count);
-        });
 
         return ok(sr);
     }

@@ -4,7 +4,7 @@
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:state='urn:import:ru.protei.portal.ui.delivery.client.widget.cardbatch.state'
-             xmlns:cardtype='urn:import:ru.protei.portal.ui.delivery.client.widget.card.selector'
+             xmlns:cardtype='urn:import:ru.protei.portal.ui.common.client.widget.selector.card.type'
              xmlns:range="urn:import:ru.protei.portal.ui.common.client.widget.typedrangepicker"
              xmlns:importance="urn:import:ru.protei.portal.ui.delivery.client.widget.cardbatch.importance">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -12,14 +12,14 @@
     <g:HTMLPanel styleName="card card-default no-border card-fixed">
         <div class="card-body">
             <div class="row">
-                <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.cardBatchSearchByCardTypeAndArticle}"
+                <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.cardBatchSearchPlaceholder}"
                                                        styleName="form-group col-md-12"/>
 
-                <person:EmployeeMultiSelector ui:field="contractors"
-                                              header="{lang.cardBatchContractors}"
-                                              addStyleNames="form-group col-md-12"/>
+                <person:PersonMultiSelector ui:field="contractors"
+                                            header="{lang.cardBatchContractors}"
+                                            addStyleNames="form-group col-md-12"/>
 
-                <cardtype:CardTypeMultiSelector ui:field="types"
+                <cardtype:CardTypeOptionMultiSelector ui:field="types"
                                                 header="{lang.cardType}"
                                                 addStyleNames="form-group col-md-12" showAll="true"/>
 

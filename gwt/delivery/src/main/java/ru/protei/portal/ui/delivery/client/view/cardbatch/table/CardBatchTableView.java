@@ -12,7 +12,7 @@ import ru.protei.portal.core.model.ent.CardBatch;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
-import ru.protei.portal.ui.common.client.lang.CardStateLang;
+import ru.protei.portal.ui.common.client.lang.CardBatchStateLang;
 import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.table.AbstractCardBatchTableActivity;
@@ -96,9 +96,8 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
     }
 
     private void initTable() {
-        columns.add(new TypeColumn(lang, cardStateLang));
-        columns.add(new ArticleColumn(lang));
-        columns.add(new NumberColumn(lang, cardStateLang));
+        columns.add(new NumberColumn(lang, cardBatchStateLang));
+        columns.add(new CardTypeColumn(lang));
         columns.add(new AmountColumn(lang));
         columns.add(new DeadlineColumn(lang));
         columns.add(new ContractorsColumn(lang, personRoleTypeLang));
@@ -121,7 +120,7 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
     HTMLPanel pagerContainer;
 
     @Inject
-    CardStateLang cardStateLang;
+    CardBatchStateLang cardBatchStateLang;
     @Inject
     En_PersonRoleTypeLang personRoleTypeLang;
 
