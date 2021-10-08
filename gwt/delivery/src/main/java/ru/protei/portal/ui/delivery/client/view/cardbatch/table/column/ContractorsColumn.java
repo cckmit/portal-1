@@ -42,7 +42,7 @@ public class ContractorsColumn extends ClickColumn<CardBatch> {
             StringBuilder sb = new StringBuilder();
             stream(contractors)
                     .collect(Collectors.groupingBy(PersonProjectMemberView::getRole,
-                            Collectors.mapping(PersonProjectMemberView::getDisplayName, Collectors.joining(", "))))
+                            Collectors.mapping(PersonProjectMemberView::getDisplayShortName, Collectors.joining(", "))))
                     .forEach((role, team) ->
                             sb.append("<b>")
                                     .append(personRoleTypeLang.getName(role))

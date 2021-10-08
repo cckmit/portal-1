@@ -36,7 +36,7 @@ public class CardTypeColumn extends ClickColumn<CardBatch> {
         StringBuilder sb = new StringBuilder();
         sb.append("<b>")
                 .append(sanitizeHtml(card.getTypeName()))
-                .append(" (")
+                .append("(")
                 .append(sanitizeHtml(card.getCode()))
                 .append(")")
                 .append("</b>");
