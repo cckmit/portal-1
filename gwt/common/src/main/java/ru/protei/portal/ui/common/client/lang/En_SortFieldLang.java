@@ -93,6 +93,12 @@ public class En_SortFieldLang {
                 return lang.cardSerialNumber();
             case card_test_date:
                 return lang.cardTestDate();
+            case card_batch_number:
+                return lang.cardBatchNumber();
+            case card_batch_type:
+                return lang.cardBatchType();
+            case card_batch_deadline:
+                return lang.cardBatchDeadline();
             default:
                 return lang.unknownField();
         }

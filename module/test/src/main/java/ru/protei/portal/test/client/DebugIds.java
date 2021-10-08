@@ -225,6 +225,23 @@ public class DebugIds {
 
         String COMMENT_INPUT = "filter-comment-input";
 
+        String CARD_BATCH_SEARCH_BY_NUMBER_AND_ARTICLE_INPUT = "filter-card-batch-search-by-number-and-article-input";
+        String CARD_BATCH_CONTRACTORS_SELECTOR = "filter-card-batch-contractors-selector";
+        String CARD_BATCH_CONTRACTORS_ADD_BUTTON = "filter-card-batch-contractors-add-button";
+        String CARD_BATCH_CONTRACTORS_CLEAR_BUTTON = "filter-card-batch-contractors-clear-button";
+        String CARD_BATCH_CONTRACTORS_ITEM_CONTAINER = "filter-card-batch-contractors-item-container";
+
+        String CARD_BATCH_CARD_TYPE_SELECTOR = "filter-card-batch-card-type-selector";
+        String CARD_BATCH_CARD_TYPE_ADD_BUTTON = "filter-card-batch-card-type-add-button";
+        String CARD_BATCH_CARD_TYPE_CLEAR_BUTTON = "filter-card-batch-card-type-clear-button";
+        String CARD_BATCH_CARD_TYPE_ITEM_CONTAINER = "filter-card-batch-card-type-item-container";
+
+        String CARD_BATCH_STATE_SELECTOR = "filter-card-batch-state-selector";
+        String CARD_BATCH_SORT_FIELD = "filter-card-batch-sort-field-selector";
+        String CARD_BATCH_SORT_DIRECTION = "filter-card-batch-sort-direction-selector";
+        String CARD_BATCH_DEADLINE_SELECTOR = "filter-card-batch-deadline-selector";
+        String CARD_BATCH_IMPORTANCE_SELECTOR = "filter-card-batch-importance-selector";
+
         interface USER_FILTER {
             String FILTERS_BUTTON = "filter-user-filters-button";
             String FILTER_NAME_INPUT = "filter-user-filter-name-input";
@@ -333,6 +350,19 @@ public class DebugIds {
         String SUPPORT = "project-state-support";
         String FINISHED = "project-state-finished";
         String CANCELED = "project-state-canceled";
+    }
+
+    public interface CARD_BATCH_STATE {
+        String DEFAULT = "card-batch-state-";
+        String IN_QUEUE_BUILD_EQUIPMENT = "card-batch-state-in-queue-build-equipment";
+        String BUILD_EQUIPMENT = "card-batch-state-build-equipment";
+        String IN_QUEUE_AUTOMATIC_MOUNTING = "card-batch-state-in-queue-automatic-mounting";
+        String AUTOMATIC_MOUNTING = "card-batch-state-automatic-mounting";
+        String IN_QUEUE_MANUAL_MOUNTING = "card-batch-state-in-queue-manual-mounting";
+        String MANUAL_MOUNTING = "card-batch-state-manual-mounting";
+        String IN_QUEUE_STICKER_LABELING = "card-batch-state-in-queue-sticker-labeling";
+        String STICKER_LABELING = "card-batch-state-sticker-labeling";
+        String TRANSFERRED_FOR_TESTING = "card-batch-state-transferred-for-testing";
     }
 
     public interface ISSUE {

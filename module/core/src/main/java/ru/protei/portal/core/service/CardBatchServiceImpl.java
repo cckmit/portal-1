@@ -11,11 +11,14 @@ import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.query.CardBatchQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -32,7 +35,7 @@ import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_ART
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_NUMBER_PATTERN;
 
 /**
- * Реализация сервиса управления поставками
+ * Реализация сервиса управления Партиями плат
  */
 public class CardBatchServiceImpl implements CardBatchService {
 
@@ -48,6 +51,8 @@ public class CardBatchServiceImpl implements CardBatchService {
     CaseNotifierDAO caseNotifierDAO;
     @Autowired
     CardBatchDAO cardBatchDAO;
+    @Autowired
+    CardDAO cardDAO;
     @Autowired
     HistoryService historyService;
     @Autowired
@@ -214,6 +219,26 @@ public class CardBatchServiceImpl implements CardBatchService {
         return ok(cardBatch);
     }
 
+    @Override
+    public Result<SearchResult<CardBatch>> getCardBatches(AuthToken token, CardBatchQuery query) {
+        SearchResult<CardBatch> sr = cardBatchDAO.getSearchResultByQuery(query);
+
+        List<CardBatch> results = sr.getResults();
+        if (isNotEmpty(results)) {
+            jdbcManyRelationsHelper.fill(results, "members");
+            Map<Long, Long> map = cardDAO.countByBatchIds(results.stream()
+                    .map(CardBatch::getId)
+                    .collect(Collectors.toList()));
+
+            results.forEach(cardBatch -> {
+                Long count = map.getOrDefault(cardBatch.getId(), 0L);
+                cardBatch.setManufacturedAmount(count);
+            });
+        }
+
+        return ok(sr);
+    }
+
     //обновление исполнителей партии плат
     private void updateContractors(CaseObject caseObject, List<PersonProjectMemberView> contractors) {
 
@@ -294,7 +319,7 @@ public class CardBatchServiceImpl implements CardBatchService {
         if (cardBatch.getDeadline() == null) {
             return false;
         }
-        if (cardBatch.getPriority() == null) {
+        if (cardBatch.getImportance() == null) {
             return false;
         }
         if (isEmpty(cardBatch.getContractors())) {
@@ -332,7 +357,7 @@ public class CardBatchServiceImpl implements CardBatchService {
         caseObject.setName(CardBatch.AUDIT_TYPE);
         caseObject.setInfo(cardBatch.getParams());
         caseObject.setStateId(cardBatch.getStateId());
-        caseObject.setImpLevel(cardBatch.getPriority());
+        caseObject.setImpLevel(cardBatch.getImportance());
         caseObject.setDeadline(cardBatch.getDeadline());
 
         return caseObject;

@@ -71,9 +71,8 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         view.getFilterContainer().add( filterView.asWidget() );
 
         fireEvent(new ActionBarEvents.Clear());
-
         if (policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE)) {
-            fireEvent(new ActionBarEvents.Add( CREATE_ACTION , null, UiConstants.ActionBarIdentity.CARD_CREATE ));
+            fireEvent(new ActionBarEvents.Add(CREATE_ACTION , null, UiConstants.ActionBarIdentity.CARD_CREATE));
         }
 
         this.preScroll = event.preScroll;

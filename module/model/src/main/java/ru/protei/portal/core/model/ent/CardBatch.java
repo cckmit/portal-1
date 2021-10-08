@@ -6,13 +6,11 @@ import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.ent.Delivery.Columns.ID;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 @JdbcEntity(table = "card_batch")
@@ -20,8 +18,10 @@ public class CardBatch extends AuditableObject {
     public static final String AUDIT_TYPE = "CardBatch";
     public static final String CASE_OBJECT_TABLE = "case_object";
     public static final String CASE_STATE_TABLE = "case_state";
+    public static final String CARD_TYPE_TABLE = "card_type";
     public static final String CASE_OBJECT_ALIAS = "CO";
     public static final String CASE_STATE_ALIAS = "CS";
+    public static final String CARD_TYPE_ALIAS = "CT";
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -29,8 +29,11 @@ public class CardBatch extends AuditableObject {
     @JdbcColumn(name = "type_id")
     private Long typeId;
 
-    @JdbcJoinedColumn(localColumn = CardBatch.Columns.TYPE_ID, remoteColumn = "id", mappedColumn = "name", table = "card_type")
+    @JdbcJoinedColumn(localColumn = CardBatch.Columns.TYPE_ID, remoteColumn = "id", mappedColumn = "name", table = CARD_TYPE_TABLE, sqlTableAlias = CARD_TYPE_ALIAS)
     private String typeName;
+
+    @JdbcJoinedColumn(localColumn = CardBatch.Columns.TYPE_ID, remoteColumn = "id", mappedColumn = "code", table = CARD_TYPE_TABLE, sqlTableAlias = CARD_TYPE_ALIAS)
+    private String code;
 
     @JdbcColumn(name = "number")
     private String number;
@@ -40,6 +43,10 @@ public class CardBatch extends AuditableObject {
 
     @JdbcColumn(name = "amount")
     private Integer amount;
+
+    private Long manufacturedAmount;
+
+    private Long freeAmount;
 
     @JdbcJoinedColumn(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID, mappedColumn = CaseObject.Columns.STATE,
             table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
@@ -55,20 +62,30 @@ public class CardBatch extends AuditableObject {
             mappedColumn = CaseObject.Columns.INFO, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private String params;
 
-    @JdbcJoinedColumn(localColumn = CardBatch.Columns.ID, table = CASE_OBJECT_TABLE, remoteColumn = CaseObject.Columns.ID,
-            mappedColumn = CaseObject.Columns.DEADLINE, sqlTableAlias = CASE_OBJECT_ALIAS)
+    @JdbcJoinedColumn(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.DEADLINE, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Long deadline;
 
     @JdbcJoinedColumn(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID, mappedColumn = CaseObject.Columns.IMPORTANCE,
             table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
-    private Integer priority;
+    private Integer importance;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = CaseObject.Columns.IMPORTANCE, remoteColumn = "id", table = "importance_level")}, mappedColumn = "code")
+    private String importanceCode;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = CaseObject.Columns.IMPORTANCE, remoteColumn = "id", table = "importance_level")}, mappedColumn = "color")
+    private String importanceColor;
 
     @JdbcJoinedObject(joinPath = {
-            @JdbcJoinPath(localColumn = ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
             @JdbcJoinPath(localColumn = CaseObject.Columns.CREATOR, remoteColumn = "id", table = "person")})
     private Person creator;
 
-    @JdbcJoinedColumn(localColumn = ID, remoteColumn = CaseObject.Columns.ID,
+    @JdbcJoinedColumn(localColumn = CardBatch.Columns.ID, remoteColumn = CaseObject.Columns.ID,
             mappedColumn = CaseObject.Columns.CREATED, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS)
     private Date created;
 
@@ -98,6 +115,14 @@ public class CardBatch extends AuditableObject {
 
     public void setTypeId(Long typeId) {
         this.typeId = typeId;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getTypeName() {
@@ -132,6 +157,22 @@ public class CardBatch extends AuditableObject {
         this.amount = amount;
     }
 
+    public Long getManufacturedAmount() {
+        return manufacturedAmount;
+    }
+
+    public void setManufacturedAmount(Long manufacturedAmount) {
+        this.manufacturedAmount = manufacturedAmount;
+    }
+
+    public Long getFreeAmount() {
+        return freeAmount;
+    }
+
+    public void setFreeAmount(Long freeAmount) {
+        this.freeAmount = freeAmount;
+    }
+
     public Long getStateId() {
         return stateId;
     }
@@ -164,12 +205,12 @@ public class CardBatch extends AuditableObject {
         this.deadline = deadline;
     }
 
-    public Integer getPriority() {
-        return priority;
+    public Integer getImportance() {
+        return importance;
     }
 
-    public void setPriority(Integer priority) {
-        this.priority = priority;
+    public void setImportance(Integer importance) {
+        this.importance = importance;
     }
 
     public Person getCreator() {
@@ -192,6 +233,30 @@ public class CardBatch extends AuditableObject {
 
     public void setContractors(List<PersonProjectMemberView> сontractors) {
         this.сontractors = сontractors;
+    }
+
+    public String getImportanceCode() {
+        return importanceCode;
+    }
+
+    public void setImportanceCode(String importanceCode) {
+        this.importanceCode = importanceCode;
+    }
+
+    public String getImportanceColor() {
+        return importanceColor;
+    }
+
+    public void setImportanceColor(String importanceColor) {
+        this.importanceColor = importanceColor;
+    }
+
+    public List<CaseMember> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<CaseMember> members) {
+        this.members = members;
     }
 
     @Override
@@ -221,11 +286,16 @@ public class CardBatch extends AuditableObject {
                 ", number='" + number + '\'' +
                 ", article='" + article + '\'' +
                 ", amount=" + amount +
+                ", manufacturedAmount=" + manufacturedAmount +
+                ", freeAmount=" + freeAmount +
                 ", stateId=" + stateId +
                 ", state=" + state +
-                ", info='" + params + '\'' +
+                ", params='" + params + '\'' +
                 ", deadline=" + deadline +
-                ", priority=" + priority +
+                ", importance=" + importanceCode +
+                ", importanceCode='" + importanceCode + '\'' +
+                ", importanceColor='" + importanceColor + '\'' +
+                ", members=" + members +
                 '}';
     }
 
