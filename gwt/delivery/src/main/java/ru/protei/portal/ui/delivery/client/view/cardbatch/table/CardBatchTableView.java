@@ -8,10 +8,13 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CardBatch;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
+import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.CardBatchStateLang;
 import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -36,6 +39,7 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
         this.activity = activity;
         table.setPagerListener(activity);
         table.setLoadHandler(activity);
+        editClickColumn.setEditHandler(activity);
         columns.forEach(clickColumn -> {
             clickColumn.setHandler(activity);
             clickColumn.setColumnProvider(columnProvider);
@@ -75,6 +79,11 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
     }
 
     @Override
+    public HasWidgets getPreviewContainer() {
+        return previewContainer;
+    }
+
+    @Override
     public HasWidgets getFilterContainer() {
         return filterContainer;
     }
@@ -96,11 +105,15 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
     }
 
     private void initTable() {
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT));
+
         columns.add(new NumberColumn(lang, cardBatchStateLang));
         columns.add(new CardTypeColumn(lang));
         columns.add(new AmountColumn(lang));
         columns.add(new DeadlineColumn(lang));
         columns.add(new ContractorsColumn(lang, personRoleTypeLang));
+        columns.add(editClickColumn);
+
         columns.forEach(clickColumn -> {
             table.addColumn(clickColumn.header, clickColumn.values);
         });
@@ -123,6 +136,11 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
     CardBatchStateLang cardBatchStateLang;
     @Inject
     En_PersonRoleTypeLang personRoleTypeLang;
+    @Inject
+    private EditClickColumn<CardBatch> editClickColumn;
+    @Inject
+    private PolicyService policyService;
+
 
     private List<ClickColumn> columns = new ArrayList<>();
     private ClickColumnProvider<CardBatch> columnProvider = new ClickColumnProvider<>();

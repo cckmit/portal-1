@@ -18,7 +18,9 @@ import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CardBatchControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -37,6 +39,7 @@ public abstract class CardBatchTableActivity implements AbstractCardBatchTableAc
 
     @PostConstruct
     public void onInit() {
+        CREATE_ACTION = lang.buttonCreate();
         view.setActivity(this);
         view.setAnimation(animation);
 
@@ -72,10 +75,31 @@ public abstract class CardBatchTableActivity implements AbstractCardBatchTableAc
         view.getPagerContainer().add(pagerView.asWidget());
 
         fireEvent(new ActionBarEvents.Clear());
+        if (policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE)) {
+            fireEvent(new ActionBarEvents.Add(CREATE_ACTION , null, UiConstants.ActionBarIdentity.CARD_BATCH_CREATE));
+        }
 
         this.preScroll = event.preScroll;
 
         loadTable();
+    }
+
+    @Event
+    public void onCreateClicked(ActionBarEvents.Clicked event) {
+        if (!(UiConstants.ActionBarIdentity.CARD_BATCH_CREATE.equals(event.identity)) ) {
+            return;
+        }
+
+        view.clearSelection();
+
+        fireEvent(new CardBatchEvents.Create());
+    }
+
+    @Event
+    public void onChangeRow(CardBatchEvents.Change event) {
+        cardBatchController.getCardBatch(event.id, new FluentCallback<CardBatch>()
+                .withSuccess(cardBatch -> view.updateRow(cardBatch))
+        );
     }
 
     @Override
@@ -85,7 +109,7 @@ public abstract class CardBatchTableActivity implements AbstractCardBatchTableAc
         query.setOffset(offset);
         query.setLimit(limit);
 
-        cardController.getCardBatchesList(query, new FluentCallback<SearchResult<CardBatch>>()
+        cardBatchController.getCardBatchesList(query, new FluentCallback<SearchResult<CardBatch>>()
                 .withError(throwable -> {
                     errorHandler.accept(throwable);
                     asyncCallback.onFailure(throwable);
@@ -124,7 +148,23 @@ public abstract class CardBatchTableActivity implements AbstractCardBatchTableAc
 
     @Override
     public void onItemClicked(CardBatch value) {
+        persistScroll();
+        showPreview(value);
+    }
+
+    @Override
+    public void onEditClicked(CardBatch value) {
+        persistScroll();
         fireEvent(new CardBatchEvents.Edit(value.getId()));
+    }
+
+    private void showPreview(CardBatch value) {
+        if (value == null || value.getId() == null) {
+            animation.closeDetails();
+        } else {
+            animation.showDetails();
+            fireEvent(new CardBatchEvents.ShowPreview(view.getPreviewContainer(), value.getId()));
+        }
     }
 
     private CardBatchQuery makeQuery() {
@@ -142,6 +182,10 @@ public abstract class CardBatchTableActivity implements AbstractCardBatchTableAc
         return query;
     }
 
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
+    }
+
     private void restoreScroll() {
         if (!preScroll) {
             view.clearSelection();
@@ -154,11 +198,13 @@ public abstract class CardBatchTableActivity implements AbstractCardBatchTableAc
     }
 
     @Inject
+    Lang lang;
+    @Inject
     AbstractCardBatchTableView view;
     @Inject
     AbstractCardBatchFilterView filterView;
     @Inject
-    CardBatchControllerAsync cardController;
+    CardBatchControllerAsync cardBatchController;
     @Inject
     TableAnimation animation;
     @Inject
@@ -173,4 +219,6 @@ public abstract class CardBatchTableActivity implements AbstractCardBatchTableAc
     private AppEvents.InitDetails initDetails;
     private Integer scrollTo = 0;
     private Boolean preScroll = false;
+
+    private static String CREATE_ACTION;
 }

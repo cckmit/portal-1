@@ -16,13 +16,13 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.card.type.CardTypeOptionSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
-import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoActivity;
-import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoView;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoEditActivity;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoEditView;
 
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_ARTICLE_PATTERN;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
-public class CardBatchCommonInfoView extends Composite implements AbstractCardBatchCommonInfoView {
+public class CardBatchCommonInfoView extends Composite implements AbstractCardBatchCommonInfoEditView {
 
     @Inject
     public void init() {
@@ -94,7 +94,7 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
     }
 
     @Override
-    public void setActivity(AbstractCardBatchCommonInfoActivity activity) {
+    public void setActivity(AbstractCardBatchCommonInfoEditActivity activity) {
         this.activity = activity;
     }
 
@@ -110,7 +110,7 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
 
     @UiHandler("saveButton")
     void onSaveButtonClick(ClickEvent event ) {
-        activity.onSaveMainInfoClicked();
+        activity.onSaveCommonInfoClicked();
     }
 
     @Override
@@ -120,7 +120,7 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
 
     @UiHandler("cancelButton")
     void onCancelButtonClick(ClickEvent event ) {
-        activity.onCancelSaveMainInfoClicked();
+        activity.onCancelSaveCommonInfoClicked();
     }
 
     private void ensureDebugIds() {
@@ -136,7 +136,7 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
         cancelButton.ensureDebugId(DebugIds.CARD_BATCH.CANCEL_BUTTON);
     }
 
-    AbstractCardBatchCommonInfoActivity activity;
+    AbstractCardBatchCommonInfoEditActivity activity;
 
     @UiField
     Lang lang;

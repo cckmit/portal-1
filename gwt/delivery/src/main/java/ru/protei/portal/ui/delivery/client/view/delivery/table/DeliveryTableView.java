@@ -108,9 +108,7 @@ public class DeliveryTableView extends Composite implements AbstractDeliveryTabl
     }
 
     private void initTable() {
-        editClickColumn.setActionHandler(activity);
         editClickColumn.setEditHandler(activity);
-        removeClickColumn.setActionHandler(activity);
         removeClickColumn.setRemoveHandler(activity);
 
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT));

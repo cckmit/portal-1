@@ -5699,6 +5699,17 @@ div.form-group-default.form-group-default-selectFx:focus {
   }
 }
 
+.short-table-view {
+  .card_batches {
+    .number, .card-type {
+      width: 45%;
+    }
+    .deadline, .amount, .contractors {
+      display: none;
+    }
+  }
+}
+
 .card-body, .card-meta-body {
   overflow-y: auto;
   box-sizing: border-box;

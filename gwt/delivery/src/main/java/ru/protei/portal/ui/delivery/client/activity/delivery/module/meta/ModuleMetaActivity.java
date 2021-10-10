@@ -133,7 +133,7 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
         moduleService.updateMeta(module, new FluentCallback<Module>()
                 .withSuccess(moduleMetaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new ModuleEvents.Changed(module.getId()));
+                    fireEvent(new ModuleEvents.Change(module.getId()));
                     fireEvent(new CommentAndHistoryEvents.Reload());
                     fillView(moduleMetaUpdated, true);
                 }));

@@ -8,5 +8,7 @@ public interface AbstractCardBatchEditActivity {
 
     void getCaseState(Long id, Consumer<CaseState> success);
 
-    void onMainInfoEditClicked();
+    void onBackClicked();
+
+    void onCommonInfoEditClicked();
 }

@@ -3877,4 +3877,8 @@ public interface Lang extends Messages, ContactItemLang {
     String cardBatchStateTransferredForTesting();
 
     String newEmployeeBook();
+
+    String backToCardBatches();
+
+    String cardBatchEditCommonInfo();
 }

@@ -25,8 +25,8 @@ import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.ImportanceLevelControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoActivity;
-import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoView;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoEditActivity;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoEditView;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaView;
 
@@ -41,11 +41,19 @@ import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.E
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.SUCCESS;
 
 public abstract class CardBatchCreateActivity implements Activity,
-        AbstractCardBatchCreateActivity, AbstractCardBatchCommonInfoActivity, AbstractCardBatchMetaActivity {
+        AbstractCardBatchCreateActivity, AbstractCardBatchCommonInfoEditActivity, AbstractCardBatchMetaActivity {
 
     @Inject
     public void onInit() {
         view.setActivity(this);
+
+        metaView.setActivity(this);
+        view.getMetaContainer().add(metaView);
+
+        commonInfoEditView.setActivity(this);
+        commonInfoEditView.typeEnabled().setEnabled(true);
+        commonInfoEditView.buttonsContainerVisibility().setVisible(false);
+        view.getCommonInfoContainer().add(commonInfoEditView);
     }
 
     @Event
@@ -60,15 +68,9 @@ public abstract class CardBatchCreateActivity implements Activity,
             return;
         }
 
-        commonInfoView.setActivity(this);
-        metaView.setActivity(this);
         initDetails.parent.clear();
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
-        view.getCommonInfoContainer().add(commonInfoView);
-        view.getMetaContainer().add(metaView);
-        commonInfoView.typeEnabled().setEnabled(true);
-        commonInfoView.buttonsContainerVisibility().setVisible(false);
 
         prepare();
     }
@@ -122,18 +124,18 @@ public abstract class CardBatchCreateActivity implements Activity,
     }
 
     private boolean validateAmount() {
-        boolean isValid = null == commonInfoView.amount().getValue() || commonInfoView.amount().getValue() > 0;
-        commonInfoView.setAmountValid(isValid);
+        boolean isValid = null == commonInfoEditView.amount().getValue() || commonInfoEditView.amount().getValue() > 0;
+        commonInfoEditView.setAmountValid(isValid);
         return isValid;
     }
 
     private void prepare() {
-        commonInfoView.type().setValue(null);
-        commonInfoView.number().setValue(null);
-        commonInfoView.article().setValue(null);
-        commonInfoView.amount().setValue(null);
-        commonInfoView.params().setValue(null);
-        commonInfoView.hidePrevCardBatchInfo();
+        commonInfoEditView.type().setValue(null);
+        commonInfoEditView.number().setValue(null);
+        commonInfoEditView.article().setValue(null);
+        commonInfoEditView.amount().setValue(null);
+        commonInfoEditView.params().setValue(null);
+        commonInfoEditView.hidePrevCardBatchInfo();
         metaView.deadline().setValue(null);
         metaView.stateEnable().setEnabled(false);
         metaView.contractors().setValue(null);
@@ -143,11 +145,11 @@ public abstract class CardBatchCreateActivity implements Activity,
 
     private CardBatch fillDto() {
         CardBatch cardBatch = new CardBatch();
-        cardBatch.setTypeId(commonInfoView.type().getValue().getId());
-        cardBatch.setNumber(commonInfoView.number().getValue());
-        cardBatch.setArticle(commonInfoView.article().getValue());
-        cardBatch.setAmount(commonInfoView.amount().getValue());
-        cardBatch.setParams(commonInfoView.params().getValue());
+        cardBatch.setTypeId(commonInfoEditView.type().getValue().getId());
+        cardBatch.setNumber(commonInfoEditView.number().getValue());
+        cardBatch.setArticle(commonInfoEditView.article().getValue());
+        cardBatch.setAmount(commonInfoEditView.amount().getValue());
+        cardBatch.setParams(commonInfoEditView.params().getValue());
         cardBatch.setStateId(metaView.state().getValue().getId());
         cardBatch.setImportance(metaView.priority().getValue().getId());
         cardBatch.setDeadline(metaView.deadline().getValue() != null? metaView.deadline().getValue().getTime() : null);
@@ -161,15 +163,15 @@ public abstract class CardBatchCreateActivity implements Activity,
     }
 
     private String getValidationError() {
-        if (null == commonInfoView.type().getValue()) {
+        if (null == commonInfoEditView.type().getValue()) {
             return lang.cardBatchTypeValidationError();
         }
 
-        if (isEmpty(commonInfoView.number().getValue()) || !commonInfoView.isNumberValid()) {
+        if (isEmpty(commonInfoEditView.number().getValue()) || !commonInfoEditView.isNumberValid()) {
             return lang.cardBatchNumberValidationError();
         }
 
-        if (isEmpty(commonInfoView.article().getValue()) || !commonInfoView.isArticleValid()) {
+        if (isEmpty(commonInfoEditView.article().getValue()) || !commonInfoEditView.isArticleValid()) {
             return lang.cardBatchArticleValidationError();
         }
 
@@ -231,14 +233,14 @@ public abstract class CardBatchCreateActivity implements Activity,
             releaseNumber = getNextNumber(lastNumberCardBatch.getNumber());
         }
 
-        commonInfoView.number().setValue(releaseNumber);
+        commonInfoEditView.number().setValue(releaseNumber);
 
         if (lastNumberCardBatch == null || isEmpty(releaseNumber)){
-            commonInfoView.hidePrevCardBatchInfo();
+            commonInfoEditView.hidePrevCardBatchInfo();
             return;
         }
 
-        commonInfoView.setPrevCardBatchInfo(lastNumberCardBatch.getNumber(), lastNumberCardBatch.getAmount(), cardBatchStateLang.getStateName(lastNumberCardBatch.getState()));
+        commonInfoEditView.setPrevCardBatchInfo(lastNumberCardBatch.getNumber(), lastNumberCardBatch.getAmount(), cardBatchStateLang.getStateName(lastNumberCardBatch.getState()));
     };
 
     private String getNextNumber(String lastNumberStr) {
@@ -264,7 +266,7 @@ public abstract class CardBatchCreateActivity implements Activity,
     @Inject
     private AbstractCardBatchCreateView view;
     @Inject
-    AbstractCardBatchCommonInfoView commonInfoView;
+    AbstractCardBatchCommonInfoEditView commonInfoEditView;
     @Inject
     AbstractCardBatchMetaView metaView;
     @Inject

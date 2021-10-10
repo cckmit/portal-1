@@ -127,7 +127,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
                     requestedNameDescription = false;
 
                     fireEvent( new NotifyEvents.Show( lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS ) );
-                    fireEvent(new DeliveryEvents.ChangeDelivery(changeRequest.getId()));
+                    fireEvent(new DeliveryEvents.Change(changeRequest.getId()));
                     onNameDescriptionChanged();
                 } ) );
     }
@@ -234,10 +234,10 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     }
 
     private void showMeta(Delivery delivery) {
-        fireEvent(new DeliveryEvents.EditDeliveryMeta(view.getMetaContainer(), delivery, makeMetaNotifiers(delivery)));
+        fireEvent(new DeliveryEvents.EditMeta(view.getMetaContainer(), delivery, makeMetaNotifiers(delivery)));
     }
 
-    private void viewModeIsPreview( boolean isPreviewMode){
+    private void viewModeIsPreview(boolean isPreviewMode){
         view.backButtonVisibility().setVisible(!isPreviewMode);
         view.showEditViewButtonVisibility().setVisible(isPreviewMode);
         view.setPreviewStyles(isPreviewMode);
@@ -280,8 +280,8 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         }
     }
 
-    private boolean isNew(Delivery project) {
-        return project.getId() == null;
+    private boolean isNew(Delivery delivery) {
+        return delivery.getId() == null;
     }
 
     private String transliteration(String input) {

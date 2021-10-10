@@ -102,7 +102,7 @@ public abstract class ModuleEditActivity implements Activity, AbstractModuleEdit
                     requestedNameDescription = false;
 
                     fireEvent( new NotifyEvents.Show( lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS ));
-                    fireEvent( new ModuleEvents.Changed(changeRequest.getId()));
+                    fireEvent( new ModuleEvents.Change(changeRequest.getId()));
                     onNameDescriptionChanged();
                 } ) );
     }

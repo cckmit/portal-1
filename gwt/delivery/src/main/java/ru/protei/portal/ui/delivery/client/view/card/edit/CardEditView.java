@@ -71,7 +71,7 @@ public class CardEditView extends Composite implements AbstractCardEditView {
     }
 
     @UiHandler({"noteCommentEditButton"})
-    public void onNameAndDescriptionEditButtonClicked(ClickEvent event) {
+    public void onNoteCommentEditButtonClicked(ClickEvent event) {
         if (activity != null) {
             activity.onNoteCommentClicked();
         }

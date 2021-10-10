@@ -40,8 +40,8 @@ public class ModuleEvents {
         public boolean isReadOnly;
     }
 
-    public static class Changed {
-        public Changed(Long id) {
+    public static class Change {
+        public Change(Long id) {
             this.id = id;
         }
 
