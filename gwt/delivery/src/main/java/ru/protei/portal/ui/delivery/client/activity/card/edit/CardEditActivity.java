@@ -32,6 +32,7 @@ import ru.protei.portal.ui.delivery.client.view.card.infoComment.CardNoteComment
 import ru.protei.portal.ui.delivery.client.view.card.infoComment.CardNoteCommentEditView;
 import ru.protei.portal.ui.delivery.client.view.card.infoComment.CardNoteCommentView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;

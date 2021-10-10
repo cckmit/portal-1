@@ -5709,23 +5709,3 @@ div.form-group-default.form-group-default-selectFx:focus {
     }
   }
 }
-
-.card-body, .card-meta-body {
-  overflow-y: auto;
-  box-sizing: border-box;
-  z-index: 0;
-  right: 0;
-  position: relative;
-
-  &.card-create {
-    max-height: calc(100vh - 170px);
-  }
-
-  &.card-edit {
-    max-height: calc(100vh - 120px);
-  }
-}
-
-.card-footer {
-  padding: .75rem 1.25rem;
-}
