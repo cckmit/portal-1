@@ -13,9 +13,7 @@ import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.lang.DeliveryStateLang;
-import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.lang.ModuleStateLang;
+import ru.protei.portal.ui.common.client.lang.*;
 import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItem;
 import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItemsContainer;
 import ru.protei.portal.ui.common.client.view.casehistory.item.casestate.CaseHistoryStateItemView;
@@ -245,7 +243,7 @@ public class CommentOrHistoryUtils {
 
         if (En_HistoryType.CARD_STATE.equals(historyType)) {
             CaseHistoryStateItemView caseHistoryStateItemView = caseHistoryStateItemViewProvider.get();
-            caseHistoryStateItemView.setName(value);
+            caseHistoryStateItemView.setName(cardStateLang.getStateName(new CaseState(value)));
             caseHistoryStateItemView.setColor(color);
 
             return caseHistoryStateItemView;
@@ -279,6 +277,8 @@ public class CommentOrHistoryUtils {
     private static DeliveryStateLang deliveryStateLang;
     @Inject
     private static ModuleStateLang moduleStateLang;
+    @Inject
+    private static CardStateLang cardStateLang;
     @Inject
     private static Provider<CaseHistoryItemsContainer> caseHistoryItemsContainerProvider;
 }
