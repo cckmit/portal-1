@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dao.impl.CardBatchSqlBuilder;
 import ru.protei.portal.core.model.dao.impl.CardSqlBuilder;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -493,5 +494,10 @@ public class DaoMockTestConfiguration {
     @Bean
     public CardBatchDAO getCardBatchDAO() {
         return mock(CardBatchDAO.class);
+    }
+
+    @Bean
+    public CardBatchSqlBuilder cardBatchSqlBuilder() {
+        return mock(CardBatchSqlBuilder.class);
     }
 }

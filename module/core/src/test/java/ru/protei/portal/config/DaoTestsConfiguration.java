@@ -524,4 +524,9 @@ public class DaoTestsConfiguration {
     public CardBatchDAO getCardBatchDAO() {
         return new CardBatchDAO_Impl();
     }
+
+    @Bean
+    public CardBatchSqlBuilder cardBatchSqlBuilder() {
+        return new CardBatchSqlBuilder();
+    }
 }

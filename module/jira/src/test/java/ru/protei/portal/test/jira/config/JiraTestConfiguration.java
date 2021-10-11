@@ -656,6 +656,11 @@ public class JiraTestConfiguration {
         return new CardBatchDAO_Impl();
     }
 
+    @Bean
+    public CardBatchSqlBuilder cardBatchSqlBuilder() {
+        return new CardBatchSqlBuilder();
+    }
+
     /* DAO converters */
 
     @Bean
