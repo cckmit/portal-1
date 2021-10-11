@@ -22,7 +22,7 @@ import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCar
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_ARTICLE_PATTERN;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
-public class CardBatchCommonInfoView extends Composite implements AbstractCardBatchCommonInfoEditView {
+public class CardBatchCommonInfoEditView extends Composite implements AbstractCardBatchCommonInfoEditView {
 
     @Inject
     public void init() {
@@ -161,6 +161,6 @@ public class CardBatchCommonInfoView extends Composite implements AbstractCardBa
     @UiField
     Button cancelButton;
 
-    interface CommonUiBinder extends UiBinder<HTMLPanel, CardBatchCommonInfoView> {}
+    interface CommonUiBinder extends UiBinder<HTMLPanel, CardBatchCommonInfoEditView> {}
     private static CommonUiBinder ourUiBinder = GWT.create( CommonUiBinder.class );
 }

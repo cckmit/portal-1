@@ -5,21 +5,23 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
-        <div class="card-body row no-margin">
-            <div class="col-lg-8 order-last order-lg-first p-l-25 p-r-5">
-                <delivery:namedescription.DeliveryNameDescriptionEditView ui:field="nameDescription"/>
-                 <div class="form-group form-group-default col-md-12">
-                    <label class="fade"><ui:text from="{lang.deliveryKits}"/></label>
-                    <g:HTMLPanel ui:field="kitsContainer"/>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-8 order-last order-lg-first">
+                    <delivery:namedescription.DeliveryNameDescriptionEditView ui:field="nameDescription"/>
+                    <div class="form-group form-group-default col-md-12">
+                        <label class="fade"><ui:text from="{lang.deliveryKits}"/></label>
+                        <g:HTMLPanel ui:field="kitsContainer"/>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <delivery:meta.DeliveryMetaView ui:field="meta"/>
                 </div>
             </div>
-            <div class="col-lg-4">
-                <delivery:meta.DeliveryMetaView ui:field="meta"/>
+            <div class="card-footer text-right forcibly-bottom  ">
+                <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                <g:Button ui:field="cancelButton" styleName="btn btn-default close_button" text="{lang.buttonCancel}"/>
             </div>
-        </div>
-        <div class="card-footer text-right">
-            <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
-            <g:Button ui:field="cancelButton" styleName="btn btn-default close_button" text="{lang.buttonCancel}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

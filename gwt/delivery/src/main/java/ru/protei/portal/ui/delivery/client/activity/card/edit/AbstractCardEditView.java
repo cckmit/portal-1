@@ -18,7 +18,11 @@ public interface AbstractCardEditView extends IsWidget {
 
     HasWidgets getMetaContainer();
 
+    HasVisibility backButtonVisibility();
+
     HasVisibility noteCommentEditButtonVisibility();
 
     void setCreatedBy(String value);
+
+    void setPreviewStyles(boolean isPreview);
 }

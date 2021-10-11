@@ -40,6 +40,7 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
         table.setPagerListener(activity);
         table.setLoadHandler(activity);
         editClickColumn.setEditHandler(activity);
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT));
         columns.forEach(clickColumn -> {
             clickColumn.setHandler(activity);
             clickColumn.setColumnProvider(columnProvider);
@@ -105,8 +106,6 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
     }
 
     private void initTable() {
-        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT));
-
         columns.add(new NumberColumn(lang, cardBatchStateLang));
         columns.add(new CardTypeColumn(lang));
         columns.add(new AmountColumn(lang));

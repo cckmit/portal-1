@@ -1,11 +1,13 @@
 package ru.protei.portal.ui.delivery.client.activity.card.edit;
 
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
@@ -15,10 +17,7 @@ import ru.protei.portal.core.model.ent.History;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.CardEvents;
-import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CardControllerAsync;
 import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
@@ -53,19 +52,38 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
     }
 
     @Event
+    public void onInitDetails(AppEvents.InitDetails initDetails) {
+        this.initDetails = initDetails;
+    }
+
+    @Event
     public void onAuthSuccess(AuthEvents.Success event) {
         this.authProfile = event.profile;
     }
 
     @Event
-    public void onShow( CardEvents.Edit event ) {
+    public void onShow(CardEvents.ShowPreview event) {
         HasWidgets container = event.parent;
-        if (event.cardId == null || !hasAccess()) {
+        if (event.id == null || !hasAccess()) {
             fireEvent(new ErrorPageEvents.ShowForbidden(container));
             return;
         }
 
-        request(event.cardId, container);
+        viewModeIsPreview(true);
+        request(event.id, container);
+    }
+
+    @Event(Type.FILL_CONTENT)
+    public void onShow(CardEvents.Edit event) {
+        HasWidgets container = initDetails.parent;
+        if (event.id == null || !hasAccess()) {
+            fireEvent(new ErrorPageEvents.ShowForbidden(container));
+            return;
+        }
+
+        Window.scrollTo(0, 0);
+        viewModeIsPreview(false);
+        request(event.id, container);
     }
 
     @Override
@@ -86,6 +104,11 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
                     fireEvent(new CardEvents.Change(card));
                     onCancelNoteCommentClicked();
                 }));
+    }
+
+    @Override
+    public void onBackClicked() {
+        fireEvent(new CardEvents.Show(!isNew(card)));
     }
 
     @Override
@@ -201,6 +224,15 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
         historyItemsContainers.forEach(historyItemsContainer -> historyItemsContainer.setVisible(true));
     }
 
+    private void viewModeIsPreview(boolean isPreviewMode) {
+        view.backButtonVisibility().setVisible(!isPreviewMode);
+        view.setPreviewStyles(isPreviewMode);
+    }
+
+    private boolean isNew(Card card) {
+        return card.getId() == null;
+    }
+
     @Inject
     private Lang lang;
     @Inject
@@ -227,4 +259,5 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
     Card card;
     private final List<CaseHistoryItemsContainer> historyItemsContainers = new ArrayList<>();
     private Profile authProfile;
+    private AppEvents.InitDetails initDetails;
 }

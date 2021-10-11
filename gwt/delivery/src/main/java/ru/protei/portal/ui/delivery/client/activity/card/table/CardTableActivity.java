@@ -87,12 +87,8 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         }
 
         view.clearSelection();
-        animation.showDetails();
 
-        fireEvent(new CardEvents.Create(view.getPreviewContainer(), () -> {
-            animation.closeDetails();
-            loadTable();
-        }));
+        fireEvent(new CardEvents.Create());
     }
 
     @Event
@@ -104,12 +100,14 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
 
     @Override
     public void onItemClicked(Card value) {
-        if (value == null) {
-            animation.closeDetails();
-        } else {
-            fireEvent( new CardEvents.Edit( value.getId(), view.getPreviewContainer()) );
-            animation.showDetails();
-        }
+        persistScroll();
+        showPreview(value);
+    }
+
+    @Override
+    public void onEditClicked(Card value) {
+        persistScroll();
+        fireEvent(new CardEvents.Edit(value.getId()));
     }
 
     @Override
@@ -161,6 +159,15 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
 
     }
 
+    private void showPreview(Card value) {
+        if (value == null || value.getId() == null) {
+            animation.closeDetails();
+        } else {
+            animation.showDetails();
+            fireEvent(new CardEvents.ShowPreview(view.getPreviewContainer(), value.getId()));
+        }
+    }
+
     private Runnable removeAction(Card card) {
         return () -> cardController.removeCard(card, new FluentCallback<Card>()
                 .withSuccess(result -> {
@@ -185,6 +192,10 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setSortField(filterView.sortField().getValue());
         return query;
+    }
+
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
     }
 
     private void restoreScroll() {

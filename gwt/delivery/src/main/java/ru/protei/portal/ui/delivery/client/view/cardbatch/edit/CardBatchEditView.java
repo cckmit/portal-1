@@ -120,7 +120,7 @@ public class CardBatchEditView extends Composite implements AbstractCardBatchEdi
             return;
         }
         backButton.ensureDebugId(DebugIds.ISSUE.BACK_BUTTON);
-        commonInfoEditButton.ensureDebugId(DebugIds.CARD_BATCH.EDIT_NOTE_COMMENT_BUTTON);
+        commonInfoEditButton.ensureDebugId(DebugIds.CARD_BATCH.EDIT_COMMON_INFO_BUTTON);
         numberRO.ensureDebugId(DebugIds.CARD_BATCH.NUMBER);
     }
 

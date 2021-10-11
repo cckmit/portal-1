@@ -14,15 +14,13 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
+import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.lang.CardStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.delivery.client.activity.card.table.AbstractCardTableActivity;
 import ru.protei.portal.ui.delivery.client.activity.card.table.AbstractCardTableView;
-import ru.protei.portal.ui.delivery.client.view.card.table.column.InfoColumn;
-import ru.protei.portal.ui.delivery.client.view.card.table.column.ManagerColumn;
-import ru.protei.portal.ui.delivery.client.view.card.table.column.NumberColumn;
-import ru.protei.portal.ui.delivery.client.view.card.table.column.TestDateColumn;
+import ru.protei.portal.ui.delivery.client.view.card.table.column.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,13 +38,15 @@ public class CardTableView extends Composite implements AbstractCardTableView {
     public void setActivity(AbstractCardTableActivity activity) {
         this.activity = activity;
 
+        editClickColumn.setEditHandler(activity);
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT));
+
         removeClickColumn.setRemoveHandler(activity);
         removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_REMOVE));
 
         columns.forEach(clickColumn -> {
-            clickColumn.setHandler( activity );
-            clickColumn.setColumnProvider( columnProvider );
-            clickColumn.setEnabledPredicate( v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT) );
+            clickColumn.setHandler(activity);
+            clickColumn.setColumnProvider(columnProvider);
         });
 
         table.setPagerListener(activity);
@@ -56,7 +56,7 @@ public class CardTableView extends Composite implements AbstractCardTableView {
     @Override
     public void setAnimation(TableAnimation animation) {
         animation.setContainers(tableContainer, previewContainer, filterContainer);
-        animation.setStyles("col-md-12", "col-md-9", "col-md-3", "col-md-6", "col-md-6");
+        animation.setStyles("col-md-12", "col-md-9", "col-md-3", "col-md-3", "col-md-9");
     }
 
     @Override
@@ -117,24 +117,31 @@ public class CardTableView extends Composite implements AbstractCardTableView {
         table.addColumn(number.header, number.values);
         number.setColumnProvider(columnProvider);
 
+        CardTypeColumn cardType = new CardTypeColumn(lang);
+        table.addColumn(cardType.header, cardType.values);
+        cardType.setColumnProvider(columnProvider);
+
+        ManagerColumn manager = new ManagerColumn(lang);
+        table.addColumn(manager.header, manager.values);
+        manager.setColumnProvider(columnProvider);
+
+        TestDateColumn testDate = new TestDateColumn(lang);
+        table.addColumn(testDate.header, testDate.values);
+        testDate.setColumnProvider(columnProvider);
+
         InfoColumn info = new InfoColumn(lang);
         table.addColumn(info.header, info.values);
         info.setColumnProvider(columnProvider);
 
-        TestDateColumn manager = new TestDateColumn(lang);
-        table.addColumn(manager.header, manager.values);
-        manager.setColumnProvider(columnProvider);
-
-        ManagerColumn contact = new ManagerColumn(lang);
-        table.addColumn(contact.header, contact.values);
-        contact.setColumnProvider(columnProvider);
-
+        table.addColumn(editClickColumn.header, editClickColumn.values);
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
 
         columns.add(number);
         columns.add(info);
+        columns.add(cardType);
         columns.add(manager);
-        columns.add(contact);
+        columns.add(testDate);
+        columns.add(editClickColumn);
         columns.add(removeClickColumn);
     }
 
@@ -151,6 +158,8 @@ public class CardTableView extends Composite implements AbstractCardTableView {
     @UiField
     HTMLPanel pagerContainer;
 
+    @Inject
+    EditClickColumn<Card> editClickColumn;
     @Inject
     RemoveClickColumn<Card> removeClickColumn;
 

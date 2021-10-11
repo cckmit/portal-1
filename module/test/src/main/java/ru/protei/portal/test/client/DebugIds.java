@@ -1431,6 +1431,6 @@ public class DebugIds {
         String DEADLINE_DATE = "card-batch-deadline-date-container";
         String CONTRACTOR_SELECTOR = "card-batch-contractor-selector";
         String NUMBER = "card-batch-number";
-        String EDIT_NOTE_COMMENT_BUTTON = "card-batch-edit-note-comment-button";
+        String EDIT_COMMON_INFO_BUTTON = "card-batch-edit-common-info-button";
     }
 }

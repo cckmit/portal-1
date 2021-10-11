@@ -3,6 +3,7 @@ package ru.protei.portal.ui.delivery.client.activity.cardbatch.edit;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
@@ -21,6 +22,7 @@ import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.ImportanceLevelControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoEditView;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaActivity;
@@ -29,6 +31,7 @@ import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardB
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
@@ -56,6 +59,11 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
     @Event
     public void onInitDetails(AppEvents.InitDetails initDetails) {
         this.initDetails = initDetails;
+    }
+
+    @Event
+    public void onAuthSuccess(AuthEvents.Success event) {
+        this.authProfile = event.profile;
     }
 
     @Event
@@ -136,11 +144,6 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
     }
 
     private void onMetaChanged() {
-        if (!hasEditPrivileges()) {
-            showError(lang.errPermissionDenied());
-            return;
-        }
-
         String error = getMetaValidationError();
         if (error != null) {
             showError(error);
@@ -207,8 +210,8 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
     }
 
     private void switchCommonInfoToEdit(boolean isEdit) {
-        view.commonInfoEditButtonVisibility().setVisible(!isEdit && hasEditPrivileges());
-        view.commonInfoEditContainerVisibility().setVisible(isEdit && hasEditPrivileges());
+        view.commonInfoEditButtonVisibility().setVisible(!isEdit && isSelf(cardBatch.getCreator().getId()));
+        view.commonInfoEditContainerVisibility().setVisible(isEdit);
         view.commonInfoContainerVisibility().setVisible(!isEdit);
     }
 
@@ -327,6 +330,10 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
                 }));
     }
 
+    private boolean isSelf(Long creatorId) {
+        return Objects.equals(creatorId, authProfile.getId());
+    }
+
     @Inject
     private Lang lang;
     @Inject
@@ -347,7 +354,9 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
     @Inject
     private DefaultErrorHandler defaultErrorHandler;
 
+    @ContextAware
     CardBatch cardBatch;
 
+    private Profile authProfile;
     private AppEvents.InitDetails initDetails;
 }

@@ -30,9 +30,8 @@ public class CardTypeColumn extends ClickColumn<CardBatch> {
         }
 
         cell.addClassName(CLASS_NAME);
-        com.google.gwt.dom.client.Element root = DOM.createDiv();
-        root.addClassName("card-type-size");
 
+        com.google.gwt.dom.client.Element root = DOM.createDiv();
         StringBuilder sb = new StringBuilder();
         sb.append("<b>")
                 .append(sanitizeHtml(card.getTypeName()))
