@@ -137,6 +137,7 @@ public abstract class CardBatchCreateActivity implements Activity,
         commonInfoEditView.params().setValue(null);
         commonInfoEditView.hidePrevCardBatchInfo();
         metaView.deadline().setValue(null);
+        metaView.setDeadlineValid(true);
         metaView.stateEnable().setEnabled(false);
         metaView.contractors().setValue(null);
         fillPrioritySelector(BASIC);

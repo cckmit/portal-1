@@ -36,7 +36,7 @@
             <div class="form-group-attached form-group">
                 <div class="form-group form-group-default required">
                     <label class="fade"><ui:text from="{lang.cardArticle}"/></label>
-                    <validablefield:ValidableTextBox ui:field="article" styleName="form-control" notNull="false"/>
+                    <validablefield:ValidableTextBox ui:field="article" placeholder="{lang.cardBatchArticlePlaceholder}" styleName="form-control"/>
                 </div>
                 <person:EmployeeFormSelector ui:field="manager" header="{lang.cardManager}"
                                              hasNullValue="false" defaultValue="{lang.cardSelectManager}" mandatory="true"/>

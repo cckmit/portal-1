@@ -26,9 +26,9 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    <div class="form-group form-group-default required">
+                    <div class="form-group form-group-default">
                         <label class="fade"><ui:text from="{lang.cardBatchArticle}"/></label>
-                        <text:ValidableTextBox ui:field="article" placeholder="{lang.cardBatchArticlePlaceholder}" styleName="form-control"/>
+                        <text:ValidableTextBox ui:field="article" placeholder="{lang.cardBatchArticlePlaceholder}" styleName="form-control"  notNull="false"/>
                     </div>
                 </div>
 
