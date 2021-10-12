@@ -226,4 +226,38 @@ public class DebugIdsHelper {
             return DebugIds.PROJECT_STATE.DEFAULT + id;
         }
     }
+
+    public static final class CARD_BATCH_STATE {
+        public static String byId(long id) {
+            if (id == 52) {
+                return DebugIds.CARD_BATCH_STATE.IN_QUEUE_BUILD_EQUIPMENT;
+            }
+            if (id == 53) {
+                return DebugIds.CARD_BATCH_STATE.BUILD_EQUIPMENT;
+            }
+            if (id == 54) {
+                return DebugIds.CARD_BATCH_STATE.IN_QUEUE_AUTOMATIC_MOUNTING;
+            }
+            if (id == 55) {
+                return DebugIds.CARD_BATCH_STATE.AUTOMATIC_MOUNTING;
+            }
+            if (id == 58) {
+                return DebugIds.CARD_BATCH_STATE.IN_QUEUE_MANUAL_MOUNTING;
+            }
+            if (id == 59) {
+                return DebugIds.CARD_BATCH_STATE.MANUAL_MOUNTING;
+            }
+            if (id == 60) {
+                return DebugIds.CARD_BATCH_STATE.IN_QUEUE_STICKER_LABELING;
+            }
+            if (id == 61) {
+                return DebugIds.CARD_BATCH_STATE.STICKER_LABELING;
+            }
+            if (id == 62) {
+                return DebugIds.CARD_BATCH_STATE.TRANSFERRED_FOR_TESTING;
+            }
+
+            return DebugIds.CARD_BATCH_STATE.DEFAULT + id;
+        }
+    }
 }

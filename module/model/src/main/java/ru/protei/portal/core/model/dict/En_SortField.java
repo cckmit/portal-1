@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.dict;
 
+import ru.protei.portal.core.model.ent.CardBatch;
+
 /**
  * Created by michael on 10.10.16.
  */
@@ -275,6 +277,21 @@ public enum En_SortField {
      * Название типа платы
      */
     card_type_name("name"),
+
+    /**
+     * Тип платы партии плат
+     */
+    card_batch_type("CT.name"),
+
+    /**
+     * Номер партии плат
+     */
+    card_batch_number("number"),
+
+    /**
+     * Дедлайн партии плат
+     */
+    card_batch_deadline("deadline"),
     ;
 
     private String fieldName;

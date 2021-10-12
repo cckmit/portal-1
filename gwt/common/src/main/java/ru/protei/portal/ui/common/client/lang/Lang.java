@@ -3705,9 +3705,9 @@ public interface Lang extends Messages, ContactItemLang {
     String reportYoutrackWorkDictionaryConfirmRemove(String name);
 
     String reportYoutrackWorkDictionaryName();
-
+    
     String reportYoutrackWorkDictionaryType();
-
+    
     String reportYoutrackWorkDictionaryProjects();
 
     String newStoreAndDelivery();
@@ -3786,7 +3786,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardBatchArticle();
 
+    String cardBatchSearchPlaceholder();
+
     String cardBatchAmount();
+
+    String cardBatchAmountOrdered();
+
+    String cardBatchAmountManufactured();
+
+    String cardBatchAmountFree();
 
     String cardBatchParams();
 
@@ -3809,6 +3817,18 @@ public interface Lang extends Messages, ContactItemLang {
     String cardBatchSaved();
 
     String cardBatchCreated();
+
+    String cardBatchStatePreliminary();
+
+    String cardBatchStateActual();
+
+    String cardBatchStateOrdered();
+
+    String cardBatchStateReserved();
+
+    String cardBatchStateMounting();
+
+    String cardBatchStateMounted();
 
     String personAutomaticMounting();
 

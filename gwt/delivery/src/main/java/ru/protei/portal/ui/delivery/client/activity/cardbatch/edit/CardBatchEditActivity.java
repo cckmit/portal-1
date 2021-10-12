@@ -101,7 +101,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
 
     @Override
     public void onPriorityChange() {
-        cardBatch.setPriority(metaView.priority().getValue().getId());
+        cardBatch.setImportance(metaView.priority().getValue().getId());
         onMetaChanged();
     }
 
@@ -204,7 +204,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         view.setParamsRO(cardBatch.getParams());
 
         metaView.state().setValue(cardBatch.getState());
-        fillPrioritySelector(cardBatch.getPriority());
+        fillPrioritySelector(cardBatch.getImportance());
         metaView.deadline().setValue(new Date(cardBatch.getDeadline()));
         metaView.contractors().setValue(new HashSet<>(cardBatch.getContractors()));
     }

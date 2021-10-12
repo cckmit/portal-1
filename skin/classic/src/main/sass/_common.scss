@@ -5647,6 +5647,58 @@ div.form-group-default.form-group-default-selectFx:focus {
   }
 }
 
+.card_batches {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 60px;
+          div {
+            height: 60px;
+            max-height: 60px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          p {
+            margin: 0;
+            font-size: 85%;
+            line-height: 1.3em;
+          }
+
+          label {
+            font-weight: 600;
+            line-height: 1.2em;
+            vertical-align: inherit;
+            font-size: 0.9em;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+    .number {
+      width: 15%;
+      text-align: center;
+    }
+    .deadline, .amount {
+      width: 10%;
+    }
+    .card-type {
+      width: 15%;
+    }
+    .contractors {
+      width: 40%;
+    }
+    .number-size {
+      font-size: 16px;
+    }
+    .card-type-size {
+      font-size: 14px;
+    }
+  }
+}
+
 .card-body, .card-meta-body {
   overflow-y: auto;
   box-sizing: border-box;
