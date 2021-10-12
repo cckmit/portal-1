@@ -11,7 +11,6 @@ import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CardBatchQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.winter.core.utils.beans.SearchResult;

@@ -11,7 +11,7 @@ import ru.protei.portal.ui.delivery.client.activity.card.meta.AbstractCardMetaVi
 import ru.protei.portal.ui.delivery.client.activity.card.meta.CardEditMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.card.table.AbstractCardTableView;
 import ru.protei.portal.ui.delivery.client.activity.card.table.CardTableActivity;
-import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoView;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoEditView;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.create.AbstractCardBatchCreateView;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.create.CardBatchCreateActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.filter.AbstractCardBatchFilterView;
@@ -49,7 +49,7 @@ import ru.protei.portal.ui.delivery.client.view.card.edit.CardEditView;
 import ru.protei.portal.ui.delivery.client.view.card.filter.CardFilterView;
 import ru.protei.portal.ui.delivery.client.view.card.meta.CardMetaView;
 import ru.protei.portal.ui.delivery.client.view.card.table.CardTableView;
-import ru.protei.portal.ui.delivery.client.view.cardbatch.common.CardBatchCommonInfoView;
+import ru.protei.portal.ui.delivery.client.view.cardbatch.common.CardBatchCommonInfoEditView;
 import ru.protei.portal.ui.delivery.client.view.cardbatch.create.CardBatchCreateView;
 import ru.protei.portal.ui.delivery.client.view.cardbatch.filter.CardBatchFilterView;
 import ru.protei.portal.ui.delivery.client.view.cardbatch.edit.CardBatchEditView;
@@ -121,8 +121,8 @@ public class DeliveryClientModule extends AbstractGinModule {
 
         bind(CardBatchCreateActivity.class).asEagerSingleton();
         bind(AbstractCardBatchCreateView.class).to(CardBatchCreateView.class).in(Singleton.class);
-        bind(AbstractCardBatchCommonInfoView.class).to(CardBatchCommonInfoView.class).in(Singleton.class);
-        bind(AbstractCardBatchMetaView.class).to(CardBatchMetaView.class).in(Singleton.class);
+        bind(AbstractCardBatchCommonInfoEditView.class).to(CardBatchCommonInfoEditView.class);
+        bind(AbstractCardBatchMetaView.class).to(CardBatchMetaView.class);
 
         bind(CardBatchTableActivity.class).asEagerSingleton();
         bind(AbstractCardBatchTableView.class).to(CardBatchTableView.class).in(Singleton.class);

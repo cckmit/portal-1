@@ -8,12 +8,12 @@
     <g:HTMLPanel>
         <g:HTMLPanel styleName="form-group form-group-default col-md-12">
             <label class="fade"><ui:text from="{lang.cardNote}"/></label>
-            <markdown:MarkdownAreaWithPreview ui:field="note" minRows="10" maxRows="20"/>
+            <markdown:MarkdownAreaWithPreview ui:field="note" minRows="5" maxRows="10"/>
         </g:HTMLPanel>
 
         <g:HTMLPanel styleName="form-group form-group-default col-md-12">
             <label class="fade"><ui:text from="{lang.cardComment}"/></label>
-            <markdown:MarkdownAreaWithPreview ui:field="comment" minRows="10" maxRows="20"/>
+            <markdown:MarkdownAreaWithPreview ui:field="comment" minRows="5" maxRows="10"/>
         </g:HTMLPanel>
         <g:HTMLPanel ui:field="buttonContainer" styleName="form-group m-b-30"/>
     </g:HTMLPanel>

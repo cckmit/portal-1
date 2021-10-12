@@ -6,23 +6,24 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="card card-default no-border card-fixed preview-card">
-        <div class="card-body row no-margin">
-            <div class="col-lg-6 order-last order-lg-first">
-                <div class="form-group form-group-default">
-                    <label class="fade"><ui:text from="{lang.cardSerialNumber}"/></label>
-                    <g:TextBox ui:field="serialNumber" styleName="form-control" enabled="false"/>
+    <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin card-with-fixable-footer">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-8 order-last order-lg-first">
+                    <div class="form-group form-group-default">
+                        <label class="fade"><ui:text from="{lang.cardSerialNumber}"/></label>
+                        <g:TextBox ui:field="serialNumber" styleName="form-control" enabled="false"/>
+                    </div>
+                    <infoComment:CardNoteCommentEditView ui:field="noteComment"/>
                 </div>
-                <infoComment:CardNoteCommentEditView ui:field="noteComment"/>
+                <div class="col-lg-4 order-first order-lg-last">
+                    <meta:CardMetaView ui:field="meta"/>
+                </div>
             </div>
-            <div class="col-lg-6 order-first order-lg-last">
-                <meta:CardMetaView ui:field="meta"/>
+            <div class="card-footer text-right forcibly-bottom">
+                <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                <g:Button ui:field="cancelButton" styleName="btn btn-default close_button" text="{lang.buttonCancel}"/>
             </div>
-        </div>
-        <div class="card-footer text-right">
-            <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
-            <g:Button ui:field="cancelButton" styleName="btn btn-default close_button"
-                      text="{lang.buttonCancel}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -5601,11 +5601,11 @@ div.form-group-default.form-group-default-selectFx:focus {
     tbody {
       tr {
         td {
-          height: 70px;
+          height: 40px;
 
           div {
-            height: 70px;
-            max-height: 70px;
+            height: 40px;
+            max-height: 40px;
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -5631,18 +5631,31 @@ div.form-group-default.form-group-default-selectFx:focus {
       width: 15%;
       text-align: center;
       .number-size {
-        font-size: 22px;
+        font-size: 16px;
       }
+    }
+    .card-type {
+      width: 20%;
+    }
+    .manager {
+      width: 10%;
+    }
+    .test-date {
+      width: 15%;
     }
     .info {
       font-size: 85%;
-      width: 40%;
+      width: 30%;
     }
-    .test-date {
-      width: 20%
+  }
+}
+.short-table-view {
+  .cards {
+    .number, .card-type {
+      width: 45%;
     }
-    .manager {
-      width: 15%;
+    .manager, .test-date, .info {
+      display: none;
     }
   }
 }
@@ -5680,41 +5693,29 @@ div.form-group-default.form-group-default-selectFx:focus {
     .number {
       width: 15%;
       text-align: center;
-    }
-    .deadline, .amount {
-      width: 10%;
+      .number-size {
+        font-size: 16px;
+      }
     }
     .card-type {
       width: 15%;
     }
+    .deadline, .amount {
+      width: 10%;
+    }
     .contractors {
       width: 40%;
     }
-    .number-size {
-      font-size: 16px;
-    }
-    .card-type-size {
-      font-size: 14px;
-    }
   }
 }
 
-.card-body, .card-meta-body {
-  overflow-y: auto;
-  box-sizing: border-box;
-  z-index: 0;
-  right: 0;
-  position: relative;
-
-  &.card-create {
-    max-height: calc(100vh - 170px);
+.short-table-view {
+  .card_batches {
+    .number, .card-type {
+      width: 45%;
+    }
+    .deadline, .amount, .contractors {
+      display: none;
+    }
   }
-
-  &.card-edit {
-    max-height: calc(100vh - 120px);
-  }
-}
-
-.card-footer {
-  padding: .75rem 1.25rem;
 }

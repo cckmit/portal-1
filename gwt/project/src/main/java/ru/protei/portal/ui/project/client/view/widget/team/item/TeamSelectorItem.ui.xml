@@ -7,10 +7,10 @@
 
     <g:HTMLPanel ui:field="root" styleName="project-team-selector-item">
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-4 p-r-5">
                 <personrole:ProjectRoleFormSelector ui:field="role" header="{lang.projectTeamRole}" mandatory="false"/>
             </div>
-            <div class="col-md-8">
+            <div class="col-md-8 p-l-5">
                 <person:EmployeeMultiSelector ui:field="members" firedEmployeesVisible="false"/>
             </div>
         </div>

@@ -85,7 +85,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     }
 
     @Event
-    public void onModuleChanged(ModuleEvents.Changed event) {
+    public void onModuleChanged(ModuleEvents.Change event) {
         moduleService.getModule(event.id, new FluentCallback<Module>()
                 .withSuccess(module -> moduleView.updateRow(module))
         );

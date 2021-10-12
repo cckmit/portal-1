@@ -61,6 +61,11 @@ public class CardEditView extends Composite implements AbstractCardEditView {
     }
 
     @Override
+    public HasVisibility backButtonVisibility() {
+        return backButton;
+    }
+
+    @Override
     public HasVisibility noteCommentEditButtonVisibility() {
         return noteCommentEditButton;
     }
@@ -70,19 +75,39 @@ public class CardEditView extends Composite implements AbstractCardEditView {
         this.createdBy.setInnerHTML( value );
     }
 
+    @Override
+    public void setPreviewStyles(boolean isPreview) {
+        root.removeStyleName("card-default");
+        root.removeStyleName("card-transparent");
+        root.removeStyleName("card-fixed");
+        if (isPreview) {
+            root.addStyleName("card-default");
+            root.addStyleName("card-fixed");
+        } else {
+            root.addStyleName("card-transparent");
+        }
+    }
+
+    @UiHandler("backButton")
+    public void onBackButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onBackClicked();
+        }
+    }
+
     @UiHandler({"noteCommentEditButton"})
-    public void onNameAndDescriptionEditButtonClicked(ClickEvent event) {
+    public void onNoteCommentEditButtonClicked(ClickEvent event) {
         if (activity != null) {
             activity.onNoteCommentClicked();
         }
     }
-
 
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
 
+        backButton.ensureDebugId(DebugIds.ISSUE.BACK_BUTTON);
         noteCommentEditButton.ensureDebugId(DebugIds.CARD.EDIT_NOTE_COMMENT_BUTTON);
         multiTabWidget.setTabNameDebugId(HISTORY, DebugIds.CARD.TAB_HISTORY);
         serialNumber.ensureDebugId(DebugIds.CARD.SERIAL_NUMBER);
@@ -104,6 +129,8 @@ public class CardEditView extends Composite implements AbstractCardEditView {
     Element createdBy;
     @UiField
     MultiTabWidget<En_CommentOrHistoryType> multiTabWidget;
+    @UiField
+    Button backButton;
     @Inject
     En_CommentOrHistoryTypeLang commentOrHistoryTypeLang;
 

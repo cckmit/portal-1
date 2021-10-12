@@ -18,23 +18,28 @@ public class CardEvents {
         public Boolean preScroll = false;
     }
 
+    @Url( value = "card_create")
     public static class Create {
-        public Create(HasWidgets parent, Runnable closeHandle) {
-            this.parent = parent;
-            this.closeHandle = closeHandle;
-        }
-
-        public HasWidgets parent;
-        public Runnable closeHandle;
+        public Create() {}
     }
 
+    @Url( value = "card")
     public static class Edit {
-        public Edit(Long cardId, HasWidgets parent) {
-            this.cardId = cardId;
-            this.parent = parent;
+        public Edit() {}
+        public Edit(Long id) {
+            this.id = id;
         }
 
-        public Long cardId;
+        public Long id;
+    }
+
+    public static class ShowPreview {
+        public ShowPreview (HasWidgets parent, Long id) {
+            this.parent = parent;
+            this.id = id;
+        }
+
+        public Long id;
         public HasWidgets parent;
     }
 

@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.view.EntityOption;
 
-public interface AbstractCardBatchCommonInfoView extends IsWidget {
+public interface AbstractCardBatchCommonInfoEditView extends IsWidget {
 
     HasValue<EntityOption> type();
 
@@ -32,7 +32,7 @@ public interface AbstractCardBatchCommonInfoView extends IsWidget {
 
     void setPrevCardBatchInfo(String number, int amount, String state);
 
-    void setActivity(AbstractCardBatchCommonInfoActivity activity);
+    void setActivity(AbstractCardBatchCommonInfoEditActivity activity);
 
     HasEnabled saveEnabled();
 }

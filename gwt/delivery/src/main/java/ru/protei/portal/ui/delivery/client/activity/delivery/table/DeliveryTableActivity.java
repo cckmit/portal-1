@@ -67,7 +67,7 @@ public abstract class DeliveryTableActivity implements AbstractDeliveryTableActi
     }
 
     @Event
-    public void onChangeRow( DeliveryEvents.ChangeDelivery event ) {
+    public void onChangeRow( DeliveryEvents.Change event ) {
         deliveryService.getDelivery(event.id, new FluentCallback<Delivery>()
                 .withSuccess(delivery -> view.updateRow(delivery))
         );

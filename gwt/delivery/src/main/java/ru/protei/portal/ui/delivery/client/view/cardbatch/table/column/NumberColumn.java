@@ -7,7 +7,6 @@ import ru.protei.portal.core.model.ent.CardBatch;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.lang.CardBatchStateLang;
-import ru.protei.portal.ui.common.client.lang.CardStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import static ru.protei.portal.core.model.helper.StringUtils.firstUppercaseChar;

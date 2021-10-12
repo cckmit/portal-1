@@ -37,7 +37,7 @@ public class NumberColumn extends ClickColumn<Card> {
         com.google.gwt.dom.client.Element divElement = DOM.createDiv();
 
         com.google.gwt.dom.client.Element numberElement = DOM.createElement( "p" );
-        numberElement.addClassName( "number-size" );
+        numberElement.addClassName( "number-size bold" );
         numberElement.setInnerText(card.getSerialNumber());
         divElement.appendChild( numberElement );
 

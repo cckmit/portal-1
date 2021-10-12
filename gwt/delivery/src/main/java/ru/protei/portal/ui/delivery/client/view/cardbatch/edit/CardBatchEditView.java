@@ -74,8 +74,13 @@ public class CardBatchEditView extends Composite implements AbstractCardBatchEdi
     }
 
     @Override
-    public HasVisibility noteCommentEditButtonVisibility() {
-        return noteCommentEditButton;
+    public HasVisibility backButtonVisibility() {
+        return backButton;
+    }
+
+    @Override
+    public HasVisibility commonInfoEditButtonVisibility() {
+        return commonInfoEditButton;
     }
 
     @Override
@@ -83,16 +88,39 @@ public class CardBatchEditView extends Composite implements AbstractCardBatchEdi
         this.createdBy.setInnerHTML( value );
     }
 
-    @UiHandler({"noteCommentEditButton"})
-    public void onNameAndDescriptionEditButtonClicked(ClickEvent event) {
-        activity.onMainInfoEditClicked();
+    @Override
+    public void setPreviewStyles(boolean isPreview) {
+        root.removeStyleName("card-default");
+        root.removeStyleName("card-transparent");
+        root.removeStyleName("card-fixed");
+        if (isPreview) {
+            root.addStyleName("card-default");
+            root.addStyleName("card-fixed");
+        } else {
+            root.addStyleName("card-transparent");
+        }
+    }
+
+    @UiHandler("backButton")
+    public void onBackButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onBackClicked();
+        }
+    }
+
+    @UiHandler({"commonInfoEditButton"})
+    public void onCommonInfoEditButtonClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onCommonInfoEditClicked();
+        }
     }
 
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        noteCommentEditButton.ensureDebugId(DebugIds.CARD_BATCH.EDIT_NOTE_COMMENT_BUTTON);
+        backButton.ensureDebugId(DebugIds.ISSUE.BACK_BUTTON);
+        commonInfoEditButton.ensureDebugId(DebugIds.CARD_BATCH.EDIT_COMMON_INFO_BUTTON);
         numberRO.ensureDebugId(DebugIds.CARD_BATCH.NUMBER);
     }
 
@@ -105,7 +133,7 @@ public class CardBatchEditView extends Composite implements AbstractCardBatchEdi
     @UiField
     HTMLPanel metaContainer;
     @UiField
-    Button noteCommentEditButton;
+    Button commonInfoEditButton;
     @UiField
     Element createdBy;
     @UiField
@@ -120,6 +148,8 @@ public class CardBatchEditView extends Composite implements AbstractCardBatchEdi
     DivElement paramsRO;
     @UiField
     Lang lang;
+    @UiField
+    Button backButton;
 
     private AbstractCardBatchEditActivity activity;
 

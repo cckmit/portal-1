@@ -1,7 +1,9 @@
 package ru.protei.portal.ui.delivery.client.activity.card.create;
 
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -22,6 +24,8 @@ import ru.protei.portal.ui.delivery.client.activity.card.meta.AbstractCardCreate
 import ru.protei.portal.ui.delivery.client.activity.card.meta.CardCommonMeta;
 
 import java.util.function.Consumer;
+
+import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.SUCCESS;
 
 public abstract class CardCreateActivity extends CardCommonMeta implements Activity, AbstractCardCreateActivity, AbstractCardCreateMetaActivity {
 
@@ -45,10 +49,9 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
             return;
         }
 
-        closeHandle = event.closeHandle;
-
-        event.parent.clear();
-        event.parent.add(view.asWidget());
+        initDetails.parent.clear();
+        Window.scrollTo(0, 0);
+        initDetails.parent.add(view.asWidget());
 
         prepare();
     }
@@ -61,12 +64,12 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
             return;
         }
         Card card = fillDto();
-        save(card, closeHandle);
+        save(card);
     }
 
     @Override
     public void onCancelClicked() {
-        closeHandle.run();
+        fireEvent(new Back());
     }
 
     @Override
@@ -154,7 +157,7 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
         return null;
     }
 
-    private void save(Card card, Runnable onSuccess) {
+    private void save(Card card) {
         view.saveEnabled().setEnabled(false);
         cardController.createCard(card, new FluentCallback<Card>()
             .withError(throwable -> {
@@ -163,7 +166,8 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
             })
             .withSuccess(id -> {
                 view.saveEnabled().setEnabled(true);
-                onSuccess.run();
+                fireEvent(new NotifyEvents.Show(lang.cardCreated(), SUCCESS));
+                fireEvent(new Back());
             }));
     }
 
@@ -195,5 +199,4 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
 
     private boolean isCanPresetArticle;
     private AppEvents.InitDetails initDetails;
-    private Runnable closeHandle;
 }

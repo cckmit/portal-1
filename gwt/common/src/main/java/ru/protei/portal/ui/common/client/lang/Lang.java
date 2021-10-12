@@ -3736,11 +3736,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardColumnNumber();
 
-    String cardColumnInfo();
+    String cardColumnNote();
 
     String cardColumnTestDate();
 
     String cardColumnManager();
+
+    String cardColumnCardType();
 
     String cardSerialNumber();
 
@@ -3877,4 +3879,12 @@ public interface Lang extends Messages, ContactItemLang {
     String cardBatchStateTransferredForTesting();
 
     String newEmployeeBook();
+
+    String backToCardBatches();
+
+    String cardBatchEditCommonInfo();
+
+    String cardCreated();
+
+    String backToCards();
 }
