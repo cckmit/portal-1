@@ -6,8 +6,12 @@ import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
+import ru.protei.portal.ui.delivery.client.view.card.table.CardTableView;
 
 public interface AbstractCardTableActivity extends
         InfiniteLoadHandler<Card>, InfiniteTableWidget.PagerListener,
         ClickColumn.Handler<Card>, EditClickColumn.EditHandler<Card>, RemoveClickColumn.RemoveHandler<Card> {
+    void setGroupButtonEnabled(boolean isEnabled);
+
+    void onCheckModuleClicked(CardTableView cardTableView);
 }

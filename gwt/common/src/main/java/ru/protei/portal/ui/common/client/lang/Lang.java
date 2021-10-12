@@ -3782,6 +3782,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardRemoveSucceeded();
 
+    String cardGroupModify();
+
     String cardBatchNumber();
 
     String cardBatchType();

@@ -14,6 +14,8 @@ import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.query.CardQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
+import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -26,6 +28,7 @@ import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.activity.card.filter.AbstractCardFilterActivity;
 import ru.protei.portal.ui.delivery.client.activity.card.filter.AbstractCardFilterView;
+import ru.protei.portal.ui.delivery.client.view.card.table.CardTableView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -34,7 +37,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 public abstract class CardTableActivity implements AbstractCardTableActivity, AbstractPagerActivity,
-        AbstractCardFilterActivity, Activity {
+        AbstractCardFilterActivity, AbstractDialogDetailsActivity, Activity {
 
     @PostConstruct
     public void onInit() {
@@ -46,6 +49,8 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         pagerView.setActivity( this );
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
+
+        prepareDialog(dialogView);
     }
 
     @Event
@@ -74,6 +79,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         if (policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE)) {
             fireEvent(new ActionBarEvents.Add(CREATE_ACTION , null, UiConstants.ActionBarIdentity.CARD_CREATE));
         }
+        fireEvent(new ActionBarEvents.Add(lang.cardGroupModify(), null, UiConstants.ActionBarIdentity.CARD_GROUP_MODIFY));
 
         this.preScroll = event.preScroll;
 
@@ -89,6 +95,15 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         view.clearSelection();
 
         fireEvent(new CardEvents.Create());
+    }
+
+    @Event
+    public void onGroupModifyClicked(ActionBarEvents.Clicked event) {
+        if (!(UiConstants.ActionBarIdentity.CARD_GROUP_MODIFY.equals(event.identity)) ) {
+            return;
+        }
+
+        dialogView.showPopup();
     }
 
     @Event
@@ -159,6 +174,26 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
 
     }
 
+    @Override
+    public void setGroupButtonEnabled(boolean isEnabled) {
+
+    }
+
+    @Override
+    public void onCheckModuleClicked(CardTableView cardTableView) {
+
+    }
+
+    @Override
+    public void onSaveClicked() {
+
+    }
+
+    @Override
+    public void onCancelClicked() {
+        dialogView.hidePopup();
+    }
+
     private void showPreview(Card value) {
         if (value == null || value.getId() == null) {
             animation.closeDetails();
@@ -209,6 +244,15 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         scrollTo = 0;
     }
 
+    private void prepareDialog(AbstractDialogDetailsView dialog) {
+        dialog.setActivity(this);
+        dialog.getBodyContainer().clear();
+//        dialog.getBodyContainer().add(changePasswordView.asWidget());
+        dialog.setHeader(lang.cardGroupModify());
+        dialog.removeButtonVisibility().setVisible(false);
+    }
+
+
     @Inject
     Lang lang;
     @Inject
@@ -225,6 +269,9 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
     DefaultErrorHandler errorHandler;
     @Inject
     AbstractPagerView pagerView;
+
+    @Inject
+    AbstractDialogDetailsView dialogView;
 
     private AppEvents.InitDetails initDetails;
     private Integer scrollTo = 0;
