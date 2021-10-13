@@ -11,7 +11,6 @@ import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Card;
-import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
@@ -20,7 +19,6 @@ import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.lang.CardStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.stringselectpopup.StringSelectPopup;
 import ru.protei.portal.ui.delivery.client.activity.card.table.AbstractCardTableActivity;
 import ru.protei.portal.ui.delivery.client.activity.card.table.AbstractCardTableView;
 import ru.protei.portal.ui.delivery.client.view.card.table.column.*;
@@ -91,11 +89,6 @@ public class CardTableView extends Composite implements AbstractCardTableView {
     }
 
     @Override
-    public StringSelectPopup getPopup() {
-        return popup;
-    }
-
-    @Override
     public void clearSelection() {
         columnProvider.removeSelection();
     }
@@ -126,7 +119,7 @@ public class CardTableView extends Composite implements AbstractCardTableView {
 
     private void initTable() {
         selectionColumn.setSelectionHandler((module, handler) -> {
-            activity.onCheckModuleClicked(this);
+            activity.onCheckCardClicked();
         });
 
         editClickColumn.setEditHandler(activity);
@@ -200,11 +193,9 @@ public class CardTableView extends Composite implements AbstractCardTableView {
     @Inject
     private PolicyService policyService;
 
-    private StringSelectPopup popup = new StringSelectPopup();
-
     private final List<ClickColumn<Card>> columns = new ArrayList<>();
 
-    private SelectionColumn<Card> selectionColumn = new SelectionColumn<>();
+    private final SelectionColumn<Card> selectionColumn = new SelectionColumn<>();
     private final ClickColumnProvider<Card> columnProvider = new ClickColumnProvider<>();
     private AbstractCardTableActivity activity;
 

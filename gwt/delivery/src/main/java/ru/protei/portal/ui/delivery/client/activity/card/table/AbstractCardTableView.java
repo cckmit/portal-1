@@ -4,7 +4,6 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
-import ru.protei.portal.ui.common.client.widget.stringselectpopup.StringSelectPopup;
 
 import java.util.Set;
 
@@ -21,9 +20,6 @@ public interface AbstractCardTableView extends IsWidget {
     HasWidgets getPreviewContainer();
     HasWidgets getFilterContainer();
     HasWidgets getPagerContainer();
-
-    StringSelectPopup getPopup();
-
     void clearSelection();
 
     void updateRow(Card item);

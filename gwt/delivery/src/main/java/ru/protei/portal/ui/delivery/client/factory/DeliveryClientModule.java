@@ -6,6 +6,8 @@ import ru.protei.portal.ui.delivery.client.activity.card.create.AbstractCardCrea
 import ru.protei.portal.ui.delivery.client.activity.card.create.CardCreateActivity;
 import ru.protei.portal.ui.delivery.client.activity.card.edit.AbstractCardEditView;
 import ru.protei.portal.ui.delivery.client.activity.card.edit.CardEditActivity;
+import ru.protei.portal.ui.delivery.client.activity.card.edit.group.AbstractCardGroupEditView;
+import ru.protei.portal.ui.delivery.client.activity.card.edit.group.CardGroupEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.card.filter.AbstractCardFilterView;
 import ru.protei.portal.ui.delivery.client.activity.card.meta.AbstractCardMetaView;
 import ru.protei.portal.ui.delivery.client.activity.card.meta.CardEditMetaActivity;
@@ -46,6 +48,7 @@ import ru.protei.portal.ui.delivery.client.page.DeliveryPage;
 import ru.protei.portal.ui.delivery.client.page.StoreAndDeliveryPage;
 import ru.protei.portal.ui.delivery.client.view.card.create.CardCreateView;
 import ru.protei.portal.ui.delivery.client.view.card.edit.CardEditView;
+import ru.protei.portal.ui.delivery.client.view.card.edit.group.CardGroupEditView;
 import ru.protei.portal.ui.delivery.client.view.card.filter.CardFilterView;
 import ru.protei.portal.ui.delivery.client.view.card.meta.CardMetaView;
 import ru.protei.portal.ui.delivery.client.view.card.table.CardTableView;
@@ -118,6 +121,9 @@ public class DeliveryClientModule extends AbstractGinModule {
         bind(AbstractCardEditView.class).to(CardEditView.class).in(Singleton.class);
 
         bind(AbstractCardMetaView.class).to(CardMetaView.class);
+
+        bind(CardGroupEditActivity.class).asEagerSingleton();
+        bind(AbstractCardGroupEditView.class).to(CardGroupEditView.class).in(Singleton.class);
 
         bind(CardBatchCreateActivity.class).asEagerSingleton();
         bind(AbstractCardBatchCreateView.class).to(CardBatchCreateView.class).in(Singleton.class);

@@ -61,4 +61,17 @@ public class ActionBarEvents {
      * Очистить action bar
      */
     public static class Clear {}
+
+    /**
+     * Заблокировать/разблокировать кнопку
+     */
+    public static class SetButtonEnabled {
+        public SetButtonEnabled(String identity, boolean isEnabled) {
+            this.identity = identity;
+            this.isEnabled = isEnabled;
+        }
+
+        public boolean isEnabled;
+        public String identity;
+    }
 }

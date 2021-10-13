@@ -14,8 +14,6 @@ import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.query.CardQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
-import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -28,7 +26,6 @@ import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.activity.card.filter.AbstractCardFilterActivity;
 import ru.protei.portal.ui.delivery.client.activity.card.filter.AbstractCardFilterView;
-import ru.protei.portal.ui.delivery.client.view.card.table.CardTableView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -37,7 +34,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 public abstract class CardTableActivity implements AbstractCardTableActivity, AbstractPagerActivity,
-        AbstractCardFilterActivity, AbstractDialogDetailsActivity, Activity {
+        AbstractCardFilterActivity, Activity {
 
     @PostConstruct
     public void onInit() {
@@ -49,8 +46,6 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         pagerView.setActivity( this );
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
-
-        prepareDialog(dialogView);
     }
 
     @Event
@@ -103,7 +98,9 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
             return;
         }
 
-        dialogView.showPopup();
+        // todo возможно надо будет добавить backHandler для каких либо действий после успешного сохранения изменений
+        // например обновление таблицы - loadTable (чтобы не создавать отдельное событие по
+        fireEvent(new CardEvents.GroupEdit(view.getSelectedCards()));
     }
 
     @Event
@@ -143,6 +140,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
                         restoreScroll();
+                        view.clearSelectedRows();
                     }
                     asyncCallback.onSuccess(sr.getResults());
                 }));
@@ -180,18 +178,9 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
     }
 
     @Override
-    public void onCheckModuleClicked(CardTableView cardTableView) {
-
-    }
-
-    @Override
-    public void onSaveClicked() {
-
-    }
-
-    @Override
-    public void onCancelClicked() {
-        dialogView.hidePopup();
+    public void onCheckCardClicked() {
+        fireEvent(new ActionBarEvents.SetButtonEnabled( UiConstants.ActionBarIdentity.CARD_GROUP_MODIFY,
+                !view.getSelectedCards().isEmpty() ));
     }
 
     private void showPreview(Card value) {
@@ -244,15 +233,6 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         scrollTo = 0;
     }
 
-    private void prepareDialog(AbstractDialogDetailsView dialog) {
-        dialog.setActivity(this);
-        dialog.getBodyContainer().clear();
-//        dialog.getBodyContainer().add(changePasswordView.asWidget());
-        dialog.setHeader(lang.cardGroupModify());
-        dialog.removeButtonVisibility().setVisible(false);
-    }
-
-
     @Inject
     Lang lang;
     @Inject
@@ -269,9 +249,6 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
     DefaultErrorHandler errorHandler;
     @Inject
     AbstractPagerView pagerView;
-
-    @Inject
-    AbstractDialogDetailsView dialogView;
 
     private AppEvents.InitDetails initDetails;
     private Integer scrollTo = 0;

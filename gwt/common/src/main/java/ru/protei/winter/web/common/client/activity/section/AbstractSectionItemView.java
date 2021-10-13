@@ -36,4 +36,5 @@ public interface AbstractSectionItemView extends IsWidget {
 
     void addClickHandler();
 
+    void setEnabled(boolean isEnabled);
 }
