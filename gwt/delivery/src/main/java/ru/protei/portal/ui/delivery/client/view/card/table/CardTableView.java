@@ -118,24 +118,6 @@ public class CardTableView extends Composite implements AbstractCardTableView {
     }
 
     private void initTable() {
-        selectionColumn.setSelectionHandler((module, handler) -> {
-            activity.onCheckCardClicked();
-        });
-
-        editClickColumn.setEditHandler(activity);
-        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT));
-
-        removeClickColumn.setRemoveHandler(activity);
-        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_REMOVE));
-
-        columns.forEach(clickColumn -> {
-            clickColumn.setHandler(activity);
-            clickColumn.setColumnProvider(columnProvider);
-        });
-
-        table.setPagerListener(activity);
-        table.setLoadHandler(activity);
-
         table.addColumn(selectionColumn.header, selectionColumn.values);
 
         NumberColumn number = new NumberColumn(lang, cardStateLang);
@@ -168,6 +150,24 @@ public class CardTableView extends Composite implements AbstractCardTableView {
         columns.add(testDate);
         columns.add(editClickColumn);
         columns.add(removeClickColumn);
+
+        selectionColumn.setSelectionHandler((module, handler) -> {
+            activity.onCheckCardClicked();
+        });
+
+        editClickColumn.setEditHandler(activity);
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT));
+
+        removeClickColumn.setRemoveHandler(activity);
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_REMOVE));
+
+        columns.forEach(clickColumn -> {
+            clickColumn.setHandler(activity);
+            clickColumn.setColumnProvider(columnProvider);
+        });
+
+        table.setPagerListener(activity);
+        table.setLoadHandler(activity);
     }
 
     @UiField

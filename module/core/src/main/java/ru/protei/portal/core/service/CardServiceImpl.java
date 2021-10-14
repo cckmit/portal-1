@@ -18,13 +18,12 @@ import ru.protei.portal.core.model.query.CardTypeQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.util.CrmConstants.SOME_CARDS_NOT_UPDATED;
 
 public class CardServiceImpl implements CardService {
     private static Logger log = LoggerFactory.getLogger(CardServiceImpl.class);
@@ -172,6 +171,28 @@ public class CardServiceImpl implements CardService {
         }
 
         return getCard(token, meta.getId());
+    }
+
+    @Override
+    @Transactional
+    public Result<Set<Card>> updateCards(AuthToken token, Set<Card> cards) {
+        Set<Card> updatedCard = new HashSet<>();
+        for (Card card : cards) {
+            Result<Card> cardResult = updateMeta(token, card);
+            if (cardResult.isOk()) {
+                updatedCard.add(cardResult.getData());
+            }
+        }
+
+        if (updatedCard.isEmpty()) {
+            return error(En_ResultStatus.NOT_UPDATED);
+        }
+
+        if (cards.size() != updatedCard.size()) {
+            return ok(updatedCard, SOME_CARDS_NOT_UPDATED);
+        }
+
+        return ok(updatedCard);
     }
 
     @Override

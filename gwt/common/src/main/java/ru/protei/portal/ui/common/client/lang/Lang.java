@@ -800,6 +800,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String msgObjectSaved();
 
+    String msgObjectsSaved();
+
     String reservedIpPartiallyCreated(int p0, int p1 );
 
     String msgStatusChanged();
@@ -3784,6 +3786,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardGroupModify();
 
+    String cardSomeNotUpdated();
+
     String cardBatchNumber();
 
     String cardBatchType();
@@ -3889,4 +3893,6 @@ public interface Lang extends Messages, ContactItemLang {
     String cardCreated();
 
     String backToCards();
+
+    String notSelected();
 }

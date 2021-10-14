@@ -75,6 +75,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
             fireEvent(new ActionBarEvents.Add(CREATE_ACTION , null, UiConstants.ActionBarIdentity.CARD_CREATE));
         }
         fireEvent(new ActionBarEvents.Add(lang.cardGroupModify(), null, UiConstants.ActionBarIdentity.CARD_GROUP_MODIFY));
+        view.clearSelectedRows();
 
         this.preScroll = event.preScroll;
 
@@ -98,9 +99,13 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
             return;
         }
 
-        // todo возможно надо будет добавить backHandler для каких либо действий после успешного сохранения изменений
-        // например обновление таблицы - loadTable (чтобы не создавать отдельное событие по
         fireEvent(new CardEvents.GroupEdit(view.getSelectedCards()));
+    }
+
+
+    @Event
+    public void onGroupUpdate(CardEvents.GroupChanged event) {
+        loadTable();
     }
 
     @Event
@@ -205,6 +210,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         animation.closeDetails();
         view.clearRecords();
         view.triggerTableLoad();
+        fireEvent(new ActionBarEvents.SetButtonEnabled( UiConstants.ActionBarIdentity.CARD_GROUP_MODIFY, false));
     }
 
     private CardQuery makeQuery() {

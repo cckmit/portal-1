@@ -6,11 +6,13 @@ import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.core.model.ent.CardType;
 import ru.protei.portal.core.model.query.CardQuery;
 import ru.protei.portal.core.model.query.CardTypeQuery;
+import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Set;
 
 @RemoteServiceRelativePath( "springGwtServices/CardController" )
 public interface CardController extends RemoteService {
@@ -26,6 +28,8 @@ public interface CardController extends RemoteService {
     Card createCard(Card card) throws RequestFailedException;
 
     Card updateMeta(Card card) throws RequestFailedException;
+
+    UiResult<Set<Card>> updateCards(Set<Card> cards) throws RequestFailedException;
 
     Card removeCard(Card card) throws RequestFailedException;
 

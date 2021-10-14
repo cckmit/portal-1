@@ -69,4 +69,7 @@ public class CardEvents {
 
         public Card card;
     }
+
+    public static class GroupChanged {
+    }
 }

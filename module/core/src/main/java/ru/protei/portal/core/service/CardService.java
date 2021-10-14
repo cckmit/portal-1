@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Set;
 
 public interface CardService {
     @Privileged({ En_Privilege.DELIVERY_VIEW })
@@ -29,6 +30,10 @@ public interface CardService {
     @Privileged({ En_Privilege.DELIVERY_EDIT })
     @Auditable( En_AuditType.CARD_MODIFY)
     Result<Card> updateMeta(AuthToken token, Card card);
+
+    @Privileged({ En_Privilege.DELIVERY_EDIT })
+    @Auditable( En_AuditType.CARDS_MODIFY)
+    Result<Set<Card>> updateCards(AuthToken token, Set<Card> cards);
 
     @Privileged({ En_Privilege.DELIVERY_REMOVE })
     @Auditable( En_AuditType.CARD_REMOVE )
