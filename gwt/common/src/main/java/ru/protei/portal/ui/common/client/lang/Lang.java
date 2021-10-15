@@ -3895,4 +3895,6 @@ public interface Lang extends Messages, ContactItemLang {
     String backToCards();
 
     String notSelected();
+
+    String cardWarningChangeNotEqualsFields();
 }

@@ -5782,4 +5782,8 @@ div.form-group-default.form-group-default-selectFx:focus {
       color: #ffd140;
     }
   }
+
+  .no-warning .warn-icon {
+    display: none !important;
+  }
 }

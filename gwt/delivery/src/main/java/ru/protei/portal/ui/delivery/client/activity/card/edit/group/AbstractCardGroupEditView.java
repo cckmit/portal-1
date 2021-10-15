@@ -23,4 +23,16 @@ public interface AbstractCardGroupEditView extends IsWidget {
     boolean articleIsValid();
 
     void setTestDateValid(boolean isValid);
+
+    void setStateWarning(boolean isWarning);
+
+    void setArticleWarning(boolean isWarning);
+
+    void setManagerWarning(boolean isWarning);
+
+    void setTestDateWarning(boolean isWarning);
+
+    void setNoteWarning(boolean isWarning);
+
+    void setCommentWarning(boolean isWarning);
 }

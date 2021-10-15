@@ -79,12 +79,49 @@ public class CardGroupEditView extends Composite implements AbstractCardGroupEdi
         testDate.markInputValid(isValid);
     }
 
+    @Override
+    public void setStateWarning(boolean isWarning) {
+        setWarning(isWarning, stateContainer);
+    }
+
+    @Override
+    public void setArticleWarning(boolean isWarning) {
+        setWarning(isWarning, articleContainer);
+    }
+
+    @Override
+    public void setManagerWarning(boolean isWarning) {
+        setWarning(isWarning, managerContainer);
+    }
+
+    @Override
+    public void setTestDateWarning(boolean isWarning) {
+        setWarning(isWarning, testDateContainer);
+    }
+
+    @Override
+    public void setNoteWarning(boolean isWarning) {
+        setWarning(isWarning, noteContainer);
+    }
+
+    @Override
+    public void setCommentWarning(boolean isWarning) {
+        setWarning(isWarning, commentContainer);
+    }
+
+    private void setWarning(boolean isWarning, HTMLPanel container) {
+        if (isWarning) {
+            container.removeStyleName("no-warning");
+        } else {
+            container.addStyleName("no-warning");
+        }
+    }
+
     private void renderMarkupText(String text, Consumer<String> consumer ) {
         textRenderController.render( text, MARKDOWN, new FluentCallback<String>()
                 .withError( throwable -> consumer.accept( null ) )
                 .withSuccess( consumer ) );
     }
-
 
     private void onDisplayPreviewChanged( String key, boolean isDisplay ) {
         localStorageService.set( this.getClass().getSimpleName() + "_" + key, String.valueOf( isDisplay ) );
@@ -119,6 +156,19 @@ public class CardGroupEditView extends Composite implements AbstractCardGroupEdi
     MarkdownAreaWithPreview note;
     @UiField
     MarkdownAreaWithPreview comment;
+
+    @UiField
+    HTMLPanel stateContainer;
+    @UiField
+    HTMLPanel articleContainer;
+    @UiField
+    HTMLPanel managerContainer;
+    @UiField
+    HTMLPanel testDateContainer;
+    @UiField
+    HTMLPanel noteContainer;
+    @UiField
+    HTMLPanel commentContainer;
 
     @Inject
     TextRenderControllerAsync textRenderController;

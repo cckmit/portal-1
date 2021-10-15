@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_CARDS_NOT_UPDATED;
@@ -36,8 +37,8 @@ public abstract class CardGroupEditActivity implements AbstractCardGroupEditActi
             return;
         }
         this.selectedCards = event.selectedCards;
+
         prepareView();
-        // todo как-то пометить поля, где изменяем несколько разных значений
         dialogView.showPopup();
     }
 
@@ -74,8 +75,9 @@ public abstract class CardGroupEditActivity implements AbstractCardGroupEditActi
         view.setTestDateValid(true);
         view.note().setValue(null);
         view.comment().setValue(null);
+        setWarnings();
     }
-    
+
     private void fillCards() {
         for (Card card : selectedCards) {
             if (view.state().getValue() != null) {
@@ -112,6 +114,27 @@ public abstract class CardGroupEditActivity implements AbstractCardGroupEditActi
                     dialogView.hidePopup();
                     fireEvent(new CardEvents.GroupChanged());
                 }));
+    }
+
+    private void setWarnings() {
+        Card compareCard = selectedCards.iterator().next();
+        boolean isStateFieldsEqual = selectedCards.stream().allMatch(card -> Objects.equals(card.getStateId(), compareCard.getStateId()));
+        view.setStateWarning(!isStateFieldsEqual);
+
+        boolean isArticleFieldsEqual = selectedCards.stream().allMatch(card -> Objects.equals(card.getArticle(), compareCard.getArticle()));
+        view.setArticleWarning(!isArticleFieldsEqual);
+
+        boolean isManagerFieldsEqual = selectedCards.stream().allMatch(card -> Objects.equals(card.getManager(), compareCard.getManager()));
+        view.setManagerWarning(!isManagerFieldsEqual);
+
+        boolean isTestDateFieldsEqual = selectedCards.stream().allMatch(card -> Objects.equals(card.getTestDate(), compareCard.getTestDate()));
+        view.setTestDateWarning(!isTestDateFieldsEqual);
+
+        boolean isNoteFieldsEqual = selectedCards.stream().allMatch(card -> Objects.equals(card.getNote(), compareCard.getNote()));
+        view.setNoteWarning(!isNoteFieldsEqual);
+
+        boolean isCommentFieldsEqual = selectedCards.stream().allMatch(card -> Objects.equals(card.getComment(), compareCard.getComment()));
+        view.setCommentWarning(!isCommentFieldsEqual);
     }
 
     private String getValidationError() {
