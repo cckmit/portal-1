@@ -174,14 +174,15 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    @Transactional
     public Result<Set<Card>> updateCards(AuthToken token, Set<Card> cards) {
         Set<Card> updatedCard = new HashSet<>();
         for (Card card : cards) {
-            Result<Card> cardResult = updateMeta(token, card);
-            if (cardResult.isOk()) {
-                updatedCard.add(cardResult.getData());
-            }
+            try {
+                Result<Card> cardResult = updateMeta(token, card);
+                if (cardResult.isOk()) {
+                    updatedCard.add(cardResult.getData());
+                }
+            } catch (Exception ignored) { }
         }
 
         if (updatedCard.isEmpty()) {
