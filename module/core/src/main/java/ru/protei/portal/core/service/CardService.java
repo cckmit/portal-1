@@ -28,6 +28,10 @@ public interface CardService {
 
     @Privileged({ En_Privilege.CARD_EDIT })
     @Auditable( En_AuditType.CARD_MODIFY)
+    Result<Card> updateNoteAndComment(AuthToken token, Card card);
+
+    @Privileged({ En_Privilege.CARD_EDIT })
+    @Auditable( En_AuditType.CARD_MODIFY)
     Result<Card> updateMeta(AuthToken token, Card card);
 
     @Privileged({ En_Privilege.CARD_REMOVE })

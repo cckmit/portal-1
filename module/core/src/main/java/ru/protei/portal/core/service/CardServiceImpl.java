@@ -102,8 +102,7 @@ public class CardServiceImpl implements CardService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        Date now = new Date();
-        CaseObject caseObject = createCaseObject(null, card, token.getPersonId(), now, now);
+        CaseObject caseObject = createCaseObject(card, token.getPersonId());
         Long caseId = caseObjectDAO.persist(caseObject);
         if (caseId == null) {
             log.warn("create(): case object not created, card={}", card);
@@ -127,6 +126,49 @@ public class CardServiceImpl implements CardService {
 
     @Override
     @Transactional
+    public Result<Card> updateNoteAndComment(AuthToken token, Card card) {
+        if (card == null || card.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!isValid(card)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+        Card oldCard = cardDAO.get(card.getId());
+        if (oldCard == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (!isValid(oldCard, card)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        CaseObject caseObject = caseObjectDAO.get(card.getId());
+        boolean isUpdated;
+        if (caseObject == null) {
+            caseObject = createCaseObject(card, null);
+            isUpdated = caseObjectDAO.saveOrUpdate(caseObject);
+        } else {
+            caseObject.setInfo(card.getNote());
+            caseObject.setModified(new Date());
+            isUpdated = caseObjectDAO.partialMerge(caseObject, CaseObject.Columns.INFO, CaseObject.Columns.MODIFIED);
+        }
+        if (!isUpdated) {
+            log.info("Failed to update card note {} at db", card);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        isUpdated = cardDAO.partialMerge(card, "comment");
+        if (!isUpdated) {
+            log.warn("updateCard(): card not updated. card={}",  card);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        return getCard(token, card.getId());
+    }
+
+    @Override
+    @Transactional
     public Result<Card> updateMeta(AuthToken token, Card meta) {
         if (meta == null || meta.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -145,14 +187,23 @@ public class CardServiceImpl implements CardService {
         }
 
         CaseObject caseObject = caseObjectDAO.get(meta.getId());
-        caseObject = createCaseObject(caseObject, meta, null, null, new Date());
-        boolean isUpdated = caseObjectDAO.merge(caseObject);
+        boolean isUpdated;
+        if (caseObject == null) {
+            caseObject = createCaseObject(meta, null);
+            isUpdated = caseObjectDAO.saveOrUpdate(caseObject);
+        } else {
+            caseObject.setManagerId(meta.getManager().getId());
+            caseObject.setStateId(meta.getStateId());
+            caseObject.setModified(new Date());
+            isUpdated = caseObjectDAO.partialMerge(caseObject, CaseObject.Columns.MANAGER,
+                    CaseObject.Columns.STATE, CaseObject.Columns.MODIFIED);
+        }
         if (!isUpdated) {
             log.info("Failed to update card meta data {} at db", meta);
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
-        isUpdated = cardDAO.merge(meta);
+        isUpdated = cardDAO.partialMerge(meta, "article", "test_date");
         if (!isUpdated) {
             log.warn("updateMeta(): card not updated. card={}",  meta);
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
@@ -225,19 +276,14 @@ public class CardServiceImpl implements CardService {
                 Objects.equals(oldCard.getCardBatchId(), card.getCardBatchId());
     }
 
-    private CaseObject createCaseObject(CaseObject caseObject, Card card,
-                                        Long creatorId, Date created, Date modified) {
-        if (caseObject == null){
-            caseObject = new CaseObject();
-            caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.CARD));
-            caseObject.setType(En_CaseType.CARD);
-            caseObject.setCreated(created);
-            caseObject.setModified(created);
-            caseObject.setCreatorId(creatorId);
-        } else {
-            caseObject.setModified(modified);
-        }
-
+    private CaseObject createCaseObject(Card card, Long creatorId) {
+        Date now = new Date();
+        CaseObject caseObject = new CaseObject();
+        caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.CARD));
+        caseObject.setType(En_CaseType.CARD);
+        caseObject.setCreated(now);
+        caseObject.setModified(now);
+        caseObject.setCreatorId(creatorId);
         caseObject.setName(Card.AUDIT_TYPE);
         caseObject.setId(card.getId());
         caseObject.setInfo(card.getNote());

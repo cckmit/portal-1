@@ -97,7 +97,7 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
     public void onSaveNoteCommentClicked() {
         card.setNote(noteCommentEditView.note().getValue());
         card.setComment(noteCommentEditView.comment().getValue());
-        controller.updateMeta(card, new FluentCallback<Card>()
+        controller.updateNoteAndComment(card, new FluentCallback<Card>()
                 .withSuccess(result -> {
                     card = result;
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));

@@ -25,6 +25,8 @@ public interface CardController extends RemoteService {
 
     Card createCard(Card card) throws RequestFailedException;
 
+    Card updateNoteAndComment(Card card) throws RequestFailedException;
+
     Card updateMeta(Card card) throws RequestFailedException;
 
     Card removeCard(Card card) throws RequestFailedException;

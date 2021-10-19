@@ -22,6 +22,8 @@ public interface CardControllerAsync {
 
     void createCard(Card card, AsyncCallback<Card> async);
 
+    void updateNoteAndComment(Card card, AsyncCallback<Card> async);
+
     void updateMeta(Card card, AsyncCallback<Card> async);
 
     void removeCard(Card card, AsyncCallback<Card> async);
