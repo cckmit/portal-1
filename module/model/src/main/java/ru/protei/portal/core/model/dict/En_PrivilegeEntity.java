@@ -33,6 +33,8 @@ public enum En_PrivilegeEntity {
     DUTY_LOG(27),
     DELIVERY(28),
     YT(29),
+    CARD(30),
+    CARD_BATCH(31),
     ;
 
     private final Integer order;

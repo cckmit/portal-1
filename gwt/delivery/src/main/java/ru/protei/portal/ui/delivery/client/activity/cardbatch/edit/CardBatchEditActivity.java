@@ -313,11 +313,11 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
     }
 
     private boolean hasViewPrivileges() {
-        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW);
+        return policyService.hasPrivilegeFor(En_Privilege.CARD_BATCH_VIEW);
     }
 
     private boolean hasEditPrivileges() {
-        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
+        return policyService.hasPrivilegeFor(En_Privilege.CARD_BATCH_EDIT);
     }
 
     private void fillPrioritySelector(Integer id) {

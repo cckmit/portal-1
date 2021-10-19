@@ -60,7 +60,7 @@ public abstract class CardBatchTableActivity implements AbstractCardBatchTableAc
 
     @Event(Type.FILL_CONTENT)
     public void onShow(CardBatchEvents.Show event) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW)) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.CARD_BATCH_VIEW)) {
             fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
@@ -75,7 +75,7 @@ public abstract class CardBatchTableActivity implements AbstractCardBatchTableAc
         view.getPagerContainer().add(pagerView.asWidget());
 
         fireEvent(new ActionBarEvents.Clear());
-        if (policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE)) {
+        if (policyService.hasPrivilegeFor(En_Privilege.CARD_BATCH_CREATE)) {
             fireEvent(new ActionBarEvents.Add(CREATE_ACTION , null, UiConstants.ActionBarIdentity.CARD_BATCH_CREATE));
         }
 

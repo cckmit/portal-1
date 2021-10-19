@@ -27,7 +27,7 @@ public abstract class CardBatchPage
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        if ( event.profile.hasPrivilegeFor( En_Privilege.DELIVERY_VIEW) ) {
+        if ( event.profile.hasPrivilegeFor( En_Privilege.CARD_BATCH_VIEW) ) {
             fireEvent( new MenuEvents.Add( TAB, UiConstants.TabIcons.CARD_BATCH, TAB, DebugIds.SIDEBAR_MENU.CARD_BATCH).withParent(CATEGORY) );
             fireEvent( new AppEvents.InitPage( show ) );
         }
@@ -55,7 +55,7 @@ public abstract class CardBatchPage
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        if ( policyService.hasPrivilegeFor( En_Privilege.DELIVERY_VIEW) ) {
+        if ( policyService.hasPrivilegeFor( En_Privilege.CARD_BATCH_VIEW) ) {
             fireEvent( new MenuEvents.Select( TAB, CATEGORY) );
         }
     }

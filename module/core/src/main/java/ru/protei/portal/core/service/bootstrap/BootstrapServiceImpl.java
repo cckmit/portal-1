@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static ru.protei.portal.core.model.dict.En_Privilege.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
 /**
@@ -95,7 +96,63 @@ public class BootstrapServiceImpl implements BootstrapService {
         /**
          *  end Спринт */
 
+        /**
+         * begin Спринт 82 */
+        if (!bootstrapAppDAO.isActionExists("addCardAndCardBatchRolesAndPrivileges")) {
+            this.addCardRolesAndPrivileges();
+            bootstrapAppDAO.createAction("addCardAndCardBatchRolesAndPrivileges");
+        }
+        /**
+         *  end Спринт */
+
         log.info( "bootstrapApplication(): BootstrapService complete."  );
+    }
+
+    private void addCardRolesAndPrivileges() {
+        log.debug("addCardRolesAndPrivileges(): start");
+        UserRole mainAdmin = userRoleDAO.partialGetByCondition("role_code = ?",
+                Collections.singletonList("Главный администратор"), "id", "privileges");
+        if (mainAdmin != null) {
+            Set<En_Privilege> mainAdmPrivs = mainAdmin.getPrivileges();
+            mainAdmPrivs.add(CARD_VIEW);
+            mainAdmPrivs.add(CARD_CREATE);
+            mainAdmPrivs.add(CARD_EDIT);
+            mainAdmPrivs.add(CARD_REMOVE);
+            mainAdmPrivs.add(CARD_BATCH_VIEW);
+            mainAdmPrivs.add(CARD_BATCH_CREATE);
+            mainAdmPrivs.add(CARD_BATCH_EDIT);
+            mainAdmPrivs.add(CARD_BATCH_REMOVE);
+            userRoleDAO.partialMerge(mainAdmin, "privileges");
+        }
+
+        UserRole mainAdminReadOnly = userRoleDAO.partialGetByCondition("role_code = ?",
+                Collections.singletonList("Главный администратор (Read only)"), "id", "privileges");
+        if (mainAdminReadOnly != null) {
+            Set<En_Privilege> mainAdmReadOnlyPrivs = mainAdminReadOnly.getPrivileges();
+            mainAdmReadOnlyPrivs.add(PLAN_VIEW);
+            mainAdmReadOnlyPrivs.add(ABSENCE_VIEW);
+            mainAdmReadOnlyPrivs.add(DUTY_LOG_VIEW);
+            mainAdmReadOnlyPrivs.add(EDUCATION_VIEW);
+            mainAdmReadOnlyPrivs.add(DELIVERY_VIEW);
+            mainAdmReadOnlyPrivs.add(CARD_VIEW);
+            mainAdmReadOnlyPrivs.add(CARD_BATCH_VIEW);
+            userRoleDAO.partialMerge(mainAdminReadOnly, "privileges");
+        }
+
+        UserRole cardRole = new UserRole();
+        cardRole.setCode("ТПиМ: Управление платами");
+        cardRole.setInfo("Управление платами");
+        cardRole.setPrivileges(new HashSet<>(Arrays.asList(CARD_VIEW, CARD_CREATE, CARD_EDIT, CARD_REMOVE)));
+        cardRole.setScope(En_Scope.SYSTEM);
+        userRoleDAO.saveOrUpdate(cardRole);
+
+        UserRole cardBatchRole = new UserRole();
+        cardBatchRole.setCode("ТПиМ: Управление партиями плат");
+        cardBatchRole.setInfo("Управление партиями плат");
+        cardBatchRole.setPrivileges(new HashSet<>(Arrays.asList(CARD_BATCH_VIEW, CARD_BATCH_CREATE, CARD_BATCH_EDIT, CARD_BATCH_REMOVE)));
+        cardBatchRole.setScope(En_Scope.SYSTEM);
+        userRoleDAO.saveOrUpdate(cardBatchRole);
+        log.debug("addCardRolesAndPrivileges(): finish");
     }
 
     private void importCardTypes() {
@@ -418,6 +475,8 @@ public class BootstrapServiceImpl implements BootstrapService {
     YoutrackProjectDAO youtrackProjectDAO;
     @Autowired
     CardTypeDAO cardTypeDAO;
+    @Autowired
+    UserRoleDAO userRoleDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 }

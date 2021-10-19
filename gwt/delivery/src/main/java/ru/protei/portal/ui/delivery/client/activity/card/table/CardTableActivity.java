@@ -60,7 +60,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
 
     @Event(Type.FILL_CONTENT)
     public void onShow( CardEvents.Show event ) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW)) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.CARD_VIEW)) {
             fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
@@ -71,7 +71,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         view.getFilterContainer().add( filterView.asWidget() );
 
         fireEvent(new ActionBarEvents.Clear());
-        if (policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE)) {
+        if (policyService.hasPrivilegeFor(En_Privilege.CARD_CREATE)) {
             fireEvent(new ActionBarEvents.Add(CREATE_ACTION , null, UiConstants.ActionBarIdentity.CARD_CREATE));
         }
 

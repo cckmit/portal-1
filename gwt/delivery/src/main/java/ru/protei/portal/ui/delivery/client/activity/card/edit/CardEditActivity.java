@@ -167,11 +167,11 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
     }
 
     private boolean hasAccess() {
-        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW);
+        return policyService.hasPrivilegeFor(En_Privilege.CARD_VIEW);
     }
 
     private boolean hasEditPrivileges() {
-        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
+        return policyService.hasPrivilegeFor(En_Privilege.CARD_EDIT);
     }
 
     private void renderMarkupText(String text, Consumer<String> consumer ) {

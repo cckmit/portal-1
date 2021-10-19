@@ -135,6 +135,16 @@ public enum En_Privilege {
 
     YT_REPORT (YT, REPORT),
 
+    CARD_VIEW(CARD, VIEW),
+    CARD_CREATE(CARD, CREATE),
+    CARD_EDIT(CARD, EDIT),
+    CARD_REMOVE(CARD, REMOVE),
+
+    CARD_BATCH_VIEW(CARD_BATCH, VIEW),
+    CARD_BATCH_CREATE(CARD_BATCH, CREATE),
+    CARD_BATCH_EDIT(CARD_BATCH, EDIT),
+    CARD_BATCH_REMOVE(CARD_BATCH, REMOVE),
+
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),
     ISSUE_PLAN_EDIT (ISSUE, null),

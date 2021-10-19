@@ -213,7 +213,7 @@ public abstract class CardBatchCreateActivity implements Activity,
     }
 
     private boolean hasPrivileges() {
-        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE);
+        return policyService.hasPrivilegeFor(En_Privilege.CARD_BATCH_CREATE);
     }
 
     private void fillStateSelector(Long id) {

@@ -33,7 +33,7 @@ public abstract class CardBatchImportanceBtnGroupModel implements Activity {
     }
 
     private void refreshOptions() {
-        if (policyService.hasSystemScopeForPrivilege(En_Privilege.DELIVERY_VIEW)) {
+        if (policyService.hasSystemScopeForPrivilege(En_Privilege.CARD_BATCH_VIEW)) {
             importanceService.getImportanceLevels(new FluentCallback<List<ImportanceLevel>>()
                     .withSuccess(result -> {
                         importanceLevels.clear();
