@@ -3834,6 +3834,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardBatchRemoveConfirmMessage(String type, String number);
 
+    String errCardBatchForbiddenRemove();
+
     String personAutomaticMounting();
 
     String personManualMounting();

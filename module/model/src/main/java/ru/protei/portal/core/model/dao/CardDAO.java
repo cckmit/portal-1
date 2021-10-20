@@ -15,4 +15,6 @@ public interface CardDAO extends PortalBaseDAO<Card> {
     Long getLastNumber(Long typeId, Long batchId);
 
     Map<Long, Long> countByBatchIds(List<Long> batchIds);
+
+    Boolean existByCardBatchId(Long cardBatchId);
 }

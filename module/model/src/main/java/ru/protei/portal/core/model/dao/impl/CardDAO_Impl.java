@@ -7,11 +7,11 @@ import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CardQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.sqlcondition.Query;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import ru.protei.portal.core.model.util.sqlcondition.Query;
 
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
@@ -53,5 +53,10 @@ public class CardDAO_Impl extends PortalBaseJdbcDAO<Card> implements CardDAO {
         });
 
         return result;
+    }
+
+    @Override
+    public Boolean existByCardBatchId(Long cardBatchId) {
+        return checkExistsByCondition(Card.Columns.CARD_BATCH_ID + "= ?", cardBatchId);
     }
 }

@@ -74,6 +74,7 @@ public class CardBatchControllerImpl implements CardBatchController {
 
     @Override
     public CardBatch removeCardBatch(CardBatch value) throws RequestFailedException {
-        return value;
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(cardBatchService.removeCardBatch(token, value));
     }
 }
