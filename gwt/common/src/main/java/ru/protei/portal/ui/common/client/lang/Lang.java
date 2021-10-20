@@ -472,6 +472,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String productInternalDocLink();
 
+    String productExternalDocLink();
+
     String productCDRDescription();
 
     String productHistoryVersion();

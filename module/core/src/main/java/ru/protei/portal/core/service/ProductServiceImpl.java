@@ -437,6 +437,7 @@ public class ProductServiceImpl implements ProductService {
         if (product.getHistoryVersion() != null) devUnit.setHistoryVersion( product.getHistoryVersion() );
         if (product.getDescription() != null) devUnit.setInfo( product.getDescription() );
         if (product.getInternalDocLink() != null) devUnit.setInternalDocLink( product.getInternalDocLink() );
+        if (product.getExternalDocLink() != null) devUnit.setExternalDocLink( product.getExternalDocLink() );
         if (product.getName() != null) devUnit.setName( product.getName() );
         if (product.getCommonManagerId() != null) devUnit.setCommonManagerId( product.getCommonManagerId() );
         return devUnit;

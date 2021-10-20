@@ -66,6 +66,17 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     }
 
     @Override
+    public void setExternalDocLink(String value) {
+        String href = value == null ? "#" : value;
+        externalDocLink.setInnerText(value);
+
+        if ( !href.startsWith(CrmConstants.LinkStart.HTTP) && !href.startsWith(CrmConstants.LinkStart.HTTPS) ) {
+            href = CrmConstants.LinkStart.HTTP + href;
+        }
+        externalDocLink.setHref(href);
+    }
+
+    @Override
     public HasVisibility parentsContainerVisibility() {
         return parentsContainer;
     }
@@ -145,6 +156,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     private void ensureDebugIds() {
         productName.ensureDebugId(DebugIds.PRODUCT_PREVIEW.NAME);
         internalDocLink.setId(DebugIds.PRODUCT_PREVIEW.INTERNAL_DOC_LINK);
+        externalDocLink.setId(DebugIds.PRODUCT_PREVIEW.EXTERNAL_DOC_LINK);
         info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PRODUCT_PREVIEW.DESCRIPTION);
         tabWidget.setTabNameDebugId(lang.productHistoryVersion(), DebugIds.PRODUCT_PREVIEW.TAB.HISTORY_VERSION);
         historyVersion.getElement().setId(DebugIds.PRODUCT_PREVIEW.HISTORY_VERSION);
@@ -181,6 +193,8 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     Anchor productName;
     @UiField
     AnchorElement internalDocLink;
+    @UiField
+    AnchorElement externalDocLink;
     @UiField
     TabWidget tabWidget;
     @UiField

@@ -188,6 +188,11 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
+    public HasValue<String> externalDocLink() {
+        return externalDocLink;
+    }
+
+    @Override
     public HasValue<String> historyVersion() {
         return historyVersion;
     }
@@ -330,6 +335,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         name.ensureDebugId(DebugIds.PRODUCT.NAME);
         info.ensureDebugId(DebugIds.PRODUCT.DESCRIPTION);
         internalDocLink.ensureDebugId(DebugIds.PRODUCT.INTERNAL_DOC_LINK);
+        externalDocLink.ensureDebugId(DebugIds.PRODUCT.EXTERNAL_DOC_LINK);
         
         children.ensureDebugId(DebugIds.PRODUCT.INCLUDES);
         parents.ensureDebugId(DebugIds.PRODUCT.PRODUCTS);
@@ -404,6 +410,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     MarkdownAreaWithPreview cdrDescription;
     @UiField
     TextBox internalDocLink;
+    @UiField
+    TextBox externalDocLink;
     @Inject
     @UiField(provided = true)
     StringSelectInput aliases;

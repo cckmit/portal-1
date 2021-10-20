@@ -18,6 +18,10 @@
                         <a ui:field="internalDocLink" href="#" target="_blank"/>
                     </div>
 
+                    <div class="small">
+                        <a ui:field="externalDocLink" href="#" target="_blank"/>
+                    </div>
+
                     <div class="markdown">
                         <span ui:field="info"/>
                     </div>

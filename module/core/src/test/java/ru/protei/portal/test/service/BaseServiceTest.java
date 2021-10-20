@@ -60,6 +60,7 @@ public class BaseServiceTest {
         product.setCdrDescription( "cdrDescription" );
         product.setConfiguration( "configuration" );
         product.setInternalDocLink( "https://newportal.protei.ru/" );
+        product.setExternalDocLink( "https://newportal.protei.ru/" );
         return product;
     }
 

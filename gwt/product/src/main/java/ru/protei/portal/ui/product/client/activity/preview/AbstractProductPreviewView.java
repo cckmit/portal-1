@@ -19,6 +19,8 @@ public interface AbstractProductPreviewView extends IsWidget {
 
     void setInternalDocLink(String value);
 
+    void setExternalDocLink(String value);
+
     HasVisibility parentsContainerVisibility();
 
     void setParents(Map<String, String> nameToLink);

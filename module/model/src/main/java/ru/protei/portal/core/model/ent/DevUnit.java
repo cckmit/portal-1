@@ -56,6 +56,9 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     @JdbcColumn(name = "internal_doc_link")
     private String internalDocLink;
 
+    @JdbcColumn(name = "external_doc_link")
+    private String externalDocLink;
+
     @JdbcColumn(name = Columns.CONFIGURATION)
     private String configuration;
 
@@ -279,6 +282,14 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         this.internalDocLink = internalDocLink;
     }
 
+    public String getExternalDocLink() {
+        return externalDocLink;
+    }
+
+    public void setExternalDocLink(String externalDocLink) {
+        this.externalDocLink = externalDocLink;
+    }
+
     public String getConfiguration() {
         return configuration;
     }
@@ -349,6 +360,7 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
                 ", oldId=" + oldId +
                 ", subscriptions=" + subscriptions +
                 ", internalDocLink='" + internalDocLink + '\'' +
+                ", externalDocLink='" + externalDocLink + '\'' +
                 ", configuration='" + configuration + '\'' +
                 ", cdrDescription='" + cdrDescription + '\'' +
                 ", historyVersion='" + historyVersion + '\'' +

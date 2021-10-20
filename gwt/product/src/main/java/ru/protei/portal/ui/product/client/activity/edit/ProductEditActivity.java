@@ -222,6 +222,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         );
 
         view.internalDocLink().setValue(devUnit.getInternalDocLink());
+        view.externalDocLink().setValue(devUnit.getExternalDocLink());
 
         view.setHistoryVersionPreviewAllowing( isPreviewDisplayed(HISTORY_VERSION) );
         view.setConfigurationPreviewAllowing( isPreviewDisplayed(CONFIGURATION) );
@@ -273,6 +274,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         );
 
         product.setInternalDocLink(view.internalDocLink().getValue());
+        product.setExternalDocLink(view.externalDocLink().getValue());
         product.setCdrDescription(view.cdrDescription().getValue());
         product.setConfiguration(view.configuration().getValue());
         product.setHistoryVersion(view.historyVersion().getValue());

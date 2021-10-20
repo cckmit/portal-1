@@ -343,6 +343,7 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect( jsonPath( "$.data.configuration", is( product.getConfiguration() ) ) )
                 .andExpect( jsonPath( "$.data.description", is( product.getInfo() ) ) )
                 .andExpect( jsonPath( "$.data.internalDocLink", is( product.getInternalDocLink() ) ) )
+                .andExpect( jsonPath( "$.data.externalDocLink", is( product.getExternalDocLink() ) ) )
                 .andExpect( jsonPath( "$.data.type", is( product.getType().name() ) ) )
         ;
     }

@@ -18,6 +18,8 @@ public class DevUnitInfo extends AuditableObject {
 
     private String internalDocLink;
 
+    private String externalDocLink;
+
     private String configuration;
 
     private String cdrDescription;
@@ -109,6 +111,14 @@ public class DevUnitInfo extends AuditableObject {
         this.internalDocLink = internalDocLink;
     }
 
+    public String getExternalDocLink() {
+        return externalDocLink;
+    }
+
+    public void setExternalDocLink(String externalDocLink) {
+        this.externalDocLink = externalDocLink;
+    }
+
     public Long getCommonManagerId() {
         return commonManagerId;
     }
@@ -131,6 +141,7 @@ public class DevUnitInfo extends AuditableObject {
         info.setName( devUnit.getName() );
         info.setType( devUnit.getType() );
         info.setInternalDocLink( devUnit.getInternalDocLink() );
+        info.setExternalDocLink( devUnit.getExternalDocLink() );
         info.setCommonManagerId( devUnit.getCommonManagerId() );
         return info;
     }
@@ -149,6 +160,7 @@ public class DevUnitInfo extends AuditableObject {
         devUnit.setConfiguration(info.getConfiguration());
         devUnit.setHistoryVersion(info.getHistoryVersion());
         devUnit.setInternalDocLink(info.getInternalDocLink());
+        devUnit.setExternalDocLink(info.getExternalDocLink());
         devUnit.setCommonManagerId(info.getCommonManagerId());
 
         return devUnit;

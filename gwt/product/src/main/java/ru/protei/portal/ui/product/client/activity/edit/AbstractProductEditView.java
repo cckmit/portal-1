@@ -3,6 +3,7 @@ package ru.protei.portal.ui.product.client.activity.edit;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.googlecode.gwt.crypto.util.Str;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.Pair;
@@ -48,6 +49,8 @@ public interface AbstractProductEditView extends IsWidget {
     void setTypeImageVisibility(boolean isVisible);
 
     HasValue<String> internalDocLink();
+
+    HasValue<String> externalDocLink();
 
     HasValue<String> historyVersion();
 

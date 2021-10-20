@@ -82,6 +82,7 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
         view.setTypeImage(product.getType() == null ? null : product.getType().getImgSrc());
         view.setDirection(product.getProductDirections() == null ? "" : joining(product.getProductDirections(), ", ", DevUnit::getName));
         view.setInternalDocLink(StringUtils.emptyIfNull(product.getInternalDocLink()));
+        view.setExternalDocLink(StringUtils.emptyIfNull(product.getExternalDocLink()));
 
         view.setParents(emptyIfNull(product.getParents()).stream().collect(Collectors.toMap(DevUnit::getName, devUnit -> LinkUtils.makePreviewLink(DevUnit.class, devUnit.getId()))));
         view.setChildren(emptyIfNull(product.getChildren()).stream().collect(Collectors.toMap(DevUnit::getName, devUnit -> LinkUtils.makePreviewLink(DevUnit.class, devUnit.getId()))));

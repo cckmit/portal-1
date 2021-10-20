@@ -44,6 +44,12 @@
                                 <label><ui:text from="{lang.productInternalDocLink}"/></label>
                                 <g:TextBox ui:field="internalDocLink" styleName="form-control"/>
                             </div>
+
+                            <div class="form-group col-md-12">
+                                <label><ui:text from="{lang.productExternalDocLink}"/></label>
+                                <g:TextBox ui:field="externalDocLink" styleName="form-control"/>
+                            </div>
+
                             <div class="form-group col-md-12">
                                 <label>
                                     <ui:text from="{lang.companySubscription}"/>
