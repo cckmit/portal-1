@@ -210,7 +210,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
     }
 
     private void switchCommonInfoToEdit(boolean isEdit) {
-        view.commonInfoEditButtonVisibility().setVisible(!isEdit && isSelf(cardBatch.getCreator().getId()));
+        view.commonInfoEditButtonVisibility().setVisible(!isEdit);
         view.commonInfoEditContainerVisibility().setVisible(isEdit);
         view.commonInfoContainerVisibility().setVisible(!isEdit);
     }
@@ -332,10 +332,6 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
                         metaView.priority().setValue(level);
                     }
                 }));
-    }
-
-    private boolean isSelf(Long creatorId) {
-        return Objects.equals(creatorId, authProfile.getId());
     }
 
     @Inject

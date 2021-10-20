@@ -152,7 +152,7 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
         noteCommentView.setNote(card.getNote());
         noteCommentView.setComment(card.getComment());
 
-        view.noteCommentEditButtonVisibility().setVisible(hasEditPrivileges() && isSelf(card.getCreatorId()));
+        view.noteCommentEditButtonVisibility().setVisible(hasEditPrivileges());
 
         renderMarkupText(card.getNote(), html -> noteCommentView.setNote(html));
         renderMarkupText(card.getComment(), html -> noteCommentView.setComment(html));
@@ -160,10 +160,6 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
 
     private void showMeta(Card card) {
         fireEvent(new CardEvents.EditMeta(card, view.getMetaContainer()));
-    }
-
-    private boolean isSelf(Long creatorId) {
-        return Objects.equals(creatorId, authProfile.getId());
     }
 
     private boolean hasAccess() {
