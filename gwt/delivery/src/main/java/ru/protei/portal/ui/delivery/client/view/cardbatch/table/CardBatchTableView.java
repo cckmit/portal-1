@@ -15,6 +15,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.lang.CardBatchStateLang;
 import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -41,6 +42,8 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
         table.setLoadHandler(activity);
         editClickColumn.setEditHandler(activity);
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT));
+        removeClickColumn.setRemoveHandler(activity);   // todo новые привилегии
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_REMOVE));
         columns.forEach(clickColumn -> {
             clickColumn.setHandler(activity);
             clickColumn.setColumnProvider(columnProvider);
@@ -112,6 +115,7 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
         columns.add(new DeadlineColumn(lang));
         columns.add(new ContractorsColumn(lang, personRoleTypeLang));
         columns.add(editClickColumn);
+        columns.add(removeClickColumn);
 
         columns.forEach(clickColumn -> {
             table.addColumn(clickColumn.header, clickColumn.values);
@@ -138,10 +142,12 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
     @Inject
     private EditClickColumn<CardBatch> editClickColumn;
     @Inject
+    RemoveClickColumn<CardBatch> removeClickColumn;
+    @Inject
     private PolicyService policyService;
 
 
-    private List<ClickColumn> columns = new ArrayList<>();
+    private List<ClickColumn<CardBatch>> columns = new ArrayList<>();
     private ClickColumnProvider<CardBatch> columnProvider = new ClickColumnProvider<>();
     private AbstractCardBatchTableActivity activity;
 
