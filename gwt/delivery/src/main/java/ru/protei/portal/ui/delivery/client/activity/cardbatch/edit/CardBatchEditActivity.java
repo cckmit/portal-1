@@ -150,7 +150,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
             return;
         }
 
-        save(cardBatch, throwable -> {}, () -> {});
+        saveMeta(cardBatch);
     }
 
     private void requestCardBatch(Long cardBatchId, HasWidgets container) {
@@ -182,7 +182,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
             return;
         }
         CardBatch cardBatch = fillCommonInfo();
-        save(cardBatch);
+        saveCommonInfo(cardBatch);
     }
 
     @Override
@@ -288,26 +288,30 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         return null;
     }
 
-    private void save(CardBatch cardBatch) {
+    private void saveCommonInfo(CardBatch cardBatch) {
         commonInfoEditView.saveEnabled().setEnabled(false);
-        save(cardBatch, throwable -> {
-            commonInfoEditView.saveEnabled().setEnabled(true);
-        }, () -> {
-            commonInfoEditView.saveEnabled().setEnabled(true);
-            switchCommonInfoToEdit(false);
-        });
-    }
-
-    private void save(CardBatch cardBatch, Consumer<Throwable> onFailure, Runnable onSuccess) {
-        cardBatchService.updateMeta(cardBatch, new FluentCallback<CardBatch>()
+        cardBatchService.updateCommonInfo(cardBatch, new FluentCallback<CardBatch>()
                 .withError(throwable -> {
                     defaultErrorHandler.accept(throwable);
-                    onFailure.accept(throwable);
+                    commonInfoEditView.saveEnabled().setEnabled(true);
                 })
                 .withSuccess(batch -> {
                     fireEvent(new NotifyEvents.Show(lang.cardBatchSaved(), SUCCESS));
                     fireEvent(new CardBatchEvents.Change(batch.getId()));
-                    onSuccess.run();
+                    commonInfoEditView.saveEnabled().setEnabled(true);
+                    switchCommonInfoToEdit(false);
+                    fillView(batch);
+                }));
+    }
+
+    private void saveMeta(CardBatch cardBatch) {
+        cardBatchService.updateMeta(cardBatch, new FluentCallback<CardBatch>()
+                .withError(throwable -> {
+                    defaultErrorHandler.accept(throwable);
+                })
+                .withSuccess(batch -> {
+                    fireEvent(new NotifyEvents.Show(lang.cardBatchSaved(), SUCCESS));
+                    fireEvent(new CardBatchEvents.Change(batch.getId()));
                     fillView(batch);
                 }));
     }

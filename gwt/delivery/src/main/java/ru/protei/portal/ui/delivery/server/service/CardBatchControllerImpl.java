@@ -50,6 +50,12 @@ public class CardBatchControllerImpl implements CardBatchController {
     }
 
     @Override
+    public CardBatch updateCommonInfo(CardBatch cardBatch) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(cardBatchService.updateCommonInfo(token, cardBatch));
+    }
+
+    @Override
     public CardBatch updateMeta(CardBatch meta) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         return checkResultAndGetData(cardBatchService.updateMeta(token, meta));

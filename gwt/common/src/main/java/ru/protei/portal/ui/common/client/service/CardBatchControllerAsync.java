@@ -16,6 +16,8 @@ public interface CardBatchControllerAsync {
 
     void getCardBatch(Long id, AsyncCallback<CardBatch> async);
 
+    void updateCommonInfo(CardBatch commonInfo, AsyncCallback<CardBatch> async);
+
     void updateMeta(CardBatch meta, AsyncCallback<CardBatch> async);
 
     void getCardBatchesList(CardBatchQuery query, AsyncCallback<SearchResult<CardBatch>> async);

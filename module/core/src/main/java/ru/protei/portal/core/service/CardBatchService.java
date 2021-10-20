@@ -21,6 +21,10 @@ public interface CardBatchService {
 
     @Privileged({ En_Privilege.CARD_BATCH_EDIT })
     @Auditable( En_AuditType.CARD_BATCH_MODIFY )
+    Result<CardBatch> updateCommonInfo(AuthToken token, CardBatch cardBatch);
+
+    @Privileged({ En_Privilege.CARD_BATCH_EDIT })
+    @Auditable( En_AuditType.CARD_BATCH_MODIFY )
     Result<CardBatch> updateMeta(AuthToken token, CardBatch meta);
 
     @Privileged({ En_Privilege.CARD_BATCH_EDIT })

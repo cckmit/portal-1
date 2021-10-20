@@ -77,8 +77,7 @@ public class CardBatchServiceImpl implements CardBatchService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        Date now = new Date();
-        CaseObject cardBatchCaseObject = createCardBatchCaseObject(null, cardBatch, token.getPersonId(), now, now);
+        CaseObject cardBatchCaseObject = createCardBatchCaseObject(cardBatch, token.getPersonId());
         Long cardBatchCaseId = caseObjectDAO.persist(cardBatchCaseObject);
         if (cardBatchCaseId == null) {
             log.warn("createCardBatch(): case object not created, cardBatch={}", cardBatch);
@@ -123,13 +122,59 @@ public class CardBatchServiceImpl implements CardBatchService {
 
     @Override
     @Transactional
+    public Result<CardBatch> updateCommonInfo(AuthToken token, CardBatch commonInfo) {
+
+        if (commonInfo == null || commonInfo.getId() == null) {
+            return error(INCORRECT_PARAMS);
+        }
+
+        if (!isCardBatchValid(commonInfo, false)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        CardBatch oldCommonInfo = cardBatchDAO.get(commonInfo.getId());
+        if (oldCommonInfo == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        CaseObject caseObject = caseObjectDAO.get(commonInfo.getId());
+        boolean isUpdated;
+        if (caseObject == null) {
+            caseObject = createCardBatchCaseObject(commonInfo, null);
+            isUpdated = caseObjectDAO.saveOrUpdate(caseObject);
+        } else {
+            caseObject.setInfo(commonInfo.getParams());
+            caseObject.setModified(new Date());
+            isUpdated = caseObjectDAO.partialMerge(caseObject, CaseObject.Columns.INFO, CaseObject.Columns.MODIFIED);
+        }
+        if (!isUpdated) {
+            log.info("Failed to update card batch common info {} at db", caseObject.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        isUpdated = cardBatchDAO.partialMerge(commonInfo, "id", "article", "amount");
+        if (!isUpdated) {
+            log.warn("updateMeta(): cardBatch not updated. cardBatch={}",  commonInfo.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        //TODO доделать логику оповещения о редактировании партии плат
+        CardBatchUpdateEvent updateEvent = new CardBatchUpdateEvent(this, oldCommonInfo, commonInfo, token.getPersonId());
+
+        CardBatch cardBatch = cardBatchDAO.get(caseObject.getId());
+        jdbcManyRelationsHelper.fillAll(cardBatch);
+        return ok(cardBatch, Collections.singletonList(updateEvent));
+    }
+
+    @Override
+    @Transactional
     public Result<CardBatch> updateMeta(AuthToken token, CardBatch meta) {
 
         if (meta == null || meta.getId() == null) {
             return error(INCORRECT_PARAMS);
         }
 
-        if (!isMetaValid(meta, false)) {
+        if (!isCardBatchValid(meta, false)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
@@ -139,9 +184,19 @@ public class CardBatchServiceImpl implements CardBatchService {
         }
 
         CaseObject caseObject = caseObjectDAO.get(meta.getId());
-        jdbcManyRelationsHelper.fill( caseObject, "members" );
-        caseObject = createCardBatchCaseObject(caseObject, meta, null, null, new Date());
-        boolean isUpdated = caseObjectDAO.merge(caseObject);
+        boolean isUpdated;
+        if (caseObject == null) {
+            caseObject = createCardBatchCaseObject(meta, null);
+            isUpdated = caseObjectDAO.saveOrUpdate(caseObject);
+        } else {
+            caseObject.setStateId(meta.getStateId());
+            caseObject.setImpLevel(meta.getImportance());
+            caseObject.setDeadline(meta.getDeadline());
+            caseObject.setModified(new Date());
+            jdbcManyRelationsHelper.fill( caseObject, "members" );
+            isUpdated = caseObjectDAO.partialMerge(caseObject, CaseObject.Columns.STATE, CaseObject.Columns.IMPORTANCE,
+                    CaseObject.Columns.DEADLINE, CaseObject.Columns.MODIFIED);
+        }
         if (!isUpdated) {
             log.info("Failed to update card batch meta data {} at db", caseObject.getId());
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
@@ -152,12 +207,6 @@ public class CardBatchServiceImpl implements CardBatchService {
         } catch (Throwable e) {
             log.error("updateMeta(): error during save card batch meta when update contractors;", e);
             throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
-        }
-
-        isUpdated = cardBatchDAO.merge(meta);
-        if (!isUpdated) {
-            log.warn("updateMeta(): cardBatch not updated. cardBatch={}",  meta.getId());
-            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         //TODO доделать логику оповещения о редактировании партии плат
@@ -309,10 +358,10 @@ public class CardBatchServiceImpl implements CardBatchService {
             return false;
         }
 
-        return isMetaValid(cardBatch, isNew);
+        return isCardBatchValid(cardBatch, isNew);
     }
 
-    private boolean isMetaValid(CardBatch cardBatch, boolean isNew) {
+    private boolean isCardBatchValid(CardBatch cardBatch, boolean isNew) {
         if (isNew && CrmConstants.State.BUILD_EQUIPMENT_IN_QUEUE != cardBatch.getStateId()) {
             return false;
         }
@@ -340,19 +389,14 @@ public class CardBatchServiceImpl implements CardBatchService {
                 cardBatchNumber.matcher(number).matches();
     }
 
-    private CaseObject createCardBatchCaseObject(CaseObject caseObject, CardBatch cardBatch, Long creatorId,
-                                                 Date created, Date modified) {
-        if (caseObject == null){
-            caseObject = new CaseObject();
-            caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.CARD_BATCH));
-            caseObject.setType(En_CaseType.CARD_BATCH);
-            caseObject.setCreated(created);
-            caseObject.setModified(created);
-            caseObject.setCreatorId(creatorId);
-        } else {
-            caseObject.setModified(modified);
-        }
-
+    private CaseObject createCardBatchCaseObject(CardBatch cardBatch, Long creatorId) {
+        Date now = new Date();
+        CaseObject caseObject = new CaseObject();
+        caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.CARD_BATCH));
+        caseObject.setType(En_CaseType.CARD_BATCH);
+        caseObject.setCreated(now);
+        caseObject.setModified(now);
+        caseObject.setCreatorId(creatorId);
         caseObject.setId(cardBatch.getId());
         caseObject.setName(CardBatch.AUDIT_TYPE);
         caseObject.setInfo(cardBatch.getParams());
