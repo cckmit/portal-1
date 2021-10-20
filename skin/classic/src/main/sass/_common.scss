@@ -4641,7 +4641,7 @@ table {
     }
   }
 
-  &.project-team {
+  &.project-team, &.card-batch-team {
 
     padding: 7px 12px 4px;
 
@@ -4658,7 +4658,8 @@ table {
       -moz-border-radius: 2px !important;
     }
 
-    .project-team-selector-item:not(:first-child) {
+    .project-team-selector-item:not(:first-child),
+    .card-batch-contractors-selector-item:not(:first-child) {
       margin-top: 20px;
     }
   }

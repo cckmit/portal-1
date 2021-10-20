@@ -154,7 +154,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
             return;
         }
 
-        fireEvent(new ConfirmDialogEvents.Show(lang.deliveryRemoveConfirmMessage(value.getSerialNumber()),
+        fireEvent(new ConfirmDialogEvents.Show(lang.cardRemoveConfirmMessage(value.getSerialNumber()),
                 removeAction(value)));
 
     }

@@ -216,7 +216,8 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
     }
 
     private boolean validateAmount() {
-        boolean isValid = null == commonInfoEditView.amount().getValue() || commonInfoEditView.amount().getValue() > 0;
+        Integer value = commonInfoEditView.amount().getValue();
+        boolean isValid = value != null && value > 0;
         commonInfoEditView.setAmountValid(isValid);
         return isValid;
     }

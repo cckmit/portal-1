@@ -31,7 +31,7 @@
 
             </div>
 
-            <div class="form-group form-group-default project-team required">
+            <div class="form-group col-md-12 card card-default card-batch-team required">
                 <label class="fade">
                     <ui:text from="{lang.cardBatchContractors}"/>
                 </label>
