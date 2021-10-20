@@ -41,8 +41,8 @@
                                                                        maxRows="10"/>
                             </div>
                             <div class="form-group col-md-12">
-                                <label><ui:text from="{lang.productWikiLink}"/></label>
-                                <g:TextBox ui:field="wikiLink" styleName="form-control"/>
+                                <label><ui:text from="{lang.productInternalDocLink}"/></label>
+                                <g:TextBox ui:field="internalDocLink" styleName="form-control"/>
                             </div>
                             <div class="form-group col-md-12">
                                 <label>

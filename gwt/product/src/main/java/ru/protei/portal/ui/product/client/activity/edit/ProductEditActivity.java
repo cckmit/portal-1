@@ -221,7 +221,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                 .collect(Collectors.toSet())
         );
 
-        view.wikiLink().setValue(devUnit.getWikiLink());
+        view.internalDocLink().setValue(devUnit.getInternalDocLink());
 
         view.setHistoryVersionPreviewAllowing( isPreviewDisplayed(HISTORY_VERSION) );
         view.setConfigurationPreviewAllowing( isPreviewDisplayed(CONFIGURATION) );
@@ -272,7 +272,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                 .collect(Collectors.toList()) : null
         );
 
-        product.setWikiLink(view.wikiLink().getValue());
+        product.setInternalDocLink(view.internalDocLink().getValue());
         product.setCdrDescription(view.cdrDescription().getValue());
         product.setConfiguration(view.configuration().getValue());
         product.setHistoryVersion(view.historyVersion().getValue());

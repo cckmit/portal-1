@@ -183,8 +183,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
-    public HasValue<String> wikiLink() {
-        return wikiLink;
+    public HasValue<String> internalDocLink() {
+        return internalDocLink;
     }
 
     @Override
@@ -329,7 +329,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     private void ensureDebugIds() {
         name.ensureDebugId(DebugIds.PRODUCT.NAME);
         info.ensureDebugId(DebugIds.PRODUCT.DESCRIPTION);
-        wikiLink.ensureDebugId(DebugIds.PRODUCT.WIKI_LINK);
+        internalDocLink.ensureDebugId(DebugIds.PRODUCT.INTERNAL_DOC_LINK);
         
         children.ensureDebugId(DebugIds.PRODUCT.INCLUDES);
         parents.ensureDebugId(DebugIds.PRODUCT.PRODUCTS);
@@ -403,7 +403,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @UiField
     MarkdownAreaWithPreview cdrDescription;
     @UiField
-    TextBox wikiLink;
+    TextBox internalDocLink;
     @Inject
     @UiField(provided = true)
     StringSelectInput aliases;

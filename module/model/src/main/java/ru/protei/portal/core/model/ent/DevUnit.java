@@ -53,8 +53,8 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     @JdbcOneToMany(table = "dev_unit_subscription", localColumn = "id", remoteColumn = "dev_unit_id" )
     private List<DevUnitSubscription> subscriptions;
 
-    @JdbcColumn(name = "wiki_link")
-    private String wikiLink;
+    @JdbcColumn(name = "internal_doc_link")
+    private String internalDocLink;
 
     @JdbcColumn(name = Columns.CONFIGURATION)
     private String configuration;
@@ -271,12 +271,12 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         return En_DevUnitType.DIRECTION.equals(getType());
     }
 
-    public String getWikiLink() {
-        return wikiLink;
+    public String getInternalDocLink() {
+        return internalDocLink;
     }
 
-    public void setWikiLink(String wikiLink) {
-        this.wikiLink = wikiLink;
+    public void setInternalDocLink(String internalDocLink) {
+        this.internalDocLink = internalDocLink;
     }
 
     public String getConfiguration() {
@@ -348,7 +348,7 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
                 ", stateId=" + stateId +
                 ", oldId=" + oldId +
                 ", subscriptions=" + subscriptions +
-                ", wikiLink='" + wikiLink + '\'' +
+                ", internalDocLink='" + internalDocLink + '\'' +
                 ", configuration='" + configuration + '\'' +
                 ", cdrDescription='" + cdrDescription + '\'' +
                 ", historyVersion='" + historyVersion + '\'' +

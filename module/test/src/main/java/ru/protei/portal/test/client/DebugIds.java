@@ -712,7 +712,7 @@ public class DebugIds {
 
     public interface PRODUCT {
         String NAME = "product-name";
-        String WIKI_LINK = "product-wiki-link";
+        String INTERNAL_DOC_LINK = "internal_doc_link";
         String DESCRIPTION = "product-description";
         String SUBSCRIPTIONS = "product-subscriptions";
         String INCLUDES = "product-includes";
@@ -737,7 +737,7 @@ public class DebugIds {
 
     public interface PRODUCT_PREVIEW {
         String NAME = "product-preview-name";
-        String WIKI_LINK = "product-preview-wiki-link";
+        String INTERNAL_DOC_LINK = "product-preview-internal-doc-link";
         String DESCRIPTION = "product-preview-description";
         String HISTORY_VERSION = "product-preview-history-version";
         String CONFIGURATION = "product-preview-configuration";

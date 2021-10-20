@@ -15,7 +15,7 @@
                     <img ui:field="typeImage" src="" class="preview-title-image-right"/>
 
                     <div class="small">
-                        <a ui:field="wikiLink" href="#" target="_blank"/>
+                        <a ui:field="internalDocLink" href="#" target="_blank"/>
                     </div>
 
                     <div class="markdown">

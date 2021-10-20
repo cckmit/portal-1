@@ -17,7 +17,7 @@ public interface AbstractProductPreviewView extends IsWidget {
 
     void setDirection(String direction);
 
-    void setWikiLink(String value);
+    void setInternalDocLink(String value);
 
     HasVisibility parentsContainerVisibility();
 

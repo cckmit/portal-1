@@ -47,7 +47,7 @@ public interface AbstractProductEditView extends IsWidget {
 
     void setTypeImageVisibility(boolean isVisible);
 
-    HasValue<String> wikiLink();
+    HasValue<String> internalDocLink();
 
     HasValue<String> historyVersion();
 

@@ -55,14 +55,14 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     }
 
     @Override
-    public void setWikiLink(String value) {
+    public void setInternalDocLink(String value) {
         String href = value == null ? "#" : value;
-        wikiLink.setInnerText(value);
+        internalDocLink.setInnerText(value);
 
         if ( !href.startsWith(CrmConstants.LinkStart.HTTP) && !href.startsWith(CrmConstants.LinkStart.HTTPS) ) {
             href = CrmConstants.LinkStart.HTTP + href;
         }
-        wikiLink.setHref(href);
+        internalDocLink.setHref(href);
     }
 
     @Override
@@ -144,7 +144,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
 
     private void ensureDebugIds() {
         productName.ensureDebugId(DebugIds.PRODUCT_PREVIEW.NAME);
-        wikiLink.setId(DebugIds.PRODUCT_PREVIEW.WIKI_LINK);
+        internalDocLink.setId(DebugIds.PRODUCT_PREVIEW.INTERNAL_DOC_LINK);
         info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PRODUCT_PREVIEW.DESCRIPTION);
         tabWidget.setTabNameDebugId(lang.productHistoryVersion(), DebugIds.PRODUCT_PREVIEW.TAB.HISTORY_VERSION);
         historyVersion.getElement().setId(DebugIds.PRODUCT_PREVIEW.HISTORY_VERSION);
@@ -180,7 +180,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     @UiField
     Anchor productName;
     @UiField
-    AnchorElement wikiLink;
+    AnchorElement internalDocLink;
     @UiField
     TabWidget tabWidget;
     @UiField

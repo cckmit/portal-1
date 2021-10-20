@@ -470,7 +470,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String productSubscription();
 
-    String productWikiLink();
+    String productInternalDocLink();
 
     String productCDRDescription();
 

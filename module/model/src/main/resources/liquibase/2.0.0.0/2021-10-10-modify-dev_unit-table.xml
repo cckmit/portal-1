@@ -1,0 +1,19 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="rename-wiki_link-column-in-dev_unit-table" author="turik">
+        <renameColumn tableName="dev_unit"
+                      oldColumnName="wiki_link"
+                      newColumnName="internal_doc_link"
+                      columnDataType="VARCHAR(256)"/>
+    </changeSet>
+
+    <changeSet id="add-external_doc_link-column-to-dev_unit-table" author="nunaev">
+        <addColumn tableName="dev_unit">
+            <column name="external_doc_link" type="VARCHAR(256)"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>
