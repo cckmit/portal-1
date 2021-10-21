@@ -97,7 +97,7 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
     public void onSaveNoteCommentClicked() {
         card.setNote(noteCommentEditView.note().getValue());
         card.setComment(noteCommentEditView.comment().getValue());
-        controller.updateMeta(card, new FluentCallback<Card>()
+        controller.updateNoteAndComment(card, new FluentCallback<Card>()
                 .withSuccess(result -> {
                     card = result;
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
@@ -152,7 +152,7 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
         noteCommentView.setNote(card.getNote());
         noteCommentView.setComment(card.getComment());
 
-        view.noteCommentEditButtonVisibility().setVisible(hasEditPrivileges() && isSelf(card.getCreatorId()));
+        view.noteCommentEditButtonVisibility().setVisible(hasEditPrivileges());
 
         renderMarkupText(card.getNote(), html -> noteCommentView.setNote(html));
         renderMarkupText(card.getComment(), html -> noteCommentView.setComment(html));
@@ -162,16 +162,12 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
         fireEvent(new CardEvents.EditMeta(card, view.getMetaContainer()));
     }
 
-    private boolean isSelf(Long creatorId) {
-        return Objects.equals(creatorId, authProfile.getId());
-    }
-
     private boolean hasAccess() {
-        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_VIEW);
+        return policyService.hasPrivilegeFor(En_Privilege.CARD_VIEW);
     }
 
     private boolean hasEditPrivileges() {
-        return policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT);
+        return policyService.hasPrivilegeFor(En_Privilege.CARD_EDIT);
     }
 
     private void renderMarkupText(String text, Consumer<String> consumer ) {

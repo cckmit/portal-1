@@ -16,21 +16,25 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.util.List;
 
 public interface CardService {
-    @Privileged({ En_Privilege.DELIVERY_VIEW })
+    @Privileged({ En_Privilege.CARD_VIEW })
     Result<Card> getCard(AuthToken token, Long id);
 
-    @Privileged({ En_Privilege.DELIVERY_VIEW })
+    @Privileged({ En_Privilege.CARD_VIEW })
     Result<SearchResult<Card>> getCards(AuthToken token, CardQuery query);
 
-    @Privileged({ En_Privilege.DELIVERY_CREATE })
+    @Privileged({ En_Privilege.CARD_CREATE })
     @Auditable( En_AuditType.CARD_CREATE )
     Result<Card> createCard(AuthToken token, Card card);
 
-    @Privileged({ En_Privilege.DELIVERY_EDIT })
+    @Privileged({ En_Privilege.CARD_EDIT })
+    @Auditable( En_AuditType.CARD_MODIFY)
+    Result<Card> updateNoteAndComment(AuthToken token, Card card);
+
+    @Privileged({ En_Privilege.CARD_EDIT })
     @Auditable( En_AuditType.CARD_MODIFY)
     Result<Card> updateMeta(AuthToken token, Card card);
 
-    @Privileged({ En_Privilege.DELIVERY_REMOVE })
+    @Privileged({ En_Privilege.CARD_REMOVE })
     @Auditable( En_AuditType.CARD_REMOVE )
     Result<Card> removeCard(AuthToken token, Card card);
 

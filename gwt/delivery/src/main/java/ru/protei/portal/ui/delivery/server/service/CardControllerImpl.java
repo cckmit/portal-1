@@ -64,6 +64,12 @@ public class CardControllerImpl implements CardController {
     }
 
     @Override
+    public Card updateNoteAndComment(Card card) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(cardService.updateNoteAndComment(token, card));
+    }
+
+    @Override
     public Card updateMeta(Card card) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         return checkResultAndGetData(cardService.updateMeta(token, card));

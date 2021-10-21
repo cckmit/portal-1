@@ -5,8 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.event.CardBatchCreateEvent;
-import ru.protei.portal.core.event.CardBatchUpdateEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -20,7 +18,6 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -77,8 +74,7 @@ public class CardBatchServiceImpl implements CardBatchService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        Date now = new Date();
-        CaseObject cardBatchCaseObject = createCardBatchCaseObject(null, cardBatch, token.getPersonId(), now, now);
+        CaseObject cardBatchCaseObject = createCardBatchCaseObject(cardBatch, token.getPersonId());
         Long cardBatchCaseId = caseObjectDAO.persist(cardBatchCaseObject);
         if (cardBatchCaseId == null) {
             log.warn("createCardBatch(): case object not created, cardBatch={}", cardBatch);
@@ -115,10 +111,50 @@ public class CardBatchServiceImpl implements CardBatchService {
             log.error("State message for the cardBatch {} not saved!", cardBatchCaseId);
         }
 
-        //TODO доделать логику оповещения о создании партии плат
-        CardBatchCreateEvent cardBatchCreateEvent = new CardBatchCreateEvent(this, token.getPersonId(), cardBatch.getId());
+        return ok(cardBatchDAO.get(cardBatch.getId()));
+    }
 
-        return ok(cardBatchDAO.get(cardBatch.getId()), Collections.singletonList(cardBatchCreateEvent));
+    @Override
+    @Transactional
+    public Result<CardBatch> updateCommonInfo(AuthToken token, CardBatch commonInfo) {
+
+        if (commonInfo == null || commonInfo.getId() == null) {
+            return error(INCORRECT_PARAMS);
+        }
+
+        if (!isCardBatchValid(commonInfo, false)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        CardBatch oldCommonInfo = cardBatchDAO.get(commonInfo.getId());
+        if (oldCommonInfo == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        CaseObject caseObject = caseObjectDAO.get(commonInfo.getId());
+        boolean isUpdated;
+        if (caseObject == null) {
+            log.warn("Failed to find case object for card batch {} at db", commonInfo);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_FOUND);
+        } else {
+            caseObject.setInfo(commonInfo.getParams());
+            caseObject.setModified(new Date());
+            isUpdated = caseObjectDAO.partialMerge(caseObject, CaseObject.Columns.INFO, CaseObject.Columns.MODIFIED);
+        }
+        if (!isUpdated) {
+            log.warn("Failed to update card batch common info {} at db", caseObject.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        isUpdated = cardBatchDAO.partialMerge(commonInfo, "id", "article", "amount");
+        if (!isUpdated) {
+            log.warn("updateMeta(): cardBatch not updated. cardBatch={}",  commonInfo.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        CardBatch cardBatch = cardBatchDAO.get(caseObject.getId());
+        jdbcManyRelationsHelper.fillAll(cardBatch);
+        return ok(cardBatch);
     }
 
     @Override
@@ -129,7 +165,7 @@ public class CardBatchServiceImpl implements CardBatchService {
             return error(INCORRECT_PARAMS);
         }
 
-        if (!isMetaValid(meta, false)) {
+        if (!isCardBatchValid(meta, false)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
@@ -139,11 +175,21 @@ public class CardBatchServiceImpl implements CardBatchService {
         }
 
         CaseObject caseObject = caseObjectDAO.get(meta.getId());
-        jdbcManyRelationsHelper.fill( caseObject, "members" );
-        caseObject = createCardBatchCaseObject(caseObject, meta, null, null, new Date());
-        boolean isUpdated = caseObjectDAO.merge(caseObject);
+        boolean isUpdated;
+        if (caseObject == null) {
+            log.warn("Failed to find case object for card batch {} at db", meta);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_FOUND);
+        } else {
+            caseObject.setStateId(meta.getStateId());
+            caseObject.setImpLevel(meta.getImportance());
+            caseObject.setDeadline(meta.getDeadline());
+            caseObject.setModified(new Date());
+            jdbcManyRelationsHelper.fill( caseObject, "members" );
+            isUpdated = caseObjectDAO.partialMerge(caseObject, CaseObject.Columns.STATE, CaseObject.Columns.IMPORTANCE,
+                    CaseObject.Columns.DEADLINE, CaseObject.Columns.MODIFIED);
+        }
         if (!isUpdated) {
-            log.info("Failed to update card batch meta data {} at db", caseObject.getId());
+            log.warn("Failed to update card batch meta data {} at db", caseObject.getId());
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
@@ -154,18 +200,9 @@ public class CardBatchServiceImpl implements CardBatchService {
             throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        isUpdated = cardBatchDAO.merge(meta);
-        if (!isUpdated) {
-            log.warn("updateMeta(): cardBatch not updated. cardBatch={}",  meta.getId());
-            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
-        }
-
-        //TODO доделать логику оповещения о редактировании партии плат
-        CardBatchUpdateEvent updateEvent = new CardBatchUpdateEvent(this, oldMeta, meta, token.getPersonId());
-
         CardBatch cardBatch = cardBatchDAO.get(caseObject.getId());
         jdbcManyRelationsHelper.fillAll(cardBatch);
-        return ok(cardBatch, Collections.singletonList(updateEvent));
+        return ok(cardBatch);
     }
 
     @Override
@@ -329,10 +366,10 @@ public class CardBatchServiceImpl implements CardBatchService {
             return false;
         }
 
-        return isMetaValid(cardBatch, isNew);
+        return isCardBatchValid(cardBatch, isNew);
     }
 
-    private boolean isMetaValid(CardBatch cardBatch, boolean isNew) {
+    private boolean isCardBatchValid(CardBatch cardBatch, boolean isNew) {
         if (isNew && CrmConstants.State.BUILD_EQUIPMENT_IN_QUEUE != cardBatch.getStateId()) {
             return false;
         }
@@ -360,19 +397,14 @@ public class CardBatchServiceImpl implements CardBatchService {
                 cardBatchNumber.matcher(number).matches();
     }
 
-    private CaseObject createCardBatchCaseObject(CaseObject caseObject, CardBatch cardBatch, Long creatorId,
-                                                 Date created, Date modified) {
-        if (caseObject == null){
-            caseObject = new CaseObject();
-            caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.CARD_BATCH));
-            caseObject.setType(En_CaseType.CARD_BATCH);
-            caseObject.setCreated(created);
-            caseObject.setModified(created);
-            caseObject.setCreatorId(creatorId);
-        } else {
-            caseObject.setModified(modified);
-        }
-
+    private CaseObject createCardBatchCaseObject(CardBatch cardBatch, Long creatorId) {
+        Date now = new Date();
+        CaseObject caseObject = new CaseObject();
+        caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.CARD_BATCH));
+        caseObject.setType(En_CaseType.CARD_BATCH);
+        caseObject.setCreated(now);
+        caseObject.setModified(now);
+        caseObject.setCreatorId(creatorId);
         caseObject.setId(cardBatch.getId());
         caseObject.setName(CardBatch.AUDIT_TYPE);
         caseObject.setInfo(cardBatch.getParams());

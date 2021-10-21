@@ -41,9 +41,9 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
         table.setPagerListener(activity);
         table.setLoadHandler(activity);
         editClickColumn.setEditHandler(activity);
-        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT));
-        removeClickColumn.setRemoveHandler(activity);   // todo новые привилегии
-        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_REMOVE));
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CARD_BATCH_EDIT));
+        removeClickColumn.setRemoveHandler(activity);
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CARD_BATCH_REMOVE));
         columns.forEach(clickColumn -> {
             clickColumn.setHandler(activity);
             clickColumn.setColumnProvider(columnProvider);

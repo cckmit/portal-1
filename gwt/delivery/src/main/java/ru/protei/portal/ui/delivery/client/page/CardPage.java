@@ -27,7 +27,7 @@ public abstract class CardPage
 
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
-        if ( event.profile.hasPrivilegeFor( En_Privilege.DELIVERY_VIEW) ) {
+        if ( event.profile.hasPrivilegeFor( En_Privilege.CARD_VIEW) ) {
             fireEvent( new MenuEvents.Add( TAB, UiConstants.TabIcons.CARD, TAB, DebugIds.SIDEBAR_MENU.CARD).withParent(CATEGORY) );
             fireEvent( new AppEvents.InitPage( show ) );
         }
@@ -50,7 +50,7 @@ public abstract class CardPage
 
     private void fireSelectTab() {
         fireEvent( new ActionBarEvents.Clear() );
-        if ( policyService.hasPrivilegeFor( En_Privilege.DELIVERY_VIEW) ) {
+        if ( policyService.hasPrivilegeFor( En_Privilege.CARD_VIEW) ) {
             fireEvent( new MenuEvents.Select( TAB, CATEGORY) );
         }
     }

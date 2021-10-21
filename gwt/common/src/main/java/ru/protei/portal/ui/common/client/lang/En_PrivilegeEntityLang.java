@@ -66,6 +66,10 @@ public class En_PrivilegeEntityLang {
                 return lang.delivery();
             case YT:
                 return lang.reportYtWork();
+            case CARD:
+                return lang.card();
+            case CARD_BATCH:
+                return lang.cardBatch();
             default:
                 return lang.unknownField();
         }

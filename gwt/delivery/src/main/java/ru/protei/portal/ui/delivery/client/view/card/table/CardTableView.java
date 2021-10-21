@@ -39,10 +39,10 @@ public class CardTableView extends Composite implements AbstractCardTableView {
         this.activity = activity;
 
         editClickColumn.setEditHandler(activity);
-        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT));
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CARD_EDIT));
 
         removeClickColumn.setRemoveHandler(activity);
-        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_REMOVE));
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CARD_REMOVE));
 
         columns.forEach(clickColumn -> {
             clickColumn.setHandler(activity);
