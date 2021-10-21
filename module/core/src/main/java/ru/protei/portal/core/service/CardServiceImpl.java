@@ -178,7 +178,7 @@ public class CardServiceImpl implements CardService {
         Set<Card> updatedCard = new HashSet<>();
         for (Card card : cards) {
             try {
-                Result<Card> cardResult = updateMeta(token, card);
+                Result<Card> cardResult = updateCardFromGroup(token, card);
                 if (cardResult.isOk()) {
                     updatedCard.add(cardResult.getData());
                 }
@@ -211,6 +211,7 @@ public class CardServiceImpl implements CardService {
         return ok(card);
     }
 
+    @Override
     public Result<Long> getLastNumber(AuthToken token, Long typeId, Long cardBatchId) {
         if (cardBatchId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -218,6 +219,64 @@ public class CardServiceImpl implements CardService {
 
         Long number = cardDAO.getLastNumber(typeId, cardBatchId);
         return ok(number != null? number : START_NUMBER);
+    }
+
+    @Transactional
+    public Result<Card> updateCardFromGroup(AuthToken token, Card card) {
+        if (card == null || card.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!isValid(card)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+        Card oldCard = cardDAO.get(card.getId());
+        if (oldCard == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (!isValid(oldCard, card)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        CaseObject caseObject = caseObjectDAO.get(card.getId());
+        boolean isUpdated;
+        if (caseObject == null) {
+            log.warn("Failed to find case object for card {} at db", card);
+            return error(En_ResultStatus.NOT_FOUND);
+        } else {
+            caseObject.setManagerId(card.getManager().getId());
+            caseObject.setStateId(card.getStateId());
+            caseObject.setInfo(card.getNote());
+            caseObject.setModified(new Date());
+            isUpdated = caseObjectDAO.partialMerge(caseObject, CaseObject.Columns.MANAGER,
+                    CaseObject.Columns.STATE, CaseObject.Columns.INFO, CaseObject.Columns.MODIFIED);
+        }
+        if (!isUpdated) {
+            log.info("Failed to update card data {} at db", card);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        isUpdated = cardDAO.partialMerge(card, "id", "article", "test_date", "comment");
+        if (!isUpdated) {
+            log.warn("updateCardFromGroup(): card not updated. card={}",  card);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        if (!Objects.equals(card.getStateId(), oldCard.getStateId())) {
+            changeCardStateHistory(token, card.getId(), oldCard.getStateId(), caseStateDAO.get(oldCard.getStateId()).getState(),
+                    card.getStateId(), caseStateDAO.get(card.getStateId()).getState())
+                    .ifError(ignore -> log.error("Change state message for the card {} not saved!", card));
+        }
+
+        if (!Objects.equals(card.getManager(), oldCard.getManager())) {
+            changeManagerHistory(token, card.getId(),
+                    oldCard.getManager().getId(), oldCard.getManager().getDisplayShortName(),
+                    card.getManager().getId(), card.getManager().getDisplayShortName())
+                    .ifError(ignore -> log.error("Change manager message for the card {} not saved!", oldCard));
+        }
+
+        return getCard(token, card.getId());
     }
 
     private boolean isValid(Card card) {
