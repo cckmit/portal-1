@@ -287,6 +287,26 @@ public class CardBatchServiceImpl implements CardBatchService {
         return ok(list);
     }
 
+    @Override
+    @Transactional
+    public Result<CardBatch> removeCardBatch(AuthToken token, CardBatch value) {
+        if (value == null || value.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+        CaseObject caseObject = caseObjectDAO.get(value.getId());
+        if (caseObject == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (cardDAO.existByCardBatchId(value.getId())) {
+            return error(En_ResultStatus.CARD_BATCH_HAS_CARD);
+        }
+
+        caseObjectDAO.remove(caseObject);
+
+        return ok(value);
+    }
+
     private Result<Long> addCardBatchStateHistory(AuthToken authToken, Long caseObjectId, Long stateId, String stateName) {
         return historyService.createHistory(authToken, caseObjectId, En_HistoryAction.ADD, En_HistoryType.CARD_BATCH_STATE, null, null, stateId, stateName);
     }

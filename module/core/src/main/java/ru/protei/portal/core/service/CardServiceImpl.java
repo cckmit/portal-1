@@ -175,6 +175,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
+    @Transactional
     public Result<Card> removeCard(AuthToken token, Card card) {
         if (card == null || card.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);

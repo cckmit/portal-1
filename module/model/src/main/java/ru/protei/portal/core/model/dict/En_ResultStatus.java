@@ -391,5 +391,10 @@ public enum En_ResultStatus {
      * Поставки, запрещено менять проект поставки
      */
     DELIVERY_FORBIDDEN_CHANGE_PROJECT,
+
+    /**
+     *  Партии плат, в партии есть платы
+     */
+    CARD_BATCH_HAS_CARD,
     ;
 }

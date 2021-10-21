@@ -31,7 +31,8 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
 
 public abstract class CardBatchTableActivity implements AbstractCardBatchTableActivity, AbstractPagerActivity,
@@ -138,6 +139,25 @@ public abstract class CardBatchTableActivity implements AbstractCardBatchTableAc
     @Override
     public void onPageSelected(int page) {
         view.scrollTo(page);
+    }
+
+    @Override
+    public void onRemoveClicked(CardBatch value) {
+        if (value == null) {
+            return;
+        }
+
+        fireEvent(new ConfirmDialogEvents.Show(lang.cardBatchRemoveConfirmMessage(value.getTypeName(), value.getNumber()),
+                removeAction(value)));
+    }
+
+    private Runnable removeAction(CardBatch value) {
+        return () -> cardBatchController.removeCardBatch(value, new FluentCallback<CardBatch>()
+                .withSuccess(result -> {
+                    fireEvent(new NotifyEvents.Show(lang.cardBatchRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new CardBatchEvents.Show(false));
+                })
+        );
     }
 
     private void loadTable() {
