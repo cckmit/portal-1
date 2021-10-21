@@ -1708,7 +1708,7 @@ public class WorkerController {
         if (Objects.equals(lastName, oldLastName)) {
             return;
         }
-        final String ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
+        final String USER_SUPPORT_PROJECT_NAME = portalConfig.data().youtrack().getSupportProject();
         final String PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
 
         String employeeOldFullName = oldLastName + " " + firstName + " " + (secondName != null ? secondName : "");
@@ -1722,7 +1722,7 @@ public class WorkerController {
                              "\n" +
                              "Необходимо изменение учетной записи, почты.";
 
-        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description );
+        youtrackService.createIssue( USER_SUPPORT_PROJECT_NAME, summary, description );
     }
 
     private boolean isEmailExists(Long personId, String email) {

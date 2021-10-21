@@ -201,9 +201,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                         "\n Дополнительный комментарий: " + employeeRegistration.getComment()
         ).toString();
 
-        final String ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
+        final String USER_SUPPORT_PROJECT_NAME = portalConfig.data().youtrack().getSupportProject();
 
-        return youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description ).ifOk( issueId ->
+        return youtrackService.createIssue( USER_SUPPORT_PROJECT_NAME, summary, description ).ifOk( issueId ->
                 saveCaseLink( employeeRegistration.getId(), issueId )
         ).getData();
     }

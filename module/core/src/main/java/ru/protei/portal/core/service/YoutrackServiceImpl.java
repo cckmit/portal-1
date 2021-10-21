@@ -80,7 +80,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     public Result<String> createFireWorkerIssue(String summary, String description) {
         log.info("createFireWorkerIssue(): summary={}, description={}", summary, description);
 
-        Result<String> projectResult = getProjectIdByName(config.data().youtrack().getAdminProject());
+        Result<String> projectResult = getProjectIdByName(config.data().youtrack().getSupportProject());
 
         YtIssue issue = makeNewBasicIssue(projectResult.getData(), summary, description);
         YtIssueCustomField requestType = makeRequestTypeCustomField();
@@ -238,7 +238,7 @@ public class YoutrackServiceImpl implements YoutrackService {
                 .map(company -> company.stream().map(this::convertYtProject).collect(Collectors.toList()));
     }
 
-    private Result<String> getProjectIdByName (String projectName){
+    private Result<String> getProjectIdByName(String projectName){
         Result<String> projectResult = api.getProjectIdByName(projectName)
                 .flatMap(projects -> {
                     if (projects.size() == 1) return ok(projects.get(0));

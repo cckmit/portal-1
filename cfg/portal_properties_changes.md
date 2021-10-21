@@ -9,3 +9,11 @@ enterprise1c.api.work.password=*** # password
 enterprise1c.api.work.protei_url=http://srv-1cw/ziup/hs/otrabotano
 enterprise1c.api.work.protei_st_url=http://srv-1cw/ziup_st/hs/otrabotano
 ```
+
+переименовать проперти и изменить его значение в portal.properties
+```
+старое значение
+youtrack.employee_registration.admin_project=ACRM 
+новое значение
+youtrack.employee_registration.support_project=userSupport
+```
