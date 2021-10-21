@@ -27,11 +27,6 @@ public interface AbstractProductPreviewView extends IsWidget {
 
     void setChildren(Map<String, String> nameToLink);
 
-    void setConfiguration(String value);
-
-    void setHistoryVersion(String value);
-
-    void setCdrDescription(String value);
 
     void setTypeImage(String image);
 

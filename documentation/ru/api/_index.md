@@ -440,33 +440,6 @@ __auth147=`printf 'manager01:manager01' | base64`; curl -d '{ "caseNumber" : 100
 `curl -X POST -u user:password  'host:9007/Portal/springApi/api/products/17765'`
 ```
 
-### Изменение информации по продукту 
-
-- **url** - host:port/{app_name}/api/products/update 
-- **DevUnitInfo** - json представления DevUnit продукта или компонента. Передается в теле запроса. 
-
-``` json
-{
-"AuditType":"DevUnitInfo"                // обязательное поле 
-"id":17765,                              // обязательное поле 
-"configuration":"Configuration content",
-"cdrDescription":"cdr Description some text",
-"historyVersion":"History version some text",
-"description":"Description of product"
-}
-```
-
-- **запрос** - post
-- **ответ** : содержит статус выполнения и в поле data id_dev_unit 
-
-``` json
-{"status":"OK",  "data":17765}
-```
-
-**Пример:**
-``` sh
-`curl -X POST -u user:password 'host:9007/Portal/springApi/api/products/update' -H "Content-Type:application/json" -d '{"id":17765, "AuditType":"DevUnitInfo", "description":"Регистрация проблем",  "cdrDescription":"cdrDescription test2", "configuration":""}'`
-```
 
 
 ### Создание продукта
@@ -481,10 +454,8 @@ __auth147=`printf 'manager01:manager01' | base64`; curl -d '{ "caseNumber" : 100
 "typeId":2,                               // обязательное поле
 "name":"testProductFromApi",              // обязательное поле
 "description":"Description of product",
-"configuration":"Configuration content",
-"cdrDescription":"cdr Description some text",
-"historyVersion":"History version some text",
-"wikiLink":"google.com",
+"internalDocLink":"google.com",
+"externalDocLink":"google.com",
 "commonManagerId":1                       // общий менеджер
 }
 ```
@@ -499,10 +470,8 @@ __auth147=`printf 'manager01:manager01' | base64`; curl -d '{ "caseNumber" : 100
         "typeId":2,
         "name":"testProductFromApi",
         "description":"Description of product",
-        "wikiLink":"google.com",
-        "configuration":"Configuration content",
-        "cdrDescription":"cdr Description some text",
-        "historyVersion":"History version some text"
+        "internalDocLink":"google.com",
+        "externalDocLink":"google.com"        
  }
 }
 ```
@@ -542,17 +511,11 @@ __auth147=`printf 'manager01:manager01' | base64`; curl -d '{ "caseNumber" : 100
 ``` json
 {"status":"OK",
  "data":[{
-        "id":17765,
-        "configuration":"Configuration content",
-        "cdrDescription":"cdr Description some text",
-        "historyVersion":"History version some text",
+        "id":17765,        
         "description":"Description of product"
         },
         {
-        "id":17766,
-        "configuration":"Configuration content",
-        "cdrDescription":"cdr Description some text",
-        "historyVersion":"History version some text",
+        "id":17766,        
         "description":"Description of product"]
         }     
 }

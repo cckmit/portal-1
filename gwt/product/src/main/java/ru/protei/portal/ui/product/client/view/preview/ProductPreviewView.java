@@ -92,21 +92,6 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     }
 
     @Override
-    public void setConfiguration(String value) {
-        this.configuration.getElement().setInnerHTML(value);
-    }
-
-    @Override
-    public void setHistoryVersion(String value) {
-        this.historyVersion.getElement().setInnerHTML(value);
-    }
-
-    @Override
-    public void setCdrDescription(String value) {
-        this.cdrDescription.getElement().setInnerHTML(value);
-    }
-
-    @Override
     public void showFullScreen(boolean isFullScreen) {
         backButtonPanel.setVisible(isFullScreen);
         rootWrapper.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
@@ -158,16 +143,9 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
         internalDocLink.setId(DebugIds.PRODUCT_PREVIEW.INTERNAL_DOC_LINK);
         externalDocLink.setId(DebugIds.PRODUCT_PREVIEW.EXTERNAL_DOC_LINK);
         info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PRODUCT_PREVIEW.DESCRIPTION);
-        tabWidget.setTabNameDebugId(lang.productHistoryVersion(), DebugIds.PRODUCT_PREVIEW.TAB.HISTORY_VERSION);
-        historyVersion.getElement().setId(DebugIds.PRODUCT_PREVIEW.HISTORY_VERSION);
-        tabWidget.setTabNameDebugId(lang.productConfiguration(), DebugIds.PRODUCT_PREVIEW.TAB.CONFIGURATION);
-        configuration.getElement().setId(DebugIds.PRODUCT_PREVIEW.CONFIGURATION);
-        tabWidget.setTabNameDebugId(lang.productCDRDescription(), DebugIds.PRODUCT_PREVIEW.TAB.CDR_DESCRIPTION);
-        cdrDescription.getElement().setId(DebugIds.PRODUCT_PREVIEW.CDR_DESCRIPTION);
         direction.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PRODUCT_PREVIEW.DIRECTION_LABEL);
         parents.ensureDebugId(DebugIds.PRODUCT_PREVIEW.PARENTS_CONTAINER);
         children.ensureDebugId(DebugIds.PRODUCT_PREVIEW.CHILDREN_CONTAINER);
-
         backButton.ensureDebugId(DebugIds.PRODUCT_PREVIEW.BACK_BUTTON);
     }
 
@@ -195,14 +173,6 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     AnchorElement internalDocLink;
     @UiField
     AnchorElement externalDocLink;
-    @UiField
-    TabWidget tabWidget;
-    @UiField
-    HTMLPanel configuration;
-    @UiField
-    HTMLPanel historyVersion;
-    @UiField
-    HTMLPanel cdrDescription;
     @UiField
     HTMLPanel backButtonPanel;
     @UiField

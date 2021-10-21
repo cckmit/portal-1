@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 import static ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView.*;
-import static ru.protei.portal.ui.product.client.view.edit.ProductEditView.HISTORY_VERSION;
+
 
 /**
  * Активность карточки создания и редактирования продуктов
@@ -224,14 +224,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.internalDocLink().setValue(devUnit.getInternalDocLink());
         view.externalDocLink().setValue(devUnit.getExternalDocLink());
 
-        view.setHistoryVersionPreviewAllowing( isPreviewDisplayed(HISTORY_VERSION) );
-        view.setConfigurationPreviewAllowing( isPreviewDisplayed(CONFIGURATION) );
-        view.setCdrDescriptionPreviewAllowed( isPreviewDisplayed(CDR_DESCRIPTION) );
         view.setInfoPreviewAllowed(isPreviewDisplayed(INFO));
-
-        view.cdrDescription().setValue(devUnit.getCdrDescription());
-        view.configuration().setValue(devUnit.getConfiguration());
-        view.historyVersion().setValue(devUnit.getHistoryVersion());
 
         view.aliases().setValue(product.getAliases());
         view.aliasesVisibility().setVisible(currType.equals(En_DevUnitType.PRODUCT));
@@ -275,9 +268,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         product.setInternalDocLink(view.internalDocLink().getValue());
         product.setExternalDocLink(view.externalDocLink().getValue());
-        product.setCdrDescription(view.cdrDescription().getValue());
-        product.setConfiguration(view.configuration().getValue());
-        product.setHistoryVersion(view.historyVersion().getValue());
 
         product.setAliases(view.aliases().getValue());
 

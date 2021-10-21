@@ -52,23 +52,11 @@ public interface AbstractProductEditView extends IsWidget {
 
     HasValue<String> externalDocLink();
 
-    HasValue<String> historyVersion();
-
-    HasValue<String> configuration();
-
-    HasValue<String> cdrDescription();
-
     HasValue<List<Subscription>> productSubscriptions();
 
     HasVisibility directionContainerVisibility();
 
     void directionSelectorVisibility(boolean isMulti);
-
-    void setHistoryVersionPreviewAllowing(boolean isPreviewAllowed);
-
-    void setConfigurationPreviewAllowing(boolean isPreviewAllowed);
-
-    void setCdrDescriptionPreviewAllowed(boolean isPreviewAllowed);
 
     HasValue<List<String>> aliases();
 
@@ -100,8 +88,5 @@ public interface AbstractProductEditView extends IsWidget {
 
     void setChildrenContainerLabel(String label);
 
-    String HISTORY_VERSION = "historyVersion";
-    String CONFIGURATION = "configuration";
-    String CDR_DESCRIPTION = "cdr_description";
     String INFO = "info";
 }

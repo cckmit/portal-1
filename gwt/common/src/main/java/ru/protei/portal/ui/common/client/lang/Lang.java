@@ -474,12 +474,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String productExternalDocLink();
 
-    String productCDRDescription();
-
-    String productHistoryVersion();
-
-    String productConfiguration();
-
     String productChangeStateConfirmMessage();
 
     String productSelectDirection();

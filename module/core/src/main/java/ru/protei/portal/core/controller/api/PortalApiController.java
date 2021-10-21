@@ -242,18 +242,6 @@ public class PortalApiController {
                 .ifOk(devUnit -> log.info("createProduct(): OK"));
     }
 
-    @PostMapping(value = "/products/update")
-    public Result<Long> updateProductByInfo( HttpServletRequest request, HttpServletResponse response,
-                                             @RequestBody DevUnitInfo product) {
-        log.info( "updateProductByInfo() product={} ", product);
-
-        return authenticate(request, response, authService, sidGen, log ).flatMap( authToken ->
-                productService.updateProductFromInfo( authToken, product ) )
-                .ifOk( id -> log.info( "updateProductByInfo(): OK " ) )
-                .ifError( result -> log.warn( "updateProductByInfo(): Can`t update product by info={}. {}",
-                        product, result ) );
-    }
-
     @PostMapping(value = "/products/updateState/{productId}/{productState}")
     public Result<?> updateProductState(HttpServletRequest request, HttpServletResponse response,
                                         @PathVariable("productId") Long productId,

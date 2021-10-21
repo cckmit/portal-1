@@ -59,15 +59,6 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     @JdbcColumn(name = "external_doc_link")
     private String externalDocLink;
 
-    @JdbcColumn(name = Columns.CONFIGURATION)
-    private String configuration;
-
-    @JdbcColumn(name = Columns.CDR_DESCRIPTION)
-    private String cdrDescription;
-
-    @JdbcColumn(name = Columns.HISTORY_VERSION)
-    private String historyVersion;
-
     @JdbcColumn(name = "common_manager_id")
     private Long commonManagerId;
 
@@ -290,30 +281,6 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         this.externalDocLink = externalDocLink;
     }
 
-    public String getConfiguration() {
-        return configuration;
-    }
-
-    public void setConfiguration(String configuration) {
-        this.configuration = configuration;
-    }
-
-    public String getCdrDescription() {
-        return cdrDescription;
-    }
-
-    public void setCdrDescription(String cdrDescription) {
-        this.cdrDescription = cdrDescription;
-    }
-
-    public String getHistoryVersion() {
-        return historyVersion;
-    }
-
-    public void setHistoryVersion(String historyVersion) {
-        this.historyVersion = historyVersion;
-    }
-
     public List<String> getAliases() {
         return aliases;
     }
@@ -361,9 +328,6 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
                 ", subscriptions=" + subscriptions +
                 ", internalDocLink='" + internalDocLink + '\'' +
                 ", externalDocLink='" + externalDocLink + '\'' +
-                ", configuration='" + configuration + '\'' +
-                ", cdrDescription='" + cdrDescription + '\'' +
-                ", historyVersion='" + historyVersion + '\'' +
                 ", commonManagerId=" + commonManagerId +
                 ", commonManagerName='" + commonManagerName + '\'' +
                 ", parents=" + parents +
@@ -389,9 +353,6 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     public interface Columns {
         String ID = "id";
         String UNIT_INFO = "UNIT_INFO";
-        String HISTORY_VERSION = "history_version";
-        String CONFIGURATION = "configuration";
-        String CDR_DESCRIPTION = "cdr_description";
     }
 
 }

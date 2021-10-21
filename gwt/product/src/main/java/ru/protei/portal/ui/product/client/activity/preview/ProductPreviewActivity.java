@@ -90,26 +90,14 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
         view.parentsContainerVisibility().setVisible(!En_DevUnitType.COMPLEX.equals(product.getType()));
 
         List<String> list = new ArrayList<>();
-        list.add(product.getConfiguration());
-        list.add(product.getCdrDescription());
-        list.add(product.getHistoryVersion());
         list.add(product.getInfo());
-        view.setConfiguration(list.get(0));
-        view.setCdrDescription(list.get(1));
-        view.setHistoryVersion(list.get(2));
-        view.setInfo(list.get(3));
+        view.setInfo(list.get(0));
         textRenderController.render(En_TextMarkup.MARKDOWN, list, new FluentCallback<List<String>>()
                 .withError(throwable -> {
-                    view.setConfiguration(list.get(0));
-                    view.setCdrDescription(list.get(1));
-                    view.setHistoryVersion(list.get(2));
-                    view.setInfo(list.get(3));
+                    view.setInfo(list.get(0));
                 })
                 .withSuccess(converted -> {
-                    view.setConfiguration(converted.get(0));
-                    view.setCdrDescription(converted.get(1));
-                    view.setHistoryVersion(converted.get(2));
-                    view.setInfo(converted.get(3));
+                    view.setInfo(converted.get(0));
                 })
         );
     }

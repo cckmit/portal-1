@@ -108,5 +108,6 @@
   <include file="2021-09-28-add-member-roles.xml" relativeToChangelogFile="true"/>
   <include file="2021-10-04-change-card-batch-states.xml" relativeToChangelogFile="true"/>
   <include file="2021-10-04-rework-fk_history_case_object_id_to_case_object.xml" relativeToChangelogFile="true"/>
-  <include file="2021-10-10-modify-dev_unit-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-10-20-modify-dev_unit-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-20-21-remove-history_version-cdr_description-configuration-from-dev_unit.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

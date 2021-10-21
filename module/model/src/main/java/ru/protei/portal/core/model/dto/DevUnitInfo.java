@@ -20,12 +20,6 @@ public class DevUnitInfo extends AuditableObject {
 
     private String externalDocLink;
 
-    private String configuration;
-
-    private String cdrDescription;
-
-    private String historyVersion;
-
     private Long commonManagerId;
 
     @Override
@@ -40,30 +34,6 @@ public class DevUnitInfo extends AuditableObject {
 
     public void setId( Long id ) {
         this.id = id;
-    }
-
-    public String getCdrDescription() {
-        return cdrDescription;
-    }
-
-    public void setCdrDescription( String cdrDescription ) {
-        this.cdrDescription = cdrDescription;
-    }
-
-    public String getHistoryVersion() {
-        return historyVersion;
-    }
-
-    public void setHistoryVersion( String historyVersion ) {
-        this.historyVersion = historyVersion;
-    }
-
-    public String getConfiguration() {
-        return configuration;
-    }
-
-    public void setConfiguration( String configuration ) {
-        this.configuration = configuration;
     }
 
     public String getDescription() {
@@ -134,9 +104,6 @@ public class DevUnitInfo extends AuditableObject {
 
         DevUnitInfo info = new DevUnitInfo();
         info.setId( devUnit.getId() );
-        info.setConfiguration( devUnit.getConfiguration() );
-        info.setCdrDescription( devUnit.getCdrDescription() );
-        info.setHistoryVersion( devUnit.getHistoryVersion() );
         info.setDescription( devUnit.getInfo() );
         info.setName( devUnit.getName() );
         info.setType( devUnit.getType() );
@@ -156,9 +123,6 @@ public class DevUnitInfo extends AuditableObject {
         devUnit.setName(info.getName());
         devUnit.setInfo(info.getDescription());
         devUnit.setType( info.getType() );
-        devUnit.setCdrDescription(info.getCdrDescription());
-        devUnit.setConfiguration(info.getConfiguration());
-        devUnit.setHistoryVersion(info.getHistoryVersion());
         devUnit.setInternalDocLink(info.getInternalDocLink());
         devUnit.setExternalDocLink(info.getExternalDocLink());
         devUnit.setCommonManagerId(info.getCommonManagerId());
@@ -186,9 +150,6 @@ public class DevUnitInfo extends AuditableObject {
         return "Product{" +
                 "id=" + id +
                 ", description='" + description + '\'' +
-                ", cdrDescription='" + cdrDescription + '\'' +
-                ", historyVersion='" + historyVersion + '\'' +
-                ", configuration='" + configuration + '\'' +
                 '}';
     }
 }

@@ -43,19 +43,19 @@
                         <g:HTMLPanel styleName="links-list-formatter" ui:field="children"/>
                     </g:HTMLPanel>
 
-                    <tab:TabWidget styleName="" ui:field="tabWidget">
-                        <tab:pane.TabWidgetPane tabName="{lang.productHistoryVersion}">
-                            <g:HTMLPanel styleName="markdown" ui:field="historyVersion"/>
-                        </tab:pane.TabWidgetPane>
+<!--                    <tab:TabWidget styleName="" ui:field="tabWidget">-->
+<!--                        <tab:pane.TabWidgetPane tabName="{lang.productHistoryVersion}">-->
+<!--                            <g:HTMLPanel styleName="markdown" ui:field="historyVersion"/>-->
+<!--                        </tab:pane.TabWidgetPane>-->
 
-                        <tab:pane.TabWidgetPane tabName="{lang.productConfiguration}">
-                            <g:HTMLPanel styleName="markdown" ui:field="configuration"/>
-                        </tab:pane.TabWidgetPane>
+<!--                        <tab:pane.TabWidgetPane tabName="{lang.productConfiguration}">-->
+<!--                            <g:HTMLPanel styleName="markdown" ui:field="configuration"/>-->
+<!--                        </tab:pane.TabWidgetPane>-->
 
-                        <tab:pane.TabWidgetPane tabName="{lang.productCDRDescription}">
-                            <g:HTMLPanel styleName="markdown" ui:field="cdrDescription"/>
-                        </tab:pane.TabWidgetPane>
-                    </tab:TabWidget>
+<!--                        <tab:pane.TabWidgetPane tabName="{lang.productCDRDescription}">-->
+<!--                            <g:HTMLPanel styleName="markdown" ui:field="cdrDescription"/>-->
+<!--                        </tab:pane.TabWidgetPane>-->
+<!--                    </tab:TabWidget>-->
                 </div>
             </div>
         </div>
