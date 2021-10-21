@@ -146,21 +146,21 @@ public class CardServiceImpl implements CardService {
         CaseObject caseObject = caseObjectDAO.get(card.getId());
         boolean isUpdated;
         if (caseObject == null) {
-            caseObject = createCaseObject(card, null);
-            isUpdated = caseObjectDAO.saveOrUpdate(caseObject);
+            log.warn("Failed to find case object for card {} at db", card);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_FOUND);
         } else {
             caseObject.setInfo(card.getNote());
             caseObject.setModified(new Date());
             isUpdated = caseObjectDAO.partialMerge(caseObject, CaseObject.Columns.INFO, CaseObject.Columns.MODIFIED);
         }
         if (!isUpdated) {
-            log.info("Failed to update card note {} at db", card);
+            log.warn("Failed to update card note {} at db", card);
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         isUpdated = cardDAO.partialMerge(card, "comment");
         if (!isUpdated) {
-            log.warn("updateCard(): card not updated. card={}",  card);
+            log.warn("updateNoteAndComment(): card not updated. card={}",  card);
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
@@ -189,8 +189,8 @@ public class CardServiceImpl implements CardService {
         CaseObject caseObject = caseObjectDAO.get(meta.getId());
         boolean isUpdated;
         if (caseObject == null) {
-            caseObject = createCaseObject(meta, null);
-            isUpdated = caseObjectDAO.saveOrUpdate(caseObject);
+            log.warn("Failed to find case object for card {} at db", meta);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_FOUND);
         } else {
             caseObject.setManagerId(meta.getManager().getId());
             caseObject.setStateId(meta.getStateId());

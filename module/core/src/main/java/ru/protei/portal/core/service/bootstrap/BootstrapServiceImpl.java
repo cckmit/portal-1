@@ -140,14 +140,14 @@ public class BootstrapServiceImpl implements BootstrapService {
         }
 
         UserRole cardRole = new UserRole();
-        cardRole.setCode("ТПиМ: Управление платами");
+        cardRole.setCode("Управление платами");
         cardRole.setInfo("Управление платами");
         cardRole.setPrivileges(new HashSet<>(Arrays.asList(CARD_VIEW, CARD_CREATE, CARD_EDIT, CARD_REMOVE)));
         cardRole.setScope(En_Scope.SYSTEM);
         userRoleDAO.saveOrUpdate(cardRole);
 
         UserRole cardBatchRole = new UserRole();
-        cardBatchRole.setCode("ТПиМ: Управление партиями плат");
+        cardBatchRole.setCode("Управление партиями плат");
         cardBatchRole.setInfo("Управление партиями плат");
         cardBatchRole.setPrivileges(new HashSet<>(Arrays.asList(CARD_BATCH_VIEW, CARD_BATCH_CREATE, CARD_BATCH_EDIT, CARD_BATCH_REMOVE)));
         cardBatchRole.setScope(En_Scope.SYSTEM);

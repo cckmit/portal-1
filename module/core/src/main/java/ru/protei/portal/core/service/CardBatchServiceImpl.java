@@ -5,8 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.event.CardBatchCreateEvent;
-import ru.protei.portal.core.event.CardBatchUpdateEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -20,7 +18,6 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -114,10 +111,7 @@ public class CardBatchServiceImpl implements CardBatchService {
             log.error("State message for the cardBatch {} not saved!", cardBatchCaseId);
         }
 
-        //TODO доделать логику оповещения о создании партии плат
-        CardBatchCreateEvent cardBatchCreateEvent = new CardBatchCreateEvent(this, token.getPersonId(), cardBatch.getId());
-
-        return ok(cardBatchDAO.get(cardBatch.getId()), Collections.singletonList(cardBatchCreateEvent));
+        return ok(cardBatchDAO.get(cardBatch.getId()));
     }
 
     @Override
@@ -140,15 +134,15 @@ public class CardBatchServiceImpl implements CardBatchService {
         CaseObject caseObject = caseObjectDAO.get(commonInfo.getId());
         boolean isUpdated;
         if (caseObject == null) {
-            caseObject = createCardBatchCaseObject(commonInfo, null);
-            isUpdated = caseObjectDAO.saveOrUpdate(caseObject);
+            log.warn("Failed to find case object for card batch {} at db", commonInfo);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_FOUND);
         } else {
             caseObject.setInfo(commonInfo.getParams());
             caseObject.setModified(new Date());
             isUpdated = caseObjectDAO.partialMerge(caseObject, CaseObject.Columns.INFO, CaseObject.Columns.MODIFIED);
         }
         if (!isUpdated) {
-            log.info("Failed to update card batch common info {} at db", caseObject.getId());
+            log.warn("Failed to update card batch common info {} at db", caseObject.getId());
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
@@ -158,12 +152,9 @@ public class CardBatchServiceImpl implements CardBatchService {
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
-        //TODO доделать логику оповещения о редактировании партии плат
-        CardBatchUpdateEvent updateEvent = new CardBatchUpdateEvent(this, oldCommonInfo, commonInfo, token.getPersonId());
-
         CardBatch cardBatch = cardBatchDAO.get(caseObject.getId());
         jdbcManyRelationsHelper.fillAll(cardBatch);
-        return ok(cardBatch, Collections.singletonList(updateEvent));
+        return ok(cardBatch);
     }
 
     @Override
@@ -186,8 +177,8 @@ public class CardBatchServiceImpl implements CardBatchService {
         CaseObject caseObject = caseObjectDAO.get(meta.getId());
         boolean isUpdated;
         if (caseObject == null) {
-            caseObject = createCardBatchCaseObject(meta, null);
-            isUpdated = caseObjectDAO.saveOrUpdate(caseObject);
+            log.warn("Failed to find case object for card batch {} at db", meta);
+            throw new RollbackTransactionException(En_ResultStatus.NOT_FOUND);
         } else {
             caseObject.setStateId(meta.getStateId());
             caseObject.setImpLevel(meta.getImportance());
@@ -198,7 +189,7 @@ public class CardBatchServiceImpl implements CardBatchService {
                     CaseObject.Columns.DEADLINE, CaseObject.Columns.MODIFIED);
         }
         if (!isUpdated) {
-            log.info("Failed to update card batch meta data {} at db", caseObject.getId());
+            log.warn("Failed to update card batch meta data {} at db", caseObject.getId());
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
@@ -209,12 +200,9 @@ public class CardBatchServiceImpl implements CardBatchService {
             throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        //TODO доделать логику оповещения о редактировании партии плат
-        CardBatchUpdateEvent updateEvent = new CardBatchUpdateEvent(this, oldMeta, meta, token.getPersonId());
-
         CardBatch cardBatch = cardBatchDAO.get(caseObject.getId());
         jdbcManyRelationsHelper.fillAll(cardBatch);
-        return ok(cardBatch, Collections.singletonList(updateEvent));
+        return ok(cardBatch);
     }
 
     @Override
