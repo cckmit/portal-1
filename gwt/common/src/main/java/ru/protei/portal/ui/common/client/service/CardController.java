@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.Card;
+import ru.protei.portal.core.model.ent.CardGroupChangeRequest;
 import ru.protei.portal.core.model.ent.CardType;
 import ru.protei.portal.core.model.query.CardQuery;
 import ru.protei.portal.core.model.query.CardTypeQuery;
@@ -29,7 +30,7 @@ public interface CardController extends RemoteService {
 
     Card updateMeta(Card card) throws RequestFailedException;
 
-    UiResult<Set<Card>> updateCards(Set<Card> cards) throws RequestFailedException;
+    UiResult<Set<Card>> updateCards(CardGroupChangeRequest cards) throws RequestFailedException;
 
     Card removeCard(Card card) throws RequestFailedException;
 

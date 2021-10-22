@@ -55,7 +55,8 @@ import java.io.Serializable;
         @JsonSubTypes.Type(value = Kit.class, name = Kit.AUDIT_TYPE),
         @JsonSubTypes.Type(value = YoutrackWorkDictionary.class, name = YoutrackWorkDictionary.AUDIT_TYPE),
         @JsonSubTypes.Type(value = Card.class, name = Card.AUDIT_TYPE),
-        @JsonSubTypes.Type(value = CardBatch.class, name = CardBatch.AUDIT_TYPE)
+        @JsonSubTypes.Type(value = CardBatch.class, name = CardBatch.AUDIT_TYPE),
+        @JsonSubTypes.Type(value = CardGroupChangeRequest.class, name = CardGroupChangeRequest.AUDIT_TYPE)
 })
 public abstract class AuditableObject implements Serializable {
 

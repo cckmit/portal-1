@@ -3,7 +3,10 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
@@ -46,6 +49,9 @@ public class CardServiceImpl implements CardService {
 
     @Autowired
     CaseStateDAO caseStateDAO;
+
+    @Autowired
+    PlatformTransactionManager transactionManager;
 
     @Override
     public Result<Card> getCard(AuthToken token, Long id) {
@@ -174,11 +180,11 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public Result<Set<Card>> updateCards(AuthToken token, Set<Card> cards) {
+    public Result<Set<Card>> updateCards(AuthToken token, CardGroupChangeRequest changeRequest) {
         Set<Card> updatedCard = new HashSet<>();
-        for (Card card : cards) {
+        for (Long cardId : changeRequest.getIds()) {
             try {
-                Result<Card> cardResult = updateCardFromGroup(token, card);
+                Result<Card> cardResult = updateCardFromGroup(token, cardId, changeRequest);
                 if (cardResult.isOk()) {
                     updatedCard.add(cardResult.getData());
                 }
@@ -189,7 +195,7 @@ public class CardServiceImpl implements CardService {
             return error(En_ResultStatus.NOT_UPDATED);
         }
 
-        if (cards.size() != updatedCard.size()) {
+        if (changeRequest.getIds().size() != updatedCard.size()) {
             return ok(updatedCard, SOME_CARDS_NOT_UPDATED);
         }
 
@@ -221,62 +227,83 @@ public class CardServiceImpl implements CardService {
         return ok(number != null? number : START_NUMBER);
     }
 
-    @Transactional
-    public Result<Card> updateCardFromGroup(AuthToken token, Card card) {
-        if (card == null || card.getId() == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        if (!isValid(card)) {
-            return error(En_ResultStatus.VALIDATION_ERROR);
-        }
-        Card oldCard = cardDAO.get(card.getId());
-        if (oldCard == null) {
+    public Result<Card> updateCardFromGroup(AuthToken token, Long cardId, CardGroupChangeRequest changeRequest) {
+        Card card = cardDAO.get(cardId);
+        if (card == null) {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        if (!isValid(oldCard, card)) {
-            return error(En_ResultStatus.VALIDATION_ERROR);
+        TransactionStatus transaction = transactionManager.getTransaction(new DefaultTransactionDefinition());
+        try {
+            CaseObject caseObject = caseObjectDAO.get(card.getId());
+            boolean isUpdated;
+            if (caseObject == null) {
+                log.warn("Failed to find case object for card {} at db", card);
+                return error(En_ResultStatus.NOT_FOUND);
+            } else {
+                isUpdated = updateCaseObject(changeRequest, caseObject);
+            }
+
+            if (!isUpdated) {
+                log.warn("Failed to update card data {} at db", card);
+                throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+            }
+
+            isUpdated = updateCard(changeRequest, card);
+            if (!isUpdated) {
+                log.warn("updateCardFromGroup(): card not updated. card={}",  card);
+                throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+            }
+        } catch (Exception e) {
+            transactionManager.rollback(transaction);
+            return error(En_ResultStatus.NOT_UPDATED);
+        }
+        transactionManager.commit(transaction);
+
+        Card updatedCard = getCard(token, card.getId()).getData();
+
+        if (!Objects.equals(updatedCard.getStateId(), card.getStateId())) {
+            changeCardStateHistory(token, updatedCard.getId(), card.getStateId(), caseStateDAO.get(card.getStateId()).getState(),
+                    updatedCard.getStateId(), caseStateDAO.get(updatedCard.getStateId()).getState())
+                    .ifError(ignore -> log.error("Change state message for the card {} not saved!", updatedCard));
         }
 
-        CaseObject caseObject = caseObjectDAO.get(card.getId());
-        boolean isUpdated;
-        if (caseObject == null) {
-            log.warn("Failed to find case object for card {} at db", card);
-            return error(En_ResultStatus.NOT_FOUND);
-        } else {
-            caseObject.setManagerId(card.getManager().getId());
-            caseObject.setStateId(card.getStateId());
-            caseObject.setInfo(card.getNote());
-            caseObject.setModified(new Date());
-            isUpdated = caseObjectDAO.partialMerge(caseObject, CaseObject.Columns.MANAGER,
-                    CaseObject.Columns.STATE, CaseObject.Columns.INFO, CaseObject.Columns.MODIFIED);
-        }
-        if (!isUpdated) {
-            log.info("Failed to update card data {} at db", card);
-            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        if (!Objects.equals(updatedCard.getManager(), card.getManager())) {
+            changeManagerHistory(token, updatedCard.getId(),
+                    card.getManager().getId(), card.getManager().getDisplayShortName(),
+                    updatedCard.getManager().getId(), updatedCard.getManager().getDisplayShortName())
+                    .ifError(ignore -> log.error("Change manager message for the card {} not saved!", card));
         }
 
-        isUpdated = cardDAO.partialMerge(card, "id", "article", "test_date", "comment");
-        if (!isUpdated) {
-            log.warn("updateCardFromGroup(): card not updated. card={}",  card);
-            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
-        }
+        return ok(updatedCard);
+    }
 
-        if (!Objects.equals(card.getStateId(), oldCard.getStateId())) {
-            changeCardStateHistory(token, card.getId(), oldCard.getStateId(), caseStateDAO.get(oldCard.getStateId()).getState(),
-                    card.getStateId(), caseStateDAO.get(card.getStateId()).getState())
-                    .ifError(ignore -> log.error("Change state message for the card {} not saved!", card));
+    private boolean updateCaseObject(CardGroupChangeRequest changeRequest, CaseObject caseObject) {
+        if (changeRequest.getManager() != null) {
+            caseObject.setManagerId(changeRequest.getManager().getId());
         }
-
-        if (!Objects.equals(card.getManager(), oldCard.getManager())) {
-            changeManagerHistory(token, card.getId(),
-                    oldCard.getManager().getId(), oldCard.getManager().getDisplayShortName(),
-                    card.getManager().getId(), card.getManager().getDisplayShortName())
-                    .ifError(ignore -> log.error("Change manager message for the card {} not saved!", oldCard));
+        if (changeRequest.getStateId() != null) {
+            caseObject.setStateId(changeRequest.getStateId());
         }
+        if (changeRequest.getNote() != null) {
+            caseObject.setInfo(changeRequest.getNote());
+        }
+        caseObject.setModified(new Date());
+        return caseObjectDAO.partialMerge(caseObject, CaseObject.Columns.MANAGER,
+                CaseObject.Columns.STATE, CaseObject.Columns.INFO, CaseObject.Columns.MODIFIED);
+    }
 
-        return getCard(token, card.getId());
+    private boolean updateCard(CardGroupChangeRequest changeRequest, Card card) {
+        if (changeRequest.getArticle() != null) {
+            card.setArticle(changeRequest.getArticle());
+        }
+        if (changeRequest.getTestDate() != null) {
+            card.setTestDate(changeRequest.getTestDate());
+        }
+        if (changeRequest.getComment() != null) {
+            card.setComment(changeRequest.getComment());
+        }
+         return cardDAO.partialMerge(card, "id", "article", "test_date", "comment");
     }
 
     private boolean isValid(Card card) {

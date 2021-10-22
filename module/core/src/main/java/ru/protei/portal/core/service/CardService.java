@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Card;
+import ru.protei.portal.core.model.ent.CardGroupChangeRequest;
 import ru.protei.portal.core.model.ent.CardType;
 import ru.protei.portal.core.model.query.CardQuery;
 import ru.protei.portal.core.model.query.CardTypeQuery;
@@ -33,7 +34,7 @@ public interface CardService {
 
     @Privileged({ En_Privilege.DELIVERY_EDIT })
     @Auditable( En_AuditType.CARDS_MODIFY)
-    Result<Set<Card>> updateCards(AuthToken token, Set<Card> cards);
+    Result<Set<Card>> updateCards(AuthToken token, CardGroupChangeRequest changeRequest);
 
     @Privileged({ En_Privilege.DELIVERY_REMOVE })
     @Auditable( En_AuditType.CARD_REMOVE )

@@ -122,23 +122,18 @@ public class CardTableView extends Composite implements AbstractCardTableView {
 
         NumberColumn number = new NumberColumn(lang, cardStateLang);
         table.addColumn(number.header, number.values);
-        number.setColumnProvider(columnProvider);
 
         CardTypeColumn cardType = new CardTypeColumn(lang);
         table.addColumn(cardType.header, cardType.values);
-        cardType.setColumnProvider(columnProvider);
 
         ManagerColumn manager = new ManagerColumn(lang);
         table.addColumn(manager.header, manager.values);
-        manager.setColumnProvider(columnProvider);
 
         TestDateColumn testDate = new TestDateColumn(lang);
         table.addColumn(testDate.header, testDate.values);
-        testDate.setColumnProvider(columnProvider);
 
         InfoColumn info = new InfoColumn(lang);
         table.addColumn(info.header, info.values);
-        info.setColumnProvider(columnProvider);
 
         table.addColumn(editClickColumn.header, editClickColumn.values);
         table.addColumn(removeClickColumn.header, removeClickColumn.values);

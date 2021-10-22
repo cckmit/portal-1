@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Card;
+import ru.protei.portal.core.model.ent.CardGroupChangeRequest;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.UiResult;
@@ -20,6 +21,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_CARDS_NOT_UPDATED;
 
@@ -50,8 +52,7 @@ public abstract class CardGroupEditActivity implements AbstractCardGroupEditActi
             return;
         }
 
-        fillCards();
-        update();
+        update( createChangeRequest() );
     }
 
     @Override
@@ -78,32 +79,32 @@ public abstract class CardGroupEditActivity implements AbstractCardGroupEditActi
         setWarnings();
     }
 
-    private void fillCards() {
-        for (Card card : selectedCards) {
-            if (view.state().getValue() != null) {
-                card.setState(view.state().getValue());
-                card.setStateId(view.state().getValue().getId());
-            }
-            if (StringUtils.isNotEmpty(view.article().getValue())) {
-                card.setArticle(view.article().getValue());
-            }
-            if (view.manager().getValue() != null) {
-                card.setManager(view.manager().getValue());
-            }
-            if (view.testDate().getValue() != null) {
-                card.setTestDate(view.testDate().getValue());
-            }
-            if (StringUtils.isNotEmpty(view.note().getValue())) {
-                card.setNote(view.note().getValue());
-            }
-            if (StringUtils.isNotEmpty(view.comment().getValue())) {
-                card.setComment(view.comment().getValue());
-            }
+    private CardGroupChangeRequest createChangeRequest(){
+        CardGroupChangeRequest changeRequest = new CardGroupChangeRequest();
+        changeRequest.setIds(selectedCards.stream().map(Card::getId).collect(Collectors.toSet()));
+        if (view.state().getValue() != null) {
+            changeRequest.setStateId(view.state().getValue().getId());
         }
+        if (StringUtils.isNotEmpty(view.article().getValue())) {
+            changeRequest.setArticle(view.article().getValue());
+        }
+        if (view.manager().getValue() != null) {
+            changeRequest.setManager(view.manager().getValue());
+        }
+        if (view.testDate().getValue() != null) {
+            changeRequest.setTestDate(view.testDate().getValue());
+        }
+        if (StringUtils.isNotEmpty(view.note().getValue())) {
+            changeRequest.setNote(view.note().getValue());
+        }
+        if (StringUtils.isNotEmpty(view.comment().getValue())) {
+            changeRequest.setComment(view.comment().getValue());
+        }
+        return changeRequest;
     }
 
-    private void update() {
-        controller.updateCards(selectedCards, new FluentCallback<UiResult<Set<Card>>>()
+    private void update(CardGroupChangeRequest changeRequest) {
+        controller.updateCards(changeRequest, new FluentCallback<UiResult<Set<Card>>>()
                 .withError(defaultErrorHandler)
                 .withSuccess(result -> {
                     if (SOME_CARDS_NOT_UPDATED.equals(result.getMessage())) {

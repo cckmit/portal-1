@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Card;
+import ru.protei.portal.core.model.ent.CardGroupChangeRequest;
 import ru.protei.portal.core.model.ent.CardType;
 import ru.protei.portal.core.model.query.CardQuery;
 import ru.protei.portal.core.model.query.CardTypeQuery;
@@ -74,9 +75,9 @@ public class CardControllerImpl implements CardController {
     }
 
     @Override
-    public UiResult<Set<Card>> updateCards(Set<Card> cards) throws RequestFailedException {
+    public UiResult<Set<Card>> updateCards(CardGroupChangeRequest changeRequest) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
-        Result<Set<Card>> response = cardService.updateCards(token, cards);
+        Result<Set<Card>> response = cardService.updateCards(token, changeRequest);
 
         if (response.isError()) {
             log.info("updateCards(): status={}", response.getStatus());

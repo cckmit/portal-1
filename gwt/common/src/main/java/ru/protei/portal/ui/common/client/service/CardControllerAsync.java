@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.Card;
+import ru.protei.portal.core.model.ent.CardGroupChangeRequest;
 import ru.protei.portal.core.model.ent.CardType;
 import ru.protei.portal.core.model.query.CardQuery;
 import ru.protei.portal.core.model.query.CardTypeQuery;
@@ -26,7 +27,7 @@ public interface CardControllerAsync {
 
     void updateMeta(Card card, AsyncCallback<Card> async);
 
-    void updateCards(Set<Card> cards, AsyncCallback<UiResult<Set<Card>>> async);
+    void updateCards(CardGroupChangeRequest cards, AsyncCallback<UiResult<Set<Card>>> async);
 
     void removeCard(Card card, AsyncCallback<Card> async);
 
