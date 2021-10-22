@@ -90,22 +90,6 @@
                     </div>
                 </div>
             </div>
-
-<!--            <div class="container-fluid padding-15 bg-white">-->
-<!--                <tab:TabWidget styleName="" ui:field="tabWidget">-->
-<!--                    <tab:pane.TabWidgetPane tabName="{lang.productHistoryVersion}">-->
-<!--                        <markdown:MarkdownAreaWithPreview ui:field="historyVersion"/>-->
-<!--                    </tab:pane.TabWidgetPane>-->
-
-<!--                    <tab:pane.TabWidgetPane tabName="{lang.productConfiguration}">-->
-<!--                        <markdown:MarkdownAreaWithPreview ui:field="configuration"/>-->
-<!--                    </tab:pane.TabWidgetPane>-->
-
-<!--                    <tab:pane.TabWidgetPane tabName="{lang.productCDRDescription}">-->
-<!--                        <markdown:MarkdownAreaWithPreview ui:field="cdrDescription"/>-->
-<!--                    </tab:pane.TabWidgetPane>-->
-<!--                </tab:TabWidget>-->
-<!--            </div>-->
         </div>
         <div class="card-footer">
             <div class="card card-transparent no-margin">

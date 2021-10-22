@@ -14,7 +14,6 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPreviewActivity;
 import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPreviewView;
 
@@ -87,11 +86,6 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     }
 
     @Override
-    public void setChildren(Map<String, String> nameToLink) {
-        addLinksToContainer(nameToLink, children);
-    }
-
-    @Override
     public void showFullScreen(boolean isFullScreen) {
         backButtonPanel.setVisible(isFullScreen);
         rootWrapper.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
@@ -145,7 +139,6 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
         info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PRODUCT_PREVIEW.DESCRIPTION);
         direction.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PRODUCT_PREVIEW.DIRECTION_LABEL);
         parents.ensureDebugId(DebugIds.PRODUCT_PREVIEW.PARENTS_CONTAINER);
-        children.ensureDebugId(DebugIds.PRODUCT_PREVIEW.CHILDREN_CONTAINER);
         backButton.ensureDebugId(DebugIds.PRODUCT_PREVIEW.BACK_BUTTON);
     }
 
@@ -158,11 +151,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     @UiField
     HTMLPanel parents;
     @UiField
-    HTMLPanel children;
-    @UiField
     HTMLPanel parentsContainer;
-    @UiField
-    HTMLPanel childrenContainer;
     @UiField
     ImageElement typeImage;
     @UiField
