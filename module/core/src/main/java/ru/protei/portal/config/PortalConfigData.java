@@ -738,7 +738,7 @@ public class PortalConfigData {
         private final String authToken;
         private final String employeeRegistrationSyncSchedule;
         private final String equipmentProject;
-        private final String adminProject;
+        private final String supportProject;
         private final String phoneProject;
         private final Long youtrackUserId;
         private final String youtrackCustomFieldCompanyId;
@@ -749,7 +749,7 @@ public class PortalConfigData {
             authToken = properties.getProperty("youtrack.api.auth_token");
             employeeRegistrationSyncSchedule = properties.getProperty("youtrack.employee_registration.sync_schedule", "0 */15 * * * *");
             equipmentProject = properties.getProperty("youtrack.employee_registration.equipment_project");
-            adminProject = properties.getProperty("youtrack.employee_registration.admin_project");
+            supportProject = properties.getProperty("youtrack.employee_registration.support_project");
             phoneProject = properties.getProperty("youtrack.employee_registration.phone_project");
             youtrackUserId = properties.getProperty("youtrack.user_id_for_synchronization", Long.class);
             youtrackCustomFieldCompanyId = properties.getProperty("youtrack.custom_field_company_id");
@@ -775,8 +775,8 @@ public class PortalConfigData {
             return equipmentProject;
         }
 
-        public String getAdminProject() {
-            return adminProject;
+        public String getSupportProject() {
+            return supportProject;
         }
 
         public String getPhoneProject() {

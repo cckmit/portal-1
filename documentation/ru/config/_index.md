@@ -419,7 +419,7 @@ youtrack.employee_registration.sync_schedule=0 */15 * * * *
 youtrack.employee_registration.equipment_project=HOZVOPROS
 
 ## название YouTrack проекта для создания задач по открытию доступа к внутренним ресурсам для нового сотрудника
-youtrack.employee_registration.admin_project=ACRM
+youtrack.employee_registration.support_project=userSupport
 
 ## название YouTrack проекта для создания задач по открытию доступа к телефонной связи
 youtrack.employee_registration.phone_project=Office_Tel

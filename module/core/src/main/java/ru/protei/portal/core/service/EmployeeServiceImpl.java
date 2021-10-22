@@ -710,9 +710,9 @@ public class EmployeeServiceImpl implements EmployeeService {
                 "\n" +
                 "Необходимо изменение учетной записи, почты.";
 
-        final String ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
+        final String USER_SUPPORT_PROJECT_NAME = portalConfig.data().youtrack().getSupportProject();
 
-        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description );
+        youtrackService.createIssue( USER_SUPPORT_PROJECT_NAME, summary, description );
     }
 
     private void createFireEmployeeYoutrackIssue(Person person) {
