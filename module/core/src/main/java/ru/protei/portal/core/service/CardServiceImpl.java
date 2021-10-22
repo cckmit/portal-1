@@ -7,6 +7,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
@@ -51,7 +52,8 @@ public class CardServiceImpl implements CardService {
     CaseStateDAO caseStateDAO;
 
     @Autowired
-    PlatformTransactionManager transactionManager;
+    TransactionTemplate transactionTemplate;
+
 
     @Override
     public Result<Card> getCard(AuthToken token, Long id) {
@@ -233,13 +235,12 @@ public class CardServiceImpl implements CardService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        TransactionStatus transaction = transactionManager.getTransaction(new DefaultTransactionDefinition());
-        try {
+        transactionTemplate.execute(transactionStatus -> {
             CaseObject caseObject = caseObjectDAO.get(card.getId());
             boolean isUpdated;
             if (caseObject == null) {
                 log.warn("Failed to find case object for card {} at db", card);
-                return error(En_ResultStatus.NOT_FOUND);
+                throw new RollbackTransactionException(En_ResultStatus.NOT_FOUND);
             } else {
                 isUpdated = updateCaseObject(changeRequest, caseObject);
             }
@@ -254,11 +255,9 @@ public class CardServiceImpl implements CardService {
                 log.warn("updateCardFromGroup(): card not updated. card={}",  card);
                 throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
             }
-        } catch (Exception e) {
-            transactionManager.rollback(transaction);
-            return error(En_ResultStatus.NOT_UPDATED);
-        }
-        transactionManager.commit(transaction);
+
+            return true;
+        });
 
         Card updatedCard = getCard(token, card.getId()).getData();
 
