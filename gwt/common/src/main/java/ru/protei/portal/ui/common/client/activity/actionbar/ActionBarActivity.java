@@ -33,6 +33,15 @@ public abstract class ActionBarActivity
         itemViewToIdentity.clear();
     }
 
+    @Event
+    public void onSetButtonEnabled( ActionBarEvents.SetButtonEnabled event ) {
+        itemViewToIdentity.forEach((view, identity) -> {
+            if (identity.equals(event.identity)) {
+               view.setEnabled(event.isEnabled);
+            }
+        });
+    }
+
     @Override
     public void onSectionClicked( AbstractSectionItemView itemView ) {
         if ( itemViewToIdentity == null ) {

@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Card;
+import ru.protei.portal.core.model.ent.CardGroupChangeRequest;
 import ru.protei.portal.core.model.ent.CardType;
 import ru.protei.portal.core.model.query.CardQuery;
 import ru.protei.portal.core.model.query.CardTypeQuery;
@@ -14,6 +15,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Set;
 
 public interface CardService {
     @Privileged({ En_Privilege.CARD_VIEW })
@@ -33,6 +35,10 @@ public interface CardService {
     @Privileged({ En_Privilege.CARD_EDIT })
     @Auditable( En_AuditType.CARD_MODIFY)
     Result<Card> updateMeta(AuthToken token, Card card);
+
+    @Privileged({ En_Privilege.CARD_EDIT })
+    @Auditable( En_AuditType.CARDS_MODIFY)
+    Result<Set<Card>> updateCards(AuthToken token, CardGroupChangeRequest changeRequest);
 
     @Privileged({ En_Privilege.CARD_REMOVE })
     @Auditable( En_AuditType.CARD_REMOVE )

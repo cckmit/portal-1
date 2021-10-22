@@ -121,6 +121,15 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
         root.addDomHandler(event -> onSectionClicked(), ClickEvent.getType());
     }
 
+    @Override
+    public void setEnabled(boolean isEnabled) {
+        if (isEnabled) {
+            root.removeStyleName("disabled");
+        } else {
+            root.addStyleName("disabled");
+        }
+    }
+
     @UiHandler("anchor")
     public void onAnchorClicked( ClickEvent event ) {
         if ( anchor.getHref().endsWith("#") ) {

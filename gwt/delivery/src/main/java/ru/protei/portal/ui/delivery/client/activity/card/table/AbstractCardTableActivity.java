@@ -10,4 +10,7 @@ import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 public interface AbstractCardTableActivity extends
         InfiniteLoadHandler<Card>, InfiniteTableWidget.PagerListener,
         ClickColumn.Handler<Card>, EditClickColumn.EditHandler<Card>, RemoveClickColumn.RemoveHandler<Card> {
+    void setGroupButtonEnabled(boolean isEnabled);
+
+    void onCheckCardClicked();
 }

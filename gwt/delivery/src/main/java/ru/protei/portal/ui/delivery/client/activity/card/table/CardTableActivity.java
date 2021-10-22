@@ -74,6 +74,8 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         if (policyService.hasPrivilegeFor(En_Privilege.CARD_CREATE)) {
             fireEvent(new ActionBarEvents.Add(CREATE_ACTION , null, UiConstants.ActionBarIdentity.CARD_CREATE));
         }
+        fireEvent(new ActionBarEvents.Add(lang.cardGroupModify(), null, UiConstants.ActionBarIdentity.CARD_GROUP_MODIFY));
+        view.clearSelectedRows();
 
         this.preScroll = event.preScroll;
 
@@ -89,6 +91,21 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         view.clearSelection();
 
         fireEvent(new CardEvents.Create());
+    }
+
+    @Event
+    public void onGroupModifyClicked(ActionBarEvents.Clicked event) {
+        if (!(UiConstants.ActionBarIdentity.CARD_GROUP_MODIFY.equals(event.identity)) ) {
+            return;
+        }
+
+        fireEvent(new CardEvents.GroupEdit(view.getSelectedCards()));
+    }
+
+
+    @Event
+    public void onGroupUpdate(CardEvents.GroupChanged event) {
+        loadTable();
     }
 
     @Event
@@ -128,6 +145,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
                         restoreScroll();
+                        view.clearSelectedRows();
                     }
                     asyncCallback.onSuccess(sr.getResults());
                 }));
@@ -159,6 +177,17 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
 
     }
 
+    @Override
+    public void setGroupButtonEnabled(boolean isEnabled) {
+
+    }
+
+    @Override
+    public void onCheckCardClicked() {
+        fireEvent(new ActionBarEvents.SetButtonEnabled( UiConstants.ActionBarIdentity.CARD_GROUP_MODIFY,
+                !view.getSelectedCards().isEmpty() ));
+    }
+
     private void showPreview(Card value) {
         if (value == null || value.getId() == null) {
             animation.closeDetails();
@@ -181,6 +210,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
         animation.closeDetails();
         view.clearRecords();
         view.triggerTableLoad();
+        fireEvent(new ActionBarEvents.SetButtonEnabled( UiConstants.ActionBarIdentity.CARD_GROUP_MODIFY, false));
     }
 
     private CardQuery makeQuery() {

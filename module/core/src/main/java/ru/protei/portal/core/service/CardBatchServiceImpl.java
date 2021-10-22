@@ -146,7 +146,7 @@ public class CardBatchServiceImpl implements CardBatchService {
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
-        isUpdated = cardBatchDAO.partialMerge(commonInfo, "id", "article", "amount");
+        isUpdated = cardBatchDAO.partialMerge(commonInfo, "article", "amount");
         if (!isUpdated) {
             log.warn("updateMeta(): cardBatch not updated. cardBatch={}",  commonInfo.getId());
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);

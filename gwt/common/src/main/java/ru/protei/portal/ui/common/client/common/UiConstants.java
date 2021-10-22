@@ -134,6 +134,7 @@ public class UiConstants {
         String DUTY_LOG = "duty_log";
         String DUTY_LOG_CREATE_REPORT = "duty_log_create_report";
         String CARD_CREATE = "card_create";
+        String CARD_GROUP_MODIFY = "card_group_modify";
         String CARD_BATCH_CREATE = "card_batch_create";
     }
 

@@ -1,0 +1,68 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+             xmlns:card="urn:import:ru.protei.portal.ui.common.client.widget.selector.card"
+             xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
+             xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
+             xmlns:markdown="urn:import:ru.protei.portal.ui.common.client.widget.markdown"
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="card card-transparent no-margin">
+        <div class="card-body cards-edit-modal">
+            <g:HTMLPanel ui:field="stateContainer" addStyleNames="row">
+                <card:state.CardStateFormSelector ui:field="state" header="{lang.cardState}" searchEnabled="false"
+                                                  hasNullValue="true" defaultValue="{lang.notSelected}" addStyleNames="col-11 p-0"/>
+                <div class="col-1 d-flex justify-content-center align-items-center m-b-10">
+                    <i class="fas fa-exclamation-triangle fa-lg warn-icon" title="{lang.cardWarningChangeNotEqualsFields}"/>
+                </div>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="articleContainer" addStyleNames="row">
+                <div class="form-group form-group-default col-11">
+                    <label class="fade"><ui:text from="{lang.cardArticle}"/></label>
+                    <validablefield:ValidableTextBox ui:field="article" placeholder="{lang.cardBatchArticlePlaceholder}"
+                                                     styleName="form-control" notNull="false"/>
+                </div>
+                <div class="col-1 d-flex justify-content-center align-items-center m-b-10">
+                    <i class="fas fa-exclamation-triangle fa-lg warn-icon" title="{lang.cardWarningChangeNotEqualsFields}"/>
+                </div>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="managerContainer" addStyleNames="row">
+                <person:EmployeeFormSelector ui:field="manager" header="{lang.cardManager}" addStyleNames="col-11 p-0"
+                                             hasNullValue="true" defaultValue="{lang.notSelected}"/>
+                <div class="col-1 d-flex justify-content-center align-items-center m-b-10">
+                    <i class="fas fa-exclamation-triangle fa-lg warn-icon" title="{lang.cardWarningChangeNotEqualsFields}"/>
+                </div>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="testDateContainer" addStyleNames="row">
+                <div class="form-group form-group-default date-picker col-11">
+                    <label class="fade" ><ui:text from="{lang.cardTestDate}"/></label>
+                    <datepicker:SinglePicker ui:field="testDate" type="DATE"
+                                             formatValue="dd-MM-yyyy" styleName="clearfix"/>
+                </div>
+                <div class="col-1 d-flex justify-content-center align-items-center m-b-10">
+                    <i class="fas fa-exclamation-triangle fa-lg warn-icon" title="{lang.cardWarningChangeNotEqualsFields}"/>
+                </div>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="noteContainer" addStyleNames="row">
+                <g:HTMLPanel styleName="form-group form-group-default col-md-11">
+                    <label class="fade"><ui:text from="{lang.cardNote}"/></label>
+                    <markdown:MarkdownAreaWithPreview ui:field="note" minRows="5" maxRows="10"/>
+                </g:HTMLPanel>
+                <div class="col-1 d-flex justify-content-center align-items-center m-b-10">
+                    <i class="fas fa-exclamation-triangle fa-lg warn-icon" title="{lang.cardWarningChangeNotEqualsFields}"/>
+                </div>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="commentContainer" addStyleNames="row">
+                <g:HTMLPanel styleName="form-group form-group-default col-md-11">
+                    <label class="fade"><ui:text from="{lang.cardComment}"/></label>
+                    <markdown:MarkdownAreaWithPreview ui:field="comment" minRows="5" maxRows="10"/>
+                </g:HTMLPanel>
+                <div class="col-1 d-flex justify-content-center align-items-center m-b-10">
+                    <i class="fas fa-exclamation-triangle fa-lg warn-icon" title="{lang.cardWarningChangeNotEqualsFields}"/>
+                </div>
+            </g:HTMLPanel>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -24,6 +25,7 @@ import ru.protei.portal.ui.delivery.client.view.card.table.column.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 public class CardTableView extends Composite implements AbstractCardTableView {
@@ -31,26 +33,12 @@ public class CardTableView extends Composite implements AbstractCardTableView {
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        initTable();
     }
 
     @Override
     public void setActivity(AbstractCardTableActivity activity) {
         this.activity = activity;
-
-        editClickColumn.setEditHandler(activity);
-        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CARD_EDIT));
-
-        removeClickColumn.setRemoveHandler(activity);
-        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CARD_REMOVE));
-
-        columns.forEach(clickColumn -> {
-            clickColumn.setHandler(activity);
-            clickColumn.setColumnProvider(columnProvider);
-        });
-
-        table.setPagerListener(activity);
-        table.setLoadHandler(activity);
+        initTable();
     }
 
     @Override
@@ -112,26 +100,40 @@ public class CardTableView extends Composite implements AbstractCardTableView {
         }
     }
 
+    @Override
+    public Set<Card> getSelectedCards() {
+        return selectionColumn.selectedValues;
+    }
+
+    @Override
+    public void clearSelectedRows() {
+        selectionColumn.clear();
+        columnProvider.removeSelection();
+        setGroupButtonEnabled(false);
+    }
+
+    @Override
+    public void setGroupButtonEnabled(boolean isEnabled) {
+        activity.setGroupButtonEnabled(isEnabled);
+    }
+
     private void initTable() {
+        table.addColumn(selectionColumn.header, selectionColumn.values);
+
         NumberColumn number = new NumberColumn(lang, cardStateLang);
         table.addColumn(number.header, number.values);
-        number.setColumnProvider(columnProvider);
 
         CardTypeColumn cardType = new CardTypeColumn(lang);
         table.addColumn(cardType.header, cardType.values);
-        cardType.setColumnProvider(columnProvider);
 
         ManagerColumn manager = new ManagerColumn(lang);
         table.addColumn(manager.header, manager.values);
-        manager.setColumnProvider(columnProvider);
 
         TestDateColumn testDate = new TestDateColumn(lang);
         table.addColumn(testDate.header, testDate.values);
-        testDate.setColumnProvider(columnProvider);
 
         InfoColumn info = new InfoColumn(lang);
         table.addColumn(info.header, info.values);
-        info.setColumnProvider(columnProvider);
 
         table.addColumn(editClickColumn.header, editClickColumn.values);
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
@@ -143,6 +145,24 @@ public class CardTableView extends Composite implements AbstractCardTableView {
         columns.add(testDate);
         columns.add(editClickColumn);
         columns.add(removeClickColumn);
+
+        selectionColumn.setSelectionHandler((module, handler) -> {
+            activity.onCheckCardClicked();
+        });
+
+        editClickColumn.setEditHandler(activity);
+        editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_EDIT));
+
+        removeClickColumn.setRemoveHandler(activity);
+        removeClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.DELIVERY_REMOVE));
+
+        columns.forEach(clickColumn -> {
+            clickColumn.setHandler(activity);
+            clickColumn.setColumnProvider(columnProvider);
+        });
+
+        table.setPagerListener(activity);
+        table.setLoadHandler(activity);
     }
 
     @UiField
@@ -170,6 +190,7 @@ public class CardTableView extends Composite implements AbstractCardTableView {
 
     private final List<ClickColumn<Card>> columns = new ArrayList<>();
 
+    private final SelectionColumn<Card> selectionColumn = new SelectionColumn<>();
     private final ClickColumnProvider<Card> columnProvider = new ClickColumnProvider<>();
     private AbstractCardTableActivity activity;
 

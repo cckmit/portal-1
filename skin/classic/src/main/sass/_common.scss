@@ -5598,6 +5598,15 @@ div.form-group-default.form-group-default-selectFx:focus {
 
 .cards {
   table {
+    thead {
+      tr {
+        th {
+          &:first-child {
+            padding: 8px !important;
+          }
+        }
+      }
+    }
     tbody {
       tr {
         td {
@@ -5646,6 +5655,49 @@ div.form-group-default.form-group-default-selectFx:focus {
     .info {
       font-size: 85%;
       width: 30%;
+    }
+  }
+
+  th, td {
+    input[type="checkbox"] {
+      margin: 5px 0 0 10px;
+      font-family: Arial, Helvetica, sans-serif;
+
+      &:before {
+        position: relative;
+        border-radius: 3px;
+        transition: border .2s linear 0s, color .2s linear 0s;
+        box-sizing: border-box;
+        content: "";
+        display: inline-block;
+        width: 17px;
+        height: 17px;
+        margin-right: 10px;
+        background-color: #fff;
+        border: 1px solid #d0d0d0;
+        right: 2px;
+        bottom: 2px;
+      }
+
+      &:checked:before {
+        border-width: 8.5px;
+      }
+
+      &:checked:after {
+        position: relative;
+        font-family: "Font Awesome 5 Free", serif;
+        font-weight: 900;
+        content: "\F00C";
+        color: #fff;
+        border-radius: 3px;
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        left: 1.5px;
+        font-size: 11px;
+        bottom: 23px;
+        transition: border .2s linear 0s, color .2s linear 0s;
+      }
     }
   }
 }
@@ -5717,5 +5769,21 @@ div.form-group-default.form-group-default-selectFx:focus {
     .deadline, .amount, .contractors {
       display: none;
     }
+  }
+}
+
+.card {
+  .cards-edit-modal {
+    padding-right: 0;
+    margin-right: -10px;
+
+    .warn-icon {
+      padding-right: 10px;
+      color: #ffd140;
+    }
+  }
+
+  .no-warning .warn-icon {
+    display: none !important;
   }
 }

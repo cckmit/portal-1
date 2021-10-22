@@ -5,6 +5,8 @@ import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Card;
 
+import java.util.Set;
+
 public class CardEvents {
 
     @Url( value = "cards", primary = true )
@@ -33,6 +35,14 @@ public class CardEvents {
         public Long id;
     }
 
+    public static class GroupEdit {
+        public GroupEdit(Set<Card> selectedCards) {
+            this.selectedCards = selectedCards;
+        }
+
+        public Set<Card> selectedCards;
+    }
+
     public static class ShowPreview {
         public ShowPreview (HasWidgets parent, Long id) {
             this.parent = parent;
@@ -58,5 +68,8 @@ public class CardEvents {
         }
 
         public Card card;
+    }
+
+    public static class GroupChanged {
     }
 }
