@@ -10,16 +10,29 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.lang.En_CommentOrHistoryTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.edit.AbstractCardBatchEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.edit.AbstractCardBatchEditView;
+
+import java.util.Arrays;
+
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.COMMENT;
+import static ru.protei.portal.core.model.dict.En_CommentOrHistoryType.HISTORY;
 
 public class CardBatchEditView extends Composite implements AbstractCardBatchEditView {
 
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+
+        multiTabWidget.setTabToNameRenderer(type -> commentOrHistoryTypeLang.getName(type));
+        multiTabWidget.addTabs(Arrays.asList(COMMENT, HISTORY));
+        multiTabWidget.setOnTabClickHandler(selectedTabs -> activity.onSelectedTabsChanged(selectedTabs));
+
         ensureDebugIds();
     }
 
@@ -101,6 +114,16 @@ public class CardBatchEditView extends Composite implements AbstractCardBatchEdi
         }
     }
 
+    @Override
+    public HasWidgets getItemsContainer() {
+        return multiTabWidget.getContainer();
+    }
+
+    @Override
+    public MultiTabWidget<En_CommentOrHistoryType> getMultiTabWidget() {
+        return multiTabWidget;
+    }
+
     @UiHandler("backButton")
     public void onBackButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -122,6 +145,9 @@ public class CardBatchEditView extends Composite implements AbstractCardBatchEdi
         backButton.ensureDebugId(DebugIds.ISSUE.BACK_BUTTON);
         commonInfoEditButton.ensureDebugId(DebugIds.CARD_BATCH.EDIT_COMMON_INFO_BUTTON);
         numberRO.ensureDebugId(DebugIds.CARD_BATCH.NUMBER);
+
+        multiTabWidget.setTabNameDebugId(COMMENT, DebugIds.CARD_BATCH.TAB_COMMENT);
+        multiTabWidget.setTabNameDebugId(HISTORY, DebugIds.CARD_BATCH.TAB_HISTORY);
     }
 
     @UiField
@@ -150,6 +176,10 @@ public class CardBatchEditView extends Composite implements AbstractCardBatchEdi
     Lang lang;
     @UiField
     Button backButton;
+    @UiField
+    MultiTabWidget<En_CommentOrHistoryType> multiTabWidget;
+    @Inject
+    En_CommentOrHistoryTypeLang commentOrHistoryTypeLang;
 
     private AbstractCardBatchEditActivity activity;
 

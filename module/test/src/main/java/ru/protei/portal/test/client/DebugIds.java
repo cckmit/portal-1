@@ -1432,5 +1432,7 @@ public class DebugIds {
         String CONTRACTOR_SELECTOR = "card-batch-contractor-selector";
         String NUMBER = "card-batch-number";
         String EDIT_COMMON_INFO_BUTTON = "card-batch-edit-common-info-button";
+        String TAB_COMMENT = "card-batch-tab-comments";
+        String TAB_HISTORY = "card-batch-tab-history";
     }
 }

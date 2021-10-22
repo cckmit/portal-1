@@ -7,14 +7,18 @@ import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
+import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CardBatch;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CardBatchControllerAsync;
@@ -31,13 +35,15 @@ import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardB
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Objects;
+import java.util.List;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.ERROR;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.SUCCESS;
 import static ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils.transliteration;
+import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
+import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
 
 public abstract class CardBatchEditActivity implements Activity, AbstractCardBatchEditActivity,
         AbstractCardBatchCommonInfoEditActivity, AbstractCardBatchMetaActivity {
@@ -205,6 +211,12 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         switchCommonInfoToEdit(true);
     }
 
+    @Override
+    public void onSelectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
+        saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
+        fireEvent(new CommentAndHistoryEvents.ShowItems(commentAndHistoryView, selectedTabs));
+    }
+
     private boolean isNew(CardBatch cardBatch) {
         return cardBatch.getId() == null;
     }
@@ -240,6 +252,12 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         fillPrioritySelector(cardBatch.getImportance());
         metaView.deadline().setValue(new Date(cardBatch.getDeadline()));
         metaView.contractors().setValue(new HashSet<>(cardBatch.getContractors()));
+
+        view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
+        view.getItemsContainer().clear();
+        view.getItemsContainer().add(commentAndHistoryView.asWidget());
+        fireEvent(new CommentAndHistoryEvents.Show(commentAndHistoryView, cardBatch.getId(),
+                En_CaseType.CARD_BATCH, true, cardBatch.getCreator().getId()));
     }
 
     private CardBatch fillCommonInfo() {
@@ -341,6 +359,8 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
     @Inject
     AbstractCardBatchCommonInfoEditView commonInfoEditView;
     @Inject
+    private AbstractCommentAndHistoryListView commentAndHistoryView;
+    @Inject
     AbstractCardBatchMetaView metaView;
     @Inject
     private CardBatchControllerAsync cardBatchService;
@@ -353,6 +373,8 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
 
     @Inject
     private DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    LocalStorageService localStorageService;
 
     @ContextAware
     CardBatch cardBatch;
