@@ -56,10 +56,8 @@ public class BaseServiceTest {
         product.setType( En_DevUnitType.PRODUCT );
         product.setStateId( En_DevUnitState.ACTIVE.getId() );
         product.setInfo( "info" );
-        product.setHistoryVersion( "historyVersion" );
-        product.setCdrDescription( "cdrDescription" );
-        product.setConfiguration( "configuration" );
-        product.setWikiLink( "https://newportal.protei.ru/" );
+        product.setInternalDocLink( "https://newportal.protei.ru/" );
+        product.setExternalDocLink( "https://newportal.protei.ru/" );
         return product;
     }
 

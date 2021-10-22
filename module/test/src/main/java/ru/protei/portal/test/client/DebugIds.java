@@ -712,46 +712,29 @@ public class DebugIds {
 
     public interface PRODUCT {
         String NAME = "product-name";
-        String WIKI_LINK = "product-wiki-link";
+        String INTERNAL_DOC_LINK = "internal_doc_link";
+        String EXTERNAL_DOC_LINK = "external_doc_link";
         String DESCRIPTION = "product-description";
         String SUBSCRIPTIONS = "product-subscriptions";
         String INCLUDES = "product-includes";
         String PRODUCTS = "product-products";
         String ALIASES = "product-aliases";
-        String HISTORY_VERSION = "product-history-version";
-        String CONFIGURATION = "product-configuration";
-        String CDR_DESCRIPTION = "product-cdr-description";
         String SAVE_BUTTON = "product-save-button";
         String CANCEL_BUTTON = "product-cancel-button";
         String DIRECTION = "product-direction";
         String DIRECTIONS = "product-directions";
         String DIRECTION_LABEL = "product-direction-label";
         String COMMON_MANAGER = "product-common-manager";
-
-        interface TAB {
-            String HISTORY_VERSION = "product-tab-history-version";
-            String CONFIGURATION = "product-tab-configuration";
-            String CDR_DESCRIPTION = "product-tab-cdr-description";
-        }
     }
 
     public interface PRODUCT_PREVIEW {
         String NAME = "product-preview-name";
-        String WIKI_LINK = "product-preview-wiki-link";
+        String INTERNAL_DOC_LINK = "product-preview-internal-doc-link";
+        String EXTERNAL_DOC_LINK = "product-preview-external-doc-link";
         String DESCRIPTION = "product-preview-description";
-        String HISTORY_VERSION = "product-preview-history-version";
-        String CONFIGURATION = "product-preview-configuration";
-        String CDR_DESCRIPTION = "product-preview-cdr-description";
         String BACK_BUTTON = "product-preview-back-button";
         String DIRECTION_LABEL = "product-preview-direction-label";
         String PARENTS_CONTAINER = "product-preview-parents-container";
-        String CHILDREN_CONTAINER = "product-preview-children-container";
-
-        interface TAB {
-            String HISTORY_VERSION = "product-preview-tab-history-version";
-            String CONFIGURATION = "product-preview-tab-configuration";
-            String CDR_DESCRIPTION = "product-preview-tab-cdr-description";
-        }
     }
 
     public interface PRODUCT_ITEM {

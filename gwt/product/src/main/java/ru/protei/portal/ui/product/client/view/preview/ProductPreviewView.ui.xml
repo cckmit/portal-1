@@ -15,7 +15,11 @@
                     <img ui:field="typeImage" src="" class="preview-title-image-right"/>
 
                     <div class="small">
-                        <a ui:field="wikiLink" href="#" target="_blank"/>
+                        <a ui:field="internalDocLink" href="#" target="_blank"/>
+                    </div>
+
+                    <div class="small">
+                        <a ui:field="externalDocLink" href="#" target="_blank"/>
                     </div>
 
                     <div class="markdown">
@@ -33,25 +37,6 @@
                         <b><ui:text from="{lang.belongsTo}:"/></b>
                         <g:HTMLPanel styleName="links-list-formatter" ui:field="parents"/>
                     </g:HTMLPanel>
-
-                    <g:HTMLPanel styleName="small m-t-5" ui:field="childrenContainer">
-                        <b><ui:text from="{lang.consistOf}:"/></b>
-                        <g:HTMLPanel styleName="links-list-formatter" ui:field="children"/>
-                    </g:HTMLPanel>
-
-                    <tab:TabWidget styleName="" ui:field="tabWidget">
-                        <tab:pane.TabWidgetPane tabName="{lang.productHistoryVersion}">
-                            <g:HTMLPanel styleName="markdown" ui:field="historyVersion"/>
-                        </tab:pane.TabWidgetPane>
-
-                        <tab:pane.TabWidgetPane tabName="{lang.productConfiguration}">
-                            <g:HTMLPanel styleName="markdown" ui:field="configuration"/>
-                        </tab:pane.TabWidgetPane>
-
-                        <tab:pane.TabWidgetPane tabName="{lang.productCDRDescription}">
-                            <g:HTMLPanel styleName="markdown" ui:field="cdrDescription"/>
-                        </tab:pane.TabWidgetPane>
-                    </tab:TabWidget>
                 </div>
             </div>
         </div>

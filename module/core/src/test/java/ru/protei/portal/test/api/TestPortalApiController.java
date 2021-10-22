@@ -338,11 +338,9 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.status", is( En_ResultStatus.OK.toString() ) ) )
                 .andExpect( jsonPath( "$.data.id").value(  product.getId().intValue() ) )
-                .andExpect( jsonPath( "$.data.historyVersion", is( product.getHistoryVersion() ) ) )
-                .andExpect( jsonPath( "$.data.cdrDescription", is( product.getCdrDescription() ) ) )
-                .andExpect( jsonPath( "$.data.configuration", is( product.getConfiguration() ) ) )
                 .andExpect( jsonPath( "$.data.description", is( product.getInfo() ) ) )
-                .andExpect( jsonPath( "$.data.wikiLink", is( product.getWikiLink() ) ) )
+                .andExpect( jsonPath( "$.data.internalDocLink", is( product.getInternalDocLink() ) ) )
+                .andExpect( jsonPath( "$.data.externalDocLink", is( product.getExternalDocLink() ) ) )
                 .andExpect( jsonPath( "$.data.type", is( product.getType().name() ) ) )
         ;
     }
@@ -357,26 +355,10 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
                 .andExpect(jsonPath("$.data.id", notNullValue()))
                 .andExpect(jsonPath("$.data.name", is(product.getName())))
-                .andExpect(jsonPath("$.data.historyVersion", is(product.getHistoryVersion())))
-                .andExpect(jsonPath("$.data.cdrDescription", is(product.getCdrDescription())))
-                .andExpect(jsonPath("$.data.configuration", is(product.getConfiguration())))
                 .andExpect(jsonPath("$.data.description", is(product.getInfo())))
-                .andExpect(jsonPath("$.data.wikiLink", is(product.getWikiLink())))
+                .andExpect(jsonPath("$.data.internalDocLink", is(product.getInternalDocLink())))
+                .andExpect(jsonPath("$.data.externalDocLink", is(product.getExternalDocLink())))
                 .andExpect(jsonPath("$.data.type", is(product.getType().name())));
-    }
-
-    @Test
-    @Transactional
-    public void updateProduct() throws Exception {
-        DevUnit devUnit = makeProduct( );
-
-        DevUnitInfo product = DevUnitInfo.toInfo(devUnit);
-
-        createPostResultAction( "/api/products/update", product )
-                .andExpect( status().isOk() )
-                .andExpect( jsonPath( "$.status", is( En_ResultStatus.OK.toString() ) ) )
-                .andExpect( jsonPath( "$.data").value(  product.getId().intValue() ) )
-        ;
     }
 
     @Test
