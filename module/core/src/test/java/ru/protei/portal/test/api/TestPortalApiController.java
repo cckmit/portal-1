@@ -357,21 +357,8 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.data.name", is(product.getName())))
                 .andExpect(jsonPath("$.data.description", is(product.getInfo())))
                 .andExpect(jsonPath("$.data.internalDocLink", is(product.getInternalDocLink())))
+                .andExpect(jsonPath("$.data.externalDocLink", is(product.getExternalDocLink())))
                 .andExpect(jsonPath("$.data.type", is(product.getType().name())));
-    }
-
-    @Test
-    @Transactional
-    public void updateProduct() throws Exception {
-        DevUnit devUnit = makeProduct( );
-
-        DevUnitInfo product = DevUnitInfo.toInfo(devUnit);
-
-        createPostResultAction( "/api/products/update", product )
-                .andExpect( status().isOk() )
-                .andExpect( jsonPath( "$.status", is( En_ResultStatus.OK.toString() ) ) )
-                .andExpect( jsonPath( "$.data").value(  product.getId().intValue() ) )
-        ;
     }
 
     @Test
