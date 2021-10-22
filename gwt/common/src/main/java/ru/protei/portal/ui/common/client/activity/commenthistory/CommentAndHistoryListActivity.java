@@ -585,6 +585,10 @@ public abstract class CommentAndHistoryListActivity
             return true;
         }
 
+        if (En_CaseType.CARD_BATCH.equals(caseType)) {
+            return true;
+        }
+
         return false;
     }
 

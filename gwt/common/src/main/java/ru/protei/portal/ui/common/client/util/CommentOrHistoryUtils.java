@@ -106,6 +106,8 @@ public class CommentOrHistoryUtils {
             case BUILD_DATE: return makeHistoryItem(history, lang.moduleBuildDate(), Module.class);
             case CARD_STATE: return makeHistoryItem(history, lang.cardState(), CaseState.class);
             case CARD_MANAGER: return makeHistoryItem(history, lang.cardManager(), EmployeeShortView.class);
+            case CARD_BATCH_STATE: return makeHistoryItem(history, lang.cardBatchState(), CaseState.class);
+            case CARD_BATCH_IMPORTANCE: return makeHistoryItem(history, lang.issueImportance(), ImportanceLevel.class);
             default: return null;
         }
     }
@@ -256,6 +258,22 @@ public class CommentOrHistoryUtils {
             return caseHistorySimpleItemView;
         }
 
+        if (En_HistoryType.CARD_BATCH_STATE.equals(historyType)) {
+            CaseHistoryStateItemView caseHistoryStateItemView = caseHistoryStateItemViewProvider.get();
+            caseHistoryStateItemView.setName(cardBatchStateLang.getStateName(new CaseState(value)));
+            caseHistoryStateItemView.setColor(color);
+
+            return caseHistoryStateItemView;
+        }
+
+        if (En_HistoryType.CARD_BATCH_IMPORTANCE.equals(historyType)) {
+            CaseHistoryImportanceItemView caseHistoryImportanceItemView = caseHistoryImportanceItemViewProvider.get();
+            caseHistoryImportanceItemView.setName(value);
+            caseHistoryImportanceItemView.setColor(color);
+
+            return caseHistoryImportanceItemView;
+        }
+
         return null;
     }
 
@@ -279,6 +297,8 @@ public class CommentOrHistoryUtils {
     private static ModuleStateLang moduleStateLang;
     @Inject
     private static CardStateLang cardStateLang;
+    @Inject
+    private static CardBatchStateLang cardBatchStateLang;
     @Inject
     private static Provider<CaseHistoryItemsContainer> caseHistoryItemsContainerProvider;
 }

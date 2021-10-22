@@ -105,11 +105,11 @@ public class CardBatchServiceImpl implements CardBatchService {
             jdbcManyRelationsHelper.fill(cardBatchCaseObject.getNotifiers(), Person.Fields.CONTACT_ITEMS);
         }
 
-        long stateId = cardBatch.getStateId();
-        Result<Long> resultState = addCardBatchStateHistory(token, cardBatchId, stateId, caseStateDAO.get(stateId).getState());
-        if (resultState.isError()) {
-            log.error("State message for the cardBatch {} not saved!", cardBatchCaseId);
-        }
+        addCardBatchStateHistory(token, cardBatch.getId(), cardBatch.getStateId(), caseStateDAO.get(cardBatch.getStateId()).getState())
+                .ifError(ignore -> log.error("State message for the cardBatch {} not saved!", cardBatch));
+
+        addCardBatchImportanceHistory(token, cardBatch.getId(), cardBatch.getImportance().longValue(), cardBatch.getCode())
+                .ifError(ignore -> log.error("Importance message for the cardBatch {} not saved!", cardBatch.getId()));
 
         return ok(cardBatchDAO.get(cardBatch.getId()));
     }
@@ -202,6 +202,21 @@ public class CardBatchServiceImpl implements CardBatchService {
 
         CardBatch cardBatch = cardBatchDAO.get(caseObject.getId());
         jdbcManyRelationsHelper.fillAll(cardBatch);
+
+        if (!Objects.equals(oldMeta.getStateId(), cardBatch.getStateId())) {
+            changeCardBatchStateHistory(token, cardBatch.getId(),
+                    oldMeta.getStateId(), caseStateDAO.get(oldMeta.getStateId()).getState(),
+                    cardBatch.getStateId(), caseStateDAO.get(cardBatch.getStateId()).getState())
+                        .ifError(ignore -> log.error("Change state message for the cardBatch {} not saved!", cardBatch));
+        }
+
+        if (!Objects.equals(oldMeta.getImportance(), cardBatch.getImportance())) {
+            changeCardBatchImportanceHistory(token, cardBatch.getId(),
+                    oldMeta.getImportance().longValue(), oldMeta.getImportanceCode(),
+                    cardBatch.getImportance().longValue(), cardBatch.getImportanceCode())
+                        .ifError(ignore -> log.error("Importance level message for the cardBatch {} isn't saved!", cardBatch.getId()));
+        }
+
         return ok(cardBatch);
     }
 
@@ -224,6 +239,20 @@ public class CardBatchServiceImpl implements CardBatchService {
         if (!isUpdated) {
             log.warn("updateCardBatch(): cardBatch not updated = {}",  cardBatch.getId());
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        if (!Objects.equals(oldCardBatch.getStateId(), cardBatch.getStateId())) {
+            changeCardBatchStateHistory(token, cardBatch.getId(),
+                    oldCardBatch.getStateId(), caseStateDAO.get(oldCardBatch.getStateId()).getState(),
+                    cardBatch.getStateId(), caseStateDAO.get(cardBatch.getStateId()).getState())
+                        .ifError(ignore -> log.error("Change state message for the cardBatch {} not saved!", cardBatch));
+        }
+
+        if (!Objects.equals(oldCardBatch.getImportance(), cardBatch.getImportance())) {
+            changeCardBatchImportanceHistory(token, cardBatch.getId(),
+                    oldCardBatch.getImportance().longValue(), oldCardBatch.getImportanceCode(),
+                    cardBatch.getImportance().longValue(), cardBatch.getImportanceCode())
+                        .ifError(ignore -> log.error("Importance level message for the cardBatch {} isn't saved!", cardBatch.getId()));
         }
 
         return ok(cardBatch);
@@ -346,6 +375,18 @@ public class CardBatchServiceImpl implements CardBatchService {
 
     private Result<Long> addCardBatchStateHistory(AuthToken authToken, Long caseObjectId, Long stateId, String stateName) {
         return historyService.createHistory(authToken, caseObjectId, En_HistoryAction.ADD, En_HistoryType.CARD_BATCH_STATE, null, null, stateId, stateName);
+    }
+
+    private Result<Long> changeCardBatchStateHistory(AuthToken token, Long caseObjectId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
+        return historyService.createHistory(token, caseObjectId, En_HistoryAction.CHANGE, En_HistoryType.CARD_BATCH_STATE, oldStateId, oldStateName, newStateId, newStateName);
+    }
+
+    private Result<Long> addCardBatchImportanceHistory(AuthToken authToken, Long caseObjectId, Long importanceId, String importanceName) {
+        return historyService.createHistory(authToken, caseObjectId, En_HistoryAction.ADD, En_HistoryType.CARD_BATCH_IMPORTANCE, null, null, importanceId, importanceName);
+    }
+
+    private Result<Long> changeCardBatchImportanceHistory(AuthToken authToken, Long caseId, Long oldImportanceId, String oldImportanceName, Long newImportanceId, String newImportanceName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CARD_BATCH_IMPORTANCE, oldImportanceId, oldImportanceName, newImportanceId, newImportanceName);
     }
 
     private boolean isValid(CardBatch cardBatch, boolean isNew) {
