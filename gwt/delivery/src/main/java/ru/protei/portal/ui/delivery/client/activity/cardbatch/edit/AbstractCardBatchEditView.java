@@ -27,6 +27,8 @@ public interface AbstractCardBatchEditView extends IsWidget {
 
     void setNumberRO(String value);
 
+    void setContractorsRO(String value);
+
     HasVisibility backButtonVisibility();
 
     HasVisibility commonInfoEditButtonVisibility();

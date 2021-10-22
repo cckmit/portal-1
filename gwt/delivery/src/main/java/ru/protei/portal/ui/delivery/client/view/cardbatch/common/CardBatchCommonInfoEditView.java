@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
@@ -18,6 +19,8 @@ import ru.protei.portal.ui.common.client.widget.selector.card.type.CardTypeOptio
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoEditView;
+import ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.ContractorsSelector;
+import java.util.Set;
 
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_ARTICLE_PATTERN;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
@@ -69,6 +72,11 @@ public class CardBatchCommonInfoEditView extends Composite implements AbstractCa
     @Override
     public HasValue<String> params(){
         return params;
+    }
+
+    @Override
+    public HasValue<Set<PersonProjectMemberView>> contractors() {
+        return contractors;
     }
 
     @Override
@@ -132,6 +140,7 @@ public class CardBatchCommonInfoEditView extends Composite implements AbstractCa
         article.ensureDebugId( DebugIds.CARD_BATCH.ARTICLE );
         amount.ensureDebugId( DebugIds.CARD_BATCH.AMOUNT );
         params.ensureDebugId( DebugIds.CARD_BATCH.PARAMS );
+        contractors.ensureDebugId( DebugIds.CARD_BATCH.CONTRACTOR_SELECTOR );
         saveButton.ensureDebugId(DebugIds.CARD_BATCH.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.CARD_BATCH.CANCEL_BUTTON);
     }
@@ -152,6 +161,9 @@ public class CardBatchCommonInfoEditView extends Composite implements AbstractCa
     IntegerBox amount;
     @UiField
     AutoResizeTextArea params;
+    @Inject
+    @UiField(provided = true)
+    ContractorsSelector contractors;
     @UiField
     Label prevCardBatchInfo;
     @UiField

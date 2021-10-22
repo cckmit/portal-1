@@ -74,6 +74,11 @@ public class CardBatchEditView extends Composite implements AbstractCardBatchEdi
     }
 
     @Override
+    public void setContractorsRO(String value) {
+        contractorsRO.setInnerHTML(value);
+    }
+
+    @Override
     public HasVisibility backButtonVisibility() {
         return backButton;
     }
@@ -146,6 +151,8 @@ public class CardBatchEditView extends Composite implements AbstractCardBatchEdi
     DivElement amountRO;
     @UiField
     DivElement paramsRO;
+    @UiField
+    DivElement contractorsRO;
     @UiField
     Lang lang;
     @UiField

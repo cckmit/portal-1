@@ -7,6 +7,4 @@ public interface AbstractCardBatchMetaActivity {
     void onDeadlineChanged();
 
     default void onPriorityChange(){}
-
-    default void onContractorsChange(){}
 }

@@ -13,9 +13,11 @@ import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CardBatchControllerAsync;
 import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
@@ -33,7 +35,10 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.ERROR;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.SUCCESS;
@@ -123,16 +128,6 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         onMetaChanged();
     }
 
-    @Override
-    public void onContractorsChange() {
-        if (CollectionUtils.isEmpty(metaView.contractors().getValue())) {
-            showError(lang.cardBatchContractorsValidationError());
-            return;
-        }
-        cardBatch.setContractors(new ArrayList<>(metaView.contractors().getValue()));
-        onMetaChanged();
-    }
-
     private void attachToContainer(HasWidgets container) {
         container.clear();
         container.add(view.asWidget());
@@ -202,6 +197,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         commonInfoEditView.article().setValue(cardBatch.getArticle());
         commonInfoEditView.amount().setValue(cardBatch.getAmount());
         commonInfoEditView.params().setValue(cardBatch.getParams());
+        commonInfoEditView.contractors().setValue(new HashSet<PersonProjectMemberView>(cardBatch.getContractors()));
         switchCommonInfoToEdit(true);
     }
 
@@ -237,10 +233,26 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         view.setAmountRO(String.valueOf(cardBatch.getAmount()));
         view.setParamsRO(cardBatch.getParams());
 
+        if (isNotEmpty(cardBatch.getContractors())) {
+            StringBuilder contractorsBuilder = new StringBuilder();
+            stream(cardBatch.getContractors())
+                    .collect(Collectors.groupingBy(PersonProjectMemberView::getRole,
+                             Collectors.mapping(PersonProjectMemberView::getDisplayName, Collectors.joining(", "))))
+                    .forEach((role, team) ->
+                            contractorsBuilder.append("<b>")
+                                    .append(roleTypeLang.getName(role))
+                                    .append("</b>: ")
+                                    .append(team)
+                                    .append("<br/>"));
+
+            view.setContractorsRO(contractorsBuilder.toString());
+        } else {
+            view.setContractorsRO("");
+        }
+
         metaView.state().setValue(cardBatch.getState());
         fillPrioritySelector(cardBatch.getImportance());
         metaView.deadline().setValue(new Date(cardBatch.getDeadline()));
-        metaView.contractors().setValue(new HashSet<>(cardBatch.getContractors()));
     }
 
     private CardBatch fillCommonInfo() {
@@ -249,6 +261,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         cardBatch.setArticle(commonInfoEditView.article().getValue());
         cardBatch.setAmount(commonInfoEditView.amount().getValue());
         cardBatch.setParams(commonInfoEditView.params().getValue());
+        cardBatch.setContractors(new ArrayList<PersonProjectMemberView>(commonInfoEditView.contractors().getValue()));
 
         return cardBatch;
     }
@@ -260,10 +273,6 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
     private String getMetaValidationError() {
         if (!validateDeadline()) {
             return lang.cardBatchDeadlineValidationError();
-        }
-
-        if (CollectionUtils.isEmpty(metaView.contractors().getValue())) {
-            return lang.cardBatchContractorsValidationError();
         }
 
         return null;
@@ -354,6 +363,8 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
 
     @Inject
     private DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    En_PersonRoleTypeLang roleTypeLang;
 
     @ContextAware
     CardBatch cardBatch;

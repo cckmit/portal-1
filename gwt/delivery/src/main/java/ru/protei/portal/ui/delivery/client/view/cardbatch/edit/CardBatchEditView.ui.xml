@@ -7,7 +7,7 @@
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin">
         <div class="card-body">
             <div class="row">
-                <div class="col-lg-6 order-last order-lg-first p-l-25 p-r-5">
+                <div class="col-lg-8 order-last order-lg-first p-l-25 p-r-5">
                     <div class="btn-toolbar flex-wrap">
                         <div class="btn-group form-group">
                             <g:Button ui:field="backButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
@@ -36,12 +36,14 @@
                         <div ui:field="amountRO" class="form-group markdown p-t-15"/>
                         <h5 class="no-margin"><g:Label text="{lang.cardBatchParams}" styleName="semi-bold large-text"/></h5>
                         <div ui:field="paramsRO" class="form-group markdown p-t-15"/>
+                        <h5 class="no-margin"><g:Label text="{lang.cardBatchContractors}" styleName="semi-bold large-text"/></h5>
+                        <div ui:field="contractorsRO" class="form-group markdown p-t-15"/>
 
                     </g:HTMLPanel>
 
                     <g:HTMLPanel ui:field="commonInfoEditContainer"/>
                 </div>
-                <g:HTMLPanel ui:field="metaContainer" styleName="col-lg-6"/>
+                <g:HTMLPanel ui:field="metaContainer" styleName="col-lg-4"/>
             </div>
         </div>
     </g:HTMLPanel>

@@ -75,9 +75,6 @@ public class CardBatchMetaView extends Composite implements AbstractCardBatchMet
         deadline.markInputValid(isValid);
     }
 
-    @Override
-    public HasValue<Set<PersonProjectMemberView>> contractors() { return contractors; }
-
     @UiHandler("deadline")
     public void onDeadlineChanged(ValueChangeEvent<Date> event) {
         activity.onDeadlineChanged();
@@ -91,11 +88,6 @@ public class CardBatchMetaView extends Composite implements AbstractCardBatchMet
     @UiHandler("priority")
     public void onPriorityChanged(ValueChangeEvent<ImportanceLevel> event) {
         activity.onPriorityChange();
-    }
-
-    @UiHandler("contractors")
-    public void onContractorsChanged(ValueChangeEvent<Set<PersonProjectMemberView>> event) {
-        activity.onContractorsChange();
     }
 
     private void ensureDebugIds() {
@@ -118,9 +110,7 @@ public class CardBatchMetaView extends Composite implements AbstractCardBatchMet
     @Inject
     @UiField(provided = true)
     SinglePicker deadline;
-    @Inject
-    @UiField(provided = true)
-    ContractorsSelector contractors;
+
     @UiField
     Lang lang;
 
