@@ -11,15 +11,12 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CardBatchQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -58,6 +55,8 @@ public class CardBatchServiceImpl implements CardBatchService {
     private ImportanceLevelDAO importanceLevelDAO;
     @Autowired
     CaseMemberDAO caseMemberDAO;
+    @Autowired
+    CaseCommentService caseCommentService;
     @Autowired
     PolicyService policyService;
 
@@ -373,6 +372,20 @@ public class CardBatchServiceImpl implements CardBatchService {
         if (cardDAO.existByCardBatchId(value.getId())) {
             return error(En_ResultStatus.CARD_BATCH_HAS_CARD);
         }
+
+        caseCommentService.getCaseCommentList(token, En_CaseType.CARD_BATCH, value.getId())
+                .flatMap(comments -> {
+                    for (CaseComment comment : comments) {
+                        Result<Long> removeResult = caseCommentService.removeCaseCommentWithOutTimeCheck(token, En_CaseType.CARD_BATCH, comment);
+                        if (removeResult.isError()) {
+                            return removeResult;
+                        }
+                    }
+                    return ok();
+                }).orElseThrow(result -> new RollbackTransactionException(
+                        result.getStatus(),
+                        String.format("Card batch comments was not removed, id=%d", value.getId())
+                ));
 
         caseObjectDAO.remove(caseObject);
 
