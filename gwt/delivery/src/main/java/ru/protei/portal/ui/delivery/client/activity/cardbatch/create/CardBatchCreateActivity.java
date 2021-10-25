@@ -152,7 +152,7 @@ public abstract class CardBatchCreateActivity implements Activity,
         cardBatch.setArticle(commonInfoEditView.article().getValue());
         cardBatch.setAmount(commonInfoEditView.amount().getValue());
         cardBatch.setParams(commonInfoEditView.params().getValue());
-        cardBatch.setContractors(new ArrayList<>(commonInfoEditView.contractors().getValue()));
+        cardBatch.setContractors(commonInfoEditView.contractors().getValue());
         cardBatch.setStateId(metaView.state().getValue().getId());
         cardBatch.setImportance(metaView.priority().getValue().getId());
         cardBatch.setDeadline(metaView.deadline().getValue() != null? metaView.deadline().getValue().getTime() : null);

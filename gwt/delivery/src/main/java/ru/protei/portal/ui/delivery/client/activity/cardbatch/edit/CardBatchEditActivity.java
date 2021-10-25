@@ -7,6 +7,7 @@ import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CardBatch;
 import ru.protei.portal.core.model.ent.CaseState;
@@ -30,10 +31,7 @@ import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCar
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaView;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -145,7 +143,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
             return;
         }
 
-        save(cardBatch, throwable -> {}, () -> {});
+        save(cardBatch, view.commonInfoEditContainerVisibility().isVisible(), throwable -> {}, () -> {});
     }
 
     private void requestCardBatch(Long cardBatchId, HasWidgets container) {
@@ -153,6 +151,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
                 .withSuccess(cardBatch -> {
                     fillView(cardBatch);
                     attachToContainer(container);
+                    switchCommonInfoToEdit(false);
                 }));
     }
 
@@ -197,7 +196,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         commonInfoEditView.article().setValue(cardBatch.getArticle());
         commonInfoEditView.amount().setValue(cardBatch.getAmount());
         commonInfoEditView.params().setValue(cardBatch.getParams());
-        commonInfoEditView.contractors().setValue(new HashSet<PersonProjectMemberView>(cardBatch.getContractors()));
+        commonInfoEditView.contractors().setValue(cardBatch.getContractors());
         switchCommonInfoToEdit(true);
     }
 
@@ -223,7 +222,6 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         this.cardBatch = cardBatch;
         if (cardBatch == null) return;
 
-        switchCommonInfoToEdit(false);
         view.commonInfoContainerVisibility().setVisible(true);
         view.setCreatedBy(lang.createBy(cardBatch.getCreator() == null ? "" : transliteration(cardBatch.getCreator().getDisplayShortName()),
                 DateFormatter.formatDateTime(cardBatch.getCreated())));
@@ -261,7 +259,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         cardBatch.setArticle(commonInfoEditView.article().getValue());
         cardBatch.setAmount(commonInfoEditView.amount().getValue());
         cardBatch.setParams(commonInfoEditView.params().getValue());
-        cardBatch.setContractors(new ArrayList<PersonProjectMemberView>(commonInfoEditView.contractors().getValue()));
+        cardBatch.setContractors(commonInfoEditView.contractors().getValue());
 
         return cardBatch;
     }
@@ -295,20 +293,23 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
             return lang.cardBatchAmountValidationError();
         }
 
+        if (CollectionUtils.isEmpty(commonInfoEditView.contractors().getValue())) {
+            return lang.cardBatchContractorsValidationError();
+        }
+
         return null;
     }
 
     private void save(CardBatch cardBatch) {
         commonInfoEditView.saveEnabled().setEnabled(false);
-        save(cardBatch, throwable -> {
+        save(cardBatch, false, throwable -> {
             commonInfoEditView.saveEnabled().setEnabled(true);
         }, () -> {
             commonInfoEditView.saveEnabled().setEnabled(true);
-            switchCommonInfoToEdit(false);
         });
     }
 
-    private void save(CardBatch cardBatch, Consumer<Throwable> onFailure, Runnable onSuccess) {
+    private void save(CardBatch cardBatch, final boolean isEdit, Consumer<Throwable> onFailure, Runnable onSuccess) {
         cardBatchService.updateMeta(cardBatch, new FluentCallback<CardBatch>()
                 .withError(throwable -> {
                     defaultErrorHandler.accept(throwable);
@@ -319,6 +320,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
                     fireEvent(new CardBatchEvents.Change(batch.getId()));
                     onSuccess.run();
                     fillView(batch);
+                    switchCommonInfoToEdit(isEdit);
                 }));
     }
 

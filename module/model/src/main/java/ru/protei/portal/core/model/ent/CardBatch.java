@@ -9,6 +9,7 @@ import ru.protei.winter.jdbc.annotations.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
@@ -95,7 +96,7 @@ public class CardBatch extends AuditableObject {
     /**
      * Исполнители
      */
-    private List<PersonProjectMemberView> сontractors;
+    private Set<PersonProjectMemberView> сontractors;
 
 
     public CardBatch() {
@@ -221,17 +222,17 @@ public class CardBatch extends AuditableObject {
         return created;
     }
 
-    public List<PersonProjectMemberView> getContractors() {
+    public Set<PersonProjectMemberView> getContractors() {
         if ( сontractors == null && !isEmpty( members ) ) {
             сontractors = CollectionUtils.stream( members )
                     .filter( member -> En_PersonRoleType.isCardBatchRole( member.getRole() ) )
                     .map( member -> new PersonProjectMemberView( member.getMember(), member.getRole() ) )
-                    .collect( Collectors.toList() );
+                    .collect( Collectors.toSet() );
         }
         return сontractors;
     }
 
-    public void setContractors(List<PersonProjectMemberView> сontractors) {
+    public void setContractors(Set<PersonProjectMemberView> сontractors) {
         this.сontractors = сontractors;
     }
 
