@@ -201,7 +201,7 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
         );
     }
 
-    public void fillHistoryView(CommentsAndHistories commentsAndHistories) {
+    private void fillHistoryView(CommentsAndHistories commentsAndHistories) {
 
         List<CommentsAndHistories.CommentOrHistory> commentOrHistoryList
                 = getSortedCommentOrHistoryList(commentsAndHistories.getCommentOrHistoryList());

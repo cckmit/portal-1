@@ -16,6 +16,7 @@ public enum En_HistoryType implements HasId {
     CARD_BATCH_STATE(10),
     CARD_STATE(11),
     CARD_MANAGER(12),
+    CARD_BATCH_IMPORTANCE(13),
     ;
 
     En_HistoryType(int id) {

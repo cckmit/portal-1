@@ -1,9 +1,8 @@
 package ru.protei.portal.ui.delivery.client.activity.cardbatch.edit;
 
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasVisibility;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
+import ru.protei.portal.ui.common.client.widget.tab.multi.MultiTabWidget;
 
 public interface AbstractCardBatchEditView extends IsWidget {
 
@@ -34,4 +33,8 @@ public interface AbstractCardBatchEditView extends IsWidget {
     void setCreatedBy(String value);
 
     void setPreviewStyles(boolean isPreview);
+
+    HasWidgets getItemsContainer();
+
+    MultiTabWidget<En_CommentOrHistoryType> getMultiTabWidget();
 }

@@ -372,7 +372,15 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     @Override
     @Transactional
     public Result<Long> removeCaseComment(AuthToken token, En_CaseType caseType, CaseComment removedComment) {
+        return removeCaseComment(token, caseType, removedComment, true);
+    }
 
+    @Override
+    public Result<Long> removeCaseCommentWithOutTimeCheck(AuthToken token, En_CaseType caseType, CaseComment comment) {
+        return removeCaseComment(token, caseType, comment, false);
+    }
+
+    public Result<Long> removeCaseComment(AuthToken token, En_CaseType caseType, CaseComment removedComment, boolean isTimeCheck) {
         En_ResultStatus checkAccessStatus = null;
         if (removedComment == null || removedComment.getId() == null || token.getPersonId() == null) {
             checkAccessStatus = En_ResultStatus.INCORRECT_PARAMS;
@@ -385,7 +393,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                 checkAccessStatus = En_ResultStatus.NOT_REMOVED;
             }
 
-            if (isCaseCommentReadOnlyByTime(removedComment.getCreated())) {
+            if (isTimeCheck && isCaseCommentReadOnlyByTime(removedComment.getCreated())) {
                 return error(En_ResultStatus.NOT_ALLOWED_REMOVE_COMMENT_BY_TIME);
             }
         }

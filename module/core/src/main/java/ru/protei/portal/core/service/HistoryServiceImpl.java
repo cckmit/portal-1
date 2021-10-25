@@ -152,6 +152,8 @@ public class HistoryServiceImpl implements HistoryService {
         fillCaseStateHistoriesWithColors(typeToHistories.get(En_HistoryType.CARD_STATE));
         fillImportanceHistoriesWithColors(typeToHistories.get(En_HistoryType.CASE_IMPORTANCE));
         fillTagHistoriesWithColors(typeToHistories.get(En_HistoryType.TAG));
+        fillCaseStateHistoriesWithColors(typeToHistories.get(En_HistoryType.CARD_BATCH_STATE));
+        fillImportanceHistoriesWithColors(typeToHistories.get(En_HistoryType.CARD_BATCH_IMPORTANCE));
 
         return histories;
     }
