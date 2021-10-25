@@ -10,7 +10,9 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_CommentOrHistoryType;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.CardBatch;
+import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
@@ -23,7 +25,6 @@ import ru.protei.portal.ui.common.client.service.CardBatchControllerAsync;
 import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
 import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.ImportanceLevelControllerAsync;
-import ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils;
 import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItemsContainer;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -33,15 +34,15 @@ import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCar
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaView;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.ERROR;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.SUCCESS;
-import static ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils.getSortedCommentOrHistoryList;
 import static ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils.transliteration;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
@@ -164,7 +165,6 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         cardBatchService.getCardBatch(cardBatchId, new FluentCallback<CardBatch>()
                 .withSuccess(cardBatch -> {
                     fillView(cardBatch);
-                    fillHistory();
                     attachToContainer(container);
                 }));
     }
@@ -272,36 +272,6 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         return cardBatch;
     }
 
-    private void fillHistory(){
-        view.getItemsContainer().clear();
-        view.getItemsContainer().add(commentAndHistoryView.asWidget());
-        commentAndHistoryView.clearItemsContainer();
-
-        caseCommentController.getCommentsAndHistories(En_CaseType.CARD, cardBatch.getId(), new FluentCallback<CommentsAndHistories>()
-                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
-                .withSuccess(this::fillHistoryView)
-        );
-    }
-
-    private void fillHistoryView(CommentsAndHistories commentsAndHistories) {
-
-        List<CommentsAndHistories.CommentOrHistory> commentOrHistoryList
-                = getSortedCommentOrHistoryList(commentsAndHistories.getCommentOrHistoryList());
-
-        List<History> histories = stream(commentOrHistoryList)
-                .map(CommentsAndHistories.CommentOrHistory::getHistory)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        List<CaseHistoryItemsContainer> caseHistoryItemsContainers = CommentOrHistoryUtils.fillView(
-                histories, commentAndHistoryView.commentsAndHistoriesContainer());
-
-        historyItemsContainers.addAll(caseHistoryItemsContainers);
-
-        commentAndHistoryView.setNewCommentHidden(true);
-        historyItemsContainers.forEach(historyItemsContainer -> historyItemsContainer.setVisible(true));
-    }
-
     private void showError(String error) {
         fireEvent(new NotifyEvents.Show(error, ERROR));
     }
@@ -363,7 +333,6 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
                     fireEvent(new NotifyEvents.Show(lang.cardBatchSaved(), SUCCESS));
                     fireEvent(new CardBatchEvents.Change(batch.getId()));
                     fillView(batch);
-                    fillHistory();
                 }));
     }
 
