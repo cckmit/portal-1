@@ -55,6 +55,8 @@ public class CardBatchServiceImpl implements CardBatchService {
     @Autowired
     CaseStateDAO caseStateDAO;
     @Autowired
+    private ImportanceLevelDAO importanceLevelDAO;
+    @Autowired
     CaseMemberDAO caseMemberDAO;
     @Autowired
     PolicyService policyService;
@@ -105,11 +107,15 @@ public class CardBatchServiceImpl implements CardBatchService {
             jdbcManyRelationsHelper.fill(cardBatchCaseObject.getNotifiers(), Person.Fields.CONTACT_ITEMS);
         }
 
-        addCardBatchStateHistory(token, cardBatch.getId(), cardBatch.getStateId(), caseStateDAO.get(cardBatch.getStateId()).getState())
-                .ifError(ignore -> log.error("State message for the cardBatch {} not saved!", cardBatch));
+        addCardBatchStateHistory(token, cardBatch.getId(),
+                cardBatch.getStateId(),
+                caseStateDAO.get(cardBatch.getStateId()).getState())
+                    .ifError(ignore -> log.error("State message for the cardBatch {} not saved!", cardBatch));
 
-        addCardBatchImportanceHistory(token, cardBatch.getId(), cardBatch.getImportance().longValue(), cardBatch.getCode())
-                .ifError(ignore -> log.error("Importance message for the cardBatch {} not saved!", cardBatch.getId()));
+        addCardBatchImportanceHistory(token, cardBatch.getId(),
+                cardBatch.getImportance().longValue(),
+                importanceLevelDAO.get(cardBatch.getImportance()).getCode())
+                    .ifError(ignore -> log.error("Importance message for the cardBatch {} not saved!", cardBatch.getId()));
 
         return ok(cardBatchDAO.get(cardBatch.getId()));
     }
@@ -212,8 +218,8 @@ public class CardBatchServiceImpl implements CardBatchService {
 
         if (!Objects.equals(oldMeta.getImportance(), cardBatch.getImportance())) {
             changeCardBatchImportanceHistory(token, cardBatch.getId(),
-                    oldMeta.getImportance().longValue(), oldMeta.getImportanceCode(),
-                    cardBatch.getImportance().longValue(), cardBatch.getImportanceCode())
+                    oldMeta.getImportance().longValue(), importanceLevelDAO.get(oldMeta.getImportance()).getCode(),
+                    cardBatch.getImportance().longValue(), importanceLevelDAO.get(cardBatch.getImportance()).getCode())
                         .ifError(ignore -> log.error("Importance level message for the cardBatch {} isn't saved!", cardBatch.getId()));
         }
 
@@ -250,8 +256,8 @@ public class CardBatchServiceImpl implements CardBatchService {
 
         if (!Objects.equals(oldCardBatch.getImportance(), cardBatch.getImportance())) {
             changeCardBatchImportanceHistory(token, cardBatch.getId(),
-                    oldCardBatch.getImportance().longValue(), oldCardBatch.getImportanceCode(),
-                    cardBatch.getImportance().longValue(), cardBatch.getImportanceCode())
+                    oldCardBatch.getImportance().longValue(), importanceLevelDAO.get(oldCardBatch.getImportance()).getCode(),
+                    cardBatch.getImportance().longValue(), importanceLevelDAO.get(cardBatch.getImportance()).getCode())
                         .ifError(ignore -> log.error("Importance level message for the cardBatch {} isn't saved!", cardBatch.getId()));
         }
 
