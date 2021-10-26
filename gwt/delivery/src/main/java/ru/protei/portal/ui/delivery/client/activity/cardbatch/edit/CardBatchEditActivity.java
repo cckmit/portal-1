@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+import static ru.protei.portal.ui.common.client.common.DateFormatter.formatDateOnly;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.ERROR;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.SUCCESS;
 import static ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils.transliteration;
@@ -160,7 +161,8 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
     }
 
     private boolean deadlineChanged(Date deadline) {
-        return deadline != null && !Objects.equals(deadline.getTime(), cardBatch.getDeadline());
+        return !Objects.equals(formatDateOnly(deadline),
+                               formatDateOnly(new Date(cardBatch.getDeadline())));
     }
 
     private boolean validateDeadline(Date deadline) {
