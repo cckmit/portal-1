@@ -4665,6 +4665,15 @@ table {
   }
 }
 
+.card-batch-team.required:after {
+  color: #f55753;
+  content: "*";
+  font-size: 20px;
+  position: absolute;
+  right: 12px;
+  top: 6px;
+}
+
 .max-z-index {
   z-index: 9999 !important;
 }

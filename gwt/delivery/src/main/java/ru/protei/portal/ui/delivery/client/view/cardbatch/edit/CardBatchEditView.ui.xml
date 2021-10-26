@@ -25,18 +25,18 @@
 
                         <small ui:field="createdBy" class="pull-right text-right"/>
 
-                        <h5 class="no-margin"><g:Label ui:field="numberRO" styleName="semi-bold large-text"/></h5>
+                        <h5 class="no-margin"><g:Label ui:field="numberRO"/></h5>
 
                         <br/>
-                        <h5 class="no-margin"><g:Label text="{lang.cardBatchType}" styleName="semi-bold large-text"/></h5>
+                        <h5 class="no-margin"><g:Label text="{lang.cardBatchType}"/></h5>
                         <div ui:field="typeRO" class="form-group markdown p-t-15"/>
-                        <h5 class="no-margin"><g:Label text="{lang.cardBatchArticle}" styleName="semi-bold large-text"/></h5>
+                        <h5 class="no-margin"><g:Label text="{lang.cardBatchArticle}"/></h5>
                         <div ui:field="articleRO" class="form-group markdown p-t-15"/>
-                        <h5 class="no-margin"><g:Label text="{lang.cardBatchAmount}" styleName="semi-bold large-text"/></h5>
+                        <h5 class="no-margin"><g:Label text="{lang.cardBatchAmount}"/></h5>
                         <div ui:field="amountRO" class="form-group markdown p-t-15"/>
-                        <h5 class="no-margin"><g:Label text="{lang.cardBatchParams}" styleName="semi-bold large-text"/></h5>
+                        <h5 class="no-margin"><g:Label text="{lang.cardBatchParams}"/></h5>
                         <div ui:field="paramsRO" class="form-group markdown p-t-15"/>
-                        <h5 class="no-margin"><g:Label text="{lang.cardBatchContractors}" styleName="semi-bold large-text"/></h5>
+                        <h5 class="no-margin"><g:Label text="{lang.cardBatchContractors}"/></h5>
                         <div ui:field="contractorsRO" class="form-group markdown p-t-15"/>
 
                     </g:HTMLPanel>

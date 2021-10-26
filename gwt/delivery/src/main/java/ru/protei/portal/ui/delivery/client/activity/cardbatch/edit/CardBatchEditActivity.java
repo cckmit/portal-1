@@ -7,7 +7,6 @@ import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
-import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CardBatch;
 import ru.protei.portal.core.model.ent.CaseState;
@@ -112,7 +111,12 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
 
     @Override
     public void onDeadlineChanged() {
-        if (!validateDeadline()) {
+        Date deadline = metaView.deadline().getValue();
+        if (!deadlineChanged(deadline)) {
+            return;
+        }
+
+        if (!validateDeadline(deadline)) {
             showError(lang.cardBatchDeadlineValidationError());
             return;
         }
@@ -155,8 +159,11 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
                 }));
     }
 
-    private boolean validateDeadline() {
-        Date deadline = metaView.deadline().getValue();
+    private boolean deadlineChanged(Date deadline) {
+        return deadline != null && !Objects.equals(deadline.getTime(), cardBatch.getDeadline());
+    }
+
+    private boolean validateDeadline(Date deadline) {
         boolean isValid = deadline != null && deadline.after(new Date());
         metaView.setDeadlineValid(isValid);
         return isValid;
@@ -269,7 +276,12 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
     }
 
     private String getMetaValidationError() {
-        if (!validateDeadline()) {
+        Date deadline = metaView.deadline().getValue();
+        if (!deadlineChanged(deadline)) {
+            return null;
+        }
+
+        if (!validateDeadline(deadline)) {
             return lang.cardBatchDeadlineValidationError();
         }
 
