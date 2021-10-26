@@ -86,6 +86,11 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     }
 
     @Override
+    public void setChildren(Map<String, String> nameToLink) {
+        addLinksToContainer(nameToLink, children);
+    }
+
+    @Override
     public void showFullScreen(boolean isFullScreen) {
         backButtonPanel.setVisible(isFullScreen);
         rootWrapper.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
@@ -139,6 +144,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
         info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PRODUCT_PREVIEW.DESCRIPTION);
         direction.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PRODUCT_PREVIEW.DIRECTION_LABEL);
         parents.ensureDebugId(DebugIds.PRODUCT_PREVIEW.PARENTS_CONTAINER);
+        children.ensureDebugId(DebugIds.PRODUCT_PREVIEW.CHILDREN_CONTAINER);
         backButton.ensureDebugId(DebugIds.PRODUCT_PREVIEW.BACK_BUTTON);
     }
 
@@ -148,6 +154,10 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     SpanElement info;
     @UiField
     SpanElement direction;
+    @UiField
+    HTMLPanel children;
+    @UiField
+    HTMLPanel childrenContainer;
     @UiField
     HTMLPanel parents;
     @UiField

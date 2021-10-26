@@ -37,6 +37,11 @@
                         <b><ui:text from="{lang.belongsTo}:"/></b>
                         <g:HTMLPanel styleName="links-list-formatter" ui:field="parents"/>
                     </g:HTMLPanel>
+
+                    <g:HTMLPanel styleName="small m-t-5" ui:field="childrenContainer">
+                        <b><ui:text from="{lang.consistOf}:"/></b>
+                        <g:HTMLPanel styleName="links-list-formatter" ui:field="children"/>
+                    </g:HTMLPanel>
                 </div>
             </div>
         </div>
