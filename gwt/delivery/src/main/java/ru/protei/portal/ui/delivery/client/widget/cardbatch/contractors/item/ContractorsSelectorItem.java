@@ -100,6 +100,11 @@ public class ContractorsSelectorItem extends Composite implements AbstractContra
         }
         model.role = roleValue;
         fireRoleChanged(previousRoleValue, roleValue);
+
+        if (model.members == null || model.members.isEmpty()) {
+            return;
+        }
+
         fireModelChanged();
     }
 

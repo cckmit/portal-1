@@ -27,6 +27,4 @@ public interface AbstractCardBatchMetaView extends IsWidget {
     boolean isDeadlineEmpty();
 
     void setDeadlineValid(boolean isValid);
-
-    HasValue<Set<PersonProjectMemberView>> contractors();
 }

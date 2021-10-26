@@ -10,6 +10,7 @@ import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
@@ -37,7 +38,7 @@ public class ContractorsColumn extends ClickColumn<CardBatch> {
 
         cell.addClassName(CLASS_NAME);
 
-        List<PersonProjectMemberView> contractors = card.getContractors();
+        Set<PersonProjectMemberView> contractors = card.getContractors();
         if (contractors != null) {
             StringBuilder sb = new StringBuilder();
             stream(contractors)

@@ -311,7 +311,7 @@ public class CardBatchServiceImpl implements CardBatchService {
     }
 
     //обновление исполнителей партии плат
-    private void updateContractors(CaseObject caseObject, List<PersonProjectMemberView> contractors) {
+    private void updateContractors(CaseObject caseObject, Set<PersonProjectMemberView> contractors) {
 
         List<PersonProjectMemberView> toAdd = listOf(contractors);
         List<Long> toRemove = new ArrayList<>();
@@ -437,9 +437,6 @@ public class CardBatchServiceImpl implements CardBatchService {
             return false;
         }
         if (cardBatch.getImportance() == null) {
-            return false;
-        }
-        if (isEmpty(cardBatch.getContractors())) {
             return false;
         }
         return true;

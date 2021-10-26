@@ -3778,6 +3778,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardValidationErrorTestDate();
 
+    String cardRemoveConfirmMessage(String serialNumber);
+
     String cardRemoveSucceeded();
 
     String cardGroupModify();

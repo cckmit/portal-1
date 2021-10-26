@@ -124,7 +124,8 @@ public abstract class CardBatchCreateActivity implements Activity,
     }
 
     private boolean validateAmount() {
-        boolean isValid = null == commonInfoEditView.amount().getValue() || commonInfoEditView.amount().getValue() > 0;
+        Integer value = commonInfoEditView.amount().getValue();
+        boolean isValid = value != null && value > 0;
         commonInfoEditView.setAmountValid(isValid);
         return isValid;
     }
@@ -135,11 +136,11 @@ public abstract class CardBatchCreateActivity implements Activity,
         commonInfoEditView.article().setValue(null);
         commonInfoEditView.amount().setValue(null);
         commonInfoEditView.params().setValue(null);
+        commonInfoEditView.contractors().setValue(null);
         commonInfoEditView.hidePrevCardBatchInfo();
         metaView.deadline().setValue(null);
         metaView.setDeadlineValid(true);
         metaView.stateEnable().setEnabled(false);
-        metaView.contractors().setValue(null);
         fillPrioritySelector(BASIC);
         fillStateSelector(CrmConstants.State.BUILD_EQUIPMENT_IN_QUEUE);
     }
@@ -151,10 +152,10 @@ public abstract class CardBatchCreateActivity implements Activity,
         cardBatch.setArticle(commonInfoEditView.article().getValue());
         cardBatch.setAmount(commonInfoEditView.amount().getValue());
         cardBatch.setParams(commonInfoEditView.params().getValue());
+        cardBatch.setContractors(commonInfoEditView.contractors().getValue());
         cardBatch.setStateId(metaView.state().getValue().getId());
         cardBatch.setImportance(metaView.priority().getValue().getId());
         cardBatch.setDeadline(metaView.deadline().getValue() != null? metaView.deadline().getValue().getTime() : null);
-        cardBatch.setContractors(new ArrayList<>(metaView.contractors().getValue()));
 
         return cardBatch;
     }
@@ -176,16 +177,16 @@ public abstract class CardBatchCreateActivity implements Activity,
             return lang.cardBatchArticleValidationError();
         }
 
+        if (CollectionUtils.isEmpty(commonInfoEditView.contractors().getValue())) {
+            return lang.cardBatchContractorsValidationError();
+        }
+
         if (!validateAmount()) {
             return lang.cardBatchAmountValidationError();
         }
 
         if (!validateDeadline()) {
             return lang.cardBatchDeadlineValidationError();
-        }
-
-        if (CollectionUtils.isEmpty(metaView.contractors().getValue())) {
-            return lang.cardBatchContractorsValidationError();
         }
 
         return null;

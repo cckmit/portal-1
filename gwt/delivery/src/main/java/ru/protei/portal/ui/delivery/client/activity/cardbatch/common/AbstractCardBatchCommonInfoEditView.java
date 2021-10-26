@@ -5,6 +5,10 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
+
+import java.util.List;
+import java.util.Set;
 
 public interface AbstractCardBatchCommonInfoEditView extends IsWidget {
 
@@ -23,6 +27,8 @@ public interface AbstractCardBatchCommonInfoEditView extends IsWidget {
     void setAmountValid(boolean isValid);
 
     HasValue<String> params();
+
+    HasValue<Set<PersonProjectMemberView>> contractors();
 
     boolean isNumberValid();
 
