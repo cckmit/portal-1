@@ -35,7 +35,7 @@ public abstract class CardCommonMeta implements Activity, AbstractCardCommonMeta
         if (view.manager().getValue() == null) {
             return lang.cardValidationErrorManager();
         }
-        if (view.testDate().getValue() == null || !isTestDateFieldValid()) {
+        if (view.testDate().getValue() == null) {
             return lang.cardValidationErrorTestDate();
         }
         return null;

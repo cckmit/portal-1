@@ -153,6 +153,9 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
         if (view.serialNumber().getValue() == null) {
             return lang.cardValidationErrorSerialNumber();
         }
+        if (!isTestDateFieldValid()) {
+            return lang.cardValidationErrorTestDate();
+        }
 
         return null;
     }

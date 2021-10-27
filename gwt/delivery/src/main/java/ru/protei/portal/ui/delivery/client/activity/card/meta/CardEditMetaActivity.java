@@ -70,25 +70,21 @@ public abstract class CardEditMetaActivity extends CardCommonMeta implements Act
 
     @Override
     public void onTestDateChanged() {
-        super.onTestDateChanged();
-        if (!isTestDateFieldValid()) {
+        if (isDateEquals(view.testDate().getValue(), card.getTestDate())) {
+            view.setTestDateValid(true);
+            return;
+        }
+        boolean isValid = isTestDateFieldValid();
+        view.setTestDateValid(isValid);
+        if (!isValid) {
             return;
         }
 
-        if (isDateEquals(view.testDate().getValue(), card.getTestDate())) {
-            return;
-        }
         card.setTestDate(view.testDate().getValue());
         onCaseMetaChanged();
     }
 
     private void onCaseMetaChanged() {
-        String error = getValidationError();
-        if (error != null) {
-            showValidationError(error);
-            return;
-        }
-
         controller.updateMeta(card, new FluentCallback<Card>()
                 .withSuccess(metaUpdated -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
