@@ -3899,4 +3899,6 @@ public interface Lang extends Messages, ContactItemLang {
     String notSelected();
 
     String cardWarningChangeNotEqualsFields();
+
+    String jiraWorkflowWarning();
 }

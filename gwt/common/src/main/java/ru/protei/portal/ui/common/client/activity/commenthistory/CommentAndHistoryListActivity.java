@@ -101,6 +101,8 @@ public abstract class CommentAndHistoryListActivity
         view.setInitiatorCompanyId(event.initiatorCompanyId);
         view.setMentionEnabled(event.isMentionEnabled);
 
+        view.setJiraWorkflowWarningVisible(event.isJiraWorkflowWarningVisible);
+
         reloadItems(caseType, caseId);
     }
 

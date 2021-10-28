@@ -41,6 +41,7 @@ public class CommentAndHistoryEvents {
         public boolean isMentionEnabled = true;
         public En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
         public boolean extendedPrivacyType = false;
+        public boolean isJiraWorkflowWarningVisible = false;
     }
 
     /**
