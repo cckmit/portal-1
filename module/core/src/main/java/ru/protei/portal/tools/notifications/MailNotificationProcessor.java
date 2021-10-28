@@ -339,13 +339,14 @@ public class MailNotificationProcessor {
         return formNotifiers(defaultNotifiers,
                 event.getInitiator(),
                 event.getCreator(),
-                event.getManager());
+                event.getManager(),
+                event.getPreviousManager());
     }
 
     /**
      * Form case notifiers with initiator, creator and manager
      */
-    private Collection<NotificationEntry> formNotifiers(Set<NotificationEntry> allNotifiers, Person initiator, Person creator, Person manager){
+    private Collection<NotificationEntry> formNotifiers(Set<NotificationEntry> allNotifiers, Person initiator, Person creator, Person manager, Person previousManager){
 
         NotificationEntry initiatorEmail = fetchNotificationEntryFromPerson(initiator);
         if (initiatorEmail != null) {
@@ -360,6 +361,11 @@ public class MailNotificationProcessor {
         NotificationEntry managerEmail = fetchNotificationEntryFromPerson(manager);
         if (managerEmail != null) {
             allNotifiers.add(managerEmail);
+        }
+
+        NotificationEntry previousManagerEmail = fetchNotificationEntryFromPerson(previousManager);
+        if (previousManagerEmail != null) {
+            allNotifiers.add(previousManagerEmail);
         }
 
         return allNotifiers;
