@@ -64,4 +64,11 @@ public class CommentAndHistoryEvents {
         public AbstractCommentAndHistoryListView view;
         public List<En_CommentOrHistoryType> typesToShow;
     }
+
+    public static class ShowJiraWorkflowWarning {
+        public ShowJiraWorkflowWarning(boolean isJiraWorkflowWarningVisible) {
+            this.isJiraWorkflowWarningVisible = isJiraWorkflowWarningVisible;
+        }
+        public boolean isJiraWorkflowWarningVisible;
+    }
 }

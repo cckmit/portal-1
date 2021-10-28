@@ -216,6 +216,9 @@ public abstract class IssueEditActivity implements
             if (isTerminalState(event.meta.getStateId())) {
                 fireEvent(new CommentAndHistoryEvents.DisableNewComment());
             }
+            if (En_ExtAppType.JIRA.equals(En_ExtAppType.forCode(event.meta.getExtAppType()))) {
+                fireEvent(new CommentAndHistoryEvents.ShowJiraWorkflowWarning(CrmConstants.State.OPENED == event.meta.getStateId()));
+            }
         }
         boolean isCreatingSubtaskAllowed = isCreatingSubtaskAllowed(
                 event.meta.getStateId(),

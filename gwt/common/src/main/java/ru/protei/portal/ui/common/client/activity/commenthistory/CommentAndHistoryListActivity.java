@@ -148,6 +148,11 @@ public abstract class CommentAndHistoryListActivity
     }
 
     @Event
+    public void onShowJiraWorkflowWarning(CommentAndHistoryEvents.ShowJiraWorkflowWarning event) {
+        view.setJiraWorkflowWarningVisible(event.isJiraWorkflowWarningVisible);
+    }
+
+    @Event
     public void onEditComment(CaseCommentItemEvents.EditComment event) {
         commentCompleteEditConsumer = event.resultConsumer;
 
