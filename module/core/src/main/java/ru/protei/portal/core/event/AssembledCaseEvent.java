@@ -33,6 +33,7 @@ public class AssembledCaseEvent extends ApplicationEvent implements HasCaseComme
     private Long initiatorId;
     private Person initiator;
     private Person manager;
+    private Person previousManager;
     private ServiceModule serviceModule;
     private List<CaseComment> existingComments;
     private boolean isEagerEvent;
@@ -378,6 +379,14 @@ public class AssembledCaseEvent extends ApplicationEvent implements HasCaseComme
 
     public void setManager( Person manager ) {
         this.manager = manager;
+    }
+
+    public Person getPreviousManager() {
+        return previousManager;
+    }
+
+    public void setPreviousManager(Person previousManager) {
+        this.previousManager = previousManager;
     }
 
     public Long getCaseObjectId() {
