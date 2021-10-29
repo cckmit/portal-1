@@ -157,6 +157,15 @@ public class CardBatchServiceImpl implements CardBatchService {
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
+        jdbcManyRelationsHelper.fill(caseObject, "members");
+
+        try {
+            updateContractors(caseObject, commonInfo.getContractors());
+        } catch (Throwable e) {
+            log.error("updateCommonInfo(): error during save cardBatch common info when update contractors;", e);
+            throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
+        }
+
         CardBatch cardBatch = cardBatchDAO.get(caseObject.getId());
         jdbcManyRelationsHelper.fillAll(cardBatch);
         return ok(cardBatch);
@@ -189,20 +198,12 @@ public class CardBatchServiceImpl implements CardBatchService {
             caseObject.setImpLevel(meta.getImportance());
             caseObject.setDeadline(meta.getDeadline());
             caseObject.setModified(new Date());
-            jdbcManyRelationsHelper.fill( caseObject, "members" );
             isUpdated = caseObjectDAO.partialMerge(caseObject, CaseObject.Columns.STATE, CaseObject.Columns.IMPORTANCE,
                     CaseObject.Columns.DEADLINE, CaseObject.Columns.MODIFIED);
         }
         if (!isUpdated) {
             log.warn("Failed to update card batch meta data {} at db", caseObject.getId());
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
-        }
-
-        try {
-            updateContractors(caseObject, meta.getContractors());
-        } catch (Throwable e) {
-            log.error("updateMeta(): error during save card batch meta when update contractors;", e);
-            throw new RollbackTransactionException(En_ResultStatus.INTERNAL_ERROR);
         }
 
         CardBatch cardBatch = cardBatchDAO.get(caseObject.getId());
