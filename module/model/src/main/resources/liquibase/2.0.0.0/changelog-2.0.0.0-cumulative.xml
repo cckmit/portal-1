@@ -111,4 +111,5 @@
   <include file="2021-10-20-rework-FK_CO_CASE.xml" relativeToChangelogFile="true"/>
   <include file="2021-10-20-modify-dev_unit-table.xml" relativeToChangelogFile="true"/>
   <include file="2021-20-21-remove-history_version-cdr_description-configuration-from-dev_unit.xml" relativeToChangelogFile="true"/>
+  <include file="2021-10-29-create-pcb-order-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
