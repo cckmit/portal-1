@@ -74,6 +74,18 @@
                                     <attachment:AttachmentList ui:field="attachmentList" simpleMode="true"
                                                                styleName="inline-block attachment-list-simple"/>
                                 </div>
+
+                                <div ui:field="jiraWorkflowWarning" class="row p-t-10 d-table hide">
+                                    <div class="d-table-cell">
+                                        <span class="fa-stack fa-2x align-middle text-danger">
+                                            <i class="far fa-circle fa-stack-2x"/>
+                                            <i class="fas fa-exclamation fa-stack-1x"/>
+                                        </span>
+                                    </div>
+                                    <div class="d-table-cell align-middle p-l-10 large-text">
+                                        <ui:text from="{lang.jiraWorkflowWarning}"/>
+                                    </div>
+                                </div>
                             </div>
 
                             <div ui:field="commentPreviewContainer" class="message-preview hide">

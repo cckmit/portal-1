@@ -101,6 +101,8 @@ public abstract class CommentAndHistoryListActivity
         view.setInitiatorCompanyId(event.initiatorCompanyId);
         view.setMentionEnabled(event.isMentionEnabled);
 
+        view.setJiraWorkflowWarningVisible(event.isJiraWorkflowWarningVisible);
+
         reloadItems(caseType, caseId);
     }
 
@@ -143,6 +145,11 @@ public abstract class CommentAndHistoryListActivity
     public void onDisableNewComment(CommentAndHistoryEvents.DisableNewComment event) {
         this.isNewCommentEnabled = false;
         view.setNewCommentDisabled(true);
+    }
+
+    @Event
+    public void onShowJiraWorkflowWarning(CommentAndHistoryEvents.ShowJiraWorkflowWarning event) {
+        view.setJiraWorkflowWarningVisible(event.isJiraWorkflowWarningVisible);
     }
 
     @Event

@@ -216,6 +216,9 @@ public abstract class IssueEditActivity implements
             if (isTerminalState(event.meta.getStateId())) {
                 fireEvent(new CommentAndHistoryEvents.DisableNewComment());
             }
+            if (En_ExtAppType.JIRA.equals(En_ExtAppType.forCode(event.meta.getExtAppType()))) {
+                fireEvent(new CommentAndHistoryEvents.ShowJiraWorkflowWarning(CrmConstants.State.OPENED == event.meta.getStateId()));
+            }
         }
         boolean isCreatingSubtaskAllowed = isCreatingSubtaskAllowed(
                 event.meta.getStateId(),
@@ -447,6 +450,7 @@ public abstract class IssueEditActivity implements
         showCommentsAndHistoriesEvent.initiatorCompanyId = issue.getInitiatorCompany().getId();
         showCommentsAndHistoriesEvent.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
         showCommentsAndHistoriesEvent.extendedPrivacyType =  selectExtendedPrivacyType( issue );
+        showCommentsAndHistoriesEvent.isJiraWorkflowWarningVisible = isJiraOpenedCase(issue);
         fireEvent( showCommentsAndHistoriesEvent );
     }
 
@@ -574,6 +578,14 @@ public abstract class IssueEditActivity implements
 
     private En_TextMarkup isJiraMarkupCase(CaseObject issue) {
         return En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) ? En_TextMarkup.JIRA_WIKI_MARKUP : En_TextMarkup.MARKDOWN;
+    }
+
+    private boolean isJiraOpenedCase(CaseObject issue) {
+        if (issue.getStateId() != CrmConstants.State.OPENED) {
+            return false;
+        }
+
+        return En_ExtAppType.JIRA.equals(En_ExtAppType.forCode(issue.getExtAppType()));
     }
 
     private void copyToClipboardNotify(Boolean success) {
