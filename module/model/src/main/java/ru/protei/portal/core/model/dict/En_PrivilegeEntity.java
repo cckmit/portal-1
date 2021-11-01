@@ -35,6 +35,7 @@ public enum En_PrivilegeEntity {
     YT(29),
     CARD(30),
     CARD_BATCH(31),
+    PCB_ORDER(32),
     ;
 
     private final Integer order;

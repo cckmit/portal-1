@@ -145,6 +145,11 @@ public enum En_Privilege {
     CARD_BATCH_EDIT(CARD_BATCH, EDIT),
     CARD_BATCH_REMOVE(CARD_BATCH, REMOVE),
 
+    PCB_ORDER_VIEW(CARD, VIEW),
+    PCB_ORDER_CREATE(CARD, CREATE),
+    PCB_ORDER_EDIT(CARD, EDIT),
+    PCB_ORDER_REMOVE(CARD, REMOVE),
+
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),
     ISSUE_PLAN_EDIT (ISSUE, null),

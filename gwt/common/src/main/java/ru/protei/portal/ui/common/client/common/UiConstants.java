@@ -56,6 +56,7 @@ public class UiConstants {
         String CARD_SEARCH = "fas fa-search";
         String DELIVERY = "fas fa-truck";
         String CARD = "fas fa-microchip";
+        String PCB_ORDER = "fas fa-server";
         String CARD_BATCH = "fas fa-layer-group";
         String STORE = "fas fa-memory";
         String FLOOR_PLAN = "fas fa-search-location";
