@@ -3901,4 +3901,30 @@ public interface Lang extends Messages, ContactItemLang {
     String cardWarningChangeNotEqualsFields();
 
     String pcbOrder();
+
+    String pcbOrderName();
+
+    String pcbOrderOrderDate();
+
+    String pcbOrderStateSent();
+
+    String pcbOrderStateAccepted();
+
+    String pcbOrderStateReceived();
+
+    String pcbOrderGroupActive();
+
+    String pcbOrderGroupCompleted();
+
+    String pcbOrderTypeCard();
+
+    String pcbOrderTypeStencil();
+
+    String pcbOrderTypeFrontPanel();
+
+    String pcbOrderPromptnessRegular();
+
+    String pcbOrderPromptnessUrgent();
+
+    String pcbOrderPromptnessVeryUrgent();
 }
