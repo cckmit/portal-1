@@ -3953,4 +3953,6 @@ public interface Lang extends Messages, ContactItemLang {
     String pcbOrderRemoved();
 
     String pcbOrderRemoveConfirmMessage();
+
+    String pcbOrderGroupNotDefined();
 }

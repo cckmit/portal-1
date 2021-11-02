@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_PcbOrderState;
+import ru.protei.portal.core.model.dict.En_PcbOrderType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.PcbOrder;
 import ru.protei.portal.core.model.query.PcbOrderQuery;
@@ -23,7 +24,7 @@ import ru.protei.portal.ui.delivery.client.activity.pcborder.filter.AbstractPcbO
 import ru.protei.portal.ui.delivery.client.activity.pcborder.filter.AbstractPcbOrderFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.Date;
+import java.util.*;
 
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.PAGE_SIZE;
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.getTotalPages;
@@ -101,25 +102,43 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
     }
 
     @Override
-    public En_PcbOrderState makeGroup(PcbOrder pcbOrder) {
-        return pcbOrder.getState();
-    }
+    public PcbOrderGroupType makeGroup(PcbOrder pcbOrder) {
 
-    @Override
-    public String makeGroupName(En_PcbOrderState state) {
+        if (pcbOrder == null){
+            return null;
+        }
+
+        En_PcbOrderState state = pcbOrder.getState();
 
         if (state == null){
-            return "";
+            return null;
         }
 
         switch (state) {
             case SENT:
-                return "завершенные";
+                return PcbOrderGroupType.COMPLETED;
             case ACCEPTED:
             case RECEIVED:
-                return "активные";
+                return PcbOrderGroupType.ACTIVE;
             default:
-                return "";
+                return null;
+        }
+    }
+
+    @Override
+    public String makeGroupName(PcbOrderGroupType type) {
+
+        if (type == null){
+            return lang.pcbOrderGroupNotDefined();
+        }
+
+        switch (type) {
+            case COMPLETED:
+                return lang.pcbOrderGroupCompleted();
+            case ACTIVE:
+                return lang.pcbOrderGroupActive();
+            default:
+                return type.name();
         }
     }
 
@@ -141,7 +160,7 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
                             pagerView.setTotalPages( getTotalPages( r.getTotalCount() ) );
                         }
                         pagerView.setCurrentPage( page );
-                        view.addRecords(r.getResults());
+                        view.addRecords(r.getResults(), groupComparator);
 
                         restoreScroll();
                     }
@@ -193,6 +212,16 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
     private void fireSuccessNotify(String message) {
         fireEvent(new NotifyEvents.Show(message, NotifyEvents.NotifyType.SUCCESS));
     }
+
+    Comparator<Map.Entry<PcbOrderGroupType, List<PcbOrder>>> groupComparator = new Comparator<Map.Entry<PcbOrderGroupType, List<PcbOrder>>>() {
+        @Override
+        public int compare(Map.Entry<PcbOrderGroupType, List<PcbOrder>> o1, Map.Entry<PcbOrderGroupType, List<PcbOrder>> o2) {
+            if (Objects.equals(o1.getKey(), o2.getKey())){
+                return 0;
+            }
+            return o1.getKey().isBefore(o2.getKey()) ? 1 : -1;
+        }
+    };
 
     @Inject
     AbstractPcbOrderTableView view;

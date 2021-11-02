@@ -4,9 +4,9 @@ import ru.protei.winter.core.utils.enums.HasId;
 
 public enum En_PcbOrderState implements HasId {
 
-    SENT(1),
+    RECEIVED(1),
     ACCEPTED(2),
-    RECEIVED(3);
+    SENT(3);
 
     private final int id;
 

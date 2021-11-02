@@ -20,10 +20,13 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.table.GroupedTableWidget;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.table.AbstractPcbOrderTableActivity;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.table.AbstractPcbOrderTableView;
+import ru.protei.portal.ui.delivery.client.activity.pcborder.table.PcbOrderGroupType;
 import ru.protei.portal.ui.delivery.client.view.pcborder.table.column.*;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 public class PcbOrderTableView extends Composite implements AbstractPcbOrderTableView {
 
@@ -57,8 +60,8 @@ public class PcbOrderTableView extends Composite implements AbstractPcbOrderTabl
     }
 
     @Override
-    public void addRecords(List<PcbOrder> pcbOrders) {
-        table.addRecords(pcbOrders);
+    public void addRecords(List<PcbOrder> pcbOrders, Comparator<Map.Entry<PcbOrderGroupType, List<PcbOrder>>> comparator) {
+        table.addRecords(pcbOrders, comparator);
     }
 
     @Override
@@ -131,7 +134,7 @@ public class PcbOrderTableView extends Composite implements AbstractPcbOrderTabl
     @UiField
     Lang lang;
     @UiField
-    GroupedTableWidget<PcbOrder, En_PcbOrderState> table;
+    GroupedTableWidget<PcbOrder, PcbOrderGroupType> table;
     @UiField
     HTMLPanel pagerContainer;
     @UiField
