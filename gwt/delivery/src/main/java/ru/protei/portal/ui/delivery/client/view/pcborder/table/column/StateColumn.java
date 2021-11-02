@@ -1,16 +1,16 @@
 package ru.protei.portal.ui.delivery.client.view.pcborder.table.column;
 
 import com.google.gwt.user.client.Element;
-import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.PcbOrder;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
+import ru.protei.portal.ui.common.client.lang.En_PcbOrderStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 public class StateColumn extends ClickColumn<PcbOrder> {
 
-    @Inject
-    public StateColumn(Lang lang) {
+    public StateColumn(Lang lang, En_PcbOrderStateLang stateLang) {
         this.lang = lang;
+        this.stateLang = stateLang;
     }
 
     @Override
@@ -24,8 +24,9 @@ public class StateColumn extends ClickColumn<PcbOrder> {
             return;
         }
 
-        cell.setInnerHTML(pcbOrder.getState().name());
+        cell.setInnerHTML(stateLang.getStateName(pcbOrder.getState()));
     }
 
     Lang lang;
+    En_PcbOrderStateLang stateLang;
 }
