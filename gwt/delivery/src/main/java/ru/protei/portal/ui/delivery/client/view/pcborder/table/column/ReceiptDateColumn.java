@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.delivery.client.view.pcborder.table.column;
 
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.PcbOrder;
@@ -29,13 +28,12 @@ public class ReceiptDateColumn extends ClickColumn<PcbOrder> {
             return;
         }
 
-        Date orderDate = pcbOrder.getOrderDate();
-        if (orderDate == null) {
+        Date date = pcbOrder.getReceiptDate();
+        if (date == null) {
             return;
         }
-        com.google.gwt.dom.client.Element root = DOM.createDiv();
-        root.setInnerHTML(formatDateOnly(orderDate));
-        cell.appendChild(root);
+
+        cell.setInnerHTML(formatDateOnly(date));
     }
 
     Lang lang;
