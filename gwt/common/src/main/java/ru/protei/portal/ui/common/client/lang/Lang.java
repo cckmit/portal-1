@@ -3927,4 +3927,30 @@ public interface Lang extends Messages, ContactItemLang {
     String pcbOrderPromptnessUrgent();
 
     String pcbOrderPromptnessVeryUrgent();
+
+    String pcbOrderStencilTypeTop();
+
+    String pcbOrderStencilTypeBot();
+
+    String pcbOrderStencilTypeTopBot();
+
+    String pcbOrderModification();
+
+    String pcbOrderState();
+
+    String pcbOrderPromptness();
+
+    String pcbOrderOrderType();
+
+    String pcbOrderAmount();
+
+    String pcbOrderReceiptDate();
+
+    String pcbOrderReadyDate();
+
+    String pcbOrderContractor();
+
+    String pcbOrderRemoved();
+
+    String pcbOrderRemoveConfirmMessage();
 }

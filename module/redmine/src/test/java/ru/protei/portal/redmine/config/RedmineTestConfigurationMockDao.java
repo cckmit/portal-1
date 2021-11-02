@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.CardBatchSqlBuilder;
 import ru.protei.portal.core.model.dao.impl.CardSqlBuilder;
+import ru.protei.portal.core.model.dao.impl.PcbOrderDAO_Impl;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static org.mockito.Mockito.mock;
@@ -451,5 +452,10 @@ public class RedmineTestConfigurationMockDao {
     @Bean
     public CardBatchSqlBuilder cardBatchSqlBuilder() {
         return mock(CardBatchSqlBuilder.class);
+    }
+
+    @Bean
+    public PcbOrderDAO getPcbOrderDAO() {
+        return mock(PcbOrderDAO.class);
     }
 }

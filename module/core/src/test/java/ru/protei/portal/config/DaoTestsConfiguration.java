@@ -6,6 +6,8 @@ import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 
+import static org.mockito.Mockito.mock;
+
 @Configuration
 public class DaoTestsConfiguration {
 
@@ -40,6 +42,26 @@ public class DaoTestsConfiguration {
     @Bean
     public ContactSqlBuilder getContactSqlBuilder() {
         return new ContactSqlBuilder();
+    }
+
+    @Bean
+    public DeliverySqlBuilder deliverySqlBuilder() {
+        return new DeliverySqlBuilder();
+    }
+
+    @Bean
+    public CardSqlBuilder cardSqlBuilder() {
+        return new CardSqlBuilder();
+    }
+
+    @Bean
+    public CardBatchSqlBuilder cardBatchSqlBuilder() {
+        return new CardBatchSqlBuilder();
+    }
+
+    @Bean
+    public PcbOrderSqlBuilder pcbOrderSqlBuilder() {
+        return new PcbOrderSqlBuilder();
     }
 
     /* DAO converters */
@@ -481,11 +503,6 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public DeliverySqlBuilder deliverySqlBuilder() {
-        return new DeliverySqlBuilder();
-    }
-
-    @Bean
     public KitDAO getKitDAO() {
         return new KitDAO_Impl();
     }
@@ -511,11 +528,6 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public CardSqlBuilder cardSqlBuilder() {
-        return new CardSqlBuilder();
-    }
-
-    @Bean
     public CardDAO getCardDAO() {
         return new CardDAO_Impl();
     }
@@ -526,7 +538,7 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public CardBatchSqlBuilder cardBatchSqlBuilder() {
-        return new CardBatchSqlBuilder();
+    public PcbOrderDAO getPcbOrderDAO() {
+        return new PcbOrderDAO_Impl();
     }
 }

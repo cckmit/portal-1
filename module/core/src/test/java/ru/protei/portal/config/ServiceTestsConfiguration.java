@@ -533,6 +533,11 @@ public class ServiceTestsConfiguration {
         return new CardBatchServiceImpl();
     }
 
+    @Bean
+    public PcbOrderService getPcbOrderService() {
+        return new PcbOrderServiceImpl();
+    }
+
     /* ASPECT/INTERCEPTORS */
 
     @Bean

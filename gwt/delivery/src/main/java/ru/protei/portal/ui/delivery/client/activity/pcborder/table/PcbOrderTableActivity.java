@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PcbOrderControllerAsync;
@@ -32,6 +33,8 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
 
     @PostConstruct
     public void onInit() {
+        CREATE_ACTION = lang.buttonCreate();
+
         view.setActivity(this);
         pagerView.setActivity( this );
 
@@ -54,11 +57,7 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
-        if (!policyService.hasPrivilegeFor(En_Privilege.PCB_ORDER_VIEW)) {
-            return;
-        }
-
-//        view.getFilterContainer().clear();
+        filterView.resetFilter();
     }
 
     @Event
@@ -72,24 +71,23 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
             fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
             return;
         }
+
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
-
         view.getPagerContainer().add( pagerView.asWidget() );
+        view.getFilterContainer().add( filterView.asWidget() );
+
+        fireEvent(new ActionBarEvents.Clear());
+        if (policyService.hasPrivilegeFor(En_Privilege.CARD_CREATE)) {
+            fireEvent(new ActionBarEvents.Add(CREATE_ACTION , null, UiConstants.ActionBarIdentity.CARD_CREATE));
+        }
 
         requestPcbOrder(this.page);
     }
 
-//    @Event
-//    public void onUpdate(PcbOrderEvents.Reload event) {
-//        if (view.asWidget().isAttached()) {
-//            reloadTable(page);
-//        }
-//    }
-
     @Override
     public void onItemClicked(PcbOrder value) {
-        fireEvent(new PcbOrderEvents.Edit(value.getId()));
+        showPreview(value);
     }
 
     @Override
@@ -99,7 +97,7 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
 
     @Override
     public void onRemoveClicked(PcbOrder value) {
-        fireEvent(new ConfirmDialogEvents.Show(lang.roomReservationRemoveConfirmMessage(), removeAction(value)));
+        fireEvent(new ConfirmDialogEvents.Show(lang.pcbOrderRemoveConfirmMessage(), removeAction(value)));
     }
 
     @Override
@@ -131,7 +129,7 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
         boolean isFirstChunk = page == 0;
         marker = new Date().getTime();
 
-        query = getQuery();
+        PcbOrderQuery query = getQuery();
         query.setOffset( page*PAGE_SIZE );
         query.setLimit( PAGE_SIZE );
 
@@ -170,19 +168,17 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
         }
     }
 
-
     private Runnable removeAction(PcbOrder value) {
-        //TODO remove
-//        return () -> service.removeReservation(value.getId(), new FluentCallback<Long>()
-//                .withSuccess(result -> fireSuccessNotify(lang.roomReservationRemoved()))
-//        );
-        return null;
+        return () -> service.removePcbOrder(value, new FluentCallback<PcbOrder>()
+                .withSuccess(result -> fireSuccessNotify(lang.pcbOrderRemoved()))
+        );
     }
 
     private PcbOrderQuery getQuery() {
-        //TODO
-//        return view.getFilterWidget().getQuery();
-        return null;
+        //TODO fill query
+        PcbOrderQuery query = new PcbOrderQuery();
+        query.setSearchString(filterView.search().getValue());
+        return query;
     }
 
     private void reloadTable(int page) {
@@ -196,7 +192,6 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
 
     private void fireSuccessNotify(String message) {
         fireEvent(new NotifyEvents.Show(message, NotifyEvents.NotifyType.SUCCESS));
-//        fireEvent(new PcbOrderEvents.Reload());
     }
 
     @Inject
@@ -221,7 +216,8 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
     PolicyService policyService;
 
     private AppEvents.InitDetails initDetails;
-    private PcbOrderQuery query = null;
     private long marker;
     private int page = 0;
+
+    private static String CREATE_ACTION;
 }

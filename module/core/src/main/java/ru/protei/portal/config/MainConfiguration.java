@@ -664,6 +664,16 @@ public class MainConfiguration {
     }
 
     @Bean
+    public PcbOrderSqlBuilder pcbOrderSqlBuilder() {
+        return new PcbOrderSqlBuilder();
+    }
+
+    @Bean
+    public PcbOrderDAO getPcbOrderDAO() {
+        return new PcbOrderDAO_Impl();
+    }
+
+    @Bean
     public CardBatchDAO getCardBatchDAO() {
         return new CardBatchDAO_Impl();
     }
@@ -1248,6 +1258,11 @@ public class MainConfiguration {
     @Bean
     public CardBatchService getCardBatchService() {
         return new CardBatchServiceImpl();
+    }
+
+    @Bean
+    public PcbOrderService getPcbOrderService() {
+        return new PcbOrderServiceImpl();
     }
 
     @Bean

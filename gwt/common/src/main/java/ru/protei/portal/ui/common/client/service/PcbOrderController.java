@@ -11,4 +11,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 public interface PcbOrderController extends RemoteService {
 
     SearchResult<PcbOrder> getPcbOrderList(PcbOrderQuery query) throws RequestFailedException;
+
+    PcbOrder removePcbOrder(PcbOrder pcbOrder) throws RequestFailedException;
 }

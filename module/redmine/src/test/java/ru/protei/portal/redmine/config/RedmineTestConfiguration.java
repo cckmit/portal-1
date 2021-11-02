@@ -196,6 +196,11 @@ public class RedmineTestConfiguration {
     }
 
     @Bean
+    public PcbOrderService getPcbOrderService() {
+        return new PcbOrderServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
     }

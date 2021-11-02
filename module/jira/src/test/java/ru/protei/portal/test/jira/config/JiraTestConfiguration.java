@@ -396,6 +396,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public PcbOrderService getPcbOrderService() {
+        return new PcbOrderServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
     }
@@ -659,6 +664,16 @@ public class JiraTestConfiguration {
     @Bean
     public CardBatchSqlBuilder cardBatchSqlBuilder() {
         return new CardBatchSqlBuilder();
+    }
+
+    @Bean
+    public PcbOrderSqlBuilder pcbOrderSqlBuilder() {
+        return new PcbOrderSqlBuilder();
+    }
+
+    @Bean
+    public PcbOrderDAO getPcbOrderDAO() {
+        return new PcbOrderDAO_Impl();
     }
 
     /* DAO converters */

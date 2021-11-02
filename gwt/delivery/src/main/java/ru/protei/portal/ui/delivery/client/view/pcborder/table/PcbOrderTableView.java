@@ -20,10 +20,9 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.table.GroupedTableWidget;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.table.AbstractPcbOrderTableActivity;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.table.AbstractPcbOrderTableView;
-import ru.protei.portal.ui.delivery.client.view.pcborder.table.column.OrderDateColumn;
+import ru.protei.portal.ui.delivery.client.view.pcborder.table.column.*;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class PcbOrderTableView extends Composite implements AbstractPcbOrderTableView {
@@ -58,8 +57,8 @@ public class PcbOrderTableView extends Composite implements AbstractPcbOrderTabl
     }
 
     @Override
-    public void addRecords(List<PcbOrder> roomReservations) {
-        table.addRecords(roomReservations);
+    public void addRecords(List<PcbOrder> pcbOrders) {
+        table.addRecords(pcbOrders);
     }
 
     @Override
@@ -93,12 +92,38 @@ public class PcbOrderTableView extends Composite implements AbstractPcbOrderTabl
         editClickColumn.setDisplayPredicate(value -> policyService.hasPrivilegeFor(En_Privilege.PCB_ORDER_EDIT));
         removeClickColumn.setDisplayPredicate(value -> policyService.hasPrivilegeFor(En_Privilege.PCB_ORDER_REMOVE));
 
+        NameColumn nameColumn = new NameColumn(lang);
+        ModificationColumn modificationColumn = new ModificationColumn(lang);
+        StateColumn stateColumn = new StateColumn(lang);
+        PromptnessColumn promptnessColumn = new PromptnessColumn(lang);
+        OrderTypeColumn orderTypeColumn = new OrderTypeColumn(lang);
+        AmountColumn amountColumn = new AmountColumn(lang);
         OrderDateColumn orderDateColumn = new OrderDateColumn(lang);
-        table.addColumn(orderDateColumn.header, orderDateColumn.values);
+        ReadyDateColumn readyDateColumn = new ReadyDateColumn(lang);
+        ReceiptDateColumn receiptDateColumn = new ReceiptDateColumn(lang);
+        ContractorColumn contractorColumn = new ContractorColumn(lang);
 
+        columns.add(nameColumn);
+        columns.add(modificationColumn);
+        columns.add(stateColumn);
+        columns.add(promptnessColumn);
+        columns.add(orderTypeColumn);
+        columns.add(amountColumn);
         columns.add(orderDateColumn);
+        columns.add(readyDateColumn);
+        columns.add(receiptDateColumn);
+        columns.add(contractorColumn);
 
+        table.addColumn(nameColumn.header, nameColumn.values);
+        table.addColumn(modificationColumn.header, modificationColumn.values);
+        table.addColumn(stateColumn.header, stateColumn.values);
+        table.addColumn(promptnessColumn.header, promptnessColumn.values);
+        table.addColumn(orderTypeColumn.header, orderTypeColumn.values);
+        table.addColumn(amountColumn.header, amountColumn.values);
         table.addColumn(orderDateColumn.header, orderDateColumn.values);
+        table.addColumn(readyDateColumn.header, readyDateColumn.values);
+        table.addColumn(receiptDateColumn.header, receiptDateColumn.values);
+        table.addColumn(contractorColumn.header, contractorColumn.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
     }

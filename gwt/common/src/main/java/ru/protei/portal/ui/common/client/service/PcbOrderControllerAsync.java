@@ -8,4 +8,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 public interface PcbOrderControllerAsync {
 
     void getPcbOrderList(PcbOrderQuery query, AsyncCallback<SearchResult<PcbOrder>> async);
+
+    void removePcbOrder(PcbOrder pcbOrder, AsyncCallback<PcbOrder> async);
 }

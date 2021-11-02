@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.dict.En_PcbOrderPromptness;
 import ru.protei.portal.core.model.dict.En_PcbOrderState;
 import ru.protei.portal.core.model.dict.En_PcbOrderType;
 import ru.protei.portal.core.model.dict.En_StencilType;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -11,7 +12,9 @@ import java.util.Date;
 import java.util.Objects;
 
 @JdbcEntity(table = "pcb_order")
-public class PcbOrder implements Serializable {
+public class PcbOrder extends AuditableObject {
+
+    public static final String AUDIT_TYPE = "PcbOrder";
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -248,6 +251,11 @@ public class PcbOrder implements Serializable {
 
     public void setPromptness(En_PcbOrderPromptness promptness) {
         this.promptness = promptness;
+    }
+
+    @Override
+    public String getAuditType() {
+        return AUDIT_TYPE;
     }
 
     @Override

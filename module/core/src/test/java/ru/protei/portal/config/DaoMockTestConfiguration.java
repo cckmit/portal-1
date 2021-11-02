@@ -6,6 +6,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.CardBatchSqlBuilder;
 import ru.protei.portal.core.model.dao.impl.CardSqlBuilder;
+import ru.protei.portal.core.model.dao.impl.PcbOrderDAO_Impl;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static org.mockito.Mockito.mock;
@@ -499,5 +500,10 @@ public class DaoMockTestConfiguration {
     @Bean
     public CardBatchSqlBuilder cardBatchSqlBuilder() {
         return mock(CardBatchSqlBuilder.class);
+    }
+
+    @Bean
+    public PcbOrderDAO getPcbOrderDAO() {
+        return mock(PcbOrderDAO.class);
     }
 }
