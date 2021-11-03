@@ -52,9 +52,11 @@ public class PcbOrderDAO_Impl extends PortalBaseJdbcDAO<PcbOrder> implements Pcb
         if (query.getSortField() == null) return null;
 
         return new JdbcSort(listOf(
-                new Pair<>(query.getSortField().getFieldName(), TypeConverters.toWinter(query.getSortDir())),
-                En_SortField.pcb_order_card_type.equals(query.getSortField()) ?
-                        new Pair<>(En_SortField.pcb_order_receipt_date.getFieldName(), JdbcSort.Direction.DESC) :
-                        new Pair<>(En_SortField.pcb_order_card_type.getFieldName(), JdbcSort.Direction.ASC)));
+                new Pair<>(query.getSortField().getFieldName(), TypeConverters.toWinter(query.getSortDir()))
+//                ,
+//                En_SortField.pcb_order_card_type.equals(query.getSortField()) ?
+//                        new Pair<>(En_SortField.pcb_order_receipt_date.getFieldName(), JdbcSort.Direction.DESC) :
+//                        new Pair<>(En_SortField.pcb_order_card_type.getFieldName(), JdbcSort.Direction.ASC))
+        ));
     }
 }

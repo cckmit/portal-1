@@ -6,10 +6,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_PcbOrderPromptness;
-import ru.protei.portal.core.model.dict.En_PcbOrderState;
-import ru.protei.portal.core.model.dict.En_PcbOrderType;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.PcbOrder;
 import ru.protei.portal.core.model.query.PcbOrderQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -213,6 +210,8 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
         query.setTypeIds(nullIfEmpty(toList(filterView.orderType().getValue(), En_PcbOrderType::getId)));
         query.setStateIds(nullIfEmpty(toList(filterView.states().getValue(), En_PcbOrderState::getId)));
         query.setPromptnessIds(nullIfEmpty(toList(filterView.promptness().getValue(), En_PcbOrderPromptness::getId)));
+        query.setSortField(filterView.sortField().getValue());
+        query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         return query;
     }
 

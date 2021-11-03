@@ -24,7 +24,7 @@ public class ContractorColumn extends ClickColumn<PcbOrder> {
             return;
         }
 
-        cell.setInnerHTML(pcbOrder.getCompany().getCname());
+        cell.setInnerHTML(pcbOrder.getCompanyName());
     }
 
     Lang lang;

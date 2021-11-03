@@ -294,7 +294,7 @@ public enum En_SortField {
     /**
      * Тип платы
      */
-    pcb_order_card_type("pcb_order.card_type_id"),
+    pcb_order_card_type("CT.name"),
 
     /**
      * Дата получения

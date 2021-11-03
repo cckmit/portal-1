@@ -57,8 +57,8 @@ public class PcbOrder extends AuditableObject {
     @JdbcColumn(name = "company_id")
     private Long companyId;
 
-    @JdbcJoinedObject (localColumn = "company_id", remoteColumn = "id" )
-    private Company company;
+    @JdbcJoinedColumn(localColumn = "company_id", table = "company", remoteColumn = "id", mappedColumn = "cname")
+    private String companyName;
 
     @JdbcColumn(name = "parent_id")
     private Long parentId;
@@ -146,12 +146,12 @@ public class PcbOrder extends AuditableObject {
         this.companyId = companyId;
     }
 
-    public Company getCompany() {
-        return company;
+    public String getCompanyName() {
+        return companyName;
     }
 
-    public void setCompany(Company company) {
-        this.company = company;
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 
     public Long getCardTypeId() {
