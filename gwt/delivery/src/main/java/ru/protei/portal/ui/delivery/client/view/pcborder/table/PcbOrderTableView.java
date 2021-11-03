@@ -16,10 +16,7 @@ import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
-import ru.protei.portal.ui.common.client.lang.En_PcbOrderPromptnessLang;
-import ru.protei.portal.ui.common.client.lang.En_PcbOrderStateLang;
-import ru.protei.portal.ui.common.client.lang.En_PcbOrderTypeLang;
-import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.lang.*;
 import ru.protei.portal.ui.common.client.widget.table.GroupedTableWidget;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.table.AbstractPcbOrderTableActivity;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.table.AbstractPcbOrderTableView;
@@ -102,7 +99,7 @@ public class PcbOrderTableView extends Composite implements AbstractPcbOrderTabl
         ModificationColumn modificationColumn = new ModificationColumn(lang);
         StateColumn stateColumn = new StateColumn(lang, stateLang);
         PromptnessColumn promptnessColumn = new PromptnessColumn(lang, promptnessLang);
-        OrderTypeColumn orderTypeColumn = new OrderTypeColumn(lang, typeLang);
+        OrderTypeColumn orderTypeColumn = new OrderTypeColumn(lang, typeLang, stencilTypeLang);
         AmountColumn amountColumn = new AmountColumn(lang);
         OrderDateColumn orderDateColumn = new OrderDateColumn(lang);
         ReadyDateColumn readyDateColumn = new ReadyDateColumn(lang);
@@ -155,6 +152,8 @@ public class PcbOrderTableView extends Composite implements AbstractPcbOrderTabl
     En_PcbOrderPromptnessLang promptnessLang;
     @Inject
     En_PcbOrderTypeLang typeLang;
+    @Inject
+    En_PcbOrderStencilTypeLang stencilTypeLang;
 
     AbstractPcbOrderTableActivity activity;
     EditClickColumn<PcbOrder> editClickColumn;

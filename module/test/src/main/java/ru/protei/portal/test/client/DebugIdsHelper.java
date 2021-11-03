@@ -260,4 +260,49 @@ public class DebugIdsHelper {
             return DebugIds.CARD_BATCH_STATE.DEFAULT + id;
         }
     }
+
+    public static final class PCB_ORDER_STATE {
+        public static String byId(long id) {
+            if (id == 1) {
+                return DebugIds.PCB_ORDER_STATE.RECEIVED;
+            }
+            if (id == 2) {
+                return DebugIds.PCB_ORDER_STATE.ACCEPTED;
+            }
+            if (id == 3) {
+                return DebugIds.PCB_ORDER_STATE.SENT;
+            }
+            return DebugIds.ISSUE_STATE.DEFAULT + id;
+        }
+    }
+
+    public static final class PCB_ORDER_PROMPTNESS {
+        public static String byId(long id) {
+            if (id == 1) {
+                return DebugIds.PCB_ORDER_PROMPTNESS.REGULAR;
+            }
+            if (id == 2) {
+                return DebugIds.PCB_ORDER_PROMPTNESS.URGENT;
+            }
+            if (id == 3) {
+                return DebugIds.PCB_ORDER_PROMPTNESS.VERY_URGENT;
+            }
+            return DebugIds.ISSUE_STATE.DEFAULT + id;
+        }
+    }
+
+    public static final class PCB_ORDER_TYPE {
+        public static String byId(long id) {
+            if (id == 1) {
+                return DebugIds.PCB_ORDER_TYPE.CARD;
+            }
+            if (id == 2) {
+                return DebugIds.PCB_ORDER_TYPE.STENCIL;
+            }
+            if (id == 3) {
+                return DebugIds.PCB_ORDER_TYPE.FRONT_PANEL;
+            }
+            return DebugIds.ISSUE_STATE.DEFAULT + id;
+        }
+    }
 }

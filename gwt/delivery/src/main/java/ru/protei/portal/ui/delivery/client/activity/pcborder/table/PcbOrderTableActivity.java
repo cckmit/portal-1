@@ -6,11 +6,13 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_PcbOrderPromptness;
 import ru.protei.portal.core.model.dict.En_PcbOrderState;
 import ru.protei.portal.core.model.dict.En_PcbOrderType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.PcbOrder;
 import ru.protei.portal.core.model.query.PcbOrderQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -26,6 +28,8 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.*;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.PAGE_SIZE;
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.getTotalPages;
 
@@ -194,9 +198,12 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
     }
 
     private PcbOrderQuery getQuery() {
-        //TODO fill query
         PcbOrderQuery query = new PcbOrderQuery();
         query.setSearchString(filterView.search().getValue());
+        query.setCardTypeIds(nullIfEmpty(toList(filterView.types().getValue(), EntityOption::getId)));
+        query.setTypeIds(nullIfEmpty(toList(filterView.orderType().getValue(), En_PcbOrderType::getId)));
+        query.setStateIds(nullIfEmpty(toList(filterView.states().getValue(), En_PcbOrderState::getId)));
+        query.setPromptnessIds(nullIfEmpty(toList(filterView.promptness().getValue(), En_PcbOrderPromptness::getId)));
         return query;
     }
 

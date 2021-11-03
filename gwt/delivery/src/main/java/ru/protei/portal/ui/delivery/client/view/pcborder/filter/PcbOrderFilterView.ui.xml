@@ -2,6 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
+             xmlns:cardtype='urn:import:ru.protei.portal.ui.common.client.widget.selector.card.type'
+             xmlns:orderType='urn:import:ru.protei.portal.ui.common.client.widget.pcborder'
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -9,6 +11,25 @@
         <div class="card-body">
             <div class="row">
                 <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>
+
+                <cardtype:CardTypeOptionMultiSelector ui:field="types"
+                                                      header="{lang.cardType}"
+                                                      addStyleNames="form-group col-md-12" showAll="true"/>
+
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.pcbOrderOrderType}"/></label>
+                    <orderType:ordertype.PcbOrderTypeBtnGroupMulti ui:field="orderType"/>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.pcbOrderState}"/></label>
+                    <orderType:state.PcbOrderStateOptionSelector ui:field="states"/>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.pcbOrderPromptness}"/></label>
+                    <orderType:promptness.PcbOrderPromptnessOptionSelector ui:field="promptness"/>
+                </div>
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>

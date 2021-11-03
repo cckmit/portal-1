@@ -1420,4 +1420,25 @@ public class DebugIds {
         String TAB_COMMENT = "card-batch-tab-comments";
         String TAB_HISTORY = "card-batch-tab-history";
     }
+
+    public interface PCB_ORDER_STATE {
+        String DEFAULT = "pcb-order-state-";
+        String RECEIVED = "pcb-order-state-received";
+        String ACCEPTED = "pcb-order-state-accepted";
+        String SENT = "pcb-order-state-sent";
+    }
+
+    public interface PCB_ORDER_PROMPTNESS {
+        String DEFAULT = "pcb-order-promptness-";
+        String REGULAR = "pcb-order-promptness-regular";
+        String URGENT = "pcb-order-promptness-urgent";
+        String VERY_URGENT = "pcb-order-promptness-very-urgent";
+    }
+
+    public interface PCB_ORDER_TYPE {
+        String DEFAULT = "pcb-order-type-";
+        String CARD = "pcb-order-type-card";
+        String STENCIL = "pcb-order-type-stencil";
+        String FRONT_PANEL = "pcb-order-type-very-front-panel";
+    }
 }
