@@ -54,10 +54,9 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
     }
 
     private void loadTable() {
-//        animation.closeDetails();
-//        view.clearRecords();
-//        view.triggerTableLoad();
-//        fireEvent(new ActionBarEvents.SetButtonEnabled( UiConstants.ActionBarIdentity.CARD_GROUP_MODIFY, false));
+        animation.closeDetails();
+        view.clearRecords();
+        requestPcbOrder(this.page);
     }
 
     @Event
@@ -83,11 +82,22 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
         view.getFilterContainer().add( filterView.asWidget() );
 
         fireEvent(new ActionBarEvents.Clear());
-        if (policyService.hasPrivilegeFor(En_Privilege.CARD_CREATE)) {
-            fireEvent(new ActionBarEvents.Add(CREATE_ACTION , null, UiConstants.ActionBarIdentity.CARD_CREATE));
+        if (policyService.hasPrivilegeFor(En_Privilege.PCB_ORDER_CREATE)) {
+            fireEvent(new ActionBarEvents.Add(CREATE_ACTION , null, UiConstants.ActionBarIdentity.PCB_ORDER_CREATE));
         }
 
         requestPcbOrder(this.page);
+    }
+
+    @Event
+    public void onCreateClicked(ActionBarEvents.Clicked event) {
+        if (!(UiConstants.ActionBarIdentity.PCB_ORDER_CREATE.equals(event.identity)) ) {
+            return;
+        }
+
+        view.clearSelection();
+
+        fireEvent(new PcbOrderEvents.Create());
     }
 
     @Override
@@ -146,6 +156,17 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
         }
     }
 
+    @Override
+    public void onFilterChange() {
+        reloadTable(0);
+    }
+
+    @Override
+    public void onPageSelected(int page) {
+        this.page = page;
+        requestPcbOrder(this.page);
+    }
+
     private void requestPcbOrder(int page ) {
         view.clearRecords();
 
@@ -171,17 +192,6 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
                 }));
     }
 
-    @Override
-    public void onFilterChange() {
-        reloadTable(0);
-    }
-
-    @Override
-    public void onPageSelected(int page) {
-        this.page = page;
-        requestPcbOrder(this.page);
-    }
-
     private void showPreview(PcbOrder value) {
         if (value == null || value.getId() == null) {
             animation.closeDetails();
@@ -199,7 +209,6 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
 
     private PcbOrderQuery getQuery() {
         PcbOrderQuery query = new PcbOrderQuery();
-        query.setSearchString(filterView.search().getValue());
         query.setCardTypeIds(nullIfEmpty(toList(filterView.types().getValue(), EntityOption::getId)));
         query.setTypeIds(nullIfEmpty(toList(filterView.orderType().getValue(), En_PcbOrderType::getId)));
         query.setStateIds(nullIfEmpty(toList(filterView.states().getValue(), En_PcbOrderState::getId)));

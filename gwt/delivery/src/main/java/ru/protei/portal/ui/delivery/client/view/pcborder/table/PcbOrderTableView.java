@@ -7,7 +7,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_PcbOrderState;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.PcbOrder;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -88,6 +87,11 @@ public class PcbOrderTableView extends Composite implements AbstractPcbOrderTabl
     public void setAnimation(TableAnimation animation) {
         animation.setContainers(tableContainer, previewContainer, filterContainer);
         animation.setStyles("col-md-12", "col-md-9", "col-md-3", "col-md-3", "col-md-9");
+    }
+
+    @Override
+    public void clearSelection() {
+        columnProvider.removeSelection();
     }
 
     private void initTable() {

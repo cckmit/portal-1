@@ -15,6 +15,8 @@ import java.util.Objects;
 public class PcbOrder extends AuditableObject {
 
     public static final String AUDIT_TYPE = "PcbOrder";
+    public static final String CARD_TYPE_TABLE = "card_type";
+    public static final String CARD_TYPE_ALIAS = "CT";
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -31,8 +33,11 @@ public class PcbOrder extends AuditableObject {
     @JdbcColumn(name = "card_type_id")
     private Long cardTypeId;
 
-    @JdbcJoinedObject (localColumn = "card_type_id", remoteColumn = "id" )
-    private CardType cardType;
+    @JdbcJoinedColumn(localColumn = "card_type_id", remoteColumn = "id", mappedColumn = "name", table = CARD_TYPE_TABLE, sqlTableAlias = CARD_TYPE_ALIAS)
+    private String cardTypeName;
+
+    @JdbcJoinedColumn(localColumn = "card_type_id", remoteColumn = "id", mappedColumn = "code", table = CARD_TYPE_TABLE, sqlTableAlias = CARD_TYPE_ALIAS)
+    private String cardTypeCode;
 
     @JdbcColumn(name = "modification")
     private String modification;
@@ -157,12 +162,20 @@ public class PcbOrder extends AuditableObject {
         this.cardTypeId = cardTypeId;
     }
 
-    public CardType getCardType() {
-        return cardType;
+    public String getCardTypeName() {
+        return cardTypeName;
     }
 
-    public void setCardType(CardType cardType) {
-        this.cardType = cardType;
+    public void setCardTypeName(String cardTypeName) {
+        this.cardTypeName = cardTypeName;
+    }
+
+    public String getCardTypeCode() {
+        return cardTypeCode;
+    }
+
+    public void setCardTypeCode(String cardTypeCode) {
+        this.cardTypeCode = cardTypeCode;
     }
 
     public Long getParentId() {

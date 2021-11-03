@@ -23,4 +23,6 @@ public interface AbstractPcbOrderTableView extends IsWidget {
     HasWidgets getFilterContainer();
 
     void setAnimation(TableAnimation animation);
+
+    void clearSelection();
 }

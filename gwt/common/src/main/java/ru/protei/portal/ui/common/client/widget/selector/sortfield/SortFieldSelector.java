@@ -129,6 +129,10 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption(En_SortField.card_batch_type);
                 addOption(En_SortField.card_batch_deadline);
                 break;
+            case PCB_ORDER:
+                addOption(En_SortField.pcb_order_card_type);
+                addOption(En_SortField.pcb_order_receipt_date);
+                break;
         }
     }
 

@@ -46,9 +46,6 @@ public class PcbOrderFilterView extends Composite implements AbstractPcbOrderFil
     public HasValue<Boolean> sortDir() { return sortDir; }
 
     @Override
-    public HasValue<String> search() { return search; }
-
-    @Override
     public HasValue<Set<EntityOption>> types() {
         return types;
     }
@@ -74,14 +71,8 @@ public class PcbOrderFilterView extends Composite implements AbstractPcbOrderFil
         orderType.setValue(null);
         states.setValue( new HashSet<>() );
         promptness.setValue( new HashSet<>() );
-        sortField.setValue( En_SortField.card_serial_number );
+        sortField.setValue( En_SortField.pcb_order_card_type );
         sortDir.setValue( true );
-        search.setValue( "" );
-    }
-
-    @UiHandler( "search" )
-    public void onSearchChanged( ValueChangeEvent<String> event )  {
-        fireChangeTimer();
     }
 
     @UiHandler( "sortField" )
@@ -136,8 +127,6 @@ public class PcbOrderFilterView extends Composite implements AbstractPcbOrderFil
         }
     };
 
-    @UiField
-    CleanableSearchBox search;
     @Inject
     @UiField(provided = true)
     CardTypeOptionMultiSelector types;

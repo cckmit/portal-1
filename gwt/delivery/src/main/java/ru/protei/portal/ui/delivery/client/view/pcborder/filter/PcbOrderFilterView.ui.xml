@@ -1,7 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
-             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:cardtype='urn:import:ru.protei.portal.ui.common.client.widget.selector.card.type'
              xmlns:orderType='urn:import:ru.protei.portal.ui.common.client.widget.pcborder'
 >
@@ -10,7 +9,6 @@
     <g:HTMLPanel styleName="card card-default no-border card-fixed">
         <div class="card-body">
             <div class="row">
-                <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>
 
                 <cardtype:CardTypeOptionMultiSelector ui:field="types"
                                                       header="{lang.cardType}"
@@ -34,7 +32,7 @@
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>
                     <div class="control-group">
-                        <sortfieldselector:SortFieldSelector ui:field="sortField" type="CARD"/>
+                        <sortfieldselector:SortFieldSelector ui:field="sortField" type="PCB_ORDER"/>
                         <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
                     </div>
                 </div>

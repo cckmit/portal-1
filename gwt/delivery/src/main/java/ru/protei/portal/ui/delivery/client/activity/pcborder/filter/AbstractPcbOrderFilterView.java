@@ -13,9 +13,8 @@ import java.util.Set;
 public interface AbstractPcbOrderFilterView extends IsWidget {
     void setActivity(AbstractPcbOrderFilterActivity activity);
 
-    HasValue<String> search();
-
     HasValue<En_SortField> sortField();
+
     HasValue<Boolean> sortDir();
 
     HasValue<Set<EntityOption>> types();

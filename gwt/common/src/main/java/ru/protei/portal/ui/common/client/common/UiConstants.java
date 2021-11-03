@@ -137,6 +137,7 @@ public class UiConstants {
         String CARD_CREATE = "card_create";
         String CARD_GROUP_MODIFY = "card_group_modify";
         String CARD_BATCH_CREATE = "card_batch_create";
+        String PCB_ORDER_CREATE = "pcb_order";
     }
 
     public interface Styles {

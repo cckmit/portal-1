@@ -99,6 +99,10 @@ public class En_SortFieldLang {
                 return lang.cardBatchType();
             case card_batch_deadline:
                 return lang.cardBatchDeadline();
+            case pcb_order_card_type:
+                return lang.cardType();
+            case pcb_order_receipt_date:
+                return lang.pcbOrderReceiptDate();
             default:
                 return lang.unknownField();
         }

@@ -290,6 +290,16 @@ public enum En_SortField {
      * Дедлайн партии плат
      */
     card_batch_deadline("deadline"),
+
+    /**
+     * Тип платы
+     */
+    pcb_order_card_type("pcb_order.card_type_id"),
+
+    /**
+     * Дата получения
+     */
+    pcb_order_receipt_date("pcb_order.receipt_date"),
     ;
 
     private String fieldName;
