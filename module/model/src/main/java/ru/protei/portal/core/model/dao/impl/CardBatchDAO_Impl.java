@@ -56,11 +56,12 @@ public class CardBatchDAO_Impl extends PortalBaseJdbcDAO<CardBatch> implements C
 
         Query query = query()
                 .where(TYPE_ID)
-                .equal( typeId )
+                .equal(typeId)
                 .and(NUMBER)
                 .in(query()
                         .select("max(number)")
                         .from("card_batch")
+                        .whereExpression(TYPE_ID + "=" + typeId)
                 )
                 .asQuery();
 

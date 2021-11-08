@@ -151,9 +151,9 @@ public class CardBatchServiceImpl implements CardBatchService {
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
-        isUpdated = cardBatchDAO.partialMerge(commonInfo, "article", "amount");
+        isUpdated = cardBatchDAO.partialMerge(commonInfo, "amount");
         if (!isUpdated) {
-            log.warn("updateMeta(): cardBatch not updated. cardBatch={}",  commonInfo.getId());
+            log.warn("updateCommonInfo(): cardBatch not updated. cardBatch={}",  commonInfo.getId());
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
@@ -203,6 +203,12 @@ public class CardBatchServiceImpl implements CardBatchService {
         }
         if (!isUpdated) {
             log.warn("Failed to update card batch meta data {} at db", caseObject.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        isUpdated = cardBatchDAO.partialMerge(meta, "article");
+        if (!isUpdated) {
+            log.warn("updateMeta(): cardBatch not updated. cardBatch={}",  meta.getId());
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 

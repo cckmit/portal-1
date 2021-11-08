@@ -12,6 +12,11 @@ public class CardTypeDAO_Impl extends PortalBaseJdbcDAO<CardType> implements Car
     public SqlCondition createSqlCondition(CardTypeQuery query) {
         return new SqlCondition().build((condition, args) -> {
             condition.append("1=1");
+
+            if (query.getDisplay() != null) {
+                condition.append(" and is_display = ?");
+                args.add(query.getDisplay());
+            }
         });
     }
 }

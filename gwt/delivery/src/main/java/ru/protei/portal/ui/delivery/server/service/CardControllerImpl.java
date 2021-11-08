@@ -5,10 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Card;
-import ru.protei.portal.core.model.ent.CardGroupChangeRequest;
-import ru.protei.portal.core.model.ent.CardType;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CardQuery;
 import ru.protei.portal.core.model.query.CardTypeQuery;
 import ru.protei.portal.core.model.util.UiResult;
@@ -57,15 +54,15 @@ public class CardControllerImpl implements CardController {
     }
 
     @Override
-    public List<CardType> getCardTypeList() throws RequestFailedException {
+    public List<CardType> getCardTypeList(CardTypeQuery query) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
-        return checkResultAndGetData(cardService.getCardTypeList(token));
+        return checkResultAndGetData(cardService.getCardTypeList(token, query));
     }
 
     @Override
-    public Card createCard(Card card) throws RequestFailedException {
+    public List<Card> createCards(CardCreateRequest createRequest) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        return checkResultAndGetData(cardService.createCard(token, card));
+        return checkResultAndGetData(cardService.createCards(token, createRequest));
     }
 
     @Override

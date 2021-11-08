@@ -1399,6 +1399,7 @@ public class DebugIds {
         String ARTICLE = "card-article-input";
         String MANAGER = "card-manager-selector";
         String TEST_DATE = "card-test-date-container";
+        String AMOUNT = "card-amount-input";
     }
 
     public interface CARD_BATCH {

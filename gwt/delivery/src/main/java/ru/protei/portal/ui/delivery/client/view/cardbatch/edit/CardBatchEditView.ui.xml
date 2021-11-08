@@ -22,23 +22,18 @@
                         </div>
                     </div>
 
-                    <g:HTMLPanel ui:field="commonInfoContainer">
+                    <small ui:field="createdBy" class="pull-right text-right"/>
+                    <h5 class="no-margin">
+                        <ui:text from="{lang.cardBatch}"/> <g:Label ui:field="numberRO" styleName="inline"/>
+                    </h5>
 
-                        <small ui:field="createdBy" class="pull-right text-right"/>
-
-                        <h5 class="no-margin"><g:Label ui:field="numberRO"/></h5>
-
-                        <br/>
-                        <h5 class="no-margin"><g:Label text="{lang.cardBatchType}"/></h5>
-                        <div ui:field="typeRO" class="form-group markdown p-t-15"/>
-                        <h5 class="no-margin"><g:Label text="{lang.cardBatchArticle}"/></h5>
-                        <div ui:field="articleRO" class="form-group markdown p-t-15"/>
-                        <h5 class="no-margin"><g:Label text="{lang.cardBatchAmount}"/></h5>
-                        <div ui:field="amountRO" class="form-group markdown p-t-15"/>
-                        <h5 class="no-margin"><g:Label text="{lang.cardBatchParams}"/></h5>
-                        <div ui:field="paramsRO" class="form-group markdown p-t-15"/>
-                        <h5 class="no-margin"><g:Label text="{lang.cardBatchContractors}"/></h5>
-                        <div ui:field="contractorsRO" class="form-group markdown p-t-15"/>
+                    <g:HTMLPanel ui:field="commonInfoContainer" styleName="p-t-10">
+                        <g:Label text="{lang.cardBatchAmount}" styleName="semi-bold large-text"/>
+                        <div ui:field="amountRO" class="form-group p-t-5"/>
+                        <g:Label text="{lang.cardBatchParams}" styleName="semi-bold large-text"/>
+                        <div ui:field="paramsRO" class="form-group markdown p-t-5"/>
+                        <g:Label text="{lang.cardBatchContractors}" styleName="semi-bold large-text"/>
+                        <div ui:field="contractorsRO" class="form-group p-t-5"/>
 
                         <div class="row">
                             <div class="form-group col-md-12">

@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.Card;
+import ru.protei.portal.core.model.ent.CardCreateRequest;
 import ru.protei.portal.core.model.ent.CardGroupChangeRequest;
 import ru.protei.portal.core.model.ent.CardType;
 import ru.protei.portal.core.model.query.CardQuery;
@@ -21,9 +22,9 @@ public interface CardControllerAsync {
 
     void getCardTypeOptionList(CardTypeQuery query, AsyncCallback<List<EntityOption>> async);
 
-    void getCardTypeList(AsyncCallback<List<CardType>> async);
+    void getCardTypeList(CardTypeQuery query, AsyncCallback<List<CardType>> async);
 
-    void createCard(Card card, AsyncCallback<Card> async);
+    void createCards(CardCreateRequest createRequest, AsyncCallback<List<Card>> async);
 
     void updateNoteAndComment(Card card, AsyncCallback<Card> async);
 

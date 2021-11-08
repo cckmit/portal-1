@@ -3710,9 +3710,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String newStoreAndDelivery();
 
-    String card();
+    String cards();
 
-    String cardBatch();
+    String cardBatches();
 
     String cardTestDate();
 
@@ -3892,7 +3892,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardBatchEditCommonInfo();
 
-    String cardCreated();
+    String cardsCreated();
 
     String backToCards();
 
@@ -3901,4 +3901,14 @@ public interface Lang extends Messages, ContactItemLang {
     String cardWarningChangeNotEqualsFields();
 
     String jiraWorkflowWarning();
+
+    String cardAmount();
+
+    String cardAmountValidationError();
+
+    String cardCardBatch();
+
+    String cardBatch();
+
+    String card();
 }

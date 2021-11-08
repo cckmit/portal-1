@@ -2,7 +2,6 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:text="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
              xmlns:textarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
-             xmlns:sel="urn:import:ru.protei.portal.ui.common.client.widget.selector.card.type"
              xmlns:contractors="urn:import:ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors"
 >
 
@@ -11,39 +10,26 @@
     <g:HTMLPanel>
         <form>
             <div class="row">
-                <sel:CardTypeOptionSelector ui:field="type" styleName="col-md-6" mandatory="true" header="{lang.cardBatchType}" defaultValue="{lang.cardBatchNumberPlaceholder}"/>
-
-                <div class="col-md-6">
-                    <div class="form-group form-group-default required disabled">
+                <div ui:field="numberContainer" class="col-md-6">
+                    <div class="form-group form-group-default required">
                         <label class="fade"><ui:text from="{lang.cardBatchNumber}"/></label>
                         <text:ValidableTextBox ui:field="number" enabled="false" notNull="false"
                                                placeholder="{lang.cardBatchNumberPlaceholder}" styleName="form-control"/>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <g:Label styleName="form-group col-md-12 p-b-5 m-0 inline half-opacity plan-limit-label" ui:field="prevCardBatchInfo"/>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group form-group-default required">
-                        <label class="fade"><ui:text from="{lang.cardBatchArticle}"/></label>
-                        <text:ValidableTextBox ui:field="article" placeholder="{lang.cardBatchArticlePlaceholder}" styleName="form-control"  notNull="false"/>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
+                <div ui:field="amountContainer" class="col-md-6">
                     <div class="form-group form-group-default required">
                         <label class="fade"><ui:text from="{lang.cardBatchAmount}"/></label>
                         <g:IntegerBox ui:field="amount" styleName="form-control"/>
                     </div>
                 </div>
             </div>
-
+            <div class="row">
+                <g:Label styleName="form-group col-md-12 p-b-5 m-0 inline half-opacity plan-limit-label fs-11" ui:field="prevCardBatchInfo"/>
+            </div>
             <div class="col-md-12 form-group form-group-default">
                 <label class="fade"><ui:text from="{lang.cardBatchParams}"/></label>
-                <textarea:AutoResizeTextArea ui:field="params" minRows="1" styleName="form-control"/>
+                <textarea:AutoResizeTextArea ui:field="params" minRows="5" maxRows="10" styleName="form-control"/>
             </div>
 
             <div class="form-group col-md-12 card card-default card-batch-team required">

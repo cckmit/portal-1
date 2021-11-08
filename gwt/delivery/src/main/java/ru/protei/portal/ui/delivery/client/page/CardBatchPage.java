@@ -22,7 +22,7 @@ public abstract class CardBatchPage
     @PostConstruct
     public void onInit() {
         CATEGORY = lang.newStoreAndDelivery();
-        TAB = lang.cardBatch();
+        TAB = lang.cardBatches();
     }
 
     @Event
@@ -35,11 +35,6 @@ public abstract class CardBatchPage
 
     @Event
     public void onShowTable( CardBatchEvents.Show event ) {
-        fireSelectTab();
-    }
-
-    @Event
-    public void onShowDetail( CardBatchEvents.Create event ) {
         fireSelectTab();
     }
 
@@ -71,4 +66,3 @@ public abstract class CardBatchPage
     private String TAB;
     private CardBatchEvents.Show show = new CardBatchEvents.Show(false);
 }
-

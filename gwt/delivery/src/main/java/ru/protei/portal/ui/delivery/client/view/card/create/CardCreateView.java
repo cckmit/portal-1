@@ -3,6 +3,7 @@ package ru.protei.portal.ui.delivery.client.view.card.create;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -21,6 +22,8 @@ import ru.protei.portal.ui.delivery.client.view.card.infoComment.CardNoteComment
 import ru.protei.portal.ui.delivery.client.view.card.meta.CardMetaView;
 
 import java.util.Date;
+
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
 
 public class CardCreateView extends Composite implements AbstractCardCreateView {
@@ -102,6 +105,16 @@ public class CardCreateView extends Composite implements AbstractCardCreateView 
         return meta;
     }
 
+    @Override
+    public HasValue<Integer> amount() {
+        return amount;
+    }
+
+    @Override
+    public void setAmountValid(boolean isValid) {
+        amount.setStyleName(REQUIRED, !isValid);
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -110,6 +123,7 @@ public class CardCreateView extends Composite implements AbstractCardCreateView 
         saveButton.ensureDebugId(DebugIds.CARD.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.CARD.CANCEL_BUTTON);
         serialNumber.ensureDebugId(DebugIds.CARD.SERIAL_NUMBER);
+        amount.ensureDebugId(DebugIds.CARD.AMOUNT);
     }
 
     @UiHandler("saveButton")
@@ -126,6 +140,11 @@ public class CardCreateView extends Composite implements AbstractCardCreateView 
         }
     }
 
+    @UiHandler("amount")
+    public void onAmountChanged(KeyUpEvent event) {
+        activity.onAmountChanged();
+    }
+
     @UiField
     Lang lang;
     @UiField
@@ -140,6 +159,8 @@ public class CardCreateView extends Composite implements AbstractCardCreateView 
     Button saveButton;
     @UiField
     Button cancelButton;
+    @UiField
+    IntegerBox amount;
 
     private AbstractCardCreateActivity activity;
 

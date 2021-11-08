@@ -62,16 +62,6 @@ public class CardBatchEditView extends Composite implements AbstractCardBatchEdi
     }
 
     @Override
-    public void setTypeRO(String value) {
-        typeRO.setInnerHTML(value);
-    }
-
-    @Override
-    public void setArticleRO(String value) {
-        articleRO.setInnerHTML(value);
-    }
-
-    @Override
     public void setAmountRO(String value) {
         amountRO.setInnerHTML(value);
     }
@@ -169,10 +159,6 @@ public class CardBatchEditView extends Composite implements AbstractCardBatchEdi
     Element createdBy;
     @UiField
     Label numberRO;
-    @UiField
-    DivElement typeRO;
-    @UiField
-    DivElement articleRO;
     @UiField
     DivElement amountRO;
     @UiField
