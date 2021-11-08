@@ -12,22 +12,22 @@ public class PcbOrderSqlBuilder {
             condition.append("1=1");
 
             if (isNotEmpty(query.getCardTypeIds())) {
-                condition.append(" and card_type_id in ")
+                condition.append(" and pcb_order.card_type_id in ")
                         .append(makeInArg(query.getCardTypeIds()));
             }
 
             if (isNotEmpty(query.getTypeIds())) {
-                condition.append(" and type in ")
+                condition.append(" and pcb_order.type in ")
                         .append(makeInArg(query.getTypeIds()));
             }
 
             if ( isNotEmpty(query.getStateIds()) ) {
-                condition.append(" and state in ")
+                condition.append(" and pcb_order.state in ")
                         .append(makeInArg(query.getStateIds()));
             }
 
             if ( isNotEmpty(query.getPromptnessIds()) ) {
-                condition.append(" and promptness in ")
+                condition.append(" and pcb_order.promptness in ")
                         .append(makeInArg(query.getPromptnessIds()));
             }
         });

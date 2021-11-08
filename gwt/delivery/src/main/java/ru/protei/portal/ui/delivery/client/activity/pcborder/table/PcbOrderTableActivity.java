@@ -200,7 +200,10 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
 
     private Runnable removeAction(PcbOrder value) {
         return () -> service.removePcbOrder(value, new FluentCallback<PcbOrder>()
-                .withSuccess(result -> fireSuccessNotify(lang.pcbOrderRemoved()))
+                .withSuccess(result -> {
+                    fireSuccessNotify(lang.pcbOrderRemoved());
+                    fireEvent(new PcbOrderEvents.Show(false));
+                })
         );
     }
 

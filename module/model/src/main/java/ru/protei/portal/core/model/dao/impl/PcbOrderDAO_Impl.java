@@ -3,7 +3,6 @@ package ru.protei.portal.core.model.dao.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.PcbOrderDAO;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.PcbOrder;
 import ru.protei.portal.core.model.query.PcbOrderQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
@@ -53,10 +52,6 @@ public class PcbOrderDAO_Impl extends PortalBaseJdbcDAO<PcbOrder> implements Pcb
 
         return new JdbcSort(listOf(
                 new Pair<>(query.getSortField().getFieldName(), TypeConverters.toWinter(query.getSortDir()))
-//                ,
-//                En_SortField.pcb_order_card_type.equals(query.getSortField()) ?
-//                        new Pair<>(En_SortField.pcb_order_receipt_date.getFieldName(), JdbcSort.Direction.DESC) :
-//                        new Pair<>(En_SortField.pcb_order_card_type.getFieldName(), JdbcSort.Direction.ASC))
         ));
     }
 }
