@@ -42,7 +42,11 @@ import ru.protei.portal.ui.delivery.client.activity.delivery.module.meta.Abstrac
 import ru.protei.portal.ui.delivery.client.activity.delivery.module.meta.ModuleMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.delivery.table.AbstractDeliveryTableView;
 import ru.protei.portal.ui.delivery.client.activity.delivery.table.DeliveryTableActivity;
+import ru.protei.portal.ui.delivery.client.activity.pcborder.common.AbstractPcbOrderCommonInfoEditView;
+import ru.protei.portal.ui.delivery.client.activity.pcborder.create.AbstractPcbOrderCreateView;
+import ru.protei.portal.ui.delivery.client.activity.pcborder.create.PcbOrderCreateActivity;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.filter.AbstractPcbOrderFilterView;
+import ru.protei.portal.ui.delivery.client.activity.pcborder.meta.AbstractPcbOrderMetaView;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.table.AbstractPcbOrderTableView;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.table.PcbOrderTableActivity;
 import ru.protei.portal.ui.delivery.client.page.*;
@@ -68,7 +72,10 @@ import ru.protei.portal.ui.delivery.client.view.delivery.module.edit.ModuleEditV
 import ru.protei.portal.ui.delivery.client.view.delivery.module.meta.ModuleMetaView;
 import ru.protei.portal.ui.delivery.client.view.delivery.module.table.ModuleTableView;
 import ru.protei.portal.ui.delivery.client.view.delivery.table.DeliveryTableView;
+import ru.protei.portal.ui.delivery.client.view.pcborder.common.PcbOrderCommonInfoEditView;
+import ru.protei.portal.ui.delivery.client.view.pcborder.create.PcbOrderCreateView;
 import ru.protei.portal.ui.delivery.client.view.pcborder.filter.PcbOrderFilterView;
+import ru.protei.portal.ui.delivery.client.view.pcborder.meta.PcbOrderMetaView;
 import ru.protei.portal.ui.delivery.client.view.pcborder.table.PcbOrderTableView;
 import ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.AbstractContractorsSelector;
 import ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.ContractorsSelector;
@@ -146,6 +153,11 @@ public class DeliveryClientModule extends AbstractGinModule {
         bind(PcbOrderTableActivity.class).asEagerSingleton();
         bind(AbstractPcbOrderTableView.class).to(PcbOrderTableView.class).in(Singleton.class);
         bind(AbstractPcbOrderFilterView.class).to(PcbOrderFilterView.class).in(Singleton.class);
+
+        bind(PcbOrderCreateActivity.class).asEagerSingleton();
+        bind(AbstractPcbOrderCreateView.class).to(PcbOrderCreateView.class).in(Singleton.class);
+        bind(AbstractPcbOrderCommonInfoEditView.class).to(PcbOrderCommonInfoEditView.class);
+        bind(AbstractPcbOrderMetaView.class).to(PcbOrderMetaView.class);
     }
 }
 

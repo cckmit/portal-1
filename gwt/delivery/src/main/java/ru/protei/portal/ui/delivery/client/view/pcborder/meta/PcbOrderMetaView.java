@@ -1,0 +1,120 @@
+package ru.protei.portal.ui.delivery.client.view.pcborder.meta;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasValue;
+import com.google.inject.Inject;
+import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
+import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.ImportanceLevel;
+import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.cardbatch.state.CardBatchStateFormSelector;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaActivity;
+import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaView;
+import ru.protei.portal.ui.delivery.client.activity.pcborder.meta.AbstractPcbOrderMetaActivity;
+import ru.protei.portal.ui.delivery.client.activity.pcborder.meta.AbstractPcbOrderMetaView;
+import ru.protei.portal.ui.delivery.client.widget.cardbatch.priority.PrioritySelector;
+
+import java.util.Date;
+
+public class PcbOrderMetaView extends Composite implements AbstractPcbOrderMetaView {
+
+    @Inject
+    public void onInit() {
+        initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
+    }
+
+    @Override
+    public void setActivity(AbstractPcbOrderMetaActivity activity) {
+        this.activity = activity;
+    }
+//
+//    @Override
+//    public HasValue<CaseState> state() {
+//        return state;
+//    }
+//
+//    @Override
+//    public HasEnabled stateEnable() {
+//        return state;
+//    }
+//
+//    @Override
+//    public HasValue<ImportanceLevel> priority() {
+//        return priority;
+//    }
+//
+//    @Override
+//    public HasValue<Date> deadline() {
+//        return deadline;
+//    }
+//
+//    @Override
+//    public HasEnabled deadlineEnabled() {
+//        return deadline;
+//    }
+//
+//    @Override
+//    public boolean isDeadlineEmpty() {
+//        return HelperFunc.isEmpty(deadline.getInputValue());
+//    }
+//
+//    @Override
+//    public void setDeadlineValid(boolean isValid) {
+//        deadline.markInputValid(isValid);
+//    }
+
+//    @UiHandler("deadline")
+//    public void onDeadlineChanged(ValueChangeEvent<Date> event) {
+//        activity.onDeadlineChanged();
+//    }
+//
+//    @UiHandler("state")
+//    public void onStateChanged(ValueChangeEvent<CaseState> event) {
+//        activity.onStateChange();
+//    }
+//
+//    @UiHandler("priority")
+//    public void onPriorityChanged(ValueChangeEvent<ImportanceLevel> event) {
+//        activity.onPriorityChange();
+//    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+//        state.setEnsureDebugId(DebugIds.CARD_BATCH.STATE_SELECTOR);
+//        priority.setEnsureDebugId(DebugIds.CARD_BATCH.PRIORITY_SELECTOR);
+//        deadline.ensureDebugId(DebugIds.CARD_BATCH.DEADLINE_DATE);
+    }
+
+    @UiField
+    HTMLPanel root;
+//    @Inject
+//    @UiField( provided = true )
+//    CardBatchStateFormSelector state;
+//    @Inject
+//    @UiField( provided = true )
+//    PrioritySelector priority;
+//    @Inject
+//    @UiField(provided = true)
+//    SinglePicker deadline;
+
+    @UiField
+    Lang lang;
+
+    private AbstractPcbOrderMetaActivity activity;
+
+    interface ViewUiBinder extends UiBinder<HTMLPanel, PcbOrderMetaView> {}
+    private static ViewUiBinder ourUiBinder = GWT.create(ViewUiBinder.class);
+}

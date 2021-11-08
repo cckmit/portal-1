@@ -1421,6 +1421,15 @@ public class DebugIds {
         String TAB_HISTORY = "card-batch-tab-history";
     }
 
+    public interface PCB_ORDER {
+        String SAVE_BUTTON = "pcb-order-save-button";
+        String CANCEL_BUTTON = "pcb-order-cancel-button";
+        String CARD_TYPE_SELECTOR = "pcb-card-type-selector";
+        String AMOUNT = "pcb-card-amount";
+        String MODIFICATION = "pcb-card-modification";
+        String COMMENT = "pcb-card-comment";
+    }
+
     public interface PCB_ORDER_STATE {
         String DEFAULT = "pcb-order-state-";
         String RECEIVED = "pcb-order-state-received";

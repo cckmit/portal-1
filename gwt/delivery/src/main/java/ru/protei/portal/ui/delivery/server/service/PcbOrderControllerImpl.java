@@ -39,4 +39,9 @@ public class PcbOrderControllerImpl implements PcbOrderController {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         return checkResultAndGetData(pcbOrderService.removePcbOrder(token, pcbOrder));
     }
+
+    @Override
+    public PcbOrder savePcbOrder(PcbOrder pcbOrder) {
+        return null;
+    }
 }

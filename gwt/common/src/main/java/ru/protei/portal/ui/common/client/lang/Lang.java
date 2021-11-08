@@ -3956,5 +3956,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String pcbOrderGroupNotDefined();
 
+    String pcbOrderCreated();
+
+    String pcbOrderCardType();
+
+    String pcbOrderCardTypePlaceholder();
+
+    String pcbOrderCardAmount();
+
+    String pcbOrderComment();
+
     String jiraWorkflowWarning();
 }

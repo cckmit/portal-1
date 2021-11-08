@@ -13,4 +13,6 @@ public interface PcbOrderController extends RemoteService {
     SearchResult<PcbOrder> getPcbOrderList(PcbOrderQuery query) throws RequestFailedException;
 
     PcbOrder removePcbOrder(PcbOrder pcbOrder) throws RequestFailedException;
+
+    PcbOrder savePcbOrder(PcbOrder pcbOrder);
 }
