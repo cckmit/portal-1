@@ -3955,4 +3955,6 @@ public interface Lang extends Messages, ContactItemLang {
     String pcbOrderRemoveConfirmMessage();
 
     String pcbOrderGroupNotDefined();
+
+    String jiraWorkflowWarning();
 }

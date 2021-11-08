@@ -41,6 +41,7 @@ public class CommentAndHistoryEvents {
         public boolean isMentionEnabled = true;
         public En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
         public boolean extendedPrivacyType = false;
+        public boolean isJiraWorkflowWarningVisible = false;
     }
 
     /**
@@ -62,5 +63,12 @@ public class CommentAndHistoryEvents {
 
         public AbstractCommentAndHistoryListView view;
         public List<En_CommentOrHistoryType> typesToShow;
+    }
+
+    public static class ShowJiraWorkflowWarning {
+        public ShowJiraWorkflowWarning(boolean isJiraWorkflowWarningVisible) {
+            this.isJiraWorkflowWarningVisible = isJiraWorkflowWarningVisible;
+        }
+        public boolean isJiraWorkflowWarningVisible;
     }
 }

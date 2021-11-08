@@ -63,7 +63,7 @@ public class EmployeeRegistrationDAO_Impl extends PortalBaseJdbcDAO<EmployeeRegi
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(EmployeeRegistrationQuery query) {
         return new SqlCondition().build(((condition, args) -> {
-            condition.append("1=1");
+            condition.append("CO.deleted = 0");
 
             if (StringUtils.isNotEmpty(query.getSearchString())) {
                 condition.append(" and (CO.CASE_NAME like ? or employee_registration.position like ?)");

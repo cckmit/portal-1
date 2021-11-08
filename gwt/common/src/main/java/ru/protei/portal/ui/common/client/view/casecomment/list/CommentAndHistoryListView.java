@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListActivity;
 import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
@@ -265,6 +266,15 @@ public class CommentAndHistoryListView
     }
 
     @Override
+    public void setJiraWorkflowWarningVisible(boolean isVisible) {
+        if (isVisible) {
+            jiraWorkflowWarning.removeClassName(CrmConstants.Style.HIDE);
+        } else {
+            jiraWorkflowWarning.addClassName(CrmConstants.Style.HIDE);
+        }
+    }
+
+    @Override
     public void setPrivacyTypeSelector(boolean isExtendedPrivacyType) {
         privacyType.setModel( makeSelectorModel(isExtendedPrivacyType) );
         privacyType.setValue(En_CaseCommentPrivacyType.PUBLIC);
@@ -376,6 +386,8 @@ public class CommentAndHistoryListView
     HTMLPanel newCommentContainer;
     @UiField
     HTMLPanel newCommentDisabledContainer;
+    @UiField
+    DivElement jiraWorkflowWarning;
 
     @Inject
     private TimeElapsedTypeLang elapsedTimeTypeLang;
