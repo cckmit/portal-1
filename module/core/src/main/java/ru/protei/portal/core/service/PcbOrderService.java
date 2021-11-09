@@ -15,6 +15,10 @@ public interface PcbOrderService {
     @Privileged({ En_Privilege.PCB_ORDER_VIEW })
     Result<SearchResult<PcbOrder>> getPcbOrderList(AuthToken token, PcbOrderQuery query);
 
+    @Privileged({ En_Privilege.PCB_ORDER_CREATE })
+    @Auditable( En_AuditType.PCB_ORDER_CREATE )
+    Result<PcbOrder> createPcbOrder(AuthToken token, PcbOrder pcbOrder);
+
     @Privileged({ En_Privilege.PCB_ORDER_REMOVE })
     @Auditable( En_AuditType.PCB_ORDER_REMOVE )
     Result<PcbOrder> removePcbOrder(AuthToken token, PcbOrder value);

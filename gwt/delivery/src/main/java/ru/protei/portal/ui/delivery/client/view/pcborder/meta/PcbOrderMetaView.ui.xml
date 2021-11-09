@@ -1,8 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:cardbatch="urn:import:ru.protei.portal.ui.common.client.widget.selector.cardbatch"
+             xmlns:widget="urn:import:ru.protei.portal.ui.delivery.client.widget.pcborder"
+             xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
-             xmlns:priority="urn:import:ru.protei.portal.ui.delivery.client.widget.cardbatch.priority"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -10,23 +10,46 @@
     <g:HTMLPanel ui:field="root" styleName="card card-default">
         <div class="card-body">
             <div class="form-group form-group-attached">
-<!--                <cardbatch:state.CardBatchStateFormSelector ui:field="state"-->
-<!--                                                            header="{lang.cardBatchState}"-->
-<!--                                                            searchEnabled="false"-->
-<!--                                                            hasNullValue="false"-->
-<!--                                                            mandatory="false"-->
-<!--                                                            enabled="true"/>-->
+                <widget:state.PcbOrderStateFormSelector ui:field="state" header="{lang.pcbOrderState}"
+                                                        defaultValue="{lang.pcbOrderSelectState}"
+                                                        mandatory="true"/>
+                <widget:promptness.PcbOrderPromptnessFormSelector ui:field="promptness"
+                                                                  header="{lang.pcbOrderPromptness}"
+                                                                  defaultValue="{lang.pcbOrderSelectPromptness}"
+                                                                  mandatory="true"/>
+                <widget:ordertype.PcbOrderTypeFormSelector ui:field="orderType"
+                                                           header="{lang.pcbOrderOrderType}"
+                                                           defaultValue="{lang.pcbOrderSelectOrderType}"
+                                                           mandatory="true"/>
 
-<!--                <priority:PrioritySelector ui:field="priority"-->
-<!--                                           validation="true"-->
-<!--                                           header="{lang.cardBatchPriority}"-->
-<!--                                           mandatory="false"/>-->
+                <g:HTMLPanel ui:field="stencilTypeContainer">
+                    <widget:stenciltype.PcbOrderStencilTypeFormSelector ui:field="stencilType"
+                                                                        header="{lang.pcbOrderTypeStencil}"
+                                                                        defaultValue="{lang.pcbOrderSelectorStencilType}"
+                                                                        mandatory="true"/>
+                </g:HTMLPanel>
+                <company:CompanyFormSelector ui:field="contractor"
+                                             header="{lang.pcbOrderContractor}"
+                                             defaultValue="{lang.pcbOrderSelectCompany}"
+                                             mandatory="true"/>
+            </div>
 
-<!--                <div class="form-group form-group-default date-picker required">-->
-<!--                    <label class="fade" ><ui:text from="{lang.cardBatchDeadline}"/></label>-->
-<!--                    <datepicker:SinglePicker ui:field="deadline" type="DATE" mandatory="true"-->
-<!--                                             formatValue="dd-MM-yyyy" styleName="clearfix"/>-->
-<!--                </div>-->
+            <div class="form-group form-group-attached">
+                <div class="form-group form-group-default date-picker">
+                    <label class="fade" ><ui:text from="{lang.pcbOrderOrderDate}"/></label>
+                    <datepicker:SinglePicker ui:field="orderDate" type="DATE" mandatory="false"
+                                             formatValue="dd-MM-yyyy" styleName=""/>
+                </div>
+                <div class="form-group form-group-default date-picker">
+                    <label class="fade" ><ui:text from="{lang.pcbOrderReadyDate}"/></label>
+                    <datepicker:SinglePicker ui:field="readyDate" type="DATE" mandatory="false"
+                                             formatValue="dd-MM-yyyy" styleName=""/>
+                </div>
+                <div class="form-group form-group-default date-picker">
+                    <label class="fade" ><ui:text from="{lang.pcbOrderReceiptDate}"/></label>
+                    <datepicker:SinglePicker ui:field="receiptDate" type="DATE" mandatory="false"
+                                             formatValue="dd-MM-yyyy" styleName=""/>
+                </div>
             </div>
         </div>
     </g:HTMLPanel>

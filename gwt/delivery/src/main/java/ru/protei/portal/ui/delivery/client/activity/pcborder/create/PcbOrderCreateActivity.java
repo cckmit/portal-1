@@ -6,6 +6,7 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
+import ru.protei.portal.core.model.dict.En_PcbOrderType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.PcbOrder;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -37,7 +38,6 @@ public abstract class PcbOrderCreateActivity implements Activity, AbstractPcbOrd
         view.getMetaContainer().add(metaView);
 
         commonInfoEditView.setActivity(this);
-//        commonInfoEditView.typeEnabled().setEnabled(true);
         commonInfoEditView.buttonsContainerVisibility().setVisible(false);
         view.getCommonInfoContainer().add(commonInfoEditView);
     }
@@ -76,38 +76,55 @@ public abstract class PcbOrderCreateActivity implements Activity, AbstractPcbOrd
     public void onCancelClicked() {
         fireEvent(new Back());
     }
-//
-//    @Override
-//    public void onCardTypeChanged(Long cardTypeId) {
-//
-//    }
-
-//    @Override
-//    public void onDeadlineChanged() {
-//        validateDeadline();
-//    }
 
     @Override
     public void onAmountChanged() {
         validateAmount();
     }
 
+    @Override
+    public void onOrderTypeChanged(En_PcbOrderType orderType) {
+        if (En_PcbOrderType.STENCIL.equals(orderType)) {
+            metaView.stencilTypeContainer().setVisible(true);
+        } else {
+            metaView.stencilTypeContainer().setVisible(false);
+            metaView.stencilType().setValue(null);
+        }
+    }
+
     private void prepare() {
-//        commonInfoEditView.type().setValue(null);
-//        commonInfoEditView.number().setValue(null);
-//        commonInfoEditView.article().setValue(null);
-//        commonInfoEditView.amount().setValue(null);
-//        commonInfoEditView.params().setValue(null);
-//        commonInfoEditView.contractors().setValue(null);
-//        commonInfoEditView.hidePrevCardBatchInfo();
-//        metaView.deadline().setValue(null);
-//        metaView.setDeadlineValid(true);
-//        metaView.stateEnable().setEnabled(false);
+        commonInfoEditView.cardType().setValue(null);
+        commonInfoEditView.amount().setValue(null);
+        commonInfoEditView.modification().setValue(null);
+        commonInfoEditView.comment().setValue(null);
+        metaView.state().setValue(null);
+        metaView.promptness().setValue(null);
+        metaView.orderType().setValue(null);
+        metaView.stencilTypeContainer().setVisible(false);
+        metaView.stencilType().setValue(null);
+        metaView.contractor().setValue(null);
+        metaView.orderDate().setValue(null);
+        metaView.setOrderDateValid(true);
+        metaView.readyDate().setValue(null);
+        metaView.setReadyDateValid(true);
+        metaView.receiptDate().setValue(null);
+        metaView.setReceiptDateValid(true);
     }
 
     private PcbOrder fillDto() {
         PcbOrder pcbOrder = new PcbOrder();
-//        cardBatch.setTypeId(commonInfoEditView.type().getValue().getId());
+        pcbOrder.setCardTypeId(commonInfoEditView.cardType().getValue().getId());
+        pcbOrder.setAmount(commonInfoEditView.amount().getValue());
+        pcbOrder.setModification(commonInfoEditView.modification().getValue());
+        pcbOrder.setComment(commonInfoEditView.comment().getValue());
+        pcbOrder.setState(metaView.state().getValue());
+        pcbOrder.setPromptness(metaView.promptness().getValue());
+        pcbOrder.setType(metaView.orderType().getValue());
+        pcbOrder.setStencilType(metaView.stencilType().getValue());
+        pcbOrder.setCompanyId(metaView.contractor().getValue().getId());
+        pcbOrder.setOrderDate(metaView.orderDate().getValue());
+        pcbOrder.setReadyDate(metaView.readyDate().getValue());
+        pcbOrder.setReceiptDate(metaView.receiptDate().getValue());
         return pcbOrder;
     }
 
@@ -116,30 +133,28 @@ public abstract class PcbOrderCreateActivity implements Activity, AbstractPcbOrd
     }
 
     private String getValidationError() {
-//        if (null == commonInfoEditView.type().getValue()) {
-//            return lang.cardBatchTypeValidationError();
-//        }
-//
-//        if (isEmpty(commonInfoEditView.number().getValue()) || !commonInfoEditView.isNumberValid()) {
-//            return lang.cardBatchNumberValidationError();
-//        }
-//
-//        if (isEmpty(commonInfoEditView.article().getValue()) || !commonInfoEditView.isArticleValid()) {
-//            return lang.cardBatchArticleValidationError();
-//        }
-//
-//        if (CollectionUtils.isEmpty(commonInfoEditView.contractors().getValue())) {
-//            return lang.cardBatchContractorsValidationError();
-//        }
-//
-//        if (!validateAmount()) {
-//            return lang.cardBatchAmountValidationError();
-//        }
-//
-//        if (!validateDeadline()) {
-//            return lang.cardBatchDeadlineValidationError();
-//        }
-
+        if (commonInfoEditView.cardType().getValue() == null) {
+            return lang.pcbOrderCardTypeValidationError();
+        }
+        if (!validateAmount()) {
+            return lang.pcbOrderAmountValidationError();
+        }
+        if (metaView.state().getValue() == null) {
+            return lang.pcbOrderStateValidationError();
+        }
+        if (metaView.promptness().getValue() == null) {
+            return lang.pcbOrderPromptnessValidationError();
+        }
+        if (metaView.orderType().getValue() == null) {
+            return lang.pcbOrderOrderTypeValidationError();
+        }
+        if (metaView.stencilType().getValue() == null
+                && En_PcbOrderType.STENCIL.equals(metaView.orderType().getValue())) {
+            return lang.pcbOrderStencilTypeValidationError();
+        }
+        if (metaView.contractor().getValue() == null) {
+            return lang.pcbOrderContractorValidationError();
+        }
         return null;
     }
 
@@ -150,7 +165,7 @@ public abstract class PcbOrderCreateActivity implements Activity, AbstractPcbOrd
                 view.saveEnabled().setEnabled(true);
                 defaultErrorHandler.accept(throwable);
             })
-            .withSuccess(id -> {
+            .withSuccess(result -> {
                 view.saveEnabled().setEnabled(true);
                 fireEvent(new NotifyEvents.Show(lang.pcbOrderCreated(), SUCCESS));
                 fireEvent(new Back());

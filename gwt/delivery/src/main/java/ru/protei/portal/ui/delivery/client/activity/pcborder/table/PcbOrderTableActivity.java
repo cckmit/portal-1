@@ -126,10 +126,10 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
         }
 
         switch (state) {
-            case SENT:
+            case RECEIVED:
                 return PcbOrderGroupType.COMPLETED;
             case ACCEPTED:
-            case RECEIVED:
+            case SENT:
                 return PcbOrderGroupType.ACTIVE;
             default:
                 return null;

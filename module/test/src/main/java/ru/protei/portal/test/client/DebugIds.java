@@ -1424,10 +1424,18 @@ public class DebugIds {
     public interface PCB_ORDER {
         String SAVE_BUTTON = "pcb-order-save-button";
         String CANCEL_BUTTON = "pcb-order-cancel-button";
-        String CARD_TYPE_SELECTOR = "pcb-card-type-selector";
-        String AMOUNT = "pcb-card-amount";
-        String MODIFICATION = "pcb-card-modification";
-        String COMMENT = "pcb-card-comment";
+        String CARD_TYPE_SELECTOR = "pcb-order-type-selector";
+        String AMOUNT = "pcb-order-amount";
+        String MODIFICATION = "pcb-order-modification";
+        String COMMENT = "pcb-order-comment";
+        String STATE_SELECTOR = "pcb-order-state-selector";
+        String PROMPTNESS_SELECTOR = "pcb-order-promptness-selector";
+        String ORDER_TYPE_SELECTOR = "pcb-order-order-type-selector";
+        String STENCIL_TYPE_SELECTOR = "pcb-order-stemcil-type-selector";
+        String CONTRACTOR_SELECTOR = "pcb-order-contractor-selector";
+        String ORDER_DATE = "pcb-order-order-date";
+        String READY_DATE = "pcb-order-ready-date";
+        String RECEIPT_DATE = "pcb-order-receopt-date";
     }
 
     public interface PCB_ORDER_STATE {

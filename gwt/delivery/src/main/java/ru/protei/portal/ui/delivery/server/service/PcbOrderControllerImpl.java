@@ -41,7 +41,8 @@ public class PcbOrderControllerImpl implements PcbOrderController {
     }
 
     @Override
-    public PcbOrder savePcbOrder(PcbOrder pcbOrder) {
-        return null;
+    public PcbOrder savePcbOrder(PcbOrder pcbOrder) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(pcbOrderService.createPcbOrder(token, pcbOrder));
     }
 }
