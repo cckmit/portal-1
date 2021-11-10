@@ -48,6 +48,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     EventPublisherService publisherService;
     @Autowired
     PortalConfig portalConfig;
+    @Autowired
+    EmployeeRegistrationReminderService employeeRegistrationReminderService;
 
     @Override
     public Result<SearchResult<EmployeeRegistration>> getEmployeeRegistrations( AuthToken token, EmployeeRegistrationQuery query) {
@@ -78,6 +80,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             return error(En_ResultStatus.NOT_CREATED);
 
         employeeRegistration.setId(id);
+        setProbationPeriodEndDate(employeeRegistration);
         Long employeeRegistrationId = employeeRegistrationDAO.persist(employeeRegistration);
 
         if (employeeRegistrationId == null)
@@ -132,6 +135,26 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         }
 
         return ok(oldEmployeeRegistration.getId()).publishEvent(new AssembledEmployeeRegistrationEvent(this, oldEmployeeRegistration, newEmployeeRegistration));
+    }
+
+    @Override
+    @Transactional
+    public Result<EmployeeRegistration> completeProbationPeriod(AuthToken token, Long employeeRegistrationId) {
+        if (employeeRegistrationId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(employeeRegistrationId);
+        employeeRegistration.setProbationPeriodEndDate(new Date());
+
+        if (!employeeRegistrationDAO.partialMerge(employeeRegistration, "probation_period_end_date")) {
+            return error(En_ResultStatus.NOT_UPDATED);
+        }
+
+        employeeRegistrationReminderService.notifyAboutEmployeeProbationPeriod(employeeRegistration);
+        employeeRegistrationReminderService.notifyEmployeeAboutDevelopmentAgenda(employeeRegistration);
+
+        return ok(employeeRegistration);
     }
 
     private void updateYouTrackEmploymentDate(Long employeeRegistrationId, Date employmentDate) {
@@ -324,6 +347,13 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         caseLink.setRemoteId(issueId);
         caseLink.setWithCrosslink(false);
         caseLinkDAO.persist(caseLink);
+    }
+
+    private void setProbationPeriodEndDate(EmployeeRegistration employeeRegistration) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.add(Calendar.MONTH, employeeRegistration.getProbationPeriodMonth());
+        Date probationPeriodEndDate = calendar.getTime();
+        employeeRegistration.setProbationPeriodEndDate(probationPeriodEndDate);
     }
 
     private static String getResourceName(En_InternalResource internalResource) {

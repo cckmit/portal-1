@@ -92,6 +92,18 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
     }
 
     @Override
+    public void onCompleteProbationClicked(EmployeeRegistration value) {
+        employeeRegistrationService.completeProbationPeriod(value.getId(), new FluentCallback<EmployeeRegistration>()
+                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.error(), NotifyEvents.NotifyType.ERROR)))
+                .withSuccess(employeeRegistration -> {
+                    view.updateRow(employeeRegistration);
+                    fireEvent(new CommentAndHistoryEvents.Reload());
+                    fireEvent(new NotifyEvents.Show(lang.probationCompletedSuccessfully(), NotifyEvents.NotifyType.SUCCESS));
+                })
+        );
+    }
+
+    @Override
     public void onFilterChanged() {
         loadTable();
     }

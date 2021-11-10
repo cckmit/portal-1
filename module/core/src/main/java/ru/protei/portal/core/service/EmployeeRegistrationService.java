@@ -26,4 +26,8 @@ public interface EmployeeRegistrationService {
     @Auditable(En_AuditType.EMPLOYEE_REGISTRATION_MODIFY)
     @Privileged(requireAny = En_Privilege.EMPLOYEE_REGISTRATION_EDIT)
     Result<Long> updateEmployeeRegistration(AuthToken token, EmployeeRegistrationShortView employeeRegistration);
+
+    @Auditable(En_AuditType.EMPLOYEE_REGISTRATION_MODIFY)
+    @Privileged(requireAny = En_Privilege.EMPLOYEE_REGISTRATION_EDIT)
+    Result<EmployeeRegistration> completeProbationPeriod(AuthToken token, Long id);
 }

@@ -110,5 +110,6 @@
   <include file="2021-10-04-rework-fk_history_case_object_id_to_case_object.xml" relativeToChangelogFile="true"/>
   <include file="2021-10-20-rework-FK_CO_CASE.xml" relativeToChangelogFile="true"/>
   <include file="2021-10-20-modify-dev_unit-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-11-03-add-probation-period-end-date-to-employee-registration-table.xml" relativeToChangelogFile="true"/>
   <include file="2021-20-21-remove-history_version-cdr_description-configuration-from-dev_unit.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

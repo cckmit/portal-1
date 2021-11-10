@@ -181,6 +181,12 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
     @JdbcJoinedColumn(localColumn = "company_id", remoteColumn = "id", table = "company", mappedColumn = "cname")
     private String companyName;
 
+    /**
+     * Дата окончания испытательного срока
+     */
+    @JdbcColumn(name = "probation_period_end_date")
+    private Date probationPeriodEndDate;
+
     public Person getPerson() {
         return person;
     }
@@ -425,6 +431,14 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
 
     public void setDepartment(String department) {
         this.department = department;
+    }
+
+    public Date getProbationPeriodEndDate() {
+        return probationPeriodEndDate;
+    }
+
+    public void setProbationPeriodEndDate(Date probationPeriodEndDate) {
+        this.probationPeriodEndDate = probationPeriodEndDate;
     }
 
     public EmployeeRegistration() {

@@ -17,4 +17,6 @@ public interface EmployeeRegistrationControllerAsync {
     void updateEmployeeRegistration(EmployeeRegistrationShortView employeeRegistration, AsyncCallback<Long> async);
 
     void getEmployeeRegistrationShortView(Long id, AsyncCallback<EmployeeRegistrationShortView> async);
+
+    void completeProbationPeriod(Long id, AsyncCallback<EmployeeRegistration> async);
 }
