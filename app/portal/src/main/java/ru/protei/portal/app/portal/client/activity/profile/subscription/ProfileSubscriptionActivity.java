@@ -14,8 +14,12 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Consumer;
+
+import static java.util.stream.Collectors.toCollection;
 
 public abstract class ProfileSubscriptionActivity implements AbstractProfileSubscriptionActivity, Activity {
 
@@ -35,7 +39,7 @@ public abstract class ProfileSubscriptionActivity implements AbstractProfileSubs
     private void requestPersonSubscriptions(Consumer<Set<PersonShortView>> successAction) {
         personSubscriptionController.getPersonSubscriptions(
                 new FluentCallback<Set<PersonShortView>>()
-                        .withSuccess(persons -> successAction.accept(persons)));
+                        .withSuccess(persons -> successAction.accept(sortByName(persons))));
     }
 
     private void fillPersonSubscriptionsView(Set<PersonShortView> persons) {
@@ -53,9 +57,14 @@ public abstract class ProfileSubscriptionActivity implements AbstractProfileSubs
                 new FluentCallback<Set<PersonShortView>>()
                         .withSuccess(persons -> {
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                            view.persons().setValue(persons);
+                            view.persons().setValue(sortByName(persons));
                         }));
 
+    }
+
+    private Set<PersonShortView> sortByName(Set<PersonShortView> persons) {
+        return persons.stream().sorted(Comparator.comparing(PersonShortView::getName))
+                               .collect(toCollection(LinkedHashSet::new));
     }
 
     @Inject
