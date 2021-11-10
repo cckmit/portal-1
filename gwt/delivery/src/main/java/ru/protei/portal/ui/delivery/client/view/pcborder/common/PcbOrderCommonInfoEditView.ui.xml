@@ -13,7 +13,7 @@
                                             header="{lang.pcbOrderCardType}" defaultValue="{lang.pcbOrderCardTypePlaceholder}"/>
                 <div class="col-md-6">
                     <div class="form-group form-group-default required">
-                        <label class="fade"><ui:text from="{lang.pcbOrderCardAmount}"/></label>
+                        <label class="fade"><ui:text from="{lang.pcbOrderAmount}"/></label>
                         <g:IntegerBox ui:field="amount" styleName="form-control"/>
                     </div>
                 </div>

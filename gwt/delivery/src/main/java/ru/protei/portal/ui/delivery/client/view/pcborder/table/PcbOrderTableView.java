@@ -94,6 +94,13 @@ public class PcbOrderTableView extends Composite implements AbstractPcbOrderTabl
         columnProvider.removeSelection();
     }
 
+    @Override
+    public void updateRow(PcbOrder pcbOrder) {
+        if(pcbOrder != null) {
+            table.updateRow(pcbOrder);
+        }
+    }
+
     private void initTable() {
 
         editClickColumn.setDisplayPredicate(value -> policyService.hasPrivilegeFor(En_Privilege.PCB_ORDER_EDIT));

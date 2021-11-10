@@ -19,6 +19,7 @@ import java.util.Date;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.dict.En_ResultStatus.INCORRECT_PARAMS;
 
 public class PcbOrderServiceImpl implements PcbOrderService {
 
@@ -35,6 +36,21 @@ public class PcbOrderServiceImpl implements PcbOrderService {
     public Result<SearchResult<PcbOrder>> getPcbOrderList(AuthToken token, PcbOrderQuery query) {
         SearchResult<PcbOrder> sr = pcbOrderDAO.getSearchResultByQuery(query);
         return ok(sr);
+    }
+
+    @Override
+    public Result<PcbOrder> getPcbOrder(AuthToken token, Long pcbOrderId) {
+        if (pcbOrderId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        PcbOrder pcbOrder = pcbOrderDAO.get(pcbOrderId);
+        if (pcbOrder == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        log.debug("getPcbOrder(): id = {}, result = {}", pcbOrderId, pcbOrder);
+        return ok(pcbOrder);
     }
 
     @Override
@@ -58,6 +74,45 @@ public class PcbOrderServiceImpl implements PcbOrderService {
         }
 
         return ok(pcbOrderDAO.get(pcbOrderId));
+    }
+
+    @Override
+    @Transactional
+    public Result<PcbOrder> updateCommonInfo(AuthToken token, PcbOrder commonInfo) {
+        if (commonInfo == null || commonInfo.getId() == null) {
+            return error(INCORRECT_PARAMS);
+        }
+
+        if (!isValid(commonInfo)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        if (!pcbOrderDAO.partialMerge(commonInfo, "card_type_id", "amount", "modification", "comment")) {
+            log.warn("updateCommonInfo(): pcb order not updated. pbcOrder={}", commonInfo.getId());
+            return error(En_ResultStatus.NOT_UPDATED);
+        }
+
+        return ok(pcbOrderDAO.get(commonInfo.getId()));
+    }
+
+    @Override
+    @Transactional
+    public Result<PcbOrder> updateMeta(AuthToken token, PcbOrder meta) {
+        if (meta == null || meta.getId() == null) {
+            return error(INCORRECT_PARAMS);
+        }
+
+        if (!isValid(meta)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        if (!pcbOrderDAO.partialMerge(meta, "state", "promptness", "type", "stencil_type", "company_id",
+                "order_date", "ready_date", "receipt_date")) {
+            log.warn("updateMeta(): pcb order not updated. pbcOrder={}", meta.getId());
+            return error(En_ResultStatus.NOT_UPDATED);
+        }
+
+        return ok(pcbOrderDAO.get(meta.getId()));
     }
 
     @Override

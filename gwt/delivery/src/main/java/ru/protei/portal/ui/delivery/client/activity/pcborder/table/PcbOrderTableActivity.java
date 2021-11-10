@@ -97,6 +97,13 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
         fireEvent(new PcbOrderEvents.Create());
     }
 
+    @Event
+    public void onChangeRow(PcbOrderEvents.Change event) {
+        service.getPcbOrder(event.id, new FluentCallback<PcbOrder>()
+                .withSuccess(pcbOrder -> view.updateRow(pcbOrder))
+        );
+    }
+
     @Override
     public void onItemClicked(PcbOrder value) {
         showPreview(value);

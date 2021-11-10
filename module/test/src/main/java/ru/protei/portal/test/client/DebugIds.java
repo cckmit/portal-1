@@ -1431,11 +1431,12 @@ public class DebugIds {
         String STATE_SELECTOR = "pcb-order-state-selector";
         String PROMPTNESS_SELECTOR = "pcb-order-promptness-selector";
         String ORDER_TYPE_SELECTOR = "pcb-order-order-type-selector";
-        String STENCIL_TYPE_SELECTOR = "pcb-order-stemcil-type-selector";
+        String STENCIL_TYPE_SELECTOR = "pcb-order-stencil-type-selector";
         String CONTRACTOR_SELECTOR = "pcb-order-contractor-selector";
         String ORDER_DATE = "pcb-order-order-date";
         String READY_DATE = "pcb-order-ready-date";
-        String RECEIPT_DATE = "pcb-order-receopt-date";
+        String RECEIPT_DATE = "pcb-order-receipt-date";
+        String EDIT_COMMON_INFO_BUTTON = "pcb-order-edit-common-info-button";
     }
 
     public interface PCB_ORDER_STATE {

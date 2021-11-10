@@ -14,7 +14,6 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.PcbOrderEvents;
-import ru.protei.portal.ui.common.client.lang.En_PcbOrderStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PcbOrderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
@@ -83,11 +82,12 @@ public abstract class PcbOrderCreateActivity implements Activity, AbstractPcbOrd
     }
 
     @Override
-    public void onOrderTypeChanged(En_PcbOrderType orderType) {
+    public void onOrderTypeChanged() {
+        En_PcbOrderType orderType = metaView.orderType().getValue();
         if (En_PcbOrderType.STENCIL.equals(orderType)) {
-            metaView.stencilTypeContainer().setVisible(true);
+            metaView.stencilTypeVisibility().setVisible(true);
         } else {
-            metaView.stencilTypeContainer().setVisible(false);
+            metaView.stencilTypeVisibility().setVisible(false);
             metaView.stencilType().setValue(null);
         }
     }
@@ -100,15 +100,13 @@ public abstract class PcbOrderCreateActivity implements Activity, AbstractPcbOrd
         metaView.state().setValue(null);
         metaView.promptness().setValue(null);
         metaView.orderType().setValue(null);
-        metaView.stencilTypeContainer().setVisible(false);
+        metaView.stencilTypeVisibility().setVisible(false);
         metaView.stencilType().setValue(null);
         metaView.contractor().setValue(null);
         metaView.orderDate().setValue(null);
-        metaView.setOrderDateValid(true);
         metaView.readyDate().setValue(null);
-        metaView.setReadyDateValid(true);
         metaView.receiptDate().setValue(null);
-        metaView.setReceiptDateValid(true);
+        metaView.clearDatesValidationMarks();
     }
 
     private PcbOrder fillDto() {
@@ -195,8 +193,6 @@ public abstract class PcbOrderCreateActivity implements Activity, AbstractPcbOrd
     private PcbOrderControllerAsync pcbOrderService;
     @Inject
     private PolicyService policyService;
-    @Inject
-    En_PcbOrderStateLang pcbOrderStateLang;
     @Inject
     private DefaultErrorHandler defaultErrorHandler;
 

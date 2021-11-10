@@ -24,7 +24,6 @@ public class PcbOrderCommonInfoEditView extends Composite implements AbstractPcb
     @Inject
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-//        article.setRegexp(CARD_BATCH_ARTICLE_PATTERN);
         ensureDebugIds();
     }
 
@@ -58,55 +57,14 @@ public class PcbOrderCommonInfoEditView extends Composite implements AbstractPcb
         return buttonsContainer;
     }
 
-    //
-    @Override
-    public void setAmountValid(boolean isValid) {
-        amount.setStyleName(REQUIRED, !isValid);
-    }
-//
-//    @Override
-//    public HasValue<String> params(){
-//        return params;
-//    }
-//
-//    @Override
-//    public HasValue<Set<PersonProjectMemberView>> contractors() {
-//        return contractors;
-//    }
-//
-//    @Override
-//    public boolean isNumberValid() {
-//        return number.isValid();
-//    }
-//
-//    @Override
-//    public boolean isArticleValid() {
-//        return article.isValid();
-//    }
-//
-//    @UiHandler("type")
-//    public void onTypeChanged(ValueChangeEvent<EntityOption> event) {
-//        activity.onCardTypeChanged(event.getValue().getId());
-//    }
-//
-    @UiHandler("amount")
-    public void onAmountChanged(KeyUpEvent event) {
-        activity.onAmountChanged();
-    }
-
-    @UiHandler("saveButton")
-    void onSaveButtonClick(ClickEvent event ) {
-        activity.onSaveCommonInfoClicked();
-    }
-
     @Override
     public HasEnabled saveEnabled(){
         return saveButton;
     }
 
-    @UiHandler("cancelButton")
-    void onCancelButtonClick(ClickEvent event ) {
-        activity.onCancelSaveCommonInfoClicked();
+    @Override
+    public void setAmountValid(boolean isValid) {
+        amount.setStyleName(REQUIRED, !isValid);
     }
 
     private void ensureDebugIds() {
@@ -119,6 +77,21 @@ public class PcbOrderCommonInfoEditView extends Composite implements AbstractPcb
         comment.ensureDebugId(DebugIds.PCB_ORDER.COMMENT);
         saveButton.ensureDebugId(DebugIds.PCB_ORDER.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.PCB_ORDER.CANCEL_BUTTON);
+    }
+
+    @UiHandler("amount")
+    public void onAmountChanged(KeyUpEvent event) {
+        activity.onAmountChanged();
+    }
+
+    @UiHandler("saveButton")
+    void onSaveButtonClick(ClickEvent event ) {
+        activity.onSaveCommonInfoClicked();
+    }
+
+    @UiHandler("cancelButton")
+    void onCancelButtonClick(ClickEvent event ) {
+        activity.onCancelSaveCommonInfoClicked();
     }
 
     @UiField

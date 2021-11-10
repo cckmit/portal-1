@@ -12,25 +12,30 @@
             <div class="form-group form-group-attached">
                 <widget:state.PcbOrderStateFormSelector ui:field="state" header="{lang.pcbOrderState}"
                                                         defaultValue="{lang.pcbOrderSelectState}"
+                                                        searchEnabled="false"
                                                         mandatory="true"/>
                 <widget:promptness.PcbOrderPromptnessFormSelector ui:field="promptness"
                                                                   header="{lang.pcbOrderPromptness}"
                                                                   defaultValue="{lang.pcbOrderSelectPromptness}"
+                                                                  searchEnabled="false"
                                                                   mandatory="true"/>
                 <widget:ordertype.PcbOrderTypeFormSelector ui:field="orderType"
                                                            header="{lang.pcbOrderOrderType}"
                                                            defaultValue="{lang.pcbOrderSelectOrderType}"
+                                                           searchEnabled="false"
                                                            mandatory="true"/>
 
                 <g:HTMLPanel ui:field="stencilTypeContainer">
                     <widget:stenciltype.PcbOrderStencilTypeFormSelector ui:field="stencilType"
                                                                         header="{lang.pcbOrderTypeStencil}"
                                                                         defaultValue="{lang.pcbOrderSelectorStencilType}"
+                                                                        searchEnabled="false"
                                                                         mandatory="true"/>
                 </g:HTMLPanel>
                 <company:CompanyFormSelector ui:field="contractor"
                                              header="{lang.pcbOrderContractor}"
                                              defaultValue="{lang.pcbOrderSelectCompany}"
+                                             searchEnabled="false"
                                              mandatory="true"/>
             </div>
 

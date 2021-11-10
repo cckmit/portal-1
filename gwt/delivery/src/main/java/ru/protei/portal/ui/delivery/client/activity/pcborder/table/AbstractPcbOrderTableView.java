@@ -2,7 +2,6 @@ package ru.protei.portal.ui.delivery.client.activity.pcborder.table;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.dict.En_PcbOrderState;
 import ru.protei.portal.core.model.ent.PcbOrder;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 
@@ -16,6 +15,7 @@ public interface AbstractPcbOrderTableView extends IsWidget {
     void addRecords(List<PcbOrder> pcbOrders, Comparator<Map.Entry<PcbOrderGroupType, List<PcbOrder>>> comparator);
 
     void clearRecords();
+
     HasWidgets getPagerContainer();
 
     HasWidgets getPreviewContainer();
@@ -25,4 +25,6 @@ public interface AbstractPcbOrderTableView extends IsWidget {
     void setAnimation(TableAnimation animation);
 
     void clearSelection();
+
+    void updateRow(PcbOrder pcbOrder);
 }

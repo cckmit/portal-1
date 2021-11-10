@@ -1,7 +1,19 @@
 package ru.protei.portal.ui.delivery.client.activity.pcborder.meta;
 
-import ru.protei.portal.core.model.dict.En_PcbOrderType;
-
 public interface AbstractPcbOrderMetaActivity {
-    void onOrderTypeChanged(En_PcbOrderType value);
+    default void onStateChanged() {}
+
+    default void onPromptnessChanged() {}
+
+    void onOrderTypeChanged();
+
+    default void onStencilTypeChanged() {}
+
+    default void onContractorChanged() {}
+
+    default void onReadyDateChanged() {}
+
+    default void onReceiptDateChanged() {}
+
+    default void onOrderDateChanged() {}
 }

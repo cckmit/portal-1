@@ -41,4 +41,12 @@ public class PcbOrderEvents {
         public Long id;
         public HasWidgets parent;
     }
+
+    public static class Change {
+        public Change(Long id) {
+            this.id = id;
+        }
+
+        public Long id;
+    }
 }

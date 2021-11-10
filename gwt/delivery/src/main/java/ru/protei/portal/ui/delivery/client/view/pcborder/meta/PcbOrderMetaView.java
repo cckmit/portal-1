@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_PcbOrderPromptness;
 import ru.protei.portal.core.model.dict.En_PcbOrderState;
 import ru.protei.portal.core.model.dict.En_PcbOrderType;
 import ru.protei.portal.core.model.dict.En_StencilType;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -55,7 +56,7 @@ public class PcbOrderMetaView extends Composite implements AbstractPcbOrderMetaV
     }
 
     @Override
-    public HasVisibility stencilTypeContainer() {
+    public HasVisibility stencilTypeVisibility() {
         return stencilTypeContainer;
     }
 
@@ -85,18 +86,25 @@ public class PcbOrderMetaView extends Composite implements AbstractPcbOrderMetaV
     }
 
     @Override
-    public void setOrderDateValid(boolean isValid) {
-        orderDate.markInputValid(isValid);
+    public boolean isOrderDateValid() {
+        return isDateValid(orderDate.getInputValue(), orderDate.getValue());
     }
 
     @Override
-    public void setReadyDateValid(boolean isValid) {
-        readyDate.markInputValid(isValid);
+    public boolean isReadyDateValid() {
+        return isDateValid(readyDate.getInputValue(), readyDate.getValue());
     }
 
     @Override
-    public void setReceiptDateValid(boolean isValid) {
-        receiptDate.markInputValid(isValid);
+    public boolean isReceiptDateValid() {
+        return isDateValid(receiptDate.getInputValue(), receiptDate.getValue());
+    }
+
+    @Override
+    public void clearDatesValidationMarks() {
+        orderDate.clearInputMark();
+        readyDate.clearInputMark();
+        receiptDate.clearInputMark();
     }
 
     private void ensureDebugIds() {
@@ -114,9 +122,50 @@ public class PcbOrderMetaView extends Composite implements AbstractPcbOrderMetaV
         receiptDate.setEnsureDebugId(DebugIds.PCB_ORDER.RECEIPT_DATE);
     }
 
+    private boolean isDateValid(String input, Date value) {
+        if (input.isEmpty()) return true;
+        if (StringUtils.isNotEmpty(input) && value != null) return true;
+        return false;
+    }
+
+    @UiHandler("state")
+    public void onStateChanged(ValueChangeEvent<En_PcbOrderState> event) {
+        activity.onStateChanged();
+    }
+
+    @UiHandler("promptness")
+    public void onPromptnessChanged(ValueChangeEvent<En_PcbOrderPromptness> event) {
+        activity.onPromptnessChanged();
+    }
+
     @UiHandler("orderType")
-    public void onDeadlineChanged(ValueChangeEvent<En_PcbOrderType> event) {
-        activity.onOrderTypeChanged(event.getValue());
+    public void onOrderTypeChanged(ValueChangeEvent<En_PcbOrderType> event) {
+        activity.onOrderTypeChanged();
+    }
+
+    @UiHandler("stencilType")
+    public void onStencilTypeChanged(ValueChangeEvent<En_StencilType> event) {
+        activity.onStencilTypeChanged();
+    }
+
+    @UiHandler("contractor")
+    public void onContractorChanged(ValueChangeEvent<EntityOption> event) {
+        activity.onContractorChanged();
+    }
+
+    @UiHandler("orderDate")
+    public void onOrderDateChanged(ValueChangeEvent<Date> event) {
+        activity.onOrderDateChanged();
+    }
+
+    @UiHandler("readyDate")
+    public void onReadyDateChanged(ValueChangeEvent<Date> event) {
+        activity.onReadyDateChanged();
+    }
+
+    @UiHandler("receiptDate")
+    public void onReceiptDateChanged(ValueChangeEvent<Date> event) {
+        activity.onReceiptDateChanged();
     }
 
     @UiField

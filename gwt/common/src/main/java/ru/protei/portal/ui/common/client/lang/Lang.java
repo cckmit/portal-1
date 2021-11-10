@@ -3962,8 +3962,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String pcbOrderCardTypePlaceholder();
 
-    String pcbOrderCardAmount();
-
     String pcbOrderComment();
 
     String pcbOrderAmountValidationError();
@@ -3989,6 +3987,12 @@ public interface Lang extends Messages, ContactItemLang {
     String pcbOrderStencilTypeValidationError();
 
     String pcbOrderContractorValidationError();
+
+    String pcbOrderEditCommonInfo();
+
+    String pcbOrderBackToPcbOrders();
+
+    String pcbOrderSaved();
 
     String jiraWorkflowWarning();
 }

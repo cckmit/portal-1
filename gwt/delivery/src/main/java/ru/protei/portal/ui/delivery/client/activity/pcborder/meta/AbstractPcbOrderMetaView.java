@@ -21,7 +21,7 @@ public interface AbstractPcbOrderMetaView extends IsWidget {
 
     HasValue<En_PcbOrderType> orderType();
 
-    HasVisibility stencilTypeContainer();
+    HasVisibility stencilTypeVisibility();
 
     HasValue<En_StencilType> stencilType();
 
@@ -33,9 +33,11 @@ public interface AbstractPcbOrderMetaView extends IsWidget {
 
     HasValue<Date> receiptDate();
 
-    void setOrderDateValid(boolean isValid);
+    boolean isOrderDateValid();
 
-    void setReadyDateValid(boolean isValid);
+    boolean isReadyDateValid();
 
-    void setReceiptDateValid(boolean isValid);
+    boolean isReceiptDateValid();
+
+    void clearDatesValidationMarks();
 }
