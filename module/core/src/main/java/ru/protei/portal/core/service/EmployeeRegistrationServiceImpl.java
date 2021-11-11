@@ -119,8 +119,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         EmployeeRegistration newEmployeeRegistration = employeeRegistrationDAO.get(employeeRegistrationShortView.getId());
         newEmployeeRegistration.setCuratorsIds(employeeRegistrationShortView.getCuratorIds());
         newEmployeeRegistration.setEmploymentDate(employeeRegistrationShortView.getEmploymentDate());
+        setProbationPeriodEndDate(newEmployeeRegistration);
 
-        if (!employeeRegistrationDAO.partialMerge(newEmployeeRegistration, "employment_date", "curators")) {
+        if (!employeeRegistrationDAO.partialMerge(newEmployeeRegistration, "employment_date", "curators", "probation_period_end_date")) {
             return error(En_ResultStatus.NOT_UPDATED);
         }
 
@@ -351,6 +352,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
     private void setProbationPeriodEndDate(EmployeeRegistration employeeRegistration) {
         Calendar calendar = new GregorianCalendar();
+        calendar.setTime(employeeRegistration.getEmploymentDate());
         calendar.add(Calendar.MONTH, employeeRegistration.getProbationPeriodMonth());
         Date probationPeriodEndDate = calendar.getTime();
         employeeRegistration.setProbationPeriodEndDate(probationPeriodEndDate);
