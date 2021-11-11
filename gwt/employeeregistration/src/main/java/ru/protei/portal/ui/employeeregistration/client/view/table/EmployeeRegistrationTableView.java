@@ -14,15 +14,16 @@ import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.columns.ActionIconClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.employeeregistration.client.activity.table.AbstractEmployeeRegistrationTableActivity;
 import ru.protei.portal.ui.employeeregistration.client.activity.table.AbstractEmployeeRegistrationTableView;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,6 +43,10 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
         });
 
         editClickColumn.setEditHandler(activity);
+
+        completeProbationClickColumn.setHandler(activity);
+        completeProbationClickColumn.setActionHandler(activity::onCompleteProbationClicked);
+        completeProbationClickColumn.setColumnProvider(columnProvider);
 
         table.setLoadHandler(activity);
     }
@@ -157,6 +162,13 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
             }
         };
 
+        completeProbationClickColumn = new ActionIconClickColumn<>(
+                "far fa-lg fa-check-circle", lang.completeProbation(), "complete");
+        completeProbationClickColumn.setDisplayPredicate(
+                v -> policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_EDIT));
+        completeProbationClickColumn.setEnabledPredicate(
+                v -> v.getProbationPeriodEndDate() != null && new Date().before(v.getProbationPeriodEndDate()));
+
         editClickColumn.setEnabledPredicate(employeeShortView -> policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_EDIT));
 
         clickColumns.add(state);
@@ -164,6 +176,7 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
         clickColumns.add(headOfDepartment);
         clickColumns.add(employmentDate);
         clickColumns.add(editClickColumn);
+        clickColumns.add(completeProbationClickColumn);
 
         clickColumns.forEach(c -> table.addColumn(c.header, c.values));
     }
@@ -187,6 +200,8 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
 
     @Inject
     PolicyService policyService;
+
+    ActionIconClickColumn<EmployeeRegistration> completeProbationClickColumn;
 
     private ClickColumnProvider<EmployeeRegistration> columnProvider = new ClickColumnProvider<>();
 

@@ -1996,6 +1996,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String goToEmployeeRegistration();
 
+    String completeProbation();
+
+    String probationCompletedSuccessfully();
+
     String employmentTypeFullTime();
 
     String employmentTypePartTime();

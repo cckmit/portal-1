@@ -7,4 +7,5 @@ import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 
 public interface AbstractEmployeeRegistrationTableActivity extends ClickColumn.Handler<EmployeeRegistration>,
         InfiniteLoadHandler<EmployeeRegistration>, EditClickColumn.EditHandler<EmployeeRegistration> {
+        void onCompleteProbationClicked(EmployeeRegistration value);
 }

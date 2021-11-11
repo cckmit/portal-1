@@ -101,8 +101,8 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
                 message = join( message, ", ", curator.getDisplayName() );
             }
 
-            List<String> recipients = collectAdditionalRecipients(headOfDepartment);
-            notifyAdditionalRecipients(recipients, employeeFullName, employeeId);
+            List<String> recipients = collectAdditionalRecipients( headOfDepartment );
+            notifyAdditionalRecipients( recipients, employeeFullName, employeeId );
 
             for (String recipient : recipients) {
                 message = join(message, ", ", recipient);
@@ -113,6 +113,53 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
 
         return ok(true );
     }
+
+    @Override
+    public Result<Boolean> notifyAboutEmployeeProbationPeriod(EmployeeRegistration employeeRegistration) {
+        log.info( "notifyAboutProbationPeriod(): {}", employeeRegistration.getId() );
+
+        Person headOfDepartment = personDAO.get( employeeRegistration.getHeadOfDepartmentId() );
+        jdbcManyRelationsHelper.fill( headOfDepartment, Person.Fields.CONTACT_ITEMS );
+        String employeeFullName = employeeRegistration.getEmployeeFullName();
+        Long employeeId = employeeRegistration.getId();
+
+        notifyHeadOfDepartment( headOfDepartment, employeeFullName, employeeId );
+        StringBuilder message = makeProbationComment( employeeRegistration.getHeadOfDepartmentShortName() );
+
+        List<Person> personList = personDAO.partialGetListByKeys( employeeRegistration.getCuratorsIds(), "id", "displayname", "company_id" );
+        jdbcManyRelationsHelper.fill( personList, Person.Fields.CONTACT_ITEMS );
+
+        for (Person curator : emptyIfNull( personList )) {
+            notifyEmployeeCurator(curator, employeeFullName, employeeId);
+            message = join(message, ", ", curator.getDisplayName());
+        }
+
+        List<String> recipients = collectAdditionalRecipients(headOfDepartment);
+        notifyAdditionalRecipients(recipients, employeeFullName, employeeId);
+
+        for (String recipient : recipients) {
+            message = join(message, ", ", recipient);
+        }
+
+        addCaseComment(employeeRegistration.getId(), message.toString());
+
+        return ok(true );
+    }
+
+
+    @Override
+    public Result<Boolean> notifyEmployeeAboutDevelopmentAgenda(EmployeeRegistration employeeRegistration) {
+        log.info( "notifyEmployeeAboutDevelopmentAgenda(): {}", employeeRegistration.getId());
+
+        Person employee = employeeRegistration.getPerson();
+        jdbcManyRelationsHelper.fill(employee, Person.Fields.CONTACT_ITEMS);
+
+        notifyEmployerAboutAgenda( employee );
+        addCaseComment( employeeRegistration.getId(), makeDevelopmentAgendaComment( employee ) );
+
+        return ok(true );
+    }
+
 
     private StringBuilder makeProbationComment( String headOfDepartmentName ) {
         return join( getLangFor( "sent_reminder_about_response" ), "\n",

@@ -105,7 +105,35 @@ public class BootstrapServiceImpl implements BootstrapService {
         /**
          *  end Спринт */
 
+        /**
+         * begin Спринт 83 */
+        if (!bootstrapAppDAO.isActionExists("setProbationPeriodEndDateForProbationNotExpired")) {
+            this.setProbationPeriodEndDateForProbationNotExpired();
+            bootstrapAppDAO.createAction("setProbationPeriodEndDateForProbationNotExpired");
+        }
+        /**
+         *  end Спринт */
+
         log.info( "bootstrapApplication(): BootstrapService complete."  );
+    }
+
+    private void setProbationPeriodEndDateForProbationNotExpired() {
+        log.debug("setProbationPeriodEndDateForProbationNotExpired(): start");
+        List<EmployeeRegistration> probationNotExpired = employeeRegistrationDAO.getListByCondition(
+                "CURDATE() <= DATE_ADD(employment_date, INTERVAL probation_period MONTH)");
+
+        Calendar calendar = new GregorianCalendar();
+        for (EmployeeRegistration employeeRegistration : probationNotExpired) {
+            calendar.setTime(employeeRegistration.getEmploymentDate());
+            calendar.add(Calendar.MONTH, employeeRegistration.getProbationPeriodMonth());
+            employeeRegistration.setProbationPeriodEndDate(calendar.getTime());
+
+            employeeRegistrationDAO.partialMerge(employeeRegistration, "probation_period_end_date");
+            log.info("setProbationPeriodEndDateForProbationNotExpired(): " +
+                    "employee registration with id={} updated", employeeRegistration.getId());
+        }
+
+        log.debug("setProbationPeriodEndDateForProbationNotExpired(): finish");
     }
 
     private void addCardRolesAndPrivileges() {
@@ -449,6 +477,8 @@ public class BootstrapServiceImpl implements BootstrapService {
         })).collect(Collectors.toList());
     }
 
+    @Autowired
+    EmployeeRegistrationDAO employeeRegistrationDAO;
     @Autowired
     CaseFilterDAO caseFilterDAO;
     @Autowired
