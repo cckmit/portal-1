@@ -15,11 +15,13 @@ public class AmountColumn extends ClickColumn<PcbOrder> {
 
     @Override
     protected void fillColumnHeader(Element columnHeader) {
+        columnHeader.addClassName("amount");
         columnHeader.setInnerText(lang.pcbOrderAmount());
     }
 
     @Override
     public void fillColumnValue(Element cell, PcbOrder pcbOrder) {
+        cell.addClassName("amount");
         if (pcbOrder == null) {
             return;
         }

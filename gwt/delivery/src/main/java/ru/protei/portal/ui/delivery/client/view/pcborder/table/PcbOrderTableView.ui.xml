@@ -10,7 +10,7 @@
             <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container col-md-9">
                 <div class="card card-default no-border">
                     <div class="card-body no-padding">
-                        <table:GroupedTableWidget ui:field="table" styleName="table table-hover cards"/>
+                        <table:GroupedTableWidget ui:field="table" styleName="table table-hover pcb-orders"/>
                         <g:HTMLPanel ui:field="pagerContainer" styleName="pager-container"/>
                     </div>
                 </div>

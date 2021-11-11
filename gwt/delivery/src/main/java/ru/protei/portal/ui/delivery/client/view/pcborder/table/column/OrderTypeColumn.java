@@ -21,11 +21,13 @@ public class OrderTypeColumn extends ClickColumn<PcbOrder> {
 
     @Override
     protected void fillColumnHeader(Element columnHeader) {
+        columnHeader.addClassName("type");
         columnHeader.setInnerText(lang.pcbOrderOrderType());
     }
 
     @Override
     public void fillColumnValue(Element cell, PcbOrder pcbOrder) {
+        cell.addClassName("type");
         if (pcbOrder == null) {
             return;
         }

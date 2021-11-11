@@ -30,6 +30,10 @@ public interface PcbOrderService {
     @Auditable( En_AuditType.PCB_ORDER_MODIFY )
     Result<PcbOrder> updateMeta(AuthToken token, PcbOrder pcbOrder);
 
+    @Privileged({ En_Privilege.PCB_ORDER_EDIT })
+    @Auditable( En_AuditType.PCB_ORDER_MODIFY )
+    Result<PcbOrder> updateMetaWithCreatingChildPbcOrder(AuthToken token, PcbOrder pcbOrder, Integer receivedAmount);
+
     @Privileged({ En_Privilege.PCB_ORDER_REMOVE })
     @Auditable( En_AuditType.PCB_ORDER_REMOVE )
     Result<PcbOrder> removePcbOrder(AuthToken token, PcbOrder value);

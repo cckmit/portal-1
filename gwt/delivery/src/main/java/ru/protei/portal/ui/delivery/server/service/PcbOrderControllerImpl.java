@@ -59,6 +59,12 @@ public class PcbOrderControllerImpl implements PcbOrderController {
     }
 
     @Override
+    public PcbOrder updateMetaWithCreatingChildPbcOrder(PcbOrder pcbOrder, Integer receivedAmount) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(pcbOrderService.updateMetaWithCreatingChildPbcOrder(token, pcbOrder, receivedAmount));
+    }
+
+    @Override
     public PcbOrder removePcbOrder(PcbOrder pcbOrder) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         return checkResultAndGetData(pcbOrderService.removePcbOrder(token, pcbOrder));

@@ -19,11 +19,13 @@ public class ReadyDateColumn extends ClickColumn<PcbOrder> {
 
     @Override
     protected void fillColumnHeader(Element columnHeader) {
+        columnHeader.addClassName("ready-date");
         columnHeader.setInnerText(lang.pcbOrderReadyDate());
     }
 
     @Override
     public void fillColumnValue(Element cell, PcbOrder pcbOrder) {
+        cell.addClassName("ready-date");
         if (pcbOrder == null) {
             return;
         }

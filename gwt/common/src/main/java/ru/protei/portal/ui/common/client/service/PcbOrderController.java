@@ -20,5 +20,7 @@ public interface PcbOrderController extends RemoteService {
 
     PcbOrder updateMeta(PcbOrder pcbOrder) throws RequestFailedException;
 
+    PcbOrder updateMetaWithCreatingChildPbcOrder(PcbOrder pcbOrder, Integer receivedAmount) throws RequestFailedException;
+
     PcbOrder removePcbOrder(PcbOrder pcbOrder) throws RequestFailedException;
 }

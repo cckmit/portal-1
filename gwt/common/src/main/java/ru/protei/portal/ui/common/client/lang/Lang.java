@@ -3994,5 +3994,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String pcbOrderSaved();
 
+    String pcbOrderModalAmountReceived();
+
     String jiraWorkflowWarning();
 }

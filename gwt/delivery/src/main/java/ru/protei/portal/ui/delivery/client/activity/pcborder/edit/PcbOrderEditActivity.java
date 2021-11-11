@@ -10,6 +10,8 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.PcbOrder;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
+import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
@@ -20,6 +22,8 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.common.AbstractPcbOrderCommonInfoEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.common.AbstractPcbOrderCommonInfoEditView;
+import ru.protei.portal.ui.delivery.client.activity.pcborder.edit.modal.AbstractPcbOrderModalEditActivity;
+import ru.protei.portal.ui.delivery.client.activity.pcborder.edit.modal.AbstractPcbOrderModalEditView;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.meta.AbstractPcbOrderMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.meta.AbstractPcbOrderMetaView;
 
@@ -31,7 +35,8 @@ import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.S
 import static ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils.transliteration;
 
 public abstract class PcbOrderEditActivity implements Activity, AbstractPcbOrderEditActivity,
-        AbstractPcbOrderCommonInfoEditActivity, AbstractPcbOrderMetaActivity {
+        AbstractPcbOrderCommonInfoEditActivity, AbstractPcbOrderMetaActivity,
+        AbstractPcbOrderModalEditActivity, AbstractDialogDetailsActivity {
 
     @Inject
     public void onInit() {
@@ -43,6 +48,12 @@ public abstract class PcbOrderEditActivity implements Activity, AbstractPcbOrder
         commonInfoEditView.setActivity(this);
         commonInfoEditView.buttonsContainerVisibility().setVisible(true);
         view.getCommonInfoEditContainer().add(commonInfoEditView);
+
+        modalView.setActivity(this);
+        dialogDetailsView.setActivity(this);
+        dialogDetailsView.getBodyContainer().add(modalView.asWidget());
+        dialogDetailsView.removeButtonVisibility().setVisible(false);
+        dialogDetailsView.setHeader(lang.pcbOrderModalAmountReceived());
     }
 
     @Event
@@ -86,17 +97,22 @@ public abstract class PcbOrderEditActivity implements Activity, AbstractPcbOrder
     }
 
     @Override
+    public void onReceivedAmountChanged() {
+        validateReceivedAmount();
+    }
+
+    @Override
     public void onStateChanged() {
         En_PcbOrderState state = metaView.state().getValue();
         if (Objects.equals(state, pcbOrder.getState())) {
             return;
         }
         if (En_PcbOrderState.RECEIVED.equals(metaView.state().getValue())) {
-            // todo не сохраняем сразу, а открываем новое поле для ввода количества плат
-            // после ввода количества нужно выполнить проверку на сравнение
+            modalView.receivedAmount().setValue(null);
+            dialogDetailsView.showPopup();
         } else {
             pcbOrder.setState(metaView.state().getValue());
-            onMetaChanged();
+            onMetaStateChanged();
         }
     }
 
@@ -210,6 +226,27 @@ public abstract class PcbOrderEditActivity implements Activity, AbstractPcbOrder
         fireEvent(new PcbOrderEvents.Show(!isNew(pcbOrder)));
     }
 
+    @Override
+    public void onSaveClicked() {
+        if (!validateReceivedAmount()) {
+            showError(lang.pcbOrderAmountValidationError());
+            return;
+        }
+
+        if (modalView.receivedAmount().getValue() >= pcbOrder.getAmount()) {
+            pcbOrder.setState(metaView.state().getValue());
+            onMetaStateChanged();
+        } else {
+            onPartiallyCompletedPcbOrder(modalView.receivedAmount().getValue());
+        }
+    }
+
+    @Override
+    public void onCancelClicked() {
+        metaView.state().setValue(pcbOrder.getState());
+        dialogDetailsView.hidePopup();
+    }
+
     private void fillView(PcbOrder pcbOrder) {
         this.pcbOrder = pcbOrder;
         if (pcbOrder == null) return;
@@ -269,6 +306,34 @@ public abstract class PcbOrderEditActivity implements Activity, AbstractPcbOrder
                 }));
     }
 
+    private void onMetaStateChanged() {
+        pcbOrderService.updateMeta(pcbOrder, new FluentCallback<PcbOrder>()
+                .withError(throwable -> {
+                    defaultErrorHandler.accept(throwable);
+                })
+                .withSuccess(result -> {
+                    fireEvent(new NotifyEvents.Show(lang.pcbOrderSaved(), SUCCESS));
+                    fireEvent(new PcbOrderEvents.ChangeState());
+                    fillView(result);
+                    dialogDetailsView.hidePopup();
+                })
+        );
+    }
+
+    private void onPartiallyCompletedPcbOrder(Integer receivedAmount) {
+        pcbOrderService.updateMetaWithCreatingChildPbcOrder(pcbOrder, receivedAmount, new FluentCallback<PcbOrder>()
+                .withError(throwable -> {
+                    defaultErrorHandler.accept(throwable);
+                })
+                .withSuccess(result -> {
+                    fireEvent(new NotifyEvents.Show(lang.pcbOrderSaved(), SUCCESS));
+                    fireEvent(new PcbOrderEvents.ChangeState());
+                    fillView(result);
+                    dialogDetailsView.hidePopup();
+                })
+        );
+    }
+
     private PcbOrder fillCommonInfo() {
         pcbOrder.setCardTypeId(commonInfoEditView.cardType().getValue().getId());
         pcbOrder.setAmount(commonInfoEditView.amount().getValue());
@@ -318,6 +383,13 @@ public abstract class PcbOrderEditActivity implements Activity, AbstractPcbOrder
         return isValid;
     }
 
+    private boolean validateReceivedAmount() {
+        Integer value = modalView.receivedAmount().getValue();
+        boolean isValid = value != null && value > 0;
+        modalView.setReceivedAmountValid(isValid);
+        return isValid;
+    }
+
     private boolean isDateEquals(Date dateField, Date dateMeta) {
         if (dateField == null) {
             return dateMeta == null;
@@ -351,6 +423,10 @@ public abstract class PcbOrderEditActivity implements Activity, AbstractPcbOrder
     AbstractPcbOrderCommonInfoEditView commonInfoEditView;
     @Inject
     AbstractPcbOrderMetaView metaView;
+    @Inject
+    AbstractPcbOrderModalEditView modalView;
+    @Inject
+    AbstractDialogDetailsView dialogDetailsView;
     @Inject
     private PcbOrderControllerAsync pcbOrderService;
     @Inject

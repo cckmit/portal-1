@@ -19,11 +19,13 @@ public class ReceiptDateColumn extends ClickColumn<PcbOrder> {
 
     @Override
     protected void fillColumnHeader(Element columnHeader) {
+        columnHeader.addClassName("receipt-date");
         columnHeader.setInnerText(lang.pcbOrderReceiptDate());
     }
 
     @Override
     public void fillColumnValue(Element cell, PcbOrder pcbOrder) {
+        cell.addClassName("receipt-date");
         if (pcbOrder == null) {
             return;
         }

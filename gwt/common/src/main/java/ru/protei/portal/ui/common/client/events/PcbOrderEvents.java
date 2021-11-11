@@ -49,4 +49,7 @@ public class PcbOrderEvents {
 
         public Long id;
     }
+
+    public static class ChangeState {
+    }
 }

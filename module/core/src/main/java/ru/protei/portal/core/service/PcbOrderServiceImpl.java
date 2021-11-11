@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.PcbOrderDAO;
 import ru.protei.portal.core.model.dict.En_PcbOrderState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -117,6 +118,31 @@ public class PcbOrderServiceImpl implements PcbOrderService {
 
     @Override
     @Transactional
+    public Result<PcbOrder> updateMetaWithCreatingChildPbcOrder(AuthToken token, PcbOrder parent, Integer receivedAmount) {
+        if (parent == null || parent.getId() == null) {
+            return error(INCORRECT_PARAMS);
+        }
+
+        if (!isValid(parent)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        PcbOrder childPcbOrder = createChildPcbOrder(parent, receivedAmount, token.getPersonId());
+        Long childPcbOrderId = pcbOrderDAO.persist(childPcbOrder);
+        if (childPcbOrderId == null) {
+            return error(En_ResultStatus.NOT_CREATED);
+        }
+
+        parent.setAmount(parent.getAmount() - receivedAmount);
+        if (!pcbOrderDAO.partialMerge(parent, "amount")) {
+            log.warn("updateMetaWithCreatingChildPbcOrder(): pcb order not updated. pbcOrder={}", parent.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        return ok(pcbOrderDAO.get(parent.getId()));    }
+
+    @Override
+    @Transactional
     public Result<PcbOrder> removePcbOrder(AuthToken token, PcbOrder value) {
         if (value == null || value.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -164,5 +190,26 @@ public class PcbOrderServiceImpl implements PcbOrderService {
                 && pcbOrder.getReceiptDate() == null) {
             pcbOrder.setReceiptDate(new Date());
         }
+    }
+
+    private PcbOrder createChildPcbOrder(PcbOrder parent, Integer receivedAmount, Long recipientId) {
+        PcbOrder child = new PcbOrder();
+        child.setCardTypeId(parent.getCardTypeId());
+        child.setAmount(receivedAmount);
+        child.setModification(parent.getModification());
+        child.setComment(parent.getComment());
+        child.setState(En_PcbOrderState.RECEIVED);
+        child.setPromptness(parent.getPromptness());
+        child.setType(parent.getType());
+        child.setStencilType(parent.getStencilType());
+        child.setOrderDate(parent.getOrderDate());
+        child.setReadyDate(parent.getReadyDate());
+        child.setReceiptDate(new Date());
+        child.setRecipientId(recipientId);
+        child.setParentId(parent.getId());
+        child.setCreated(new Date());
+        child.setCreatorId(recipientId);
+        child.setCompanyId(parent.getCompanyId());
+        return child;
     }
 }

@@ -47,6 +47,7 @@ import ru.protei.portal.ui.delivery.client.activity.pcborder.create.AbstractPcbO
 import ru.protei.portal.ui.delivery.client.activity.pcborder.create.PcbOrderCreateActivity;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.edit.AbstractPcbOrderEditView;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.edit.PcbOrderEditActivity;
+import ru.protei.portal.ui.delivery.client.activity.pcborder.edit.modal.AbstractPcbOrderModalEditView;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.filter.AbstractPcbOrderFilterView;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.meta.AbstractPcbOrderMetaView;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.table.AbstractPcbOrderTableView;
@@ -77,6 +78,7 @@ import ru.protei.portal.ui.delivery.client.view.delivery.table.DeliveryTableView
 import ru.protei.portal.ui.delivery.client.view.pcborder.common.PcbOrderCommonInfoEditView;
 import ru.protei.portal.ui.delivery.client.view.pcborder.create.PcbOrderCreateView;
 import ru.protei.portal.ui.delivery.client.view.pcborder.edit.PcbOrderEditView;
+import ru.protei.portal.ui.delivery.client.view.pcborder.edit.modal.PcbOrderModalEditView;
 import ru.protei.portal.ui.delivery.client.view.pcborder.filter.PcbOrderFilterView;
 import ru.protei.portal.ui.delivery.client.view.pcborder.meta.PcbOrderMetaView;
 import ru.protei.portal.ui.delivery.client.view.pcborder.table.PcbOrderTableView;
@@ -164,6 +166,7 @@ public class DeliveryClientModule extends AbstractGinModule {
 
         bind(PcbOrderEditActivity.class).asEagerSingleton();
         bind(AbstractPcbOrderEditView.class).to(PcbOrderEditView.class).in(Singleton.class);
+        bind(AbstractPcbOrderModalEditView.class).to(PcbOrderModalEditView.class);
     }
 }
 

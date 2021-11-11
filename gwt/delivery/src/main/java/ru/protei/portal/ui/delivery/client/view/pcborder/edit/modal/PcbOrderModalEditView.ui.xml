@@ -1,0 +1,19 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="card card-transparent no-margin">
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.pcbOrderAmount}"/>
+                    </label>
+                    <g:IntegerBox ui:field="receivedAmount" styleName="form-control"/>
+                </div>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

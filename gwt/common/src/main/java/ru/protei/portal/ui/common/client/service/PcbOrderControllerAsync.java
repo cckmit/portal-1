@@ -17,5 +17,7 @@ public interface PcbOrderControllerAsync {
 
     void updateMeta(PcbOrder pcbOrder, AsyncCallback<PcbOrder> async);
 
+    void updateMetaWithCreatingChildPbcOrder(PcbOrder pcbOrder, Integer receivedAmount, AsyncCallback<PcbOrder> async);
+
     void removePcbOrder(PcbOrder pcbOrder, AsyncCallback<PcbOrder> async);
 }
