@@ -234,6 +234,7 @@ public class PortalConfigData {
         private final String crmEmployeeRegistrationUrl;
         private final String crmReservedIpsUrl;
         private final String[] crmEmployeeRegistrationNotificationsRecipients;
+        private final String[] crmEmployeeRegistrationCommentNotificationsRecipients;
         private final String[] crmRoomReservationNotificationsRecipients;
         private final String[] crmIpReservationNotificationsRecipients;
         private final String[] crmBirthdaysNotificationsRecipients;
@@ -255,6 +256,7 @@ public class PortalConfigData {
             crmEmployeeRegistrationUrl = properties.getProperty( "crm.employee_registration.url");
             crmReservedIpsUrl = properties.getProperty("crm.reserved_ips.url", "#reserved_ips");
             crmEmployeeRegistrationNotificationsRecipients = properties.getProperty( "crm.employee_registration.recipients", "" ).split(",");
+            crmEmployeeRegistrationCommentNotificationsRecipients = properties.getProperty("crm.employee_registration.comment.recipients", "").split(",");
             crmRoomReservationNotificationsRecipients = properties.getProperty("crm.room_reservation.recipients", "").split(",");
             crmIpReservationNotificationsRecipients = properties.getProperty("crm.ip_reservation.recipients", "").split(",");
             crmBirthdaysNotificationsRecipients = properties.getProperty("crm.birthdays.recipients", "").split(",");
@@ -297,6 +299,10 @@ public class PortalConfigData {
 
         public String[] getCrmEmployeeRegistrationNotificationsRecipients() {
             return crmEmployeeRegistrationNotificationsRecipients;
+        }
+
+        public String[] getCrmEmployeeRegistrationCommentNotificationsRecipients() {
+            return crmEmployeeRegistrationCommentNotificationsRecipients;
         }
 
         public String[] getCrmRoomReservationNotificationsRecipients() {

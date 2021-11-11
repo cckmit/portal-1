@@ -462,6 +462,13 @@ public class MailNotificationProcessor {
     }
 
     @EventListener
+    public void onEmployeeRegistrationCommentEvent(EmployeeRegistrationCommentEvent event) {
+        log.info( "---------->>>> onEmployeeRegistrationCommentEvent(): {}", event );
+
+        //TODO implement
+    }
+
+    @EventListener
     public void onEmployeeRegistrationEmployeeFeedbackEvent( EmployeeRegistrationEmployeeFeedbackEvent event) {
         log.info( "onEmployeeRegistrationEmployeeFeedbackEvent(): {}", event );
 

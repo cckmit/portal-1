@@ -163,6 +163,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             );
         }
 
+        if (EMPLOYEE_REGISTRATION.equals(caseType)) {
+            okResult.publishEvent(new EmployeeRegistrationCommentEvent(
+                    this, resultData.getCaseComment(), token.getPersonId(), comment.getCaseId())
+            );
+        }
+
 /*
         if (resultData.getCaseComment() != null) {
             clientEventService.fireEvent( new CaseCommentSavedClientEvent( token.getPersonId(), comment.getCaseId(), resultData.getCaseComment().getId() ) );
