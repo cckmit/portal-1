@@ -1,20 +1,20 @@
 package ru.protei.portal.ui.delivery.client.activity.pcborder.edit;
 
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasVisibility;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface AbstractPcbOrderEditView extends IsWidget {
 
     void setActivity(AbstractPcbOrderEditActivity activity);
 
-    HTMLPanel getCommonInfoEditContainer();
+    HasWidgets getCommonInfoEditContainer();
 
     HasVisibility commonInfoEditContainerVisibility();
 
     HasVisibility commonInfoContainerVisibility();
 
-    HTMLPanel getMetaContainer();
+    HasWidgets getMetaContainer();
 
     void setCardTypeRO(String value);
 

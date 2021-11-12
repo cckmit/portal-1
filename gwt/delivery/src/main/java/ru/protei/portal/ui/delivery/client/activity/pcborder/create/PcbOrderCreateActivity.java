@@ -34,11 +34,11 @@ public abstract class PcbOrderCreateActivity implements Activity, AbstractPcbOrd
         view.setActivity(this);
 
         metaView.setActivity(this);
-        view.getMetaContainer().add(metaView);
+        view.getMetaContainer().add(metaView.asWidget());
 
         commonInfoEditView.setActivity(this);
         commonInfoEditView.buttonsContainerVisibility().setVisible(false);
-        view.getCommonInfoContainer().add(commonInfoEditView);
+        view.getCommonInfoContainer().add(commonInfoEditView.asWidget());
     }
 
     @Event

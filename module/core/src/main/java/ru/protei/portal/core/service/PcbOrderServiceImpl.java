@@ -21,6 +21,7 @@ import java.util.Date;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.dict.En_ResultStatus.INCORRECT_PARAMS;
+import static ru.protei.portal.core.model.ent.PcbOrder.Columns.*;
 
 public class PcbOrderServiceImpl implements PcbOrderService {
 
@@ -68,6 +69,10 @@ public class PcbOrderServiceImpl implements PcbOrderService {
 
         pcbOrder.setCreated(new Date());
         pcbOrder.setCreatorId(token.getPersonId());
+        if (En_PcbOrderState.RECEIVED.equals(pcbOrder.getState())) {
+            pcbOrder.setRecipientId(token.getPersonId());
+        }
+
         Long pcbOrderId = pcbOrderDAO.persist(pcbOrder);
 
         if (pcbOrderId == null) {
@@ -88,7 +93,7 @@ public class PcbOrderServiceImpl implements PcbOrderService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        if (!pcbOrderDAO.partialMerge(commonInfo, "card_type_id", "amount", "modification", "comment")) {
+        if (!pcbOrderDAO.partialMerge(commonInfo, CARD_TYPE_ID, AMOUNT, MODIFICATION, COMMENT)) {
             log.warn("updateCommonInfo(): pcb order not updated. pbcOrder={}", commonInfo.getId());
             return error(En_ResultStatus.NOT_UPDATED);
         }
@@ -107,8 +112,9 @@ public class PcbOrderServiceImpl implements PcbOrderService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        if (!pcbOrderDAO.partialMerge(meta, "amount","state", "promptness", "type",
-                "stencil_type", "company_id", "order_date", "ready_date", "receipt_date")) {
+        // amount поменятся, если при изменении статуса на "Заказ получен" ввести большее значение, чем прописано в заказе
+        if (!pcbOrderDAO.partialMerge(meta, AMOUNT, STATE, PROMPTNESS, TYPE,
+                STENCIL_TYPE, COMPANY_ID, ORDER_DATE, READY_DATE, RECEIPT_DATE, RECIPIENT_ID)) {
             log.warn("updateMeta(): pcb order not updated. pbcOrder={}", meta.getId());
             return error(En_ResultStatus.NOT_UPDATED);
         }
@@ -134,7 +140,7 @@ public class PcbOrderServiceImpl implements PcbOrderService {
         }
 
         parent.setAmount(parent.getAmount() - receivedAmount);
-        if (!pcbOrderDAO.partialMerge(parent, "amount")) {
+        if (!pcbOrderDAO.partialMerge(parent, AMOUNT)) {
             log.warn("updateMetaWithCreatingChildPbcOrder(): pcb order not updated. pbcOrder={}", parent.getId());
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }

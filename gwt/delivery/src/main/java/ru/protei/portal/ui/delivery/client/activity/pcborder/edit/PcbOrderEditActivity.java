@@ -43,11 +43,11 @@ public abstract class PcbOrderEditActivity implements Activity, AbstractPcbOrder
         view.setActivity(this);
 
         metaView.setActivity(this);
-        view.getMetaContainer().add(metaView);
+        view.getMetaContainer().add(metaView.asWidget());
 
         commonInfoEditView.setActivity(this);
         commonInfoEditView.buttonsContainerVisibility().setVisible(true);
-        view.getCommonInfoEditContainer().add(commonInfoEditView);
+        view.getCommonInfoEditContainer().add(commonInfoEditView.asWidget());
 
         modalView.setActivity(this);
         dialogDetailsView.setActivity(this);
@@ -237,6 +237,7 @@ public abstract class PcbOrderEditActivity implements Activity, AbstractPcbOrder
         if (modalView.receivedAmount().getValue() >= pcbOrder.getAmount()) {
             pcbOrder.setState(metaView.state().getValue());
             pcbOrder.setAmount(modalView.receivedAmount().getValue());
+            pcbOrder.setRecipientId(authProfile.getId());
             onMetaStateChanged();
         } else {
             onPartiallyCompletedPcbOrder(modalView.receivedAmount().getValue());
