@@ -12,10 +12,7 @@ import ru.protei.portal.core.model.ent.CardType;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.CardEvents;
-import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.service.CardControllerAsync;
 import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
@@ -53,7 +50,7 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
 
-        prepare();
+        prepare(event);
     }
 
     @Override
@@ -110,12 +107,12 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
                 }));
     }
 
-    private void prepare() {
+    private void prepare(CardEvents.Create event) {
         view.serialNumber().setValue(null);
-        view.type().setValue(null);
-        view.cardBatch().setValue(null);
+        view.type().setValue(event.typeCode != null ? new CardType(event.typeName, event.typeCode, true, true) : null);
+        view.cardBatch().setValue(event.cardBatch != null ? event.cardBatch : null);
         view.cardBatchModel().updateCardType(null);
-        view.article().setValue(null);
+        view.article().setValue(event.article != null ? event.article : null);
         isCanPresetArticle = true;
         view.testDate().setValue(null);
         view.setTestDateValid(true);
