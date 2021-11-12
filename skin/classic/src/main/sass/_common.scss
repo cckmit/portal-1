@@ -5797,3 +5797,14 @@ div.form-group-default.form-group-default-selectFx:focus {
     display: none !important;
   }
 }
+
+.short-table-view {
+  .pcb-orders {
+    .name, .type {
+      width: 45%;
+    }
+    .modification, .state, .promptness, .amount, .order-date, .ready-date, .receipt-date, .contractor {
+      display: none;
+    }
+  }
+}

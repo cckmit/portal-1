@@ -11,6 +11,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+import static ru.protei.portal.core.model.ent.PcbOrder.Columns.*;
+
 @JdbcEntity(table = "pcb_order")
 public class PcbOrder extends AuditableObject {
 
@@ -18,7 +20,7 @@ public class PcbOrder extends AuditableObject {
     public static final String CARD_TYPE_TABLE = "card_type";
     public static final String CARD_TYPE_ALIAS = "CT";
 
-    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    @JdbcId(name = ID, idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
     @JdbcColumn(name="created")
@@ -30,7 +32,7 @@ public class PcbOrder extends AuditableObject {
     @JdbcJoinedColumn(mappedColumn = "displayShortName", localColumn = "creator_id", remoteColumn = "id", table = "person")
     private String creatorShortName;
 
-    @JdbcColumn(name = "card_type_id")
+    @JdbcColumn(name = CARD_TYPE_ID)
     private Long cardTypeId;
 
     @JdbcJoinedColumn(localColumn = "card_type_id", remoteColumn = "id", mappedColumn = "name", table = CARD_TYPE_TABLE, sqlTableAlias = CARD_TYPE_ALIAS)
@@ -39,53 +41,53 @@ public class PcbOrder extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "card_type_id", remoteColumn = "id", mappedColumn = "code", table = CARD_TYPE_TABLE, sqlTableAlias = CARD_TYPE_ALIAS)
     private String cardTypeCode;
 
-    @JdbcColumn(name = "modification")
+    @JdbcColumn(name = MODIFICATION)
     private String modification;
 
-    @JdbcColumn(name = "type")
+    @JdbcColumn(name = TYPE)
     @JdbcEnumerated(EnumType.ID)
     private En_PcbOrderType type;
 
-    @JdbcColumn(name = "stencil_type")
+    @JdbcColumn(name = STENCIL_TYPE)
     @JdbcEnumerated(EnumType.ID)
     private En_StencilType stencilType;
 
-    @JdbcColumn(name = "state")
+    @JdbcColumn(name = STATE)
     @JdbcEnumerated(EnumType.ID)
     private En_PcbOrderState state;
 
-    @JdbcColumn(name = "company_id")
+    @JdbcColumn(name = COMPANY_ID)
     private Long companyId;
 
-    @JdbcJoinedColumn(localColumn = "company_id", table = "company", remoteColumn = "id", mappedColumn = "cname")
+    @JdbcJoinedColumn(localColumn = COMPANY_ID, table = "company", remoteColumn = "id", mappedColumn = "cname")
     private String companyName;
 
     @JdbcColumn(name = "parent_id")
     private Long parentId;
 
-    @JdbcColumn(name = "promptness")
+    @JdbcColumn(name = PROMPTNESS)
     @JdbcEnumerated(EnumType.ID)
     private En_PcbOrderPromptness promptness;
 
-    @JdbcColumn(name = "amount")
+    @JdbcColumn(name = AMOUNT)
     private Integer amount;
 
-    @JdbcColumn(name="order_date")
+    @JdbcColumn(name = ORDER_DATE)
     private Date orderDate;
 
-    @JdbcColumn(name="ready_date")
+    @JdbcColumn(name = READY_DATE)
     private Date readyDate;
 
-    @JdbcColumn(name="receipt_date")
+    @JdbcColumn(name = RECEIPT_DATE)
     private Date receiptDate;
 
-    @JdbcColumn(name = "recipient_id")
+    @JdbcColumn(name = RECIPIENT_ID)
     private Long recipientId;
 
-    @JdbcJoinedColumn(mappedColumn = "displayShortName", localColumn = "recipient_id", remoteColumn = "id", table = "person")
+    @JdbcJoinedColumn(mappedColumn = "displayShortName", localColumn = RECIPIENT_ID, remoteColumn = "id", table = "person")
     private String recipientShortName;
 
-    @JdbcColumn(name = "comment")
+    @JdbcColumn(name = COMMENT)
     private String comment;
 
     public PcbOrder() {}
@@ -305,5 +307,22 @@ public class PcbOrder extends AuditableObject {
                 ", recipientId=" + recipientId +
                 ", comment='" + comment + '\'' +
                 '}';
+    }
+
+    public interface Columns {
+        String ID = "id";
+        String CARD_TYPE_ID = "card_type_id";
+        String MODIFICATION = "modification";
+        String TYPE = "type";
+        String STENCIL_TYPE = "stencil_type";
+        String STATE = "state";
+        String COMPANY_ID = "company_id";
+        String PROMPTNESS = "promptness";
+        String AMOUNT = "amount";
+        String ORDER_DATE = "order_date";
+        String READY_DATE = "ready_date";
+        String RECEIPT_DATE = "receipt_date";
+        String RECIPIENT_ID = "recipient_id";
+        String COMMENT = "comment";
     }
 }

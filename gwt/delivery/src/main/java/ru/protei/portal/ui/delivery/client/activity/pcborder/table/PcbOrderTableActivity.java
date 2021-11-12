@@ -52,7 +52,6 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
 
     private void loadTable() {
         animation.closeDetails();
-        view.clearRecords();
         requestPcbOrder(this.page);
     }
 
@@ -83,6 +82,7 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
             fireEvent(new ActionBarEvents.Add(CREATE_ACTION , null, UiConstants.ActionBarIdentity.PCB_ORDER_CREATE));
         }
 
+        animation.closeDetails();
         requestPcbOrder(this.page);
     }
 
@@ -95,6 +95,18 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
         view.clearSelection();
 
         fireEvent(new PcbOrderEvents.Create());
+    }
+
+    @Event
+    public void onChangeRow(PcbOrderEvents.Change event) {
+        service.getPcbOrder(event.id, new FluentCallback<PcbOrder>()
+                .withSuccess(pcbOrder -> view.updateRow(pcbOrder))
+        );
+    }
+
+    @Event
+    public void onChangePcbOrderState(PcbOrderEvents.ChangeState event) {
+        reloadTable(page);
     }
 
     @Override
@@ -126,10 +138,10 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
         }
 
         switch (state) {
-            case SENT:
+            case RECEIVED:
                 return PcbOrderGroupType.COMPLETED;
             case ACCEPTED:
-            case RECEIVED:
+            case SENT:
                 return PcbOrderGroupType.ACTIVE;
             default:
                 return null;
@@ -161,6 +173,7 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
     @Override
     public void onPageSelected(int page) {
         this.page = page;
+        animation.closeDetails();
         requestPcbOrder(this.page);
     }
 
@@ -219,7 +232,6 @@ public abstract class PcbOrderTableActivity implements AbstractPcbOrderTableActi
     }
 
     private void reloadTable(int page) {
-        view.clearRecords();
         requestPcbOrder(page);
     }
 

@@ -17,11 +17,13 @@ public class PromptnessColumn extends ClickColumn<PcbOrder> {
 
     @Override
     protected void fillColumnHeader(Element columnHeader) {
+        columnHeader.addClassName("promptness");
         columnHeader.setInnerText(lang.pcbOrderPromptness());
     }
 
     @Override
     public void fillColumnValue(Element cell, PcbOrder pcbOrder) {
+        cell.addClassName("promptness");
         if (pcbOrder == null) {
             return;
         }

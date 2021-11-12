@@ -3960,5 +3960,45 @@ public interface Lang extends Messages, ContactItemLang {
 
     String pcbOrderGroupNotDefined();
 
+    String pcbOrderCreated();
+
+    String pcbOrderCardType();
+
+    String pcbOrderCardTypePlaceholder();
+
+    String pcbOrderComment();
+
+    String pcbOrderAmountValidationError();
+
+    String pcbOrderCardTypeValidationError();
+
+    String pcbOrderSelectState();
+
+    String pcbOrderSelectPromptness();
+
+    String pcbOrderSelectOrderType();
+
+    String pcbOrderSelectorStencilType();
+
+    String pcbOrderSelectCompany();
+
+    String pcbOrderStateValidationError();
+
+    String pcbOrderPromptnessValidationError();
+
+    String pcbOrderOrderTypeValidationError();
+
+    String pcbOrderStencilTypeValidationError();
+
+    String pcbOrderContractorValidationError();
+
+    String pcbOrderEditCommonInfo();
+
+    String pcbOrderBackToPcbOrders();
+
+    String pcbOrderSaved();
+
+    String pcbOrderModalAmountReceived();
+
     String jiraWorkflowWarning();
 }

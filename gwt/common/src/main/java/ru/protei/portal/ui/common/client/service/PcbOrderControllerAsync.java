@@ -9,5 +9,15 @@ public interface PcbOrderControllerAsync {
 
     void getPcbOrderList(PcbOrderQuery query, AsyncCallback<SearchResult<PcbOrder>> async);
 
+    void getPcbOrder(Long pcbOrderId, AsyncCallback<PcbOrder> async);
+
+    void savePcbOrder(PcbOrder pcbOrder, AsyncCallback<PcbOrder> async);
+
+    void updateCommonInfo(PcbOrder pcbOrder, AsyncCallback<PcbOrder> async);
+
+    void updateMeta(PcbOrder pcbOrder, AsyncCallback<PcbOrder> async);
+
+    void updateMetaWithCreatingChildPbcOrder(PcbOrder pcbOrder, Integer receivedAmount, AsyncCallback<PcbOrder> async);
+
     void removePcbOrder(PcbOrder pcbOrder, AsyncCallback<PcbOrder> async);
 }

@@ -18,11 +18,13 @@ public class NameColumn extends ClickColumn<PcbOrder> {
 
     @Override
     protected void fillColumnHeader(Element columnHeader) {
+        columnHeader.addClassName("name");
         columnHeader.setInnerText(lang.pcbOrderName());
     }
 
     @Override
     public void fillColumnValue(Element cell, PcbOrder pcbOrder) {
+        cell.addClassName("name");
         if (pcbOrder == null) {
             return;
         }

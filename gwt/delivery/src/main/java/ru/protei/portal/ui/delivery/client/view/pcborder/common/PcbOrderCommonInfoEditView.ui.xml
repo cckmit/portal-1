@@ -1,0 +1,48 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:textarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
+             xmlns:cardType="urn:import:ru.protei.portal.ui.common.client.widget.selector.card.type"
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel>
+        <form>
+            <div class="row">
+                <cardType:CardTypeOptionSelector ui:field="cardType" styleName="col-md-6" mandatory="true"
+                                            header="{lang.pcbOrderCardType}" defaultValue="{lang.pcbOrderCardTypePlaceholder}"/>
+                <div class="col-md-6">
+                    <div class="form-group form-group-default required">
+                        <label class="fade"><ui:text from="{lang.pcbOrderAmount}"/></label>
+                        <g:IntegerBox ui:field="amount" styleName="form-control"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group form-group-default">
+                        <label class="fade"><ui:text from="{lang.pcbOrderModification}"/></label>
+                        <g:TextBox ui:field="modification" styleName="form-control"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group form-group-default">
+                        <label class="fade">
+                            <ui:text from="{lang.pcbOrderComment}"/>
+                        </label>
+                        <textarea:AutoResizeTextArea ui:field="comment" minRows="1"
+                                                             styleName="form-control"/>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <g:HTMLPanel ui:field="buttonsContainer" visible="false">
+            <g:Button ui:field="saveButton" styleName="btn btn-xs btn-complete" text="{lang.buttonApply}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-xs btn-default" text="{lang.buttonCancel}"/>
+        </g:HTMLPanel>
+
+    </g:HTMLPanel>
+</ui:UiBinder>

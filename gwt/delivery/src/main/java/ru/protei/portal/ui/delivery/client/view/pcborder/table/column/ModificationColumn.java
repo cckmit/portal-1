@@ -15,11 +15,13 @@ public class ModificationColumn extends ClickColumn<PcbOrder> {
 
     @Override
     protected void fillColumnHeader(Element columnHeader) {
+        columnHeader.addClassName("modification");
         columnHeader.setInnerText(lang.pcbOrderModification());
     }
 
     @Override
     public void fillColumnValue(Element cell, PcbOrder pcbOrder) {
+        cell.addClassName("modification");
         if (pcbOrder == null) {
             return;
         }

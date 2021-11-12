@@ -17,11 +17,13 @@ public class StateColumn extends ClickColumn<PcbOrder> {
 
     @Override
     protected void fillColumnHeader(Element columnHeader) {
+        columnHeader.addClassName("state");
         columnHeader.setInnerText(lang.pcbOrderState());
     }
 
     @Override
     public void fillColumnValue(Element cell, PcbOrder pcbOrder) {
+        cell.addClassName("state");
         if (pcbOrder == null) {
             return;
         }

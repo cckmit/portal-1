@@ -35,6 +35,36 @@ public class PcbOrderControllerImpl implements PcbOrderController {
     }
 
     @Override
+    public PcbOrder getPcbOrder(Long pcbOrderId) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(pcbOrderService.getPcbOrder(token, pcbOrderId));
+    }
+
+    @Override
+    public PcbOrder savePcbOrder(PcbOrder pcbOrder) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(pcbOrderService.createPcbOrder(token, pcbOrder));
+    }
+
+    @Override
+    public PcbOrder updateCommonInfo(PcbOrder pcbOrder) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(pcbOrderService.updateCommonInfo(token, pcbOrder));
+    }
+
+    @Override
+    public PcbOrder updateMeta(PcbOrder pcbOrder) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(pcbOrderService.updateMeta(token, pcbOrder));
+    }
+
+    @Override
+    public PcbOrder updateMetaWithCreatingChildPbcOrder(PcbOrder pcbOrder, Integer receivedAmount) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(pcbOrderService.updateMetaWithCreatingChildPbcOrder(token, pcbOrder, receivedAmount));
+    }
+
+    @Override
     public PcbOrder removePcbOrder(PcbOrder pcbOrder) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         return checkResultAndGetData(pcbOrderService.removePcbOrder(token, pcbOrder));
