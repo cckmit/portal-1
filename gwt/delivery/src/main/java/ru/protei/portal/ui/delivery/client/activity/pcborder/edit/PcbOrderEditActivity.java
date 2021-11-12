@@ -109,6 +109,7 @@ public abstract class PcbOrderEditActivity implements Activity, AbstractPcbOrder
         }
         if (En_PcbOrderState.RECEIVED.equals(metaView.state().getValue())) {
             modalView.receivedAmount().setValue(null);
+            modalView.setReceivedAmountValid(true);
             dialogDetailsView.showPopup();
         } else {
             pcbOrder.setState(metaView.state().getValue());
@@ -235,6 +236,7 @@ public abstract class PcbOrderEditActivity implements Activity, AbstractPcbOrder
 
         if (modalView.receivedAmount().getValue() >= pcbOrder.getAmount()) {
             pcbOrder.setState(metaView.state().getValue());
+            pcbOrder.setAmount(modalView.receivedAmount().getValue());
             onMetaStateChanged();
         } else {
             onPartiallyCompletedPcbOrder(modalView.receivedAmount().getValue());

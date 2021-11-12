@@ -107,8 +107,8 @@ public class PcbOrderServiceImpl implements PcbOrderService {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
-        if (!pcbOrderDAO.partialMerge(meta, "state", "promptness", "type", "stencil_type", "company_id",
-                "order_date", "ready_date", "receipt_date")) {
+        if (!pcbOrderDAO.partialMerge(meta, "amount","state", "promptness", "type",
+                "stencil_type", "company_id", "order_date", "ready_date", "receipt_date")) {
             log.warn("updateMeta(): pcb order not updated. pbcOrder={}", meta.getId());
             return error(En_ResultStatus.NOT_UPDATED);
         }
