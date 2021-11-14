@@ -12,7 +12,7 @@
                                                     mandatory="false" fixedStrategy="false"/>
             </div>
             <div class="col-md-8 p-l-5">
-                <person:PersonMultiSelector ui:field="members"/>
+                <person:PersonMultiSelector ui:field="members" fixedStrategy="false"/>
             </div>
         </div>
     </g:HTMLPanel>
