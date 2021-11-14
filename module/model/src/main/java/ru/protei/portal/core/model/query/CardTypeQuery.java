@@ -5,10 +5,13 @@ import ru.protei.portal.core.model.dict.En_SortField;
 
 public class CardTypeQuery extends BaseQuery {
 
-    public CardTypeQuery() {
+    public CardTypeQuery() {}
+
+    public CardTypeQuery(String searchString, En_SortField sortField, En_SortDir sortDir) {
+        super(searchString, sortField, sortDir);
     }
 
-    public CardTypeQuery(String searchString, En_SortField sortField, En_SortDir sortDir, Boolean isDisplay ) {
+    public CardTypeQuery(String searchString, En_SortField sortField, En_SortDir sortDir, Boolean isDisplay) {
         super(searchString, sortField, sortDir);
         this.isDisplay = isDisplay;
     }
@@ -17,5 +20,5 @@ public class CardTypeQuery extends BaseQuery {
         return isDisplay;
     }
 
-    private Boolean isDisplay;
+    private Boolean isDisplay = true;
 }

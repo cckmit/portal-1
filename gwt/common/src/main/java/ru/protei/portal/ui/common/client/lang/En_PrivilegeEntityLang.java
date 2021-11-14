@@ -67,9 +67,9 @@ public class En_PrivilegeEntityLang {
             case YT:
                 return lang.reportYtWork();
             case CARD:
-                return lang.card();
+                return lang.cards();
             case CARD_BATCH:
-                return lang.cardBatch();
+                return lang.cardBatches();
             case PCB_ORDER:
                 return lang.pcbOrder();
             default:

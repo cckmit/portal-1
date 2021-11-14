@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Card;
+import ru.protei.portal.core.model.ent.CardCreateRequest;
 import ru.protei.portal.core.model.ent.CardType;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -23,6 +24,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.activity.card.meta.AbstractCardCreateMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.card.meta.CardCommonMeta;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.SUCCESS;
@@ -63,8 +65,7 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
             showValidationError(error);
             return;
         }
-        Card card = fillDto();
-        save(card);
+        save(fillCardCreateRequest());
     }
 
     @Override
@@ -96,6 +97,11 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
         isCanPresetArticle = false;
     }
 
+    @Override
+    public void onAmountChanged() {
+        validateAmount();
+    }
+
     private void setSerialNumber() {
         Long typeId = view.type().getValue().getId();
         Long cardBatchId = view.cardBatch().getValue().getId();
@@ -123,22 +129,22 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
         fillStateSelector(CrmConstants.State.TESTING);
         view.manager().setValue(null);
         view.note().setValue(null);
+        view.amount().setValue(1);
     }
 
-    private Card fillDto() {
-        Card card = new Card();
-        card.setTypeId(view.type().getValue().getId());
-        card.setCardType(view.type().getValue());
-        card.setSerialNumber(view.serialNumber().getValue());
-        card.setCardBatchId(view.cardBatch().getValue().getId());
-        card.setArticle(view.article().getValue());
-        card.setTestDate(view.testDate().getValue());
-        card.setComment(view.comment().getValue());
-        card.setStateId(view.state().getValue().getId());
-        card.setState(view.state().getValue());
-        card.setManager(view.manager().getValue());
-        card.setNote(view.note().getValue());
-        return card;
+    private CardCreateRequest fillCardCreateRequest() {
+        CardCreateRequest createRequest = new CardCreateRequest();
+        createRequest.setTypeId(view.type().getValue().getId());
+        createRequest.setSerialNumber(view.serialNumber().getValue());
+        createRequest.setCardBatchId(view.cardBatch().getValue().getId());
+        createRequest.setArticle(view.article().getValue());
+        createRequest.setTestDate(view.testDate().getValue());
+        createRequest.setStateId(view.state().getValue().getId());
+        createRequest.setManager(view.manager().getValue());
+        createRequest.setComment(view.comment().getValue());
+        createRequest.setNote(view.note().getValue());
+        createRequest.setAmount(view.amount().getValue());
+        return createRequest;
     }
 
     private void showValidationError(String error) {
@@ -156,20 +162,23 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
         if (!isTestDateFieldValid()) {
             return lang.cardValidationErrorTestDate();
         }
+        if (!validateAmount()) {
+            return lang.cardAmountValidationError();
+        }
 
         return null;
     }
 
-    private void save(Card card) {
+    private void save(CardCreateRequest cardCreateRequest) {
         view.saveEnabled().setEnabled(false);
-        cardController.createCard(card, new FluentCallback<Card>()
+        cardController.createCards(cardCreateRequest, new FluentCallback<List<Card>>()
             .withError(throwable -> {
                 view.saveEnabled().setEnabled(true);
                 defaultErrorHandler.accept(throwable);
             })
-            .withSuccess(id -> {
+            .withSuccess(cards -> {
                 view.saveEnabled().setEnabled(true);
-                fireEvent(new NotifyEvents.Show(lang.cardCreated(), SUCCESS));
+                fireEvent(new NotifyEvents.Show(lang.cardsCreated(), SUCCESS));
                 fireEvent(new Back());
             }));
     }
@@ -187,6 +196,13 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
         caseStateController.getCaseStateWithoutCompaniesOmitPrivileges(id, new FluentCallback<CaseState>()
                 .withError(defaultErrorHandler)
                 .withSuccess(success));
+    }
+
+    private boolean validateAmount() {
+        Integer value = view.amount().getValue();
+        boolean isValid = value != null && value > 0;
+        view.setAmountValid(isValid);
+        return isValid;
     }
 
     @Inject

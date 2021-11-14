@@ -16,10 +16,6 @@ public interface AbstractCardBatchEditView extends IsWidget {
 
     HTMLPanel getMetaContainer();
 
-    void setTypeRO(String value);
-
-    void setArticleRO(String value);
-
     void setAmountRO(String value);
 
     void setParamsRO(String value);

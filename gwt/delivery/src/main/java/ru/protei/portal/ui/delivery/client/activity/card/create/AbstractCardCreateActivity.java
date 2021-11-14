@@ -8,4 +8,6 @@ public interface AbstractCardCreateActivity {
     void onSaveClicked();
 
     void onCancelClicked();
+
+    void onAmountChanged();
 }

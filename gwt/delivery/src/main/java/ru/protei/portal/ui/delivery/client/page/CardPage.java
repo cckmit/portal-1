@@ -22,7 +22,7 @@ public abstract class CardPage
     @PostConstruct
     public void onInit() {
         CATEGORY = lang.newStoreAndDelivery();
-        TAB = lang.card();
+        TAB = lang.cards();
     }
 
     @Event
@@ -66,4 +66,3 @@ public abstract class CardPage
     private String TAB;
     private CardEvents.Show show = new CardEvents.Show(false);
 }
-

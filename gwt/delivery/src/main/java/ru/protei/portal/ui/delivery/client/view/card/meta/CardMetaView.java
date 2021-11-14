@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.widget.selector.card.state.CardStateFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.card.type.CardTypeFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.cardbatch.CardBatchFormSelector;
@@ -130,7 +131,7 @@ public class CardMetaView extends Composite implements AbstractCardMetaView {
     }
 
     @UiHandler("article")
-    public void onArticleChanged(ValueChangeEvent<String> event) {
+    public void onArticleChanged(InputEvent event) {
         commonActivity.onArticleChanged();
     }
 

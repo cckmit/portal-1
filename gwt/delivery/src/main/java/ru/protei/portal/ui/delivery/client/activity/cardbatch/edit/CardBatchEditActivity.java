@@ -58,11 +58,12 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         view.setActivity(this);
 
         metaView.setActivity(this);
+        metaView.typeEnabled().setEnabled(false);
         view.getMetaContainer().add(metaView);
 
         commonInfoEditView.setActivity(this);
         commonInfoEditView.hidePrevCardBatchInfo();
-        commonInfoEditView.typeEnabled().setEnabled(false);
+        commonInfoEditView.hideNumberContainer();
         commonInfoEditView.buttonsContainerVisibility().setVisible(true);
         view.getCommonInfoEditContainer().add(commonInfoEditView);
     }
@@ -139,6 +140,18 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         onMetaChanged();
     }
 
+    @Override
+    public void onArticleChanged() {
+        if (Objects.equals(metaView.article().getValue(), cardBatch.getArticle())) {
+            return;
+        }
+        if (!metaView.articleIsValid()) {
+            return;
+        }
+        cardBatch.setArticle(metaView.article().getValue());
+        onMetaChanged();
+    }
+
     private void attachToContainer(HasWidgets container) {
         container.clear();
         container.add(view.asWidget());
@@ -208,9 +221,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
 
     @Override
     public void onCommonInfoEditClicked() {
-        commonInfoEditView.type().setValue(new EntityOption(cardBatch.getTypeName(), cardBatch.getTypeId()));
         commonInfoEditView.number().setValue(cardBatch.getNumber());
-        commonInfoEditView.article().setValue(cardBatch.getArticle());
         commonInfoEditView.amount().setValue(cardBatch.getAmount());
         commonInfoEditView.params().setValue(cardBatch.getParams());
         commonInfoEditView.contractors().setValue(cardBatch.getContractors());
@@ -248,9 +259,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
         view.commonInfoContainerVisibility().setVisible(true);
         view.setCreatedBy(lang.createBy(cardBatch.getCreator() == null ? "" : transliteration(cardBatch.getCreator().getDisplayShortName()),
                 DateFormatter.formatDateTime(cardBatch.getCreated())));
-        view.setNumberRO(lang.cardBatchNumber() + ": " + cardBatch.getNumber());
-        view.setTypeRO(cardBatch.getTypeName());
-        view.setArticleRO(cardBatch.getArticle());
+        view.setNumberRO(cardBatch.getNumber());
         view.setAmountRO(String.valueOf(cardBatch.getAmount()));
         view.setParamsRO(cardBatch.getParams());
 
@@ -273,6 +282,8 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
 
         metaView.state().setValue(cardBatch.getState());
         fillPrioritySelector(cardBatch.getImportance());
+        metaView.type().setValue(new EntityOption(cardBatch.getTypeName(), cardBatch.getTypeId()));
+        metaView.article().setValue(cardBatch.getArticle());
         metaView.deadline().setValue(new Date(cardBatch.getDeadline()));
 
         view.getMultiTabWidget().selectTabs(getCommentAndHistorySelectedTabs(localStorageService));
@@ -283,9 +294,7 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
     }
 
     private CardBatch fillCommonInfo() {
-        cardBatch.setTypeId(commonInfoEditView.type().getValue().getId());
         cardBatch.setNumber(commonInfoEditView.number().getValue());
-        cardBatch.setArticle(commonInfoEditView.article().getValue());
         cardBatch.setAmount(commonInfoEditView.amount().getValue());
         cardBatch.setParams(commonInfoEditView.params().getValue());
         cardBatch.setContractors(commonInfoEditView.contractors().getValue());
@@ -307,20 +316,20 @@ public abstract class CardBatchEditActivity implements Activity, AbstractCardBat
             return lang.cardBatchDeadlineValidationError();
         }
 
+        if (null == metaView.type().getValue()) {
+            return lang.cardBatchTypeValidationError();
+        }
+
+        if (!metaView.articleIsValid()) {
+            return lang.cardBatchArticleValidationError();
+        }
+
         return null;
     }
 
     private String getCommonValidationError() {
-        if (null == commonInfoEditView.type().getValue()) {
-            return lang.cardBatchTypeValidationError();
-        }
-
         if (isEmpty(commonInfoEditView.number().getValue()) || !commonInfoEditView.isNumberValid()) {
             return lang.cardBatchNumberValidationError();
-        }
-
-        if (isEmpty(commonInfoEditView.article().getValue()) || !commonInfoEditView.isArticleValid()) {
-            return lang.cardBatchArticleValidationError();
         }
 
         if (!validateAmount()) {

@@ -8,7 +8,8 @@
     <g:HTMLPanel ui:field="root" styleName="card-batch-contractors-selector-item">
         <div class="row">
             <div class="col-md-4 p-r-5">
-                <personrole:ProjectRoleFormSelector ui:field="role" header="{lang.projectTeamRole}" mandatory="false"/>
+                <personrole:ProjectRoleFormSelector ui:field="role" header="{lang.projectTeamRole}"
+                                                    mandatory="false"/>
             </div>
             <div class="col-md-8 p-l-5">
                 <person:PersonMultiSelector ui:field="members"/>

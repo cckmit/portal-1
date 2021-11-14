@@ -2,27 +2,25 @@ package ru.protei.portal.ui.delivery.client.view.cardbatch.common;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
-import ru.protei.portal.ui.common.client.widget.selector.card.type.CardTypeOptionSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCardBatchCommonInfoEditView;
 import ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.ContractorsSelector;
 import java.util.Set;
 
-import static ru.protei.portal.core.model.util.CrmConstants.Masks.CARD_BATCH_ARTICLE_PATTERN;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
 public class CardBatchCommonInfoEditView extends Composite implements AbstractCardBatchCommonInfoEditView {
@@ -30,18 +28,7 @@ public class CardBatchCommonInfoEditView extends Composite implements AbstractCa
     @Inject
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        article.setRegexp(CARD_BATCH_ARTICLE_PATTERN);
         ensureDebugIds();
-    }
-
-    @Override
-    public HasValue<EntityOption> type() {
-        return type;
-    }
-
-    @Override
-    public HasEnabled typeEnabled() {
-        return type;
     }
 
     @Override
@@ -52,11 +39,6 @@ public class CardBatchCommonInfoEditView extends Composite implements AbstractCa
     @Override
     public HasValue<String> number() {
         return number;
-    }
-
-    @Override
-    public HasValue<String> article() {
-        return article;
     }
 
     @Override
@@ -85,11 +67,6 @@ public class CardBatchCommonInfoEditView extends Composite implements AbstractCa
     }
 
     @Override
-    public boolean isArticleValid() {
-        return article.isValid();
-    }
-
-    @Override
     public void hidePrevCardBatchInfo() {
         prevCardBatchInfo.setText(null);
         prevCardBatchInfo.setVisible(false);
@@ -102,13 +79,14 @@ public class CardBatchCommonInfoEditView extends Composite implements AbstractCa
     }
 
     @Override
-    public void setActivity(AbstractCardBatchCommonInfoEditActivity activity) {
-        this.activity = activity;
+    public void hideNumberContainer() {
+        numberContainer.addClassName(CrmConstants.Style.HIDE);
+        amountContainer.replaceClassName("col-md-6", "col-md-12 p-l-0");
     }
 
-    @UiHandler("type")
-    public void onTypeChanged(ValueChangeEvent<EntityOption> event) {
-        activity.onCardTypeChanged(event.getValue().getId());
+    @Override
+    public void setActivity(AbstractCardBatchCommonInfoEditActivity activity) {
+        this.activity = activity;
     }
 
     @UiHandler("amount")
@@ -135,9 +113,7 @@ public class CardBatchCommonInfoEditView extends Composite implements AbstractCa
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-        type.ensureDebugId( DebugIds.CARD_BATCH.TYPE );
         number.ensureDebugId( DebugIds.CARD_BATCH.NUMBER_INPUT);
-        article.ensureDebugId( DebugIds.CARD_BATCH.ARTICLE );
         amount.ensureDebugId( DebugIds.CARD_BATCH.AMOUNT );
         params.ensureDebugId( DebugIds.CARD_BATCH.PARAMS );
         contractors.ensureDebugId( DebugIds.CARD_BATCH.CONTRACTOR_SELECTOR );
@@ -150,13 +126,8 @@ public class CardBatchCommonInfoEditView extends Composite implements AbstractCa
     @UiField
     Lang lang;
 
-    @Inject
-    @UiField(provided = true)
-    CardTypeOptionSelector type;
     @UiField
     ValidableTextBox number;
-    @UiField
-    ValidableTextBox article;
     @UiField
     IntegerBox amount;
     @UiField
@@ -172,6 +143,10 @@ public class CardBatchCommonInfoEditView extends Composite implements AbstractCa
     Button saveButton;
     @UiField
     Button cancelButton;
+    @UiField
+    DivElement numberContainer;
+    @UiField
+    DivElement amountContainer;
 
     interface CommonUiBinder extends UiBinder<HTMLPanel, CardBatchCommonInfoEditView> {}
     private static CommonUiBinder ourUiBinder = GWT.create( CommonUiBinder.class );
