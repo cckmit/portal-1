@@ -31,10 +31,7 @@ import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.service.CaseCommentService;
-import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.EmployeeService;
-import ru.protei.portal.core.service.ReportService;
+import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.events.CaseSubscriptionService;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TemplateService;
@@ -442,11 +439,18 @@ public class MailNotificationProcessor {
             return;
         }
 
+        List<CaseComment> caseComments = Collections.emptyList();
+        if (event.hasComments()){
+            List<ReplaceLoginWithUsernameInfo<CaseComment>> commentReplacementInfoList = caseCommentService.replaceLoginWithUsername(event.getAllComments()).getData();
+            notifiers.addAll(collectCommentNotifiers(event, commentReplacementInfoList, true));
+            caseComments = selectPublicComments(commentReplacementInfoList.stream().map(ReplaceLoginWithUsernameInfo::getObject).collect(Collectors.toList()));
+        }
+
         List<String> recipients = getNotifiersAddresses(notifiers);
 
         String urlTemplate = getEmployeeRegistrationUrl();
 
-        PreparedTemplate bodyTemplate = templateService.getEmployeeRegistrationEmailNotificationBody(event, urlTemplate, recipients);
+        PreparedTemplate bodyTemplate = templateService.getEmployeeRegistrationEmailNotificationBody(event, urlTemplate, caseComments, recipients);
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for employeeRegistrationId={}", employeeRegistration.getId());
             return;
@@ -459,13 +463,6 @@ public class MailNotificationProcessor {
         }
 
         sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
-    }
-
-    @EventListener
-    public void onEmployeeRegistrationCommentEvent(EmployeeRegistrationCommentEvent event) {
-        log.info( "---------->>>> onEmployeeRegistrationCommentEvent(): {}", event );
-
-        //TODO implement
     }
 
     @EventListener

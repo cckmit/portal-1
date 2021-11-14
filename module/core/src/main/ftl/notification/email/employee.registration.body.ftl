@@ -278,6 +278,29 @@
         </tr>
         </tbody>
     </table>
+
+    <#--COMMENTS-->
+    <div id="test-case-comments" style="font-size:14px;margin-top:15px">
+        <#list caseComment?reverse as caseComment>
+            <div style="border-radius:5px;padding:12px;margin-bottom:5px;background:<#if caseComment.removed>#f7dede<#else><#if caseComment.added>#dff7e2<#else>#f0f0f0</#if></#if>;">
+                <span style="color:#666666;line-height: 17px;margin-right:5px">${caseComment.created?datetime}</span>
+                <span style="font-size:14px;margin-bottom:5px;color:#0062ff;line-height: 17px;">
+                            <#if caseComment.author??>
+                                ${TransliterationUtils.transliterate(caseComment.author.displayName, lang)!''}
+                            </#if>
+                </span>
+                <#if caseComment.isUpdated>
+                    <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
+                </#if>
+                <#if caseComment.oldText??>
+                    <div class="markdown" style="margin-top:4px;line-height:1.5em;"><@diffHTML old="${caseComment.oldText}" new="${caseComment.text}"/></div>
+                <#else>
+                    <div class="markdown" style="margin-top:4px;line-height:1.5em;">${caseComment.text}</div>
+                </#if>
+            </div>
+        </#list>
+    </div>
+
 </div>
 <div style="padding: 4px 0 8px;">
     <div style="color: #777777; font-size: 11px; font-family:sans-serif; margin: 20px 0; padding: 8px 0; border-top: 1px solid #D4D5D6;">

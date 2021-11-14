@@ -273,7 +273,11 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getEmployeeRegistrationEmailNotificationBody(AssembledEmployeeRegistrationEvent event, String urlTemplate, Collection<String> recipients) {
+    public PreparedTemplate getEmployeeRegistrationEmailNotificationBody(
+            AssembledEmployeeRegistrationEvent event,
+            String urlTemplate,
+            List<CaseComment> comments,
+            Collection<String> recipients) {
         Map<String, Object> templateModel = new HashMap<>();
         EmployeeRegistration newState = event.getNewState();
         EmployeeRegistration oldState = event.getOldState();
@@ -301,6 +305,11 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("comment", HtmlUtils.htmlEscape(newState.getComment()));
         templateModel.put("recipients", recipients);
         templateModel.put("curatorsDiff", event.getCuratorsDiff());
+
+        templateModel.put( "caseComment",
+                getCommentsAttachesModelKeys(comments, event.getAddedCaseComments(), event.getChangedCaseComments(),
+                        event.getRemovedCaseComments(), Collections.emptyMap(), Collections.emptyList(), En_TextMarkup.MARKDOWN)
+        );
 
         PreparedTemplate template = new PreparedTemplate("notification/email/employee.registration.body.%s.ftl");
         template.setModel(templateModel);

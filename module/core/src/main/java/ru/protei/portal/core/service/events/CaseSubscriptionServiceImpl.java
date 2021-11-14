@@ -64,31 +64,44 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     PersonDAO personDAO;
 
     private Set<NotificationEntry> employeeRegistrationEventSubscribers = new HashSet<>();
+    private Set<NotificationEntry> employeeRegistrationEventWithCommentsSubscribers = new HashSet<>();
 
     @PostConstruct
     private void parseEmployeeRegistrationRecipients() {
         String[] recipientEmails = portalConfig.data().getMailNotificationConfig().getCrmEmployeeRegistrationNotificationsRecipients();
+        String[] commentRecipientEmails = portalConfig.data().getMailNotificationConfig().getCrmEmployeeRegistrationCommentNotificationsRecipients();
 
-        for (String recipientEmail : recipientEmails) {
-            NotificationEntry notificationEntry = new NotificationEntry(recipientEmail, En_ContactItemType.EMAIL, "ru");
-            employeeRegistrationEventSubscribers.add(notificationEntry);
-        }
+        employeeRegistrationEventSubscribers.addAll(Arrays.stream(recipientEmails)
+                .map(email -> new NotificationEntry(email, En_ContactItemType.EMAIL, "ru"))
+                .collect(Collectors.toList()));
+
+        employeeRegistrationEventWithCommentsSubscribers.addAll(Arrays.stream(commentRecipientEmails)
+                .map(email -> new NotificationEntry(email, En_ContactItemType.EMAIL, "ru"))
+                .collect(Collectors.toList()));
     }
 
     @Override
     public Set<NotificationEntry> subscribers(AssembledEmployeeRegistrationEvent event) {
-        HashSet<NotificationEntry> notifiers = new HashSet<>(employeeRegistrationEventSubscribers);
-        Optional.ofNullable(event.getNewState())
-                .map(EmployeeRegistration::getCreatorId)
-                .map(Person::new)
-                .map(person -> {
-                    jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
-                    return person;
-                })
-                .map(Person::getContactInfo)
-                .map(contactInfo -> new PlainContactInfoFacade(contactInfo).getEmail())
-                .map(email -> new NotificationEntry(email, En_ContactItemType.EMAIL, "ru"))
-                .ifPresent(notifiers::add);
+
+        Set<NotificationEntry> notifiers;
+        if (event.hasComments()){
+            notifiers = new HashSet<>(employeeRegistrationEventWithCommentsSubscribers);
+            notifiers.addAll(subscribers(Arrays.asList(event.getNewState().getHeadOfDepartmentId(), event.getInitiatorId())));
+        } else {
+            notifiers = new HashSet<>(employeeRegistrationEventSubscribers);
+            Optional.ofNullable(event.getNewState())
+                    .map(EmployeeRegistration::getCreatorId)
+                    .map(Person::new)
+                    .map(person -> {
+                        jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+                        return person;
+                    })
+                    .map(Person::getContactInfo)
+                    .map(contactInfo -> new PlainContactInfoFacade(contactInfo).getEmail())
+                    .map(email -> new NotificationEntry(email, En_ContactItemType.EMAIL, "ru"))
+                    .filter(entry -> StringUtils.isNotEmpty(entry.getAddress()))
+                    .ifPresent(notifiers::add);
+        }
         log.info( "subscribers: EmployeeRegistrationEvent: {}", join( notifiers, NotificationEntry::getAddress, ",") );
         return notifiers;
     }
