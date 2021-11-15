@@ -284,6 +284,7 @@ public class TemplateServiceImpl implements TemplateService {
 
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("TransliterationUtils", new TransliterationUtils());
+        templateModel.put("TextUtils", new TextUtils());
 
         templateModel.put("linkToEmployeeRegistration", String.format(urlTemplate, newState.getId()));
         templateModel.put("employeeFullName", HtmlUtils.htmlEscape(newState.getEmployeeFullName()));
