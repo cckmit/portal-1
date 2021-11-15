@@ -18,12 +18,16 @@ import ru.protei.portal.core.model.query.CardQuery;
 import ru.protei.portal.core.model.query.CardTypeQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.winter.core.utils.services.lock.LockService;
+import ru.protei.winter.core.utils.services.lock.LockStrategy;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.StringUtils.isNotBlank;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_CARDS_NOT_UPDATED;
 
 public class CardServiceImpl implements CardService {
@@ -35,6 +39,9 @@ public class CardServiceImpl implements CardService {
 
     @Autowired
     CardTypeDAO cardTypeDAO;
+
+    @Autowired
+    CardBatchDAO cardBatchDAO;
 
     @Autowired
     CaseTypeDAO caseTypeDAO;
@@ -50,6 +57,9 @@ public class CardServiceImpl implements CardService {
 
     @Autowired
     TransactionTemplate transactionTemplate;
+
+    @Autowired
+    private LockService lockService;
 
     @Override
     public Result<Card> getCard(AuthToken token, Long id) {
@@ -77,7 +87,6 @@ public class CardServiceImpl implements CardService {
         }
 
         List<EntityOption> options = result.stream()
-                .filter(cardType -> query.getDisplay() == null || Objects.equals(cardType.isDisplay(), query.getDisplay()))
                 .map(ct -> new EntityOption(ct.getName(), ct.getId()))
                 .collect(Collectors.toList());
 
@@ -85,8 +94,8 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public Result<List<CardType>> getCardTypeList(AuthToken token) {
-        List<CardType> result = cardTypeDAO.getAll();
+    public Result<List<CardType>> getCardTypeList(AuthToken token, CardTypeQuery query) {
+        List<CardType> result = cardTypeDAO.listByQuery(query);
 
         if (result == null) {
             return error(En_ResultStatus.GET_DATA_ERROR);
@@ -125,6 +134,59 @@ public class CardServiceImpl implements CardService {
                 .ifError(ignore -> log.error("Manager message for the card {} not saved!", card));
 
         return getCard(token, cardId);
+    }
+
+    @Override
+    @Transactional
+    public Result<List<Card>> createCards(AuthToken token, CardCreateRequest createRequest) {
+        if (createRequest == null || createRequest.getAmount() < 1) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CardType cardType = cardTypeDAO.get(createRequest.getTypeId());
+        if (cardType == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        CardBatch cardBatch = cardBatchDAO.get(createRequest.getCardBatchId());
+        if (cardBatch == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        List<Card> createdCards = new ArrayList<>();
+        return lockService.doWithLock(CardBatch.class, createRequest.getCardBatchId(), LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
+
+            Result<Long> lastNumberResult = getLastNumber(token, createRequest.getTypeId(), createRequest.getCardBatchId());
+            if (lastNumberResult.isError()) {
+                return error(lastNumberResult.getStatus());
+            }
+
+            Long lastNumber = lastNumberResult.getData();
+            String nextSerialNumber = cardType.getCode() + "." +
+                    cardBatch.getNumber() + "." +
+                    String.format("%03d", lastNumber + 1);
+
+            if (isNotBlank(createRequest.getSerialNumber()) &&
+                    !createRequest.getSerialNumber().equals(nextSerialNumber)) {
+                return error(En_ResultStatus.NOT_CREATED);
+            }
+
+            for (int i=1; i<=createRequest.getAmount(); i++) {
+
+                Card card = Card.createByRequest(createRequest);
+                card.setSerialNumber(cardType.getCode() + "." +
+                        cardBatch.getNumber() + "." +
+                        String.format("%03d", lastNumber + i));
+
+                Result<Card> createCardResult = createCard(token, card);
+                if (createCardResult.isError()) {
+                    throw new RollbackTransactionException(createCardResult.getStatus());
+                }
+
+                createdCards.add(createCardResult.getData());;
+            }
+            return ok(createdCards);
+        });
     }
 
     @Override

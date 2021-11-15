@@ -10,11 +10,23 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-lg-8 order-last order-lg-first">
-                    <div class="form-group form-group-default">
-                        <label class="fade"><ui:text from="{lang.cardSerialNumber}"/></label>
-                        <g:TextBox ui:field="serialNumber" styleName="form-control" enabled="false"/>
-                    </div>
-                    <infoComment:CardNoteCommentEditView ui:field="noteComment"/>
+                    <form>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group form-group-default required">
+                                    <label class="fade"><ui:text from="{lang.cardSerialNumber}"/></label>
+                                    <g:TextBox ui:field="serialNumber" styleName="form-control" enabled="false"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group form-group-default required">
+                                    <label class="fade"><ui:text from="{lang.cardAmount}"/></label>
+                                    <g:IntegerBox ui:field="amount" styleName="form-control"/>
+                                </div>
+                            </div>
+                        </div>
+                        <infoComment:CardNoteCommentEditView ui:field="noteComment"/>
+                    </form>
                 </div>
                 <div class="col-lg-4 order-first order-lg-last">
                     <meta:CardMetaView ui:field="meta"/>

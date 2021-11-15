@@ -36,11 +36,6 @@ public abstract class DeliveryPage
     }
 
     @Event
-    public void onShowDetail( DeliveryEvents.Create event ) {
-        fireSelectTab();
-    }
-
-    @Event
     public void onShowPreview(DeliveryEvents.ShowFullScreen event) {
         fireSelectTab();
     }
@@ -73,4 +68,3 @@ public abstract class DeliveryPage
     private String TAB;
     private DeliveryEvents.Show show = new DeliveryEvents.Show(false);
 }
-

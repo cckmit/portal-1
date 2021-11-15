@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CardBatchEvents;
@@ -30,7 +31,6 @@ import ru.protei.portal.ui.delivery.client.activity.cardbatch.common.AbstractCar
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.cardbatch.meta.AbstractCardBatchMetaView;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.function.Consumer;
 
@@ -51,7 +51,6 @@ public abstract class CardBatchCreateActivity implements Activity,
         view.getMetaContainer().add(metaView);
 
         commonInfoEditView.setActivity(this);
-        commonInfoEditView.typeEnabled().setEnabled(true);
         commonInfoEditView.buttonsContainerVisibility().setVisible(false);
         view.getCommonInfoContainer().add(commonInfoEditView);
     }
@@ -92,11 +91,13 @@ public abstract class CardBatchCreateActivity implements Activity,
     }
 
     @Override
-    public void onCardTypeChanged(Long cardTypeId) {
-
-        cardBatchService.getLastCardBatch(cardTypeId, new FluentCallback<CardBatch>()
-                        .withError(defaultErrorHandler)
-                        .withSuccess(this::lastCardBatchConsumer));
+    public void onTypeChanged() {
+        EntityOption cardType = metaView.type().getValue();
+        if (cardType != null) {
+            cardBatchService.getLastCardBatch(cardType.getId(), new FluentCallback<CardBatch>()
+                    .withError(defaultErrorHandler)
+                    .withSuccess(this::lastCardBatchConsumer));
+        }
     }
 
     @Override
@@ -131,28 +132,28 @@ public abstract class CardBatchCreateActivity implements Activity,
     }
 
     private void prepare() {
-        commonInfoEditView.type().setValue(null);
         commonInfoEditView.number().setValue(null);
-        commonInfoEditView.article().setValue(null);
-        commonInfoEditView.amount().setValue(null);
+        commonInfoEditView.amount().setValue(1);
         commonInfoEditView.params().setValue(null);
         commonInfoEditView.contractors().setValue(null);
         commonInfoEditView.hidePrevCardBatchInfo();
+        metaView.type().setValue(null);
+        metaView.article().setValue(null);
         metaView.deadline().setValue(null);
         metaView.setDeadlineValid(true);
-        metaView.stateEnable().setEnabled(false);
+        metaView.stateEnabled().setEnabled(false);
         fillPrioritySelector(BASIC);
         fillStateSelector(CrmConstants.State.BUILD_EQUIPMENT_IN_QUEUE);
     }
 
     private CardBatch fillDto() {
         CardBatch cardBatch = new CardBatch();
-        cardBatch.setTypeId(commonInfoEditView.type().getValue().getId());
         cardBatch.setNumber(commonInfoEditView.number().getValue());
-        cardBatch.setArticle(commonInfoEditView.article().getValue());
         cardBatch.setAmount(commonInfoEditView.amount().getValue());
         cardBatch.setParams(commonInfoEditView.params().getValue());
         cardBatch.setContractors(commonInfoEditView.contractors().getValue());
+        cardBatch.setTypeId(metaView.type().getValue().getId());
+        cardBatch.setArticle(metaView.article().getValue());
         cardBatch.setStateId(metaView.state().getValue().getId());
         cardBatch.setImportance(metaView.priority().getValue().getId());
         cardBatch.setDeadline(metaView.deadline().getValue() != null? metaView.deadline().getValue().getTime() : null);
@@ -165,7 +166,7 @@ public abstract class CardBatchCreateActivity implements Activity,
     }
 
     private String getValidationError() {
-        if (null == commonInfoEditView.type().getValue()) {
+        if (null == metaView.type().getValue()) {
             return lang.cardBatchTypeValidationError();
         }
 
@@ -173,7 +174,7 @@ public abstract class CardBatchCreateActivity implements Activity,
             return lang.cardBatchNumberValidationError();
         }
 
-        if (isEmpty(commonInfoEditView.article().getValue()) || !commonInfoEditView.isArticleValid()) {
+        if (!metaView.articleIsValid()) {
             return lang.cardBatchArticleValidationError();
         }
 

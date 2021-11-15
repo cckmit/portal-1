@@ -13,7 +13,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
-import ru.protei.portal.ui.common.client.widget.selector.card.type.CardTypeOptionSelector;
+import ru.protei.portal.ui.common.client.widget.selector.card.type.CardTypeOptionFormSelector;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.common.AbstractPcbOrderCommonInfoEditActivity;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.common.AbstractPcbOrderCommonInfoEditView;
 
@@ -99,7 +99,7 @@ public class PcbOrderCommonInfoEditView extends Composite implements AbstractPcb
 
     @Inject
     @UiField(provided = true)
-    CardTypeOptionSelector cardType;
+    CardTypeOptionFormSelector cardType;
     @UiField
     IntegerBox amount;
     @UiField

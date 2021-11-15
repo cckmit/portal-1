@@ -9,7 +9,7 @@
     <g:HTMLPanel>
         <form>
             <div class="row">
-                <cardType:CardTypeOptionSelector ui:field="cardType" styleName="col-md-6" mandatory="true"
+                <cardType:CardTypeOptionFormSelector ui:field="cardType" styleName="col-md-6" mandatory="true"
                                             header="{lang.pcbOrderCardType}" defaultValue="{lang.pcbOrderCardTypePlaceholder}"/>
                 <div class="col-md-6">
                     <div class="form-group form-group-default required">

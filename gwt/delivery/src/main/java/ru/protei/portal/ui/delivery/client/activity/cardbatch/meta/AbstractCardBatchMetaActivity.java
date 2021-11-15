@@ -7,4 +7,8 @@ public interface AbstractCardBatchMetaActivity {
     void onDeadlineChanged();
 
     default void onPriorityChange(){}
+
+    default void onTypeChanged(){};
+
+    default void onArticleChanged(){};
 }

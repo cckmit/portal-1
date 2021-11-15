@@ -21,9 +21,11 @@
                             </g:Button>
                         </div>
                     </div>
-                    <small ui:field="createdBy" class="pull-right text-right"/>
 
-                    <h5 class="no-margin"><g:Label ui:field="serialNumber" styleName="semi-bold large-text"/></h5>
+                    <small ui:field="createdBy" class="pull-right text-right"/>
+                    <h5 class="no-margin">
+                        <ui:text from="{lang.card}"/> <g:Label ui:field="serialNumber" styleName="inline"/>
+                    </h5>
 
                     <g:HTMLPanel ui:field="noteCommentContainer"/>
                     <div class="row">

@@ -5,10 +5,7 @@ import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Card;
-import ru.protei.portal.core.model.ent.CardGroupChangeRequest;
-import ru.protei.portal.core.model.ent.CardType;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CardQuery;
 import ru.protei.portal.core.model.query.CardTypeQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -28,6 +25,10 @@ public interface CardService {
     @Auditable( En_AuditType.CARD_CREATE )
     Result<Card> createCard(AuthToken token, Card card);
 
+    @Privileged({ En_Privilege.CARD_CREATE })
+    @Auditable( En_AuditType.CARD_CREATE )
+    Result<List<Card>> createCards(AuthToken token, CardCreateRequest createRequest);
+
     @Privileged({ En_Privilege.CARD_EDIT })
     @Auditable( En_AuditType.CARD_MODIFY)
     Result<Card> updateNoteAndComment(AuthToken token, Card card);
@@ -46,7 +47,7 @@ public interface CardService {
 
     Result<List<EntityOption>> getCardTypeOptionList(AuthToken token, CardTypeQuery query);
 
-    Result<List<CardType>> getCardTypeList(AuthToken token);
+    Result<List<CardType>> getCardTypeList(AuthToken token, CardTypeQuery query);
 
     Result<Long> getLastNumber(AuthToken token, Long typeId, Long cardBatchId);
 }

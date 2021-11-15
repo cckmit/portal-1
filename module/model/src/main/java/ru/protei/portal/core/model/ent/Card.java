@@ -257,7 +257,7 @@ public class Card extends AuditableObject {
                 ", creator=" + creator +
                 ", modified=" + modified +
                 ", typeId=" + typeId +
-                ", cardType='" + cardType + '\'' +
+                ", cardType=" + cardType +
                 ", serialNumber='" + serialNumber + '\'' +
                 ", cardBatchId=" + cardBatchId +
                 ", cardBatch=" + cardBatch +
@@ -269,6 +269,20 @@ public class Card extends AuditableObject {
                 ", manager=" + manager +
                 ", note='" + note + '\'' +
                 '}';
+    }
+
+    public static Card createByRequest(CardCreateRequest createRequest) {
+        Card card = new Card();
+        card.setTypeId(createRequest.getTypeId());
+        card.setCardBatchId(createRequest.getCardBatchId());
+        card.setSerialNumber(createRequest.getSerialNumber());
+        card.setArticle(createRequest.getArticle());
+        card.setTestDate(createRequest.getTestDate());
+        card.setStateId(createRequest.getStateId());
+        card.setManager(createRequest.getManager());
+        card.setComment(createRequest.getComment());
+        card.setNote(createRequest.getNote());
+        return card;
     }
 
     public interface Columns {

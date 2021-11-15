@@ -44,4 +44,8 @@ public interface AbstractCardCreateView extends IsWidget {
     void setTestDateValid(boolean value);
 
     CardMetaView getMetaView();
+
+    HasValue<Integer> amount();
+
+    void setAmountValid(boolean isValid);
 }
