@@ -123,7 +123,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
         newEmployeeRegistration.setCurators(personShortDAO.partialGetListByKeys(newEmployeeRegistration.getCuratorsIds(), "id", "displayname"));
 
-        boolean isEmploymentDateChanged = !Objects.equals(oldEmployeeRegistration.getEmploymentDate(), newEmployeeRegistration.getEmploymentDate());
+        boolean isEmploymentDateChanged = !Objects.equals(oldEmployeeRegistration.getEmploymentDate().getTime(), newEmployeeRegistration.getEmploymentDate().getTime());
 
         final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEnabled();
 

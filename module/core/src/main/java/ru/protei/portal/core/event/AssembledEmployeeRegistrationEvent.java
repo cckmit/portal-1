@@ -42,7 +42,7 @@ public class AssembledEmployeeRegistrationEvent extends ApplicationEvent impleme
     }
 
     public boolean isEmploymentDateChanged() {
-        return isEditEvent() && !Objects.equals(oldState.getEmploymentDate(), newState.getEmploymentDate());
+        return isEditEvent() && !Objects.equals(oldState.getEmploymentDate().getTime(), newState.getEmploymentDate().getTime());
     }
 
     public boolean isCuratorsChanged() {
