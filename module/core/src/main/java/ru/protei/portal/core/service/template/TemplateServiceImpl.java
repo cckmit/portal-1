@@ -273,12 +273,18 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getEmployeeRegistrationEmailNotificationBody(AssembledEmployeeRegistrationEvent event, String urlTemplate, Collection<String> recipients) {
-        Map<String, Object> templateModel = new HashMap<>();
+    public PreparedTemplate getEmployeeRegistrationEmailNotificationBody(
+            AssembledEmployeeRegistrationEvent event,
+            String urlTemplate,
+            List<CaseComment> comments,
+            Collection<String> recipients) {
+
         EmployeeRegistration newState = event.getNewState();
         EmployeeRegistration oldState = event.getOldState();
 
+        Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("TransliterationUtils", new TransliterationUtils());
+        templateModel.put("TextUtils", new TextUtils());
 
         templateModel.put("linkToEmployeeRegistration", String.format(urlTemplate, newState.getId()));
         templateModel.put("employeeFullName", HtmlUtils.htmlEscape(newState.getEmployeeFullName()));
@@ -301,6 +307,17 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("comment", HtmlUtils.htmlEscape(newState.getComment()));
         templateModel.put("recipients", recipients);
         templateModel.put("curatorsDiff", event.getCuratorsDiff());
+
+        templateModel.put( "caseComments",
+                getCommentsAttachesModelKeys(
+                        comments,
+                        event.getAddedCaseComments(),
+                        event.getChangedCaseComments(),
+                        event.getRemovedCaseComments(),
+                        event.getCommentToAttachmentDiffs(),
+                        event.getExistingAttachments(),
+                        En_TextMarkup.MARKDOWN)
+        );
 
         PreparedTemplate template = new PreparedTemplate("notification/email/employee.registration.body.%s.ftl");
         template.setModel(templateModel);

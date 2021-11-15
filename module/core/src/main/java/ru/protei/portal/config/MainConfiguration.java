@@ -951,6 +951,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public EventEmployeeRegistrationAssemblerService getEventEmployeeRegistrationAssemblerService() {
+        return new EventEmployeeRegistrationAssemblerServiceImpl();
+    }
+
+    @Bean
     public EventDeliveryAssemblerService getEventDeliveryAssemblerService(@Autowired PortalConfig config) {
         if (config.data().getMailNotificationConfig().isDeliveryNotificationEnabled()) {
             return new EventDeliveryAssemblerServiceImpl();
@@ -973,6 +978,11 @@ public class MainConfiguration {
     @Bean
     public AssemblerDeliveryService getAssemblerDeliveryService() {
         return new AssemblerDeliveryServiceImpl();
+    }
+
+    @Bean
+    public AssemblerEmployeeRegistrationService getAssemblerEmployeeRegistrationService() {
+        return new AssemblerEmployeeRegistrationServiceImpl();
     }
 
     @Bean

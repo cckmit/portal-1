@@ -163,6 +163,17 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             );
         }
 
+        if (EMPLOYEE_REGISTRATION.equals(caseType)) {
+            okResult.publishEvent(new EmployeeRegistrationCommentEvent(
+                            this, null, resultData.getCaseComment(), null,
+                            token.getPersonId(), comment.getCaseId())
+            );
+
+            okResult.publishEvent(new EmployeeRegistrationAttachmentEvent(this, resultData.getAddedAttachments(), resultData.getRemovedAttachments(), comment.getId(),
+                    token.getPersonId(), comment.getCaseId())
+            );
+        }
+
 /*
         if (resultData.getCaseComment() != null) {
             clientEventService.fireEvent( new CaseCommentSavedClientEvent( token.getPersonId(), comment.getCaseId(), resultData.getCaseComment().getId() ) );
@@ -289,6 +300,16 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             );
         }
 
+        if (EMPLOYEE_REGISTRATION.equals(caseType)) {
+            okResult.publishEvent(new EmployeeRegistrationCommentEvent(this,
+                    resultData.getOldCaseComment(), resultData.getCaseComment(), null,
+                    token.getPersonId(), comment.getCaseId())
+            );
+
+            okResult.publishEvent(new EmployeeRegistrationAttachmentEvent(this, resultData.getAddedAttachments(), resultData.getRemovedAttachments(), comment.getId(),
+                    token.getPersonId(), comment.getCaseId())
+            );
+        }
 /*
         if (resultData.getCaseComment() != null) {
             clientEventService.fireEvent( new CaseCommentSavedClientEvent( token.getPersonId(), comment.getCaseId(), resultData.getCaseComment().getId() ) );
@@ -465,6 +486,16 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             okResult
                     .publishEvent(new CaseAttachmentEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, null, removedAttachments))
                     .publishEvent(new CaseCommentEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, isEagerEvent, null, null, removedComment));
+        }
+
+        if (EMPLOYEE_REGISTRATION.equals(caseType)) {
+            okResult.publishEvent(new EmployeeRegistrationCommentEvent(this,
+                    null, null, removedComment, token.getPersonId(), caseId)
+            );
+
+            okResult.publishEvent(new EmployeeRegistrationAttachmentEvent(this, Collections.emptyList(), removedAttachments, removedComment.getId(),
+                    token.getPersonId(), caseId)
+            );
         }
 
 /*

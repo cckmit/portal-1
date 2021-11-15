@@ -170,6 +170,11 @@ public class RedmineTestConfiguration {
     }
 
     @Bean
+    public EventEmployeeRegistrationAssemblerService getEventEmployeeRegistrationAssemblerService() {
+        return new EventEmployeeRegistrationAssemblerServiceImpl();
+    }
+
+    @Bean
     public AssemblerDeliveryService getAssemblerDeliveryService() {
         return new AssemblerDeliveryServiceImpl();
     }
@@ -208,6 +213,11 @@ public class RedmineTestConfiguration {
     @Bean
     public AssemblerProjectService getAssemblerProjectService() {
         return new AssemblerProjectServiceImpl();
+    }
+
+    @Bean
+    public AssemblerEmployeeRegistrationService getAssemblerEmployeeRegistrationService() {
+        return new AssemblerEmployeeRegistrationServiceImpl();
     }
 
     @Bean
