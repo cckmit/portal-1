@@ -426,6 +426,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public EmployeeRegistrationDAO getEmployeeRegistrationDAO() {
+        return new EmployeeRegistrationDAO_Impl();
+    }
+
+    @Bean
     public YoutrackService getYoutrackService() {
         return new YoutrackServiceImpl();
     }

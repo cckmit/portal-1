@@ -273,6 +273,11 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
+    public AssemblerEmployeeRegistrationService getAssemblerEmployeeRegistrationService() {
+        return new AssemblerEmployeeRegistrationServiceStub();
+    }
+
+    @Bean
     public AssemblerDeliveryService getAssemblerDeliveryService() {
         return new AssemblerDeliveryServiceStub();
     }
