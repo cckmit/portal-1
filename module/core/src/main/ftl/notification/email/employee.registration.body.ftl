@@ -50,6 +50,9 @@
 <@set name="_operating_system" value="${operating_system}"/>
 <@set name="_additional_soft" value="${additional_soft}"/>
 
+<@set name="_updated" value="${updated_just_now}"/>
+<@set name="_attachments" value="${attachments}"/>
+
 <#noparse>
 <#macro changeTo old, new>
     <span style="color:#bd1313;text-decoration:line-through;">${old}</span>
@@ -281,23 +284,47 @@
 
     <#--COMMENTS-->
     <div id="test-case-comments" style="font-size:14px;margin-top:15px">
-        <#list caseComment?reverse as caseComment>
-            <div style="border-radius:5px;padding:12px;margin-bottom:5px;background:<#if caseComment.removed>#f7dede<#else><#if caseComment.added>#dff7e2<#else>#f0f0f0</#if></#if>;">
-                <span style="color:#666666;line-height: 17px;margin-right:5px">${caseComment.created?datetime}</span>
-                <span style="font-size:14px;margin-bottom:5px;color:#0062ff;line-height: 17px;">
-                            <#if caseComment.author??>
-                                ${TransliterationUtils.transliterate(caseComment.author.displayName, lang)!''}
-                            </#if>
-                </span>
-                <#if caseComment.isUpdated>
-                    <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
-                </#if>
-                <#if caseComment.oldText??>
-                    <div class="markdown" style="margin-top:4px;line-height:1.5em;"><@diffHTML old="${caseComment.oldText}" new="${caseComment.text}"/></div>
-                <#else>
-                    <div class="markdown" style="margin-top:4px;line-height:1.5em;">${caseComment.text}</div>
-                </#if>
-            </div>
+        <#list caseComments?reverse as caseComment>
+        <div style="border-radius:5px;padding:12px;margin-bottom:5px;background:<#if caseComment.removed>#f7dede<#else><#if caseComment.added>#dff7e2<#else>#f0f0f0</#if></#if>;">
+            <span style="color:#666666;line-height: 17px;margin-right:5px">${caseComment.created?datetime}</span>
+            <span style="font-size:14px;margin-bottom:5px;color:#0062ff;line-height: 17px;">
+                        <#if caseComment.author??>
+                            ${TransliterationUtils.transliterate(caseComment.author.displayName, lang)!''}
+                        </#if>
+            </span>
+            <#if caseComment.isUpdated>
+            <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
+            </#if>
+            <#if caseComment.oldText??>
+                <div class="markdown"
+                     style="margin-top:4px;line-height:1.5em;"><@diffHTML old="${caseComment.oldText}"
+                    new="${caseComment.text}"/>
+                </div>
+            <#else>
+                <div class="markdown" style="margin-top:4px;line-height:1.5em;">${caseComment.text}</div>
+            </#if>
+            <#if caseComment.hasAttachments>
+                <div class="markdown" style="margin-top:12px;line-height:1.5em;">
+                    <hr/>
+                    <i>${_attachments}: </i>
+                    <#if caseComment.sameAttachments??>
+                        <#list caseComment.sameAttachments as attach>
+                            <span style="display:inline-block;padding:1px 4px 1px 0px;white-space:nowrap;text-decoration:none;color:#0062ff">${attach.fileName}</span>
+                        </#list>
+                    </#if>
+                    <#if caseComment.removedAttachments??>
+                        <#list caseComment.removedAttachments as attach>
+                            <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:line-through;color:#bd1313;">${attach.fileName}</span>
+                        </#list>
+                    </#if>
+                    <#if caseComment.addedAttachments??>
+                        <#list caseComment.addedAttachments as attach>
+                            <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:none;color:#11731d;background:#dff7e2;">${attach.fileName}</span>
+                        </#list>
+                    </#if>
+                </div>
+            </#if>
+        </div>
         </#list>
     </div>
 

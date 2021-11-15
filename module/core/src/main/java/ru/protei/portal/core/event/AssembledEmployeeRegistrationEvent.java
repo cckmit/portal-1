@@ -1,6 +1,7 @@
 package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
+import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -23,6 +24,8 @@ public class AssembledEmployeeRegistrationEvent extends ApplicationEvent impleme
     private DiffCollectionResult<CaseComment> comments = new DiffCollectionResult<>();
     private long lastUpdated;
     private boolean hasComments;
+    private Map<Long, DiffCollectionResult<Attachment>> commentToAttachmentDiffs = new HashMap<>();
+    private List<Attachment> existingAttachments;
 
     public AssembledEmployeeRegistrationEvent(Object source, EmployeeRegistration oldState, EmployeeRegistration newState) {
         super(source);
@@ -141,5 +144,48 @@ public class AssembledEmployeeRegistrationEvent extends ApplicationEvent impleme
 
     public boolean hasComments() {
         return hasComments;
+    }
+
+    public void attachAttachmentEvent(EmployeeRegistrationAttachmentEvent event) {
+        DiffCollectionResult<Attachment> attachmentDiffCollectionResult = commentToAttachmentDiffs.computeIfAbsent(event.getCommentId(), value -> new DiffCollectionResult<>());
+
+        attachmentDiffCollectionResult.putAddedEntries(event.getAddedAttachments());
+        attachmentDiffCollectionResult.putRemovedEntries(event.getRemovedAttachments());
+    }
+
+    public boolean isAttachmentChanged() {
+        return !commentToAttachmentDiffs.isEmpty();
+    }
+
+    public boolean isCommentsChanged() {
+        if (isNotEmpty(comments.getAddedEntries())) {
+            return true;
+        }
+
+        if (isNotEmpty(comments.getChangedEntries())) {
+            return true;
+        }
+
+        if (isNotEmpty(comments.getRemovedEntries())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isAttachmentsFilled() {
+        return existingAttachments != null;
+    }
+
+    public void setExistingAttachments(List<Attachment> existingAttachments) {
+        this.existingAttachments = existingAttachments;
+    }
+
+    public List<Attachment> getExistingAttachments() {
+        return existingAttachments;
+    }
+
+    public Map<Long, DiffCollectionResult<Attachment>> getCommentToAttachmentDiffs() {
+        return commentToAttachmentDiffs;
     }
 }

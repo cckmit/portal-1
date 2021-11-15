@@ -168,6 +168,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                             this, null, resultData.getCaseComment(), null,
                             token.getPersonId(), comment.getCaseId())
             );
+
+            okResult.publishEvent(new EmployeeRegistrationAttachmentEvent(this, resultData.getAddedAttachments(), resultData.getRemovedAttachments(), comment.getId(),
+                    token.getPersonId(), comment.getCaseId())
+            );
         }
 
 /*
@@ -299,6 +303,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if (EMPLOYEE_REGISTRATION.equals(caseType)) {
             okResult.publishEvent(new EmployeeRegistrationCommentEvent(this,
                     resultData.getOldCaseComment(), resultData.getCaseComment(), null,
+                    token.getPersonId(), comment.getCaseId())
+            );
+
+            okResult.publishEvent(new EmployeeRegistrationAttachmentEvent(this, resultData.getAddedAttachments(), resultData.getRemovedAttachments(), comment.getId(),
                     token.getPersonId(), comment.getCaseId())
             );
         }
@@ -483,6 +491,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if (EMPLOYEE_REGISTRATION.equals(caseType)) {
             okResult.publishEvent(new EmployeeRegistrationCommentEvent(this,
                     null, null, removedComment, token.getPersonId(), caseId)
+            );
+
+            okResult.publishEvent(new EmployeeRegistrationAttachmentEvent(this, Collections.emptyList(), removedAttachments, removedComment.getId(),
+                    token.getPersonId(), caseId)
             );
         }
 

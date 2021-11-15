@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
+import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.EmployeeRegistrationDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
@@ -29,6 +30,8 @@ public class AssemblerEmployeeRegistrationServiceImpl implements AssemblerEmploy
     EmployeeRegistrationDAO employeeRegistrationDAO;
     @Autowired
     EventPublisherService publisherService;
+    @Autowired
+    AttachmentDAO attachmentDAO;
 
     @Async(BACKGROUND_TASKS)
     @Override
@@ -40,6 +43,7 @@ public class AssemblerEmployeeRegistrationServiceImpl implements AssemblerEmploy
 
         fillEmployeeRegistration(sourceEvent)
                 .flatMap(this::fillComments)
+                .flatMap(this::fillAttachments)
                 .ifOk(filledEvent -> publisherService.publishEvent(filledEvent));
     }
 
@@ -67,6 +71,18 @@ public class AssemblerEmployeeRegistrationServiceImpl implements AssemblerEmploy
 
         event.setExistingComments(caseComments);
         log.info("fillComments(): employeeRegistrationId={} Comments are successfully filled.", event.getEmployeeRegistrationId());
+
+        return ok(event);
+    }
+
+    private Result<AssembledEmployeeRegistrationEvent> fillAttachments(AssembledEmployeeRegistrationEvent event) {
+        if (event.isAttachmentsFilled()) {
+            log.info("fillAttachments(): employeeRegistrationId={} Attachments are already filled.", event.getEmployeeRegistrationId());
+            return ok(event);
+        }
+        log.info("fillAttachments(): CaseObjectID={} Try to fill attachments.", event.getEmployeeRegistrationId());
+        event.setExistingAttachments(attachmentDAO.getAttachmentsByCaseId(event.getEmployeeRegistrationId()));
+        log.info("fillAttachments(): CaseObjectID={} Attachments are successfully filled.", event.getEmployeeRegistrationId());
 
         return ok(event);
     }

@@ -278,10 +278,11 @@ public class TemplateServiceImpl implements TemplateService {
             String urlTemplate,
             List<CaseComment> comments,
             Collection<String> recipients) {
-        Map<String, Object> templateModel = new HashMap<>();
+
         EmployeeRegistration newState = event.getNewState();
         EmployeeRegistration oldState = event.getOldState();
 
+        Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("TransliterationUtils", new TransliterationUtils());
 
         templateModel.put("linkToEmployeeRegistration", String.format(urlTemplate, newState.getId()));
@@ -306,9 +307,15 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("recipients", recipients);
         templateModel.put("curatorsDiff", event.getCuratorsDiff());
 
-        templateModel.put( "caseComment",
-                getCommentsAttachesModelKeys(comments, event.getAddedCaseComments(), event.getChangedCaseComments(),
-                        event.getRemovedCaseComments(), Collections.emptyMap(), Collections.emptyList(), En_TextMarkup.MARKDOWN)
+        templateModel.put( "caseComments",
+                getCommentsAttachesModelKeys(
+                        comments,
+                        event.getAddedCaseComments(),
+                        event.getChangedCaseComments(),
+                        event.getRemovedCaseComments(),
+                        event.getCommentToAttachmentDiffs(),
+                        event.getExistingAttachments(),
+                        En_TextMarkup.MARKDOWN)
         );
 
         PreparedTemplate template = new PreparedTemplate("notification/email/employee.registration.body.%s.ftl");

@@ -1646,6 +1646,14 @@ public class MailNotificationProcessor {
             return true;
         }
 
+        if (event.isCommentsChanged()) {
+            return true;
+        }
+
+        if (event.isAttachmentChanged()) {
+            return true;
+        }
+
         return false;
     }
 

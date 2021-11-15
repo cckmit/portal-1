@@ -7,9 +7,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import protei.utils.common.Tuple;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.event.AbstractEmployeeRegistrationEvent;
-import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
-import ru.protei.portal.core.event.EmployeeRegistrationCommentEvent;
+import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.service.AssemblerEmployeeRegistrationService;
 
 import java.util.Collection;
@@ -28,6 +26,13 @@ public class EventEmployeeRegistrationAssemblerServiceImpl implements EventEmplo
         log.info("onEmployeeRegistrationCommentEvent(): employeeRegistrationId:{}", event.getEmployeeRegistrationId());
         AssembledEmployeeRegistrationEvent assembledEmployeeRegistrationEvent = getAssembledEmployeeRegistrationEvent(event);
         assembledEmployeeRegistrationEvent.attachCommentEvent(event);
+    }
+
+    @Override
+    @EventListener
+    public void onEmployeeRegistrationAttachmentEvent(EmployeeRegistrationAttachmentEvent event) {
+        AssembledEmployeeRegistrationEvent assembledEmployeeRegistrationEvent = getAssembledEmployeeRegistrationEvent(event);
+        assembledEmployeeRegistrationEvent.attachAttachmentEvent(event);
     }
 
     @Scheduled(fixedRate = 1 * SEC)
