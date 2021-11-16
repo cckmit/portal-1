@@ -9,6 +9,7 @@ import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.EmployeeRegistrationDAO;
+import ru.protei.portal.core.model.dao.PersonShortViewDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
@@ -20,6 +21,7 @@ import java.util.List;
 
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 public class AssemblerEmployeeRegistrationServiceImpl implements AssemblerEmployeeRegistrationService {
     private static final Logger log = LoggerFactory.getLogger(AssemblerEmployeeRegistrationServiceImpl.class);
@@ -32,6 +34,8 @@ public class AssemblerEmployeeRegistrationServiceImpl implements AssemblerEmploy
     EventPublisherService publisherService;
     @Autowired
     AttachmentDAO attachmentDAO;
+    @Autowired
+    PersonShortViewDAO personShortDAO;
 
     @Async(BACKGROUND_TASKS)
     @Override
@@ -53,6 +57,9 @@ public class AssemblerEmployeeRegistrationServiceImpl implements AssemblerEmploy
         }
 
         EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(event.getEmployeeRegistrationId());
+        if(!isEmpty(employeeRegistration.getCuratorsIds())){
+            employeeRegistration.setCurators ( personShortDAO.getListByKeys( employeeRegistration.getCuratorsIds() ));
+        }
         event.setNewEmployeeRegistrationState(employeeRegistration);
 
         return ok(event);
