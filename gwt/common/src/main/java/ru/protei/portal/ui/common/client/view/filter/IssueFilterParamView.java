@@ -367,6 +367,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
                 query.setTimeElapsedTypeIds(toList(timeElapsedTypes.getValue(), En_TimeElapsedType::getId));
                 query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
+                query.setCaseTagsIds(nullIfEmpty(toList(tags.getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
                 break;
             }
             case CASE_RESOLUTION_TIME:
@@ -553,7 +554,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         managers.setVisible((!isCustomer || isSubcontractor) && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         commentAuthors.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED) || filterType.equals(En_CaseFilterType.NIGHT_WORK));
         timeElapsedTypes.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
-        tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME));
+        tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME) ||
+                        filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
         searchPrivateContainer.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         plan.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         workTriggers.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
