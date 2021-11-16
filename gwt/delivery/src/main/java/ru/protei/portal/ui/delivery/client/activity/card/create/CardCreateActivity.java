@@ -117,9 +117,26 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
         view.serialNumber().setValue(null);
         view.type().setValue(event.typeCode != null ? new CardType(event.typeName, event.typeCode, true, true) : null);
         view.cardBatch().setValue(event.cardBatch != null ? event.cardBatch : null);
-        view.cardBatchModel().updateCardType(null);
-        view.article().setValue(event.article != null ? event.article : null);
+
+        if (event.typeId != null) {
+            CardType cardType = new CardType(event.typeName, event.typeCode, true, true);
+            cardType.setId(event.typeId);
+            view.type().setValue(cardType);
+            onTypeChange();
+        } else {
+            view.type().setValue(null);
+        }
+
         isCanPresetArticle = true;
+        if (event.cardBatch != null) {
+            view.cardBatch().setValue(event.cardBatch);
+            onCardBatchChange();
+        } else {
+            view.cardBatch().setValue(null);
+            view.article().setValue(null);
+        }
+
+        view.cardBatchModel().updateCardType(null);
         view.testDate().setValue(null);
         view.setTestDateValid(true);
         view.comment().setValue(null);

@@ -3896,7 +3896,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String cardBatchEditCommonInfo();
 
-    String cardCreate();
+    String cardsCreating();
 
     String cardsCreated();
 

@@ -39,7 +39,7 @@ public class CreateCardClickColumn<T> extends ClickColumn<T> {
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref("#");
         a.addClassName("fa fa-plus-circle fa-lg");
-        a.setTitle(lang.cardCreate());
+        a.setTitle(lang.cardsCreating());
         a.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.BUTTON.CREATE_CARD);
 
         if (enabledPredicate == null || enabledPredicate.isEnabled(value)) {

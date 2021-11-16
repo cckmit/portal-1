@@ -24,21 +24,21 @@ public class CardEvents {
     @Url( value = "card_create")
     public static class Create {
         public Create() {}
-        public Create(String typeCode, String typeName, CardBatch cardBatch, String article) {
+        public Create(Long typeId, String typeName, String typeCode, CardBatch cardBatch) {
+            this.typeId = typeId;
             this.typeCode = typeCode;
             this.typeName = typeName;
             this.cardBatch = cardBatch;
-            this.article = article;
         }
 
+        @Omit
+        public Long typeId;
         @Omit
         public String typeCode;
         @Omit
         public String typeName;
         @Omit
         public CardBatch cardBatch;
-        @Omit
-        public String article;
     }
 
     @Url( value = "card")

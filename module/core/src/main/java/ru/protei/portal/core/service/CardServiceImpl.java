@@ -183,7 +183,7 @@ public class CardServiceImpl implements CardService {
                     throw new RollbackTransactionException(createCardResult.getStatus());
                 }
 
-                createdCards.add(createCardResult.getData());;
+                createdCards.add(createCardResult.getData());
             }
             return ok(createdCards);
         });
