@@ -7,13 +7,11 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.Card;
-import ru.protei.portal.core.model.ent.CardCreateRequest;
-import ru.protei.portal.core.model.ent.CardType;
-import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.service.CardBatchControllerAsync;
 import ru.protei.portal.ui.common.client.service.CardControllerAsync;
 import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
@@ -24,6 +22,7 @@ import ru.protei.portal.ui.delivery.client.activity.card.meta.CardCommonMeta;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.SUCCESS;
 
 public abstract class CardCreateActivity extends CardCommonMeta implements Activity, AbstractCardCreateActivity, AbstractCardCreateMetaActivity {
@@ -52,7 +51,17 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
 
-        prepare(event);
+        if (event.cardBatchId != null) {
+            getCardBatchAndFillView(event.cardBatchId);
+            return;
+        }
+
+        fillView(new CardBatch());
+    }
+
+    private void getCardBatchAndFillView(Long cardBatchId) {
+        cardBatchController.getCardBatch(cardBatchId, new FluentCallback<CardBatch>()
+                           .withSuccess(cardBatch -> fillView(cardBatch)));
     }
 
     @Override
@@ -82,16 +91,12 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
 
     @Override
     public void onCardBatchChange() {
-        if (isCanPresetArticle) {
+        if (isBlank(view.article().getValue())) {
             view.article().setValue(view.cardBatch().getValue().getArticle());
-            isCanPresetArticle = false;
         }
-        setSerialNumber();
-    }
 
-    @Override
-    public void onArticleChanged() {
-        isCanPresetArticle = false;
+        CardBatch cardBatch = view.cardBatch().getValue();
+        setSerialNumber(cardBatch.getId(), cardBatch.getTypeId());
     }
 
     @Override
@@ -99,10 +104,8 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
         validateAmount();
     }
 
-    private void setSerialNumber() {
-        Long typeId = view.type().getValue().getId();
-        Long cardBatchId = view.cardBatch().getValue().getId();
-        cardController.getLastNumber(typeId, cardBatchId, new FluentCallback<Long>()
+    private void setSerialNumber(Long cardBatchId, Long cardBatchTypeId) {
+        cardController.getLastNumber(cardBatchTypeId, cardBatchId, new FluentCallback<Long>()
                 .withError(throwable -> defaultErrorHandler.accept(throwable))
                 .withSuccess(size -> {
                     String serialNumber =
@@ -113,29 +116,9 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
                 }));
     }
 
-    private void prepare(CardEvents.Create event) {
-        view.serialNumber().setValue(null);
-        view.type().setValue(event.typeCode != null ? new CardType(event.typeName, event.typeCode, true, true) : null);
-        view.cardBatch().setValue(event.cardBatch != null ? event.cardBatch : null);
-
-        if (event.typeId != null) {
-            CardType cardType = new CardType(event.typeName, event.typeCode, true, true);
-            cardType.setId(event.typeId);
-            view.type().setValue(cardType);
-            onTypeChange();
-        } else {
-            view.type().setValue(null);
-        }
-
-        isCanPresetArticle = true;
-        if (event.cardBatch != null) {
-            view.cardBatch().setValue(event.cardBatch);
-            onCardBatchChange();
-        } else {
-            view.cardBatch().setValue(null);
-            view.article().setValue(null);
-        }
-
+    private void fillView(CardBatch cardBatch){
+        view.type().setValue(cardBatch.getId() != null ? new CardType(cardBatch.getTypeName(), cardBatch.getCode(), true, true) : null);
+        view.cardBatch().setValue(cardBatch.getId() != null ? cardBatch : null);
         view.cardBatchModel().updateCardType(null);
         view.testDate().setValue(null);
         view.setTestDateValid(true);
@@ -144,6 +127,15 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
         view.manager().setValue(null);
         view.note().setValue(null);
         view.amount().setValue(1);
+        view.article().setValue(cardBatch.getArticle());
+
+        Long cardBatchId = cardBatch.getId();
+        Long cardBatchTypeId = cardBatch.getTypeId();
+        if (cardBatchId != null && cardBatchTypeId != null) {
+            setSerialNumber(cardBatchId, cardBatchTypeId);
+        } else {
+            view.serialNumber().setValue(null);
+        }
     }
 
     private CardCreateRequest fillCardCreateRequest() {
@@ -208,8 +200,7 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
 
     private void getCaseState(Long id, Consumer<CaseState> success) {
         caseStateController.getCaseStateWithoutCompaniesOmitPrivileges(id, new FluentCallback<CaseState>()
-                .withError(defaultErrorHandler)
-                .withSuccess(success));
+                           .withSuccess(success));
     }
 
     private boolean validateAmount() {
@@ -226,10 +217,11 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
     @Inject
     private CaseStateControllerAsync caseStateController;
     @Inject
+    CardBatchControllerAsync cardBatchController;
+    @Inject
     private PolicyService policyService;
     @Inject
     private DefaultErrorHandler defaultErrorHandler;
 
-    private boolean isCanPresetArticle;
     private AppEvents.InitDetails initDetails;
 }

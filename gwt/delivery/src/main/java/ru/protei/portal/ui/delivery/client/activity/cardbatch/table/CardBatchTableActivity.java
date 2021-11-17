@@ -180,7 +180,7 @@ public abstract class CardBatchTableActivity implements AbstractCardBatchTableAc
 
     @Override
     public void onClicked(CardBatch value) {
-        fireEvent(new CardEvents.Create(value.getTypeId(), value.getTypeName(), value.getCode(), value));
+        fireEvent(new CardEvents.Create(value.getId()));
     }
 
     private void showPreview(CardBatch value) {

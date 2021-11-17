@@ -90,7 +90,7 @@ public abstract class CardTableActivity implements AbstractCardTableActivity, Ab
 
         view.clearSelection();
 
-        fireEvent(new CardEvents.Create());
+        fireEvent(new CardEvents.Create(null));
     }
 
     @Event

@@ -4,7 +4,6 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Card;
-import ru.protei.portal.core.model.ent.CardBatch;
 
 import java.util.Set;
 
@@ -24,21 +23,11 @@ public class CardEvents {
     @Url( value = "card_create")
     public static class Create {
         public Create() {}
-        public Create(Long typeId, String typeName, String typeCode, CardBatch cardBatch) {
-            this.typeId = typeId;
-            this.typeCode = typeCode;
-            this.typeName = typeName;
-            this.cardBatch = cardBatch;
+        public Create(Long cardBatchId) {
+            this.cardBatchId = cardBatchId;
         }
 
-        @Omit
-        public Long typeId;
-        @Omit
-        public String typeCode;
-        @Omit
-        public String typeName;
-        @Omit
-        public CardBatch cardBatch;
+        public Long cardBatchId;
     }
 
     @Url( value = "card")
