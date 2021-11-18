@@ -76,7 +76,7 @@ public abstract class ReportEditActivity implements Activity,
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        issueFilterWidget.resetFilter(null);
+        issueFilterWidget.resetFilter();
         projectFilterWidget.resetFilter();
         contractFilterView.resetFilter();
         youtrackWorkFilterView.resetFilter(false);

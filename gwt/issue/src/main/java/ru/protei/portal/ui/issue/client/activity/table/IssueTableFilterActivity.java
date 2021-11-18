@@ -14,7 +14,6 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueCollapseFilterActivity;
@@ -34,7 +33,6 @@ import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
-import ru.protei.portal.ui.common.client.widget.selector.platform.PlatformModel;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -42,9 +40,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.common.CaseStateFilterProvider;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Активность таблицы обращений
@@ -62,6 +58,7 @@ public abstract class IssueTableFilterActivity
         view.setAnimation( animation );
 
         filterView.getIssueFilterParams().setModel(this);
+        filterView.getIssueFilterParams().setModifiedRangeInitialValue(DEFAULT_MODIFIED_RANGE);
 
         collapseFilterView.setActivity(this);
         collapseFilterView.getContainer().add(filterView.asWidget());
@@ -79,7 +76,7 @@ public abstract class IssueTableFilterActivity
             return;
         }
 
-        filterView.resetFilter(DEFAULT_MODIFIED_RANGE);
+        filterView.resetFilter();
         filterView.presetFilterType();
         updateCaseStatesFilter();
         updateCompanyModels(event.profile);
@@ -105,7 +102,7 @@ public abstract class IssueTableFilterActivity
                 new ActionBarEvents.Clear()
         );
 
-        if(!policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)) {
+        if (!policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)) {
             if (policyService.isSubcontractorCompany()) {
                 filterView.getIssueFilterParams().presetManagerCompany(policyService.getProfile().getCompany());
             } else {
@@ -115,7 +112,8 @@ public abstract class IssueTableFilterActivity
             companyService.getSingleHomeCompanies(new FluentCallback<List<EntityOption>>()
                     .withSuccess(companies -> {
                         filterView.getIssueFilterParams().presetManagerCompanies(companies);
-                    }));
+                    })
+            );
         }
 
         this.preScroll = event.preScroll;
@@ -339,7 +337,7 @@ public abstract class IssueTableFilterActivity
     }
 
     private void fillFilterFieldsByCaseQuery(CaseFilterDto<CaseQuery> caseFilterDto) {
-        filterView.resetFilter(DEFAULT_MODIFIED_RANGE);
+        filterView.resetFilter();
         filterView.userFilter().setValue(caseFilterDto.getCaseFilter().toShortView());
 
         final CaseQuery caseQuery = caseFilterDto.getQuery();
@@ -470,5 +468,5 @@ public abstract class IssueTableFilterActivity
     private AppEvents.InitDetails initDetails;
     private Integer scrollTo = 0;
     private Boolean preScroll = false;
-    private static final DateIntervalWithType DEFAULT_MODIFIED_RANGE = new DateIntervalWithType(null, En_DateIntervalType.PREVIOUS_AND_THIS_MONTH);
+    private final DateIntervalWithType DEFAULT_MODIFIED_RANGE = new DateIntervalWithType(null, En_DateIntervalType.PREVIOUS_AND_THIS_MONTH);
 }

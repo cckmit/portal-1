@@ -14,7 +14,9 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterWidgetModel;
@@ -26,6 +28,9 @@ import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.client.view.filter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
+
+import java.util.HashSet;
+import java.util.List;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
@@ -53,8 +58,8 @@ public class IssueFilterWidget extends Composite {
         issueFilterParamView.setManagerCompaniesModel(companyModel);
     }
 
-    public void resetFilter( DateIntervalWithType dateModified) {
-        issueFilterParamView.resetFilter( dateModified );
+    public void resetFilter() {
+        issueFilterParamView.resetFilter();
         userFilter.setValue(null);
         removeBtn.setVisible(false);
         saveBtn.setVisible(false);
@@ -149,7 +154,7 @@ public class IssueFilterWidget extends Composite {
         if (value == null || value.getId() == null) {
             return;
         }
-        model.onRemoveClicked(value.getId(), () -> resetFilter(null) );
+        model.onRemoveClicked(value.getId(), () -> resetFilter() );
     }
 
     @UiHandler( "filterName" )
@@ -165,7 +170,7 @@ public class IssueFilterWidget extends Composite {
 
     private void onUserFilterChanged(FilterShortView filter) {
         if (filter == null){
-            resetFilter(null);
+            resetFilter();
             showUserFilterControls();
 
             return;
@@ -220,7 +225,7 @@ public class IssueFilterWidget extends Composite {
     public void updateFilterType(En_CaseFilterType filterType) {
         this.filterType = filterType;
         applyVisibility(filterType);
-        resetFilter(null);
+        resetFilter();
         userFilter.updateFilterType(filterType);
     }
 

@@ -201,14 +201,14 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public void resetFilter(DateIntervalWithType dateModified) {
+    public void resetFilter() {
         companies.setValue(null);
         initiators.setValue(null);
         platforms.setValue(null);
         updateInitiators(companies.getValue());
-        managerCompanies.setValue(null);
+        managerCompanies.setValue(managerCompaniesInitialValue);
         managers.setValue(null);
-        updateManagers(managerCompanies.getValue());
+        updateManagers(this.managerCompanies.getValue());
         products.setValue(null);
         commentAuthors.setValue(null);
         timeElapsedTypes.setValue(null);
@@ -216,7 +216,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         importance.setValue(null);
         state.setValue(null);
         dateCreatedRange.setValue(null);
-        dateModifiedRange.setValue(dateModified);
+        dateModifiedRange.setValue(modifiedRangeInitialValue);
         sortField.setValue(En_SortField.issue_number);
         sortDir.setValue(false);
         search.setValue("");
@@ -248,6 +248,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         HashSet<EntityOption> managerCompanies = new HashSet<>();
         managerCompanies.add(toEntityOption(company));
         this.managerCompanies.setValue(managerCompanies);
+        this.managerCompaniesInitialValue = managerCompanies;
         updateManagers(managerCompanies);
     }
 
@@ -255,6 +256,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     public void presetManagerCompanies(List<EntityOption> companies) {
         HashSet<EntityOption> managerCompanies = new HashSet<>(companies);
         this.managerCompanies.setValue(managerCompanies);
+        this.managerCompaniesInitialValue = managerCompanies;
         updateManagers(managerCompanies);
     }
 
@@ -803,7 +805,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         }
     }
 
-    private void updateInitiators( Set<EntityOption> initiatorsCompanies ) {
+    public void setModifiedRangeInitialValue(DateIntervalWithType modifiedRangeInitialValue) {
+        this.modifiedRangeInitialValue = modifiedRangeInitialValue;
+    }
+
+    private void updateInitiators(Set<EntityOption> initiatorsCompanies ) {
         Set<Long> companyIds = toSet( initiatorsCompanies, entityOption -> entityOption.getId() );
         initiatorsModel.updateCompanies(initiators, companyIds );
         if (isEmpty( companyIds )) {
@@ -971,6 +977,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     private Timer timer = null;
     private AbstractIssueFilterModel model;
+
+    private DateIntervalWithType modifiedRangeInitialValue;
+    private HashSet<EntityOption> managerCompaniesInitialValue;
 
 
     interface IssueFilterUiBinder extends UiBinder<HTMLPanel, IssueFilterParamView> {}

@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -60,7 +61,7 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     HasVisibility planVisibility();
 
-    void resetFilter( DateIntervalWithType dateModified );
+    void resetFilter();
 
     void presetCompany(Company company);
 
@@ -101,4 +102,6 @@ public interface AbstractIssueFilterParamView extends IsWidget {
     int importanceSize();
 
     void resetRanges();
+
+    void setModifiedRangeInitialValue(DateIntervalWithType default_modified_range);
 }
