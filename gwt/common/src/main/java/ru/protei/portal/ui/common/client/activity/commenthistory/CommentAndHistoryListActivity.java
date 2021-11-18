@@ -108,6 +108,7 @@ public abstract class CommentAndHistoryListActivity
 
     @Event
     public void onReload(CommentAndHistoryEvents.Reload event) {
+        if (!view.isAttached()) return;
         reloadItems(caseType, caseId);
     }
 

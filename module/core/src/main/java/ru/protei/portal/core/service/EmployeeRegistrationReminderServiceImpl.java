@@ -149,7 +149,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
 
     @Override
     public Result<Boolean> notifyEmployeeAboutDevelopmentAgenda(EmployeeRegistration employeeRegistration) {
-        log.info( "notifyEmployeeAboutDevelopmentAgenda(): {}", employeeRegistration.getId());
+        if (employeeRegistration.getPerson() == null) return ok(true);
 
         Person employee = employeeRegistration.getPerson();
         jdbcManyRelationsHelper.fill(employee, Person.Fields.CONTACT_ITEMS);
