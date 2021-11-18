@@ -170,6 +170,13 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         return deliveryNumber;
     }
 
+    @Override
+    public void setContractCuratorsDepartmentsIds(Set<Long> contractCuratorsDepartmentsIds) {
+        this.contractCuratorsDepartmentsIds = contractCuratorsDepartmentsIds;
+        curators.clearSelector();
+        initCuratorsSelector();
+    }
+
     @UiHandler("resetBtn")
     public void onResetClicked(ClickEvent event) {
         if (activity != null) {
@@ -250,7 +257,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
 
     private void initCuratorsSelector() {
         EmployeeQuery query = new EmployeeQuery(null, false, true, En_SortField.person_full_name, En_SortDir.ASC);
-        query.setDepartmentIds(new HashSet<>(Collections.singletonList(CrmConstants.Department.CONTRACT)));
+        query.setDepartmentIds(contractCuratorsDepartmentsIds);
         curators.setEmployeeQuery(query);
     }
 
@@ -317,6 +324,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @UiField
     TextBox deliveryNumber;
 
+    private Set<Long> contractCuratorsDepartmentsIds;
     private AbstractContractFilterActivity activity;
 
     private static FilterViewUiBinder outUiBinder = GWT.create(FilterViewUiBinder.class);

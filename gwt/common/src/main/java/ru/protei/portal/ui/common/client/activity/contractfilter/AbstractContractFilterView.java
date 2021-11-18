@@ -24,6 +24,8 @@ public interface AbstractContractFilterView extends IsWidget {
 
     void clearFooterStyle();
 
+    void setContractCuratorsDepartmentsIds(Set<Long> contractCuratorsDepartmentsIds);
+
     HasValue<String> searchString();
 
     HasValue<En_SortField> sortField();

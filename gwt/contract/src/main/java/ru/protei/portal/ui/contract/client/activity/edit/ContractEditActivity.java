@@ -20,14 +20,14 @@ import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTa
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.AppServiceAsync;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.shared.model.ClientConfigData;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
@@ -60,12 +60,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
 
-        if(event.id == null) {
-            fillView(new Contract());
-            return;
-        }
-
-        requestContract(event.id, this::fillView);
+        setCuratorsDepartmentsIdsAndFillView(event.id);
     }
 
     @Event
@@ -171,6 +166,22 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     @Override
     public void onAddDateClicked() {
         fireEvent(new ContractDateEvents.ShowEdit());
+    }
+
+    private void setCuratorsDepartmentsIdsAndFillView(Long contractId) {
+        appService.getClientConfig(new FluentCallback<ClientConfigData>()
+                  .withSuccess(config -> {
+                      if (config != null) {
+                          view.setContractCuratorsDepartmentsIds(config.contractCuratorsDepartmentsIds);
+                      }
+
+                      if (contractId == null) {
+                          fillView(new Contract());
+                          return;
+                      }
+
+                      requestContract(contractId, this::fillView);
+                }));
     }
 
     private void requestContract(Long contractId, Consumer<Contract> consumer) {
@@ -406,6 +417,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     RegionControllerAsync regionService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    AppServiceAsync appService;
 
     private Contract contract;
     private AbstractCaseTagListActivity tagListActivity;

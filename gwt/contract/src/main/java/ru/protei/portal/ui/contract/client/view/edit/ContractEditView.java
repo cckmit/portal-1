@@ -21,7 +21,6 @@ import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
@@ -45,10 +44,7 @@ import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditVie
 import ru.protei.portal.ui.contract.client.widget.contractor.ContractorWidget;
 import ru.protei.portal.ui.contract.client.widget.contractspecification.list.ContractSpecificationList;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 import static ru.protei.portal.core.model.struct.Vat.*;
@@ -196,6 +192,13 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
+    public void setContractCuratorsDepartmentsIds(Set<Long> contractCuratorsDepartmentsIds) {
+        this.contractCuratorsDepartmentsIds = contractCuratorsDepartmentsIds;
+        curator.clearSelector();
+        initCuratorSelector();
+    }
+
+    @Override
     public HasVisibility tagsVisibility() {
         return tags;
     }
@@ -306,7 +309,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
 
     private void initCuratorSelector() {
         EmployeeQuery query = new EmployeeQuery(null, false, true, En_SortField.person_full_name, En_SortDir.ASC);
-        query.setDepartmentIds(new HashSet<>(Collections.singletonList(CrmConstants.Department.CONTRACT)));
+        query.setDepartmentIds(contractCuratorsDepartmentsIds);
         curator.setEmployeeQuery(query);
     }
 
@@ -442,6 +445,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @UiField
     TextBox deliveryNumber;
 
+    private Set<Long> contractCuratorsDepartmentsIds;
     private AbstractContractEditActivity activity;
 
     private static ContractViewUiBinder ourUiBinder = GWT.create(ContractViewUiBinder.class);
