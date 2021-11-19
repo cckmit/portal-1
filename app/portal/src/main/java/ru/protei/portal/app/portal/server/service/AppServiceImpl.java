@@ -13,6 +13,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.ui.common.client.service.AppService;
 import ru.protei.portal.ui.common.shared.model.ClientConfigData;
 
+import static java.util.Arrays.asList;
 
 /**
  * Сервис приложения
@@ -29,6 +30,7 @@ public class AppServiceImpl extends RemoteServiceServlet implements AppService {
 
         data.appVersion = properties.getProperty("version", "");
         data.cardbatchCompanyPartnerId = portalConfig.data().getCommonConfig().getCardbatchCompanyPartnerId();
+        data.contractCuratorsDepartmentsIds = asList(portalConfig.data().getCommonConfig().getContractCuratorsDepartmentsIds());
 
         log.info( "getClientConfig, data = {}", data );
         return data;

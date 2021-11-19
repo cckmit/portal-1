@@ -15,6 +15,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public interface AbstractContractEditView extends IsWidget {
 
@@ -69,6 +70,8 @@ public interface AbstractContractEditView extends IsWidget {
     void setDirections(String value);
 
     void setOrganization(String organization);
+
+    void initCuratorsSelector(List<String> contractCuratorsDepartmentsIds);
 
     HasVisibility tagsVisibility();
 

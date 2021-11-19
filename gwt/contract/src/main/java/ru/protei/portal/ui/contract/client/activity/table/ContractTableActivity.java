@@ -19,9 +19,11 @@ import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.AppServiceAsync;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -47,6 +49,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
         filterView.resetFilter();
+        filterView.initCuratorsSelector(configStorage.getConfigData().contractCuratorsDepartmentsIds);
     }
 
     @Event
@@ -203,6 +206,8 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     private DefaultErrorHandler errorHandler;
     @Inject
     private AbstractPagerView pagerView;
+    @Inject
+    ConfigStorage configStorage;
 
     private Integer scrollTo = 0;
     private Boolean preScroll = false;

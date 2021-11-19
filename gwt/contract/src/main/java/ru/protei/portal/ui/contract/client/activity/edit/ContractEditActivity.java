@@ -18,16 +18,16 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.shared.model.ClientConfigData;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
@@ -41,6 +41,11 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+    }
+
+    @Event
+    public void onAuthSuccess(AuthEvents.Success event) {
+        view.initCuratorsSelector(configStorage.getConfigData().contractCuratorsDepartmentsIds);
     }
 
     @Event
@@ -60,7 +65,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
 
-        if(event.id == null) {
+        if (event.id == null) {
             fillView(new Contract());
             return;
         }
@@ -406,6 +411,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     RegionControllerAsync regionService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    ConfigStorage configStorage;
 
     private Contract contract;
     private AbstractCaseTagListActivity tagListActivity;

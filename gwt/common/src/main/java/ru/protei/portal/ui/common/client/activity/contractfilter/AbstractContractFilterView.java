@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 
+import java.util.List;
 import java.util.Set;
 
 public interface AbstractContractFilterView extends IsWidget {
@@ -23,6 +24,8 @@ public interface AbstractContractFilterView extends IsWidget {
     void resetFilter();
 
     void clearFooterStyle();
+
+    void initCuratorsSelector(List<String> contractCuratorsDepartmentsIds);
 
     HasValue<String> searchString();
 
