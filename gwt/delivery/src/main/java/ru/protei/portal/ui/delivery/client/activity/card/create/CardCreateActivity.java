@@ -117,8 +117,11 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
     }
 
     private void fillView(CardBatch cardBatch){
-        view.type().setValue(cardBatch.getId() != null ? new CardType(cardBatch.getTypeName(), cardBatch.getCode(), true, true) : null);
-        view.cardBatch().setValue(cardBatch.getId() != null ? cardBatch : null);
+        boolean createCardBasedOnCardBatch = cardBatch.getId() != null;
+        view.type().setValue(createCardBasedOnCardBatch ? makeCardType(cardBatch) : null);
+        view.cardBatch().setValue(createCardBasedOnCardBatch ? cardBatch : null);
+        view.typeEnabled().setEnabled(!createCardBasedOnCardBatch);
+        view.cardBatchEnabled().setEnabled(!createCardBasedOnCardBatch);
         view.cardBatchModel().updateCardType(null);
         view.testDate().setValue(null);
         view.setTestDateValid(true);
@@ -136,6 +139,12 @@ public abstract class CardCreateActivity extends CardCommonMeta implements Activ
         } else {
             view.serialNumber().setValue(null);
         }
+    }
+
+    private CardType makeCardType(CardBatch cardBatch) {
+        CardType cardType = new CardType(cardBatch.getTypeName(), cardBatch.getCode(), true, true);
+        cardType.setId(cardBatch.getTypeId());
+        return cardType;
     }
 
     private CardCreateRequest fillCardCreateRequest() {

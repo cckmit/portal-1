@@ -52,7 +52,7 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
     @Override
     public void setAnimation(TableAnimation animation) {
         animation.setContainers(tableContainer, previewContainer, filterContainer);
-        animation.setStyles("col-md-12", "col-md-9", "col-md-3", "col-md-3", "col-md-9");
+        animation.setStyles("col-md-12", "col-md-9", "col-md-3", "col-md-4", "col-md-8");
     }
 
     @Override

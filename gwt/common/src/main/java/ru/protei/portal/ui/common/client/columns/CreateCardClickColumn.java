@@ -38,7 +38,7 @@ public class CreateCardClickColumn<T> extends ClickColumn<T> {
     public void fillColumnValue(Element cell, T value) {
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref("#");
-        a.addClassName("fa fa-plus-circle fa-lg");
+        a.addClassName("fa fa-fw fa-plus-circle fa-lg");
         a.setTitle(lang.cardsCreating());
         a.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.BUTTON.CREATE_CARD);
 

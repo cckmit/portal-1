@@ -71,8 +71,18 @@ public class CardCreateView extends Composite implements AbstractCardCreateView 
     }
 
     @Override
+    public HasEnabled typeEnabled() {
+        return meta.typeEnable();
+    }
+
+    @Override
     public HasValue<CardBatch> cardBatch() {
         return meta.cardBatch();
+    }
+
+    @Override
+    public HasEnabled cardBatchEnabled() {
+        return meta.cardBatchEnable();
     }
 
     @Override
