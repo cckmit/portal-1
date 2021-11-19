@@ -18,9 +18,9 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AppServiceAsync;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.ClientConfigData;
@@ -44,6 +44,11 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     }
 
     @Event
+    public void onAuthSuccess(AuthEvents.Success event) {
+        view.initCuratorsSelector(configStorage.getConfigData().contractCuratorsDepartmentsIds);
+    }
+
+    @Event
     public void onInitDetails(AppEvents.InitDetails initDetails) {
         this.initDetails = initDetails;
         fireEvent(new ContractDateEvents.Init(() -> view.cost().getValue().getMoney(), () -> view.dateSigning().getValue()));
@@ -60,7 +65,12 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
 
-        setCuratorsDepartmentsIdsAndFillView(event.id);
+        if (event.id == null) {
+            fillView(new Contract());
+            return;
+        }
+
+        requestContract(event.id, this::fillView);
     }
 
     @Event
@@ -166,22 +176,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     @Override
     public void onAddDateClicked() {
         fireEvent(new ContractDateEvents.ShowEdit());
-    }
-
-    private void setCuratorsDepartmentsIdsAndFillView(Long contractId) {
-        appService.getClientConfig(new FluentCallback<ClientConfigData>()
-                  .withSuccess(config -> {
-                      if (config != null) {
-                          view.setContractCuratorsDepartmentsIds(config.contractCuratorsDepartmentsIds);
-                      }
-
-                      if (contractId == null) {
-                          fillView(new Contract());
-                          return;
-                      }
-
-                      requestContract(contractId, this::fillView);
-                }));
     }
 
     private void requestContract(Long contractId, Consumer<Contract> consumer) {
@@ -418,7 +412,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     @Inject
     DefaultErrorHandler defaultErrorHandler;
     @Inject
-    AppServiceAsync appService;
+    ConfigStorage configStorage;
 
     private Contract contract;
     private AbstractCaseTagListActivity tagListActivity;

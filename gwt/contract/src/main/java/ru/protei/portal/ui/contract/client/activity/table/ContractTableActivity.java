@@ -19,12 +19,12 @@ import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AppServiceAsync;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
-import ru.protei.portal.ui.common.shared.model.ClientConfigData;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -49,6 +49,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
         filterView.resetFilter();
+        filterView.initCuratorsSelector(configStorage.getConfigData().contractCuratorsDepartmentsIds);
     }
 
     @Event
@@ -74,7 +75,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
 
         this.preScroll = event.preScroll;
 
-        setCuratorsDepartmentsIdsAndLoadTable();
+        loadTable();
     }
 
     @Event
@@ -136,17 +137,6 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     @Override
     public void onPageSelected(int page) {
         view.scrollTo(page);
-    }
-
-    private void setCuratorsDepartmentsIdsAndLoadTable() {
-        appService.getClientConfig(new FluentCallback<ClientConfigData>()
-                .withSuccess(config -> {
-                    if (config != null) {
-                        filterView.setContractCuratorsDepartmentsIds(config.contractCuratorsDepartmentsIds);
-                    }
-
-                    loadTable();
-                }));
     }
 
     private void loadTable() {
@@ -217,7 +207,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     @Inject
     private AbstractPagerView pagerView;
     @Inject
-    AppServiceAsync appService;
+    ConfigStorage configStorage;
 
     private Integer scrollTo = 0;
     private Boolean preScroll = false;

@@ -71,7 +71,7 @@ public interface AbstractContractEditView extends IsWidget {
 
     void setOrganization(String organization);
 
-    void setContractCuratorsDepartmentsIds(Set<Long> contractCuratorsDepartmentsIds);
+    void initCuratorsSelector(List<String> contractCuratorsDepartmentsIds);
 
     HasVisibility tagsVisibility();
 
