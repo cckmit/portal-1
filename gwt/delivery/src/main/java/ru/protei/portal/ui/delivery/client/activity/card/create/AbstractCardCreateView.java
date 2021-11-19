@@ -31,7 +31,11 @@ public interface AbstractCardCreateView extends IsWidget {
 
     HasValue<CardType> type();
 
+    HasEnabled typeEnabled();
+
     HasValue<CardBatch> cardBatch();
+
+    HasEnabled cardBatchEnabled();
 
     CardBatchModel cardBatchModel();
 

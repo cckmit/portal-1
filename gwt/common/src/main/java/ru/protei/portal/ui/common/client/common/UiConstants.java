@@ -166,6 +166,7 @@ public class UiConstants {
         String DOWNLOAD = "download";
         String REFRESH = "refresh";
         String CANCEL = "cancel";
+        String CREATE_CARD = "create-card";
     }
 
     public interface Accordion {

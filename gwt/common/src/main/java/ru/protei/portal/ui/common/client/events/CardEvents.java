@@ -23,6 +23,11 @@ public class CardEvents {
     @Url( value = "card_create")
     public static class Create {
         public Create() {}
+        public Create(Long cardBatchId) {
+            this.cardBatchId = cardBatchId;
+        }
+
+        public Long cardBatchId;
     }
 
     @Url( value = "card")

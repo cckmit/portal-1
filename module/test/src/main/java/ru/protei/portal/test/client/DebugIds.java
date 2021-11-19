@@ -957,6 +957,7 @@ public class DebugIds {
             String ATTACHMENT = "table-attachment-button";
             String COPY = "table-copy-button";
             String CANCEL = "table-cancel-button";
+            String CREATE_CARD = "table-create-card-button";
         }
 
         interface ISSUE {

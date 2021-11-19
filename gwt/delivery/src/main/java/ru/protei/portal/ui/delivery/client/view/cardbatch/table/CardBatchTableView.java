@@ -12,10 +12,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CardBatch;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
-import ru.protei.portal.ui.common.client.columns.ClickColumn;
-import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
-import ru.protei.portal.ui.common.client.columns.EditClickColumn;
-import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
+import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.CardBatchStateLang;
 import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -40,6 +37,8 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
         this.activity = activity;
         table.setPagerListener(activity);
         table.setLoadHandler(activity);
+        createCardClickColumn.setCreateCardHandler(activity);
+        createCardClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CARD_CREATE));
         editClickColumn.setEditHandler(activity);
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CARD_BATCH_EDIT));
         removeClickColumn.setRemoveHandler(activity);
@@ -53,7 +52,7 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
     @Override
     public void setAnimation(TableAnimation animation) {
         animation.setContainers(tableContainer, previewContainer, filterContainer);
-        animation.setStyles("col-md-12", "col-md-9", "col-md-3", "col-md-3", "col-md-9");
+        animation.setStyles("col-md-12", "col-md-9", "col-md-3", "col-md-4", "col-md-8");
     }
 
     @Override
@@ -114,6 +113,7 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
         columns.add(new AmountColumn(lang));
         columns.add(new DeadlineColumn(lang));
         columns.add(new ContractorsColumn(lang, personRoleTypeLang));
+        columns.add(createCardClickColumn);
         columns.add(editClickColumn);
         columns.add(removeClickColumn);
 
@@ -139,6 +139,8 @@ public class CardBatchTableView extends Composite implements AbstractCardBatchTa
     CardBatchStateLang cardBatchStateLang;
     @Inject
     En_PersonRoleTypeLang personRoleTypeLang;
+    @Inject
+    private CreateCardClickColumn<CardBatch> createCardClickColumn;
     @Inject
     private EditClickColumn<CardBatch> editClickColumn;
     @Inject
