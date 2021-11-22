@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
 import ru.protei.portal.core.renderer.impl.markup.custom.userlink.UserLinkRendererComponent;
@@ -33,8 +34,7 @@ import ru.protei.portal.core.service.AttachmentService;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -111,16 +111,27 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
     }
 
     private String restoreContentFromContentStore(RenderContext context, String content) {
+
+        Map<String,String> replacementMap = new HashMap<>();
         for (TokenType tokenType : TokenType.values()) {
-            Pattern p = Pattern.compile(".*(" + tokenType.getTokenPatternString() + ").*", Pattern.CASE_INSENSITIVE);
+            Pattern p = Pattern.compile(tokenType.getTokenPatternString(), Pattern.CASE_INSENSITIVE);
             Matcher m = p.matcher(content);
-            if (m.find() && m.groupCount() > 0) {
-                String token = m.group(1);
-                content = content.replace(token, renderFromContentStore(context, token));
-                return restoreContentFromContentStore(context, content);
+            while (m.find()) {
+                String token = m.group();
+                String replacement = renderFromContentStore(context, token);
+                replacementMap.put(token, replacement);
             }
         }
-        return content;
+
+        if (CollectionUtils.isEmpty(replacementMap)){
+            return content;
+        }
+
+        for (Map.Entry<String,String> rep : replacementMap.entrySet()){
+            content = content.replace(rep.getKey(), rep.getValue());
+        }
+
+        return restoreContentFromContentStore(context, content);
     }
 
     private String renderFromContentStore(RenderContext context, String token) {
