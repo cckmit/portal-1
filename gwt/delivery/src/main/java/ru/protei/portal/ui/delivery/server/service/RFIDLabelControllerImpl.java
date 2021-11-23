@@ -6,13 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.RFIDLabel;
+import ru.protei.portal.core.model.query.RFIDLabelQuery;
 import ru.protei.portal.core.service.RFIDLabelService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.RFIDLabelController;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
 import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
@@ -39,14 +40,20 @@ public class RFIDLabelControllerImpl implements RFIDLabelController {
     }
 
     @Override
-    public List<RFIDLabel> getAll() throws RequestFailedException {
+    public SearchResult<RFIDLabel> getByQuery(RFIDLabelQuery query) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
-        return checkResultAndGetData(rfidLabelService.getAll(token));
+        return checkResultAndGetData(rfidLabelService.getByQuery(token, query));
     }
 
     @Override
     public RFIDLabel update(RFIDLabel value) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         return checkResultAndGetData(rfidLabelService.update(token, value));
+    }
+
+    @Override
+    public RFIDLabel remove(RFIDLabel value) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(rfidLabelService.remove(token, value));
     }
 }

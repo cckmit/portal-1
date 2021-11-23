@@ -124,6 +124,7 @@ public class DebugIds {
         String ROOM_RESERVATION_TABLE = "sidebar-menu-room-reservation-table";
         String DUTY_LOG = "sidebar-menu-duty-log";
         String DOCUMENTATION = "sidebar-menu-documentation";
+        String RFID_LABEL = "sidebar-menu-rfid-labels";
     }
 
     public interface SELECTOR {

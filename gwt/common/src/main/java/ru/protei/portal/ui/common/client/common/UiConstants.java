@@ -69,6 +69,7 @@ public class UiConstants {
         String ROOM_RESERVATION_TABLE = "fas fa-th-list";
         String DUTY_LOG = "fas fa-book-open";
         String DOCUMENTATION = "fas fa-file-alt";
+        String RFID_LABEL = "fa fa-qrcode";
     }
     public interface Icons {
         String APPROVED = "fa-clipboard-check";

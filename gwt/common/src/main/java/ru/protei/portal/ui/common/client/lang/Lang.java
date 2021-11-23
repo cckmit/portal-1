@@ -4013,4 +4013,20 @@ public interface Lang extends Messages, ContactItemLang {
     String cardBatch();
 
     String card();
+
+    String RFIDLabels();
+
+    String RFIDLabelsEpc();
+
+    String RFIDLabelsName();
+
+    String RFIDLabelsInfo();
+
+    String RFIDLabelsLastScanDate();
+
+    String RFIDLabelsDevice();
+
+    String RFIDLabelsRemoveConfirmMessage(String name);
+
+    String RFIDLabelsRemoveSucceeded();
 }

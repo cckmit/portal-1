@@ -12,6 +12,9 @@ public class RFIDLabel implements Serializable {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
+    @JdbcColumn(name = "epc")
+    private String epc;
+
     @JdbcColumn(name = "name")
     private String name;
 
@@ -35,6 +38,14 @@ public class RFIDLabel implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getEpc() {
+        return epc;
+    }
+
+    public void setEpc(String epc) {
+        this.epc = epc;
     }
 
     public String getName() {
@@ -88,6 +99,19 @@ public class RFIDLabel implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "RFIDLabel{" +
+                "id=" + id +
+                ", epc='" + epc + '\'' +
+                ", name='" + name + '\'' +
+                ", info='" + info + '\'' +
+                ", lastScanDate=" + lastScanDate +
+                ", rfidDeviceId=" + rfidDeviceId +
+                ", rfidDevice=" + rfidDevice +
+                '}';
     }
 
     public interface Columns {

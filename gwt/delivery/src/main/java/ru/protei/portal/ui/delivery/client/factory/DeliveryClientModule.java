@@ -52,6 +52,8 @@ import ru.protei.portal.ui.delivery.client.activity.pcborder.filter.AbstractPcbO
 import ru.protei.portal.ui.delivery.client.activity.pcborder.meta.AbstractPcbOrderMetaView;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.table.AbstractPcbOrderTableView;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.table.PcbOrderTableActivity;
+import ru.protei.portal.ui.delivery.client.activity.rfidlabels.table.AbstractRFIDLabelTableView;
+import ru.protei.portal.ui.delivery.client.activity.rfidlabels.table.RFIDLabelTableActivity;
 import ru.protei.portal.ui.delivery.client.page.*;
 import ru.protei.portal.ui.delivery.client.view.card.create.CardCreateView;
 import ru.protei.portal.ui.delivery.client.view.card.edit.CardEditView;
@@ -82,6 +84,7 @@ import ru.protei.portal.ui.delivery.client.view.pcborder.edit.modal.PcbOrderModa
 import ru.protei.portal.ui.delivery.client.view.pcborder.filter.PcbOrderFilterView;
 import ru.protei.portal.ui.delivery.client.view.pcborder.meta.PcbOrderMetaView;
 import ru.protei.portal.ui.delivery.client.view.pcborder.table.PcbOrderTableView;
+import ru.protei.portal.ui.delivery.client.view.rfidlabels.table.RFIDLabelTableView;
 import ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.AbstractContractorsSelector;
 import ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.ContractorsSelector;
 import ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.item.AbstractContractorsSelectorItem;
@@ -95,6 +98,7 @@ public class DeliveryClientModule extends AbstractGinModule {
         bind(CardPage.class).asEagerSingleton();
         bind(CardBatchPage.class).asEagerSingleton();
         bind(PcbOrderPage.class).asEagerSingleton();
+        bind(RFIDLabelPage.class).asEagerSingleton();
 
         bind(DeliveryTableActivity.class).asEagerSingleton();
         bind(AbstractDeliveryTableView.class).to(DeliveryTableView.class).in(Singleton.class);
@@ -167,6 +171,9 @@ public class DeliveryClientModule extends AbstractGinModule {
         bind(PcbOrderEditActivity.class).asEagerSingleton();
         bind(AbstractPcbOrderEditView.class).to(PcbOrderEditView.class).in(Singleton.class);
         bind(AbstractPcbOrderModalEditView.class).to(PcbOrderModalEditView.class);
+
+        bind(RFIDLabelTableActivity.class).asEagerSingleton();
+        bind(AbstractRFIDLabelTableView.class).to(RFIDLabelTableView.class).in(Singleton.class);
     }
 }
 
