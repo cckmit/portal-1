@@ -244,6 +244,11 @@ public class DebugIds {
         String CARD_BATCH_DEADLINE_SELECTOR = "filter-card-batch-deadline-selector";
         String CARD_BATCH_IMPORTANCE_SELECTOR = "filter-card-batch-importance-selector";
 
+        String RFID_LABEL_EPC_SEARCH_INPUT = "filter-rfid-label-epc-search-input";
+        String RFID_LABEL_EPC_SEARCH_CLEAR_BUTTON = "filter-rfid-label-epc-clear_button";
+        String RFID_LABEL_NAME_SEARCH_INPUT = "filter-rfid-label-name-search-input";
+        String RFID_LABEL_NAME_SEARCH_CLEAR_BUTTON = "filter-rfid-label-name-clear_button";
+
         interface USER_FILTER {
             String FILTERS_BUTTON = "filter-user-filters-button";
             String FILTER_NAME_INPUT = "filter-user-filter-name-input";

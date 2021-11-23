@@ -54,6 +54,7 @@ import ru.protei.portal.ui.delivery.client.activity.pcborder.table.AbstractPcbOr
 import ru.protei.portal.ui.delivery.client.activity.pcborder.table.PcbOrderTableActivity;
 import ru.protei.portal.ui.delivery.client.activity.rfidlabels.table.AbstractRFIDLabelTableView;
 import ru.protei.portal.ui.delivery.client.activity.rfidlabels.table.RFIDLabelTableActivity;
+import ru.protei.portal.ui.delivery.client.activity.rfidlabels.table.filter.AbstractRFIDLabelParamWidget;
 import ru.protei.portal.ui.delivery.client.page.*;
 import ru.protei.portal.ui.delivery.client.view.card.create.CardCreateView;
 import ru.protei.portal.ui.delivery.client.view.card.edit.CardEditView;
@@ -89,6 +90,7 @@ import ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.Abstract
 import ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.ContractorsSelector;
 import ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.item.AbstractContractorsSelectorItem;
 import ru.protei.portal.ui.delivery.client.widget.cardbatch.contractors.item.ContractorsSelectorItem;
+import ru.protei.portal.ui.delivery.client.widget.rfidlabel.filter.RFIDLabelParamWidget;
 
 public class DeliveryClientModule extends AbstractGinModule {
     @Override
@@ -174,6 +176,7 @@ public class DeliveryClientModule extends AbstractGinModule {
 
         bind(RFIDLabelTableActivity.class).asEagerSingleton();
         bind(AbstractRFIDLabelTableView.class).to(RFIDLabelTableView.class).in(Singleton.class);
+        bind(AbstractRFIDLabelParamWidget.class).to(RFIDLabelParamWidget.class).in(Singleton.class);
     }
 }
 

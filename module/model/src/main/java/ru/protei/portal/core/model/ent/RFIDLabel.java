@@ -6,16 +6,18 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+import static ru.protei.portal.core.model.ent.RFIDLabel.Columns.*;
+
 @JdbcEntity(table = "rfid_label")
 public class RFIDLabel implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name = "epc")
+    @JdbcColumn(name = EPC)
     private String epc;
 
-    @JdbcColumn(name = "name")
+    @JdbcColumn(name = NAME)
     private String name;
 
     @JdbcColumn(name = "info")
@@ -117,5 +119,7 @@ public class RFIDLabel implements Serializable {
     public interface Columns {
         String ID = "id";
         String RFID_DEVICE_ID = "rfid_device_id";
+        String EPC = "epc";
+        String NAME = "name";
     }
 }

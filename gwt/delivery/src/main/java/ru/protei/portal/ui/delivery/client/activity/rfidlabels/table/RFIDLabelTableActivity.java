@@ -10,11 +10,15 @@ import ru.protei.portal.core.model.ent.RFIDLabel;
 import ru.protei.portal.core.model.query.RFIDLabelQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.RFIDLabelEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RFIDLabelControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.delivery.client.widget.rfidlabel.filter.RFIDLabelFilterWidget;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -25,6 +29,10 @@ public abstract class RFIDLabelTableActivity implements AbstractRFIDLabelTableAc
     public void onInit() {
         view.setActivity( this );
         pagerView.setActivity( this );
+
+        filterWidget.onInit();
+        filterWidget.setOnFilterChangeCallback(this::loadTable);
+        view.getFilterContainer().add( filterWidget.asWidget() );
     }
 
     @Event
@@ -37,6 +45,8 @@ public abstract class RFIDLabelTableActivity implements AbstractRFIDLabelTableAc
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
+
+        filterWidget.resetFilter();
 
         loadTable();
     }
@@ -57,7 +67,7 @@ public abstract class RFIDLabelTableActivity implements AbstractRFIDLabelTableAc
     public void loadData(int offset, int limit, AsyncCallback<List<RFIDLabel>> asyncCallback) {
         boolean isFirstChunk = offset == 0;
 
-        RFIDLabelQuery query = makeQuery();
+        RFIDLabelQuery query = filterWidget.getFilterParamView().getQuery();
         query.setOffset(offset);
         query.setLimit(limit);
 
@@ -111,11 +121,6 @@ public abstract class RFIDLabelTableActivity implements AbstractRFIDLabelTableAc
         view.triggerTableLoad();
     }
 
-    private RFIDLabelQuery makeQuery() {
-        RFIDLabelQuery query = new RFIDLabelQuery();
-        return query;
-    }
-
     @Inject
     Lang lang;
     @Inject
@@ -126,6 +131,8 @@ public abstract class RFIDLabelTableActivity implements AbstractRFIDLabelTableAc
     DefaultErrorHandler errorHandler;
     @Inject
     AbstractPagerView pagerView;
+    @Inject
+    RFIDLabelFilterWidget filterWidget;
 
     private AppEvents.InitDetails initDetails;
 }
