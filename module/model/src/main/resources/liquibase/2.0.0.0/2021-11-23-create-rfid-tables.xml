@@ -1,0 +1,57 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create-rfid_device-table" author="porubov">
+        <createTable tableName="rfid_device">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="reader_id" type="varchar(32)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="info" type="varchar(256)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-rfid_label-table" author="porubov">
+        <createTable tableName="rfid_label">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="epc" type="varchar(32)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="info" type="varchar(256)"/>
+            <column name="last_scan_date" type="DATETIME"/>
+            <column name="rfid_device_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-rfid_label_id-to-module-table" author="porubov">
+        <addColumn tableName="module">
+            <column name="rfid_label_id" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-fk-rfid-tables" author="porubov">
+        <addForeignKeyConstraint constraintName="fk_rfid_label_rfid_device_id_to_rfid_device"
+                                 baseTableName="rfid_label" baseColumnNames="rfid_device_id"
+                                 referencedTableName="rfid_device" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="SET NULL"/>
+
+        <addForeignKeyConstraint constraintName="fk_module_rfid_label_id_to_rfid_label"
+                                 baseTableName="module" baseColumnNames="rfid_label_id"
+                                 referencedTableName="rfid_label" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="SET NULL"/>
+    </changeSet>
+
+</databaseChangeLog>
