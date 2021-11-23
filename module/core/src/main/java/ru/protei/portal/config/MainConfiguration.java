@@ -1290,6 +1290,11 @@ public class MainConfiguration {
         return new CardServiceImpl();
     }
 
+    @Bean
+    public RFIDLabelService getRFIDLabelService() {
+        return new RFIDLabelServiceImpl();
+    }
+
     /* ASPECT/INTERCEPTORS */
 
     @Bean

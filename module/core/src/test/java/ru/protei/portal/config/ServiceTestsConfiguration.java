@@ -570,5 +570,8 @@ public class ServiceTestsConfiguration {
         return new ModuleServiceImpl();
     }
 
-
+    @Bean
+    public RFIDLabelService getRFIDLabelService() {
+        return new RFIDLabelServiceImpl();
+    }
 }
