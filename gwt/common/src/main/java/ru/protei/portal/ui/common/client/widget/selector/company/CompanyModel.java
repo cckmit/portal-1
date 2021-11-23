@@ -5,7 +5,10 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -18,8 +21,6 @@ import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHan
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
 import ru.protei.portal.ui.common.client.selector.pageable.SelectorItemRenderer;
 import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
-//import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
-//import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
@@ -90,7 +91,8 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
     }
 
     private CompanyQuery makeQuery( List<En_CompanyCategory> categories, boolean isParentIdIsNull ) {
-        CompanyQuery query = new CompanyQuery();
+        CompanyQuery query = new CompanyQuery(querySortParameters);
+
         if(categories != null) {
             query.setCategoryIds(
                     categories.stream()
@@ -120,5 +122,11 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
             En_CompanyCategory.HOME);
 
     private CompanyQuery query;
+
+    private List <Pair<En_SortField, En_SortDir>> querySortParameters = Arrays.asList(
+            new Pair<>(En_SortField.category, En_SortDir.DESC),
+            new Pair<>(En_SortField.comp_name, En_SortDir.ASC)
+    );
+
     private SelectorDataCache<EntityOption> cache = new SelectorDataCache<>();
 }

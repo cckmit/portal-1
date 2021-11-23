@@ -103,5 +103,5 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     void resetRanges();
 
-    void setModifiedRangeInitialValue(DateIntervalWithType default_modified_range);
+    void setDefaultModifiedRange(DateIntervalWithType default_modified_range);
 }

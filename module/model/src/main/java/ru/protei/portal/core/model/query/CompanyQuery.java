@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.struct.Pair;
 
 import java.util.List;
 
@@ -39,7 +40,11 @@ public class CompanyQuery extends BaseQuery {
     private Boolean isShowHidden;
 
     public CompanyQuery() {
-        super("", En_SortField.comp_name, En_SortDir.ASC);
+        super("", En_SortField.category, En_SortDir.DESC);
+    }
+
+    public CompanyQuery(List <Pair<En_SortField, En_SortDir>> sortParams) {
+        super("", sortParams);
     }
 
 

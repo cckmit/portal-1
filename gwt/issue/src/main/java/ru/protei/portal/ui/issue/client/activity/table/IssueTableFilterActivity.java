@@ -58,7 +58,7 @@ public abstract class IssueTableFilterActivity
         view.setAnimation( animation );
 
         filterView.getIssueFilterParams().setModel(this);
-        filterView.getIssueFilterParams().setModifiedRangeInitialValue(DEFAULT_MODIFIED_RANGE);
+        filterView.getIssueFilterParams().setDefaultModifiedRange(DEFAULT_MODIFIED_RANGE);
 
         collapseFilterView.setActivity(this);
         collapseFilterView.getContainer().add(filterView.asWidget());

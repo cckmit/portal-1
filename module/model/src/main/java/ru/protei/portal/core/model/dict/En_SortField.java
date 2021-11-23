@@ -16,6 +16,11 @@ public enum En_SortField {
     comp_name("cname"),
 
     /**
+     * category id
+     */
+    category("category_id"),
+
+    /**
      * product name (field from common table DEV_UNIT)
      */
     prod_name("unit_name"),
