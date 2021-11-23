@@ -823,6 +823,11 @@ public class MainConfiguration {
         return new CardTypeDAO_Impl();
     }
 
+    @Bean
+    public RFIDLabelDAO getRFIDLabelDAO() {
+        return new RFIDLabelDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean

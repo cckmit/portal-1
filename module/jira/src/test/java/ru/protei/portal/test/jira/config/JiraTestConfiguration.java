@@ -691,6 +691,11 @@ public class JiraTestConfiguration {
         return new PcbOrderDAO_Impl();
     }
 
+    @Bean
+    public RFIDLabelDAO getRFIDLabelDAO() {
+        return new RFIDLabelDAO_Impl();
+    }
+
     /* DAO converters */
 
     @Bean

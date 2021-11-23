@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.CardBatchSqlBuilder;
 import ru.protei.portal.core.model.dao.impl.CardSqlBuilder;
 import ru.protei.portal.core.model.dao.impl.PcbOrderDAO_Impl;
+import ru.protei.portal.core.model.dao.impl.RFIDLabelDAO_Impl;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static org.mockito.Mockito.mock;
@@ -505,5 +506,10 @@ public class DaoMockTestConfiguration {
     @Bean
     public PcbOrderDAO getPcbOrderDAO() {
         return mock(PcbOrderDAO.class);
+    }
+
+    @Bean
+    public RFIDLabelDAO getRFIDLabelDAO() {
+        return mock(RFIDLabelDAO.class);
     }
 }

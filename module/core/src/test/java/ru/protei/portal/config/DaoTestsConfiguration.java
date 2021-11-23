@@ -541,4 +541,9 @@ public class DaoTestsConfiguration {
     public PcbOrderDAO getPcbOrderDAO() {
         return new PcbOrderDAO_Impl();
     }
+
+    @Bean
+    public RFIDLabelDAO getRFIDLabelDAO() {
+        return new RFIDLabelDAO_Impl();
+    }
 }
