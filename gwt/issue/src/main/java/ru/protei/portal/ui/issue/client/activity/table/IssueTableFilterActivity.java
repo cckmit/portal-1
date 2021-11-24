@@ -32,6 +32,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.ManagerCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -58,7 +59,7 @@ public abstract class IssueTableFilterActivity
         view.setAnimation( animation );
 
         filterView.getIssueFilterParams().setModel(this);
-        filterView.getIssueFilterParams().setDefaultModifiedRange(DEFAULT_MODIFIED_RANGE);
+        filterView.getIssueFilterParams().presetDefaultModifiedRange(DEFAULT_MODIFIED_RANGE);
 
         collapseFilterView.setActivity(this);
         collapseFilterView.getContainer().add(filterView.asWidget());
@@ -101,6 +102,8 @@ public abstract class IssueTableFilterActivity
                 new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.ISSUE ) :
                 new ActionBarEvents.Clear()
         );
+
+
 
         if (!policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)) {
             if (policyService.isSubcontractorCompany()) {
@@ -404,7 +407,7 @@ public abstract class IssueTableFilterActivity
         customerCompanyModel.setActive(false);
 
         filterView.setInitiatorCompaniesModel(isSubcontractorCompany(userCompany) ? customerCompanyModel : companyModel);
-        filterView.setManagerCompaniesModel(profile.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || isSubcontractorCompany(userCompany) ? companyModel : subcontractorCompanyModel);
+        filterView.setManagerCompaniesModel(profile.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || isSubcontractorCompany(userCompany) ? managerCompanyModel : subcontractorCompanyModel);
     }
 
     private boolean isSubcontractorCompany(Company userCompany) {
@@ -458,6 +461,9 @@ public abstract class IssueTableFilterActivity
 
     @Inject
     CustomerCompanyModel customerCompanyModel;
+
+    @Inject
+    ManagerCompanyModel managerCompanyModel;
 
     @Inject
     SubcontractorCompanyModel subcontractorCompanyModel;

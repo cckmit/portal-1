@@ -805,7 +805,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         }
     }
 
-    public void setDefaultModifiedRange(DateIntervalWithType defaultModifiedRange) {
+    public void presetDefaultModifiedRange(DateIntervalWithType defaultModifiedRange) {
         this.defaultModifiedRange = defaultModifiedRange;
     }
 

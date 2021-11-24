@@ -69,6 +69,8 @@ public interface AbstractIssueFilterParamView extends IsWidget {
 
     void presetManagerCompanies(List<EntityOption> companies);
 
+    void presetDefaultModifiedRange(DateIntervalWithType default_modified_range);
+
     void fillFilterFields(CaseQuery caseQuery, SelectorsParams selectorsParams);
 
     CaseQuery getFilterFields(En_CaseFilterType filterType);
@@ -102,6 +104,4 @@ public interface AbstractIssueFilterParamView extends IsWidget {
     int importanceSize();
 
     void resetRanges();
-
-    void setDefaultModifiedRange(DateIntervalWithType default_modified_range);
 }

@@ -40,7 +40,7 @@ public class CompanyQuery extends BaseQuery {
     private Boolean isShowHidden;
 
     public CompanyQuery() {
-        super("", En_SortField.category, En_SortDir.DESC);
+        super("", En_SortField.comp_name, En_SortDir.ASC);
     }
 
     public CompanyQuery(List <Pair<En_SortField, En_SortDir>> sortParams) {
