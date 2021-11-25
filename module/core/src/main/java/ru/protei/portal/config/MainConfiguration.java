@@ -828,6 +828,11 @@ public class MainConfiguration {
         return new RFIDLabelDAO_Impl();
     }
 
+    @Bean
+    public RFIDDeviceDAO getRFIDDeviceDAO() {
+        return new RFIDDeviceDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean

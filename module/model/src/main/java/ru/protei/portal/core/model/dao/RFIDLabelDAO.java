@@ -8,4 +8,6 @@ import ru.protei.portal.core.model.query.SqlCondition;
 public interface RFIDLabelDAO extends PortalBaseDAO<RFIDLabel> {
     @SqlConditionBuilder
     SqlCondition createSqlCondition(RFIDLabelQuery query);
+    
+    RFIDLabel getByEPC(String epc);
 }

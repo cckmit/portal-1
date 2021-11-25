@@ -14,7 +14,7 @@ public class RFIDDevice implements Serializable {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name = "reader_id")
+    @JdbcColumn(name = Columns.READER_ID)
     private String readerId;
 
     @JdbcColumn(name = "name")
@@ -24,6 +24,10 @@ public class RFIDDevice implements Serializable {
     private String info;
 
     public RFIDDevice() {}
+
+    public RFIDDevice(String readerId) {
+        this.readerId = readerId;
+    }
 
     public Long getId() {
         return id;
@@ -82,5 +86,6 @@ public class RFIDDevice implements Serializable {
 
     public interface Columns {
         String ID = "id";
+        String READER_ID = "reader_id";
     }
 }

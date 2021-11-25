@@ -462,4 +462,9 @@ public class RedmineTestConfigurationMockDao {
     public RFIDLabelDAO getRFIDLabelDAO() {
         return mock(RFIDLabelDAO.class);
     }
+
+    @Bean
+    public RFIDDeviceDAO getRFIDDeviceDAO() {
+        return mock(RFIDDeviceDAO.class);
+    }
 }

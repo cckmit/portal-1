@@ -696,6 +696,11 @@ public class JiraTestConfiguration {
         return new RFIDLabelDAO_Impl();
     }
 
+    @Bean
+    public RFIDDeviceDAO getRFIDDeviceDAO() {
+        return new RFIDDeviceDAO_Impl();
+    }
+    
     /* DAO converters */
 
     @Bean

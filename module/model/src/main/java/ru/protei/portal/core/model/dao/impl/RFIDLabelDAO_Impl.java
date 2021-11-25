@@ -27,4 +27,9 @@ public class RFIDLabelDAO_Impl extends PortalBaseJdbcDAO<RFIDLabel> implements R
             }
         });
     }
+
+    @Override
+    public RFIDLabel getByEPC(String epc) {
+        return getByCondition(RFIDLabel.Columns.EPC + " = ?", epc);
+    }
 }

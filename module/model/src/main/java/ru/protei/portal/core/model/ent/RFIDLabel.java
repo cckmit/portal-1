@@ -23,10 +23,10 @@ public class RFIDLabel implements Serializable {
     @JdbcColumn(name = "info")
     private String info;
 
-    @JdbcColumn(name = "last_scan_date")
+    @JdbcColumn(name = LAST_SCAN_DATE)
     private Date lastScanDate;
 
-    @JdbcColumn(name = "rfid_device_id")
+    @JdbcColumn(name = RFID_DEVICE_ID)
     private Long rfidDeviceId;
 
     @JdbcJoinedObject(localColumn = Columns.RFID_DEVICE_ID, remoteColumn = RFIDDevice.Columns.ID)
@@ -118,8 +118,9 @@ public class RFIDLabel implements Serializable {
 
     public interface Columns {
         String ID = "id";
-        String RFID_DEVICE_ID = "rfid_device_id";
         String EPC = "epc";
         String NAME = "name";
+        String LAST_SCAN_DATE = "last_scan_date";
+        String RFID_DEVICE_ID = "rfid_device_id";
     }
 }

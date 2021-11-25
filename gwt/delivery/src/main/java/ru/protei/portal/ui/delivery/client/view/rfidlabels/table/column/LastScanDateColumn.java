@@ -31,7 +31,7 @@ public class LastScanDateColumn extends ClickColumn<RFIDLabel> {
 
         if (item.getLastScanDate() != null) {
             com.google.gwt.dom.client.Element date = DOM.createDiv();
-            date.setInnerText( DateFormatter.formatDateOnly(item.getLastScanDate()) );
+            date.setInnerText( DateFormatter.formatDateTime(item.getLastScanDate()) );
             cell.appendChild( date );
         }
     }
