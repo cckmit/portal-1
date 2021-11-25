@@ -10,4 +10,6 @@ public interface AbstractModuleMetaActivity {
     void onBuildDateChanged();
 
     void onDepartureDateChanged();
+
+    default void onRfidLabelGetFocus(){};
 }

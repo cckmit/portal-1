@@ -24,6 +24,8 @@ public interface AbstractModuleMetaView extends IsWidget {
     HasValue<Date> buildDate();
 
     HasValue<Date> departureDate();
+    
+    HasValue<String> rfidLabel();
 
     void setBuildDateValid(boolean isValid);
 

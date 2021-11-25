@@ -2,15 +2,12 @@ package ru.protei.portal.ui.delivery.client.view.delivery.module.meta;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.ent.CaseState;
@@ -70,6 +67,11 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
     @Override
     public HasValue<Date> departureDate() {
         return departureDate;
+    }
+
+    @Override
+    public HasValue<String> rfidLabel() {
+        return rfidLabel;
     }
 
     @Override
@@ -160,6 +162,11 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
         activity.onDepartureDateChanged();
     }
 
+    @UiHandler("rfidLabel")
+    public void onRfidLabelFocus(FocusEvent event) {
+        activity.onRfidLabelGetFocus();
+    }
+
     @Inject
     @UiField( provided = true )
     ModuleStateFormSelector state;
@@ -179,6 +186,8 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
     @Inject
     @UiField(provided = true)
     SinglePicker departureDate;
+    @UiField
+    TextBox rfidLabel;
 
     private AbstractModuleMetaActivity activity;
 

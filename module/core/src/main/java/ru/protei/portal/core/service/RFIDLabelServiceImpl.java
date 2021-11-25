@@ -14,6 +14,10 @@ import ru.protei.portal.core.model.ent.RFIDLabel;
 import ru.protei.portal.core.model.query.RFIDLabelQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
+
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.ent.RFIDLabel.Columns.LAST_SCAN_DATE;
@@ -105,6 +109,23 @@ public class RFIDLabelServiceImpl implements RFIDLabelService {
             }
         }
 
+        lastScanRfidLabel.offer(value);
+
         return ok(value);
     }
+
+    @Override
+    public Result<RFIDLabel> getLastScanLabel(AuthToken token, boolean start) {
+        if (start) {
+            lastScanRfidLabel.clear();
+        }
+        try {
+            return ok(lastScanRfidLabel.poll(5, TimeUnit.SECONDS));
+        } catch (InterruptedException e) {
+            log.error(e.getMessage());
+            return error(En_ResultStatus.INTERNAL_ERROR);
+        }
+    }
+
+    static private final BlockingQueue<RFIDLabel> lastScanRfidLabel = new ArrayBlockingQueue<>(1);
 }

@@ -56,4 +56,10 @@ public class RFIDLabelControllerImpl implements RFIDLabelController {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         return checkResultAndGetData(rfidLabelService.remove(token, value));
     }
+
+    @Override
+    public RFIDLabel getLastScanLabel(boolean start) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        return checkResultAndGetData(rfidLabelService.getLastScanLabel(token, start));
+    }
 }

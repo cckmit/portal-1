@@ -7,6 +7,8 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Module;
+import ru.protei.portal.core.model.ent.RFIDLabel;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.CommentAndHistoryEvents;
@@ -14,6 +16,7 @@ import ru.protei.portal.ui.common.client.events.ModuleEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ModuleControllerAsync;
+import ru.protei.portal.ui.common.client.service.RFIDLabelControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.view.delivery.module.meta.ModuleMetaView;
 
@@ -89,6 +92,32 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
         }
         module.setDepartureDate(view.departureDate().getValue());
         onCaseMetaChanged(module);
+    }
+
+    @Override
+    public void onRfidLabelGetFocus() {
+        rfidLabelCount = 0;
+        rfidLabelController.getLastScanLabel(true, new FluentCallback<RFIDLabel>()
+                .withSuccess(this::method));
+    }
+
+    private void method(RFIDLabel labelOuter) {
+        if (!view.isAttached() || StringUtils.isNotEmpty(view.rfidLabel().getValue())) {
+            return;
+        }
+        if (labelOuter == null) {
+            rfidLabelCount++;
+            rfidLabelController.getLastScanLabel(false, new FluentCallback<RFIDLabel>()
+                .withSuccess(labelInner -> {
+                    if (rfidLabelCount == 5) {
+                        fireEvent(new NotifyEvents.Show("RFID labelOuter scan failed =(", NotifyEvents.NotifyType.ERROR));
+                        return;
+                    }
+                    method(labelInner);
+                }));
+        } else if (view.isAttached() && StringUtils.isEmpty(view.rfidLabel().getValue())) {
+            view.rfidLabel().setValue(labelOuter.getEpc());
+        }
     }
 
     private String getValidationError() {
@@ -176,6 +205,9 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
     private ModuleMetaView view;
     @Inject
     private ModuleControllerAsync moduleService;
+    @Inject
+    private RFIDLabelControllerAsync rfidLabelController;
+    private int rfidLabelCount = 0;
 
     @ContextAware
     Module module;

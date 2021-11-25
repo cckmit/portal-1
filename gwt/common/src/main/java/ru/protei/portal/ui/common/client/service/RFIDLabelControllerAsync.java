@@ -13,4 +13,6 @@ public interface RFIDLabelControllerAsync {
     void update(RFIDLabel value, AsyncCallback<RFIDLabel> async);
 
     void remove(RFIDLabel value, AsyncCallback<RFIDLabel> async);
+
+    void getLastScanLabel(boolean start, AsyncCallback<RFIDLabel> async);
 }
