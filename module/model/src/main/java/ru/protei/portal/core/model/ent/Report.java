@@ -9,6 +9,7 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * @see ReportCaseQuery
@@ -235,6 +236,19 @@ public class Report implements Serializable {
 
     public void setWithDeadlineAndWorkTrigger(boolean withDeadlineAndWorkTrigger) {
         this.withDeadlineAndWorkTrigger = withDeadlineAndWorkTrigger;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Report report = (Report) o;
+        return Objects.equals(id, report.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override
