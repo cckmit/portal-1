@@ -95,7 +95,7 @@ public class AssemblerServiceImpl implements AssemblerService {
         log.info("fillManager(): CaseObjectID={} manager is successfully filled.", e.getCaseObjectId());
 
 
-        if (e.getInitCaseMeta().getManager() != null) {
+        if (e.getInitCaseMeta() != null && e.getInitCaseMeta().getManager() != null) {
             log.info("fillPreviousManager(): CaseObjectID={} Try to fill previous manager.", e.getCaseObjectId());
             Person previousManager = personDAO.get(e.getInitCaseMeta().getManager().getId());
             jdbcManyRelationsHelper.fill(previousManager, Person.Fields.CONTACT_ITEMS);
