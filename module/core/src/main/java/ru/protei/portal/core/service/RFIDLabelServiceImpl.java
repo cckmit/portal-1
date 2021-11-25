@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.RFIDDeviceDAO;
 import ru.protei.portal.core.model.dao.RFIDLabelDAO;
@@ -42,6 +43,7 @@ public class RFIDLabelServiceImpl implements RFIDLabelService {
     }
 
     @Override
+    @Transactional
     public Result<RFIDLabel> update(AuthToken token, RFIDLabel value) {
         if (value == null || value.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -57,6 +59,7 @@ public class RFIDLabelServiceImpl implements RFIDLabelService {
     }
 
     @Override
+    @Transactional
     public Result<RFIDLabel> remove(AuthToken token, RFIDLabel value) {
         if (value == null || value.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -72,6 +75,7 @@ public class RFIDLabelServiceImpl implements RFIDLabelService {
     }
 
     @Override
+    @Transactional
     public Result<RFIDDevice> getOrCreateDeviceByReaderId(AuthToken token, String readerId) {
         if (readerId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -85,6 +89,7 @@ public class RFIDLabelServiceImpl implements RFIDLabelService {
     }
 
     @Override
+    @Transactional
     public Result<RFIDLabel> saveOrUpdateLastScan(AuthToken token, RFIDLabel value) {
         if (value == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
