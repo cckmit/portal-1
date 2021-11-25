@@ -2664,6 +2664,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errSaveReservedIpUseInterval();
 
+    String errSaveReservedIpUseOpenInterval();
+
     String errSaveReservedIpNeedSelectOwner();
 
     String errSaveReservedIpNeedSelectSubnet();
