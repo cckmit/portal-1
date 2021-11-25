@@ -146,9 +146,13 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
                 || null == reservedIp.getReleaseDate();
 
         if ( from == null
-             || (to == null && !isAllowToSetNullDate)
              || (to != null && from.after(to))) {
             showError(lang.errSaveReservedIpUseInterval());
+            return false;
+        }
+
+        if (!isAllowToSetNullDate && to == null) {
+            showError(lang.errSaveReservedIpUseOpenInterval());
             return false;
         }
 

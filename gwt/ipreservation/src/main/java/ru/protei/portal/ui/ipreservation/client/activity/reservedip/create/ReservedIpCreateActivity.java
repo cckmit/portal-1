@@ -275,12 +275,14 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
             return false;
         }
 
-        if(view.useRange().getValue() == null
-           || ( view.useRange().getValue().getIntervalType().equals(En_DateIntervalType.FIXED)
-                && !view.useRange().getValue().getInterval().isValid() ))
-        {
-            showError(lang.errSaveReservedIpUseInterval());
-            return false;
+        if (view.useRange().getValue() == null || (view.useRange().getValue().getIntervalType().equals(En_DateIntervalType.FIXED))) {
+            if (view.useRange().getValue().getInterval().to == null) {
+                showError(lang.errSaveReservedIpUseOpenInterval());
+                return false;
+            } else if (!view.useRange().getValue().getInterval().isValid()) {
+                showError(lang.errSaveReservedIpUseInterval());
+                return false;
+            }
         }
 
         return true;
