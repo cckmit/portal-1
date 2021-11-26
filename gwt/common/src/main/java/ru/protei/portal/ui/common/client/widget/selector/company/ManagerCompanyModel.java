@@ -5,30 +5,34 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
+import ru.protei.portal.ui.common.client.selector.LoadingHandler;
 import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCache;
 import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHandler;
-import ru.protei.portal.ui.common.client.selector.LoadingHandler;
 import ru.protei.portal.ui.common.client.selector.pageable.SelectorItemRenderer;
-import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
 
 /**
- * Модель селектора компаний
+ * Модель селектора компаний менеджера в фильтре на странице обращений
  */
-public abstract class CompanyModel implements Activity, AsyncSelectorModel<EntityOption>, SelectorItemRenderer<EntityOption> {
+public abstract class ManagerCompanyModel implements Activity, AsyncSelectorModel<EntityOption>, SelectorItemRenderer<EntityOption> {
     @Event
     public void onInit( AuthEvents.Success event ) {
         cache.clearCache();
@@ -40,8 +44,8 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
     }
 
 
-    public CompanyModel() {
-        query = makeQuery( categories, false );
+    public ManagerCompanyModel() {
+        query = makeQuery();
         cache.setLoadHandler(makeLoadHandler(query));
     }
 
@@ -53,18 +57,6 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
     @Override
     public String getElementName( EntityOption value ) {
         return value == null ? "" : value.getDisplayText();
-    }
-
-    public void setCategories( List<En_CompanyCategory> categories ) {
-        query.setCategoryIds( toList( categories, En_CompanyCategory::getId ) );
-    }
-
-    public void showOnlyParentCompanies( boolean isOnlyParentCompanies ) {
-        query.setOnlyParentCompanies( isOnlyParentCompanies );
-    }
-
-    public void showDeprecated( Boolean isShowDeprecated) {
-        query.setShowDeprecated(isShowDeprecated);
     }
 
     private SelectorDataCacheLoadHandler<EntityOption> makeLoadHandler( final CompanyQuery query) {
@@ -87,18 +79,12 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
         };
     }
 
-    private CompanyQuery makeQuery( List<En_CompanyCategory> categories, boolean isParentIdIsNull ) {
-        CompanyQuery query = new CompanyQuery();
-
-        if(categories != null) {
-            query.setCategoryIds(
-                    categories.stream()
-                            .map( En_CompanyCategory:: getId )
-                            .collect( Collectors.toList() ) );
-        }
-        query.setOnlyParentCompanies( isParentIdIsNull );
+    private CompanyQuery makeQuery() {
+        CompanyQuery query = new CompanyQuery(querySortParameters);
+        query.setCategoryIds(categories);
+        query.setOnlyParentCompanies( false );
         query.setSortHomeCompaniesAtBegin( true );
-        query.setShowDeprecated( false );
+
         return query;
     }
 
@@ -112,13 +98,17 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
     @Inject
     Lang lang;
 
-    private List<En_CompanyCategory > categories = Arrays.asList(
-            En_CompanyCategory.CUSTOMER,
-            En_CompanyCategory.PARTNER,
-            En_CompanyCategory.SUBCONTRACTOR,
-            En_CompanyCategory.HOME);
+    private List<Integer> categories = Arrays.asList(
+            En_CompanyCategory.PARTNER.getId(),
+            En_CompanyCategory.SUBCONTRACTOR.getId(),
+            En_CompanyCategory.HOME.getId());
 
     private CompanyQuery query;
+
+    private List <Pair<En_SortField, En_SortDir>> querySortParameters = Arrays.asList(
+            new Pair<>(En_SortField.category, En_SortDir.DESC),
+            new Pair<>(En_SortField.comp_name, En_SortDir.ASC)
+    );
 
     private SelectorDataCache<EntityOption> cache = new SelectorDataCache<>();
 }

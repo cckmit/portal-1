@@ -22,7 +22,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;

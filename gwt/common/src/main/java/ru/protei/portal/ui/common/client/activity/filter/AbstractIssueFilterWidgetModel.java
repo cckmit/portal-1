@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.filter;
 
 import ru.protei.portal.core.model.dto.CaseFilterDto;
-import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
 
 import java.util.function.Consumer;
