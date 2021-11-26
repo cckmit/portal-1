@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.delivery.client.activity.delivery.module.meta;
 
+import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -96,27 +97,20 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
 
     @Override
     public void onRfidLabelGetFocus() {
-        rfidLabelCount = 0;
         rfidLabelController.getLastScanLabel(true, new FluentCallback<RFIDLabel>()
-                .withSuccess(this::method));
-    }
-
-    private void method(RFIDLabel labelOuter) {
-        if (!view.isAttached() || StringUtils.isNotEmpty(view.rfidLabel().getValue())) {
-            return;
-        }
-        if (labelOuter == null) {
-            rfidLabelCount++;
-            rfidLabelController.getLastScanLabel(false, new FluentCallback<RFIDLabel>()
-                .withSuccess(labelInner -> {
-                    if (rfidLabelCount == 5) {
-                        fireEvent(new NotifyEvents.Show("RFID labelOuter scan failed =(", NotifyEvents.NotifyType.ERROR));
+                .withSuccess(label -> {
+                    if (label != null) {
+                        setRFIDLabel(label);
                         return;
                     }
-                    method(labelInner);
+                    timer.prepare();
+                    timer.schedule(timer.DELAY);
                 }));
-        } else if (view.isAttached() && StringUtils.isEmpty(view.rfidLabel().getValue())) {
-            view.rfidLabel().setValue(labelOuter.getEpc());
+    }
+
+    private void setRFIDLabel(RFIDLabel label) {
+        if (view.isAttached() && StringUtils.isEmpty(view.rfidLabel().getValue())) {
+            view.rfidLabel().setValue(label.getEpc());
         }
     }
 
@@ -198,6 +192,36 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
         return departureDate.getTime() > System.currentTimeMillis();
     }
 
+    private class RFIDLabelTimer extends Timer {
+        private int rfidLabelCount = 0;
+        private final int MAX_COUNT = 5;
+        final int DELAY = 5000;
+
+        public void prepare() {
+            this.rfidLabelCount = 0;
+        }
+
+        @Override
+        public void run() {
+            if (!view.isAttached() || StringUtils.isNotEmpty(view.rfidLabel().getValue())) {
+                return;
+            }
+            rfidLabelCount++;
+
+            if (MAX_COUNT < rfidLabelCount) {
+                return;
+            }
+            rfidLabelController.getLastScanLabel(false, new FluentCallback<RFIDLabel>()
+                    .withSuccess(labelInner -> {
+                        if (labelInner == null) {
+                            this.schedule(DELAY);
+                        } else {
+                            setRFIDLabel(labelInner);
+                        }
+                    }));
+        }
+    }
+
 
     @Inject
     private Lang lang;
@@ -207,10 +231,10 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
     private ModuleControllerAsync moduleService;
     @Inject
     private RFIDLabelControllerAsync rfidLabelController;
-    private int rfidLabelCount = 0;
 
     @ContextAware
     Module module;
 
+    private final RFIDLabelTimer timer = new RFIDLabelTimer();
     private boolean readOnly;
 }

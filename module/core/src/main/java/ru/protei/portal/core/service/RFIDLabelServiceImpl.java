@@ -119,12 +119,7 @@ public class RFIDLabelServiceImpl implements RFIDLabelService {
         if (start) {
             lastScanRfidLabel.clear();
         }
-        try {
-            return ok(lastScanRfidLabel.poll(5, TimeUnit.SECONDS));
-        } catch (InterruptedException e) {
-            log.error(e.getMessage());
-            return error(En_ResultStatus.INTERNAL_ERROR);
-        }
+        return ok(lastScanRfidLabel.poll());
     }
 
     static private final BlockingQueue<RFIDLabel> lastScanRfidLabel = new ArrayBlockingQueue<>(1);
