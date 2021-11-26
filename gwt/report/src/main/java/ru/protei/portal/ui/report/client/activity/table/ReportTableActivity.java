@@ -124,7 +124,6 @@ public abstract class ReportTableActivity implements
                 .withSuccess(id -> {
                     fireEvent(new NotifyEvents.Show(lang.reportCanceled(id), NotifyEvents.NotifyType.SUCCESS));
                     loadTable();
-                    timer.cancel();
                 }));
     }
 
@@ -144,6 +143,7 @@ public abstract class ReportTableActivity implements
                         view.setTotalRecords(sr.getTotalCount());
                         pagerView.setTotalPages(view.getPageCount());
                         pagerView.setTotalCount(sr.getTotalCount());
+                        restoreScroll();
                     }
                     tableReports = sr.getResults();
                     asyncCallback.onSuccess(sr.getResults());
@@ -185,35 +185,53 @@ public abstract class ReportTableActivity implements
     Timer timer = new Timer() {
         @Override
         public void run() {
-            if (view.isAttached()) {
-                Set<Long> notReadyReportsIds = new HashSet<>();
-                for (ReportDto reportDto: tableReports) {
-                    Report report = reportDto.getReport();
-                    if (report.getStatus().equals(CREATED) ||
-                        report.getStatus().equals(PROCESS)) {
-                        notReadyReportsIds.add(report.getId());
-                    }
-                }
+            if (!view.isAttached()) {
+                timer.cancel();
+                tableReports = null;
+                return;
+            }
 
-                if (notReadyReportsIds.isEmpty()) {
-                    timer.cancel();
-                } else {
-                    ReportQuery query = new ReportQuery();
-                    query.setIncludeIds(notReadyReportsIds);
-                    reportService.getReportsByQuery(query, new FluentCallback<SearchResult<ReportDto>>()
-                                 .withError(throwable -> {
-                                     defaultErrorHandler.accept(throwable);
-                                 })
-                                 .withSuccess(sr -> {
-                                     tableReports = sr.getResults();
-                                     for (ReportDto reportDto: tableReports) {
-                                         view.updateRow(reportDto);
-                                     }
-                                 }));
+            final Set<Long> reportsToProcessIds = new HashSet<>();
+            for (ReportDto reportDto : tableReports) {
+                Report report = reportDto.getReport();
+                if (report.getStatus().equals(CREATED) ||
+                    report.getStatus().equals(PROCESS)) {
+                    reportsToProcessIds.add(report.getId());
                 }
             }
+
+            if (reportsToProcessIds.isEmpty()) {
+                timer.cancel();
+                return;
+            }
+
+            ReportQuery query = new ReportQuery();
+            query.setIncludeIds(reportsToProcessIds);
+            reportService.getReportsByQuery(query, new FluentCallback<SearchResult<ReportDto>>()
+                    .withError(throwable -> {
+                        defaultErrorHandler.accept(throwable);
+                    })
+                    .withSuccess(sr -> {
+                        for (ReportDto reportDto : sr.getResults()) {
+                            Report report = reportDto.getReport();
+                            if (reportsToProcessIds.contains(report.getId()) && report.getStatus().equals(READY)) {
+                                persistScroll();
+                                loadTable();
+                                return;
+                            }
+                        }
+                    }));
         }
     };
+
+    private void persistScroll() {
+        scrollTo = Window.getScrollTop();
+    }
+
+    private void restoreScroll() {
+        Window.scrollTo(0, scrollTo);
+        scrollTo = 0;
+    }
 
     @Inject
     AbstractReportTableView view;
@@ -228,6 +246,7 @@ public abstract class ReportTableActivity implements
     @Inject
     protected DefaultErrorHandler defaultErrorHandler;
 
+    private Integer scrollTo = 0;
     private List<ReportDto> tableReports;
     private AppEvents.InitDetails initDetails;
     private static String CREATE_ACTION;
