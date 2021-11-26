@@ -45,7 +45,7 @@ public abstract class ManagerCompanyModel implements Activity, AsyncSelectorMode
 
 
     public ManagerCompanyModel() {
-        query = makeQuery( categories, false );
+        query = makeQuery();
         cache.setLoadHandler(makeLoadHandler(query));
     }
 
@@ -57,14 +57,6 @@ public abstract class ManagerCompanyModel implements Activity, AsyncSelectorMode
     @Override
     public String getElementName( EntityOption value ) {
         return value == null ? "" : value.getDisplayText();
-    }
-
-    public void setCategories( List<En_CompanyCategory> categories ) {
-        query.setCategoryIds( toList( categories, En_CompanyCategory::getId ) );
-    }
-
-    public void showDeprecated( Boolean isShowDeprecated) {
-        query.setShowDeprecated(isShowDeprecated);
     }
 
     private SelectorDataCacheLoadHandler<EntityOption> makeLoadHandler( final CompanyQuery query) {
@@ -87,19 +79,12 @@ public abstract class ManagerCompanyModel implements Activity, AsyncSelectorMode
         };
     }
 
-    private CompanyQuery makeQuery( List<En_CompanyCategory> categories, boolean isParentIdIsNull ) {
+    private CompanyQuery makeQuery() {
         CompanyQuery query = new CompanyQuery(querySortParameters);
-
-        if(categories != null) {
-            query.setCategoryIds(
-                    categories.stream()
-                            .map( En_CompanyCategory:: getId )
-                            .collect( Collectors.toList() ) );
-        }
-
-        query.setOnlyParentCompanies( isParentIdIsNull );
+        query.setCategoryIds(categories);
+        query.setOnlyParentCompanies( false );
         query.setSortHomeCompaniesAtBegin( true );
-        query.setShowDeprecated( false );
+
         return query;
     }
 
@@ -113,10 +98,10 @@ public abstract class ManagerCompanyModel implements Activity, AsyncSelectorMode
     @Inject
     Lang lang;
 
-    private List<En_CompanyCategory > categories = Arrays.asList(
-            En_CompanyCategory.PARTNER,
-            En_CompanyCategory.SUBCONTRACTOR,
-            En_CompanyCategory.HOME);
+    private List<Integer> categories = Arrays.asList(
+            En_CompanyCategory.PARTNER.getId(),
+            En_CompanyCategory.SUBCONTRACTOR.getId(),
+            En_CompanyCategory.HOME.getId());
 
     private CompanyQuery query;
 
