@@ -20,9 +20,6 @@ public class RFIDDevice implements Serializable {
     @JdbcColumn(name = "name")
     private String name;
 
-    @JdbcColumn(name = "info")
-    private String info;
-
     public RFIDDevice() {}
 
     public RFIDDevice(String readerId) {
@@ -53,14 +50,6 @@ public class RFIDDevice implements Serializable {
         this.name = name;
     }
 
-    public String getInfo() {
-        return info;
-    }
-
-    public void setInfo(String info) {
-        this.info = info;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -80,7 +69,6 @@ public class RFIDDevice implements Serializable {
                 "id=" + id +
                 ", readerId='" + readerId + '\'' +
                 ", name='" + name + '\'' +
-                ", info='" + info + '\'' +
                 '}';
     }
 

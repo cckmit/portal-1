@@ -20,9 +20,6 @@ public class RFIDLabel implements Serializable {
     @JdbcColumn(name = NAME)
     private String name;
 
-    @JdbcColumn(name = "info")
-    private String info;
-
     @JdbcColumn(name = LAST_SCAN_DATE)
     private Date lastScanDate;
 
@@ -56,14 +53,6 @@ public class RFIDLabel implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getInfo() {
-        return info;
-    }
-
-    public void setInfo(String info) {
-        this.info = info;
     }
 
     public Date getLastScanDate() {
@@ -109,7 +98,6 @@ public class RFIDLabel implements Serializable {
                 "id=" + id +
                 ", epc='" + epc + '\'' +
                 ", name='" + name + '\'' +
-                ", info='" + info + '\'' +
                 ", lastScanDate=" + lastScanDate +
                 ", rfidDeviceId=" + rfidDeviceId +
                 ", rfidDevice=" + rfidDevice +

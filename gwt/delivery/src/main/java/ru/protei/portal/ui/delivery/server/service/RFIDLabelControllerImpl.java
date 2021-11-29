@@ -6,12 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.RFIDLabel;
-import ru.protei.portal.core.model.query.RFIDLabelQuery;
 import ru.protei.portal.core.service.RFIDLabelService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.RFIDLabelController;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -37,12 +35,6 @@ public class RFIDLabelControllerImpl implements RFIDLabelController {
     public RFIDLabel get(Long id) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         return checkResultAndGetData(rfidLabelService.get(token, id));
-    }
-
-    @Override
-    public SearchResult<RFIDLabel> getByQuery(RFIDLabelQuery query) throws RequestFailedException {
-        AuthToken token = getAuthToken(sessionService, httpRequest);
-        return checkResultAndGetData(rfidLabelService.getByQuery(token, query));
     }
 
     @Override

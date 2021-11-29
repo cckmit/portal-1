@@ -4020,13 +4020,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String RFIDLabelsName();
 
-    String RFIDLabelsInfo();
-
     String RFIDLabelsLastScanDate();
 
     String RFIDLabelsDevice();
-
-    String RFIDLabelsRemoveConfirmMessage(String name);
-
-    String RFIDLabelsRemoveSucceeded();
 }

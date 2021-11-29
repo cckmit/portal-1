@@ -5811,34 +5811,3 @@ div.form-group-default.form-group-default-selectFx:focus {
     }
   }
 }
-
-.rfid-labels {
-  table {
-    tbody {
-      tr {
-        td {
-          height: 40px;
-
-          div {
-            height: 40px;
-            max-height: 40px;
-            white-space: pre-line;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-        }
-      }
-    }
-    .epc {
-      width: 20%;
-      text-align: center;
-    }
-    .last-scan-date {
-      width: 15%;
-      text-align: center;
-    }
-    .info {
-      width: 25%;
-    }
-  }
-}

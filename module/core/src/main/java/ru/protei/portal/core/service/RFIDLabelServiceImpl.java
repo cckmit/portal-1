@@ -11,8 +11,6 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.RFIDDevice;
 import ru.protei.portal.core.model.ent.RFIDLabel;
-import ru.protei.portal.core.model.query.RFIDLabelQuery;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -38,11 +36,6 @@ public class RFIDLabelServiceImpl implements RFIDLabelService {
         }
 
         return ok(labelDAO.get(id));
-    }
-
-    @Override
-    public Result<SearchResult<RFIDLabel>> getByQuery(AuthToken token, RFIDLabelQuery query) {
-        return ok(labelDAO.getSearchResultByQuery(query));
     }
 
     @Override

@@ -15,7 +15,6 @@
             <column name="name" type="varchar(256)">
                 <constraints nullable="false"/>
             </column>
-            <column name="info" type="varchar(256)"/>
         </createTable>
     </changeSet>
 
@@ -30,7 +29,6 @@
             <column name="name" type="varchar(256)">
                 <constraints nullable="false"/>
             </column>
-            <column name="info" type="varchar(256)"/>
             <column name="last_scan_date" type="DATETIME"/>
             <column name="rfid_device_id" type="BIGINT"/>
         </createTable>
