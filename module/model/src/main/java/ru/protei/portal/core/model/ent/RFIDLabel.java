@@ -11,7 +11,7 @@ import static ru.protei.portal.core.model.ent.RFIDLabel.Columns.*;
 @JdbcEntity(table = "rfid_label")
 public class RFIDLabel implements Serializable {
 
-    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    @JdbcId(name = ID, idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
     @JdbcColumn(name = EPC)

@@ -30,25 +30,6 @@ public class RFIDLabelControllerImpl implements RFIDLabelController {
     @Autowired
     HttpServletRequest httpRequest;
 
-
-    @Override
-    public RFIDLabel get(Long id) throws RequestFailedException {
-        AuthToken token = getAuthToken(sessionService, httpRequest);
-        return checkResultAndGetData(rfidLabelService.get(token, id));
-    }
-
-    @Override
-    public RFIDLabel update(RFIDLabel value) throws RequestFailedException {
-        AuthToken token = getAuthToken(sessionService, httpRequest);
-        return checkResultAndGetData(rfidLabelService.update(token, value));
-    }
-
-    @Override
-    public RFIDLabel remove(RFIDLabel value) throws RequestFailedException {
-        AuthToken token = getAuthToken(sessionService, httpRequest);
-        return checkResultAndGetData(rfidLabelService.remove(token, value));
-    }
-
     @Override
     public RFIDLabel getLastScanLabel(boolean start) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);

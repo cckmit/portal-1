@@ -30,47 +30,6 @@ public class RFIDLabelServiceImpl implements RFIDLabelService {
     RFIDDeviceDAO deviceDAO;
 
     @Override
-    public Result<RFIDLabel> get(AuthToken token, Long id) {
-        if (id == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        return ok(labelDAO.get(id));
-    }
-
-    @Override
-    @Transactional
-    public Result<RFIDLabel> update(AuthToken token, RFIDLabel value) {
-        if (value == null || value.getId() == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        RFIDLabel oldMeta = labelDAO.get(value.getId());
-        if (oldMeta == null) {
-            return error(En_ResultStatus.NOT_FOUND);
-        }
-
-        labelDAO.merge(value);
-        return ok(value);
-    }
-
-    @Override
-    @Transactional
-    public Result<RFIDLabel> remove(AuthToken token, RFIDLabel value) {
-        if (value == null || value.getId() == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        RFIDLabel oldMeta = labelDAO.get(value.getId());
-        if (oldMeta == null) {
-            return error(En_ResultStatus.NOT_FOUND);
-        }
-
-        labelDAO.remove(value);
-        return ok(value);
-    }
-
-    @Override
     @Transactional
     public Result<RFIDDevice> getOrCreateDeviceByReaderId(AuthToken token, String readerId) {
         if (readerId == null) {

@@ -11,7 +11,7 @@ import java.util.Objects;
 @JdbcEntity(table = "rfid_device")
 public class RFIDDevice implements Serializable {
 
-    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    @JdbcId(name = Columns.ID, idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
     @JdbcColumn(name = Columns.READER_ID)
