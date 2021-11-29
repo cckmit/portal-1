@@ -58,6 +58,7 @@ public class PortalApiRFIDLabelController {
                     label.setName("Api");
                     label.setLastScanDate(parameter.getTime());
                     label.setRfidDeviceId(device.getId());
+                    label.setRfidDevice(device);
                     return label;
                 }).forEach(label -> rfidLabelService.saveOrUpdateLastScan(rfidToken, label));
 

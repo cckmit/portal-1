@@ -2,7 +2,6 @@ package ru.protei.portal.ui.delivery.client.view.delivery.module.meta;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -11,6 +10,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.RFIDLabel;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.widget.selector.module.ModuleStateFormS
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
 import ru.protei.portal.ui.delivery.client.activity.delivery.module.meta.AbstractModuleMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.delivery.module.meta.AbstractModuleMetaView;
+import ru.protei.portal.ui.delivery.client.widget.rfidlabel.RFIDLabelFormField;
 
 import java.util.Date;
 
@@ -70,7 +71,7 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
     }
 
     @Override
-    public HasValue<String> rfidLabel() {
+    public HasValue<RFIDLabel> rfidLabel() {
         return rfidLabel;
     }
 
@@ -163,8 +164,8 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
     }
 
     @UiHandler("rfidLabel")
-    public void onRfidLabelFocus(FocusEvent event) {
-        activity.onRfidLabelGetFocus();
+    public void onRfidLabelChanged(ValueChangeEvent<RFIDLabel> event) {
+        activity.onRfidLabelChanged();
     }
 
     @Inject
@@ -186,8 +187,9 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
     @Inject
     @UiField(provided = true)
     SinglePicker departureDate;
-    @UiField
-    TextBox rfidLabel;
+    @Inject
+    @UiField(provided = true)
+    RFIDLabelFormField rfidLabel;
 
     private AbstractModuleMetaActivity activity;
 
