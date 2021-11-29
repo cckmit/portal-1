@@ -21,4 +21,6 @@ public interface AbstractReportTableView extends IsWidget {
     void updateRow(ReportDto item);
 
     HasWidgets getPagerContainer();
+
+    boolean isAttached();
 }
