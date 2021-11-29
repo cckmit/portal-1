@@ -102,15 +102,14 @@ public class RFIDLabelServiceImpl implements RFIDLabelService {
         RFIDLabel byEPC = labelDAO.getByEPC(value.getEpc());
         if (byEPC == null) {
             labelDAO.persist(value);
+            lastScanRfidLabel.offer(value);
         } else {
             if (value.getLastScanDate().after(byEPC.getLastScanDate())) {
                 value.setId(byEPC.getId());
                 labelDAO.partialMerge(value, RFID_DEVICE_ID, LAST_SCAN_DATE);
+                lastScanRfidLabel.offer(value);
             }
         }
-
-        lastScanRfidLabel.offer(value);
-
         return ok(value);
     }
 

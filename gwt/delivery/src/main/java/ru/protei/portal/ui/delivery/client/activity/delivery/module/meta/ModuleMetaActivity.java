@@ -9,7 +9,6 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.core.model.ent.RFIDLabel;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.CommentAndHistoryEvents;
@@ -23,6 +22,9 @@ import ru.protei.portal.ui.delivery.client.view.delivery.module.meta.ModuleMetaV
 
 import java.util.Date;
 import java.util.Objects;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 
 public abstract class ModuleMetaActivity implements Activity, AbstractModuleMetaActivity {
@@ -97,6 +99,9 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
 
     @Override
     public void onRfidLabelGetFocus() {
+        if (isNotEmpty(view.rfidLabel().getValue())) {
+            return;
+        }
         rfidLabelController.getLastScanLabel(true, new FluentCallback<RFIDLabel>()
                 .withSuccess(label -> {
                     if (label != null) {
@@ -109,8 +114,12 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
     }
 
     private void setRFIDLabel(RFIDLabel label) {
-        if (view.isAttached() && StringUtils.isEmpty(view.rfidLabel().getValue())) {
+        if (view.isAttached() && isEmpty(view.rfidLabel().getValue())) {
+            module.setRfidLabel(label);
+            module.setRfidLabelId(label.getId());
             view.rfidLabel().setValue(label.getEpc());
+
+            onCaseMetaChanged(module);
         }
     }
 
@@ -137,6 +146,7 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
 
         view.setCustomerCompany(module.getCustomerName());
         view.setManager(module.getManager().getDisplayName());
+        view.rfidLabel().setValue(module.getRfidLabel().getEpc());
 
         if (!afterUpdate) {
             view.buildDate().setValue(module.getBuildDate());
@@ -203,7 +213,7 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
 
         @Override
         public void run() {
-            if (!view.isAttached() || StringUtils.isNotEmpty(view.rfidLabel().getValue())) {
+            if (!view.isAttached() || isNotEmpty(view.rfidLabel().getValue())) {
                 return;
             }
             rfidLabelCount++;
