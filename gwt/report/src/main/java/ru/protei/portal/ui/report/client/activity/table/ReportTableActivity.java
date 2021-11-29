@@ -202,6 +202,7 @@ public abstract class ReportTableActivity implements
 
             if (reportsToProcessIds.isEmpty()) {
                 timer.cancel();
+                tableReports = null;
                 return;
             }
 
