@@ -136,6 +136,7 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
         qcManager.ensureLabelDebugId(DebugIds.DELIVERY.KIT.MODULE.QC_MANAGER);
         buildDate.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.BUILD_DATE);
         departureDate.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.DEPARTURE_DATE);
+        rfidLabel.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.RFID_LABEL);
     }
 
     @UiHandler("state")

@@ -12,6 +12,7 @@
         <label class="fade">
             <ui:text from="{lang.RFIDLabelsDevice}"/>
             <g:Label ui:field="rfidLabelDevice"/>
+            <g:Label ui:field="rfidLabelDeviceName"/>
         </label>
         <label class="fade">
             <ui:text from="{lang.RFIDLabelsLastScanDate}"/>

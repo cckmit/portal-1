@@ -2,6 +2,7 @@ package ru.protei.portal.ui.delivery.client.widget.rfidlabel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -12,13 +13,13 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.RFIDLabel;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RFIDLabelControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
+import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
 
 public class RFIDLabelFormField extends Composite
         implements HasValue<RFIDLabel> {
@@ -46,10 +47,12 @@ public class RFIDLabelFormField extends Composite
         if (rfidLabel != null) {
             this.rfidLabelEpc.setValue(rfidLabel.getEpc());
             this.rfidLabelDevice.setText(rfidLabel.getRfidDevice().getReaderId());
+            this.rfidLabelDeviceName.setText(rfidLabel.getRfidDevice().getName());
             this.rfidLabelLastScanDate.setText(DateFormatter.formatDateTime(rfidLabel.getLastScanDate()));
         } else {
             this.rfidLabelEpc.setValue(null);
             this.rfidLabelDevice.setText(null);
+            this.rfidLabelDeviceName.setText(null);
             this.rfidLabelLastScanDate.setText(null);
         }
 
@@ -71,7 +74,7 @@ public class RFIDLabelFormField extends Composite
         rfidLabelController.getLastScanLabel(true, new FluentCallback<RFIDLabel>()
                 .withSuccess(label -> {
                     if (label != null) {
-                        setRFIDLabel(label);
+                        setValue(label, true);
                         return;
                     }
                     timer.prepare();
@@ -80,14 +83,10 @@ public class RFIDLabelFormField extends Composite
     }
 
     @UiHandler("rfidLabelEpc")
-    public void onRfidLabelChangeValue(ValueChangeEvent<String> event) {
+    public void onRfidLabelChangeValue(KeyUpEvent event) {
         setValue(null);
-    }
-
-    private void setRFIDLabel(RFIDLabel label) {
-        if (this.isAttached() && isEmpty(rfidLabelEpc.getValue())) {
-            setValue(label, true);
-        }
+        timer.prepare();
+        timer.schedule(timer.DELAY);
     }
 
     private class RFIDLabelTimer extends Timer {
@@ -101,7 +100,7 @@ public class RFIDLabelFormField extends Composite
 
         @Override
         public void run() {
-            if (!RFIDLabelFormField.this.isAttached() || isNotEmpty(rfidLabelEpc.getValue())) {
+            if (!RFIDLabelFormField.this.isAttached()) {
                 return;
             }
             rfidLabelCount++;
@@ -112,21 +111,20 @@ public class RFIDLabelFormField extends Composite
             rfidLabelController.getLastScanLabel(false, new FluentCallback<RFIDLabel>()
                     .withSuccess(labelInner -> {
                         if (labelInner == null) {
-                            this.schedule(DELAY);
+                            if (RFIDLabelFormField.this.isAttached()) {
+                                this.schedule(DELAY);
+                            }
                         } else {
-                            setRFIDLabel(labelInner);
+                            setValue(labelInner, true);
                         }
                     }));
         }
     }
 
     private void setDebugId() {
-        // todo
-/*        root.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.DELIVERY.KIT.ITEM);
-        serialNumber.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.DELIVERY.KIT.SERIAL_NUMBER);
-        state.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.DELIVERY.KIT.STATE);
-        name.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.DELIVERY.KIT.NAME);
-        remove.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.DELIVERY.KIT.REMOVE_BUTTON);*/
+        rfidLabelEpc.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.RFID_LABEL.EPC);
+        rfidLabelDevice.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.RFID_LABEL.DEVICE);
+        rfidLabelLastScanDate.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.RFID_LABEL.LAST_SCAN_DATE);
     }
 
     @UiField
@@ -134,12 +132,9 @@ public class RFIDLabelFormField extends Composite
     @UiField
     Label rfidLabelDevice;
     @UiField
+    Label rfidLabelDeviceName;
+    @UiField
     Label rfidLabelLastScanDate;
-
-    @UiField
-    Lang lang;
-    @UiField
-    HTMLPanel root;
 
     @Inject
     private RFIDLabelControllerAsync rfidLabelController;
