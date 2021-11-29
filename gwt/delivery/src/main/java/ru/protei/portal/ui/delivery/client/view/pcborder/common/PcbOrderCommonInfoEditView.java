@@ -12,6 +12,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.view.passwordgen.popup.PasswordGenPopup;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.selector.card.type.CardTypeOptionFormSelector;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.common.AbstractPcbOrderCommonInfoEditActivity;
@@ -40,6 +41,11 @@ public class PcbOrderCommonInfoEditView extends Composite implements AbstractPcb
     @Override
     public HasValue<Integer> amount() {
         return amount;
+    }
+
+    @Override
+    public String getAmount() {
+        return amount.getText();
     }
 
     @Override

@@ -23,6 +23,7 @@ import ru.protei.portal.ui.delivery.client.activity.pcborder.common.AbstractPcbO
 import ru.protei.portal.ui.delivery.client.activity.pcborder.meta.AbstractPcbOrderMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.meta.AbstractPcbOrderMetaView;
 
+import static org.apache.logging.log4j.ThreadContext.isEmpty;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.ERROR;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.SUCCESS;
 
@@ -97,6 +98,7 @@ public abstract class PcbOrderCreateActivity implements Activity, AbstractPcbOrd
         commonInfoEditView.amount().setValue(null);
         commonInfoEditView.modification().setValue(null);
         commonInfoEditView.comment().setValue(null);
+        commonInfoEditView.setAmountValid(true);
         metaView.state().setValue(null);
         metaView.promptness().setValue(null);
         metaView.orderType().setValue(null);
@@ -171,8 +173,16 @@ public abstract class PcbOrderCreateActivity implements Activity, AbstractPcbOrd
     }
 
     private boolean validateAmount() {
-        Integer value = commonInfoEditView.amount().getValue();
-        boolean isValid = value != null && value > 0;
+        String strValue = commonInfoEditView.getAmount();
+        Integer amount = null;
+
+        try {
+            amount = Integer.valueOf(strValue);
+        } catch (NumberFormatException ex){
+            commonInfoEditView.setAmountValid(false);
+        }
+
+        boolean isValid = strValue != null && amount > 0;
         commonInfoEditView.setAmountValid(isValid);
         return isValid;
     }

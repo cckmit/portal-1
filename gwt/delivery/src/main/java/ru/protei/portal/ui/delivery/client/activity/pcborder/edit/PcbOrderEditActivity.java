@@ -380,8 +380,16 @@ public abstract class PcbOrderEditActivity implements Activity, AbstractPcbOrder
     }
 
     private boolean validateAmount() {
-        Integer value = commonInfoEditView.amount().getValue();
-        boolean isValid = value != null && value > 0;
+        String strValue = commonInfoEditView.getAmount();
+        Integer amount = null;
+
+        try {
+            amount = Integer.valueOf(strValue);
+        } catch (NumberFormatException ex){
+            commonInfoEditView.setAmountValid(false);
+        }
+
+        boolean isValid = strValue != null && amount > 0;
         commonInfoEditView.setAmountValid(isValid);
         return isValid;
     }
