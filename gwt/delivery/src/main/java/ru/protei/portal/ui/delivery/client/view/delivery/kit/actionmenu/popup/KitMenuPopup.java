@@ -66,8 +66,6 @@ public class KitMenuPopup extends BasePopupView {
     Lang lang;
     @UiField
     HTMLPanel root;
-    @UiField
-    HTMLPanel childContainer;
 
     @UiField
     UListElement statesContainer;
