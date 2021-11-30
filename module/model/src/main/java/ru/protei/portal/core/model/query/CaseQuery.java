@@ -60,6 +60,8 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
 
     private Boolean viewPrivate = null;
 
+    private boolean isIssueTable = false;
+
     @Deprecated
     @JsonAlias({"from", "createdFrom" })
     private Date createdFrom;
@@ -282,6 +284,14 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
 
     public void setAllowViewPrivate(boolean isAllowViewPrivate) {
         this.allowViewPrivate = isAllowViewPrivate;
+    }
+
+    public boolean isIssueTable() {
+        return isIssueTable;
+    }
+
+    public void setIsIssueTable(boolean issueTable) {
+        isIssueTable = issueTable;
     }
 
     public boolean isSearchStringAtComments() {
