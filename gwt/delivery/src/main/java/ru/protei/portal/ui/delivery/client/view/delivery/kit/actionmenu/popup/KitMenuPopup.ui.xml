@@ -1,0 +1,49 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel ui:field="root" styleName="form-group case-tag-popup">
+        <g:HTMLPanel ui:field="childContainer" tag="ul" styleName="case-tag-list full-width show">
+            <li class="case-tag">
+                <g:Anchor ui:field="copy">
+                    <i class="case-tag-icon far fa-clone"/>
+                    <span class="case-tag-text"><ui:text from="{lang.buttonCopy}"/></span>
+                </g:Anchor>
+            </li>
+            <li class="case-tag">
+                <g:Anchor ui:field="changeState">
+                    <i class="case-tag-icon far fa-circle"/>
+                    <span class="case-tag-text"><ui:text from="{lang.buttonState}"/></span>
+                    <ul ui:field="statesContainer" class="hide">
+                        <li class="case-tag">
+                            <a ui:field="edit1">
+                                <i class="case-tag-icon fa fa-pen"/>
+                                <span class="case-tag-text"><ui:text from="{lang.buttonModify}"/></span>
+                            </a>
+                        </li>
+                        <li class="case-tag">
+                            <a ui:field="edit2">
+                                <i class="case-tag-icon fa fa-pen"/>
+                                <span class="case-tag-text"><ui:text from="{lang.buttonModify}"/></span>
+                            </a>
+                        </li>
+                    </ul>
+                </g:Anchor>
+            </li>
+            <li class="case-tag">
+                <g:Anchor ui:field="edit">
+                    <i class="case-tag-icon fa fa-pen"/>
+                    <span class="case-tag-text"><ui:text from="{lang.edit}"/></span>
+                </g:Anchor>
+            </li>
+            <li class="case-tag">
+                <g:Anchor ui:field="remove">
+                    <i class="case-tag-icon fa fa-trash-alt"/>
+                    <span class="case-tag-text"><ui:text from="{lang.buttonRemove}"/></span>
+                </g:Anchor>
+            </li>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

@@ -12,42 +12,29 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.stringselectpopup.StringSelectPopup;
+import ru.protei.portal.ui.delivery.client.activity.actionmenu.AbstractKitMenuPopupActivity;
 import ru.protei.portal.ui.delivery.client.activity.delivery.kit.handler.KitActionsHandler;
-
-import java.util.Arrays;
+import ru.protei.portal.ui.delivery.client.view.delivery.kit.actionmenu.popup.KitMenuPopup;
 
 public class KitMenu extends Composite {
 
     @Inject
     public void onInit(Lang lang) {
         initWidget(ourUiBinder.createAndBindUi(this));
-
-        String ACTION_COPY = lang.buttonCopy();
-        String ACTION_CHANGE_STATE = lang.buttonState();
-        String ACTION_EDIT = lang.buttonModify();
-        String ACTION_REMOVE = lang.buttonRemove();
-        popup.setValues(Arrays.asList(ACTION_COPY, ACTION_CHANGE_STATE, ACTION_EDIT, ACTION_REMOVE));
-
-        popup.addValueChangeHandler(event -> {
-            if (handler == null) {
-                return;
-            }
-            if (ACTION_COPY.equals(event.getValue())) {
+        kitMenuPopup.setActivity(new AbstractKitMenuPopupActivity() {
+            @Override
+            public void onCopyClick() {
                 handler.onCopy();
-                return;
             }
-            if (ACTION_CHANGE_STATE.equals(event.getValue())) {
-                handler.onGroupChangeState();
-                return;
-            }
-            if (ACTION_EDIT.equals(event.getValue())) {
+
+            @Override
+            public void onEditClick() {
                 handler.onEdit();
-                return;
             }
-            if (ACTION_REMOVE.equals(event.getValue())) {
+
+            @Override
+            public void onRemoveClick() {
                 handler.onGroupRemove();
-                return;
             }
         });
 
@@ -65,7 +52,7 @@ public class KitMenu extends Composite {
     @UiHandler("actionsBtn")
     public void onActionsBtnClick(ClickEvent event) {
         event.preventDefault();
-        popup.showUnderRight(actionsBtn, 200);
+        kitMenuPopup.showUnderRight(actionsBtn, 200);
     }
 
     public void setHandler(KitActionsHandler handler) {
@@ -88,13 +75,14 @@ public class KitMenu extends Composite {
         actionsBtn.ensureDebugId(DebugIds.DELIVERY.KIT.ACTION_MENU_BUTTON);
     }
 
-    private StringSelectPopup popup = new StringSelectPopup();
     private KitActionsHandler handler;
 
     @UiField
     Anchor actionsBtn;
     @UiField
     Anchor backBtn;
+    @Inject
+    KitMenuPopup kitMenuPopup;
 
     private static KitMenu.KitViewUiBinder ourUiBinder = GWT.create(KitMenu.KitViewUiBinder.class);
 
