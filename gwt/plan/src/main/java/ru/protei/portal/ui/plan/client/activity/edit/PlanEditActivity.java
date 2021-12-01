@@ -14,7 +14,10 @@ import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.core.model.query.PlanQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.PlanEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -39,7 +42,6 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
     @Event(Type.FILL_CONTENT)
     public void onShow(PlanEvents.Edit event) {
         initDetails.parent.clear();
-        Window.scrollTo(0, 0);
 
         if (!hasPrivileges(event.planId)) {
             fireEvent(new ErrorPageEvents.ShowForbidden(initDetails.parent));
@@ -79,6 +81,11 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
     @Event
     public void onUpdateIssues (PlanEvents.UpdateIssues event){
         plan.setIssueList(event.issues);
+    }
+
+    @Event
+    public void persistScroll( PlanEvents.PersistScroll event) {
+            scrollTo = Window.getScrollTop();
     }
 
     @Override
@@ -187,8 +194,9 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
 
         planService.listPlans(query, new FluentCallback<List<Plan>>()
                 .withSuccess(planList -> {
-                    fireEvent(new PlanEvents.ShowUnplannedIssueTable(view.unplannedTableContainer(), planId));
-                    fireEvent(new PlanEvents.ShowPlannedIssueTable(view.plannedTableContainer(), planList, planId));
+                    fireEvent(new PlanEvents.ShowUnplannedIssueTable(view.unplannedTableContainer(), planId, scrollTo));
+                    fireEvent(new PlanEvents.ShowPlannedIssueTable(view.plannedTableContainer(), planList, planId, scrollTo));
+                    resetScrollTo();
                 }));
     }
 
@@ -198,6 +206,10 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
 
     private boolean isNew(){
         return planId == null;
+    }
+
+    private void resetScrollTo() {
+        scrollTo = 0;
     }
 
     @Inject
@@ -210,6 +222,8 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
     PolicyService policyService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+
+    private Integer scrollTo;
 
     private Plan plan;
     private AppEvents.InitDetails initDetails;

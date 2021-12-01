@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.plan.client.activity.edit.tables;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
@@ -39,6 +40,7 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
         planId = event.planId;
         plans = event.planList;
         view.moveColumnVisibility(!isNew());
+        scrollTo = event.scrollTo;
 
         if (isNew()){
             issues = new ArrayList<>();
@@ -73,6 +75,12 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
                         loadTable(plan.getIssueList());
                     }));
         }
+    }
+
+    @Event
+    public void removeSelection(PlanEvents.RemovePlannedSelection event) {
+        view.getIssuesColumnProvider().removeSelection();
+
     }
 
     @Override
@@ -117,6 +125,8 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
     @Override
     public void onItemClicked(CaseShortView value) {
         if (planId != null) {
+            fireEvent(new PlanEvents.PersistScroll());
+            fireEvent(new PlanEvents.RemoveUnplannedSelection());
             fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
         }
     }
@@ -159,6 +169,7 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
                 .withSuccess(plan -> {
                     view.putRecords(plan.getIssueList());
                     this.issues = plan.getIssueList();
+                    restoreScroll();
                 }));
     }
 
@@ -200,6 +211,10 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
         return planId == null;
     }
 
+    private void restoreScroll() {
+        Window.scrollTo(0, scrollTo);
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -208,6 +223,8 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
     PlanControllerAsync planService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+
+    private Integer scrollTo = 0;
 
     private List<Plan> plans = new ArrayList<>();
     private Long planId;
