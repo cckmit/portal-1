@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class ContractorsColumn extends ClickColumn<CardBatch> {
 
@@ -39,7 +39,7 @@ public class ContractorsColumn extends ClickColumn<CardBatch> {
         cell.addClassName(CLASS_NAME);
 
         Set<PersonProjectMemberView> contractors = card.getContractors();
-        if (contractors != null) {
+        if (isNotEmpty(contractors)) {
             StringBuilder sb = new StringBuilder();
             stream(contractors)
                     .collect(Collectors.groupingBy(PersonProjectMemberView::getRole,
