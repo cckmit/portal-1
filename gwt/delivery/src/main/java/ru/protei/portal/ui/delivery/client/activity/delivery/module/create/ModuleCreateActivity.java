@@ -144,6 +144,7 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
         metaView.setBuildDateValid(true);
         metaView.departureDate().setValue(null);
         metaView.setDepartureDateValid(true);
+        metaView.rfidLabel().setValue(null);
     }
 
     private Module fillDto() {
@@ -157,6 +158,7 @@ public abstract class ModuleCreateActivity implements Activity, AbstractModuleCr
         module.setBuildDate(metaView.buildDate().getValue());
         module.setDepartureDate(metaView.departureDate().getValue());
         module.setKitId(kitId);
+        module.setRfidLabelId(metaView.rfidLabel().getValue() == null ? null : metaView.rfidLabel().getValue().getId());
         return module;
     }
 

@@ -113,4 +113,5 @@
   <include file="2021-11-03-add-probation-period-end-date-to-employee-registration-table.xml" relativeToChangelogFile="true"/>
   <include file="2021-20-21-remove-history_version-cdr_description-configuration-from-dev_unit.xml" relativeToChangelogFile="true"/>
   <include file="2021-10-29-create-pcb-order-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-11-23-create-rfid-tables.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

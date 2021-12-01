@@ -823,6 +823,16 @@ public class MainConfiguration {
         return new CardTypeDAO_Impl();
     }
 
+    @Bean
+    public RFIDLabelDAO getRFIDLabelDAO() {
+        return new RFIDLabelDAO_Impl();
+    }
+
+    @Bean
+    public RFIDDeviceDAO getRFIDDeviceDAO() {
+        return new RFIDDeviceDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean
@@ -1283,6 +1293,11 @@ public class MainConfiguration {
     @Bean
     public CardService getCardService() {
         return new CardServiceImpl();
+    }
+
+    @Bean
+    public RFIDLabelService getRFIDLabelService() {
+        return new RFIDLabelServiceImpl();
     }
 
     /* ASPECT/INTERCEPTORS */

@@ -1344,6 +1344,7 @@ public class DebugIds {
                 String CUSTOMER_COMPANY = "module-customer-company";
                 String BUILD_DATE = "module-build-date-container";
                 String DEPARTURE_DATE = "module-departure-date-container";
+                String RFID_LABEL = "module-rfid-label-container";
                 String ADD_BUTTON = "module-add-button";
                 String SAVE_BUTTON = "module-save-button";
                 String CANCEL_BUTTON = "module-cancel-button";
@@ -1460,5 +1461,11 @@ public class DebugIds {
         String CARD = "pcb-order-type-card";
         String STENCIL = "pcb-order-type-stencil";
         String FRONT_PANEL = "pcb-order-type-very-front-panel";
+    }
+
+    public interface RFID_LABEL {
+        String EPC = "rfid-label-epc";
+        String DEVICE = "rfid-label-device";
+        String LAST_SCAN_DATE = "rfid-label-last-scan-date";
     }
 }

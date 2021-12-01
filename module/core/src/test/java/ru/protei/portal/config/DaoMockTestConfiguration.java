@@ -4,9 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dao.impl.CardBatchSqlBuilder;
-import ru.protei.portal.core.model.dao.impl.CardSqlBuilder;
-import ru.protei.portal.core.model.dao.impl.PcbOrderDAO_Impl;
+import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static org.mockito.Mockito.mock;
@@ -505,5 +503,15 @@ public class DaoMockTestConfiguration {
     @Bean
     public PcbOrderDAO getPcbOrderDAO() {
         return mock(PcbOrderDAO.class);
+    }
+
+    @Bean
+    public RFIDLabelDAO getRFIDLabelDAO() {
+        return mock(RFIDLabelDAO.class);
+    }
+
+    @Bean
+    public RFIDDeviceDAO getRFIDDeviceDAO() {
+        return mock(RFIDDeviceDAO.class);
     }
 }

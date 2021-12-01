@@ -152,6 +152,15 @@ public class Module extends AuditableObject {
     @JdbcColumn(name = "build_date")
     private Date buildDate;
 
+    /**
+     * RFID метка
+     */
+    @JdbcColumn(name = RFID_LABEL_ID)
+    private Long rfidLabelId;
+
+    @JdbcJoinedObject(localColumn = RFID_LABEL_ID, remoteColumn = RFIDLabel.Columns.ID)
+    private RFIDLabel rfidLabel;
+
     @Override
     public String getAuditType() {
         return AUDIT_TYPE;
@@ -342,6 +351,22 @@ public class Module extends AuditableObject {
         this.buildDate = buildDate;
     }
 
+    public Long getRfidLabelId() {
+        return rfidLabelId;
+    }
+
+    public void setRfidLabelId(Long rfidLabelId) {
+        this.rfidLabelId = rfidLabelId;
+    }
+
+    public RFIDLabel getRfidLabel() {
+        return rfidLabel;
+    }
+
+    public void setRfidLabel(RFIDLabel rfidLabel) {
+        this.rfidLabel = rfidLabel;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -381,6 +406,8 @@ public class Module extends AuditableObject {
                 ", qcManager=" + qcManager +
                 ", departureDate=" + departureDate +
                 ", buildDate=" + buildDate +
+                ", rfidLabelId=" + rfidLabelId +
+                ", rfidLabel=" + rfidLabel +
                 '}';
     }
 
@@ -390,5 +417,6 @@ public class Module extends AuditableObject {
         String KIT_ID = "kit_id";
         String HW_MANAGER = "hw_manager_id";
         String QC_MANAGER = "qc_manager_id";
+        String RFID_LABEL_ID = "rfid_label_id";
     }
 }

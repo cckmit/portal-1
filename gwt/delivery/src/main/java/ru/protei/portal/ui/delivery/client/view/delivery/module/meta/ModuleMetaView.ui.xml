@@ -3,6 +3,7 @@
              xmlns:module="urn:import:ru.protei.portal.ui.common.client.widget.selector.module"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:datepicker="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
+             xmlns:rfidlabel="urn:import:ru.protei.portal.ui.delivery.client.widget.rfidlabel"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -71,6 +72,10 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="form-group-attached form-group">
+                <rfidlabel:RFIDLabelFormField ui:field="rfidLabel"/>
             </div>
         </div>
     </g:HTMLPanel>

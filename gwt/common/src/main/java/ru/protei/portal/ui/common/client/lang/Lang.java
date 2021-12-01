@@ -4015,4 +4015,14 @@ public interface Lang extends Messages, ContactItemLang {
     String cardBatch();
 
     String card();
+
+    String RFIDLabels();
+
+    String RFIDLabelsEpc();
+
+    String RFIDLabelsName();
+
+    String RFIDLabelsLastScanDate();
+
+    String RFIDLabelsDevice();
 }

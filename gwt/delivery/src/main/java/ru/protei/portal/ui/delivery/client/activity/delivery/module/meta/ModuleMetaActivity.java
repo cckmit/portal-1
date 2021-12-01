@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Module;
+import ru.protei.portal.core.model.ent.RFIDLabel;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.CommentAndHistoryEvents;
@@ -91,6 +92,14 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
         onCaseMetaChanged(module);
     }
 
+    @Override
+    public void onRfidLabelChanged() {
+        RFIDLabel label = view.rfidLabel().getValue();
+        module.setRfidLabel(label);
+        module.setRfidLabelId(label != null? label.getId() : null);
+        onCaseMetaChanged(module);
+    }
+
     private String getValidationError() {
         CaseState state = view.state().getValue();
         if (state == null) {
@@ -114,6 +123,7 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
 
         view.setCustomerCompany(module.getCustomerName());
         view.setManager(module.getManager().getDisplayName());
+        view.rfidLabel().setValue(module.getRfidLabel());
 
         if (!afterUpdate) {
             view.buildDate().setValue(module.getBuildDate());
@@ -168,7 +178,6 @@ public abstract class ModuleMetaActivity implements Activity, AbstractModuleMeta
 
         return departureDate.getTime() > System.currentTimeMillis();
     }
-
 
     @Inject
     private Lang lang;

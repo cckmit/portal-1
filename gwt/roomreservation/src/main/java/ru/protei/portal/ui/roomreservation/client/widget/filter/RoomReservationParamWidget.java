@@ -61,11 +61,6 @@ public class RoomReservationParamWidget extends Composite implements AbstractRoo
     }
 
     @Override
-    public void fillFilterFields(RoomReservationQuery query, SelectorsParams selectorsParams) {
-//        пока не реализуем сохранение фильтров
-    }
-
-    @Override
     public void setValidateCallback(Consumer<Boolean> callback) {
         validateCallback = callback;
     }

@@ -6,8 +6,6 @@ import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 
-import static org.mockito.Mockito.mock;
-
 @Configuration
 public class DaoTestsConfiguration {
 
@@ -540,5 +538,15 @@ public class DaoTestsConfiguration {
     @Bean
     public PcbOrderDAO getPcbOrderDAO() {
         return new PcbOrderDAO_Impl();
+    }
+
+    @Bean
+    public RFIDLabelDAO getRFIDLabelDAO() {
+        return new RFIDLabelDAO_Impl();
+    }
+
+    @Bean
+    public RFIDDeviceDAO getRFIDDeviceDAO() {
+        return new RFIDDeviceDAO_Impl();
     }
 }

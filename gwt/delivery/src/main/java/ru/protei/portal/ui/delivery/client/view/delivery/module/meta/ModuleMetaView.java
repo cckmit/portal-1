@@ -6,14 +6,11 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.RFIDLabel;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
@@ -21,6 +18,7 @@ import ru.protei.portal.ui.common.client.widget.selector.module.ModuleStateFormS
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
 import ru.protei.portal.ui.delivery.client.activity.delivery.module.meta.AbstractModuleMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.delivery.module.meta.AbstractModuleMetaView;
+import ru.protei.portal.ui.delivery.client.widget.rfidlabel.RFIDLabelFormField;
 
 import java.util.Date;
 
@@ -70,6 +68,11 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
     @Override
     public HasValue<Date> departureDate() {
         return departureDate;
+    }
+
+    @Override
+    public HasValue<RFIDLabel> rfidLabel() {
+        return rfidLabel;
     }
 
     @Override
@@ -133,6 +136,7 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
         qcManager.ensureLabelDebugId(DebugIds.DELIVERY.KIT.MODULE.QC_MANAGER);
         buildDate.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.BUILD_DATE);
         departureDate.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.DEPARTURE_DATE);
+        rfidLabel.ensureDebugId(DebugIds.DELIVERY.KIT.MODULE.RFID_LABEL);
     }
 
     @UiHandler("state")
@@ -160,6 +164,11 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
         activity.onDepartureDateChanged();
     }
 
+    @UiHandler("rfidLabel")
+    public void onRfidLabelChanged(ValueChangeEvent<RFIDLabel> event) {
+        activity.onRfidLabelChanged();
+    }
+
     @Inject
     @UiField( provided = true )
     ModuleStateFormSelector state;
@@ -179,6 +188,9 @@ public class ModuleMetaView extends Composite implements AbstractModuleMetaView 
     @Inject
     @UiField(provided = true)
     SinglePicker departureDate;
+    @Inject
+    @UiField(provided = true)
+    RFIDLabelFormField rfidLabel;
 
     private AbstractModuleMetaActivity activity;
 
