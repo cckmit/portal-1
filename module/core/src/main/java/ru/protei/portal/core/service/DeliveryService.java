@@ -1,5 +1,6 @@
 package ru.protei.portal.core.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
@@ -30,6 +31,9 @@ public interface DeliveryService {
     @Privileged({ En_Privilege.DELIVERY_REMOVE })
     @Auditable( En_AuditType.DELIVERY_REMOVE )
     Result<Long> removeDelivery(AuthToken token, Long id);
+
+    @Transactional
+    Result<Void> updateKitListStates(AuthToken token, List<Long> kitsIds, Long caseStateId);
 
     @Privileged({ En_Privilege.DELIVERY_EDIT })
     @Auditable( En_AuditType.DELIVERY_MODIFY )

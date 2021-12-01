@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Module;
@@ -25,6 +26,7 @@ import ru.protei.portal.ui.delivery.client.view.delivery.module.table.ModuleTabl
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public abstract class KitActivity implements Activity, AbstractKitActivity {
@@ -250,15 +252,33 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
         }
 
         @Override
-        public void onGroupChangeState() {
-            Set<Kit> kitsSelected = view.getKitsSelected();
-            String selectedNumbers = stream(kitsSelected).map(Kit::getSerialNumber).collect(Collectors.joining(","));
-            fireEvent(new NotifyEvents.Show("On change state Kits clicked, selected kits: " + selectedNumbers, NotifyEvents.NotifyType.SUCCESS));
+        public void onGroupChangeState(CaseState state) {
+
+            List<Long> kitsIds = stream(view.getKitsSelected()).map(Kit::getId).collect(Collectors.toList());
+
+            if (isEmpty(kitsIds)){
+                fireEvent(new NotifyEvents.Show(lang.kitNotSelectedMessage(), NotifyEvents.NotifyType.ERROR));
+                return;
+            }
+
+            deliveryService.updateKitListStates(kitsIds, state.getId(), new FluentCallback<Void>()
+                    .withSuccess((Void) -> deliveryService.getDelivery(delivery.getId(),
+                            new FluentCallback<Delivery>()
+                                    .withSuccess(delivery -> {
+                                        view.fillKits(delivery.getKits());
+                                        fireEvent(new NotifyEvents.Show(lang.kitsStatesUpdated(), NotifyEvents.NotifyType.SUCCESS));
+                                    }))));
         }
 
         @Override
         public void onGroupRemove() {
             Set<Kit> kitsSelected = view.getKitsSelected();
+
+            if (isEmpty(kitsSelected)){
+                fireEvent(new NotifyEvents.Show(lang.kitNotSelectedMessage(), NotifyEvents.NotifyType.ERROR));
+                return;
+            }
+
             String selectedNumbers = stream(kitsSelected).map(Kit::getSerialNumber).collect(Collectors.joining(","));
             fireEvent(new NotifyEvents.Show("On remove Kits clicked, selected kits: " + selectedNumbers, NotifyEvents.NotifyType.SUCCESS));
         }

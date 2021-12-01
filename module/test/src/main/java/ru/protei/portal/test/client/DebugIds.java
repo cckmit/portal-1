@@ -1333,6 +1333,10 @@ public class DebugIds {
             String TAB_HISTORY = "kit-item-tab-history";
             String BACK_BUTTON = "kit-back-button";
             String ACTION_MENU_BUTTON = "kit-action-menu-button";
+            String ACTION_MENU_ITEM_COPY_BUTTON = "kit-action-menu-copy-item-button";
+            String ACTION_MENU_ITEM_CHANGE_STATE_BUTTON = "kit-action-menu-item-change-state-button";
+            String ACTION_MENU_ITEM_EDIT_BUTTON = "kit-action-menu-item-edit-button";
+            String ACTION_MENU_ITEM_REMOVE_BUTTON = "kit-action-menu-item-remove-button";
 
             interface MODULE {
                 String NAME = "module-name-input";

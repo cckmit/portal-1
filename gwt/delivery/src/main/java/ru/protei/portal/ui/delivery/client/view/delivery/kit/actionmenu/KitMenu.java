@@ -10,21 +10,32 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.activity.actionmenu.AbstractKitMenuPopupActivity;
 import ru.protei.portal.ui.delivery.client.activity.delivery.kit.handler.KitActionsHandler;
 import ru.protei.portal.ui.delivery.client.view.delivery.kit.actionmenu.popup.KitMenuPopup;
 
+import java.util.List;
+
 public class KitMenu extends Composite {
 
     @Inject
-    public void onInit(Lang lang) {
+    public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         kitMenuPopup.setActivity(new AbstractKitMenuPopupActivity() {
             @Override
             public void onCopyClick() {
                 handler.onCopy();
+            }
+
+            @Override
+            public void onChangeStateClick(CaseState state) {
+                handler.onGroupChangeState(state);
             }
 
             @Override
@@ -37,6 +48,9 @@ public class KitMenu extends Composite {
                 handler.onGroupRemove();
             }
         });
+
+        caseStateController.getCaseStates(En_CaseType.MODULE, new FluentCallback<List<CaseState>>()
+                .withSuccess(caseStates -> kitMenuPopup.setChangeStateSubmenuItems(caseStates)));
 
         ensureDebugIds();
     }
@@ -78,11 +92,15 @@ public class KitMenu extends Composite {
     private KitActionsHandler handler;
 
     @UiField
+    Lang lang;
+    @UiField
     Anchor actionsBtn;
     @UiField
     Anchor backBtn;
     @Inject
     KitMenuPopup kitMenuPopup;
+    @Inject
+    CaseStateControllerAsync caseStateController;
 
     private static KitMenu.KitViewUiBinder ourUiBinder = GWT.create(KitMenu.KitViewUiBinder.class);
 

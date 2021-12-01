@@ -197,6 +197,16 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     @Transactional
+    public Result<Void> updateKitListStates(AuthToken token, List<Long> kitsIds, Long caseStateId) {
+
+        List<CaseObject> objects = caseObjectDAO.getListByKeys(kitsIds);
+        stream(objects).forEach(caseObject -> caseObject.setStateId(caseStateId));
+        caseObjectDAO.mergeBatch(objects);
+        return ok();
+    }
+
+    @Override
+    @Transactional
     public Result<Delivery> updateMeta(AuthToken token, Delivery meta) {
         if (meta == null || meta.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);

@@ -11,9 +11,9 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseObjectMetaNotifiers;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.ent.Kit;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
@@ -154,16 +155,6 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
     @Override
     public void onKitEditClicked(Long kitId, String kitName) {
         fireEvent(new KitEvents.Show(delivery.getId(), kitId));
-    }
-
-    @Override
-    public void onKitCloneClicked(Long kitId) {
-        fireEvent(new NotifyEvents.Show("Kit id clone clicked: " + kitId, NotifyEvents.NotifyType.SUCCESS));
-    }
-
-    @Override
-    public void onRemoveKitsButtonClicked(Set<Kit> toBeRemoved) {
-        fireEvent(new NotifyEvents.Show("Kits to be deleted: " + StringUtils.join(toBeRemoved, Kit::getSerialNumber,","), NotifyEvents.NotifyType.SUCCESS));
     }
 
     @Override
@@ -314,15 +305,33 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         }
 
         @Override
-        public void onGroupChangeState() {
-            Set<Kit> kitsSelected = view.getKitsSelected();
-            String selectedNumbers = stream(kitsSelected).map(Kit::getSerialNumber).collect(Collectors.joining(","));
-            fireEvent(new NotifyEvents.Show("On change state Kits clicked, selected kits: " + selectedNumbers, NotifyEvents.NotifyType.SUCCESS));
+        public void onGroupChangeState(CaseState state) {
+
+            List<Long> kitsIds = stream(view.getKitsSelected()).map(Kit::getId).collect(Collectors.toList());
+
+            if (isEmpty(kitsIds)){
+                fireEvent(new NotifyEvents.Show(lang.kitNotSelectedMessage(), NotifyEvents.NotifyType.ERROR));
+                return;
+            }
+
+            controller.updateKitListStates(kitsIds, state.getId(), new FluentCallback<Void>()
+                    .withSuccess((Void) -> controller.getDelivery(delivery.getId(),
+                            new FluentCallback<Delivery>()
+                                    .withSuccess(delivery -> {
+                                        view.fillKits(delivery.getKits());
+                                        fireEvent(new NotifyEvents.Show(lang.kitsStatesUpdated(), NotifyEvents.NotifyType.SUCCESS));
+                                    }))));
         }
 
         @Override
         public void onGroupRemove() {
             Set<Kit> kitsSelected = view.getKitsSelected();
+
+            if (isEmpty(kitsSelected)){
+                fireEvent(new NotifyEvents.Show(lang.kitNotSelectedMessage(), NotifyEvents.NotifyType.ERROR));
+                return;
+            }
+
             String selectedNumbers = stream(kitsSelected).map(Kit::getSerialNumber).collect(Collectors.joining(","));
             fireEvent(new NotifyEvents.Show("On remove Kits clicked, selected kits: " + selectedNumbers, NotifyEvents.NotifyType.SUCCESS));
         }

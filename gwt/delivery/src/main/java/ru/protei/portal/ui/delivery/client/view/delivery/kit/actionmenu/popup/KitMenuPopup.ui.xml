@@ -12,26 +12,6 @@
             </g:Anchor>
         </li>
         <li class="kit-menu-item">
-            <g:Anchor ui:field="changeState">
-                <i class="kit-icon far fa-circle"/>
-                <span class="kit-text"><ui:text from="{lang.buttonState}"/></span>
-                <ul ui:field="statesContainer" class="kit-submenu-list hide1">
-                    <li class="kit-menu-item">
-                        <a ui:field="edit1">
-                            <i class="kit-icon fa fa-pen"/>
-                            <span class="kit-text"><ui:text from="{lang.buttonModify}"/></span>
-                        </a>
-                    </li>
-                    <li class="kit-menu-item">
-                        <a ui:field="edit2">
-                            <i class="kit-icon fa fa-pen"/>
-                            <span class="kit-text"><ui:text from="{lang.buttonModify}"/></span>
-                        </a>
-                    </li>
-                </ul>
-            </g:Anchor>
-        </li>
-        <li class="kit-menu-item">
             <g:Anchor ui:field="edit">
                 <i class="kit-icon fa fa-pen"/>
                 <span class="kit-text"><ui:text from="{lang.edit}"/></span>
@@ -41,6 +21,13 @@
             <g:Anchor ui:field="remove">
                 <i class="kit-icon fa fa-trash-alt"/>
                 <span class="kit-text"><ui:text from="{lang.buttonRemove}"/></span>
+            </g:Anchor>
+        </li>
+        <li class="kit-menu-item">
+            <g:Anchor ui:field="changeState">
+                <i class="kit-icon far fa-circle"/>
+                <span class="kit-text"><ui:text from="{lang.buttonState}"/></span>
+                <ul ui:field="statesContainer" class="kit-submenu-list hide"/>
             </g:Anchor>
         </li>
     </g:HTMLPanel>

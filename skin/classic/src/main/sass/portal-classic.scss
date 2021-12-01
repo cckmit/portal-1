@@ -313,7 +313,6 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
     line-height: 22px;
     display: flex;
     cursor: pointer;
-    font-size: 0.9em;
     white-space: nowrap;
     padding-left: 0;
     border-radius: 4px;
@@ -358,6 +357,30 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
 
       .kit-submenu-list {
         display: table;
+        padding: 5px 0 0;
+
+        .kit-submenu-item {
+          text-align: center;
+          line-height: 22px;
+          display: flex;
+          cursor: pointer;
+          font-size: 0.9em;
+          white-space: nowrap;
+          padding-left: 0;
+          border-radius: 4px;
+
+          &:hover {
+            background-color: $bg_light_gray;
+          }
+
+          a {
+            width: 100%;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            padding-left: 30px;
+            margin-bottom: 4px;
+          }
+        }
       }
     }
   }

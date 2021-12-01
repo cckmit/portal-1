@@ -4015,4 +4015,6 @@ public interface Lang extends Messages, ContactItemLang {
     String cardBatch();
 
     String card();
+
+    String kitsStatesUpdated();
 }

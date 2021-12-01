@@ -21,8 +21,4 @@ public interface AbstractDeliveryEditActivity {
     void onSelectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs);
 
     void onKitEditClicked(Long kitId, String kitName);
-
-    void onRemoveKitsButtonClicked(Set<Kit> value);
-
-    void onKitCloneClicked(Long kitId);
 }
