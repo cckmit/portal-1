@@ -27,7 +27,7 @@
             <g:Anchor ui:field="changeState">
                 <i class="kit-icon far fa-circle"/>
                 <span class="kit-text"><ui:text from="{lang.buttonState}"/></span>
-                <ul ui:field="statesContainer" class="kit-submenu-list hide"/>
+                <ul ui:field="statesContainer" class="state-submenu-list hide"/>
             </g:Anchor>
         </li>
     </g:HTMLPanel>

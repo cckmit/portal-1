@@ -4017,4 +4017,6 @@ public interface Lang extends Messages, ContactItemLang {
     String card();
 
     String kitsStatesUpdated();
+
+    String modulesStatesUpdated();
 }

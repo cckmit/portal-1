@@ -1356,6 +1356,7 @@ public class DebugIds {
                 String EDIT_NAME_AND_DESC_REJECT = "module-edit-name-and-desc-reject";
                 String TAB_COMMENT = "module-tab-comments";
                 String TAB_HISTORY = "module-tab-history";
+                String CHANGE_STATE_POPUP = "module-change-state-";
             }
         }
 

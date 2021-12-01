@@ -339,6 +339,10 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
         text-align: left;
         line-height: 21px;
         padding-left: 3px;
+
+        &.module-text {
+          font-size: 0.9em;
+        }
       }
 
       .kit-icon {
@@ -353,13 +357,18 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
         vertical-align: middle;
         font-size: 0.8em;
         font-weight: bold;
+
+        &.module-icon {
+          font-size: 0.7em;
+          margin-top: 2px;
+        }
       }
 
-      .kit-submenu-list {
+      .state-submenu-list {
         display: table;
         padding: 5px 0 0;
 
-        .kit-submenu-item {
+        .state-submenu-item {
           text-align: center;
           line-height: 22px;
           display: flex;
@@ -368,6 +377,10 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
           white-space: nowrap;
           padding-left: 0;
           border-radius: 4px;
+
+          .kit-icon {
+            margin-top: 2px;
+          }
 
           &:hover {
             background-color: $bg_light_gray;

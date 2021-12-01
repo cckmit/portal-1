@@ -198,6 +198,9 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     @Transactional
     public Result<Void> updateKitListStates(AuthToken token, List<Long> kitsIds, Long caseStateId) {
+        if (caseStateId == null){
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         List<CaseObject> objects = caseObjectDAO.getListByKeys(kitsIds);
         stream(objects).forEach(caseObject -> caseObject.setStateId(caseStateId));

@@ -88,4 +88,10 @@ public class ModuleControllerImpl implements ModuleController {
         log.info("removeModules(): modulesIds={}, {}", modulesIds, response.isOk() ? "ok" : response.getStatus());
         return checkResultAndGetData(response);
     }
+
+    @Override
+    public void updateModuleListStates(List<Long> modulesIds, Long caseStateId) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        checkResult(moduleService.updateModuleListStates(token, modulesIds, caseStateId));
+    }
 }

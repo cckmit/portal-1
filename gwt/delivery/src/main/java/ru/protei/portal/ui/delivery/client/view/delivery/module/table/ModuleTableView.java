@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Module;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -19,6 +20,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.delivery.client.activity.delivery.kit.page.AbstractKitActivity;
 import ru.protei.portal.ui.delivery.client.activity.delivery.kit.page.AbstractModuleTableView;
 import ru.protei.portal.ui.delivery.client.view.delivery.module.column.ModuleColumn;
+import ru.protei.portal.ui.delivery.client.view.delivery.module.state.ModuleStatesPopup;
 
 import java.util.List;
 import java.util.Map;
@@ -48,6 +50,7 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
     @Override
     public void setActivity(AbstractKitActivity activity) {
         this.activity = activity;
+        moduleStatesPopup.addChangeStateHandler(activity);
         initTable();
     }
 
@@ -88,6 +91,11 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
             table.updateRow(item);
     }
 
+    @Override
+    public void fillModuleStates(List<CaseState> caseStates){
+        moduleStatesPopup.fillOptions(caseStates);
+    }
+
     @UiHandler("addButton")
     public void onClickAddButton(ClickEvent event) {
         event.preventDefault();
@@ -103,10 +111,9 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
         event.stopPropagation();
     }
 
-    @UiHandler("stateButton")
-    public void onStateClicked(ClickEvent event) {
-        event.preventDefault();
-        event.stopPropagation();
+    @UiHandler("changeStatesButton")
+    public void onChangeStateClick(ClickEvent event) {
+        moduleStatesPopup.showUnderRight(changeStatesButton, 200);
     }
 
     @UiHandler("deleteButton")
@@ -155,11 +162,13 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
     @UiField
     Anchor copyButton;
     @UiField
-    Anchor stateButton;
+    Anchor changeStatesButton;
     @UiField
     Anchor deleteButton;
     @UiField
     Anchor reloadButton;
+    @Inject
+    ModuleStatesPopup moduleStatesPopup;
 
     private AbstractKitActivity activity;
 

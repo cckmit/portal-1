@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.delivery.client.activity.delivery.kit.page;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Module;
 
 import java.util.List;
@@ -17,6 +18,8 @@ public interface AbstractModuleTableView extends IsWidget {
     void clearModules();
 
     Set<Module> getSelectedModules();
+
+    void fillModuleStates(List<CaseState> caseStates);
 
     void setDeleteEnabled(boolean isEnabled);
 

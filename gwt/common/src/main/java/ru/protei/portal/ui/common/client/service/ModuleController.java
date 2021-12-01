@@ -26,4 +26,6 @@ public interface ModuleController extends RemoteService {
     Module saveModule(Module module) throws RequestFailedException;
 
     String generateSerialNumber(Long kitId) throws RequestFailedException;
+
+    void updateModuleListStates(List<Long> modulesIds, Long caseStateId) throws RequestFailedException;
 }

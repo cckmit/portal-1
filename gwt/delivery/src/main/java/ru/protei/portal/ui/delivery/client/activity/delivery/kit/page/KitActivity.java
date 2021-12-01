@@ -6,6 +6,7 @@ import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dto.Project;
@@ -17,6 +18,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.DeliveryControllerAsync;
 import ru.protei.portal.ui.common.client.service.ModuleControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -40,6 +42,9 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
         view.setHandler(kitActionsHandler);
         view.setKitNotSelectedMessageVisible(true);
         view.setModuleNotSelectedMessageVisible(true);
+
+        caseStateController.getCaseStates(En_CaseType.MODULE, new FluentCallback<List<CaseState>>()
+                .withSuccess(caseStates -> moduleView.fillModuleStates(caseStates)));
     }
 
     @Event
@@ -97,6 +102,22 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     public void onKitClicked(Long kitId) {
         this.kitId = kitId;
         fillModules(kitId);
+    }
+
+    @Override
+    public void onModulesStateChangeClicked(CaseState state) {
+        List<Long> modulesIds = stream(moduleView.getSelectedModules()).map(Module::getId).collect(Collectors.toList());
+
+        if (isEmpty(modulesIds)){
+            fireEvent(new NotifyEvents.Show(lang.moduleNotSelectedMessage(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
+        moduleService.updateModuleListStates(modulesIds, state.getId(), new FluentCallback<Void>()
+                .withSuccess((Void) -> {
+                    fillModules(kitId);
+                    fireEvent(new NotifyEvents.Show(lang.modulesStatesUpdated(), NotifyEvents.NotifyType.SUCCESS));
+                }));
     }
 
     @Override
@@ -320,6 +341,8 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     private DeliveryControllerAsync deliveryService;
     @Inject
     private ModuleControllerAsync moduleService;
+    @Inject
+    CaseStateControllerAsync caseStateController;
 
     @ContextAware
     Delivery delivery;

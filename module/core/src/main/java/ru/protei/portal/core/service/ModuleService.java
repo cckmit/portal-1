@@ -32,5 +32,9 @@ public interface ModuleService {
     @Auditable( En_AuditType.MODULE_MODIFY )
     Result<Module> updateMeta(AuthToken token, Module meta);
 
+    @Privileged({ En_Privilege.DELIVERY_EDIT })
+    @Auditable( En_AuditType.MODULE_MODIFY )
+    Result<Void> updateModuleListStates(AuthToken token, List<Long> kitsIds, Long caseStateId);
+
     Result<String> generateSerialNumber(AuthToken token, Long kitId);
 }

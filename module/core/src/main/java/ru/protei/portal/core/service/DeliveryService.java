@@ -32,7 +32,8 @@ public interface DeliveryService {
     @Auditable( En_AuditType.DELIVERY_REMOVE )
     Result<Long> removeDelivery(AuthToken token, Long id);
 
-    @Transactional
+    @Privileged({ En_Privilege.DELIVERY_EDIT })
+    @Auditable( En_AuditType.KIT_MODIFY )
     Result<Void> updateKitListStates(AuthToken token, List<Long> kitsIds, Long caseStateId);
 
     @Privileged({ En_Privilege.DELIVERY_EDIT })

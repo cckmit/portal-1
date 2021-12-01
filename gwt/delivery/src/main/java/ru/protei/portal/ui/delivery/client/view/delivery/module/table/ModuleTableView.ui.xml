@@ -12,7 +12,7 @@
             <g:Anchor ui:field="copyButton" title="{lang.buttonCopyModule}" href="#">
                 <i class="far fa-clone"/>
             </g:Anchor>
-            <g:Anchor ui:field="stateButton" title="{lang.buttonStateModule}" href="#">
+            <g:Anchor ui:field="changeStatesButton" title="{lang.buttonStateModule}" href="#">
                 <i class="far fa-circle"/>
             </g:Anchor>
             <g:Anchor ui:field="deleteButton" title="{lang.buttonRemoveModule}" href="#">

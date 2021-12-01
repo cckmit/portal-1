@@ -81,7 +81,7 @@ public class KitMenuPopup extends BasePopupView {
         for (CaseState state : emptyIfNull(states)){
 
             Element li = DOM.createElement( "li" );
-            li.addClassName( "kit-submenu-item" );
+            li.addClassName( "state-submenu-item" );
 
             Element a = DOM.createAnchor();
 
@@ -96,6 +96,7 @@ public class KitMenuPopup extends BasePopupView {
             a.appendChild( span );
 
             li.appendChild( a );
+            a.setId(DEBUG_ID_PREFIX + DebugIds.DELIVERY.KIT.MODULE.CHANGE_STATE_POPUP + state.getState());
             statesContainer.appendChild(li);
 
             DOM.sinkEvents( a, Event.ONCLICK );
