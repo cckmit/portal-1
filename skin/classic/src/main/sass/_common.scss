@@ -5367,6 +5367,7 @@ div.form-group-default.form-group-default-selectFx:focus {
 .privacy-selector {
   .selector-popup {
     width: auto !important;
+    position: absolute !important;
     .dropdown-menu {
       padding-bottom: 0;
     }
