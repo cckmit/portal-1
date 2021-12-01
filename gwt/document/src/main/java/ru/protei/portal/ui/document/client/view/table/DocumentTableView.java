@@ -16,7 +16,6 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
-import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableActivity;
@@ -24,6 +23,8 @@ import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableV
 
 import java.util.LinkedList;
 import java.util.List;
+
+import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
 
 public class DocumentTableView extends Composite implements AbstractDocumentTableView {
 
@@ -180,7 +181,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
                         .append("</div>");
             }
 
-            cell.setInnerHTML(html.toString());
+            cell.setInnerHTML(sanitizeHtml(html.toString()));
 
             if (value.isDeprecatedUnit()) {
                 cell.addClassName("deprecated-entity");
