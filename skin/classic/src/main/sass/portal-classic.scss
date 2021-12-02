@@ -317,14 +317,20 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
     padding-left: 0;
     border-radius: 4px;
 
-    &:hover {
-      background-color: $bg_light_gray;
+    .kit-menu-item-info{
+
+      display: flex;
+      padding-bottom: 5px;
+      padding-top: 5px;
+      padding-left: 3px;
+
+      &:hover {
+        background-color: $bg_light_gray;
+      }
     }
 
     a {
       width: 100%;
-      padding: 4px 4px;
-      margin-bottom: 4px;
 
       .kit-text {
         float: left;
@@ -365,7 +371,6 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
       }
 
       .state-submenu-list {
-        display: table;
         padding: 5px 0 0;
 
         .state-submenu-item {

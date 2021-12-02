@@ -41,16 +41,19 @@ public class ModuleStatesPopup extends BasePopupView {
             li.addClassName( "kit-menu-item" );
 
             Element a = DOM.createAnchor();
+            Element div = DOM.createDiv();
+            div.addClassName( "kit-menu-item-info" );
+            a.appendChild( div );
 
             Element icon = DOM.createElement( "i" );
             icon.addClassName( "kit-icon module-icon fas fa-circle selector m-r-5" );
             icon.getStyle().setColor( state.getColor() );
-            a.appendChild( icon );
+            div.appendChild( icon );
 
             Element span = DOM.createSpan();
             span.addClassName( "kit-text module-text" );
             span.setInnerText( getStateName(state) );
-            a.appendChild( span );
+            div.appendChild( span );
 
             li.appendChild( a );
             a.setId(DEBUG_ID_PREFIX + DebugIds.DELIVERY.KIT.MODULE.CHANGE_STATE_POPUP + state.getState());

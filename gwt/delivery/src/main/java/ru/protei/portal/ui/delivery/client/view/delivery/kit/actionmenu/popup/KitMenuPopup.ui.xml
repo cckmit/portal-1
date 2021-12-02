@@ -7,26 +7,34 @@
     <g:HTMLPanel ui:field="root" tag="ul" styleName="kit-menu-list">
         <li class="kit-menu-item">
             <g:Anchor ui:field="copy">
-                <i class="kit-icon far fa-clone"/>
-                <span class="kit-text"><ui:text from="{lang.buttonCopy}"/></span>
+                <div class="kit-menu-item-info">
+                    <i class="kit-icon far fa-clone"/>
+                    <span class="kit-text"><ui:text from="{lang.buttonCopy}"/></span>
+                </div>
             </g:Anchor>
         </li>
         <li class="kit-menu-item">
             <g:Anchor ui:field="edit">
-                <i class="kit-icon fa fa-pen"/>
-                <span class="kit-text"><ui:text from="{lang.edit}"/></span>
+                <div class="kit-menu-item-info">
+                    <i class="kit-icon fa fa-pen"/>
+                    <span class="kit-text"><ui:text from="{lang.edit}"/></span>
+                </div>
             </g:Anchor>
         </li>
         <li class="kit-menu-item">
             <g:Anchor ui:field="remove">
-                <i class="kit-icon fa fa-trash-alt"/>
-                <span class="kit-text"><ui:text from="{lang.buttonRemove}"/></span>
+                <div class="kit-menu-item-info">
+                    <i class="kit-icon fa fa-trash-alt"/>
+                    <span class="kit-text"><ui:text from="{lang.buttonRemove}"/></span>
+                </div>
             </g:Anchor>
         </li>
         <li class="kit-menu-item">
             <g:Anchor ui:field="changeState">
-                <i class="kit-icon far fa-circle"/>
-                <span class="kit-text"><ui:text from="{lang.buttonState}"/></span>
+                <div class="kit-menu-item-info">
+                    <i class="kit-icon far fa-circle"/>
+                    <span class="kit-text"><ui:text from="{lang.buttonState}"/></span>
+                </div>
                 <ul ui:field="statesContainer" class="state-submenu-list hide"/>
             </g:Anchor>
         </li>

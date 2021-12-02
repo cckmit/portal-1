@@ -113,6 +113,7 @@ public class ModuleTableView extends Composite implements AbstractModuleTableVie
 
     @UiHandler("changeStatesButton")
     public void onChangeStateClick(ClickEvent event) {
+        event.preventDefault();
         moduleStatesPopup.showUnderRight(changeStatesButton, 200);
     }
 
