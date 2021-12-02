@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.plan.client.activity.edit.tables;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -9,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.dto.CaseFilterDto;
+import ru.protei.portal.core.model.ent.Plan;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -43,12 +45,14 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
         container.add(view.asWidget());
         planId = event.planId;
         view.setIssueDefaultCursor(planId == null);
+        scrollTo = event.scrollTo;
         initFilter();
     }
 
     @Override
     public void onItemClicked(CaseShortView value) {
         if (planId != null) {
+            fireEvent(new PlanEvents.PersistScroll());
             fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
         }
     }
@@ -106,6 +110,7 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
                 .withSuccess(sr -> {
                     view.setTotalRecords(sr.getTotalCount());
                     view.putRecords(sr.getResults());
+                    restoreScroll();
                 }));
     }
 
@@ -148,6 +153,10 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
         return Long.parseLong(value);
     }
 
+    private void restoreScroll() {
+        Window.scrollTo(0, scrollTo);
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -162,6 +171,8 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
     LocalStorageService localStorageService;
     @Inject
     PolicyService policyService;
+
+    private Integer scrollTo = 0;
 
     private Long planId;
     private final static int TABLE_LIMIT = 100;
