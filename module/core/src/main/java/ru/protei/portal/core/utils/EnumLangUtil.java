@@ -297,6 +297,8 @@ public class EnumLangUtil {
                 return localizedLang.get("dutyTypeSORM");
             case COV:
                 return localizedLang.get("dutyTypeCOV");
+            case IMS:
+                return localizedLang.get("dutyTypeIMS");
         }
         return "";
     }

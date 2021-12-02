@@ -21,7 +21,9 @@ public enum En_DutyType implements HasId {
     // дежурный СОРМ
     SORM(8),
     // дежурный ЦОВ
-    COV(9);
+    COV(9),
+    // дежурный IMS
+    IMS(10);
 
     En_DutyType(int id) {
         this.id = id;
