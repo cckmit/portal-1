@@ -10,6 +10,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 
+import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
+
 /**
  * Мультиселектор продуктов
  */
@@ -35,8 +37,8 @@ public class DevUnitMultiSelector extends InputPopupMultiSelector<ProductShortVi
     }
 
     protected String makeOptionName( ProductShortView productShortView ) {
-        return productShortView.getName()
-                + (HelperFunc.isEmpty( productShortView.getAliases() ) ? "" : " (" + productShortView.getAliases() + ")");
+        return sanitizeHtml(productShortView.getName()
+                + (HelperFunc.isEmpty( productShortView.getAliases() ) ? "" : " (" + productShortView.getAliases() + ")"));
     }
 
     private ProductModel model;
