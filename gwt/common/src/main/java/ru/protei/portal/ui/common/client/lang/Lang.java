@@ -3230,6 +3230,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dutyTypeCOV();
 
+    String dutyTypeIMS();
+
     String reservedIpReservationStart();
 
     String reservedIpOnlineTestStart();
