@@ -22,19 +22,22 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.lang.ModuleStateLang;
 import ru.protei.portal.ui.common.client.popup.BasePopupView;
 import ru.protei.portal.ui.delivery.client.activity.actionmenu.AbstractKitMenuPopupActivity;
+import ru.protei.portal.ui.delivery.client.activity.delivery.module.state.ModuleStateModel;
+import ru.protei.portal.ui.delivery.client.activity.delivery.module.state.ModuleStateSubscriber;
 
 import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
-public class KitMenuPopup extends BasePopupView {
+public class KitMenuPopup extends BasePopupView implements ModuleStateSubscriber {
 
     @Inject
-    public void onInit() {
+    public void onInit(ModuleStateModel stateModel) {
         setWidget(ourUiBinder.createAndBindUi(this));
         setAutoHideEnabled(true);
         setAutoHideOnHistoryEventsEnabled(true);
         ensureDebugIds();
+        stateModel.subscribeStates(this);
     }
 
     @Override
@@ -77,7 +80,8 @@ public class KitMenuPopup extends BasePopupView {
         hide();
     }
 
-    public void setChangeStateSubmenuItems(List<CaseState> states) {
+    @Override
+    public void onStatesLoaded(List<CaseState> states) {
         for (CaseState state : emptyIfNull(states)){
 
             Element li = DOM.createElement( "li" );
