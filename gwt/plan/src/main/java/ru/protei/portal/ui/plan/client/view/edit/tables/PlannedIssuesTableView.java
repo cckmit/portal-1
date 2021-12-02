@@ -52,11 +52,6 @@ public class PlannedIssuesTableView extends Composite implements AbstractPlanned
         moveToAnotherPlanColumn.setColumnVisibility(isVisible);
     }
 
-    @Override
-    public ClickColumnProvider<CaseShortView> getIssuesColumnProvider() {
-        return issuesColumnProvider;
-    }
-
     private void initTable() {
         table.setDraggableRows(true);
         dragColumn.setHandler( activity );

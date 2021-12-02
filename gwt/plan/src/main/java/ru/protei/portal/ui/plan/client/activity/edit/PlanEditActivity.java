@@ -85,7 +85,7 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
 
     @Event
     public void persistScroll( PlanEvents.PersistScroll event) {
-            scrollTo = Window.getScrollTop();
+        scrollTo = Window.getScrollTop();
     }
 
     @Override
@@ -223,7 +223,7 @@ public abstract class PlanEditActivity implements AbstractPlanEditActivity, Acti
     @Inject
     DefaultErrorHandler defaultErrorHandler;
 
-    private Integer scrollTo;
+    private Integer scrollTo = 0;
 
     private Plan plan;
     private AppEvents.InitDetails initDetails;

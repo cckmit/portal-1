@@ -84,11 +84,6 @@ public class UnplannedIssuesTableView extends Composite implements AbstractUnpla
         issue.setStyleName(isDefault ? "cursor-default" : null);
     }
 
-    @Override
-    public ClickColumnProvider<CaseShortView> getIssuesColumnProvider() {
-        return issuesColumnProvider;
-    }
-
     @UiHandler("filter")
     public void onFilterChanged(ValueChangeEvent<FilterShortView> event) {
         if (activity != null) {

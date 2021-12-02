@@ -77,12 +77,6 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
         }
     }
 
-    @Event
-    public void removeSelection(PlanEvents.RemovePlannedSelection event) {
-        view.getIssuesColumnProvider().removeSelection();
-
-    }
-
     @Override
     public void onRemoveClicked(CaseShortView value) {
         if (isNew()){
@@ -126,7 +120,6 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
     public void onItemClicked(CaseShortView value) {
         if (planId != null) {
             fireEvent(new PlanEvents.PersistScroll());
-            fireEvent(new PlanEvents.RemoveUnplannedSelection());
             fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
         }
     }

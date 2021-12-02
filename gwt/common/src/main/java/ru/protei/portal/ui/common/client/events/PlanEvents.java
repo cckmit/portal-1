@@ -115,8 +115,4 @@ public class PlanEvents {
     public static class ChangeModel {}
 
     public static class PersistScroll {}
-
-    public static class RemovePlannedSelection {}
-
-    public static class RemoveUnplannedSelection {}
 }

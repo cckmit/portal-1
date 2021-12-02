@@ -49,16 +49,10 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
         initFilter();
     }
 
-    @Event
-    public void removeSelection(PlanEvents.RemoveUnplannedSelection event) {
-        view.getIssuesColumnProvider().removeSelection();
-    }
-
     @Override
     public void onItemClicked(CaseShortView value) {
         if (planId != null) {
             fireEvent(new PlanEvents.PersistScroll());
-            fireEvent(new PlanEvents.RemovePlannedSelection());
             fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
         }
     }
