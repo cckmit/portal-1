@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Delivery;
 import ru.protei.portal.core.model.ent.Kit;
 import ru.protei.portal.core.model.ent.Module;
@@ -22,10 +23,13 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.delivery.client.activity.delivery.kit.handler.KitActionsHandler;
 import ru.protei.portal.ui.delivery.client.view.delivery.module.table.ModuleTableView;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public abstract class KitActivity implements Activity, AbstractKitActivity {
 
@@ -95,6 +99,22 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
     public void onKitClicked(Long kitId) {
         this.kitId = kitId;
         fillModules(kitId);
+    }
+
+    @Override
+    public void onModulesStateChangeClicked(CaseState state) {
+        List<Long> modulesIds = stream(moduleView.getSelectedModules()).map(Module::getId).collect(Collectors.toList());
+
+        if (isEmpty(modulesIds)){
+            fireEvent(new NotifyEvents.Show(lang.moduleNotSelectedMessage(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
+        moduleService.updateModuleListStates(modulesIds, state.getId(), new FluentCallback<Void>()
+                .withSuccess((Void) -> {
+                    fillModules(kitId);
+                    fireEvent(new NotifyEvents.Show(lang.modulesStatesUpdated(), NotifyEvents.NotifyType.SUCCESS));
+                }));
     }
 
     @Override
@@ -250,15 +270,33 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
         }
 
         @Override
-        public void onGroupChangeState() {
-            Set<Kit> kitsSelected = view.getKitsSelected();
-            String selectedNumbers = stream(kitsSelected).map(Kit::getSerialNumber).collect(Collectors.joining(","));
-            fireEvent(new NotifyEvents.Show("On change state Kits clicked, selected kits: " + selectedNumbers, NotifyEvents.NotifyType.SUCCESS));
+        public void onGroupChangeState(CaseState state) {
+
+            List<Long> kitsIds = toList(view.getKitsSelected(), Kit::getId);
+
+            if (isEmpty(kitsIds)){
+                fireEvent(new NotifyEvents.Show(lang.kitNotSelectedMessage(), NotifyEvents.NotifyType.ERROR));
+                return;
+            }
+
+            deliveryService.updateKitListStates(kitsIds, state.getId(), new FluentCallback<Void>()
+                    .withSuccess((Void) -> deliveryService.getDelivery(delivery.getId(),
+                            new FluentCallback<Delivery>()
+                                    .withSuccess(delivery -> {
+                                        view.fillKits(delivery.getKits());
+                                        fireEvent(new NotifyEvents.Show(lang.kitsStatesUpdated(), NotifyEvents.NotifyType.SUCCESS));
+                                    }))));
         }
 
         @Override
         public void onGroupRemove() {
             Set<Kit> kitsSelected = view.getKitsSelected();
+
+            if (isEmpty(kitsSelected)){
+                fireEvent(new NotifyEvents.Show(lang.kitNotSelectedMessage(), NotifyEvents.NotifyType.ERROR));
+                return;
+            }
+
             String selectedNumbers = stream(kitsSelected).map(Kit::getSerialNumber).collect(Collectors.joining(","));
             fireEvent(new NotifyEvents.Show("On remove Kits clicked, selected kits: " + selectedNumbers, NotifyEvents.NotifyType.SUCCESS));
         }

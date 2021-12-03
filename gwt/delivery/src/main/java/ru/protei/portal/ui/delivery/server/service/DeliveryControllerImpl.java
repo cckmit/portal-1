@@ -22,11 +22,9 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.List;
 
 import static ru.protei.portal.ui.common.server.ServiceUtils.*;
-import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
 
 @Service("DeliveryController")
 public class DeliveryControllerImpl implements DeliveryController {
@@ -79,6 +77,12 @@ public class DeliveryControllerImpl implements DeliveryController {
     public Delivery updateMeta(Delivery meta) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         return checkResultAndGetData(deliveryService.updateMeta(token, meta));
+    }
+
+    @Override
+    public void updateKitListStates(List<Long> kitsIds, Long caseStateId) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        checkResult(deliveryService.updateKitListStates(token, kitsIds, caseStateId));
     }
 
     @Override

@@ -22,4 +22,6 @@ public interface ModuleControllerAsync {
     void saveModule(Module module, AsyncCallback<Module> withSuccess);
 
     void generateSerialNumber(Long kitId, AsyncCallback<String> withSuccess);
+
+    void updateModuleListStates(List<Long> modulesIds, Long caseStateId, AsyncCallback<Void> async);
 }

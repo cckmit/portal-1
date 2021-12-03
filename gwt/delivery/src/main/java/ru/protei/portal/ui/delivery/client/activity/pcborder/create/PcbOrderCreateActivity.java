@@ -97,6 +97,7 @@ public abstract class PcbOrderCreateActivity implements Activity, AbstractPcbOrd
         commonInfoEditView.amount().setValue(null);
         commonInfoEditView.modification().setValue(null);
         commonInfoEditView.comment().setValue(null);
+        commonInfoEditView.setAmountValid(true);
         metaView.state().setValue(null);
         metaView.promptness().setValue(null);
         metaView.orderType().setValue(null);
@@ -171,8 +172,16 @@ public abstract class PcbOrderCreateActivity implements Activity, AbstractPcbOrd
     }
 
     private boolean validateAmount() {
-        Integer value = commonInfoEditView.amount().getValue();
-        boolean isValid = value != null && value > 0;
+        String strValue = commonInfoEditView.getAmount();
+        Integer amount = null;
+
+        try {
+            amount = Integer.valueOf(strValue);
+        } catch (NumberFormatException ex){
+            commonInfoEditView.setAmountValid(false);
+        }
+
+        boolean isValid = strValue != null && amount > 0;
         commonInfoEditView.setAmountValid(isValid);
         return isValid;
     }

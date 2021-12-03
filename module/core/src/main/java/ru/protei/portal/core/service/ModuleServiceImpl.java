@@ -148,6 +148,19 @@ public class ModuleServiceImpl implements ModuleService {
     }
 
     @Override
+    @Transactional
+    public Result<Void> updateModuleListStates(AuthToken token, List<Long> moduleIds, Long caseStateId) {
+        if (caseStateId == null){
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        List<CaseObject> objects = caseObjectDAO.getListByKeys(moduleIds);
+        stream(objects).forEach(caseObject -> caseObject.setStateId(caseStateId));
+        caseObjectDAO.mergeBatch(objects);
+        return ok();
+    }
+
+    @Override
     public Result<String> generateSerialNumber(AuthToken token, Long kitId) {
         if (kitId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);

@@ -14,6 +14,8 @@ public interface AbstractPcbOrderCommonInfoEditView extends IsWidget {
 
     HasValue<Integer> amount();
 
+    String getAmount();
+
     HasValue<String> modification();
 
     HasValue<String> comment();

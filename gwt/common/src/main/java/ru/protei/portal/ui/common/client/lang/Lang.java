@@ -4027,4 +4027,8 @@ public interface Lang extends Messages, ContactItemLang {
     String RFIDLabelsLastScanDate();
 
     String RFIDLabelsDevice();
+
+    String kitsStatesUpdated();
+
+    String modulesStatesUpdated();
 }

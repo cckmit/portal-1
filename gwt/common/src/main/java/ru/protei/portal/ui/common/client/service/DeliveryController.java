@@ -31,6 +31,8 @@ public interface DeliveryController extends RemoteService {
 
     Delivery updateMeta(Delivery meta) throws RequestFailedException;
 
+    void updateKitListStates(List<Long> kitsIds, Long caseStateId) throws RequestFailedException;
+
     CaseObjectMetaNotifiers updateMetaNotifiers(CaseObjectMetaNotifiers caseMetaNotifiers) throws RequestFailedException;
 
     List<Kit> addKits(List<Kit> kits, Long deliveryId) throws RequestFailedException;
