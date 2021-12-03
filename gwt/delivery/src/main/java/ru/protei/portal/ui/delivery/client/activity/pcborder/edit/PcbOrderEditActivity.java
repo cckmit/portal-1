@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.PcbOrder;
+import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
@@ -380,16 +381,9 @@ public abstract class PcbOrderEditActivity implements Activity, AbstractPcbOrder
     }
 
     private boolean validateAmount() {
-        String strValue = commonInfoEditView.getAmount();
-        Integer amount = null;
+        Integer amount = NumberUtils.parseInteger(commonInfoEditView.getAmount());
+        boolean isValid = amount != null && amount > 0;
 
-        try {
-            amount = Integer.valueOf(strValue);
-        } catch (NumberFormatException ex){
-            commonInfoEditView.setAmountValid(false);
-        }
-
-        boolean isValid = strValue != null && amount > 0;
         commonInfoEditView.setAmountValid(isValid);
         return isValid;
     }

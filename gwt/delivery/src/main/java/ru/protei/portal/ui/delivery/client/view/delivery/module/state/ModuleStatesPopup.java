@@ -39,6 +39,7 @@ public class ModuleStatesPopup extends BasePopupView implements ModuleStateSubsc
 
     @Override
     public void onStatesLoaded(List<CaseState> states) {
+        root.clear();
         for (CaseState state : emptyIfNull(states)){
 
             Element li = DOM.createElement( "li" );

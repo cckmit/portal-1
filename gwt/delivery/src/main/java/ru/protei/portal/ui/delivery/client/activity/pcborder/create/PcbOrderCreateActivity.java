@@ -23,7 +23,6 @@ import ru.protei.portal.ui.delivery.client.activity.pcborder.common.AbstractPcbO
 import ru.protei.portal.ui.delivery.client.activity.pcborder.meta.AbstractPcbOrderMetaActivity;
 import ru.protei.portal.ui.delivery.client.activity.pcborder.meta.AbstractPcbOrderMetaView;
 
-import static org.apache.logging.log4j.ThreadContext.isEmpty;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.ERROR;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.SUCCESS;
 

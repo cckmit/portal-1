@@ -82,6 +82,7 @@ public class KitMenuPopup extends BasePopupView implements ModuleStateSubscriber
 
     @Override
     public void onStatesLoaded(List<CaseState> states) {
+        statesContainer.removeAllChildren();
         for (CaseState state : emptyIfNull(states)){
 
             Element li = DOM.createElement( "li" );
@@ -111,6 +112,7 @@ public class KitMenuPopup extends BasePopupView implements ModuleStateSubscriber
 
                 event.preventDefault();
                 activity.onChangeStateClick(state);
+                statesContainer.addClassName("hide");
                 hide();
             });
         }

@@ -21,8 +21,8 @@ public abstract class ModuleStateModel implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-                caseStateController.getCaseStates(En_CaseType.MODULE, new FluentCallback<List<CaseState>>()
-                .withSuccess(caseStates -> notifySubscribers(caseStates)));
+                caseStateController.getCaseStatesOmitPrivileges(En_CaseType.MODULE, new FluentCallback<List<CaseState>>()
+                .withSuccess(this::notifySubscribers));
     }
 
     private void notifySubscribers(List<CaseState> caseStates) {

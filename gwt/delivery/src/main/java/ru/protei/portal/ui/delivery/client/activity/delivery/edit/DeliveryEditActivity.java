@@ -37,8 +37,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
 
@@ -307,7 +306,7 @@ public abstract class DeliveryEditActivity implements Activity, AbstractDelivery
         @Override
         public void onGroupChangeState(CaseState state) {
 
-            List<Long> kitsIds = stream(view.getKitsSelected()).map(Kit::getId).collect(Collectors.toList());
+            List<Long> kitsIds = toList(view.getKitsSelected(), Kit::getId);
 
             if (isEmpty(kitsIds)){
                 fireEvent(new NotifyEvents.Show(lang.kitNotSelectedMessage(), NotifyEvents.NotifyType.ERROR));

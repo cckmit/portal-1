@@ -29,8 +29,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public abstract class KitActivity implements Activity, AbstractKitActivity {
 
@@ -273,7 +272,7 @@ public abstract class KitActivity implements Activity, AbstractKitActivity {
         @Override
         public void onGroupChangeState(CaseState state) {
 
-            List<Long> kitsIds = stream(view.getKitsSelected()).map(Kit::getId).collect(Collectors.toList());
+            List<Long> kitsIds = toList(view.getKitsSelected(), Kit::getId);
 
             if (isEmpty(kitsIds)){
                 fireEvent(new NotifyEvents.Show(lang.kitNotSelectedMessage(), NotifyEvents.NotifyType.ERROR));
