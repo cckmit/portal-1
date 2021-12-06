@@ -399,7 +399,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     private String dateToYtString(Date date) {
-        return new SimpleDateFormat("yyyy-MM-dd_hh:mm:ss").format(date);
+        return new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(date);
     }
 
     private String getIssuePriority(YtIssue issue) {
