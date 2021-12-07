@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -313,8 +314,10 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
     private CharSequence makeCommonDescriptionString( EmployeeRegistration er ) {
         return join( "Анкета: ", makeYtLinkToCrmRegistration( er.getId(), er.getEmployeeFullName() ),
+                "\n", "Организация: ", er.getCompanyName(),
                 "\n", "Отдел: ", er.getDepartment(),
                 "\n", "Руководитель: ", er.getHeadOfDepartmentShortName(),
+                "\n", "Кураторы: ", join( er.getCurators(), PersonShortView::getDisplayShortName, "," ),
                 "\n", "Расположение рабочего места: ", er.getWorkplace()
         );
     }
