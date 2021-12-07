@@ -314,7 +314,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
     private CharSequence makeCommonDescriptionString( EmployeeRegistration er ) {
         return join( "Анкета: ", makeYtLinkToCrmRegistration( er.getId(), er.getEmployeeFullName() ),
-                "\n", "Организация: ", er.getCompanyName(),
+                "\n", "Компания: ", er.getCompanyName(),
                 "\n", "Отдел: ", er.getDepartment(),
                 "\n", "Руководитель: ", er.getHeadOfDepartmentShortName(),
                 "\n", "Кураторы: ", join( er.getCurators(), PersonShortView::getDisplayShortName, "," ),
