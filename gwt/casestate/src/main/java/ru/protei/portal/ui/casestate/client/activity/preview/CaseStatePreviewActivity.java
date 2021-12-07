@@ -107,6 +107,7 @@ public abstract class CaseStatePreviewActivity
         state.setState(caseState.getState());
         state.setInfo(view.description().getValue());
         state.setUsageInCompanies(view.usageInCompanies().getValue());
+        state.setColor(caseState.getColor());
 
         if (SELECTED.equals(state.getUsageInCompanies())) {
             List<Company> companies = makeCompaniesFromOptions(view.companies().getValue());
