@@ -10,9 +10,11 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentList;
 import ru.protei.portal.ui.common.client.activity.attachment.fullview.AbstractAttachmentFullView;
+import ru.protei.portal.ui.common.client.util.LocaleUtils;
 import ru.protei.portal.ui.common.client.widget.button.AnchorLikeButton;
 
 import java.util.Date;
@@ -58,7 +60,7 @@ public class ImageAttachmentView extends Composite implements AbstractAttachment
     public void setCreationInfo(String author, Date created) {
         DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm");
         createdDate.setInnerText(dateTimeFormat.format(created));
-        this.authorName.setInnerText(author);
+        setAuthorName(author);
     }
 
     @Override
@@ -98,6 +100,14 @@ public class ImageAttachmentView extends Composite implements AbstractAttachment
         downloadButton.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ATTACHMENT.DOWNLOAD);
         fileName.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ATTACHMENT.NAME);
         fileSize.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ATTACHMENT.SIZE);
+    }
+
+    public void setAuthorName(String author) {
+        if (LocaleUtils.isLocaleEn()) {
+            this.authorName.setInnerText(TransliterationUtils.transliterate(author));
+            return;
+        }
+        this.authorName.setInnerText(author);
     }
 
     @UiField

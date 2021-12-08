@@ -23,4 +23,7 @@ public class LocaleUtils {
         Window.Location.replace( newHref );
     }
 
+    public static boolean isLocaleEn() {
+        return LocaleInfo.getCurrentLocale().getLocaleName() != null && LocaleInfo.getCurrentLocale().getLocaleName().contains("en");
+    }
 }
