@@ -72,6 +72,23 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
     }
 
     @Override
+    public void onIDEClicked() {
+        if (StringUtils.isNotBlank(view.additionalSoft().getValue()) && view.additionalSoft().getValue().contains("IDE,")) {
+            view.additionalSoft().setValue(view.additionalSoft().getValue().replaceFirst("IDE, ", ""));
+            return;
+        }
+        if (StringUtils.isNotBlank(view.additionalSoft().getValue()) && view.additionalSoft().getValue().contains("IDE")) {
+            view.additionalSoft().setValue(view.additionalSoft().getValue().replaceFirst("IDE", ""));
+            return;
+        }
+        if (StringUtils.isNotBlank(view.additionalSoft().getValue())) {
+            view.additionalSoft().setValue("IDE, " + view.additionalSoft().getValue().trim());
+            return;
+        }
+        view.additionalSoft().setValue("IDE");
+    }
+
+    @Override
     public void validateLimitedFields() {
         if (view.position().getValue() != null) {
             view.positionErrorLabelVisibility().setVisible(view.position().getValue().length() > CrmConstants.EmployeeRegistration.POSITION_MAX_LENGTH);
@@ -224,6 +241,7 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         view.resourceComment().setValue(null);
         view.operatingSystem().setValue(null);
         view.additionalSoft().setValue(null);
+        view.IDE().setValue(false);
         view.employmentDate().setValue(new Date());
         view.headOfDepartment().setValue(null);
         view.department().setValue(null);

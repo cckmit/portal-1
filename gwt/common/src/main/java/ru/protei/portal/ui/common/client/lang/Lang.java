@@ -2050,6 +2050,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationInternalResourceOtherCommentPlaceholder();
 
+    String employeeRegistrationIDE();
+
     String goToIssues();
 
     String goToPlatforms();

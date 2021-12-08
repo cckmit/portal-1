@@ -6,6 +6,8 @@ public interface AbstractEmployeeRegistrationCreateActivity {
 
     void onCancelClicked();
 
+    void onIDEClicked();
+
     void validateLimitedFields();
 
     void onHeadOfDepartmentChanged();

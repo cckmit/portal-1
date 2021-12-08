@@ -64,6 +64,8 @@ public interface AbstractEmployeeRegistrationCreateView extends IsWidget {
 
     HasValue<String> additionalSoft();
 
+    HasValue<Boolean> IDE();
+
     HasValue<Set<PersonShortView>> curators();
 
     HasVisibility workplaceErrorLabelVisibility();

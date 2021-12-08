@@ -160,6 +160,10 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
     public HasValue<String> additionalSoft() {
         return additionalSoft;
     }
+    @Override
+    public HasValue<Boolean> IDE() {
+        return IDE;
+    }
 
     @Override
     public HasValue<Set<PersonShortView>> curators() {
@@ -264,6 +268,13 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
         }
     }
 
+    @UiHandler("IDE")
+    public void onIDEClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onIDEClicked();
+        }
+    }
+
     private void resetTimer() {
         limitedFieldsValidationTimer.cancel();
         limitedFieldsValidationTimer.schedule(200);
@@ -334,6 +345,8 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
     AutoResizeTextArea additionalSoft;
     @UiField
     Label additionalSoftErrorLabel;
+    @UiField
+    CheckBox IDE;
 
     @UiField
     Lang lang;
