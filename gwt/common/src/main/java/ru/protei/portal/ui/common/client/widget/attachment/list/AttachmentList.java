@@ -13,11 +13,13 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.dict.AttachmentType;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentList;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
+import ru.protei.portal.ui.common.client.util.LocaleUtils;
 import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
@@ -72,7 +74,7 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
             public void onSuccess(Map<Long, String> names) {
                 viewToAttachment.forEach((view, attachment) -> {
                     if (attachments.contains(attachment)) {
-                        view.setCreationInfo(names.get(attachment.getCreatorId()), attachment.getCreated());
+                        setCreationInfo(view, attachment, names);
                     }
                 });
             }
@@ -167,6 +169,14 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
         attachmentList.add(view.asWidget());
 
         return view;
+    }
+
+    public void setCreationInfo(AbstractAttachmentView view, Attachment attachment, Map<Long, String> names) {
+        if (LocaleUtils.isLocaleEn()) {
+            view.setCreationInfo(TransliterationUtils.transliterate(names.get(attachment.getCreatorId())), attachment.getCreated());
+            return;
+        }
+        view.setCreationInfo(names.get(attachment.getCreatorId()), attachment.getCreated());
     }
 
     @Inject

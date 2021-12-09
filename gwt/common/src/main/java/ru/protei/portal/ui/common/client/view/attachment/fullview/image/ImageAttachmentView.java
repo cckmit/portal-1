@@ -60,7 +60,7 @@ public class ImageAttachmentView extends Composite implements AbstractAttachment
     public void setCreationInfo(String author, Date created) {
         DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm");
         createdDate.setInnerText(dateTimeFormat.format(created));
-        setAuthorName(author);
+        this.authorName.setInnerText(author);
     }
 
     @Override
@@ -100,14 +100,6 @@ public class ImageAttachmentView extends Composite implements AbstractAttachment
         downloadButton.getElement().setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ATTACHMENT.DOWNLOAD);
         fileName.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ATTACHMENT.NAME);
         fileSize.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.ATTACHMENT.SIZE);
-    }
-
-    public void setAuthorName(String author) {
-        if (LocaleUtils.isLocaleEn()) {
-            this.authorName.setInnerText(TransliterationUtils.transliterate(author));
-            return;
-        }
-        this.authorName.setInnerText(author);
     }
 
     @UiField
