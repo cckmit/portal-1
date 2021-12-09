@@ -268,13 +268,6 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
         }
     }
 
-    @UiHandler("IDE")
-    public void onIDEClicked(ClickEvent event) {
-        if (activity != null) {
-            activity.onIDEClicked();
-        }
-    }
-
     private void resetTimer() {
         limitedFieldsValidationTimer.cancel();
         limitedFieldsValidationTimer.schedule(200);

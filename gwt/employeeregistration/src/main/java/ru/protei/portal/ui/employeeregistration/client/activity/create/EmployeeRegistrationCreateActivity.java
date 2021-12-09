@@ -72,23 +72,6 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
     }
 
     @Override
-    public void onIDEClicked() {
-        if (StringUtils.isNotBlank(view.additionalSoft().getValue()) && view.additionalSoft().getValue().contains("IDE,")) {
-            view.additionalSoft().setValue(view.additionalSoft().getValue().replaceFirst("IDE, ", ""));
-            return;
-        }
-        if (StringUtils.isNotBlank(view.additionalSoft().getValue()) && view.additionalSoft().getValue().contains("IDE")) {
-            view.additionalSoft().setValue(view.additionalSoft().getValue().replaceFirst("IDE", ""));
-            return;
-        }
-        if (StringUtils.isNotBlank(view.additionalSoft().getValue())) {
-            view.additionalSoft().setValue("IDE, " + view.additionalSoft().getValue().trim());
-            return;
-        }
-        view.additionalSoft().setValue("IDE");
-    }
-
-    @Override
     public void validateLimitedFields() {
         if (view.position().getValue() != null) {
             view.positionErrorLabelVisibility().setVisible(view.position().getValue().length() > CrmConstants.EmployeeRegistration.POSITION_MAX_LENGTH);
@@ -220,11 +203,10 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         employeeRegistration.setPhoneOfficeTypeList(view.phoneOfficeTypeList().getValue());
         employeeRegistration.setWithRegistration(view.withRegistration().getValue());
         employeeRegistration.setEmploymentType(view.employmentType().getValue());
-
         employeeRegistration.setProbationPeriodMonth( view.probationPeriod().getValue() );
         employeeRegistration.setResourceComment( view.resourceComment().getValue() );
         employeeRegistration.setOperatingSystem( view.operatingSystem().getValue() );
-        employeeRegistration.setAdditionalSoft( view.additionalSoft().getValue() );
+        setAdditionalSoft(employeeRegistration);
         employeeRegistration.setCuratorsIds( toSet( view.curators().getValue(), PersonShortView::getId ));
         employeeRegistration.setCompanyId(view.company().getValue() == null ? null : view.company().getValue().getId());
         employeeRegistration.setDepartmentId(view.department().getValue() == null ? null : view.department().getValue().getId());
@@ -277,6 +259,17 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         view.setPhoneOptionEnabled(En_PhoneOfficeType.INTERNATIONAL, isEnabled);
         view.setPhoneOptionEnabled(En_PhoneOfficeType.LONG_DISTANCE, isEnabled);
         view.setPhoneOptionEnabled(En_PhoneOfficeType.OFFICE, isEnabled);
+    }
+
+    public void setAdditionalSoft(EmployeeRegistration employeeRegistration) {
+        employeeRegistration.setAdditionalSoft(view.additionalSoft().getValue());
+        if (view.IDE().getValue()) {
+            if (StringUtils.isNotBlank(employeeRegistration.getAdditionalSoft())) {
+                employeeRegistration.setAdditionalSoft("IDE, " + employeeRegistration.getAdditionalSoft());
+                return;
+            }
+            employeeRegistration.setAdditionalSoft("IDE");
+        }
     }
 
     private boolean isSelectProteiOrProteiST(EntityOption value) {
