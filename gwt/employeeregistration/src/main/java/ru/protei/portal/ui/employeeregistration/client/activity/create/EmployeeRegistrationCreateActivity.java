@@ -125,6 +125,13 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         }
     }
 
+    @Override
+    public void onIDEChanged() {
+        if (view.ide().getValue()) {
+            view.setFocusOnAdditionalSoft();
+        }
+    }
+
     private void showValidationError(EmployeeRegistration employeeRegistration) {
         fireEvent(new NotifyEvents.Show(getValidationError(employeeRegistration), NotifyEvents.NotifyType.ERROR));
     }
@@ -206,7 +213,7 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         employeeRegistration.setProbationPeriodMonth( view.probationPeriod().getValue() );
         employeeRegistration.setResourceComment( view.resourceComment().getValue() );
         employeeRegistration.setOperatingSystem( view.operatingSystem().getValue() );
-        setAdditionalSoft(employeeRegistration);
+        employeeRegistration.setAdditionalSoft(createAdditionalSoft(view.additionalSoft().getValue(), view.ide().getValue()));
         employeeRegistration.setCuratorsIds( toSet( view.curators().getValue(), PersonShortView::getId ));
         employeeRegistration.setCompanyId(view.company().getValue() == null ? null : view.company().getValue().getId());
         employeeRegistration.setDepartmentId(view.department().getValue() == null ? null : view.department().getValue().getId());
@@ -223,7 +230,7 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         view.resourceComment().setValue(null);
         view.operatingSystem().setValue(null);
         view.additionalSoft().setValue(null);
-        view.IDE().setValue(false);
+        view.ide().setValue(false);
         view.employmentDate().setValue(new Date());
         view.headOfDepartment().setValue(null);
         view.department().setValue(null);
@@ -261,15 +268,14 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         view.setPhoneOptionEnabled(En_PhoneOfficeType.OFFICE, isEnabled);
     }
 
-    public void setAdditionalSoft(EmployeeRegistration employeeRegistration) {
-        employeeRegistration.setAdditionalSoft(view.additionalSoft().getValue());
-        if (view.IDE().getValue()) {
-            if (StringUtils.isNotBlank(employeeRegistration.getAdditionalSoft())) {
-                employeeRegistration.setAdditionalSoft("IDE, " + employeeRegistration.getAdditionalSoft());
-                return;
-            }
-            employeeRegistration.setAdditionalSoft("IDE");
+    public String createAdditionalSoft(String additionalSoft, Boolean needIDE) {
+        if (!needIDE){
+            return additionalSoft;
         }
+        if (StringUtils.isBlank(additionalSoft)) {
+            return ADD_SOFT_IDE;
+        }
+        return ADD_SOFT_IDE + ", " + additionalSoft;
     }
 
     private boolean isSelectProteiOrProteiST(EntityOption value) {
@@ -288,5 +294,6 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
     @Inject
     private EmployeeDepartmentModel departmentModel;
 
+    public static final String ADD_SOFT_IDE = "IDE";
     private AppEvents.InitDetails initDetails;
 }
