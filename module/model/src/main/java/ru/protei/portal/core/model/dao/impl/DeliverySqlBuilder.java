@@ -50,6 +50,11 @@ public class DeliverySqlBuilder {
                         .append(makeInArg(query.getProductIds()))
                         .append(")");
             }
+            //выборка по компании создателя в зависимости от UserRole.scope запрашиваемого
+            if (query.getCreatorCompanyId() != null){
+                condition
+                        .append(" and PER.company_id = ").append(query.getCreatorCompanyId());
+            }
 
             Interval deliveryInterval = makeInterval(query.getDepartureDateRange());
 

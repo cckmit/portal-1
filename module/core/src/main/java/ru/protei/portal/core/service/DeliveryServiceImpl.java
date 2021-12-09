@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.dict.En_Privilege.DELIVERY_VIEW;
+import static ru.protei.portal.core.model.dict.En_ResultStatus.PERMISSION_DENIED;
 import static ru.protei.portal.core.model.ent.Delivery.Fields.*;
 import static ru.protei.portal.core.model.dto.Project.Fields.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -83,6 +85,14 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public Result<SearchResult<Delivery>> getDeliveries(AuthToken token, DeliveryQuery query) {
+
+        Set<UserRole> roles = token.getRoles();
+        if (policyService.hasScopeForPrivilege( roles, DELIVERY_VIEW, En_Scope.USER )) {
+            return error(PERMISSION_DENIED);
+        }
+
+        query = applyFilterByScope(token, roles, query);
+
         SearchResult<Delivery> sr = deliveryDAO.getSearchResult(query);
 
         for (Delivery delivery : emptyIfNull(sr.getResults())){
@@ -449,6 +459,16 @@ public class DeliveryServiceImpl implements DeliveryService {
         if (resultState.isError()) {
             log.error("State message for the kit {} not created!", kit.getId());
         }
+    }
+
+    private DeliveryQuery applyFilterByScope(AuthToken token, Set<UserRole> roles, DeliveryQuery query) {
+        if (policyService.hasGrantAccessFor(roles, En_Privilege.DELIVERY_VIEW)) {
+            return query;
+        }
+        if (policyService.hasScopeForPrivilege( roles, DELIVERY_VIEW, En_Scope.COMPANY )) {
+            query.setCreatorCompanyId(token.getCompanyId());
+        }
+        return query;
     }
 
     private void updateKitHistory(AuthToken token, Kit newKit, Kit oldKit) {

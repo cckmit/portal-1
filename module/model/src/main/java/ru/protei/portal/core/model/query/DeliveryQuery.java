@@ -32,6 +32,8 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
 
     private List<String> serialNumbers;
 
+    private Long creatorCompanyId;
+
     public String getName() {
         return name;
     }
@@ -112,6 +114,14 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
 
     public void setManagerIds(List<Long> managerIds) {
         this.managerIds = managerIds;
+    }
+
+    public Long getCreatorCompanyId() {
+        return creatorCompanyId;
+    }
+
+    public void setCreatorCompanyId(Long creatorCompanyId) {
+        this.creatorCompanyId = creatorCompanyId;
     }
 
     public Boolean getMilitary() {
@@ -202,6 +212,7 @@ public class DeliveryQuery extends BaseQuery implements HasFilterQueryIds {
                 ", deleted=" + deleted +
                 ", isMilitary=" + isMilitary +
                 ", serialNumbers=" + serialNumbers +
+                ", creatorCompanyId=" + creatorCompanyId +
                 '}';
     }
 

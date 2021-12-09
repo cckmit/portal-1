@@ -24,6 +24,9 @@ public class DeliveryDAO_Impl extends PortalBaseJdbcDAO<Delivery> implements Del
             " LEFT JOIN project PRJ ON delivery.project_id = PRJ.ID" +
                     " LEFT JOIN case_object CO_PR on CO_PR.ID= PRJ.ID";
 
+    private static final String LEFT_JOIN_CREATOR_PERSON =
+            " LEFT JOIN person PER ON CO.CREATOR = PER.ID";
+
     @Override
     @SqlConditionBuilder
     public SqlCondition baseQueryCondition(DeliveryQuery query) {
@@ -48,6 +51,7 @@ public class DeliveryDAO_Impl extends PortalBaseJdbcDAO<Delivery> implements Del
         parameters.withOffset(query.getOffset());
         parameters.withLimit(query.getLimit());
         parameters.withSort(TypeConverters.createSort( query ));
+        parameters.withJoins(LEFT_JOIN_CREATOR_PERSON);
 
         if (isNotEmpty(query.getCompanyIds())
                 || isNotEmpty(query.getManagerIds())
