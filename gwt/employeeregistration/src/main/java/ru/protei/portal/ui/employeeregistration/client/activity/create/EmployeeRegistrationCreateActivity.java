@@ -273,9 +273,9 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
             return additionalSoft;
         }
         if (StringUtils.isBlank(additionalSoft)) {
-            return ADD_SOFT_IDE;
+            return ADDITIONAL_SOFT_IDE;
         }
-        return ADD_SOFT_IDE + ", " + additionalSoft;
+        return ADDITIONAL_SOFT_IDE + ", " + additionalSoft;
     }
 
     private boolean isSelectProteiOrProteiST(EntityOption value) {
@@ -294,6 +294,6 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
     @Inject
     private EmployeeDepartmentModel departmentModel;
 
-    public static final String ADD_SOFT_IDE = "IDE";
+    public static final String ADDITIONAL_SOFT_IDE = "IDE";
     private AppEvents.InitDetails initDetails;
 }
