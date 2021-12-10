@@ -64,6 +64,8 @@ public interface AbstractEmployeeRegistrationCreateView extends IsWidget {
 
     HasValue<String> additionalSoft();
 
+    HasValue<Boolean> ide();
+
     HasValue<Set<PersonShortView>> curators();
 
     HasVisibility workplaceErrorLabelVisibility();
@@ -93,4 +95,6 @@ public interface AbstractEmployeeRegistrationCreateView extends IsWidget {
     HasEnabled departmentEnabled();
 
     void setDepartmentModel(SelectorModel<EntityOption> model);
+
+    void setFocusOnAdditionalSoft();
 }

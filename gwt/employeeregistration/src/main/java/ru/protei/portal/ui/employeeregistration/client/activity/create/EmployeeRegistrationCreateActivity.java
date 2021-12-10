@@ -125,6 +125,13 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         }
     }
 
+    @Override
+    public void onIDEChanged() {
+        if (view.ide().getValue()) {
+            view.setFocusOnAdditionalSoft();
+        }
+    }
+
     private void showValidationError(EmployeeRegistration employeeRegistration) {
         fireEvent(new NotifyEvents.Show(getValidationError(employeeRegistration), NotifyEvents.NotifyType.ERROR));
     }
@@ -203,11 +210,10 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         employeeRegistration.setPhoneOfficeTypeList(view.phoneOfficeTypeList().getValue());
         employeeRegistration.setWithRegistration(view.withRegistration().getValue());
         employeeRegistration.setEmploymentType(view.employmentType().getValue());
-
         employeeRegistration.setProbationPeriodMonth( view.probationPeriod().getValue() );
         employeeRegistration.setResourceComment( view.resourceComment().getValue() );
         employeeRegistration.setOperatingSystem( view.operatingSystem().getValue() );
-        employeeRegistration.setAdditionalSoft( view.additionalSoft().getValue() );
+        employeeRegistration.setAdditionalSoft(createAdditionalSoft(view.additionalSoft().getValue(), view.ide().getValue()));
         employeeRegistration.setCuratorsIds( toSet( view.curators().getValue(), PersonShortView::getId ));
         employeeRegistration.setCompanyId(view.company().getValue() == null ? null : view.company().getValue().getId());
         employeeRegistration.setDepartmentId(view.department().getValue() == null ? null : view.department().getValue().getId());
@@ -224,6 +230,7 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         view.resourceComment().setValue(null);
         view.operatingSystem().setValue(null);
         view.additionalSoft().setValue(null);
+        view.ide().setValue(false);
         view.employmentDate().setValue(new Date());
         view.headOfDepartment().setValue(null);
         view.department().setValue(null);
@@ -261,6 +268,16 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         view.setPhoneOptionEnabled(En_PhoneOfficeType.OFFICE, isEnabled);
     }
 
+    public String createAdditionalSoft(String additionalSoft, Boolean needIDE) {
+        if (!needIDE){
+            return additionalSoft;
+        }
+        if (StringUtils.isBlank(additionalSoft)) {
+            return ADDITIONAL_SOFT_IDE;
+        }
+        return ADDITIONAL_SOFT_IDE + ", " + additionalSoft;
+    }
+
     private boolean isSelectProteiOrProteiST(EntityOption value) {
         if (value == null) return false;
         return MAIN_HOME_COMPANY_NAME.equals(value.getDisplayText()) || PROTEI_ST_HOME_COMPANY_NAME.equals(value.getDisplayText());
@@ -277,5 +294,6 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
     @Inject
     private EmployeeDepartmentModel departmentModel;
 
+    public static final String ADDITIONAL_SOFT_IDE = "IDE";
     private AppEvents.InitDetails initDetails;
 }
