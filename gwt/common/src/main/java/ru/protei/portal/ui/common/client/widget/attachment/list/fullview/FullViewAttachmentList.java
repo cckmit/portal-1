@@ -35,6 +35,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
+import static ru.protei.portal.ui.common.client.util.LocaleUtils.isLocaleEn;
 
 public class FullViewAttachmentList extends Composite implements HasAttachments, HasAttachmentListHandlers, AbstractAttachmentList {
     public FullViewAttachmentList() {
@@ -170,7 +172,8 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
     }
 
     private void fillPersonDependentFields(AbstractAttachmentView view, Attachment attachment, Person person) {
-        view.setCreationInfo(person.getDisplayShortName(), attachment.getCreated());
+        String name = person.getDisplayShortName();
+        view.setCreationInfo(isLocaleEn() ? transliterate(name) : name , attachment.getCreated());
         ((AbstractAttachmentFullView) view).setAuthorAvatarUrl(AvatarUtils.getAvatarUrl(person));
     }
 
