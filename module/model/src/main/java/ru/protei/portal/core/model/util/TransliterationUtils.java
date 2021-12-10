@@ -49,7 +49,7 @@ public class TransliterationUtils {
         rusToLatinCharacters.put('ь', "'");
         rusToLatinCharacters.put('э', "e");
         rusToLatinCharacters.put('ю', "ju");
-        rusToLatinCharacters.put('я', "ja");
+        rusToLatinCharacters.put('я', "ya");
 
         rusToLatinCharacters.put('А', "A");
         rusToLatinCharacters.put('Б', "B");
@@ -83,7 +83,7 @@ public class TransliterationUtils {
         rusToLatinCharacters.put('Ь', "'");
         rusToLatinCharacters.put('Э', "E");
         rusToLatinCharacters.put('Ю', "Ju");
-        rusToLatinCharacters.put('Я', "Ja");
+        rusToLatinCharacters.put('Я', "Ya");
     }
 
     public static String transliterate(String input) {

@@ -160,6 +160,10 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
     public HasValue<String> additionalSoft() {
         return additionalSoft;
     }
+    @Override
+    public HasValue<Boolean> ide() {
+        return ide;
+    }
 
     @Override
     public HasValue<Set<PersonShortView>> curators() {
@@ -236,6 +240,11 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
         department.setModel(model);
     }
 
+    @Override
+    public void setFocusOnAdditionalSoft() {
+        additionalSoft.getElement().focus();
+    }
+
     @UiHandler("company")
     public void onCompanySelected(ValueChangeEvent<EntityOption> event) {
         if (activity != null) {
@@ -261,6 +270,13 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
     public void onCancelClicked(ClickEvent event) {
         if (activity != null) {
             activity.onCancelClicked();
+        }
+    }
+
+    @UiHandler("ide")
+    public void onIDEChanged(ValueChangeEvent<Boolean> event) {
+        if (activity != null) {
+            activity.onIDEChanged();
         }
     }
 
@@ -334,6 +350,8 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
     AutoResizeTextArea additionalSoft;
     @UiField
     Label additionalSoftErrorLabel;
+    @UiField
+    CheckBox ide;
 
     @UiField
     Lang lang;

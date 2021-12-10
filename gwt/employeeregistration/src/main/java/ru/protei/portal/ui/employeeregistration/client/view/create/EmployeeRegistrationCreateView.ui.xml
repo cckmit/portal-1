@@ -150,6 +150,8 @@
                                                          placeholder="{lang.employeeRegistrationAdditionalSoftPlaceholder}"
                                                          minRows="1" styleName="form-control"/>
                             <g:Label ui:field="additionalSoftErrorLabel" styleName="text-danger size-error" visible="false"/>
+                            <g:CheckBox ui:field="ide" styleName="checkbox"
+                                        text="{lang.employeeRegistrationIDE}"/>
                         </div>
 
                         <div class="form-group col-md-12">

@@ -11,4 +11,6 @@ public interface AbstractEmployeeRegistrationCreateActivity {
     void onHeadOfDepartmentChanged();
 
     void onCompanySelected();
+
+    void onIDEChanged();
 }
