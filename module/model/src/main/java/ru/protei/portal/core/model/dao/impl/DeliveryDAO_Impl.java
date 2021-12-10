@@ -51,14 +51,15 @@ public class DeliveryDAO_Impl extends PortalBaseJdbcDAO<Delivery> implements Del
         parameters.withOffset(query.getOffset());
         parameters.withLimit(query.getLimit());
         parameters.withSort(TypeConverters.createSort( query ));
-        parameters.withJoins(LEFT_JOIN_CREATOR_PERSON);
+        String joins = LEFT_JOIN_CREATOR_PERSON;
 
         if (isNotEmpty(query.getCompanyIds())
                 || isNotEmpty(query.getManagerIds())
                 || isNotEmpty(query.getProductIds())
                 || query.getMilitary() != null) {
-            parameters.withJoins(LEFT_JOIN_PROJECT_CASE_OBJECT);
+            joins += LEFT_JOIN_PROJECT_CASE_OBJECT;
         }
+        parameters.withJoins(joins);
 
         return parameters;
     }

@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DeliveryQuery;
+import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.dict.En_Privilege.DELIVERY_VIEW;
+import static ru.protei.portal.core.model.dict.En_ResultStatus.INCORRECT_PARAMS;
 import static ru.protei.portal.core.model.dict.En_ResultStatus.PERMISSION_DENIED;
 import static ru.protei.portal.core.model.ent.Delivery.Fields.*;
 import static ru.protei.portal.core.model.dto.Project.Fields.*;
@@ -67,6 +69,8 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Autowired
     DeliveryDAO deliveryDAO;
     @Autowired
+    WorkerEntryDAO workerEntryDAO;
+    @Autowired
     KitDAO kitDAO;
 
     @Autowired
@@ -92,6 +96,9 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         query = applyFilterByScope(token, roles, query);
+        if (query == null){
+            return error(INCORRECT_PARAMS);
+        }
 
         SearchResult<Delivery> sr = deliveryDAO.getSearchResult(query);
 
@@ -466,7 +473,15 @@ public class DeliveryServiceImpl implements DeliveryService {
             return query;
         }
         if (policyService.hasScopeForPrivilege( roles, DELIVERY_VIEW, En_Scope.COMPANY )) {
-            query.setCreatorCompanyId(token.getCompanyId());
+
+            List<WorkerEntry> workers = workerEntryDAO.getWorkers(new WorkerEntryQuery(token.getPersonId()));
+            Optional<WorkerEntry> activeWorker = stream(workers).filter(WorkerEntry::isMain).findFirst();
+
+            if (!activeWorker.isPresent()){
+                log.error("No active worker entry for personId = {}", token.getPersonId());
+                return null;
+            }
+            query.setCreatorCompanyId(activeWorker.get().getCompanyId());
         }
         return query;
     }
