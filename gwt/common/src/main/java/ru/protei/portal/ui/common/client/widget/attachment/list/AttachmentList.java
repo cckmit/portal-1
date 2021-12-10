@@ -13,13 +13,11 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.protei.portal.core.model.dict.AttachmentType;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentList;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
-import ru.protei.portal.ui.common.client.util.LocaleUtils;
 import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
@@ -29,6 +27,9 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
+import static ru.protei.portal.ui.common.client.util.LocaleUtils.isLocaleEn;
 
 /**
  * Created by bondarenko on 17.01.17.
@@ -74,7 +75,8 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
             public void onSuccess(Map<Long, String> names) {
                 viewToAttachment.forEach((view, attachment) -> {
                     if (attachments.contains(attachment)) {
-                        setCreationInfo(view, attachment, names);
+                        String name = names.get(attachment.getCreatorId());
+                        view.setCreationInfo(isLocaleEn() ? transliterate(name) : name, attachment.getCreated());
                     }
                 });
             }
@@ -171,13 +173,13 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
         return view;
     }
 
-    public void setCreationInfo(AbstractAttachmentView view, Attachment attachment, Map<Long, String> names) {
-        if (LocaleUtils.isLocaleEn()) {
-            view.setCreationInfo(TransliterationUtils.transliterate(names.get(attachment.getCreatorId())), attachment.getCreated());
-            return;
-        }
-        view.setCreationInfo(names.get(attachment.getCreatorId()), attachment.getCreated());
-    }
+//    public void setCreationInfo(AbstractAttachmentView view, Attachment attachment, Map<Long, String> names) {
+//        if (LocaleUtils.isLocaleEn()) {
+//            view.setCreationInfo(TransliterationUtils.transliterate(names.get(attachment.getCreatorId())), attachment.getCreated());
+//            return;
+//        }
+//        view.setCreationInfo(names.get(attachment.getCreatorId()), attachment.getCreated());
+//    }
 
     @Inject
     Provider<AttachmentView> attachmentViewFactory;

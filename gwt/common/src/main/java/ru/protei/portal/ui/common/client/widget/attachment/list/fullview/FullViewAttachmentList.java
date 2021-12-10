@@ -15,7 +15,6 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentList;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
 import ru.protei.portal.ui.common.client.activity.attachment.fullview.AbstractAttachmentFullView;
@@ -23,7 +22,6 @@ import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
-import ru.protei.portal.ui.common.client.util.LocaleUtils;
 import ru.protei.portal.ui.common.client.view.attachment.fullview.document.DocumentAttachmentView;
 import ru.protei.portal.ui.common.client.view.attachment.fullview.image.ImageAttachmentView;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
@@ -37,6 +35,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
+import static ru.protei.portal.ui.common.client.util.LocaleUtils.isLocaleEn;
 
 public class FullViewAttachmentList extends Composite implements HasAttachments, HasAttachmentListHandlers, AbstractAttachmentList {
     public FullViewAttachmentList() {
@@ -172,16 +172,9 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
     }
 
     private void fillPersonDependentFields(AbstractAttachmentView view, Attachment attachment, Person person) {
-        setCreationInfo(view, attachment, person);
+        String name = person.getDisplayShortName();
+        view.setCreationInfo(isLocaleEn() ? transliterate(name) : name , attachment.getCreated());
         ((AbstractAttachmentFullView) view).setAuthorAvatarUrl(AvatarUtils.getAvatarUrl(person));
-    }
-
-    public void setCreationInfo(AbstractAttachmentView view, Attachment attachment, Person person) {
-        if (LocaleUtils.isLocaleEn()) {
-            view.setCreationInfo(TransliterationUtils.transliterate(person.getDisplayShortName()), attachment.getCreated());
-            return;
-        }
-        view.setCreationInfo(person.getDisplayShortName(), attachment.getCreated());
     }
 
     private void addViewInContainer(AbstractAttachmentView view, Attachment attachment) {
