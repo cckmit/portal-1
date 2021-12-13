@@ -20,6 +20,8 @@ public final class ReportYtWorkRowItem implements ReportYtWorkRow {
     final private Map<String, Long> guaranteeSpentTime;
     // Отработанное время
     private Integer workedHours;
+    // Отработанное время на домашнюю компанию в Портале
+    private Integer homeCompanySpentTime;
 
     public ReportYtWorkRowItem() {
         this.niokrSpentTime = new HashMap<>();

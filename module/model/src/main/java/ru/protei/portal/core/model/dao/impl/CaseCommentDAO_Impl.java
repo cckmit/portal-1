@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
+import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseCommentNightWork;
@@ -10,6 +11,7 @@ import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.Interval;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkCaseCommentTimeElapsedSum;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
@@ -23,7 +25,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.ent.CaseCommentNightWork.Columns.*;
-import static ru.protei.portal.core.model.ent.CaseCommentNightWork.Columns.LAST_COMMENT_ID;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
 
@@ -34,6 +35,9 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
 
     @Autowired
     CaseCommentSqlBuilder sqlBuilder;
+
+    @Autowired
+    CompanyDAO companyDAO;
 
     @Override
     public List<CaseComment> getCaseComments( CaseCommentQuery query ) {
@@ -154,5 +158,40 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                 });
     }
 
+    @Override
+    public List<ReportYtWorkCaseCommentTimeElapsedSum> getCaseCommentReportYtWork(Interval interval) {
+        String homeCompanyId = makeHomeCompanySet();
+
+        return jdbcTemplate.query( "select cc.AUTHOR_ID cc_author_id, " +
+                        "       sum(cc.time_elapsed) spentTime, " +
+                        "       ( case " +
+                        "           when co.initiator_company in (" + homeCompanyId + ") OR " +
+                        "                    (co.platform_id is null) OR (plat.project_id is null) " +
+                        "            then null " +
+                        "            else plat.id END " +
+                        "        ) sur_platform_id " +
+                        "from case_comment cc join case_object co on cc.CASE_ID = co.ID " +
+                        "         left outer join platform plat on co.platform_id = plat.id " +
+                        "where cc.CREATED >= '" + reportYtWorkFormat.format(interval.from) +"' " +
+                        "  and cc.CREATED < '" + reportYtWorkFormat.format(interval.to) +"' " +
+                        "  and cc.time_elapsed is not null " +
+                        "group by cc.AUTHOR_ID, sur_platform_id ",
+                (ResultSet rs, int rowNum) -> {
+                    ReportYtWorkCaseCommentTimeElapsedSum sum = new ReportYtWorkCaseCommentTimeElapsedSum();
+                    sum.setPersonId(rs.getLong("cc_author_id"));
+                    sum.setSpentTime(rs.getInt("spentTime"));
+                    long sur_platform_id = rs.getLong("sur_platform_id");
+                    sum.setSurrogatePlatformId(rs.wasNull()? null : sur_platform_id);
+                    return sum;
+                });
+    }
+
+    private String makeHomeCompanySet() {
+        return companyDAO.getAllHomeCompanies().stream()
+                .map(company -> String.valueOf(company.getId()))
+                .collect(Collectors.joining(","));
+    }
+
     private final static DateFormat nightWorkFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private final static DateFormat reportYtWorkFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
 }

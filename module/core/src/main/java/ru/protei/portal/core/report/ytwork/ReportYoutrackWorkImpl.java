@@ -65,6 +65,8 @@ public class ReportYoutrackWorkImpl implements ReportYoutrackWork {
     @Autowired
     CompanyDAO companyDAO;
     @Autowired
+    CaseCommentDAO caseCommentDAO;
+    @Autowired
     YoutrackWorkDictionaryDAO youtrackWorkDictionaryDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
@@ -126,6 +128,11 @@ public class ReportYoutrackWorkImpl implements ReportYoutrackWork {
         Map<String, ReportYtWorkRowItem> items = data.getItems();
 
         fillPersonInfo(items);
+
+        List<ReportYtWorkCaseCommentTimeElapsedSum> caseCommentReportYtWork = caseCommentDAO.getCaseCommentReportYtWork(interval);
+        caseCommentReportYtWork.forEach(cc -> {
+            log.info(cc.toString());
+        });
 
         Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasWorkEntry = stream(items.values())
                 .collect(partitioningBy(item -> item.getPersonInfo().hasWorkEntry()));
