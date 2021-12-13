@@ -11,10 +11,13 @@ import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_YoutrackWorkType;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.ent.YoutrackWorkDictionary;
 import ru.protei.portal.core.model.enterprise1c.dto.WorkPersonInfo1C;
 import ru.protei.portal.core.model.enterprise1c.query.WorkQuery1C;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.YoutrackWorkQuery;
 import ru.protei.portal.core.model.struct.Interval;
@@ -32,17 +35,22 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.partitioningBy;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.*;
+import static ru.protei.portal.core.model.dict.En_YoutrackWorkType.CONTRACT;
+import static ru.protei.portal.core.model.dict.En_YoutrackWorkType.GUARANTEE;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.NameWithId;
 import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.PersonInfo;
 import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.PersonInfo.nullDepartmentName;
+import static ru.protei.portal.core.report.ytwork.ReportYtWorkCollector.*;
 
 public class ReportYoutrackWorkImpl implements ReportYoutrackWork {
 
@@ -98,11 +106,12 @@ public class ReportYoutrackWorkImpl implements ReportYoutrackWork {
                 config.data().reportConfig().getChunkSize()
         );
 
+        Date now = new Date();
         ReportYtWorkCollector collector = new ReportYtWorkCollector(
                 dictionariesMap.get(En_YoutrackWorkType.NIOKR),
                 dictionariesMap.get(En_YoutrackWorkType.NMA),
                 name -> contractDAO.getByCustomerAndProject(name),
-                new Date(), makeHomeCompanySet()
+                now, makeHomeCompanySet()
         );
 
         log.debug("writeReport : reportId={} start process", report.getId());
@@ -129,10 +138,33 @@ public class ReportYoutrackWorkImpl implements ReportYoutrackWork {
 
         fillPersonInfo(items);
 
+        Map<Long, Optional<ReportYtWorkCollector.WorkTypeAndValue>> memoPlatformIdToContract = new HashMap<>();
+        Map<Long, ReportYtWorkRowItem> personIdToItem = stream(items.values())
+                .filter(item -> item.getPersonInfo().getPersonId() != null)
+                .collect(Collectors.toMap(item -> item.getPersonInfo().getPersonId(), Function.identity()));
         List<ReportYtWorkCaseCommentTimeElapsedSum> caseCommentReportYtWork = caseCommentDAO.getCaseCommentReportYtWork(interval);
         caseCommentReportYtWork.forEach(cc -> {
-            log.info(cc.toString());
+            ReportYtWorkRowItem item = personIdToItem.compute(cc.getPersonId(),
+                    (personId, ytWorkItem) -> {
+                        if (ytWorkItem == null) {
+                            ytWorkItem = new ReportYtWorkRowItem();
+                            items.put(personId.toString(), ytWorkItem);
+                        }
+                        return ytWorkItem;
+                    });
+            if (cc.getSurrogatePlatformId() == null) {
+                item.setHomeCompanySpentTime(item.getHomeCompanySpentTime() + cc.getSpentTime());
+            } else {
+                getContractsAndGuarantee(now, memoPlatformIdToContract, cc.getSurrogatePlatformId()).ifPresent(workTypeAndValue -> {
+                    Map<String, Long> spentTimeMap = createSpentTimeMap(cc.getSpentTime(), workTypeAndValue.getValue());
+                    Map<String, Long> itemMap = item.selectSpentTimeMap(workTypeAndValue.getWorkType());
+                    mergeSpentTimeMap(itemMap, spentTimeMap);
+                    item.addAllTimeSpent(cc.getSpentTime());
+                });
+            }
         });
+
+        fillPersonInfoAgainByPersonId(items);
 
         Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasWorkEntry = stream(items.values())
                 .collect(partitioningBy(item -> item.getPersonInfo().hasWorkEntry()));
@@ -165,6 +197,29 @@ public class ReportYoutrackWorkImpl implements ReportYoutrackWork {
         }
     }
 
+    private Optional<ReportYtWorkCollector.WorkTypeAndValue> getContractsAndGuarantee(
+            Date now,
+            Map<Long, Optional<ReportYtWorkCollector.WorkTypeAndValue>> memo,
+            Long platformId) {
+        return memo.compute(platformId, (keyCustomer, workTypeAndValues) -> {
+            if (workTypeAndValues != null) {
+                return workTypeAndValues;
+            }
+            List<Contract> contracts = contractDAO.getByPlatformId(platformId);
+            if (contracts.isEmpty()) {
+                return Optional.empty();
+            } else {
+                Map<En_YoutrackWorkType, List<String>> mapContactGuaranteeToName = contracts.stream()
+                        .collect(groupingBy(contract -> contractGuaranteeClassifier(contract, now), mapping(Contract::getNumber, toList())));
+                List<String> contractNames = mapContactGuaranteeToName.get(CONTRACT);
+                if (CollectionUtils.isNotEmpty(contractNames)) {
+                    return Optional.of(new ReportYtWorkCollector.WorkTypeAndValue(CONTRACT, contractNames));
+                }
+                return Optional.of(new ReportYtWorkCollector.WorkTypeAndValue(GUARANTEE, mapContactGuaranteeToName.get(GUARANTEE)));
+            }
+        });
+    }
+
     private void writeCompanySheets(NameWithId companyName, CompanyReportInfo companyReportInfo, ExcelReportWriter writer) {
         writer.setValueSheet(companyReportInfo.getProcessedWorkTypes());
         int sheetNumber = writer.createSheet();
@@ -193,6 +248,16 @@ public class ReportYoutrackWorkImpl implements ReportYoutrackWork {
 
     private void fillPersonInfo(Map<String, ReportYtWorkRowItem> items) {
         items.forEach((email, ytWorkItem) -> ytWorkItem.setPersonInfo(makePersonInfo(email)));
+    }
+
+    private void fillPersonInfoAgainByPersonId(Map<String, ReportYtWorkRowItem> items) {
+        items.forEach((email, ytWorkItem) -> {
+            if (ytWorkItem.getPersonInfo() == null) {
+                EmployeeShortView employeeShortView = employeeShortViewDAO.get(NumberUtils.parseLong(email));
+                employeeShortView.setWorkerEntries(workerEntryShortViewDAO.listByPersonIds(setOf(employeeShortView.getId())));
+                ytWorkItem.setPersonInfo(createPersonInfo(employeeShortView));
+            }
+        });
     }
 
     private void fillWorkedHours(Interval interval, String companyName, List<ReportYtWorkRowItem> items) {

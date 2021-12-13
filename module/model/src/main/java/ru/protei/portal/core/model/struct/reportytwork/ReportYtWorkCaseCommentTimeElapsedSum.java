@@ -6,7 +6,7 @@ public class ReportYtWorkCaseCommentTimeElapsedSum implements Serializable {
     private Long personId;
     
     // потраченное время
-    private Integer spentTime;
+    private Long spentTime;
 
     // суррогатный id платформы - если surrogateInitiatorCompanyId = 1, то null
     private Long surrogatePlatformId;
@@ -19,11 +19,11 @@ public class ReportYtWorkCaseCommentTimeElapsedSum implements Serializable {
         this.personId = personId;
     }
 
-    public Integer getSpentTime() {
+    public Long getSpentTime() {
         return spentTime;
     }
 
-    public void setSpentTime(Integer spentTime) {
+    public void setSpentTime(Long spentTime) {
         this.spentTime = spentTime;
     }
 

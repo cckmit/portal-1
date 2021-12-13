@@ -71,12 +71,12 @@ public class ReportYtWorkCollector implements Collector<
         }
     }
 
-    static private Map<String, Long> createSpentTimeMap(Long spentTime, List<String> values) {
+    static public Map<String, Long> createSpentTimeMap(Long spentTime, List<String> values) {
         long calcSpentTime = spentTime / values.size(); // todo Ошибки округления
         return stream(values).collect(toMap(Function.identity(), (v) -> calcSpentTime, Long::sum));
     }
 
-    static private void mergeSpentTimeMap(Map<String, Long> accumulatorMap, Map<String, Long> map) {
+    static public void mergeSpentTimeMap(Map<String, Long> accumulatorMap, Map<String, Long> map) {
         mergeMap(accumulatorMap, map, Long::sum);
     }
 
@@ -120,7 +120,7 @@ public class ReportYtWorkCollector implements Collector<
         });
     }
 
-    static private En_YoutrackWorkType contractGuaranteeClassifier(Contract contract, Date now) {
+    static public En_YoutrackWorkType contractGuaranteeClassifier(Contract contract, Date now) {
         return contract.getDateValid() == null || contract.getDateValid().after(now) ? CONTRACT : GUARANTEE;
     }
 
@@ -164,7 +164,7 @@ public class ReportYtWorkCollector implements Collector<
         }
     }
 
-    static private class WorkTypeAndValue {
+    static public class WorkTypeAndValue {
         final En_YoutrackWorkType workType;
         final List<String> value;
 

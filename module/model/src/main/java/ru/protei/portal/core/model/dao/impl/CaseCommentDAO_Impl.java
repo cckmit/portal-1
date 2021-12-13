@@ -179,7 +179,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                 (ResultSet rs, int rowNum) -> {
                     ReportYtWorkCaseCommentTimeElapsedSum sum = new ReportYtWorkCaseCommentTimeElapsedSum();
                     sum.setPersonId(rs.getLong("cc_author_id"));
-                    sum.setSpentTime(rs.getInt("spentTime"));
+                    sum.setSpentTime(rs.getLong("spentTime"));
                     long sur_platform_id = rs.getLong("sur_platform_id");
                     sum.setSurrogatePlatformId(rs.wasNull()? null : sur_platform_id);
                     return sum;

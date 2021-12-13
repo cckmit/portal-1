@@ -73,6 +73,14 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
         return getList(parameters);
     }
 
+    @Override
+    public List<Contract> getByPlatformId(Long platformId) {
+        JdbcQueryParameters parameters = new JdbcQueryParameters();
+        parameters.withJoins("join platform on platform.project_id = contract.project_id")
+                .withCondition("platform.id = ?", platformId);
+        return getList(parameters);
+    }
+
     private JdbcQueryParameters buildJdbcQueryParameters(ContractQuery query) {
 
         JdbcQueryParameters parameters = new JdbcQueryParameters();

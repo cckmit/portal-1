@@ -19,9 +19,9 @@ public final class ReportYtWorkRowItem implements ReportYtWorkRow {
     // Map<Project, Map<GUARANTEE, SpentTime>>
     final private Map<String, Long> guaranteeSpentTime;
     // Отработанное время
-    private Integer workedHours;
+    private Integer workedHours = 0;
     // Отработанное время на домашнюю компанию в Портале
-    private Integer homeCompanySpentTime;
+    private Long homeCompanySpentTime = 0L;
 
     public ReportYtWorkRowItem() {
         this.niokrSpentTime = new HashMap<>();
@@ -78,6 +78,14 @@ public final class ReportYtWorkRowItem implements ReportYtWorkRow {
             case GUARANTEE: return this.getGuaranteeSpentTime();
             default: return null;
         }
+    }
+
+    public Long getHomeCompanySpentTime() {
+        return homeCompanySpentTime;
+    }
+
+    public void setHomeCompanySpentTime(Long homeCompanySpentTime) {
+        this.homeCompanySpentTime = homeCompanySpentTime;
     }
 
     @Override
