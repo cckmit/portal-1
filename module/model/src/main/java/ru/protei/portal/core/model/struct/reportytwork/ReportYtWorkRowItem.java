@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_YoutrackWorkType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 public final class ReportYtWorkRowItem implements ReportYtWorkRow {
     private PersonInfo personInfo;
@@ -19,17 +20,15 @@ public final class ReportYtWorkRowItem implements ReportYtWorkRow {
     // Map<Project, Map<GUARANTEE, SpentTime>>
     final private Map<String, Long> guaranteeSpentTime;
     // Отработанное время
-    private Integer workedHours;
+    private Optional<Integer> workedHours = Optional.empty();
     // Отработанное время на домашнюю компанию в Портале
-    private Long homeCompanySpentTime;
+    private Long homeCompanySpentTime = 0L;
 
     public ReportYtWorkRowItem() {
         this.niokrSpentTime = new HashMap<>();
         this.nmaSpentTime = new HashMap<>();
         this.contractSpentTime = new HashMap<>();
         this.guaranteeSpentTime = new HashMap<>();
-        this.workedHours = 0;
-        this.homeCompanySpentTime = 0L;
     }
 
     public PersonInfo getPersonInfo() {
@@ -56,12 +55,12 @@ public final class ReportYtWorkRowItem implements ReportYtWorkRow {
         this.personInfo = personInfo;
     }
 
-    public Integer getWorkedHours() {
+    public Optional<Integer> getWorkedHours() {
         return workedHours;
     }
 
     public void setWorkedHours(Integer workedHours) {
-        this.workedHours = workedHours;
+        this.workedHours = Optional.of(workedHours);
     }
 
     public Long getAllTimeSpent() {
@@ -89,7 +88,6 @@ public final class ReportYtWorkRowItem implements ReportYtWorkRow {
             default: return null;
         }
     }
-
 
     @Override
     public String toString() {

@@ -160,8 +160,8 @@ public class ExcelReportWriter implements
                 long allTimeSpent = item.getAllTimeSpent();
                 values.add(allTimeSpent);
                 values.add(localizedLang.get("reportYtWorkRepresentTime", new Object[]{allTimeSpent / 60, allTimeSpent % 60}));
-                values.add(item.getHomeCompanySpentTime() != null? item.getHomeCompanySpentTime() : localizedLang.get("reportYtWorkWorkHoursNoData") );
-                values.add(item.getWorkedHours() != null? item.getWorkedHours() : localizedLang.get("reportYtWorkWorkHoursNoData") );
+                values.add(String.valueOf(item.getHomeCompanySpentTime()));
+                values.add(item.getWorkedHours().map(String::valueOf).orElseGet(() -> localizedLang.get("reportYtWorkWorkHoursNoData")));
                 processedWorkTypes.forEach((ytWorkType, strings) ->
                         strings.forEach(value -> values.add(item.selectSpentTimeMap(ytWorkType).getOrDefault(value, 0L))));
             }

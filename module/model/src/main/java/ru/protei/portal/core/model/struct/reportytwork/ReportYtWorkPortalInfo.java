@@ -2,19 +2,19 @@ package ru.protei.portal.core.model.struct.reportytwork;
 
 import java.io.Serializable;
 
-public class ReportYtWorkCaseCommentTimeElapsedSum implements Serializable {
+public class ReportYtWorkPortalInfo implements Serializable {
     private Long personId;
     
     // потраченное время
     private Long spentTime;
 
-    // суррогатный id платформы - если surrogateInitiatorCompanyId = 1, то null
+    // суррогатный id платформы - если домашняя компания или заказчик без платформы - то null
     private Long surrogatePlatformId;
 
-    public ReportYtWorkCaseCommentTimeElapsedSum() {
+    public ReportYtWorkPortalInfo() {
     }
 
-    public ReportYtWorkCaseCommentTimeElapsedSum(Long personId, Long spentTime, Long surrogatePlatformId) {
+    public ReportYtWorkPortalInfo(Long personId, Long spentTime, Long surrogatePlatformId) {
         this.personId = personId;
         this.spentTime = spentTime;
         this.surrogatePlatformId = surrogatePlatformId;
@@ -46,7 +46,7 @@ public class ReportYtWorkCaseCommentTimeElapsedSum implements Serializable {
 
     @Override
     public String toString() {
-        return "ReportYtWorkCaseCommentTimeElapsedSum{" +
+        return "ReportYtWorkPortalInfo{" +
                 "personId=" + personId +
                 ", spentTime=" + spentTime +
                 ", surrogatePlatformId=" + surrogatePlatformId +

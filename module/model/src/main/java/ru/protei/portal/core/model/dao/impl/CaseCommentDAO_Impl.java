@@ -11,7 +11,7 @@ import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.Interval;
-import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkCaseCommentTimeElapsedSum;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkPortalInfo;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
@@ -159,13 +159,13 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     }
 
     @Override
-    public List<ReportYtWorkCaseCommentTimeElapsedSum> getCaseCommentReportYtWork(Interval interval, int offset, int limit) {
-        String homeCompanyId = makeHomeCompanySet();
+    public List<ReportYtWorkPortalInfo> getReportYtWorkInfo(Interval interval, int offset, int limit) {
+        String homeCompanyIds = makeHomeCompanySet();
 
         return jdbcTemplate.query( "select cc.AUTHOR_ID cc_author_id, " +
                         "       sum(cc.time_elapsed) spentTime, " +
                         "       ( case " +
-                        "           when co.initiator_company in (" + homeCompanyId + ") OR " +
+                        "           when co.initiator_company in (" + homeCompanyIds + ") OR " +
                         "                    (co.platform_id is null) OR (plat.project_id is null) " +
                         "            then null " +
                         "            else plat.id END " +
@@ -179,7 +179,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                         "LIMIT " + limit + " " +
                         "OFFSET " + offset + ";",
                 (ResultSet rs, int rowNum) -> {
-                    ReportYtWorkCaseCommentTimeElapsedSum sum = new ReportYtWorkCaseCommentTimeElapsedSum();
+                    ReportYtWorkPortalInfo sum = new ReportYtWorkPortalInfo();
                     sum.setPersonId(rs.getLong("cc_author_id"));
                     sum.setSpentTime(rs.getLong("spentTime"));
                     long sur_platform_id = rs.getLong("sur_platform_id");

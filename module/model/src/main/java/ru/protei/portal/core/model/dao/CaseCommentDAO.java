@@ -7,7 +7,7 @@ import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.Interval;
-import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkCaseCommentTimeElapsedSum;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkPortalInfo;
 
 import java.util.List;
 
@@ -38,5 +38,5 @@ public interface CaseCommentDAO extends PortalBaseDAO<CaseComment> {
 
     List<CaseCommentNightWork> getCaseCommentNightWork(CaseQuery query);
     
-    List<ReportYtWorkCaseCommentTimeElapsedSum> getCaseCommentReportYtWork(Interval interval, int offset, int limit);
+    List<ReportYtWorkPortalInfo> getReportYtWorkInfo(Interval interval, int offset, int limit);
 }

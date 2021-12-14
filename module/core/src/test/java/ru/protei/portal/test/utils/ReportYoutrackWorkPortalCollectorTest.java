@@ -3,22 +3,22 @@ package ru.protei.portal.test.utils;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkCaseCommentTimeElapsedSum;
+import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkPortalInfo;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem;
-import ru.protei.portal.core.report.ytwork.ReportYtWorkPortalCommentsCollector;
+import ru.protei.portal.core.report.ytwork.ReportYtWorkPortalCollector;
 
 import java.util.*;
 import java.util.stream.Stream;
 
-public class ReportYoutrackWorkPortalCommentCollectorTest {
+public class ReportYoutrackWorkPortalCollectorTest {
     @Test
     public void testEmpty() {
-        ReportYtWorkPortalCommentsCollector collector = new ReportYtWorkPortalCommentsCollector(
+        ReportYtWorkPortalCollector collector = new ReportYtWorkPortalCollector(
                 id -> new ArrayList<>(),
                 new Date()
         );
 
-        Map<Long, ReportYtWorkRowItem> data = Stream.<ReportYtWorkCaseCommentTimeElapsedSum>empty()
+        Map<Long, ReportYtWorkRowItem> data = Stream.<ReportYtWorkPortalInfo>empty()
                 .collect(collector);
         Assert.assertNotNull(data);
         Assert.assertEquals(0, data.size());
@@ -29,10 +29,10 @@ public class ReportYoutrackWorkPortalCommentCollectorTest {
         Long personId = 7777L;
         Long spentTime = 13L;
 
-        ReportYtWorkCaseCommentTimeElapsedSum info1 = new ReportYtWorkCaseCommentTimeElapsedSum(
+        ReportYtWorkPortalInfo info1 = new ReportYtWorkPortalInfo(
                 personId, spentTime, null);
 
-        ReportYtWorkPortalCommentsCollector collector = new ReportYtWorkPortalCommentsCollector(
+        ReportYtWorkPortalCollector collector = new ReportYtWorkPortalCollector(
                 id -> new ArrayList<>(),
                 new Date()
         );
@@ -57,12 +57,12 @@ public class ReportYoutrackWorkPortalCommentCollectorTest {
         Long spentTime1 = 13L;
         Long spentTime2 = 9L;
 
-        ReportYtWorkCaseCommentTimeElapsedSum info1 = new ReportYtWorkCaseCommentTimeElapsedSum(
+        ReportYtWorkPortalInfo info1 = new ReportYtWorkPortalInfo(
                 personId, spentTime1, null);
-        ReportYtWorkCaseCommentTimeElapsedSum info2 = new ReportYtWorkCaseCommentTimeElapsedSum(
+        ReportYtWorkPortalInfo info2 = new ReportYtWorkPortalInfo(
                 personId, spentTime2, null);
 
-        ReportYtWorkPortalCommentsCollector collector = new ReportYtWorkPortalCommentsCollector(
+        ReportYtWorkPortalCollector collector = new ReportYtWorkPortalCollector(
                 id -> new ArrayList<>(),
                 new Date()
         );
@@ -88,12 +88,12 @@ public class ReportYoutrackWorkPortalCommentCollectorTest {
         Long spentTime1 = 13L;
         Long spentTime2 = 8L;
 
-        ReportYtWorkCaseCommentTimeElapsedSum info1 = new ReportYtWorkCaseCommentTimeElapsedSum(
+        ReportYtWorkPortalInfo info1 = new ReportYtWorkPortalInfo(
                 personId1, spentTime1, null);
-        ReportYtWorkCaseCommentTimeElapsedSum info2 = new ReportYtWorkCaseCommentTimeElapsedSum(
+        ReportYtWorkPortalInfo info2 = new ReportYtWorkPortalInfo(
                 personId2, spentTime2, null);
 
-        ReportYtWorkPortalCommentsCollector collector = new ReportYtWorkPortalCommentsCollector(
+        ReportYtWorkPortalCollector collector = new ReportYtWorkPortalCollector(
                 id -> new ArrayList<>(),
                 new Date()
         );
@@ -127,16 +127,16 @@ public class ReportYoutrackWorkPortalCommentCollectorTest {
         Long spentTime21 = 113L;
         Long spentTime22 = 23L;
 
-        ReportYtWorkCaseCommentTimeElapsedSum info11 = new ReportYtWorkCaseCommentTimeElapsedSum(
+        ReportYtWorkPortalInfo info11 = new ReportYtWorkPortalInfo(
                 personId1, spentTime11, null);
-        ReportYtWorkCaseCommentTimeElapsedSum info12 = new ReportYtWorkCaseCommentTimeElapsedSum(
+        ReportYtWorkPortalInfo info12 = new ReportYtWorkPortalInfo(
                 personId1, spentTime12, null);
-        ReportYtWorkCaseCommentTimeElapsedSum info21 = new ReportYtWorkCaseCommentTimeElapsedSum(
+        ReportYtWorkPortalInfo info21 = new ReportYtWorkPortalInfo(
                 personId2, spentTime21, null);
-        ReportYtWorkCaseCommentTimeElapsedSum info22 = new ReportYtWorkCaseCommentTimeElapsedSum(
+        ReportYtWorkPortalInfo info22 = new ReportYtWorkPortalInfo(
                 personId2, spentTime22, null);
 
-        ReportYtWorkPortalCommentsCollector collector = new ReportYtWorkPortalCommentsCollector(
+        ReportYtWorkPortalCollector collector = new ReportYtWorkPortalCollector(
                 name -> new ArrayList<>(),
                 new Date()
         );
@@ -169,14 +169,14 @@ public class ReportYoutrackWorkPortalCommentCollectorTest {
         Long platformId = 1L;
         String contractProject = "contract1";
 
-        ReportYtWorkCaseCommentTimeElapsedSum info1 = new ReportYtWorkCaseCommentTimeElapsedSum(
+        ReportYtWorkPortalInfo info1 = new ReportYtWorkPortalInfo(
                 personId, spentTime, platformId);
 
         Contract contract = new Contract();
         contract.setNumber(contractProject);
         contract.setDateValid(new GregorianCalendar(2021, Calendar.JULY, 20, 0, 0, 0).getTime());
 
-        ReportYtWorkPortalCommentsCollector collector = new ReportYtWorkPortalCommentsCollector(
+        ReportYtWorkPortalCollector collector = new ReportYtWorkPortalCollector(
                 id -> Arrays.asList(contract),
                 new GregorianCalendar(2021, Calendar.JULY, 19, 0, 0, 0).getTime()
         );
@@ -204,10 +204,10 @@ public class ReportYoutrackWorkPortalCommentCollectorTest {
         String contractName1 = "contract1";
         String contractName2 = "contract2";
 
-        ReportYtWorkCaseCommentTimeElapsedSum info1 = new ReportYtWorkCaseCommentTimeElapsedSum(
+        ReportYtWorkPortalInfo info1 = new ReportYtWorkPortalInfo(
                 personId, spentTime1, platformId);
 
-        ReportYtWorkCaseCommentTimeElapsedSum info2 = new ReportYtWorkCaseCommentTimeElapsedSum(
+        ReportYtWorkPortalInfo info2 = new ReportYtWorkPortalInfo(
                 personId, spentTime2, platformId);
 
         Contract contract1 = new Contract();
@@ -218,7 +218,7 @@ public class ReportYoutrackWorkPortalCommentCollectorTest {
         contract2.setNumber(contractName2);
         contract2.setDateValid(new GregorianCalendar(2021, Calendar.JULY, 21, 0, 0, 0).getTime());
 
-        ReportYtWorkPortalCommentsCollector collector = new ReportYtWorkPortalCommentsCollector(
+        ReportYtWorkPortalCollector collector = new ReportYtWorkPortalCollector(
                 id -> Arrays.asList(contract1, contract2),
                 new GregorianCalendar(2021, Calendar.JULY, 19, 0, 0, 0).getTime()
         );
@@ -247,10 +247,10 @@ public class ReportYoutrackWorkPortalCommentCollectorTest {
         String contractName1 = "contract1";
         String contractName2 = "contract2";
 
-        ReportYtWorkCaseCommentTimeElapsedSum info1 = new ReportYtWorkCaseCommentTimeElapsedSum(
+        ReportYtWorkPortalInfo info1 = new ReportYtWorkPortalInfo(
                 personId, spentTime1, platformId);
 
-        ReportYtWorkCaseCommentTimeElapsedSum info2 = new ReportYtWorkCaseCommentTimeElapsedSum(
+        ReportYtWorkPortalInfo info2 = new ReportYtWorkPortalInfo(
                 personId, spentTime2, platformId);
 
         Contract contract = new Contract();
@@ -261,7 +261,7 @@ public class ReportYoutrackWorkPortalCommentCollectorTest {
         guaranty.setNumber(contractName2);
         guaranty.setDateValid(new GregorianCalendar(2021, Calendar.JULY, 17, 0, 0, 0).getTime());
 
-        ReportYtWorkPortalCommentsCollector collector = new ReportYtWorkPortalCommentsCollector(
+        ReportYtWorkPortalCollector collector = new ReportYtWorkPortalCollector(
                 id -> Arrays.asList(contract, guaranty),
                 new GregorianCalendar(2021, Calendar.JULY, 19, 0, 0, 0).getTime()
         );
@@ -290,10 +290,10 @@ public class ReportYoutrackWorkPortalCommentCollectorTest {
         String contractName1 = "contract1";
         String contractName2 = "contract2";
 
-        ReportYtWorkCaseCommentTimeElapsedSum info1 = new ReportYtWorkCaseCommentTimeElapsedSum(
+        ReportYtWorkPortalInfo info1 = new ReportYtWorkPortalInfo(
                 personId, spentTime1, platformId);
 
-        ReportYtWorkCaseCommentTimeElapsedSum info2 = new ReportYtWorkCaseCommentTimeElapsedSum(
+        ReportYtWorkPortalInfo info2 = new ReportYtWorkPortalInfo(
                 personId, spentTime2, platformId);
 
         Contract guaranty1 = new Contract();
@@ -304,7 +304,7 @@ public class ReportYoutrackWorkPortalCommentCollectorTest {
         guaranty2.setNumber(contractName2);
         guaranty2.setDateValid(new GregorianCalendar(2021, Calendar.JULY, 17, 0, 0, 0).getTime());
 
-        ReportYtWorkPortalCommentsCollector collector = new ReportYtWorkPortalCommentsCollector(
+        ReportYtWorkPortalCollector collector = new ReportYtWorkPortalCollector(
                 id -> Arrays.asList(guaranty1, guaranty2),
                 new GregorianCalendar(2021, Calendar.JULY, 19, 0, 0, 0).getTime()
         );
