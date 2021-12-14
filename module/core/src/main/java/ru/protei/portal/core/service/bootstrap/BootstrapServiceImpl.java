@@ -114,7 +114,39 @@ public class BootstrapServiceImpl implements BootstrapService {
         /**
          *  end Спринт */
 
+        /**
+         * begin Спринт 85 */
+        if (!bootstrapAppDAO.isActionExists("addIssueGroupManagerId")) {
+            this.addIssueGroupManagerId();
+            bootstrapAppDAO.createAction("addIssueGroupManagerId");
+        }
+        /**
+         *  end Спринт */
+
         log.info( "bootstrapApplication(): BootstrapService complete."  );
+    }
+
+    private void addIssueGroupManagerId() {
+        log.debug("addIssueGroupManagerId(): start");
+
+        List<CaseFilter> filters = caseFilterDAO.getListByCondition("params like ? and type = ?", "%managerIds%", En_CaseFilterType.CASE_OBJECTS.name());
+        for (CaseFilter filter: filters) {
+            try {
+                CaseQuery query = objectMapper.readValue(filter.getParams(), CaseQuery.class);
+                List<Long> managerIds = query.getManagerIds();
+                if (managerIds.contains(CrmConstants.Employee.UNDEFINED)) {
+                    managerIds.add(CrmConstants.Employee.GROUP_MANAGER);
+                    query.setManagerIds(managerIds);
+                    filter.setParams(objectMapper.writeValueAsString(query));
+                    caseFilterDAO.partialMerge(filter, "params");
+                    log.info("addIssueGroupManagerId(): filter with id={} updated", filter.getId());
+                }
+            } catch (IOException e) {
+                log.warn("addIssueGroupManagerId(): cannot update filter with id={}", filter.getId());
+            }
+        }
+
+        log.debug("addIssueGroupManagerId(): finish");
     }
 
     private void setProbationPeriodEndDateForProbationNotExpired() {
