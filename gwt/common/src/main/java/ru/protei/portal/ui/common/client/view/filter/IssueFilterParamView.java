@@ -361,7 +361,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
                 query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
                 query.setModifiedRange(toDateRange(dateModifiedRange.getValue()));
-                query.setIsIssueTable(true);
                 break;
             }
             case CASE_TIME_ELAPSED: {

@@ -98,30 +98,19 @@ public class CaseObjectSqlBuilder {
                 List<Long> managerIds = new ArrayList<>(query.getManagerIds());
                 boolean isWithoutManager = managerIds.remove(CrmConstants.Employee.UNDEFINED);
 
-                if (query.isIssueTable()) {
-                    if (!isWithoutManager) {
-                        condition.append(" and manager IN ")
-                                 .append(makeInArg(managerIds, false));
-                    } else if (managerIds.isEmpty()) {
-                        condition.append(" and manager IS NULL");
-                    } else {
-                        condition.append(" and (manager IN ")
-                                 .append(makeInArg(managerIds, false))
-                                 .append(" or manager IS NULL)");
-                    }
+                if (!isWithoutManager) {
+                    condition
+                            .append(" and manager IN ")
+                            .append(makeInArg(managerIds, false));
+                } else if (managerIds.isEmpty()) {
+                    condition.append(" and (manager IS NULL or (SELECT person.sex FROM person WHERE person.id = manager) = ?)");
+                    args.add(En_Gender.UNDEFINED.getCode());
                 } else {
-                    if (!isWithoutManager) {
-                        condition.append(" and manager IN ")
-                                 .append(makeInArg(managerIds, false));
-                    } else if (managerIds.isEmpty()) {
-                        condition.append(" and (manager IS NULL or (SELECT person.sex FROM person WHERE person.id = manager) = ?)");
-                        args.add(En_Gender.UNDEFINED.getCode());
-                    } else {
-                        condition.append(" and (manager IN ")
-                                 .append(makeInArg(managerIds, false))
-                                 .append(" or manager IS NULL or (SELECT person.sex FROM person WHERE person.id = manager) = ?)");
-                        args.add(En_Gender.UNDEFINED.getCode());
-                    }
+                    condition
+                            .append(" and (manager IN ")
+                            .append(makeInArg(managerIds, false))
+                            .append(" or manager IS NULL or (SELECT person.sex FROM person WHERE person.id = manager) = ?)");
+                    args.add(En_Gender.UNDEFINED.getCode());
                 }
             }
 
