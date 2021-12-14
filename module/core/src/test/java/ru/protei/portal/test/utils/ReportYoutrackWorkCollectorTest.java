@@ -16,6 +16,30 @@ public class ReportYoutrackWorkCollectorTest {
     static private final String CUSTOMER_COMPANY_NAME = "customerCompany";
 
     @Test
+    public void testEmpty() {
+        Map<String, List<String>> niokrs = new HashMap<>();
+        String niokrProject = "niokrProject1";
+        niokrs.put(niokrProject, Arrays.asList("niokr1", "niokr2"));
+
+        Map<String, List<String>> nmas = new HashMap<>();
+        String nmaProject = "nmaProject1";
+        nmas.put(nmaProject, Arrays.asList("nma1", "nma2"));
+
+        Set<String> homeCompany = new HashSet<>(Arrays.asList(HOME_COMPANY_NAME));
+
+        ReportYtWorkCollector collector = new ReportYtWorkCollector(
+                niokrs, nmas,
+                name -> new ArrayList<>(),
+                new Date(), homeCompany
+        );
+
+        ReportYtWorkCollector.ErrorsAndItems result = Stream.<ReportYtWorkInfo>empty().collect(collector);
+        Assert.assertNotNull(result);
+        Assert.assertEquals(0, result.getItems().size());
+        Assert.assertEquals(0, result.getErrors().size());
+    }
+
+    @Test
     public void testNiokrNmaReport() {
         Map<String, List<String>> niokrs = new HashMap<>();
         String niokrProject = "niokrProject1";

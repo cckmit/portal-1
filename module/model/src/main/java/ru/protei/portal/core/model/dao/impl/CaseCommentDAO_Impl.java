@@ -159,7 +159,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     }
 
     @Override
-    public List<ReportYtWorkCaseCommentTimeElapsedSum> getCaseCommentReportYtWork(Interval interval) {
+    public List<ReportYtWorkCaseCommentTimeElapsedSum> getCaseCommentReportYtWork(Interval interval, int offset, int limit) {
         String homeCompanyId = makeHomeCompanySet();
 
         return jdbcTemplate.query( "select cc.AUTHOR_ID cc_author_id, " +
@@ -175,7 +175,9 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                         "where cc.CREATED >= '" + reportYtWorkFormat.format(interval.from) +"' " +
                         "  and cc.CREATED < '" + reportYtWorkFormat.format(interval.to) +"' " +
                         "  and cc.time_elapsed is not null " +
-                        "group by cc.AUTHOR_ID, sur_platform_id ",
+                        "group by cc.AUTHOR_ID, sur_platform_id " +
+                        "LIMIT " + limit + " " +
+                        "OFFSET " + offset + ";",
                 (ResultSet rs, int rowNum) -> {
                     ReportYtWorkCaseCommentTimeElapsedSum sum = new ReportYtWorkCaseCommentTimeElapsedSum();
                     sum.setPersonId(rs.getLong("cc_author_id"));

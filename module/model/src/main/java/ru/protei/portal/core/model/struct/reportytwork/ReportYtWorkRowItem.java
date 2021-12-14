@@ -19,15 +19,17 @@ public final class ReportYtWorkRowItem implements ReportYtWorkRow {
     // Map<Project, Map<GUARANTEE, SpentTime>>
     final private Map<String, Long> guaranteeSpentTime;
     // Отработанное время
-    private Integer workedHours = 0;
+    private Integer workedHours;
     // Отработанное время на домашнюю компанию в Портале
-    private Long homeCompanySpentTime = 0L;
+    private Long homeCompanySpentTime;
 
     public ReportYtWorkRowItem() {
         this.niokrSpentTime = new HashMap<>();
         this.nmaSpentTime = new HashMap<>();
         this.contractSpentTime = new HashMap<>();
         this.guaranteeSpentTime = new HashMap<>();
+        this.workedHours = 0;
+        this.homeCompanySpentTime = 0L;
     }
 
     public PersonInfo getPersonInfo() {
@@ -67,7 +69,15 @@ public final class ReportYtWorkRowItem implements ReportYtWorkRow {
     }
 
     public void addAllTimeSpent(long time) {
-        this.allTimeSpent = this.allTimeSpent + time;
+        this.allTimeSpent += time;
+    }
+
+    public Long getHomeCompanySpentTime() {
+        return homeCompanySpentTime;
+    }
+
+    public void addHomeCompanySpentTime(long time) {
+        this.homeCompanySpentTime += time;
     }
 
     public Map<String, Long> selectSpentTimeMap(En_YoutrackWorkType type) {
@@ -80,13 +90,6 @@ public final class ReportYtWorkRowItem implements ReportYtWorkRow {
         }
     }
 
-    public Long getHomeCompanySpentTime() {
-        return homeCompanySpentTime;
-    }
-
-    public void setHomeCompanySpentTime(Long homeCompanySpentTime) {
-        this.homeCompanySpentTime = homeCompanySpentTime;
-    }
 
     @Override
     public String toString() {

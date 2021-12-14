@@ -38,5 +38,5 @@ public interface CaseCommentDAO extends PortalBaseDAO<CaseComment> {
 
     List<CaseCommentNightWork> getCaseCommentNightWork(CaseQuery query);
     
-    List<ReportYtWorkCaseCommentTimeElapsedSum> getCaseCommentReportYtWork(Interval interval);
+    List<ReportYtWorkCaseCommentTimeElapsedSum> getCaseCommentReportYtWork(Interval interval, int offset, int limit);
 }
