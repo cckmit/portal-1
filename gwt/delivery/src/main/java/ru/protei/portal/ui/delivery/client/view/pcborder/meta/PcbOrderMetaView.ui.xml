@@ -41,7 +41,7 @@
 
             <div class="form-group form-group-attached">
                 <div class="form-group form-group-default date-picker">
-                    <label class="fade" ><ui:text from="{lang.pcbOrderOrderDate}"/></label>
+                    <label class="fade" ><ui:text from="{lang.pcbOrderDate}"/></label>
                     <datepicker:SinglePicker ui:field="orderDate" type="DATE" mandatory="false"
                                              formatValue="dd-MM-yyyy" styleName=""/>
                 </div>

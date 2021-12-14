@@ -5802,12 +5802,71 @@ div.form-group-default.form-group-default-selectFx:focus {
   }
 }
 
+
+.pcb-orders {
+  table {
+    tbody {
+      tr {
+        td {
+          height: 60px;
+          div {
+            height: 60px;
+            max-height: 60px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          p {
+            margin: 0;
+            //font-size: 110%;
+            line-height: 1.3em;
+          }
+
+          label {
+            font-weight: 600;
+            line-height: 1.2em;
+            vertical-align: inherit;
+            font-size: 0.9em;
+            cursor: pointer;
+            margin-top: 5px;
+            margin-bottom: 5px;
+          }
+        }
+      }
+    }
+  }
+  .name {
+    width: 15%;
+    text-align: center;
+    .name-size {
+      font-size: 14px;
+    }
+  }
+  .date {
+    text-align: center;
+    .order-date {
+
+    }
+    .ready-date {
+
+    }
+    .receipt-date {
+
+    }
+  }
+  .contractor {
+    word-break: break-word;
+    width: 25%;
+  }
+}
+
 .short-table-view {
   .pcb-orders {
     .name, .type {
       width: 45%;
     }
-    .modification, .state, .promptness, .amount, .order-date, .ready-date, .receipt-date, .contractor {
+    .modification, .state, .promptness, .amount, .date, .contractor {
       display: none;
     }
   }
