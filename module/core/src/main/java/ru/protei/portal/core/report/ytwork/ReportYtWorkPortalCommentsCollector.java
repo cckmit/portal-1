@@ -45,8 +45,12 @@ public class ReportYtWorkPortalCommentsCollector implements Collector<
             item.addHomeCompanySpentTime(sum.getSpentTime());
         } else {
             // todo в коллектор должны попадать элементы с контрактами
-            WorkTypeAndValue workTypeAndValue = this.getContractsAndGuarantee.apply(sum.getSurrogatePlatformId()).get();
-            mergeWithItem(sum.getSpentTime(), item, workTypeAndValue);
+            Optional<WorkTypeAndValue> workTypeAndValue = this.getContractsAndGuarantee.apply(sum.getSurrogatePlatformId());
+            if (workTypeAndValue.isPresent()) {
+                mergeWithItem(sum.getSpentTime(), item, workTypeAndValue.get());
+            } else {
+                System.out.println(sum);
+            }
         }
         item.addAllTimeSpent(sum.getSpentTime());
     }

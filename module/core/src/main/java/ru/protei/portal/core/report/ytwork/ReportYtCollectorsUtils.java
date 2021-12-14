@@ -68,7 +68,7 @@ class ReportYtCollectorsUtils {
         return stream(values).collect(toMap(Function.identity(), (v) -> calcSpentTime, Long::sum));
     }
 
-    static void mergeSpentTimeMap(Map<String, Long> accumulatorMap, Map<String, Long> map) {
+    static public void mergeSpentTimeMap(Map<String, Long> accumulatorMap, Map<String, Long> map) {
         mergeMap(accumulatorMap, map, Long::sum);
     }
 

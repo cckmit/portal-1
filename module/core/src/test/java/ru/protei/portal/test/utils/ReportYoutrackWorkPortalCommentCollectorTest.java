@@ -14,7 +14,7 @@ public class ReportYoutrackWorkPortalCommentCollectorTest {
     @Test
     public void testEmpty() {
         ReportYtWorkPortalCommentsCollector collector = new ReportYtWorkPortalCommentsCollector(
-                name -> new ArrayList<>(),
+                id -> new ArrayList<>(),
                 new Date()
         );
 

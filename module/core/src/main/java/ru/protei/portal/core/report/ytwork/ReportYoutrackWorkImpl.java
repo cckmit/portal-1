@@ -15,7 +15,6 @@ import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.ent.YoutrackWorkDictionary;
 import ru.protei.portal.core.model.enterprise1c.dto.WorkPersonInfo1C;
 import ru.protei.portal.core.model.enterprise1c.query.WorkQuery1C;
-import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.YoutrackWorkQuery;
 import ru.protei.portal.core.model.struct.Interval;
@@ -33,6 +32,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -45,6 +45,7 @@ import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.NameWithId;
 import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.PersonInfo;
 import static ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem.PersonInfo.nullDepartmentName;
+import static ru.protei.portal.core.report.ytwork.ReportYtCollectorsUtils.mergeSpentTimeMap;
 import static ru.protei.portal.core.report.ytwork.ReportYtWorkCollector.ErrorsAndItems;
 
 public class ReportYoutrackWorkImpl implements ReportYoutrackWork {
@@ -95,14 +96,14 @@ public class ReportYoutrackWorkImpl implements ReportYoutrackWork {
         Map<En_YoutrackWorkType, Map<String, List<String>>> dictionariesMap = makeYoutrackWorkTypeMap(dictionaries);
 
         Interval interval = makeInterval(query.getDateRange());
-        ChunkIterator<IssueWorkItem> iterator = new ChunkIterator<>(
+        ChunkIterator<IssueWorkItem> ytIterator = new ChunkIterator<>(
                 (offset, limit) -> api.getWorkItems(interval.from, interval.to, offset, limit),
                 () -> isCancel.test(report.getId()),
                 config.data().reportConfig().getChunkSize()
         );
 
         Date now = new Date();
-        ReportYtWorkCollector collector = new ReportYtWorkCollector(
+        ReportYtWorkCollector ytCollector = new ReportYtWorkCollector(
                 dictionariesMap.get(En_YoutrackWorkType.NIOKR),
                 dictionariesMap.get(En_YoutrackWorkType.NMA),
                 name -> contractDAO.getByCustomerAndProject(name),
@@ -110,36 +111,48 @@ public class ReportYoutrackWorkImpl implements ReportYoutrackWork {
         );
 
         log.debug("writeReport : reportId={} start process", report.getId());
-        ErrorsAndItems data = stream(iterator)
+        log.debug("writeReport : start yt");
+        ErrorsAndItems ytResult = stream(ytIterator)
                 .map(this::makeYtReportItem)
-                .collect(collector);
+                .collect(ytCollector);
 
-        switch(iterator.getStatus()) {
-            case OK: {
-                log.debug("writeReport : collect data with isOk status : reportId={}", report.getId());
-                break;
-            }
-            case CANCELED: {
-                log.info("writeReport : canceled : reportId={}", report.getId());
-                return true;
-            }
-            default: {
-                log.error("writeReport : error : reportId={}, status = {}", report.getId(), iterator.getStatus());
-                return false;
-            }
+        switch(ytIterator.getStatus()) {
+            case OK: { log.debug("writeReport : collect yt data with isOk status : reportId={}", report.getId()); break; }
+            case CANCELED: { log.info("writeReport : yt canceled : reportId={}", report.getId()); return true; }
+            default: { log.error("writeReport : yt error : reportId={}, status = {}", report.getId(), ytIterator.getStatus()); return false; }
         }
 
-        Map<String, ReportYtWorkRowItem> items = data.getItems();
+        Map<String, ReportYtWorkRowItem> ytData = ytResult.getItems();
 
-        fillPersonInfo(items);
+        fillPersonInfo(ytData);
 
-        ChunkIterator<ReportYtWorkCaseCommentTimeElapsedSum> caseCommentIterator = new ChunkIterator<>(
+        ChunkIterator<ReportYtWorkCaseCommentTimeElapsedSum> portalIterator = new ChunkIterator<>(
                 (offset, limit) -> ok(caseCommentDAO.getCaseCommentReportYtWork(interval, offset, limit)),
                 () -> isCancel.test(report.getId()),
                 config.data().reportConfig().getChunkSize()
         );
 
-        Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasWorkEntry = stream(items.values())
+        ReportYtWorkPortalCommentsCollector portalCollector = new ReportYtWorkPortalCommentsCollector(
+                platformId ->  contractDAO.getByPlatformId(platformId),
+                now
+        );
+
+        log.debug("writeReport : start portal");
+        Map<Long, ReportYtWorkRowItem> portalData = stream(portalIterator)
+                .collect(portalCollector);
+
+        switch(portalIterator.getStatus()) {
+            case OK: { log.debug("writeReport : collect portal data with isOk status : reportId={}", report.getId()); break; }
+            case CANCELED: { log.info("writeReport : portal canceled : reportId={}", report.getId()); return true; }
+            default: { log.error("writeReport : portal error : reportId={}, status = {}", report.getId(), portalIterator.getStatus()); return false; }
+        }
+
+        log.debug("writeReport : merge yt and portal");
+        Map<Long, ReportYtWorkRowItem> needFillPersonInfo = mergeYtAndPortalData(ytData, portalData);
+
+        fillPersonByPersonId(needFillPersonInfo);
+
+        Map<Boolean, List<ReportYtWorkRowItem>> partitionByHasWorkEntry = stream(ytData.values())
                 .collect(partitioningBy(item -> item.getPersonInfo().hasWorkEntry()));
 
         Map<NameWithId, CompanyReportInfo> groupingByCompanyInfo =
@@ -159,7 +172,7 @@ public class ReportYoutrackWorkImpl implements ReportYoutrackWork {
 
             writeNoCompanySheet(new ArrayList<>(partitionByHasWorkEntry.get(false)), writer);
 
-            writeClassificationErrorSheet(data.getErrors(), writer);
+            writeClassificationErrorSheet(ytResult.getErrors(), writer);
 
             writer.collect(buffer);
             log.debug("writeReport : reportId={} to end", report.getId());
@@ -196,17 +209,38 @@ public class ReportYoutrackWorkImpl implements ReportYoutrackWork {
         writer.write(sheetNumber, sortedErrors);
     }
 
+    Map<Long, ReportYtWorkRowItem> mergeYtAndPortalData(Map<String, ReportYtWorkRowItem> ytData, Map<Long, ReportYtWorkRowItem> portalData) {
+        Map<Long, ReportYtWorkRowItem> personIdToItem = stream(ytData.values())
+                .filter(item -> item.getPersonInfo().getPersonId() != null)
+                .collect(Collectors.toMap(item -> item.getPersonInfo().getPersonId(), Function.identity()));
+
+        Map<Long, ReportYtWorkRowItem> needFillPersonInfo = new HashMap<>();
+        if (portalData != null) {
+            portalData.forEach((personId, portalItem) -> {
+                ReportYtWorkRowItem ytItem = personIdToItem.get(personId);
+                if (ytItem == null) {
+                    needFillPersonInfo.put(personId, portalItem);
+                    ytData.put(personId.toString(), portalItem);
+                } else {
+                    mergeSpentTimeMap(ytItem.getContractSpentTime(), portalItem.getContractSpentTime());
+                    mergeSpentTimeMap(ytItem.getGuaranteeSpentTime(), portalItem.getGuaranteeSpentTime());
+                    ytItem.addAllTimeSpent(portalItem.getAllTimeSpent());
+                    ytItem.addHomeCompanySpentTime(portalItem.getHomeCompanySpentTime());
+                }
+            });
+        }
+        return needFillPersonInfo;
+    }
+
     private void fillPersonInfo(Map<String, ReportYtWorkRowItem> items) {
         items.forEach((email, ytWorkItem) -> ytWorkItem.setPersonInfo(makePersonInfo(email)));
     }
 
-    private void fillPersonInfoAgainByPersonId(Map<String, ReportYtWorkRowItem> items) {
-        items.forEach((email, ytWorkItem) -> {
-            if (ytWorkItem.getPersonInfo() == null) {
-                EmployeeShortView employeeShortView = employeeShortViewDAO.get(NumberUtils.parseLong(email));
-                employeeShortView.setWorkerEntries(workerEntryShortViewDAO.listByPersonIds(setOf(employeeShortView.getId())));
-                ytWorkItem.setPersonInfo(createPersonInfo(employeeShortView));
-            }
+    private void fillPersonByPersonId(Map<Long, ReportYtWorkRowItem> items) {
+        items.forEach((personId, ytWorkItem) -> {
+            EmployeeShortView employeeShortView = employeeShortViewDAO.get(personId);
+            employeeShortView.setWorkerEntries(workerEntryShortViewDAO.listByPersonIds(setOf(employeeShortView.getId())));
+            ytWorkItem.setPersonInfo(createPersonInfo(employeeShortView));
         });
     }
 
