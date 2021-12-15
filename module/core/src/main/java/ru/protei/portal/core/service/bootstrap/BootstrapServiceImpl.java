@@ -133,12 +133,17 @@ public class BootstrapServiceImpl implements BootstrapService {
     private void addIssueGroupManagerId() {
         log.debug("addIssueGroupManagerId(): start");
 
-        List<CaseFilter> filters = caseFilterDAO.getListByCondition("params like ? and type = ?", "%managerIds%", En_CaseFilterType.CASE_OBJECTS.name());
+        String bundle = "dashboardTableFilterCreationNewIssues";
+        String ruFilterName = lang.getFor(forLanguageTag(RU)).get(bundle);
+        String enFilterName = lang.getFor(forLanguageTag(EN)).get(bundle);
+        List<CaseFilter> filters = caseFilterDAO.getListByCondition("params like ? and type = ? and (name = ? or name = ?)",
+                                                                    "%managerIds%", En_CaseFilterType.CASE_OBJECTS.name(),
+                                                                    ruFilterName, enFilterName);
         for (CaseFilter filter: filters) {
             try {
                 CaseQuery query = objectMapper.readValue(filter.getParams(), CaseQuery.class);
-                if (isFilterByUndistributedIssues(filter)) {
-                    List<Long> managerIds = query.getManagerIds();
+                List<Long> managerIds = query.getManagerIds();
+                if (managerIds.contains(CrmConstants.Employee.UNDEFINED)) {
                     managerIds.add(CrmConstants.Employee.GROUP_MANAGER);
                     query.setManagerIds(managerIds);
                     filter.setParams(objectMapper.writeValueAsString(query));
@@ -151,11 +156,6 @@ public class BootstrapServiceImpl implements BootstrapService {
         }
 
         log.debug("addIssueGroupManagerId(): finish");
-    }
-
-    private boolean isFilterByUndistributedIssues(CaseFilter filter) {
-        return filter.getName().equals(lang.getFor(forLanguageTag(RU)).get("dashboardTableFilterCreationNewIssues")) ||
-               filter.getName().equals(lang.getFor(forLanguageTag(EN)).get("dashboardTableFilterCreationNewIssues"));
     }
 
     private void setProbationPeriodEndDateForProbationNotExpired() {
