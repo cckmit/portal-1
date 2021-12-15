@@ -136,6 +136,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     @Override
     public void onCategoryChanged() {
         boolean isHomeCompanyCategory = En_CompanyCategory.HOME.equals(view.companyCategory().getValue());
+        view.employeeRegistrationEmailsContainerVisibility().setVisible(isHomeCompanyCategory);
         view.probationEmailsContainerVisibility().setVisible(isHomeCompanyCategory);
     }
 
@@ -217,6 +218,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         view.webSite().setText(infoFacade.getWebSite());
 
+        view.employeeRegistrationEmailsContainerVisibility().setVisible(En_CompanyCategory.HOME.equals(company.getCategory()));
         view.probationEmailsContainerVisibility().setVisible(En_CompanyCategory.HOME.equals(company.getCategory()));
 
         contactItemViews = new ArrayList<>();
@@ -226,6 +228,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                                                  En_ContactDataAccess.PUBLIC, contactItemViews, CrmConstants.Masks.EMAIL));
         fireEvent(new ContactItemEvents.ShowList(view.probationEmailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES,
                                                  En_ContactDataAccess.INTERNAL, contactItemViews, CrmConstants.Masks.EMAIL));
+        fireEvent(new ContactItemEvents.ShowList(view.employeeRegistrationEmailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES,
+                                                 En_ContactDataAccess.INTERNAL, contactItemViews, CrmConstants.Masks.EMAIL)); // TODO: Продумать этот момент
 
         view.tableContainer().clear();
         if (company.getId() != null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
