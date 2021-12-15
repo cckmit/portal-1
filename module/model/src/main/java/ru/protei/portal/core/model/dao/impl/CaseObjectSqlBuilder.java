@@ -112,8 +112,12 @@ public class CaseObjectSqlBuilder {
                                  .append(" or manager IS NULL)");
                     }
                 } else {
-                    condition.append(" and manager IN ")
-                             .append(makeInArg(managerIds, false));
+                    if (managerIds.isEmpty()) {
+                        condition.append(" and manager IS NULL");
+                    } else {
+                        condition.append(" and manager IN ")
+                                 .append(makeInArg(managerIds, false));
+                    }
                 }
             }
 
