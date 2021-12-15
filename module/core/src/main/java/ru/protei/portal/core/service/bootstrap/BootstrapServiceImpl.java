@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -24,10 +25,13 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.Locale.forLanguageTag;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static ru.protei.portal.core.model.dict.En_Privilege.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.util.CrmConstants.LocaleTags.EN;
+import static ru.protei.portal.core.model.util.CrmConstants.LocaleTags.RU;
 
 /**
  * Сервис выполняющий первичную инициализацию, работу с исправлением данных
@@ -133,8 +137,8 @@ public class BootstrapServiceImpl implements BootstrapService {
         for (CaseFilter filter: filters) {
             try {
                 CaseQuery query = objectMapper.readValue(filter.getParams(), CaseQuery.class);
-                List<Long> managerIds = query.getManagerIds();
-                if (managerIds.contains(CrmConstants.Employee.UNDEFINED)) {
+                if (isFilterByUndistributedIssues(filter)) {
+                    List<Long> managerIds = query.getManagerIds();
                     managerIds.add(CrmConstants.Employee.GROUP_MANAGER);
                     query.setManagerIds(managerIds);
                     filter.setParams(objectMapper.writeValueAsString(query));
@@ -147,6 +151,11 @@ public class BootstrapServiceImpl implements BootstrapService {
         }
 
         log.debug("addIssueGroupManagerId(): finish");
+    }
+
+    private boolean isFilterByUndistributedIssues(CaseFilter filter) {
+        return filter.getName().equals(lang.getFor(forLanguageTag(RU)).get("dashboardTableFilterCreationNewIssues")) ||
+               filter.getName().equals(lang.getFor(forLanguageTag(EN)).get("dashboardTableFilterCreationNewIssues"));
     }
 
     private void setProbationPeriodEndDateForProbationNotExpired() {
@@ -539,6 +548,8 @@ public class BootstrapServiceImpl implements BootstrapService {
     CardTypeDAO cardTypeDAO;
     @Autowired
     UserRoleDAO userRoleDAO;
+    @Autowired
+    Lang lang;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 }
