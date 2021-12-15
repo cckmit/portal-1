@@ -16,10 +16,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.Project;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.YoutrackWorkQuery;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -41,6 +38,7 @@ import java.util.*;
 
 import static org.mockito.Mockito.mock;
 import static ru.protei.portal.core.model.util.CrmConstants.State.PRESALE;
+import static ru.protei.portal.core.model.util.CrmConstants.Time.MINUTE;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
@@ -63,14 +61,15 @@ public class ReportYoutrackWorkTest extends BaseServiceTest {
         String email = "user1@protei.ru";
 
         Company home = makeCompany(En_CompanyCategory.HOME);
-        Person person1 = createNewPerson(home);
-        person1.setLogins(Arrays.asList(email));
-        makePerson(person1);
+        Person homePerson = createNewPerson(home);
+        homePerson.setLogins(Arrays.asList(email));
+        makePerson(homePerson);
 
         PersonProjectMemberView personProjectMemberView =
-                new PersonProjectMemberView(person1.getDisplayShortName(), person1.getId(), person1.isFired(), En_PersonRoleType.HEAD_MANAGER);
+                new PersonProjectMemberView(homePerson.getDisplayShortName(), homePerson.getId(), homePerson.isFired(), En_PersonRoleType.HEAD_MANAGER);
 
         Company customerCompany = makeCompany(En_CompanyCategory.CUSTOMER);
+        Person customerPerson = makePerson(customerCompany);
         Project project1 = new Project();
         project1.setName(TEST_NAME + " : Test_Project 1");
         project1.setDescription(TEST_NAME);
@@ -87,6 +86,20 @@ public class ReportYoutrackWorkTest extends BaseServiceTest {
 
         contractService.createContract(getAuthToken(), guarantee);
 
+        Platform platform = new Platform();
+        platform.setName(TEST_NAME + ": Test_Project 1");
+        platform.setProjectId(project1.getId());
+        Long platformId = platformDAO.persist(platform);
+        
+        CaseObject caseObject = makeCaseObject(customerPerson);
+        caseObject.setPlatformId(platformId);
+        caseObjectDAO.partialMerge(caseObject, CaseObject.Columns.PLATFORM_ID);
+
+        Date caseCommentCreated = new GregorianCalendar(2021, Calendar.JULY, 21, 12, 0, 0).getTime();
+        CaseComment comment = createNewComment(caseCommentCreated, homePerson, caseObject.getId(), "Test_TimeElapsed_Comment");
+        comment.setTimeElapsed(2 * MINUTE);
+        Long commentId = caseCommentDAO.persist(comment);
+        
         YoutrackWorkQuery query = new YoutrackWorkQuery();
         Date from = new GregorianCalendar(2021, Calendar.JULY, 21, 0, 0, 0).getTime();
         Date to = new GregorianCalendar(2021, Calendar.JULY, 22, 0, 0, 0).getTime();

@@ -15,28 +15,28 @@ import java.util.Set;
 
 public interface ReportService {
 
-    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT })
+    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT, En_Privilege.YT_REPORT })
     Result<Long> saveReport(AuthToken authToken, ReportDto report);
 
-    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT })
+    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT, En_Privilege.YT_REPORT })
     Result<Long> recreateReport(AuthToken authToken, Long reportId);
 
-    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT })
+    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT, En_Privilege.YT_REPORT })
     Result<ReportDto> getReport(AuthToken authToken, Long reportId);
 
-    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT })
+    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT, En_Privilege.YT_REPORT })
     Result<SearchResult<ReportDto>> getReports(AuthToken token, ReportQuery query);
 
-    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT })
+    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT, En_Privilege.YT_REPORT })
     Result<ReportContent> downloadReport(AuthToken authToken, Long reportId);
 
-    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT })
+    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT, En_Privilege.YT_REPORT })
     Result<List<Long>> removeReports(AuthToken authToken, Set<Long> includeIds, Set<Long> excludeIds);
 
-    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT })
+    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT, En_Privilege.YT_REPORT })
     Result<List<Long>> removeReports(AuthToken authToken, ReportQuery query, Set<Long> excludeIds);
 
-    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT })
+    @Privileged(requireAny = { En_Privilege.ISSUE_REPORT, En_Privilege.CONTRACT_REPORT, En_Privilege.YT_REPORT })
     Result<Long> cancelReport(AuthToken authToken, Long reportId);
 
     Result<List<Long>> removeReports(List<Report> reports);
