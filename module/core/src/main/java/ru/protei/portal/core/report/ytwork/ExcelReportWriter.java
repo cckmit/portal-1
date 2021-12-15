@@ -156,7 +156,7 @@ public class ExcelReportWriter implements
             if (row instanceof ReportYtWorkRowItem) {
                 ReportYtWorkRowItem item = (ReportYtWorkRowItem)row;
 
-                values.add(item.getPersonInfo().getDisplayName() == null? "noname" : item.getPersonInfo().getDisplayName());
+                values.add(item.getPersonInfo().getDisplayName() == null? localizedLang.get("reportYtWorkPersonNoName") : item.getPersonInfo().getDisplayName());
                 long allTimeSpent = item.getAllTimeSpent();
                 values.add(allTimeSpent);
                 values.add(localizedLang.get("reportYtWorkRepresentTime", new Object[]{allTimeSpent / 60, allTimeSpent % 60}));

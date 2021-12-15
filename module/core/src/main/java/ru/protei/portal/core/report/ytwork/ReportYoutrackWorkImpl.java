@@ -79,8 +79,8 @@ public class ReportYoutrackWorkImpl implements ReportYoutrackWork {
     @Autowired
     Api1CWork api1CWork;
 
-    static private final String CLASSIFICATION_ERROR = "CLASSIFICATION ERROR";
-    static private final String NO_COMPANY = "NO COMPANY";
+    private String CLASSIFICATION_ERROR;
+    private String NO_COMPANY;
     static private final Set<String> workerCompanyName = setOf(CrmConstants.Company.MAIN_HOME_COMPANY_NAME, CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME);
 
     @Override
@@ -90,6 +90,11 @@ public class ReportYoutrackWorkImpl implements ReportYoutrackWork {
                                Predicate<Long> isCancel) throws IOException {
 
         log.debug("writeReport : reportId={} to process", report.getId());
+
+        Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
+
+        CLASSIFICATION_ERROR = localizedLang.get("reportYtWorkClassificationError");
+        NO_COMPANY = localizedLang.get("reportYtWorkNoCompany");
 
         Date now = new Date();
 
@@ -167,7 +172,6 @@ public class ReportYoutrackWorkImpl implements ReportYoutrackWork {
             }
         });
 
-        Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
         try (ExcelReportWriter writer = new ExcelReportWriter(localizedLang)) {
             log.debug("writeReport : start write sheet");
             groupingByCompanyInfo.forEach((companyName, companyReportInfo) ->
