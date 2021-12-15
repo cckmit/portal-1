@@ -167,21 +167,22 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         @Override
         public void fillColumnValue(Element cell, Document value) {
             StringBuilder html = new StringBuilder();
+            String valueName = sanitizeHtml(value.getName());
 
             if (value.isDeprecatedUnit()) {
                 html
                         .append("<div class =\"document-name text-overflow-dynamic-container\">")
                         .append("<i class=\"fa fa-lock m-r-5\" id=\"" + DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.TABLE.LOCK_ICON + "\"></i> ")
-                        .append("<span class=\"text-overflow-dynamic-ellipsis m-l-20\">" + value.getName() + "</span>")
+                        .append("<span class=\"text-overflow-dynamic-ellipsis m-l-20\">" + valueName + "</span>")
                         .append("</div>");
             } else {
                 html
                         .append( "<div class=\"document-name text-overflow-dynamic-container\">")
-                        .append("<span class=\"text-overflow-dynamic-ellipsis\">" + value.getName() + "</span>")
+                        .append("<span class=\"text-overflow-dynamic-ellipsis\">" + valueName + "</span>")
                         .append("</div>");
             }
 
-            cell.setInnerHTML(sanitizeHtml(html.toString()));
+            cell.setInnerHTML(html.toString());
 
             if (value.isDeprecatedUnit()) {
                 cell.addClassName("deprecated-entity");
