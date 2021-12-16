@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -24,10 +25,13 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.Locale.forLanguageTag;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static ru.protei.portal.core.model.dict.En_Privilege.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.util.CrmConstants.LocaleTags.EN;
+import static ru.protei.portal.core.model.util.CrmConstants.LocaleTags.RU;
 
 /**
  * Сервис выполняющий первичную инициализацию, работу с исправлением данных
@@ -114,7 +118,44 @@ public class BootstrapServiceImpl implements BootstrapService {
         /**
          *  end Спринт */
 
+        /**
+         * begin Спринт 85 */
+        if (!bootstrapAppDAO.isActionExists("addIssueGroupManagerId")) {
+            this.addIssueGroupManagerId();
+            bootstrapAppDAO.createAction("addIssueGroupManagerId");
+        }
+        /**
+         *  end Спринт */
+
         log.info( "bootstrapApplication(): BootstrapService complete."  );
+    }
+
+    private void addIssueGroupManagerId() {
+        log.debug("addIssueGroupManagerId(): start");
+
+        String bundle = "dashboardTableFilterCreationNewIssues";
+        String ruFilterName = lang.getFor(forLanguageTag(RU)).get(bundle);
+        String enFilterName = lang.getFor(forLanguageTag(EN)).get(bundle);
+        List<CaseFilter> filters = caseFilterDAO.getListByCondition("params like ? and type = ? and (name = ? or name = ?)",
+                                                                    "%managerIds%", En_CaseFilterType.CASE_OBJECTS.name(),
+                                                                    ruFilterName, enFilterName);
+        for (CaseFilter filter: filters) {
+            try {
+                CaseQuery query = objectMapper.readValue(filter.getParams(), CaseQuery.class);
+                List<Long> managerIds = query.getManagerIds();
+                if (managerIds.contains(CrmConstants.Employee.UNDEFINED)) {
+                    managerIds.add(CrmConstants.Employee.GROUP_MANAGER);
+                    query.setManagerIds(managerIds);
+                    filter.setParams(objectMapper.writeValueAsString(query));
+                    caseFilterDAO.partialMerge(filter, "params");
+                    log.info("addIssueGroupManagerId(): filter with id={} updated", filter.getId());
+                }
+            } catch (IOException e) {
+                log.warn("addIssueGroupManagerId(): cannot update filter with id={}", filter.getId());
+            }
+        }
+
+        log.debug("addIssueGroupManagerId(): finish");
     }
 
     private void setProbationPeriodEndDateForProbationNotExpired() {
@@ -507,6 +548,8 @@ public class BootstrapServiceImpl implements BootstrapService {
     CardTypeDAO cardTypeDAO;
     @Autowired
     UserRoleDAO userRoleDAO;
+    @Autowired
+    Lang lang;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 }

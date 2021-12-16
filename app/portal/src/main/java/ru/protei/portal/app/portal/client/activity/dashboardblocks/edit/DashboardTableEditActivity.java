@@ -27,10 +27,7 @@ import ru.protei.portal.ui.common.client.service.UserLoginControllerAsync;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -168,7 +165,7 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
     private CaseQuery generateQueryNewIssues() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
         query.setStateIds(CaseStateUtils.getNewStateIds());
-        query.setManagerIds(Collections.singletonList(CrmConstants.Employee.UNDEFINED));
+        query.setManagerIds(Arrays.asList(CrmConstants.Employee.UNDEFINED, CrmConstants.Employee.GROUP_MANAGER));
         if (policyService.getProfile() != null) {
             query.setManagerCompanyIds(new ArrayList<>(Collections.singletonList(policyService.getUserCompany().getId())));
         }

@@ -42,6 +42,7 @@ public class CrmConstants {
 
     public interface Employee {
         Long UNDEFINED = -1L;
+        Long GROUP_MANAGER = -2L;
     }
 
     public interface Region {
