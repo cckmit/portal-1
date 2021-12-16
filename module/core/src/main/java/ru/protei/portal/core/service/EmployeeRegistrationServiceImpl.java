@@ -1,15 +1,17 @@
 package ru.protei.portal.core.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
-
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -21,13 +23,15 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
-import static ru.protei.portal.api.struct.Result.error;
-import static ru.protei.portal.api.struct.Result.ok;
 
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
+
+    private static Logger log = LoggerFactory.getLogger(EmployeeRegistrationServiceImpl.class);
 
     @Autowired
     EmployeeRegistrationDAO employeeRegistrationDAO;
@@ -227,6 +231,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         ).toString();
 
         final String USER_SUPPORT_PROJECT_NAME = portalConfig.data().youtrack().getSupportProject();
+        if (StringUtils.isEmpty(USER_SUPPORT_PROJECT_NAME)){
+            log.error("createAdminYoutrackIssueIfNeeded(): no Youtrack support project specified, YT issue will not be created!");
+        }
 
         return youtrackService.createIssue( USER_SUPPORT_PROJECT_NAME, summary, description ).ifOk( issueId ->
                 saveCaseLink( employeeRegistration.getId(), issueId )
