@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.delivery.client.view.pcborder.table.column;
 
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.PcbOrder;
@@ -19,23 +20,34 @@ public class OrderDateColumn extends ClickColumn<PcbOrder> {
 
     @Override
     protected void fillColumnHeader(Element columnHeader) {
-        columnHeader.addClassName("order-date");
-        columnHeader.setInnerText(lang.pcbOrderOrderDate());
+        columnHeader.addClassName("date");
+        columnHeader.setInnerText(lang.pcbOrderDate());
     }
 
     @Override
     public void fillColumnValue(Element cell, PcbOrder pcbOrder) {
-        cell.addClassName("order-date");
+        cell.addClassName("date");
         if (pcbOrder == null) {
             return;
         }
 
-        Date date = pcbOrder.getOrderDate();
-        if (date == null) {
-            return;
-        }
+        com.google.gwt.dom.client.Element orderDateElement = DOM.createElement("p");
+        orderDateElement.addClassName("order-date");
+        Date orderDate = pcbOrder.getOrderDate();
+        orderDateElement.setInnerHTML(lang.pcbOrderOrderDate() + ": " + formatDateOnly(orderDate));
+        cell.appendChild(orderDateElement);
 
-        cell.setInnerHTML(formatDateOnly(date));
+        com.google.gwt.dom.client.Element orderReadyDateElement = DOM.createElement("p");
+        orderReadyDateElement.addClassName("ready-date");
+        Date readyDate = pcbOrder.getReadyDate();
+        orderReadyDateElement.setInnerHTML(lang.pcbOrderReadyDate() + ": " + formatDateOnly(readyDate));
+        cell.appendChild(orderReadyDateElement);
+
+        com.google.gwt.dom.client.Element orderReceiptDateElement = DOM.createElement("p");
+        orderReceiptDateElement.addClassName("receipt-date");
+        Date receiptDate = pcbOrder.getReceiptDate();
+        orderReceiptDateElement.setInnerHTML(lang.pcbOrderReceiptDate() + ": " + formatDateOnly(receiptDate));
+        cell.appendChild(orderReceiptDateElement);
     }
 
     Lang lang;
