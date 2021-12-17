@@ -3956,6 +3956,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String pcbOrderAmount();
 
+    String pcbOrderOrderDate();
+
     String pcbOrderReceiptDate();
 
     String pcbOrderReadyDate();

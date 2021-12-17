@@ -35,12 +35,12 @@ public class NameColumn extends ClickColumn<PcbOrder> {
             return;
         }
 
-        com.google.gwt.dom.client.Element stateElement = DOM.createElement("i");
-        stateElement.addClassName("label");
-        En_PcbOrderState state = pcbOrder.getState();
-        stateElement.getStyle().setBackgroundColor(state == null ? null : state.getColor());
-        stateElement.setInnerText(state == null ? null : stateLang.getStateName(state));
-        cell.appendChild(stateElement);
+        com.google.gwt.dom.client.Element promptnessElement = DOM.createElement("i");
+        promptnessElement.addClassName("label");
+        En_PcbOrderPromptness promptness = pcbOrder.getPromptness();
+        promptnessElement.getStyle().setBackgroundColor(promptness == null ? null : promptness.getColor());
+        promptnessElement.setInnerText(promptness == null ? null : promptnessLang.getName(promptness));
+        cell.appendChild(promptnessElement);
 
         com.google.gwt.dom.client.Element nameElement = DOM.createElement("p");
         nameElement.addClassName("name-size");
@@ -52,12 +52,14 @@ public class NameColumn extends ClickColumn<PcbOrder> {
         nameElement.setInnerText(sb.toString());
         cell.appendChild(nameElement);
 
-        com.google.gwt.dom.client.Element promptnessElement = DOM.createElement("p");
-        promptnessElement.addClassName("label");
-        En_PcbOrderPromptness promptness = pcbOrder.getPromptness();
-        promptnessElement.getStyle().setBackgroundColor(promptness == null ? null : promptness.getColor());
-        promptnessElement.setInnerText(promptness == null ? null : promptnessLang.getName(promptness));
-        cell.appendChild(promptnessElement);
+        com.google.gwt.dom.client.Element stateElement = DOM.createElement("p");
+        stateElement.addClassName("label");
+        En_PcbOrderState state = pcbOrder.getState();
+        stateElement.getStyle().setBackgroundColor(state == null ? null : state.getColor());
+        stateElement.setInnerText(state == null ? null : stateLang.getStateName(state));
+        cell.appendChild(stateElement);
+
+
 
     }
 

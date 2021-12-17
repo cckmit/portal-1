@@ -34,19 +34,19 @@ public class OrderDateColumn extends ClickColumn<PcbOrder> {
         com.google.gwt.dom.client.Element orderDateElement = DOM.createElement("p");
         orderDateElement.addClassName("order-date");
         Date orderDate = pcbOrder.getOrderDate();
-        orderDateElement.setInnerText(ORDER_DATE + formatDateOnly(orderDate));
+        orderDateElement.setInnerHTML(lang.pcbOrderOrderDate() + ": " + formatDateOnly(orderDate));
         cell.appendChild(orderDateElement);
 
         com.google.gwt.dom.client.Element orderReadyDateElement = DOM.createElement("p");
         orderReadyDateElement.addClassName("ready-date");
         Date readyDate = pcbOrder.getReadyDate();
-        orderReadyDateElement.setInnerText(READY_DATE + formatDateOnly(readyDate));
+        orderReadyDateElement.setInnerHTML(lang.pcbOrderReadyDate() + ": " + formatDateOnly(readyDate));
         cell.appendChild(orderReadyDateElement);
 
         com.google.gwt.dom.client.Element orderReceiptDateElement = DOM.createElement("p");
         orderReceiptDateElement.addClassName("receipt-date");
         Date receiptDate = pcbOrder.getReceiptDate();
-        orderReceiptDateElement.setInnerText(RECEIPT_DATE + formatDateOnly(receiptDate));
+        orderReceiptDateElement.setInnerHTML(lang.pcbOrderReceiptDate() + ": " + formatDateOnly(receiptDate));
         cell.appendChild(orderReceiptDateElement);
     }
 
