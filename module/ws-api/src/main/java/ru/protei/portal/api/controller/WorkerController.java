@@ -1733,6 +1733,7 @@ public class WorkerController {
 
         PersonQuery personQuery = new PersonQuery();
         personQuery.setEmail(email);
+        personQuery.setDeleted(false);
         List<Person> employeeByEmail = personDAO.getPersons(personQuery);
 
         if (CollectionUtils.isNotEmpty(employeeByEmail)){
@@ -1740,10 +1741,8 @@ public class WorkerController {
                 return true;
             }
 
-            if (employeeByEmail.stream()
-                    .noneMatch(personFromDB -> personFromDB.getId().equals(personId))){
-                return true;
-            }
+            return (employeeByEmail.stream()
+                    .anyMatch(personFromDB -> !personFromDB.getId().equals(personId)));
         }
 
         return false;
