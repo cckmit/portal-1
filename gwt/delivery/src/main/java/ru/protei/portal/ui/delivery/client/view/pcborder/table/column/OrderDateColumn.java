@@ -51,8 +51,4 @@ public class OrderDateColumn extends ClickColumn<PcbOrder> {
     }
 
     Lang lang;
-    private final String ORDER_DATE = "Дата заказа: ";
-    private final String READY_DATE = "Дата готовности: ";
-    private final String RECEIPT_DATE = "Дата получения: ";
-
 }
