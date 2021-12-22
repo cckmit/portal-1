@@ -161,11 +161,11 @@ public class WorkerController {
                     });
 
         } catch (NullPointerException e){
-            logger.error("error while get worker", En_ErrorCode.UNKNOWN_WOR.getMessage());
+            logger.error("error while get worker = {}", En_ErrorCode.UNKNOWN_WOR.getMessage());
             return error(En_ResultStatus.INCORRECT_PARAMS,  En_ErrorCode.UNKNOWN_WOR.getMessage());
         }
         catch (Throwable e) {
-            logger.error("error while get worker", e.toString());
+            logger.error("error while get worker = {}", e.toString());
             return error(En_ResultStatus.INTERNAL_ERROR,  e.toString());
         }
     }
@@ -1528,7 +1528,13 @@ public class WorkerController {
                         workerEntryDAO.remove(worker);
 
                         if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
-                            person.setFired(rec.isFired(), HelperFunc.isNotEmpty(rec.getFireDate()) ? HelperService.DATE.parse(rec.getFireDate()) : null);
+                            if (rec.isFired() && HelperFunc.isNotEmpty(rec.getFireDate())) {
+                                Date firedDate = HelperService.DATE.parse(rec.getFireDate());
+                                Date now = new Date();
+                                person.setFired(now.after(firedDate));
+                            } else {
+                                person.setFired(rec.isFired(), null);
+                            }
                             person.setDeleted(rec.isDeleted());
                             person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
 
