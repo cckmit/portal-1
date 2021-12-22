@@ -1531,7 +1531,7 @@ public class WorkerController {
                             if (rec.isFired() && HelperFunc.isNotEmpty(rec.getFireDate())) {
                                 Date firedDate = HelperService.DATE.parse(rec.getFireDate());
                                 Date now = new Date();
-                                person.setFired(now.after(firedDate));
+                                person.setFired(firedDate.before(now));
                             } else {
                                 person.setFired(rec.isFired(), null);
                             }

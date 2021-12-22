@@ -28,4 +28,6 @@ public interface PortalScheduleTasks {
     void notifyAboutBirthdays();
 
     void notifyExpiringTechnicalSupportValidity();
+    
+    void updateFiredPersonByDate();
 }

@@ -29,11 +29,19 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
  * Сервис управления person
  */
 public class PersonServiceImpl implements PersonService {
-
+    private static final Logger log = LoggerFactory.getLogger(PersonServiceImpl.class);
     @Autowired
     PersonDAO personDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    AuthService authService;
+    @Autowired
+    PolicyService policyService;
+    @Autowired
+    CompanyService companyService;
+    @Autowired
+    PersonShortViewDAO personShortViewDAO;
 
     @Override
     public Result<Person> getPerson(AuthToken token, Long personId) {
@@ -102,6 +110,16 @@ public class PersonServiceImpl implements PersonService {
         return ok(person);
     }
 
+    @Override
+    public Result<Void> updateFiredByDate(Date now) {
+        List<Person> personForFireByDate = personDAO.getPersonForFireByDate(now);
+        personForFireByDate.forEach(person -> {
+            person.setFired(true);
+            personDAO.partialMerge(person, Person.Columns.IS_FIRED);
+        });
+        return ok();
+    }
+
     private Result<PersonQuery> fillQueryByScope(AuthToken token, PersonQuery personQuery) {
         if (policyService.hasSystemScope(token.getRoles())) {
             return ok(personQuery);
@@ -128,15 +146,4 @@ public class PersonServiceImpl implements PersonService {
         log.info("fillQueryByScope(): PersonQuery modified: {}", personQuery);
         return ok(personQuery);
     }
-
-    @Autowired
-    AuthService authService;
-    @Autowired
-    PolicyService policyService;
-    @Autowired
-    CompanyService companyService;
-    @Autowired
-    PersonShortViewDAO personShortViewDAO;
-    private static final Logger log = LoggerFactory.getLogger(PersonServiceImpl.class);
-
 }

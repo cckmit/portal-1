@@ -47,4 +47,6 @@ public interface PersonDAO extends PortalBaseDAO<Person> {
      * @return
      */
     Map<Long,Long> mapLegacyId ();
+    
+    List<Person> getPersonForFireByDate(Date now);
 }
