@@ -44,6 +44,10 @@
                     <b><ui:text from="{lang.accountLogin}:"/></b>
                     <span ui:field="login"/>
                 </div>
+                <div class="small">
+                    <b><ui:text from="{lang.restVacationDays}:"/></b>
+                    <span ui:field="restVacationDays"/>
+                </div>
             </div>
 
             <div ui:field="absencesPanel" class="row hide">

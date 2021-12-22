@@ -35,6 +35,7 @@ import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemAct
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 
@@ -154,6 +155,9 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         view.setIP(employee.getIpAddress());
 
         requestLogins(employee.getId());
+        requestRestVacationDays(employee.getWorkerEntries().stream()
+                                                           .map(entry -> entry.getWorkerExtId())
+                                                           .collect(Collectors.toList()));
 
         showAbsences(employee.getId());
     }
@@ -183,6 +187,12 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
                 .withSuccess(userLoginShortViews ->
                         view.setLogins(
                                 joining(userLoginShortViews, ", ", UserLoginShortView::getUlogin))));
+    }
+
+    private void requestRestVacationDays(List<String> workerExtId) {
+        employeeService.getEmployeeRestVacationDays(workerExtId,
+                new FluentCallback<String>()
+                        .withSuccess(restVacationDaysResult -> view.setRestVacationDays(restVacationDaysResult)));
     }
 
     private AbstractPositionItemView makePositionView(WorkerEntryShortView workerEntry, PersonShortView head) {

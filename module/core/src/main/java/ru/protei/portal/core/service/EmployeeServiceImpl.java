@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.client.enterprise1c.api.Api1C;
 import ru.protei.portal.core.event.BirthdaysNotificationEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
@@ -107,6 +108,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     EventPublisherService publisherService;
     @Autowired
     CompanyService companyService;
+    @Autowired
+    Api1C api1CService;
 
     private Pattern workPhone = Pattern.compile(WORK_PHONE_NUMBER_PATTERN);
     private Pattern mobilePhone = Pattern.compile(RUS_PHONE_NUMBER_PATTERN);
@@ -552,6 +555,32 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         log.info("notifyAboutBirthdays(): done");
         return ok();
+    }
+
+    @Override
+    public Result<String> getEmployeeRestVacationDays(AuthToken token, List<String> workerExtIds) {
+        log.info("getEmployeeRestVacationDays(): start");
+
+        if (CollectionUtils.isEmpty(workerExtIds)) {
+            log.error("getEmployeeRestVacationDays(): workerExtIds is empty");
+            return ok();
+        }
+
+        Double restVacationDays = null;
+        for (String workerExtId: workerExtIds) {
+            Result<String> result = api1CService.getEmployeeRestVacationDays(workerExtId);
+            double days = Double.parseDouble(result.getData());
+            restVacationDays = restVacationDays == null ? days
+                                                        : restVacationDays + days;
+        }
+
+        if (restVacationDays == null) {
+            log.error("getEmployeeRestVacationDays(): restVacationDays is empty");
+            return ok();
+        }
+
+        log.info("getEmployeeRestVacationDays(): done");
+        return ok(String.valueOf(restVacationDays));
     }
 
     private List<NotificationEntry> makeNotificationListFromConfiguration() {

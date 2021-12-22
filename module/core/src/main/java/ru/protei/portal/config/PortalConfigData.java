@@ -807,6 +807,7 @@ public class PortalConfigData {
     public static class Enterprise1CConfig {
         private final String apiBaseProteiUrl;
         private final String apiBaseProteiStUrl;
+        private final String apiBaseProteiStZiupCopyUrl;
         private final String login;
         private final String password;
         private final String parentKeyST;
@@ -821,6 +822,7 @@ public class PortalConfigData {
         public Enterprise1CConfig(PropertiesWrapper properties) {
             apiBaseProteiUrl = properties.getProperty("enterprise1c.api.base_protei_url");
             apiBaseProteiStUrl = properties.getProperty("enterprise1c.api.base_protei_st_url");
+            apiBaseProteiStZiupCopyUrl = properties.getProperty("enterprise1c.api.base_protei_ziup_copy_url");
             login = properties.getProperty("enterprise1c.api.login");
             password = properties.getProperty("enterprise1c.api.password");
             parentKeyST = properties.getProperty("enterprise1c.api.parent_key_st");
@@ -839,6 +841,10 @@ public class PortalConfigData {
 
         public String getApiBaseProteiStUrl() {
             return apiBaseProteiStUrl;
+        }
+
+        public String getApiBaseProteiStZiupCopyUrl() {
+            return apiBaseProteiStZiupCopyUrl;
         }
 
         public String getLogin() {

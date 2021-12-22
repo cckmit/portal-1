@@ -43,6 +43,11 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     }
 
     @Override
+    public void setRestVacationDays(String restVacationDays) {
+        this.restVacationDays.setInnerText(restVacationDays);
+    }
+
+    @Override
     public void setPhotoUrl(String url) {
         photo.setUrl(url);
     }
@@ -142,6 +147,9 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
 
     @UiField
     SpanElement login;
+
+    @UiField
+    SpanElement restVacationDays;
 
     @UiField
     Image photo;

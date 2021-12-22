@@ -29,7 +29,6 @@ import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -179,6 +178,20 @@ public class Api1CImpl implements Api1C{
         return ok(checkResident(contractor, homeCompanyName));
     }
 
+    @Override
+    public Result<String> getEmployeeRestVacationDays(String workerExtId) {
+        log.debug("workerExtId={}", workerExtId);
+
+        if (workerExtId == null){
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        return client.read(buildGetRestVacationDaysByKeyUrl(workerExtId), Response1C.class)
+                .ifOk( value -> log.info( "buildGetRestVacationDaysByKeyUrl(): OK " ) )
+                .ifError( result -> log.warn( "buildGetRestVacationDaysByKeyUrl(): Can`t get restVacationDays={}. {}", workerExtId, result ))
+                .map(response -> jsonMapper.convertValue(response.getValue(), new TypeReference<String>() {}));
+    }
+
     private void prepareContractProperties(Contract1C contract, String homeCompanyName) {
         if (CollectionUtils.isNotEmpty(contract.getAdditionalProperties())) {
             for (int i = 0; i < contract.getAdditionalProperties().size(); i++) {
@@ -316,6 +329,12 @@ public class Api1CImpl implements Api1C{
     private String buildGetContractByKeyUrl(Contract1C contract, String homeCompanyName){
         String url = buildCommonUrl(contract.getClass(), homeCompanyName, contract.getRefKey());
         log.debug("buildGetContractByKeyUrl(): url={}", url);
+        return url;
+    }
+
+    private String buildGetRestVacationDaysByKeyUrl(String workerExtId){
+        String url = config.data().enterprise1C().getApiBaseProteiStZiupCopyUrl() + "/" + workerExtId;
+        log.debug("buildGetRestVacationDaysByKeyUrl(): url={}", url);
         return url;
     }
 

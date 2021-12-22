@@ -27,6 +27,8 @@ public interface AbstractEmployeePreviewView extends IsWidget {
 
     void setLogins(String logins);
 
+    void setRestVacationDays(String restVacationDays);
+
     HasVisibility birthdayContainerVisibility();
 
     HasVisibility phonesContainerVisibility();
