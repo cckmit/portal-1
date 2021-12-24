@@ -214,6 +214,6 @@ public class WorkerEntry extends AuditableObject {
     }
 
     public interface Columns {
-        String FIRED_FATE = "firedDate";
+        String FIRED_FATE = "fired_date";
     }
 }
