@@ -444,6 +444,11 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
+    public WorkerEntryService getWorkerEntryService() {
+        return new WorkerEntryServiceImpl();
+    }
+
+    @Bean
     public ReportCase getReportCase() {
         return new ReportCaseImpl();
     }

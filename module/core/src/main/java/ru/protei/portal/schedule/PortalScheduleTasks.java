@@ -29,5 +29,5 @@ public interface PortalScheduleTasks {
 
     void notifyExpiringTechnicalSupportValidity();
     
-    void updateFiredPersonByDate();
+    void updateFiredByDate();
 }

@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao;
 import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,4 +23,5 @@ public interface WorkerEntryDAO extends PortalBaseDAO<WorkerEntry> {
     List< WorkerEntry > getWorkers(WorkerEntryQuery query);
     List< WorkerEntry > getWorkersByDepartment(Long depId);
     Long getDepIdForWorker(Long workerId);
+    List<WorkerEntry> getForFireByDate(Date now);
 }

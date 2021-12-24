@@ -7,7 +7,6 @@ import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +23,4 @@ public interface PersonService {
     Result<List<PersonShortView>> shortViewListByIds(List<Long> ids);
     Result<Map<Long, String>> getPersonNames(AuthToken token, Collection<Long> ids);
     Result<Person> getCommonManagerByProductId(AuthToken authToken, Long productId);
-
-    Result<Void> updateFiredByDate(Date now);
 }

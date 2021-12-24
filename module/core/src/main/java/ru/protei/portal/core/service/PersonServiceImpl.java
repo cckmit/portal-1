@@ -110,16 +110,6 @@ public class PersonServiceImpl implements PersonService {
         return ok(person);
     }
 
-    @Override
-    public Result<Void> updateFiredByDate(Date now) {
-        List<Person> personForFireByDate = personDAO.getPersonForFireByDate(now);
-        personForFireByDate.forEach(person -> {
-            person.setFired(true);
-            personDAO.partialMerge(person, Person.Columns.IS_FIRED);
-        });
-        return ok();
-    }
-
     private Result<PersonQuery> fillQueryByScope(AuthToken token, PersonQuery personQuery) {
         if (policyService.hasSystemScope(token.getRoles())) {
             return ok(personQuery);

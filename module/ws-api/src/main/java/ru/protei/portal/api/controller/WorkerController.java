@@ -1531,7 +1531,15 @@ public class WorkerController {
                             if (rec.isFired() && HelperFunc.isNotEmpty(rec.getFireDate())) {
                                 Date firedDate = HelperService.DATE.parse(rec.getFireDate());
                                 Date now = new Date();
-                                person.setFired(firedDate.before(now));
+                                if (firedDate.after(now)) {
+                                    worker.setFiredDate(firedDate);
+                                    workerEntryDAO.partialMerge(worker, WorkerEntry.Columns.FIRED_FATE);
+                                } else {
+                                    workerEntryDAO.remove(worker);
+                                    if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
+                                        person.setFired(true, firedDate);
+                                    }
+                                }
                             } else {
                                 person.setFired(rec.isFired(), null);
                             }

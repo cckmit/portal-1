@@ -84,7 +84,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         // at 05:00:00 am every MONDAY
         scheduler.schedule(this::processScheduledMailReportsWeekly, new CronTrigger( "0 0 5 * * MON"));
         // at 04:04:00 am every day
-        scheduler.schedule(this::updateFiredPersonByDate, new CronTrigger( "0 04 4 * * ?"));
+        scheduler.schedule(this::updateFiredByDate, new CronTrigger( "0 04 4 * * ?"));
 
         scheduleNotificationsAboutPauseTime();
     }
@@ -178,9 +178,9 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     }
 
     @Override
-    public void updateFiredPersonByDate() {
-        log.info( "updateFiredPersonByDate" );
-        personService.updateFiredByDate(new Date());
+    public void updateFiredByDate() {
+        log.info( "updateFiredByDate" );
+        workerEntryService.updateFiredByDate(new Date());
     }
 
     private boolean isNotConfiguredSystemId() {
@@ -224,7 +224,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     @Autowired
     EmployeeRegistrationYoutrackSynchronizer employeeRegistrationYoutrackSynchronizer;
     @Autowired
-    PersonService personService;
+    WorkerEntryService workerEntryService;
 
     private static AtomicBoolean isPortalStarted = new AtomicBoolean(false);
     private static AtomicInteger contextRefreshedEventCounter = new AtomicInteger(0);
