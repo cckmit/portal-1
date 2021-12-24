@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.ContractService;
 import ru.protei.portal.core.service.ProjectService;
+import ru.protei.portal.core.service.WorkerEntryService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -446,4 +447,6 @@ public class BaseServiceTest {
     protected PlanDAO planDAO;
     @Autowired
     protected ContractService contractService;
+    @Autowired
+    protected WorkerEntryService workerEntryService;
 }

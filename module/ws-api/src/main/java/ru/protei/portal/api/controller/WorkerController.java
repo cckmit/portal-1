@@ -1542,6 +1542,9 @@ public class WorkerController {
                                 }
                             } else {
                                 person.setFired(rec.isFired(), null);
+                                if (rec.isFired()) {
+                                    workerEntryDAO.remove(worker);
+                                }
                             }
                             person.setDeleted(rec.isDeleted());
                             person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));

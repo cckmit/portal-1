@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static ru.protei.portal.core.model.ent.WorkerEntry.*;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 /**
@@ -91,7 +90,7 @@ public class WorkerEntryDAO_Impl extends PortalBaseJdbcDAO<WorkerEntry> implemen
     @Override
     public List<WorkerEntry> getForFireByDate(Date now) {
         Query q = query()
-                .where(Columns.FIRED_FATE).le(now)
+                .where(WorkerEntry.Columns.FIRED_FATE).le(now)
                 .asQuery();
         return getListByCondition( q.buildSql(), q.args());
     }
