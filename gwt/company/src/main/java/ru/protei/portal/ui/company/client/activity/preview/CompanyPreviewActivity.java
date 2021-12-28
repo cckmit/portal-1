@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_ContactEmailSubscriptionType;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
@@ -117,11 +118,15 @@ public abstract class CompanyPreviewActivity
     }
 
     private void setSubscriptionEmails(List<CompanySubscription> subscriptions, Company company) {
-        List<ContactItem> probationContacts = company.getContactInfo().getItems(En_ContactItemType.EMAIL).stream()
-                .filter(ContactItem::isInternalItem)
+        List<ContactItem> employeeRegistrationContacts = company.getContactInfo().getItems(En_ContactItemType.EMAIL).stream()
+                .filter(ContactItem::isSubscribedToTheEmployeeRegistration)
                 .collect(Collectors.toList());
 
-        if (probationContacts.isEmpty() && subscriptions.isEmpty()) {
+        List<ContactItem> probationContacts = company.getContactInfo().getItems(En_ContactItemType.EMAIL).stream()
+                .filter(ContactItem::isSubscribedToTheEndOfProbation)
+                .collect(Collectors.toList());
+
+        if (probationContacts.isEmpty() && subscriptions.isEmpty() && employeeRegistrationContacts.isEmpty()) {
             view.setSubscriptionEmails(lang.issueCompanySubscriptionNotDefined());
             return;
         }
@@ -141,9 +146,14 @@ public abstract class CompanyPreviewActivity
             }
         }
 
-        if (!probationContacts.isEmpty()) {
-            subscriptionsHTML += generateProbationEmailsHTML(probationContacts);
+        if (!employeeRegistrationContacts.isEmpty()) {
+            subscriptionsHTML += generateAdditionalEmailsHTML(employeeRegistrationContacts, En_ContactEmailSubscriptionType.SUBSCRIPTION_TO_EMPLOYEE_REGISTRATION);
         }
+
+        if (!probationContacts.isEmpty()) {
+            subscriptionsHTML += generateAdditionalEmailsHTML(probationContacts, En_ContactEmailSubscriptionType.SUBSCRIPTION_TO_END_OF_PROBATION);
+        }
+
 
         view.setSubscriptionEmails(subscriptionsHTML);
     }
@@ -204,19 +214,32 @@ public abstract class CompanyPreviewActivity
         groupsMap.put(Pair.of(null, null), new ArrayList<>());
     }
 
-    private String generateProbationEmailsHTML(List<ContactItem> probationContacts) {
-        StringBuilder probationEmailsHTML = new StringBuilder();
+    private String generateAdditionalEmailsHTML(List<ContactItem> contactItems, En_ContactEmailSubscriptionType subscriptionType) {
+        StringBuilder additionalEmailsHTML = new StringBuilder();
 
-        probationEmailsHTML.append("<br/>")
+        additionalEmailsHTML.append("<br/>")
                 .append("<b>")
-                .append(lang.companyProbationPeriodAddresses())
-                .append("</b> ")
+                .append(generateAdditionalSubscriptionTypeString(subscriptionType))
+                .append("</b>")
                 .append(": ")
-                .append(probationContacts.stream()
+                .append(contactItems.stream()
                         .map(ContactItem::value)
                         .filter(StringUtils::isNotEmpty)
                         .collect(Collectors.joining(", ")));
-        return probationEmailsHTML.toString();
+        return additionalEmailsHTML.toString();
+    }
+
+    private String generateAdditionalSubscriptionTypeString(En_ContactEmailSubscriptionType subscriptionType) {
+        StringBuilder sb = new StringBuilder();
+        switch (subscriptionType) {
+            case SUBSCRIPTION_TO_EMPLOYEE_REGISTRATION:
+                sb.append(lang.companyEmployeeRegistrationAddresses());
+                break;
+            case SUBSCRIPTION_TO_END_OF_PROBATION:
+                sb.append(lang.companyProbationPeriodAddresses());
+                break;
+        }
+        return sb.toString();
     }
 
     @Inject

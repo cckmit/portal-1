@@ -5,15 +5,11 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
-import ru.protei.portal.core.model.dict.En_ContactDataAccess;
-import ru.protei.portal.core.model.dict.En_ContactItemType;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ContactInfo;
-import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -29,7 +25,6 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
@@ -222,14 +217,26 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.probationEmailsContainerVisibility().setVisible(En_CompanyCategory.HOME.equals(company.getCategory()));
 
         contactItemViews = new ArrayList<>();
-        fireEvent(new ContactItemEvents.ShowList(view.phonesContainer(), company.getContactInfo().getItems(), ALLOWED_PHONE_TYPES,
-                                                 En_ContactDataAccess.PUBLIC, contactItemViews, CrmConstants.Masks.ALL_CHARACTERS));
-        fireEvent(new ContactItemEvents.ShowList(view.emailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES,
-                                                 En_ContactDataAccess.PUBLIC, contactItemViews, CrmConstants.Masks.EMAIL));
-        fireEvent(new ContactItemEvents.ShowList(view.probationEmailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES,
-                                                 En_ContactDataAccess.INTERNAL, contactItemViews, CrmConstants.Masks.EMAIL));
-        fireEvent(new ContactItemEvents.ShowList(view.employeeRegistrationEmailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES,
-                                                 En_ContactDataAccess.INTERNAL, contactItemViews, CrmConstants.Masks.EMAIL)); // TODO: Продумать этот момент
+        fireEvent(new ContactItemEvents.ShowList(
+                view.phonesContainer(), company.getContactInfo().getItems(), ALLOWED_PHONE_TYPES,
+                En_ContactDataAccess.PUBLIC, En_ContactEmailSubscriptionType.WITHOUT_SUBSCRIPTION,
+                contactItemViews, CrmConstants.Masks.ALL_CHARACTERS)
+        );
+        fireEvent(new ContactItemEvents.ShowList(
+                view.emailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES,
+                En_ContactDataAccess.PUBLIC, En_ContactEmailSubscriptionType.WITHOUT_SUBSCRIPTION ,
+                contactItemViews, CrmConstants.Masks.EMAIL)
+        );
+        fireEvent(new ContactItemEvents.ShowList(
+                view.probationEmailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES,
+                En_ContactDataAccess.INTERNAL, En_ContactEmailSubscriptionType.SUBSCRIPTION_TO_END_OF_PROBATION,
+                contactItemViews, CrmConstants.Masks.EMAIL)
+        );
+        fireEvent(new ContactItemEvents.ShowList(
+                view.employeeRegistrationEmailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES,
+                En_ContactDataAccess.INTERNAL, En_ContactEmailSubscriptionType.SUBSCRIPTION_TO_EMPLOYEE_REGISTRATION,
+                contactItemViews, CrmConstants.Masks.EMAIL)
+        );
 
         view.tableContainer().clear();
         if (company.getId() != null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {

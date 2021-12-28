@@ -114,4 +114,5 @@
   <include file="2021-20-21-remove-history_version-cdr_description-configuration-from-dev_unit.xml" relativeToChangelogFile="true"/>
   <include file="2021-10-29-create-pcb-order-table.xml" relativeToChangelogFile="true"/>
   <include file="2021-11-23-create-rfid-tables.xml" relativeToChangelogFile="true"/>
+  <include file="2021-12-16-add-subscription-type-to-contact-item-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

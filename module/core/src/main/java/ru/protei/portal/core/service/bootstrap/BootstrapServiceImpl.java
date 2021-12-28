@@ -114,7 +114,32 @@ public class BootstrapServiceImpl implements BootstrapService {
         /**
          *  end Спринт */
 
+        /**
+         * begin Спринт 85 */
+        if (!bootstrapAppDAO.isActionExists("setSubscriptionTypeToContactItems")) {
+            this.setSubscriptionTypeToContactItems();
+            bootstrapAppDAO.createAction("setSubscriptionTypeToContactItems");
+        }
+        /**
+         *  end Спринт */
+
+
         log.info( "bootstrapApplication(): BootstrapService complete."  );
+    }
+
+    private void setSubscriptionTypeToContactItems() {
+        log.debug("setSubscriptionTypeToContactItems(): start");
+
+        List<ContactItem> contactItems = contactItemDAO.getListByCondition(
+                "item_type = ? AND access_type = ?", En_ContactItemType.EMAIL.getId(), En_ContactDataAccess.INTERNAL.getId());
+        contactItems.forEach(item -> item.modify(En_ContactEmailSubscriptionType.SUBSCRIPTION_TO_END_OF_PROBATION));
+        contactItemDAO.saveOrUpdateBatch(contactItems);
+
+        List<ContactItem> contactItemsWithoutSubscription = contactItemDAO.getListByCondition("subscription_type is null");
+        contactItemsWithoutSubscription.forEach(item -> item.modify(En_ContactEmailSubscriptionType.WITHOUT_SUBSCRIPTION));
+        contactItemDAO.saveOrUpdateBatch(contactItemsWithoutSubscription);
+
+        log.debug("setSubscriptionTypeToContactItems(): finish");
     }
 
     private void setProbationPeriodEndDateForProbationNotExpired() {

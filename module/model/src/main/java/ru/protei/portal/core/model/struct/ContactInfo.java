@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
+import ru.protei.portal.core.model.dict.En_ContactEmailSubscriptionType;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 
 import java.io.Serializable;
@@ -50,6 +51,19 @@ public class ContactInfo implements Serializable, AbstractContactInfo {
     public List<ContactItem> getItems(En_ContactItemType type) {
         return itemList.stream()
                 .filter(contactItem -> contactItem != null && contactItem.isItemOf(type))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Возвращает список всех найденных элементов с типом подписки subscriptionType
+     * @param subscriptionType
+     * @return
+     */
+    @Override
+    @JsonIgnore
+    public List<ContactItem> getItems(En_ContactEmailSubscriptionType subscriptionType ) {
+        return itemList.stream()
+                .filter(contactItem -> contactItem !=null && contactItem.subscriptionType() == subscriptionType)
                 .collect(Collectors.toList());
     }
 

@@ -435,6 +435,8 @@ public class MailNotificationProcessor {
         EmployeeRegistration employeeRegistration = event.getNewState();
 
         Set<NotificationEntry> notifiers = subscriptionService.subscribers(event);
+        List<NotificationEntry> additionalNotifiers = event.getRegistrationSubscribers();
+        notifiers.addAll(additionalNotifiers);
         if (CollectionUtils.isEmpty(notifiers)) {
             return;
         }
