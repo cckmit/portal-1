@@ -165,7 +165,7 @@ public class WorkerController {
             return error(En_ResultStatus.INCORRECT_PARAMS,  En_ErrorCode.UNKNOWN_WOR.getMessage());
         }
         catch (Throwable e) {
-            logger.error("error while get worker = {}", e.toString());
+            logger.error("error while get worker", e);
             return error(En_ResultStatus.INTERNAL_ERROR,  e.toString());
         }
     }
@@ -1524,41 +1524,37 @@ public class WorkerController {
                     }
 
                     if (rec.isFired() || rec.isDeleted()) {
-
-                        workerEntryDAO.remove(worker);
-
-                        if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
-                            if (rec.isFired() && HelperFunc.isNotEmpty(rec.getFireDate())) {
-                                Date firedDate = HelperService.DATE.parse(rec.getFireDate());
-                                Date now = new Date();
-                                if (firedDate.after(now)) {
-                                    worker.setFiredDate(firedDate);
-                                    workerEntryDAO.partialMerge(worker, WorkerEntry.Columns.FIRED_FATE);
-                                } else {
-                                    workerEntryDAO.remove(worker);
-                                    if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
-                                        person.setFired(true, firedDate);
-                                    }
-                                }
+                        if (HelperFunc.isNotEmpty(rec.getFireDate())) {
+                            Date firedDate = HelperService.DATE.parse(rec.getFireDate());
+                            Date now = new Date();
+                            if (firedDate.after(now)) {
+                                worker.setFiredDate(firedDate);
+                                workerEntryDAO.partialMerge(worker, WorkerEntry.Columns.FIRED_FATE);
                             } else {
-                                person.setFired(rec.isFired(), null);
-                                if (rec.isFired()) {
-                                    workerEntryDAO.remove(worker);
+                                workerEntryDAO.remove(worker);
+                                if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
+                                    person.setFired(true, firedDate);
                                 }
                             }
-                            person.setDeleted(rec.isDeleted());
-                            person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
+                        } else {
+                            workerEntryDAO.remove(worker);
+                            if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
+                                person.setFired(rec.isFired(), null);
+                            }
+                        }
 
-                            if(isNotEmpty(userLogins)) {
-                                if (person.isDeleted()) {
-                                    for (UserLogin userLogin : userLogins) {
-                                        removeAccount(userLogin);
-                                    }
-                                } else {
-                                    for (UserLogin userLogin : userLogins) {
-                                        userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
-                                        saveAccount(userLogin);
-                                    }
+                        person.setDeleted(rec.isDeleted());
+                        person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
+
+                        if(isNotEmpty(userLogins)) {
+                            if (person.isDeleted()) {
+                                for (UserLogin userLogin : userLogins) {
+                                    removeAccount(userLogin);
+                                }
+                            } else {
+                                for (UserLogin userLogin : userLogins) {
+                                    userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
+                                    saveAccount(userLogin);
                                 }
                             }
                         }
