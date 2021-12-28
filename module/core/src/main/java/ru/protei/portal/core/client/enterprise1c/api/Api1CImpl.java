@@ -182,14 +182,10 @@ public class Api1CImpl implements Api1C{
     public Result<String> getEmployeeRestVacationDays(String workerExtId) {
         log.debug("workerExtId={}", workerExtId);
 
-        if (workerExtId == null){
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        return client.read(buildGetRestVacationDaysByKeyUrl(workerExtId), Response1C.class)
+        return client.read(buildGetRestVacationDaysByKeyUrl(workerExtId), Result.class)
                 .ifOk( value -> log.info( "buildGetRestVacationDaysByKeyUrl(): OK " ) )
                 .ifError( result -> log.warn( "buildGetRestVacationDaysByKeyUrl(): Can`t get restVacationDays={}. {}", workerExtId, result ))
-                .map(response -> jsonMapper.convertValue(response.getValue(), new TypeReference<String>() {}));
+                .getData();
     }
 
     private void prepareContractProperties(Contract1C contract, String homeCompanyName) {

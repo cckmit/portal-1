@@ -568,15 +568,22 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Double restVacationDays = null;
         for (String workerExtId: workerExtIds) {
-            Result<String> result = api1CService.getEmployeeRestVacationDays(workerExtId);
-            double days = Double.parseDouble(result.getData());
-            restVacationDays = restVacationDays == null ? days
-                                                        : restVacationDays + days;
+            if (workerExtId != null) {
+                Result<String> result = api1CService.getEmployeeRestVacationDays(workerExtId);
+                if (result != null && result.isOk()) {
+                    double days = Double.parseDouble(String.valueOf(result.getData()));
+                    restVacationDays = restVacationDays == null ? days : restVacationDays + days;
+                }
+            }
         }
 
         if (restVacationDays == null) {
-            log.error("getEmployeeRestVacationDays(): restVacationDays is empty");
+            log.warn("getEmployeeRestVacationDays(): restVacationDays is empty");
             return ok();
+        }
+
+        if (restVacationDays.equals(0.0)) {
+            return ok("0");
         }
 
         log.info("getEmployeeRestVacationDays(): done");
