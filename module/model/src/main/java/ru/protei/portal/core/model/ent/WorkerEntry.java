@@ -62,6 +62,11 @@ public class WorkerEntry extends AuditableObject {
     @JdbcColumn(name = Columns.FIRED_FATE)
     private Date firedDate;
 
+    @JdbcColumn(name = "is_deleted")
+    private Boolean isDeleted;
+
+    @JdbcColumn(name = "is_need_migration_at_fire")
+    private Boolean isNeedMigrationAtFire;
 
     @Override
     public String getAuditType() {
@@ -211,6 +216,22 @@ public class WorkerEntry extends AuditableObject {
 
     public void setFiredDate(Date firedDate) {
         this.firedDate = firedDate;
+    }
+
+    public Boolean getDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public Boolean getNeedMigrationAtFire() {
+        return isNeedMigrationAtFire;
+    }
+
+    public void setNeedMigrationAtFire(Boolean needMigrationAtFire) {
+        isNeedMigrationAtFire = needMigrationAtFire;
     }
 
     public interface Columns {

@@ -22,8 +22,7 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.struct.Photo;
-import ru.protei.portal.core.service.YoutrackService;
-import ru.protei.portal.core.service.YoutrackServiceImpl;
+import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
@@ -35,8 +34,6 @@ import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
-import ru.protei.portal.core.service.UitsService;
-import ru.protei.portal.core.service.UitsServiceImpl;
 
 import java.util.List;
 
@@ -197,6 +194,10 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     @Bean
     public LegacySystemDAO getLegacySystemDAO () { return new LegacySystemDAO(); }
 
+    @Bean
+    public WorkerEntryService getWorkerEntryService() {
+        return new WorkerEntryServiceImpl();
+    }
 /*
     @Bean
     public WorkerService createWorkerWebService () {

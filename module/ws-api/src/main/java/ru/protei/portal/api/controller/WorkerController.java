@@ -11,6 +11,7 @@ import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.api.struct.Workers;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -21,6 +22,7 @@ import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.*;
+import ru.protei.portal.core.service.WorkerEntryService;
 import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
@@ -106,6 +108,9 @@ public class WorkerController {
 
     @Autowired
     YoutrackService youtrackService;
+
+    @Autowired
+    WorkerEntryService workerEntryService;
 
     /**
      * Получить данные о физическом лице
@@ -357,9 +362,9 @@ public class WorkerController {
                     persistWorker(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
-                        Workers workers = new Workers(person.getId());
-                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : workers.requireWorkers().getActiveDepartment(operationData.department().getName());
-                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : workers.requireWorkers().getActivePosition(position.getName());
+                        Workers workers = new Workers(workerEntryDAO.getWorkers(new WorkerEntryQuery(person.getId())));
+                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : workers.getActiveDepartment(operationData.department().getName());
+                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : workers.getActivePosition(position.getName());
                         migrationManager.saveExternalEmployee(person, departmentName, positionName);
                     }
 
@@ -1403,55 +1408,6 @@ public class WorkerController {
         }
     }
 
-    public class Workers {
-
-        List<WorkerEntry> workers;
-        Long personId;
-
-        public Workers(Long personId) {
-            this.personId = personId;
-        }
-
-        public Workers requireWorkers() {
-            if (workers == null)
-                workers = workerEntryDAO.getWorkers(new WorkerEntryQuery(personId));
-
-            return this;
-        }
-
-        public String getActiveDepartment(String def) {
-            WorkerEntry activeEntry = getActiveEntry();
-            return activeEntry == null ? def : activeEntry.getDepartmentName();
-        }
-
-        public String getActivePosition(String def) {
-            WorkerEntry activeEntry = getActiveEntry();
-            return activeEntry == null ? def : activeEntry.getPositionName();
-        }
-
-        public String getAnyDepartment(String def) {
-            WorkerEntry anyEntry = getAnyEntry();
-            return anyEntry == null ? def : anyEntry.getDepartmentName();
-        }
-
-        public String getAnyPosition(String def) {
-            WorkerEntry anyEntry = getAnyEntry();
-            return anyEntry == null ? def : anyEntry.getPositionName();
-        }
-
-        private WorkerEntry getActiveEntry() {
-            return workers == null ? null : workers.stream().filter(WorkerEntry::isMain).findFirst().orElse(null);
-        }
-
-        private WorkerEntry getAnyEntry() {
-            return workers == null ? null : workers.stream().filter(WorkerEntry::isMain).findFirst().orElse(getFirstEntry());
-        }
-
-        private WorkerEntry getFirstEntry() {
-            return workers == null ? null : workers.stream().findFirst().orElse(null);
-        }
-    }
-
     private boolean checkAuth (HttpServletRequest request, HttpServletResponse response){
         Result<AuthToken> authTokenAPIResult = AuthUtils.authenticate(request, response, authService, sidGen, logger);
         if (authTokenAPIResult.isError()){
@@ -1524,48 +1480,33 @@ public class WorkerController {
                     }
 
                     if (rec.isFired() || rec.isDeleted()) {
+                        boolean immediately = false;
                         if (HelperFunc.isNotEmpty(rec.getFireDate())) {
                             Date firedDate = HelperService.DATE.parse(rec.getFireDate());
                             Date now = new Date();
                             if (firedDate.after(now)) {
                                 worker.setFiredDate(firedDate);
-                                workerEntryDAO.partialMerge(worker, WorkerEntry.Columns.FIRED_FATE);
+                                worker.setDeleted(rec.isDeleted());
+                                worker.setNeedMigrationAtFire(WSConfig.getInstance().isEnableMigration());
+                                workerEntryDAO.partialMerge(worker);
+
+                                logger.debug("success result, workerRowId={}", worker.getId());
                             } else {
-                                workerEntryDAO.remove(worker);
-                                if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
-                                    person.setFired(true, firedDate);
-                                }
+                                immediately = true;
                             }
                         } else {
+                            immediately = true;
+                        }
+
+                        if (immediately) {
                             workerEntryDAO.remove(worker);
                             if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
-                                person.setFired(rec.isFired(), null);
+                                return workerEntryService.firePerson(person, rec.isFired(), null, rec.isDeleted(), userLogins, WSConfig.getInstance().isEnableMigration())
+                                        .map(ignore -> {
+                                            logger.debug("success result, workerRowId={}", worker.getId());
+                                            return person.getId();
+                                        });
                             }
-                        }
-
-                        person.setDeleted(rec.isDeleted());
-                        person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
-
-                        if(isNotEmpty(userLogins)) {
-                            if (person.isDeleted()) {
-                                for (UserLogin userLogin : userLogins) {
-                                    removeAccount(userLogin);
-                                }
-                            } else {
-                                for (UserLogin userLogin : userLogins) {
-                                    userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
-                                    saveAccount(userLogin);
-                                }
-                            }
-                        }
-
-                        mergePerson(person);
-
-                        if (WSConfig.getInstance().isEnableMigration()) {
-                            Workers workers = new Workers(person.getId());
-                            String departmentName = workers.requireWorkers().getAnyDepartment("");
-                            String positionName = workers.requireWorkers().getAnyPosition("");
-                            migrationManager.saveExternalEmployee(person, departmentName, positionName);
                         }
 
                         logger.debug("success result, workerRowId={}", worker.getId());
@@ -1615,9 +1556,9 @@ public class WorkerController {
                     mergeWorker(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
-                        Workers workers = new Workers(person.getId());
-                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : workers.requireWorkers().getActiveDepartment(operationData.department().getName());
-                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : workers.requireWorkers().getActivePosition(position.getName());
+                        Workers workers = new Workers(workerEntryDAO.getWorkers(new WorkerEntryQuery(person.getId())));
+                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : workers.getActiveDepartment(operationData.department().getName());
+                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : workers.getActivePosition(position.getName());
                         migrationManager.saveExternalEmployee(person, departmentName, positionName);
                     }
 
