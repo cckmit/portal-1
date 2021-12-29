@@ -163,7 +163,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         } else {
             view.setRestVacationDays("");
             view.getRestVacationDaysLoading().removeClassName("hide");
-            requestRestVacationDays(workerExtIds);
+            requestRestVacationDays(workerExtIds, employee.getId());
         }
 
         showAbsences(employee.getId());
@@ -196,7 +196,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
                                 joining(userLoginShortViews, ", ", UserLoginShortView::getUlogin))));
     }
 
-    private void requestRestVacationDays(List<String> workerExtId) {
+    private void requestRestVacationDays(List<String> workerExtId, final Long employeeId) {
         employeeService.getEmployeeRestVacationDays(workerExtId,
                 new FluentCallback<String>()
                         .withError(throwable -> {
@@ -207,6 +207,10 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
                         .withSuccess(new Consumer<String>() {
                             @Override
                             public void accept(String restVacationDaysResult) {
+                                if (employee == null || !employee.getId().equals(employeeId)) {
+                                    return;
+                                }
+
                                 view.getRestVacationDaysLoading().addClassName("hide");
                                 view.setRestVacationDays(restVacationDaysResult == null ? lang.noData()
                                                                                         : restVacationDaysResult);
