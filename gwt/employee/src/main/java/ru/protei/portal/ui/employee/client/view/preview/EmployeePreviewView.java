@@ -2,6 +2,7 @@ package ru.protei.portal.ui.employee.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -110,6 +111,11 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
         rootWrapper.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
     }
 
+    @Override
+    public Element getRestVacationDaysLoading() {
+        return restVacationDaysLoading;
+    }
+
     @UiHandler("backButton")
     public void onBackButtonClicked(ClickEvent event) {
         if (activity != null) {
@@ -147,6 +153,9 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
 
     @UiField
     SpanElement login;
+
+    @UiField
+    Element restVacationDaysLoading;
 
     @UiField
     SpanElement restVacationDays;

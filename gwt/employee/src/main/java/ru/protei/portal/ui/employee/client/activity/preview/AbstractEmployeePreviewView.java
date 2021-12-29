@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employee.client.activity.preview;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -42,4 +43,6 @@ public interface AbstractEmployeePreviewView extends IsWidget {
     void showFullScreen(boolean isFullScreen);
 
     void showAbsencesPanel(boolean isShow);
+
+    Element getRestVacationDaysLoading();
 }
