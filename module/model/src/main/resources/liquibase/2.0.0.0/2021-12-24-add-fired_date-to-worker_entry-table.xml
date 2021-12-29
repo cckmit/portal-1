@@ -8,5 +8,11 @@
         <addColumn tableName="worker_entry">
             <column name="fired_date" type="DATETIME"/>
         </addColumn>
+        <addColumn tableName="worker_entry">
+            <column name="is_deleted" type="BIT(1)"/>
+        </addColumn>
+        <addColumn tableName="worker_entry">
+            <column name="is_need_migration_at_fire" type="BIT(1)"/>
+        </addColumn>
     </changeSet>
 </databaseChangeLog>

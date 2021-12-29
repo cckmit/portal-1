@@ -61,11 +61,11 @@ public class WorkerEntryServiceImpl implements WorkerEntryService {
 
     @Override
     @Transactional
-    public Result<Void> firePerson(Person person, boolean isFired, Date fireDate,
-                                   boolean isDeleted, List<UserLogin> userLogins,
-                                   boolean isNeedMigrationAtFire) {
+    public Result<Void> firePerson(Person person, Boolean isFired, Date fireDate,
+                                   Boolean isDeleted, List<UserLogin> userLogins,
+                                   Boolean isNeedMigrationAtFire) {
         person.setFired(isFired, fireDate);
-        person.setDeleted(isDeleted);
+        person.setDeleted(isDeleted != null ? isDeleted : false);
         person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
 
         if(isNotEmpty(userLogins)) {
