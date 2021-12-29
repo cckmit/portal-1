@@ -1488,7 +1488,7 @@ public class WorkerController {
                                 worker.setFiredDate(firedDate);
                                 worker.setDeleted(rec.isDeleted());
                                 worker.setNeedMigrationAtFire(WSConfig.getInstance().isEnableMigration());
-                                workerEntryDAO.partialMerge(worker);
+                                workerEntryDAO.merge(worker);
 
                                 logger.debug("success result, workerRowId={}", worker.getId());
                             } else {
