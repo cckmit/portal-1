@@ -25,11 +25,7 @@ public class WorkerEntryServiceTest extends BaseServiceTest {
     public void testWorkerEntry() {
         Company homeCompany = companyDAO.get(1L);
         Person goodWorker = createNewPerson(homeCompany);
-        goodWorker.setDeleted(false);
-        goodWorker.setFired(false);
         Person badWorker = createNewPerson(homeCompany);
-        badWorker.setDeleted(false);
-        badWorker.setFired(false);
         personDAO.persistBatch(Arrays.asList(goodWorker, badWorker));
 
         CompanyHomeGroupItem companyGroupHome = new CompanyHomeGroupItem();

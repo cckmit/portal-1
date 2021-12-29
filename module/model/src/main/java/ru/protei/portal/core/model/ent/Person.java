@@ -68,10 +68,10 @@ public class Person extends AuditableObject {
     private String info;
 
     @JdbcColumn(name="isdeleted")
-    private Boolean isDeleted;
+    private boolean isDeleted;
 
     @JdbcColumn(name = Columns.IS_FIRED)
-    private Boolean isFired;
+    private boolean isFired;
 
     @JdbcColumn(name = Columns.FIRE_DATE)
     private Date fireDate;
