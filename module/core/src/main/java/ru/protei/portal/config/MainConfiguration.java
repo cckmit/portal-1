@@ -866,6 +866,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public WorkerEntryService getWorkerEntryService() {
+        return new WorkerEntryServiceImpl();
+    }
+
+    @Bean
     public ProductService getProductService() {
         return new ProductServiceImpl();
     }

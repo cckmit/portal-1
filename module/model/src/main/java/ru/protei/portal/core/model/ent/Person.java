@@ -73,7 +73,7 @@ public class Person extends AuditableObject {
     @JdbcColumn(name = Columns.IS_FIRED)
     private boolean isFired;
 
-    @JdbcColumn(name = "firedate")
+    @JdbcColumn(name = Columns.FIRE_DATE)
     private Date fireDate;
 
     @JdbcManyToMany(linkTable = "contact_item_person", localLinkColumn = "person_id", remoteLinkColumn = "contact_item_id")
@@ -410,5 +410,6 @@ public class Person extends AuditableObject {
         String DISPLAY_SHORT_NAME = "displayShortName";
         String DISPLAY_NAME = "displayname";
         String IS_FIRED = "isfired";
+        String FIRE_DATE = "firedate";
     }
 }

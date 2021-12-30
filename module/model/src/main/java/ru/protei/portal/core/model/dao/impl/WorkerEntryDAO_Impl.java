@@ -6,9 +6,13 @@ import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
+import ru.protei.portal.core.model.util.sqlcondition.Query;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+
+import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 /**
  * Created by turik on 19.08.16.
@@ -81,6 +85,14 @@ public class WorkerEntryDAO_Impl extends PortalBaseJdbcDAO<WorkerEntry> implemen
     @Override
     public Long getDepIdForWorker(Long workerId) {
         return partialGetByCondition("worker_entry.id = ?", Collections.singletonList(workerId), "id", "dep_id").getDepartmentId();
+    }
+
+    @Override
+    public List<WorkerEntry> getForFireByDate(Date now) {
+        Query q = query()
+                .where(WorkerEntry.Columns.FIRED_FATE).le(now)
+                .asQuery();
+        return getListByCondition( q.buildSql(), q.args());
     }
 
     @SqlConditionBuilder

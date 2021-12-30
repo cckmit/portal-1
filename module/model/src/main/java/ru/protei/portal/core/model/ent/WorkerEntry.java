@@ -59,6 +59,11 @@ public class WorkerEntry extends AuditableObject {
     @JdbcColumn(name = "is_contract_agreement")
     private boolean isContractAgreement;
 
+    @JdbcColumn(name = Columns.FIRED_FATE)
+    private Date firedDate;
+
+    @JdbcColumn(name = "is_deleted")
+    private Boolean isDeleted;
 
     @Override
     public String getAuditType() {
@@ -200,5 +205,25 @@ public class WorkerEntry extends AuditableObject {
 
     public void setContractAgreement(boolean contractAgreement) {
         isContractAgreement = contractAgreement;
+    }
+
+    public Date getFiredDate() {
+        return firedDate;
+    }
+
+    public void setFiredDate(Date firedDate) {
+        this.firedDate = firedDate;
+    }
+
+    public Boolean getDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public interface Columns {
+        String FIRED_FATE = "fired_date";
     }
 }

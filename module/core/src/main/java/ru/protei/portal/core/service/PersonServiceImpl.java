@@ -29,11 +29,19 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
  * Сервис управления person
  */
 public class PersonServiceImpl implements PersonService {
-
+    private static final Logger log = LoggerFactory.getLogger(PersonServiceImpl.class);
     @Autowired
     PersonDAO personDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    AuthService authService;
+    @Autowired
+    PolicyService policyService;
+    @Autowired
+    CompanyService companyService;
+    @Autowired
+    PersonShortViewDAO personShortViewDAO;
 
     @Override
     public Result<Person> getPerson(AuthToken token, Long personId) {
@@ -128,15 +136,4 @@ public class PersonServiceImpl implements PersonService {
         log.info("fillQueryByScope(): PersonQuery modified: {}", personQuery);
         return ok(personQuery);
     }
-
-    @Autowired
-    AuthService authService;
-    @Autowired
-    PolicyService policyService;
-    @Autowired
-    CompanyService companyService;
-    @Autowired
-    PersonShortViewDAO personShortViewDAO;
-    private static final Logger log = LoggerFactory.getLogger(PersonServiceImpl.class);
-
 }
