@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.api.struct.Workers;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuditType;
@@ -41,6 +42,8 @@ public class WorkerEntryServiceImpl implements WorkerEntryService {
     ContactItemDAO contactItemDAO;
     @Autowired
     LegacySystemDAO migrationManager;
+    @Autowired
+    PortalConfig portalConfig;
     
     @Override
     @Transactional
@@ -53,7 +56,7 @@ public class WorkerEntryServiceImpl implements WorkerEntryService {
                 List<UserLogin> userLogins = userLoginDAO.findByPersonId(entry.getPersonId());
                 firePerson(person, true, entry.getFiredDate(),
                         entry.getDeleted(), userLogins,
-                        entry.getNeedMigrationAtFire());
+                        portalConfig.data().legacySysConfig().isExportEnabled());
             }
         }
         return ok();

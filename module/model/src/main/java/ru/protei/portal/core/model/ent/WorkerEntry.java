@@ -65,9 +65,6 @@ public class WorkerEntry extends AuditableObject {
     @JdbcColumn(name = "is_deleted")
     private Boolean isDeleted;
 
-    @JdbcColumn(name = "is_need_migration_at_fire")
-    private Boolean isNeedMigrationAtFire;
-
     @Override
     public String getAuditType() {
         return "Worker";
@@ -224,14 +221,6 @@ public class WorkerEntry extends AuditableObject {
 
     public void setDeleted(Boolean deleted) {
         isDeleted = deleted;
-    }
-
-    public Boolean getNeedMigrationAtFire() {
-        return isNeedMigrationAtFire;
-    }
-
-    public void setNeedMigrationAtFire(Boolean needMigrationAtFire) {
-        isNeedMigrationAtFire = needMigrationAtFire;
     }
 
     public interface Columns {
