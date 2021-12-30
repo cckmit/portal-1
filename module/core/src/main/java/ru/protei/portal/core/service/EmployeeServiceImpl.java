@@ -27,6 +27,7 @@ import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import javax.inject.Inject;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -558,22 +559,21 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Result<String> getEmployeeRestVacationDays(AuthToken token, List<String> workerExtIds) {
+    public Result<String> getEmployeeRestVacationDays(AuthToken token, List<WorkerEntryShortView> workerEntries) {
         log.info("getEmployeeRestVacationDays(): start");
 
-        if (CollectionUtils.isEmpty(workerExtIds)) {
+        if (CollectionUtils.isEmpty(workerEntries)) {
             log.error("getEmployeeRestVacationDays(): workerExtIds is empty");
             return ok();
         }
 
         Double restVacationDays = null;
-        for (String workerExtId: workerExtIds) {
-            if (workerExtId != null) {
-                Result<String> result = api1CService.getEmployeeRestVacationDays(workerExtId);
-                if (result != null && result.isOk()) {
-                    double days = Double.parseDouble(String.valueOf(result.getData()));
-                    restVacationDays = restVacationDays == null ? days : restVacationDays + days;
-                }
+        for (WorkerEntryShortView workerEntry: workerEntries) {
+            Result<String> result = api1CService.getEmployeeRestVacationDays(workerEntry.getWorkerExtId(),
+                                                                             workerEntry.getCompanyName());
+            if (result != null && result.isOk()) {
+                double days = Double.parseDouble(String.valueOf(result.getData()));
+                restVacationDays = restVacationDays == null ? days : restVacationDays + days;
             }
         }
 

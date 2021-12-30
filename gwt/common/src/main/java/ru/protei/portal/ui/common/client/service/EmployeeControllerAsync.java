@@ -52,5 +52,5 @@ public interface EmployeeControllerAsync {
 
     void getEmployeesBirthdays(Date dateFrom, Date dateUntil, AsyncCallback<EmployeesBirthdays> async);
 
-    void getEmployeeRestVacationDays(List<String> workerExtIds, AsyncCallback<String> async);
+    void getEmployeeRestVacationDays(List<WorkerEntryShortView> workerEntries, AsyncCallback<String> async);
 }

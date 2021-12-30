@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
@@ -104,7 +105,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         );
     }
 
-    private void fillView(EmployeeShortView employee) {
+    private void fillView(final EmployeeShortView employee) {
 
         this.employee = employee;
 
@@ -163,7 +164,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         } else {
             view.setRestVacationDays("");
             view.getRestVacationDaysLoading().removeClassName("hide");
-            requestRestVacationDays(workerExtIds, employee.getId());
+            requestRestVacationDays(employee.getId(), employee.getWorkerEntries());
         }
 
         showAbsences(employee.getId());
@@ -196,8 +197,8 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
                                 joining(userLoginShortViews, ", ", UserLoginShortView::getUlogin))));
     }
 
-    private void requestRestVacationDays(List<String> workerExtId, final Long employeeId) {
-        employeeService.getEmployeeRestVacationDays(workerExtId,
+    private void requestRestVacationDays(final Long employeeId, List<WorkerEntryShortView> workerEntries) {
+        employeeService.getEmployeeRestVacationDays(workerEntries,
                 new FluentCallback<String>()
                         .withError(throwable -> {
                             view.getRestVacationDaysLoading().addClassName("hide");

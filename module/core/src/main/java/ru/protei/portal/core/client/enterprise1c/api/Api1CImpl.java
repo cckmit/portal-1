@@ -35,6 +35,8 @@ import java.util.regex.Pattern;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.util.CrmConstants.Company.MAIN_HOME_COMPANY_NAME;
+import static ru.protei.portal.core.model.util.CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME;
 
 public class Api1CImpl implements Api1C{
 
@@ -62,11 +64,11 @@ public class Api1CImpl implements Api1C{
         }
 
         contractor.setComment(CONTRACTOR_COMMENT);
-        if (CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME.equals(homeCompanyName)) {
+        if (PROTEI_ST_HOME_COMPANY_NAME.equals(homeCompanyName)) {
             contractor.setParentKey(config.data().enterprise1C().getParentKeyST());
         }
 
-        if (CrmConstants.Company.MAIN_HOME_COMPANY_NAME.equals(homeCompanyName)){
+        if (MAIN_HOME_COMPANY_NAME.equals(homeCompanyName)){
             if (checkResident(contractor,homeCompanyName)){
                 contractor.setParentKey(config.data().enterprise1C().getParentKeyResident());
             } else {
@@ -179,10 +181,10 @@ public class Api1CImpl implements Api1C{
     }
 
     @Override
-    public Result<String> getEmployeeRestVacationDays(String workerExtId) {
+    public Result<String> getEmployeeRestVacationDays(String workerExtId, String companyName) {
         log.debug("workerExtId={}", workerExtId);
 
-        return client.read(buildGetRestVacationDaysByKeyUrl(workerExtId), Result.class)
+        return client.read(buildGetRestVacationDaysByKeyUrl(workerExtId, companyName), Result.class)
                 .ifOk( value -> log.info( "buildGetRestVacationDaysByKeyUrl(): OK " ) )
                 .ifError( result -> log.warn( "buildGetRestVacationDaysByKeyUrl(): Can`t get restVacationDays={}. {}", workerExtId, result ))
                 .getData();
@@ -328,9 +330,17 @@ public class Api1CImpl implements Api1C{
         return url;
     }
 
-    private String buildGetRestVacationDaysByKeyUrl(String workerExtId){
-        String url = config.data().enterprise1C().getApiBaseProteiStZiupCopyUrl() + "/" + workerExtId;
-        log.debug("buildGetRestVacationDaysByKeyUrl(): url={}", url);
+    private String buildGetRestVacationDaysByKeyUrl(String workerExtId, String companyName){
+        String url = "";
+        if (MAIN_HOME_COMPANY_NAME.equals(companyName)) {
+            url = config.data().enterprise1C().getApiBaseProteiZiupUrl();
+        } else if (PROTEI_ST_HOME_COMPANY_NAME.equals(companyName)) {
+            url = config.data().enterprise1C().getApiBaseProteiZiupStUrl();
+        } else {
+            System.out.println();
+        }
+
+        log.debug("buildGetRestVacationDaysByKeyUrl(): url={}", url + "/" + workerExtId);
         return url;
     }
 
@@ -433,11 +443,11 @@ public class Api1CImpl implements Api1C{
 
     // todo : выяснить зачем сравнение по названиями и переделать эти костыли =)
     private String getDirPropertyKey(String homeCompanyName) {
-        if (CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME.equals(homeCompanyName)) {
+        if (PROTEI_ST_HOME_COMPANY_NAME.equals(homeCompanyName)) {
             return ContractAdditionalProperty1C.DIRECTION_PROPERTY_KEY_PROTEI_ST;
         }
 
-        if (CrmConstants.Company.MAIN_HOME_COMPANY_NAME.equals(homeCompanyName)) {
+        if (MAIN_HOME_COMPANY_NAME.equals(homeCompanyName)) {
             return ContractAdditionalProperty1C.DIRECTION_PROPERTY_KEY_PROTEI;
         }
 
@@ -445,11 +455,11 @@ public class Api1CImpl implements Api1C{
     }
 
     private String getBaseUrl(String homeCompanyName) {
-        if (CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME.equals(homeCompanyName)) {
+        if (PROTEI_ST_HOME_COMPANY_NAME.equals(homeCompanyName)) {
             return config.data().enterprise1C().getApiBaseProteiStUrl();
         }
 
-        if (CrmConstants.Company.MAIN_HOME_COMPANY_NAME.equals(homeCompanyName)) {
+        if (MAIN_HOME_COMPANY_NAME.equals(homeCompanyName)) {
             return config.data().enterprise1C().getApiBaseProteiUrl();
         }
 
