@@ -74,6 +74,16 @@
                         </div>
                     </div>
                     <div class="card-body">
+                        <g:HTMLPanel ui:field="employeeRegistrationEmailsGeneralContainer" visible="false">
+                            <div class="row">
+                                <div class="form-group col-md-12">
+                                    <label>
+                                        <ui:text from="{lang.companyEmployeeRegistrationAddresses}"/>
+                                    </label>
+                                    <g:HTMLPanel ui:field="employeeRegistrationEmailsContainer"/>
+                                </div>
+                            </div>
+                        </g:HTMLPanel>
                         <g:HTMLPanel ui:field="probationEmailsGeneralContainer" visible="false">
                             <div class="row">
                                 <div class="form-group col-md-12">

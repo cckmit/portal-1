@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -26,11 +27,19 @@ public class AssembledEmployeeRegistrationEvent extends ApplicationEvent impleme
     private boolean hasComments;
     private Map<Long, DiffCollectionResult<Attachment>> commentToAttachmentDiffs = new HashMap<>();
     private List<Attachment> existingAttachments;
+    private List<NotificationEntry> registrationSubscribers;
 
     public AssembledEmployeeRegistrationEvent(Object source, EmployeeRegistration oldState, EmployeeRegistration newState) {
         super(source);
         this.oldState = oldState;
         this.newState = newState;
+    }
+
+    public AssembledEmployeeRegistrationEvent(Object source, EmployeeRegistration oldState, EmployeeRegistration newState, List<NotificationEntry> registrationSubscribers) {
+        super(source);
+        this.oldState = oldState;
+        this.newState = newState;
+        this.registrationSubscribers = registrationSubscribers;
     }
 
     public AssembledEmployeeRegistrationEvent(AbstractEmployeeRegistrationEvent event) {
@@ -187,5 +196,9 @@ public class AssembledEmployeeRegistrationEvent extends ApplicationEvent impleme
 
     public Map<Long, DiffCollectionResult<Attachment>> getCommentToAttachmentDiffs() {
         return commentToAttachmentDiffs;
+    }
+
+    public List<NotificationEntry> getRegistrationSubscribers() {
+        return registrationSubscribers;
     }
 }

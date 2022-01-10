@@ -244,6 +244,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String companyWebSite();
 
+    String companyEmployeeRegistrationAddresses();
+
     String companyProbationPeriodAddresses();
 
     String errWorkerWithThisPositionAlreadyExist();

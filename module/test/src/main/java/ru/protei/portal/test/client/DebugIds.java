@@ -665,6 +665,8 @@ public class DebugIds {
         String COMMENT = "company-comment";
         String AUTO_OPEN_ISSUES = "company-auto-open-issues";
         String SUBSCRIPTIONS = "company-subscriptions";
+        String EMPLOYEE_REGISTRATION_GENERAL_EMAILS = "company-employee-registration-general-emails";
+        String EMPLOYEE_REGISTRATION_EMAILS = "company-employee-registration-emails";
         String PROBATION_GENERAL_EMAILS = "company-probation-general-emails";
         String PROBATION_EMAILS = "company-probation-emails";
         interface GROUP {

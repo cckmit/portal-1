@@ -2,6 +2,7 @@ package ru.protei.portal.core.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
@@ -14,6 +15,8 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
+import ru.protei.portal.core.model.struct.ContactItem;
+import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.events.EventPublisherService;
@@ -22,6 +25,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -43,6 +47,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     PersonDAO personDAO;
     @Autowired
     PersonShortViewDAO personShortDAO;
+    @Autowired
+    CompanyDAO companyDAO;
     @Autowired
     YoutrackService youtrackService;
     @Autowired
@@ -96,6 +102,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
         employeeRegistration.setCurators(personShortDAO.getListByKeys(employeeRegistration.getCuratorsIds()));
 
+        List <NotificationEntry> registrationSubscribers = getEmployeeRegistrationSubscribersEmails(employeeRegistration.getHeadOfDepartment());
+
         final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEnabled();
 
         if (YOUTRACK_INTEGRATION_ENABLED) {
@@ -104,7 +112,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
         }
 
-        return ok(id).publishEvent(new AssembledEmployeeRegistrationEvent(this, null, employeeRegistration));
+        return ok(id).publishEvent(new AssembledEmployeeRegistrationEvent(this, null, employeeRegistration, registrationSubscribers));
     }
 
     @Override
@@ -392,6 +400,20 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 return "OpenVPN";
         }
         return "";
+    }
+
+    private List<NotificationEntry> getEmployeeRegistrationSubscribersEmails (PersonShortView headOfDepartment) {
+        Person head = personDAO.get(headOfDepartment.getId());
+        if (head == null) return new ArrayList<>();
+        Company company = companyDAO.get(head.getCompanyId());
+        if (company == null) return new ArrayList<>();
+        jdbcManyRelationsHelper.fill(company, Company.Fields.CONTACT_ITEMS);
+
+        return stream(company.getContactInfo().getItems(En_ContactEmailSubscriptionType.SUBSCRIPTION_TO_EMPLOYEE_REGISTRATION))
+                .map(ContactItem::value)
+                .filter(Strings::isNotEmpty)
+                .map(email -> NotificationEntry.email(email, head.getLocale()))
+                .collect(Collectors.toList());
     }
 
     private static String getEquipmentName(En_EmployeeEquipment employeeEquipment) {

@@ -219,7 +219,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
         jdbcManyRelationsHelper.fill(company, Company.Fields.CONTACT_ITEMS);
 
         return stream(company.getContactInfo().getItems(En_ContactItemType.EMAIL))
-                .filter(ContactItem::isInternalItem)
+                .filter(ContactItem::isSubscribedToTheEndOfProbation)
                 .map(ContactItem::value)
                 .filter(Strings::isNotEmpty)
                 .collect(Collectors.toList());

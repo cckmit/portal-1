@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
+import ru.protei.portal.core.model.dict.En_ContactEmailSubscriptionType;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -29,6 +30,11 @@ public class ContactItem implements Serializable {
     @JsonProperty("v")
     @JdbcColumn(name = "value")
     private String value;
+
+    @JsonProperty("s")
+    @JdbcColumn(name = "subscription_type")
+    @JdbcEnumerated(EnumType.ID)
+    private En_ContactEmailSubscriptionType subscriptionType;
 
     @Deprecated
     @JsonProperty("c")
@@ -56,6 +62,11 @@ public class ContactItem implements Serializable {
         this.value = value;
     }
 
+    public ContactItem (String value, En_ContactItemType type, En_ContactDataAccess access, En_ContactEmailSubscriptionType subscriptionType) {
+        this(value, type, access);
+        this.subscriptionType = subscriptionType;
+    }
+
     public Long id() {
         return this.id;
     }
@@ -72,6 +83,10 @@ public class ContactItem implements Serializable {
         return this.accessType;
     }
 
+    public En_ContactEmailSubscriptionType subscriptionType() {
+        return this.subscriptionType;
+    }
+
     public ContactItem modify ( String value) {
         this.value = value;
         return this;
@@ -84,6 +99,11 @@ public class ContactItem implements Serializable {
 
     public ContactItem modify (En_ContactDataAccess accessType) {
         this.accessType = accessType;
+        return this;
+    }
+
+    public ContactItem modify (En_ContactEmailSubscriptionType subscriptionType) {
+        this.subscriptionType = subscriptionType;
         return this;
     }
 
@@ -116,5 +136,18 @@ public class ContactItem implements Serializable {
     @JsonIgnore
     public boolean isInternalItem () {
         return this.accessType == En_ContactDataAccess.INTERNAL;
+
     }
+
+    @JsonIgnore
+    public boolean isSubscribedToTheEndOfProbation () {
+        return this.subscriptionType == En_ContactEmailSubscriptionType.SUBSCRIPTION_TO_END_OF_PROBATION;
+    }
+
+    @JsonIgnore
+    public boolean isSubscribedToTheEmployeeRegistration () {
+        return this.subscriptionType == En_ContactEmailSubscriptionType.SUBSCRIPTION_TO_EMPLOYEE_REGISTRATION;
+    }
+
+
 }
