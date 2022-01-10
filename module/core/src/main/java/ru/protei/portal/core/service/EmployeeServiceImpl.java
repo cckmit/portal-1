@@ -847,6 +847,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         PersonQuery query = new PersonQuery();
         query.setEmail(email);
         query.setDeleted(false);
+        query.setFired(false);
         List<Person> employeeByEmail = personDAO.getPersons(query);
 
         if (CollectionUtils.isNotEmpty(employeeByEmail)){

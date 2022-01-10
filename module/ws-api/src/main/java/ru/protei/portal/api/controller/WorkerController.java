@@ -1734,6 +1734,7 @@ public class WorkerController {
         PersonQuery personQuery = new PersonQuery();
         personQuery.setEmail(email);
         personQuery.setDeleted(false);
+        personQuery.setFired(false);
         List<Person> employeeByEmail = personDAO.getPersons(personQuery);
 
         if (CollectionUtils.isNotEmpty(employeeByEmail)){
