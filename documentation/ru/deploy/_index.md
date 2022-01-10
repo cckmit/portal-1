@@ -1,7 +1,7 @@
 ---
 title: "Деплой"
 description: >
-  Действия при деплое NewPortal
+  Действия при деплое Portal
 type: docs
 weight: 1
 gitlab_project_path: "department-7/portal"
@@ -43,10 +43,10 @@ gitlab_docs_enable_new_issue: false
 ## Работа с релизом
 
 
-В конце недели разработки из **develop** выделяем ветку **release-sN**, собираем (на jenkins **Сборка NewPortal по branch**) и отдаём на тестирование.
+В конце недели разработки из **develop** выделяем ветку **release-sN**, собираем (на jenkins **build_Portal_by_branch**) и отдаём на тестирование.
 В случае появления проблем, доработок, которые должны войти в релиз, бранчуемся от релизной ветки, изменения мержим и в релиз и в дефолт. **Не забываем собирать релизную ветку для тестирования с изменениями.**
 Когда тестирование закончено, релизную ветку мержим в master и закрываем **release-sN**.
-Для установки собираем **master** - с помощью джобы на jenkins **master build** или **Сборка NewPortal по branch**.
+Для установки собираем **master** - с помощью джобы на jenkins **master build** или **build_Portal_by_branch**.
 
 
 ## Установка релиза
@@ -55,7 +55,7 @@ gitlab_docs_enable_new_issue: false
 
 Релиз-менеджер принимает решение о том, какой способ деплоя выбрать исходя из особенностей инсталляции - изменения в бд, конфигурационные файлы.
 
-Обновление портала производится на **newportal.protei.ru** и на **crm2.protei.ru**: 
+Обновление портала производится на **portal.protei.ru** и на **crm2.protei.ru**: 
 
 
 
@@ -65,7 +65,7 @@ gitlab_docs_enable_new_issue: false
 4. отправляем письмо на bbs@protei.ru с информацией о включенных в релиз доработках.
 
 
- На newportal.protei.ru tomcat здесь **/opt/tomcat/latest**, команды для управления:
+ На portal.protei.ru tomcat здесь **/opt/tomcat/latest**, команды для управления:
 
 * service tomcat stop
 * service tomcat start
@@ -86,7 +86,7 @@ gitlab_docs_enable_new_issue: false
 ### Автоматический
 #### Дженкинс джобы
 
-https://jenkins.protei.ru/job/team7/job/NewPortal/job/deploy-jobs/
+https://jenkins.protei.ru/job/team7/job/Portal/job/deploy-jobs/
 
 1. prod-and-crm2-deploy - основная работа
 2. crm2-deploy - отдельная, так как плагин деплоя может только один варник задеплоить (а тут portal.war для 110.68 и crm.war для 10.0.0.18)

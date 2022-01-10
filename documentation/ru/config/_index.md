@@ -1,7 +1,7 @@
 ---
 title: "Конфигурация"
 description: >
-  Настройка конфигурации NewPortal
+  Настройка конфигурации Portal
 type: docs
 weight: 1
 gitlab_project_path: "department-7/portal"
@@ -125,20 +125,20 @@ jira.projects=CLM,CGTMR
 is.production.server=true
 
 ## адрес внутреннего портала
-## default: http://newportal/crm/
-crm.url.internal=https://newportal.protei.ru/portal/
+## default: http://portal/crm/
+crm.url.internal=https://portal.protei.ru/portal/
 
 ## адрес внешнего портала
-## default: http://newportal/crm/
+## default: http://portal/crm/
 crm.url.external=https://crm.protei.ru/crm/
 
 ## адрес внешнего портала
-## default: http://newportal/crm/
-crm.url.current=https://newportal.protei.ru/portal/
+## default: http://portal/crm/
+crm.url.current=https://portal.protei.ru/portal/
 
 ## адрес портала для скачивания файлов
-## default: http://newportal/crm/
-crm.url.files=https://newportal.protei.ru/portal/Portal/
+## default: http://portal/crm/
+crm.url.files=https://portal.protei.ru/portal/Portal/
 
 #### Настройки smtp сервера
 
@@ -374,8 +374,8 @@ report.storage.path=/opt/tomcat/latest/reports
 #### Настройки связи обращений case linkage properties
 
 ## адрес обращения на портале с номером %id%
-## string, default: http://newportal/crm/#issues/issue:id=%id%
-case.link.internal=https://newportal.protei.ru/portal/#issues/issue:id=%id%
+## string, default: http://portal/crm/#issues/issue:id=%id%
+case.link.internal=https://portal.protei.ru/portal/#issues/issue:id=%id%
 
 ## адрес обращения на старом портале с номером %id%
 ## string, default: http://portal/crm/session/session_support.jsp?id=%id%&&action_ref=SessionManageBean_Support.applyFilterAction_Support
@@ -390,10 +390,10 @@ case.link.uits=https://support.uits.spb.ru/crm/deal/details/%id%/
 case.link.youtrack=https://youtrack.protei.ru/issue/%id%
 
 ##
-case.crm.crosslink.youtrack=https://newportal.protei.ru/portal/#issues/issue:id=%id%
+case.crm.crosslink.youtrack=https://portal.protei.ru/portal/#issues/issue:id=%id%
 
 ##
-case.project.crosslink.youtrack=https://newportal.protei.ru/portal/#project_preview:id=%id%
+case.project.crosslink.youtrack=https://portal.protei.ru/portal/#project_preview:id=%id%
 
 #### Настройки синхронизации с порталом УИТС
 
