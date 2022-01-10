@@ -475,6 +475,10 @@ public class DeliveryServiceImpl implements DeliveryService {
         if (policyService.hasScopeForPrivilege( roles, DELIVERY_VIEW, En_Scope.COMPANY )) {
 
             List<WorkerEntry> workers = workerEntryDAO.getWorkers(new WorkerEntryQuery(token.getPersonId()));
+            if (isEmpty(workers)) {
+                log.error("Can't get getDeliveries. No WorkerEntry specified for personId = {}", token.getPersonId());
+                return null;
+            }
             query.setCreatorCompanyIds(stream(workers).map(WorkerEntry::getCompanyId).collect(Collectors.toList()));
         }
         return query;

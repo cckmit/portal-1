@@ -845,8 +845,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     private boolean isEmailExists(Long personId, String email) {
 
         PersonQuery query = new PersonQuery();
-        query.setCompanyIds(setOf(CrmConstants.Company.HOME_COMPANY_ID));
         query.setEmail(email);
+        query.setDeleted(false);
+        query.setFired(false);
         List<Person> employeeByEmail = personDAO.getPersons(query);
 
         if (CollectionUtils.isNotEmpty(employeeByEmail)){
@@ -854,10 +855,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                 return true;
             }
 
-            if (employeeByEmail.stream()
-                    .noneMatch(personFromDB -> personFromDB.getId().equals(personId))){
-                return true;
-            }
+            return (employeeByEmail.stream()
+                    .anyMatch(personFromDB -> !personFromDB.getId().equals(personId)));
         }
 
         return false;
