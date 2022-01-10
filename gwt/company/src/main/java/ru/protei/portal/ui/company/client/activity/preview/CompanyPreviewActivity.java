@@ -126,7 +126,7 @@ public abstract class CompanyPreviewActivity
                 .filter(ContactItem::isSubscribedToTheEndOfProbation)
                 .collect(Collectors.toList());
 
-        if (probationContacts.isEmpty() && subscriptions.isEmpty() && employeeRegistrationContacts.isEmpty()) {
+        if (employeeRegistrationContacts.isEmpty() && probationContacts.isEmpty() && subscriptions.isEmpty()) {
             view.setSubscriptionEmails(lang.issueCompanySubscriptionNotDefined());
             return;
         }

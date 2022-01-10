@@ -397,7 +397,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
     private List<NotificationEntry> getEmployeeRegistrationSubscribersEmails (PersonShortView headOfDepartment) {
         Person head = personDAO.get(headOfDepartment.getId());
+        if (head == null) return new ArrayList<>();
         Company company = companyDAO.get(head.getCompanyId());
+        if (company == null) return new ArrayList<>();
         jdbcManyRelationsHelper.fill(company, Company.Fields.CONTACT_ITEMS);
 
         return stream(company.getContactInfo().getItems(En_ContactEmailSubscriptionType.SUBSCRIPTION_TO_EMPLOYEE_REGISTRATION))
