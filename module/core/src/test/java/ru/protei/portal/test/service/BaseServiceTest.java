@@ -57,8 +57,8 @@ public class BaseServiceTest {
         product.setType( En_DevUnitType.PRODUCT );
         product.setStateId( En_DevUnitState.ACTIVE.getId() );
         product.setInfo( "info" );
-        product.setInternalDocLink( "https://newportal.protei.ru/" );
-        product.setExternalDocLink( "https://newportal.protei.ru/" );
+        product.setInternalDocLink( "https://portal.protei.ru/" );
+        product.setExternalDocLink( "https://portal.protei.ru/" );
         return product;
     }
 

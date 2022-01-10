@@ -174,10 +174,10 @@ public class PortalConfigData {
 
     public static class CommonConfig {
         public CommonConfig( PropertiesWrapper properties ) {
-            crmUrlInternal = properties.getProperty( "crm.url.internal", "http://newportal/crm/" );
-            crmUrlExternal = properties.getProperty( "crm.url.external", "http://newportal/crm/" );
-            crmUrlCurrent = properties.getProperty( "crm.url.current", "http://newportal/crm/" );
-            crmUrlFiles = properties.getProperty( "crm.url.files", "http://newportal/crm/" );
+            crmUrlInternal = properties.getProperty( "crm.url.internal", "http://portal/crm/" );
+            crmUrlExternal = properties.getProperty( "crm.url.external", "http://portal/crm/" );
+            crmUrlCurrent = properties.getProperty( "crm.url.current", "http://portal/crm/" );
+            crmUrlFiles = properties.getProperty( "crm.url.files", "http://portal/crm/" );
             isProductionServer = properties.getProperty( "is.production.server", Boolean.class, false );
             systemId = properties.getProperty( "system.id", "" );
             systemUserId = properties.getProperty("system.user.id", Long.class, null);
@@ -704,11 +704,11 @@ public class PortalConfigData {
         private final String crossProjectLinkYoutrack;
 
         public CaseLinkConfig(PropertiesWrapper properties) throws ConfigException {
-            this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue_preview:id=%id%");
+            this.linkCrm = properties.getProperty("case.link.internal", "http://portal/crm/#issues/issue_preview:id=%id%");
             this.linkYouTrack = properties.getProperty("case.link.youtrack", "https://youtrack.protei.ru/issue/%id%");
             this.linkUits = properties.getProperty("case.link.uits", "https://support.uits.spb.ru/crm/deal/details/%id%/");
-            this.crossCrmLinkYoutrack = properties.getProperty("case.crm.crosslink.youtrack", "http://newportal/crm/#issues/issue:id=%id%");
-            this.crossProjectLinkYoutrack = properties.getProperty("case.project.crosslink.youtrack", "http://newportal/crm/#project_preview:id=%id%");
+            this.crossCrmLinkYoutrack = properties.getProperty("case.crm.crosslink.youtrack", "http://portal/crm/#issues/issue:id=%id%");
+            this.crossProjectLinkYoutrack = properties.getProperty("case.project.crosslink.youtrack", "http://portal/crm/#project_preview:id=%id%");
         }
 
         public String getLinkCrm() {
