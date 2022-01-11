@@ -13,10 +13,8 @@
                     <loading:IndeterminateCircleLoading ui:field="loading" visible="false"
                                                         styleName="spinner-issue-table"/>
                     <div class="card-body no-padding">
-<!--                        <loading:IndeterminateCircleLoading ui:field="loading" visible="false"-->
-<!--                                                            styleName="spinner-issue-table"/>-->
-                        <g:HTMLPanel ui:field="pagerContainer" styleName="pager-container"/>
                         <table:InfiniteTableWidget ui:field="table" styleName="table table-hover issues"/>
+                        <g:HTMLPanel ui:field="pagerContainer" styleName="pager-container"/>
                     </div>
                 </div>
             </g:HTMLPanel>
