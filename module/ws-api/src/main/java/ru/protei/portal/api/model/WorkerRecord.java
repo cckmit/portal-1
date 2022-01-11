@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Date;
 
 /**
  * Created by turik on 17.08.16.
@@ -50,6 +51,10 @@ public class WorkerRecord {
     private int active;
 
     private String positionName;
+
+    private String newPositionName;
+    private Long newPositionDepartmentId;
+    private Date newPositionTransferDate;
 
     public WorkerRecord() {}
 
@@ -314,6 +319,33 @@ public class WorkerRecord {
         this.positionName = positionName;
     }
 
+    public String getNewPositionName() {
+        return newPositionName;
+    }
+
+    @XmlElement(name = "new-position-name")
+    public void setNewPositionName(String newPositionName) {
+        this.newPositionName = newPositionName;
+    }
+
+    public Long getNewPositionDepartmentId() {
+        return newPositionDepartmentId;
+    }
+
+    @XmlElement(name = "new-position-department")
+    public void setNewPositionDepartmentId(Long newPositionDepartmentId) {
+        this.newPositionDepartmentId = newPositionDepartmentId;
+    }
+
+    public Date getNewPositionTransferDate() {
+        return newPositionTransferDate;
+    }
+
+    @XmlElement(name = "new-position-transfer-date")
+    public void setNewPositionTransferDate(Date newPositionTransferDate) {
+        this.newPositionTransferDate = newPositionTransferDate;
+    }
+
     public void copy (Person person) {
         setId (person.getId ());
         setFirstName (person.getFirstName ());
@@ -378,6 +410,9 @@ public class WorkerRecord {
                 ", hireOrderNo='" + hireOrderNo + '\'' +
                 ", active=" + active +
                 ", positionName='" + positionName + '\'' +
+                ", newPositionDepartment='" + newPositionDepartmentId + '\'' +
+                ", newPositionName='" + newPositionName + '\'' +
+                ", newPositionTransferDate='" + newPositionTransferDate + '\'' +
                 '}';
     }
 }

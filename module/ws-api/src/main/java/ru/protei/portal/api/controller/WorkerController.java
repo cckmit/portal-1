@@ -874,6 +874,63 @@ public class WorkerController {
         return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_DELETE.getMessage());
     }
 
+    /**
+     * Обновить позицию сотрудника
+     * @param rec данные о сотруднике
+     * @return Result<Long>
+     */
+    @RequestMapping(method = RequestMethod.PUT,
+            consumes = MediaType.APPLICATION_XML_VALUE,
+            produces = MediaType.APPLICATION_XML_VALUE,
+            value = "/update.worker.position")
+    Result<Long> updateWorkerPosition(@RequestBody WorkerRecord rec,
+                                      HttpServletRequest request,
+                                      HttpServletResponse response) {
+
+        logger.debug("updateWorkerPosition(): rec={}", rec);
+
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+
+        Result<Long> isValid = isValidNewEmployeePosition(rec);
+        if (isValid.isError()) {
+            logger.debug("error result: " + isValid.getMessage());
+            return isValid;
+        }
+
+        updateWorkerPosition(rec);
+
+        return ok(rec.getId());
+    }
+
+    private Result<Long> isValidNewEmployeePosition(WorkerRecord position) {
+        if (HelperFunc.isEmpty(position.getNewPositionName())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_NEW_EMPLOYEE_POSITION_NAME.getMessage());
+        }
+
+        if (position.getNewPositionDepartmentId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_NEW_EMPLOYEE_POSITION_DEPARTMENT_ID.getMessage());
+        }
+
+        if (position.getNewPositionTransferDate() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_NEW_EMPLOYEE_TRANSFER_DATE.getMessage());
+        }
+
+        return ok(null);
+    }
+
+    private Result<Long> updateWorkerPosition(WorkerRecord rec){
+        try {
+            //todo implement
+            logger.debug("success result, workerRecordId={}", rec.getId());
+            return ok(rec.getId());
+
+        } catch (Exception e) {
+            logger.error("error while update worker's position", e);
+        }
+
+        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
+    }
+
     private <R> R withHomeCompany(String companyCode, Function<CompanyHomeGroupItem, R> func) throws Exception {
         CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyCode.trim());
         return item == null ? null : func.apply(item);
@@ -1271,6 +1328,22 @@ public class WorkerController {
 
             return this;
         }
+
+        public OperationData requireTest() {
+            requireHomeItem();
+            if (!isValid())
+                return this;
+
+            if (workerEntryDAO.checkExistsByPosName(record.getPositionName().trim(), homeGroupItem.getCompanyId())) {
+                lastError = En_ErrorCode.EXIST_POS_WOR;
+            }
+
+            return this;
+        }
+
+        private String newPositionName;
+        private Long newPositionDepartmentId;
+        private Date newPositionTransferDate;
 
         private <T> T handle(T value, Supplier<T> optional, En_ErrorCode failCode) {
             return handle(value, optional, failCode, false);

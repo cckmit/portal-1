@@ -458,6 +458,13 @@ public class TestWorkerController {
         Files.deleteIfExists(Paths.get(photoByIdName));
     }
 
+    @Test
+    public void testUpdateWorkerPosition() throws Exception {
+        WorkerRecord newWorkerPosition = createNewWorkerPosition();
+        updateWorkerPosition(newWorkerPosition);
+        //todo implement
+    }
+
     private void createPhotosById(Long id) throws Exception{
             String photoByIdName = WSConfig.getInstance().getDirPhotos() + id + ".jpg";
             Path photoByIdPath = Paths.get(photoByIdName);
@@ -786,5 +793,36 @@ public class TestWorkerController {
 
     private void removePerson() {
         personDAO.remove(person);
+    }
+
+    private Result updateWorkerPosition(WorkerRecord newWorkerPosition) throws Exception {
+        logger.debug("worker position data = " + newWorkerPosition);
+
+        String uri = BASE_URI + "update.worker.position";
+
+        String workerPositionXml = toXml(newWorkerPosition);
+
+        ResultActions resultActions = mockMvc.perform(
+                put(uri)
+                        .header("Accept", MediaType.APPLICATION_XML)
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
+                        .contentType(MediaType.APPLICATION_XML)
+                        .content(workerPositionXml)
+        );
+
+        Result result = (Result) fromXml(resultActions.andReturn().getResponse().getContentAsString());
+
+        logger.debug("result = " + result);
+
+        return Result.ok(result);
+    }
+
+    private WorkerRecord createNewWorkerPosition() {
+        WorkerRecord position = new WorkerRecord();
+        position.setNewPositionName("protei");
+        position.setNewPositionDepartmentId(1L);
+        position.setNewPositionTransferDate(new Date());
+        logger.debug("worker = " + position);
+        return position;
     }
 }
