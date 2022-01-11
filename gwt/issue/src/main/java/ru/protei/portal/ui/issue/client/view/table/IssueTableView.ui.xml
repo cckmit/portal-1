@@ -1,16 +1,22 @@
-<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:table="urn:import:ru.brainworm.factory.widget.table.client">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:table="urn:import:ru.brainworm.factory.widget.table.client"
+             xmlns:loading="urn:import:ru.protei.portal.ui.common.client.widget.loading">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
 
     <g:HTMLPanel styleName="p-3">
         <div class="row">
             <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container col-md-9">
                 <div class="card card-default no-border">
+                    <loading:IndeterminateCircleLoading ui:field="loading" visible="false"
+                                                        styleName="spinner-issue-table"/>
                     <div class="card-body no-padding">
-                        <table:InfiniteTableWidget ui:field="table" styleName="table table-hover issues"/>
+<!--                        <loading:IndeterminateCircleLoading ui:field="loading" visible="false"-->
+<!--                                                            styleName="spinner-issue-table"/>-->
                         <g:HTMLPanel ui:field="pagerContainer" styleName="pager-container"/>
+                        <table:InfiniteTableWidget ui:field="table" styleName="table table-hover issues"/>
                     </div>
                 </div>
             </g:HTMLPanel>
