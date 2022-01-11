@@ -80,3 +80,10 @@ $spinner-height-md:       $spinner-width-md !default;
   top: 50%;
   left: 50%;
 }
+
+.spinner-issue-table {
+  position: absolute;
+  z-index: 10;
+  top: 5%;
+  left: 50%;
+}
