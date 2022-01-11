@@ -102,9 +102,6 @@ public abstract class IssueTableFilterActivity
                 new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.ISSUE ) :
                 new ActionBarEvents.Clear()
         );
-
-
-
         if (!policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW)) {
             if (policyService.isSubcontractorCompany()) {
                 filterView.getIssueFilterParams().presetManagerCompany(policyService.getProfile().getCompany());
@@ -215,15 +212,20 @@ public abstract class IssueTableFilterActivity
     @Override
     public void loadData(int offset, int limit, final AsyncCallback<List<CaseShortView>> asyncCallback) {
         boolean isFirstChunk = offset == 0;
+        if (isFirstChunk) {
+            showLoading(true);
+        }
         query = getQuery();
         query.setOffset(offset);
         query.setLimit(limit);
         issueService.getIssues(query, new FluentCallback<SearchResult<CaseShortView>>()
                 .withError(throwable -> {
+                    showLoading(false);
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                     asyncCallback.onFailure(throwable);
                 })
                 .withSuccess(sr -> {
+                    showLoading(false);
                     if (!query.equals(getQuery())) {
                         loadData(offset, limit, asyncCallback);
                     }
@@ -234,7 +236,6 @@ public abstract class IssueTableFilterActivity
                             pagerView.setTotalCount(sr.getTotalCount());
                             restoreScroll();
                         }
-
                         asyncCallback.onSuccess(sr.getResults());
                     }
                 }));
@@ -412,6 +413,10 @@ public abstract class IssueTableFilterActivity
 
     private boolean isSubcontractorCompany(Company userCompany) {
         return userCompany.getCategory() == En_CompanyCategory.SUBCONTRACTOR;
+    }
+
+    private void showLoading(boolean isShow) {
+        view.loadingVisibility().setVisible(isShow);
     }
 
     @Inject
