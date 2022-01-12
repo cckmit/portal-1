@@ -15,4 +15,6 @@ public interface AbstractYoutrackWorkDictionaryTableActivity {
     void onCollapseClicked(boolean isCollapsed);
 
     void refreshTable();
+
+    void onSearchChanged();
 }
