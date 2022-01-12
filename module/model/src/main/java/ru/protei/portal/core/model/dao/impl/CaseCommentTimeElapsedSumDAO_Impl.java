@@ -21,7 +21,6 @@ import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
 
 public class CaseCommentTimeElapsedSumDAO_Impl extends PortalBaseJdbcDAO<CaseCommentTimeElapsedSum> implements CaseCommentTimeElapsedSumDAO {
-
     @Override
     public List<CaseCommentTimeElapsedSum> getListByQuery( CaseQuery caseCommentQuery ) {
         return getList( makeJdbcQueryParameters( caseCommentQuery ) );
@@ -44,6 +43,8 @@ public class CaseCommentTimeElapsedSumDAO_Impl extends PortalBaseJdbcDAO<CaseCom
                 .and( "case_comment.time_elapsed" ).not().isNull( true )
                 .and( getConditionByTimeElapsedTypeIds(query.getTimeElapsedTypeIds()) )
                 .and( "case_comment.author_id" ).in( query.getCommentAuthorIds() )
+
+                .and(getConditionByCaseTagsIds(query.getCaseTagsIds()))
 
                 .asQuery()
                 .offset( query.getOffset() )
@@ -68,5 +69,13 @@ public class CaseCommentTimeElapsedSumDAO_Impl extends PortalBaseJdbcDAO<CaseCom
         return condition()
                 .or("case_comment.time_elapsed_type").in(timeElapsedTypeIds)
                 .or("case_comment.time_elapsed_type").isNull(true);
+    }
+
+    private Condition getConditionByCaseTagsIds(Collection<Long> caseTagsIds) {
+        if (isEmpty(caseTagsIds)) {
+            return condition();
+        }
+
+        return condition().or("tag_id").in(caseTagsIds);
     }
 }
