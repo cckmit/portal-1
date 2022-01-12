@@ -20,6 +20,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
 public abstract class YoutrackWorkDictionaryTableActivity implements
         AbstractYoutrackWorkDictionaryTableActivity, Activity {
@@ -41,6 +45,17 @@ public abstract class YoutrackWorkDictionaryTableActivity implements
     public void refreshTable() {
         table.resetScroll();
         loadTable();
+    }
+
+    @Override
+    public void onSearchChanged() {
+        String pattern = table.searchPattern().getValue().trim();
+        List<YoutrackWorkDictionary> filtered = isEmpty(pattern) || dictionaries.isEmpty() ?
+                dictionaries :
+                dictionaries.stream().filter(makerFilter(pattern)).collect(Collectors.toList());
+        table.resetScroll();
+        table.clearRecords();
+        putTableRecords(filtered, dictionaries.size());
     }
 
     @Override
@@ -98,17 +113,24 @@ public abstract class YoutrackWorkDictionaryTableActivity implements
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                     table.showLoader(false);
-                    table.setTotalRecords(0);
+                    table.setRecords(0, 0);
                     table.hideTableOverflow();
                 })
                 .withSuccess(list -> {
+                    dictionaries = list;
+
                     table.showLoader(false);
-                    table.setTotalRecords(list.size());
-                    table.putRecords(list);
-                    if (list.size() > TABLE_LIMIT) {
-                        table.showTableOverflow(TABLE_LIMIT);
-                    }
+                    table.searchPattern().setValue(null);
+                    putTableRecords(dictionaries, dictionaries.size());
                 }));
+    }
+
+    private void putTableRecords(List<YoutrackWorkDictionary> filtered, int dictionariesSize) {
+        table.setRecords(filtered.size(), dictionariesSize);
+        table.putRecords(filtered);
+        if (filtered.size() > TABLE_LIMIT) {
+            table.showTableOverflow(TABLE_LIMIT);
+        }
     }
 
     public class YoutrackReportDictionaryDialogDetailsActivity implements AbstractDialogDetailsActivity {
@@ -153,6 +175,12 @@ public abstract class YoutrackWorkDictionaryTableActivity implements
         return dialogView.isValidName();
     }
 
+    private Predicate<YoutrackWorkDictionary> makerFilter(String searchPattern) {
+        String upperCaseSearchPattern = searchPattern.toUpperCase();
+        return dictionary -> dictionary != null && dictionary.getName() != null &&
+                dictionary.getName().toUpperCase().contains(upperCaseSearchPattern);
+    }
+
     Long dialogDictionaryId;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
@@ -166,6 +194,8 @@ public abstract class YoutrackWorkDictionaryTableActivity implements
     AbstractYoutrackWorkDictionaryDialogView dialogView;
     @Inject
     YoutrackWorkDictionaryControllerAsync controller;
+
+    private List<YoutrackWorkDictionary> dictionaries = new ArrayList<>();
 
     private final static int TABLE_LIMIT = 50;
 }

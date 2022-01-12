@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.ytwork.table;
 
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.YoutrackWorkDictionary;
 
@@ -16,7 +17,7 @@ public interface AbstractYoutrackWorkDictionaryTableView extends IsWidget {
 
     void setCollapsed(boolean isCollapsed);
 
-    void setTotalRecords(int totalRecords);
+    void setRecords(int filteredRecords, int totalRecords);
 
     void showLoader(boolean isShow);
 
@@ -31,4 +32,6 @@ public interface AbstractYoutrackWorkDictionaryTableView extends IsWidget {
     void presetScroll();
 
     void resetScroll();
+
+    HasValue<String> searchPattern();
 }
