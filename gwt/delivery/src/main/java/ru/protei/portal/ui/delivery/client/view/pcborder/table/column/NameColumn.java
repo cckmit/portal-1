@@ -35,13 +35,6 @@ public class NameColumn extends ClickColumn<PcbOrder> {
             return;
         }
 
-        com.google.gwt.dom.client.Element promptnessElement = DOM.createElement("i");
-        promptnessElement.addClassName("label");
-        En_PcbOrderPromptness promptness = pcbOrder.getPromptness();
-        promptnessElement.getStyle().setBackgroundColor(promptness == null ? null : promptness.getColor());
-        promptnessElement.setInnerText(promptness == null ? null : promptnessLang.getName(promptness));
-        cell.appendChild(promptnessElement);
-
         com.google.gwt.dom.client.Element nameElement = DOM.createElement("p");
         nameElement.addClassName("name-size");
         StringBuilder sb = new StringBuilder();
@@ -52,15 +45,26 @@ public class NameColumn extends ClickColumn<PcbOrder> {
         nameElement.setInnerText(sb.toString());
         cell.appendChild(nameElement);
 
-        com.google.gwt.dom.client.Element stateElement = DOM.createElement("p");
+        com.google.gwt.dom.client.Element stateElement = DOM.createSpan();
         stateElement.addClassName("label");
         En_PcbOrderState state = pcbOrder.getState();
         stateElement.getStyle().setBackgroundColor(state == null ? null : state.getColor());
-        stateElement.setInnerText(state == null ? null : stateLang.getStateName(state));
+        stateElement.setInnerText(stateLang.getStateName(state));
+        stateElement.setTitle(lang.pcbOrderState());
         cell.appendChild(stateElement);
 
+        com.google.gwt.dom.client.Element delimiterElement = DOM.createSpan();
+        delimiterElement.addClassName("mx-1");
+        delimiterElement.setInnerText("|");
+        cell.appendChild(delimiterElement);
 
-
+        com.google.gwt.dom.client.Element promptnessElement = DOM.createSpan();
+        promptnessElement.addClassName("label");
+        En_PcbOrderPromptness promptness = pcbOrder.getPromptness();
+        promptnessElement.getStyle().setBackgroundColor(promptness == null ? null : promptness.getColor());
+        promptnessElement.setInnerText(promptnessLang.getName(promptness));
+        promptnessElement.setTitle(lang.pcbOrderPromptness());
+        cell.appendChild(promptnessElement);
     }
 
     Lang lang;
