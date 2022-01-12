@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.ent.YoutrackProject;
@@ -20,7 +21,9 @@ import ru.protei.portal.ui.common.client.activity.ytwork.table.AbstractYoutrackW
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.columns.StaticColumn;
+import ru.protei.portal.ui.common.client.events.InputEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoading;
 
 import java.util.List;
@@ -71,8 +74,8 @@ public class YoutrackDictionaryTableView extends Composite implements AbstractYo
     }
 
     @Override
-    public void setTotalRecords(int totalRecords) {
-        count.setInnerText("(" + totalRecords + ")");
+    public void setRecords(int filteredRecords, int totalRecords) {
+        count.setInnerText("(" + filteredRecords + " / " + totalRecords + ")");
     }
 
     @Override
@@ -116,6 +119,11 @@ public class YoutrackDictionaryTableView extends Composite implements AbstractYo
         top = 0;
     }
 
+    @Override
+    public HasValue<String> searchPattern() {
+        return search;
+    }
+
     @UiHandler("add")
     public void onOpenClicked(ClickEvent event) {
         event.preventDefault();
@@ -131,6 +139,11 @@ public class YoutrackDictionaryTableView extends Composite implements AbstractYo
 
         activity.onCollapseClicked(!isCollapsed);
         setCollapsed(!isCollapsed);
+    }
+
+    @UiHandler("search")
+    public void onSearchChanged(InputEvent event) {
+        activity.onSearchChanged();
     }
 
     private void initTable() {
@@ -182,6 +195,8 @@ public class YoutrackDictionaryTableView extends Composite implements AbstractYo
     Button collapse;
     @UiField
     IndeterminateCircleLoading loading;
+    @UiField
+    CleanableSearchBox search;
     @UiField
     TableWidget<YoutrackWorkDictionary> table;
     @UiField
