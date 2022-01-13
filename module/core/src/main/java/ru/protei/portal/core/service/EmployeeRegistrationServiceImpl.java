@@ -385,7 +385,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         return stream(company.getContactInfo().getItems(En_ContactEmailSubscriptionType.SUBSCRIPTION_TO_EMPLOYEE_REGISTRATION))
                 .map(ContactItem::value)
                 .filter(Strings::isNotEmpty)
-                .map(email -> NotificationEntry.email(email, head.getLocale()))
+                .map(email -> NotificationEntry.email(email, head == null ? CrmConstants.DEFAULT_LOCALE : head.getLocale()))
                 .collect(Collectors.toList());
     }
 
