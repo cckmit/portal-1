@@ -102,7 +102,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
         employeeRegistration.setCurators(personShortDAO.getListByKeys(employeeRegistration.getCuratorsIds()));
 
-        List <NotificationEntry> registrationSubscribers = getEmployeeRegistrationSubscribersEmails(employeeRegistration.getHeadOfDepartment());
+        List <NotificationEntry> CompanyEmployeeRegistrationSubscribers = getCompanyEmployeeRegistrationSubscribers(employeeRegistration);
 
         final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEnabled();
 
@@ -112,7 +112,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
         }
 
-        return ok(id).publishEvent(new AssembledEmployeeRegistrationEvent(this, null, employeeRegistration, registrationSubscribers));
+        return ok(id).publishEvent(new AssembledEmployeeRegistrationEvent(this, null, employeeRegistration, CompanyEmployeeRegistrationSubscribers));
     }
 
     @Override
@@ -376,6 +376,19 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         employeeRegistration.setProbationPeriodEndDate(probationPeriodEndDate);
     }
 
+    private List<NotificationEntry> getCompanyEmployeeRegistrationSubscribers(EmployeeRegistration employeeRegistration) {
+        Person head = personDAO.get(employeeRegistration.getHeadOfDepartmentId());
+        Company company = companyDAO.get(employeeRegistration.getCompanyId());
+        if (company == null) return new ArrayList<>();
+        jdbcManyRelationsHelper.fill(company, Company.Fields.CONTACT_ITEMS);
+
+        return stream(company.getContactInfo().getItems(En_ContactEmailSubscriptionType.SUBSCRIPTION_TO_EMPLOYEE_REGISTRATION))
+                .map(ContactItem::value)
+                .filter(Strings::isNotEmpty)
+                .map(email -> NotificationEntry.email(email, head == null ? CrmConstants.DEFAULT_LOCALE : head.getLocale()))
+                .collect(Collectors.toList());
+    }
+
     private static String getResourceName(En_InternalResource internalResource) {
         if (internalResource == null)
             return "";
@@ -400,20 +413,6 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 return "OpenVPN";
         }
         return "";
-    }
-
-    private List<NotificationEntry> getEmployeeRegistrationSubscribersEmails (PersonShortView headOfDepartment) {
-        Person head = personDAO.get(headOfDepartment.getId());
-        if (head == null) return new ArrayList<>();
-        Company company = companyDAO.get(head.getCompanyId());
-        if (company == null) return new ArrayList<>();
-        jdbcManyRelationsHelper.fill(company, Company.Fields.CONTACT_ITEMS);
-
-        return stream(company.getContactInfo().getItems(En_ContactEmailSubscriptionType.SUBSCRIPTION_TO_EMPLOYEE_REGISTRATION))
-                .map(ContactItem::value)
-                .filter(Strings::isNotEmpty)
-                .map(email -> NotificationEntry.email(email, head.getLocale()))
-                .collect(Collectors.toList());
     }
 
     private static String getEquipmentName(En_EmployeeEquipment employeeEquipment) {
