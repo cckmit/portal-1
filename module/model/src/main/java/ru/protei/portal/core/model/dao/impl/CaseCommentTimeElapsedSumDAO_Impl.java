@@ -79,8 +79,8 @@ public class CaseCommentTimeElapsedSumDAO_Impl extends PortalBaseJdbcDAO<CaseCom
         }
 
         Query subQuery = query().select("distinct case_id").from("case_object_tag")
-                .where("tag_id").in(caseTagsIds).asQuery();
+                                .where("tag_id").in(caseTagsIds).asQuery();
 
-        return  condition().and("case_object.ID").in(subQuery);
+        return condition().and("case_object.ID").in(subQuery);
     }
 }
