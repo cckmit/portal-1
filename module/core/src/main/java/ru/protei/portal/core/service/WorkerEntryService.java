@@ -10,6 +10,8 @@ import java.util.List;
 public interface WorkerEntryService {
     Result<Void> updateFiredByDate(Date now);
 
+    Result<Void> updatePositionByDate(Date now);
+
     Result<Void> firePerson(Person person, Boolean isFired, Date fireDate,
                             Boolean isDeleted, List<UserLogin> userLogins,
                             Boolean isNeedMigrationAtFir);

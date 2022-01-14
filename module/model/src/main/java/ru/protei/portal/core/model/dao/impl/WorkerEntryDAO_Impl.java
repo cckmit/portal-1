@@ -95,6 +95,15 @@ public class WorkerEntryDAO_Impl extends PortalBaseJdbcDAO<WorkerEntry> implemen
         return getListByCondition( q.buildSql(), q.args());
     }
 
+    @Override
+    public List<WorkerEntry> getForUpdatePositionByDate(Date now) {
+        Query q = query().where(WorkerEntry.Columns.NEW_POSITION_NAME).not().equal(null)
+                         .and(WorkerEntry.Columns.NEW_POSITION_TRANSFER_DATE).le(now)
+                         .asQuery();
+
+        return getListByCondition( q.buildSql(), q.args());
+    }
+
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(WorkerEntryQuery query) {
         return new SqlCondition().build((condition, args) -> {

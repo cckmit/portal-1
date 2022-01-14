@@ -85,6 +85,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         scheduler.schedule(this::processScheduledMailReportsWeekly, new CronTrigger( "0 0 5 * * MON"));
         // at 04:04:00 am every day
         scheduler.schedule(this::updateFiredByDate, new CronTrigger( "0 04 4 * * ?"));
+        // at 04:00:00 am every day
+        scheduler.schedule(this::updatePositionByDate, new CronTrigger( "0 04 0 * * ?"));
 
         scheduleNotificationsAboutPauseTime();
     }
@@ -182,6 +184,13 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         log.info( "updateFiredByDate" );
         workerEntryService.updateFiredByDate(new Date());
     }
+
+    @Override
+    public void updatePositionByDate() {
+        log.info( "updatePositionByDate" );
+        workerEntryService.updatePositionByDate(new Date());
+    }
+
 
     private boolean isNotConfiguredSystemId() {
         if (HelperFunc.isEmpty(config.data().getCommonConfig().getSystemId())) {

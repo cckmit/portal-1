@@ -65,6 +65,15 @@ public class WorkerEntry extends AuditableObject {
     @JdbcColumn(name = "is_deleted")
     private Boolean isDeleted;
 
+    @JdbcColumn(name = Columns.NEW_POSITION_NAME)
+    private String newPositionName;
+
+    @JdbcColumn(name = Columns.NEW_POSITION_DEPARTMENT_ID)
+    private Long newPositionDepartmentId;
+
+    @JdbcColumn(name = Columns.NEW_POSITION_TRANSFER_DATE)
+    private Date newPositionTransferDate;
+
     @Override
     public String getAuditType() {
         return "Worker";
@@ -223,7 +232,34 @@ public class WorkerEntry extends AuditableObject {
         isDeleted = deleted;
     }
 
+    public String getNewPositionName() {
+        return newPositionName;
+    }
+
+    public void setNewPositionName(String newPositionName) {
+        this.newPositionName = newPositionName;
+    }
+
+    public Long getNewPositionDepartmentId() {
+        return newPositionDepartmentId;
+    }
+
+    public void setNewPositionDepartmentId(Long newPositionDepartmentId) {
+        this.newPositionDepartmentId = newPositionDepartmentId;
+    }
+
+    public Date getNewPositionTransferDate() {
+        return newPositionTransferDate;
+    }
+
+    public void setNewPositionTransferDate(Date newPositionTransferDate) {
+        this.newPositionTransferDate = newPositionTransferDate;
+    }
+
     public interface Columns {
         String FIRED_FATE = "fired_date";
+        String NEW_POSITION_NAME = "new_position_name";
+        String NEW_POSITION_DEPARTMENT_ID = "new_position_department_id";
+        String NEW_POSITION_TRANSFER_DATE = "new_position_transfer_date";
     }
 }

@@ -1329,18 +1329,6 @@ public class WorkerController {
             return this;
         }
 
-        public OperationData requireTest() {
-            requireHomeItem();
-            if (!isValid())
-                return this;
-
-            if (workerEntryDAO.checkExistsByPosName(record.getPositionName().trim(), homeGroupItem.getCompanyId())) {
-                lastError = En_ErrorCode.EXIST_POS_WOR;
-            }
-
-            return this;
-        }
-
         private String newPositionName;
         private Long newPositionDepartmentId;
         private Date newPositionTransferDate;

@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.ent.WorkerEntry.Columns.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 
 public class WorkerEntryServiceImpl implements WorkerEntryService {
@@ -44,6 +45,8 @@ public class WorkerEntryServiceImpl implements WorkerEntryService {
     LegacySystemDAO migrationManager;
     @Autowired
     PortalConfig portalConfig;
+    @Autowired
+    CompanyDepartmentDAO companyDepartmentDAO;
     
     @Override
     @Transactional
@@ -58,6 +61,24 @@ public class WorkerEntryServiceImpl implements WorkerEntryService {
                         entry.getDeleted(), userLogins,
                         portalConfig.data().legacySysConfig().isExportEnabled());
             }
+        }
+        return ok();
+    }
+
+    @Override
+    @Transactional
+    public Result<Void> updatePositionByDate(Date now) {
+        for (WorkerEntry entry: workerEntryDAO.getForUpdatePositionByDate(now)) {
+            Person person = personDAO.get(entry.getPersonId());
+            person.setPosition(entry.getNewPositionName());
+            person.setDepartment(companyDepartmentDAO.get(entry.getNewPositionDepartmentId()).getName());
+            personDAO.partialMerge(person, "department", "displayPosition");
+
+            entry.setNewPositionName(null);
+            entry.setNewPositionDepartmentId(null);
+            entry.setNewPositionTransferDate(null);
+            workerEntryDAO.partialMerge(entry, NEW_POSITION_NAME, NEW_POSITION_DEPARTMENT_ID,
+                                               NEW_POSITION_TRANSFER_DATE);
         }
         return ok();
     }
