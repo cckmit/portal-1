@@ -6,9 +6,10 @@
 
     <g:HTMLPanel>
         <div class="row">
-            <g:HTMLPanel styleName="col-md-12" ui:field="costOverflowWarning" visible="false">
-                <div class="col-md-12 alert alert-danger">
-                    <strong><ui:text from="{lang.attention}"/>: </strong><ui:text from="{lang.contractDatesWarningCostOverflow}"/>
+            <g:HTMLPanel styleName="col-md-12" ui:field="warning" visible="false">
+                <div class="col-md-12 alert alert-warning">
+                    <strong><ui:text from="{lang.attention}"/>: </strong>
+                    <g:InlineLabel ui:field="warningText"/>
                 </div>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="tableContainer" styleName="col-md-12">
