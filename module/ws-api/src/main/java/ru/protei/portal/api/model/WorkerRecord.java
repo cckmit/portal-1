@@ -19,6 +19,7 @@ import java.util.Date;
 public class WorkerRecord {
 
     private String companyCode;
+    private String companyName;
 
     private Long id;
     private String firstName;
@@ -52,6 +53,7 @@ public class WorkerRecord {
 
     private String positionName;
 
+    private String workerExtId;
     private String newPositionName;
     private Long newPositionDepartmentId;
     private Date newPositionTransferDate;
@@ -75,6 +77,15 @@ public class WorkerRecord {
 
     public void setCompanyCode(String companyCode) {
         this.companyCode = companyCode;
+    }
+
+    @XmlElement(name = "company-name")
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 
     @XmlElement(name = "id")
@@ -317,6 +328,15 @@ public class WorkerRecord {
 
     public void setPositionName(String positionName) {
         this.positionName = positionName;
+    }
+
+    @XmlElement(name = "worker-ext-id")
+    public String getWorkerExtId() {
+        return workerExtId;
+    }
+
+    public void setWorkerExtId(String workerExtId) {
+        this.workerExtId = workerExtId;
     }
 
     public String getNewPositionName() {

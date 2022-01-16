@@ -46,6 +46,7 @@ import java.util.function.Supplier;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.ent.WorkerEntry.Columns.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
 
@@ -918,12 +919,22 @@ public class WorkerController {
         return ok(null);
     }
 
-    private Result<Long> updateWorkerPosition(WorkerRecord rec){
+    private Result<String> updateWorkerPosition(WorkerRecord rec){
         try {
-            //todo implement
-            logger.debug("success result, workerRecordId={}", rec.getId());
-            return ok(rec.getId());
+            Company workerCompany = companyDAO.getCompanyByName(rec.getCompanyName());
+            WorkerEntry workerToUpdate = workerEntryDAO.getByExternalId(rec.getWorkerExtId(), workerCompany.getId());
+            if (workerToUpdate != null) {
+                workerToUpdate.setNewPositionName(rec.getNewPositionName());
+                workerToUpdate.setNewPositionDepartmentId(rec.getNewPositionDepartmentId());
+                workerToUpdate.setNewPositionTransferDate(rec.getNewPositionTransferDate());
 
+                boolean updated = workerEntryDAO.partialMerge(workerToUpdate, NEW_POSITION_NAME, NEW_POSITION_DEPARTMENT_ID,
+                                                                              NEW_POSITION_TRANSFER_DATE);
+                if (updated) {
+                    logger.debug("success result, workerExtId={}", rec.getWorkerExtId());
+                    return ok(rec.getWorkerExtId());
+                }
+            }
         } catch (Exception e) {
             logger.error("error while update worker's position", e);
         }
