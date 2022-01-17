@@ -101,7 +101,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
                 message = join( message, ", ", curator.getDisplayName() );
             }
 
-            List<String> recipients = collectAdditionalRecipients( headOfDepartment );
+            List<String> recipients = collectAdditionalRecipients( employeeRegistration );
             notifyAdditionalRecipients( recipients, employeeFullName, employeeId );
 
             for (String recipient : recipients) {
@@ -134,14 +134,14 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
             message = join(message, ", ", curator.getDisplayName());
         }
 
-        List<String> recipients = collectAdditionalRecipients(headOfDepartment);
-        notifyAdditionalRecipients(recipients, employeeFullName, employeeId);
+        List<String> recipients = collectAdditionalRecipients( employeeRegistration );
+        notifyAdditionalRecipients( recipients, employeeFullName, employeeId );
 
         for (String recipient : recipients) {
             message = join(message, ", ", recipient);
         }
 
-        addCaseComment(employeeRegistration.getId(), message.toString());
+        addCaseComment( employeeRegistration.getId(), message.toString() );
 
         return ok(true );
     }
@@ -213,9 +213,9 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
                 recipients, employeeFullName, employeeId ) );
     }
 
-    private List<String> collectAdditionalRecipients(Person headOfDepartment) {
-        Long companyId = headOfDepartment.getCompanyId();
-        Company company = companyDAO.get(companyId);
+    private List<String> collectAdditionalRecipients(EmployeeRegistration employeeRegistration) {
+        Company company = companyDAO.get(employeeRegistration.getCompanyId());
+        if (company == null) return new ArrayList<>();
         jdbcManyRelationsHelper.fill(company, Company.Fields.CONTACT_ITEMS);
 
         return stream(company.getContactInfo().getItems(En_ContactItemType.EMAIL))
