@@ -146,6 +146,9 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         if (registration.getEmploymentDate() == null)
             return lang.employeeRegistrationValidationEmploymentDate();
 
+        if (registration.getCompanyId() == null)
+            return lang.employeeRegistrationValidationCompany();
+
         if (registration.getHeadOfDepartment() == null)
             return lang.employeeRegistrationValidationHeadOfDepartment();
 

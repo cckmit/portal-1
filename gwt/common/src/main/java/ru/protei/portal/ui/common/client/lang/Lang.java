@@ -1956,6 +1956,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationValidationEmployeeFullName();
 
+    String employeeRegistrationValidationCompany();
+
     String employeeRegistrationValidationPosition();
 
     String employeeRegistrationValidationEmploymentDate();
