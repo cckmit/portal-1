@@ -2293,7 +2293,7 @@ body.sidebar-visible .page-sidebar .sidebar-header .sidebar-header-controls {
     height: 100%
 }
 
-.quickview-wrapper .nav-tabs ~ .tab-content ul {
+.quickview-wrapper .nav-tabs ~ .tab-content ul:not(.markdown ul) {
     margin: 0;
     padding: 0
 }

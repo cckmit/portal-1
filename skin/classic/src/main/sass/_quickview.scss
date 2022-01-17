@@ -131,7 +131,7 @@
         height: initial;
       }
 
-      ul {
+      ul:not(.markdown ul) {
         margin: initial;
         padding: initial;
 
