@@ -4039,4 +4039,6 @@ public interface Lang extends Messages, ContactItemLang {
     String modulesStatesUpdated();
 
     String contractDatesWarningCostFlow();
+
+    String inputProjectNumber();
 }
