@@ -68,6 +68,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         fillDateRanges(dateModifiedRange);
         dateCreatedRange.setHeader(lang.created());
         dateModifiedRange.setHeader(lang.updated());
+        initiatorsModel.setIsFired(null);
         initiators.setPersonModel( initiatorsModel );
         managersModel.setIsFired(null);
         managers.setPersonModel(managersModel);
