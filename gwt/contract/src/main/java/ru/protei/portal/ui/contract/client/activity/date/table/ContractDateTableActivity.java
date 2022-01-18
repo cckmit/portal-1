@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.ui.common.client.events.ContractDateEvents;
@@ -37,18 +36,19 @@ public abstract class ContractDateTableActivity implements AbstractContractDateT
 
         view.setData(event.contractDates);
 
+        view.hideWarning();
         showCostOverflowWarning(showTable.contractDates);
     }
 
     @Event
     public void onRefreshClicked(ContractDateEvents.Refresh event) {
-        view.setData(showTable.contractDates);
-        showCostOverflowWarning(showTable.contractDates);
+        onRefreshDates();
     }
 
     @Event
     public void contractDateAdded(ContractDateEvents.Added event) {
         view.addRow(event.value);
+        onRefreshDates();
     }
 
     @Override
@@ -68,6 +68,11 @@ public abstract class ContractDateTableActivity implements AbstractContractDateT
         showCostOverflowWarning(showTable.contractDates);
     }
 
+    private void onRefreshDates() {
+        view.setData(showTable.contractDates);
+        showCostOverflowWarning(showTable.contractDates);
+    }
+
     private void showCostOverflowWarning(List<ContractDate> value) {
         long costOfPayments = stream(value)
                 .map(ContractDate::getCost)
@@ -75,8 +80,12 @@ public abstract class ContractDateTableActivity implements AbstractContractDateT
                 .mapToLong(Money::getFull)
                 .sum();
         long costOfContract = init.contractCostSupplier.get().getFull();
-        boolean isOverflow = costOfPayments > costOfContract;
-        view.costOverflowWarningVisibility().setVisible(isOverflow);
+        if (costOfContract == costOfPayments) {
+            view.hideWarning();
+            return;
+        }
+
+        view.showWarning(costOfPayments > costOfContract ? lang.contractDatesWarningCostOverflow() : lang.contractDatesWarningCostFlow());
     }
 
     @Inject

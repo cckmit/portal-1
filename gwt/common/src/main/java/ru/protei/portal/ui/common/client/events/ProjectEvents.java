@@ -113,6 +113,7 @@ public class ProjectEvents {
     public static class Search {
         public boolean showProducts;
         public boolean showManagers;
+        public boolean separateFormView = false;
 
         public Search(HasWidgets parent, boolean showProducts, boolean showManagers) {
             this.parent = parent;
@@ -120,6 +121,11 @@ public class ProjectEvents {
             this.showManagers = showManagers;
         }
         public HasWidgets parent;
+
+        public Search withSeparateFormView() {
+            this.separateFormView = true;
+            return this;
+        }
     }
 
     /**

@@ -18,6 +18,9 @@ public interface AbstractProjectSearchView extends IsWidget {
     void setActivity( AbstractProjectSearchActivity activity);
     HasValue<String> name();
     HasValue<En_CustomerType> customerType();
+
+    HasValue<Long> id();
+
     HasValue<Set<ProductShortView>> products();
     HasValue<Set<PersonShortView>> managers();
     HasValue<DateInterval> dateCreatedRange();
@@ -29,4 +32,6 @@ public interface AbstractProjectSearchView extends IsWidget {
     void clearProjectList();
     void fillProjectList(List<ProjectInfo> list);
     void resetFilter();
+
+    void setSeparateFormView(boolean isSeparateFormView);
 }

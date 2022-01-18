@@ -40,6 +40,7 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
         view.clearProjectList();
         view.setVisibleProducts(event.showProducts);
         view.setVisibleManagers(event.showManagers);
+        view.setSeparateFormView(event.separateFormView);
     }
 
     @Override
@@ -71,7 +72,7 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
     }
 
     private ProjectQuery makeQuery() {
-        ProjectQuery query = new ProjectQuery(view.name().getValue(), En_SortField.project_creation_date, En_SortDir.DESC);
+        ProjectQuery query = new ProjectQuery(view.name().getValue(), view.id().getValue(), En_SortField.project_creation_date, En_SortDir.DESC);
         DateInterval createdInterval = view.dateCreatedRange().getValue();
         if (createdInterval != null) {
             query.setCreatedFrom(createdInterval.from);

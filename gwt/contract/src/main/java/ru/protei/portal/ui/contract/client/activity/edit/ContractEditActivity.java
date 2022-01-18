@@ -3,6 +3,7 @@ package ru.protei.portal.ui.contract.client.activity.edit;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.events.ReplaceLastEvent;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
@@ -29,6 +30,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
@@ -329,15 +331,19 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     }
 
     private void saveContract() {
-        boolean isNew = isNew(contract);
-        Runnable onDone = () -> {
-            fireEvent(new ContractEvents.ChangeModel());
-            fireEvent(new ProjectEvents.ChangeModel());
-            fireEvent(new ContractEvents.Show(!isNew));
+        final boolean isNew = isNew(contract);
+        Consumer<Long> onDone = id -> {
+                ContractEditActivity.this.fireEvent(new ContractEvents.ChangeModel());
+                ContractEditActivity.this.fireEvent(new ProjectEvents.ChangeModel());
+                if (!isNew) {
+                    ContractEditActivity.this.fireEvent(new ContractEvents.Show(true));
+                } else {
+                    ContractEditActivity.this.fireEvent(new ReplaceLastEvent(new ContractEvents.Edit(id)));
+                }
         };
+
         saveContract(contract,
-            throwable -> {},
-            id -> onDone.run()
+            throwable -> {}, onDone
         );
     }
 

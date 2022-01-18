@@ -903,6 +903,7 @@ public class DebugIds {
             String FIND_BUTTON = "document-project-search-find-button";
             String RESET_BUTTON = "document-project-search-reset-button";
             String SHOW_FIRST_RECORDS_LABEL = "document-project-search-show-first-records-label";
+            String ID_INPUT ="document-project-search-id";
         }
 
         interface PROJECT_CREATE {
