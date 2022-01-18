@@ -5,6 +5,9 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 
+import static ru.protei.portal.core.model.ent.WorkerEntry.Columns.POSITION_DEPARTMENT_ID;
+import static ru.protei.portal.core.model.ent.WorkerEntry.Columns.POSITION_NAME;
+
 /**
  * Created by michael on 17.05.16.
  */
@@ -20,7 +23,7 @@ public class WorkerEntry extends AuditableObject {
     @JdbcColumn(name="personId")
     private Long personId;
 
-    @JdbcColumn(name="dep_id")
+    @JdbcColumn(name=POSITION_DEPARTMENT_ID)
     private Long departmentId;
 
     @JdbcJoinedColumn(localColumn = "dep_id", table = "company_dep", sqlTableAlias = "d", remoteColumn = "id", mappedColumn = "dep_name")
@@ -41,7 +44,7 @@ public class WorkerEntry extends AuditableObject {
     @JdbcColumn(name="positionId")
     private Long positionId;
 
-    @JdbcJoinedColumn(localColumn = "positionId", table = "worker_position", remoteColumn = "id", mappedColumn = "pos_name")
+    @JdbcJoinedColumn(localColumn = POSITION_NAME, table = "worker_position", remoteColumn = "id", mappedColumn = "pos_name")
     private String positionName;
 
     @JdbcColumn(name="hireDate")
@@ -258,6 +261,8 @@ public class WorkerEntry extends AuditableObject {
 
     public interface Columns {
         String FIRED_FATE = "fired_date";
+        String POSITION_NAME = "positionId";
+        String POSITION_DEPARTMENT_ID = "dep_id";
         String NEW_POSITION_NAME = "new_position_name";
         String NEW_POSITION_DEPARTMENT_ID = "new_position_department_id";
         String NEW_POSITION_TRANSFER_DATE = "new_position_transfer_date";

@@ -77,8 +77,7 @@ public class WorkerEntryServiceImpl implements WorkerEntryService {
             entry.setNewPositionName(null);
             entry.setNewPositionDepartmentId(null);
             entry.setNewPositionTransferDate(null);
-            workerEntryDAO.partialMerge(entry, NEW_POSITION_NAME, NEW_POSITION_DEPARTMENT_ID,
-                                               NEW_POSITION_TRANSFER_DATE);
+            workerEntryDAO.partialMerge(entry, POSITION_NAME, POSITION_DEPARTMENT_ID);
         }
         return ok();
     }

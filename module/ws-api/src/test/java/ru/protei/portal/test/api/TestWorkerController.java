@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -19,18 +20,12 @@ import ru.protei.portal.api.config.APIConfigurationContext;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_AuthType;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
-import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dao.UserLoginDAO;
-import ru.protei.portal.core.model.dao.UserRoleDAO;
-import ru.protei.portal.core.model.dao.WorkerEntryDAO;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_Scope;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserLogin;
-import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.struct.Photo;
 
 import javax.servlet.http.HttpServletResponse;
@@ -62,6 +57,9 @@ public class TestWorkerController {
     private UserLoginDAO userLoginDAO;
     private PersonDAO personDAO;
     private WorkerEntryDAO workerEntryDAO;
+    private CompanyDepartmentDAO companyDepartmentDAO;
+    private WorkerPositionDAO workerPositionDAO;
+    private CompanyDAO companyDAO;
     private String WS_API_TEST_ROLE_CODE = "ws_api_test_role" + System.currentTimeMillis();
     private String QWERTY_PASSWORD = "qwerty_test_API" + new Date().getTime();
     private UserRole userRole;
@@ -82,6 +80,10 @@ public class TestWorkerController {
         userLoginDAO = webApplicationContext.getBean(UserLoginDAO.class);
         userRoleDAO = webApplicationContext.getBean(UserRoleDAO.class);
         workerEntryDAO = webApplicationContext.getBean(WorkerEntryDAO.class);
+        companyDepartmentDAO = webApplicationContext.getBean(CompanyDepartmentDAO.class);
+        workerPositionDAO = webApplicationContext.getBean(WorkerPositionDAO.class);
+        companyDAO = webApplicationContext.getBean(CompanyDAO.class);
+
         createAndPersistPerson();
         createAndPersistUserRoles();
         createAndPersistUserLogin();
@@ -89,9 +91,16 @@ public class TestWorkerController {
 
     @After
     public void removePersonToAuth() {
-        removeUserLogin();
+        if (person != null) {
+            removeUserLogin();
+            removePerson();
+        }
+
         removeUserRoles();
-        removePerson();
+
+        companyDepartmentDAO.removeAll();
+        workerPositionDAO.removeAll();
+        companyDAO.removeAll();
         workerEntryDAO.removeAll();
     }
 
@@ -460,9 +469,22 @@ public class TestWorkerController {
 
     @Test
     public void testUpdateWorkerPosition() throws Exception {
-        WorkerRecord newWorkerPosition = createNewWorkerPosition();
-        updateWorkerPosition(newWorkerPosition);
-        //todo implement
+        Company company = companyDAO.getCompanyByName("Протей");
+        Long companyDepartmentId = companyDepartmentDAO.persist(createCompanyDepartmentRecord(company.getId()));
+
+        WorkerPosition workerPosition = createWorkerPositionRecord(company.getId());
+        workerPositionDAO.persist(workerPosition);
+
+        WorkerEntry newWorker = createNewWorker(company.getId(), companyDepartmentId, workerPosition);
+        Long workerId = workerEntryDAO.persist(newWorker);
+
+        WorkerRecord newWorkerPosition = createNewWorkerPosition(workerId, newWorker.getExternalId());
+        Result<Long> updatedWorkerIdResult = updateWorkerPosition(newWorkerPosition);
+
+        WorkerEntry updatedWorker = workerEntryDAO.get(updatedWorkerIdResult.getData());
+        Assert.assertNotNull(updatedWorker);
+        Assert.assertEquals(newWorkerPosition.getNewPositionName(), updatedWorker.getPositionName());
+        Assert.assertEquals(newWorkerPosition.getNewPositionDepartmentId(), updatedWorker.getDepartmentId());
     }
 
     private void createPhotosById(Long id) throws Exception{
@@ -795,7 +817,7 @@ public class TestWorkerController {
         personDAO.remove(person);
     }
 
-    private Result updateWorkerPosition(WorkerRecord newWorkerPosition) throws Exception {
+    private Result<Long> updateWorkerPosition(WorkerRecord newWorkerPosition) throws Exception {
         logger.debug("worker position data = " + newWorkerPosition);
 
         String uri = BASE_URI + "update.worker.position";
@@ -810,19 +832,51 @@ public class TestWorkerController {
                         .content(workerPositionXml)
         );
 
-        Result result = (Result) fromXml(resultActions.andReturn().getResponse().getContentAsString());
+        MockHttpServletResponse response = resultActions.andReturn().getResponse();
+        Result<Long> result = (Result<Long>) fromXml(response.getContentAsString());
+        Assert.assertTrue(result.isOk());
 
-        logger.debug("result = " + result);
-
-        return Result.ok(result);
+        return Result.ok(result.getData());
     }
 
-    private WorkerRecord createNewWorkerPosition() {
+    private WorkerEntry createNewWorker(Long companyId, Long companyDepartmentId, WorkerPosition workerPosition) {
+        WorkerEntry worker = new WorkerEntry();
+        worker.setPersonId(1L);
+        worker.setCreated(new Date());
+        worker.setCompanyId(companyId);
+        worker.setDepartmentId(companyDepartmentId);
+        worker.setPositionId(workerPosition.getId());
+        worker.setPositionName(workerPosition.getName());
+        worker.setExternalId("00000001");
+        logger.debug("newWorker = " + worker);
+        return worker;
+    }
+
+    private WorkerRecord createNewWorkerPosition(Long workerId, String externalId) {
         WorkerRecord position = new WorkerRecord();
-        position.setNewPositionName("protei");
-        position.setNewPositionDepartmentId(1L);
+        position.setId(workerId);
+        position.setCompanyName("Протей");
+        position.setWorkerExtId(externalId);
+        position.setNewPositionName("Менеджер проектов");
+        position.setNewPositionDepartmentId(13L);
         position.setNewPositionTransferDate(new Date());
         logger.debug("worker = " + position);
         return position;
+    }
+
+    private WorkerPosition createWorkerPositionRecord(Long companyId) {
+        WorkerPosition workerPosition = new WorkerPosition();
+        workerPosition.setName("Инженер-програмист");
+        workerPosition.setCompanyId(companyId);
+        return workerPosition;
+    }
+
+    private CompanyDepartment createCompanyDepartmentRecord(Long companyId) {
+        CompanyDepartment companyDepartment = new CompanyDepartment();
+        companyDepartment.setCreated(new Date());
+        companyDepartment.setName("New Company Department");
+        companyDepartment.setCompanyId(companyId);
+        logger.debug("companyDepartment = " + companyDepartment.toString());
+        return companyDepartment;
     }
 }

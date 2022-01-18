@@ -898,9 +898,8 @@ public class WorkerController {
             return isValid;
         }
 
-        updateWorkerPosition(rec);
-
-        return ok(rec.getId());
+        Result<Long> result = updateWorkerPosition(rec);
+        return ok(result.getData());
     }
 
     private Result<Long> isValidNewEmployeePosition(WorkerRecord position) {
@@ -919,20 +918,18 @@ public class WorkerController {
         return ok(null);
     }
 
-    private Result<String> updateWorkerPosition(WorkerRecord rec){
+    private Result<Long> updateWorkerPosition(WorkerRecord rec){
         try {
             Company workerCompany = companyDAO.getCompanyByName(rec.getCompanyName());
             WorkerEntry workerToUpdate = workerEntryDAO.getByExternalId(rec.getWorkerExtId(), workerCompany.getId());
             if (workerToUpdate != null) {
-                workerToUpdate.setNewPositionName(rec.getNewPositionName());
-                workerToUpdate.setNewPositionDepartmentId(rec.getNewPositionDepartmentId());
-                workerToUpdate.setNewPositionTransferDate(rec.getNewPositionTransferDate());
+                workerToUpdate.setPositionName(rec.getNewPositionName());
+                workerToUpdate.setDepartmentId(rec.getNewPositionDepartmentId());
 
-                boolean updated = workerEntryDAO.partialMerge(workerToUpdate, NEW_POSITION_NAME, NEW_POSITION_DEPARTMENT_ID,
-                                                                              NEW_POSITION_TRANSFER_DATE);
+                boolean updated = workerEntryDAO.partialMerge(workerToUpdate, POSITION_NAME, POSITION_DEPARTMENT_ID);
                 if (updated) {
                     logger.debug("success result, workerExtId={}", rec.getWorkerExtId());
-                    return ok(rec.getWorkerExtId());
+                    return ok(workerToUpdate.getId());
                 }
             }
         } catch (Exception e) {
