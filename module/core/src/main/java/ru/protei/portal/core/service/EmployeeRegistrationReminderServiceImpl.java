@@ -101,7 +101,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
                 message = join( message, ", ", curator.getDisplayName() );
             }
 
-            List<String> recipients = collectAdditionalRecipients( employeeRegistration );
+            List<String> recipients = collectAdditionalRecipients( employeeRegistration.getCompanyId() );
             notifyAdditionalRecipients( recipients, employeeFullName, employeeId );
 
             for (String recipient : recipients) {
@@ -134,7 +134,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
             message = join(message, ", ", curator.getDisplayName());
         }
 
-        List<String> recipients = collectAdditionalRecipients( employeeRegistration );
+        List<String> recipients = collectAdditionalRecipients( employeeRegistration.getCompanyId() );
         notifyAdditionalRecipients( recipients, employeeFullName, employeeId );
 
         for (String recipient : recipients) {
@@ -213,9 +213,11 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
                 recipients, employeeFullName, employeeId ) );
     }
 
-    private List<String> collectAdditionalRecipients(EmployeeRegistration employeeRegistration) {
-        Company company = companyDAO.get(employeeRegistration.getCompanyId());
-        if (company == null) return new ArrayList<>();
+    private List<String> collectAdditionalRecipients(Long companyId) {
+        Company company = companyDAO.get(companyId);
+        if (company == null) {
+            return new ArrayList<>();
+        }
         jdbcManyRelationsHelper.fill(company, Company.Fields.CONTACT_ITEMS);
 
         return stream(company.getContactInfo().getItems(En_ContactItemType.EMAIL))

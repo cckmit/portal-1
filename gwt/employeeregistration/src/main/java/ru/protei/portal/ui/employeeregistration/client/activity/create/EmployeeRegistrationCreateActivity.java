@@ -59,8 +59,9 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
     @Override
     public void onSaveClicked() {
         EmployeeRegistration newEmployeeRegistration = fillDto( new EmployeeRegistration() );
-        if (getValidationError(newEmployeeRegistration) != null) {
-            showValidationError(newEmployeeRegistration);
+        String error = getValidationError(newEmployeeRegistration);
+        if (error != null) {
+            showValidationError(error);
             return;
         }
         saveEmployeeRegistration(newEmployeeRegistration);
@@ -132,8 +133,8 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         }
     }
 
-    private void showValidationError(EmployeeRegistration employeeRegistration) {
-        fireEvent(new NotifyEvents.Show(getValidationError(employeeRegistration), NotifyEvents.NotifyType.ERROR));
+    private void showValidationError(String error) {
+        fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
     }
 
     private String getValidationError(EmployeeRegistration registration) {
