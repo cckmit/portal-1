@@ -3,6 +3,8 @@
 </#macro>
 
 <@set name="_employee_full_name" value="${employee_full_name}"/>
+<@set name="_company" value="${company}"/>
+<@set name="_department " value="${department}"/>
 <@set name="_head_of_department" value="${head_of_department}"/>
 <@set name="_employment_type" value="${employment_type}"/>
 <@set name="_employment_type_full_time" value="${employment_type_full_time}"/>
@@ -18,6 +20,7 @@
 <@set name="_employment_date" value="${employment_date}"/>
 <@set name="_curators" value="${curators}"/>
 <@set name="_created" value="${created}"/>
+<@set name="_creator" value="${creator}"/>
 <@set name="_workplace" value="${workplace}"/>
 <@set name="_equipment_list" value="${equipment_list}"/>
 <@set name="_resources_list" value="${resources_list}"/>
@@ -82,6 +85,22 @@
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                 ${(employeeFullName)!''}
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                ${_company}
+            </td>
+            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                ${(company)!''}
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                ${_department}
+            </td>
+            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                ${(department)!''}
             </td>
         </tr>
         <tr>
@@ -190,6 +209,14 @@
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                 ${(created)!}
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                ${_creator}
+            </td>
+            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                ${(creator)!}
             </td>
         </tr>
         <tr>

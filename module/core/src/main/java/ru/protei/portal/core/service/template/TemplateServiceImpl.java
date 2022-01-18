@@ -288,6 +288,8 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("linkToEmployeeRegistration", String.format(urlTemplate, newState.getId()));
         templateModel.put("employeeFullName", HtmlUtils.htmlEscape(newState.getEmployeeFullName()));
+        templateModel.put("company", newState.getCompanyName());
+        templateModel.put("department", newState.getDepartment());
         templateModel.put("headOfDepartmentShortName", newState.getHeadOfDepartmentShortName());
         templateModel.put("employmentType", newState.getEmploymentType().name());
         templateModel.put("withRegistration", newState.isWithRegistration());
@@ -297,6 +299,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldEmploymentDate", oldState == null ? null : oldState.getEmploymentDate());
         templateModel.put("newEmploymentDate", newState.getEmploymentDate());
         templateModel.put("created", newState.getCreated());
+        templateModel.put("creator", newState.getCreatorShortName());
         templateModel.put("workplace", HtmlUtils.htmlEscape(newState.getWorkplace()));
         templateModel.put("equipmentList", newState.getEquipmentList());
         templateModel.put("operatingSystem", HtmlUtils.htmlEscape(newState.getOperatingSystem()));
