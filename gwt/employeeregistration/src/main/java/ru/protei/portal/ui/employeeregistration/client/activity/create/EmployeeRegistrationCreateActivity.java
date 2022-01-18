@@ -61,7 +61,7 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         EmployeeRegistration newEmployeeRegistration = fillDto( new EmployeeRegistration() );
         String error = getValidationError(newEmployeeRegistration);
         if (error != null) {
-            showValidationError(error);
+            fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
             return;
         }
         saveEmployeeRegistration(newEmployeeRegistration);
@@ -133,16 +133,9 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         }
     }
 
-    private void showValidationError(String error) {
-        fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
-    }
-
     private String getValidationError(EmployeeRegistration registration) {
         if (StringUtils.isBlank(registration.getEmployeeFullName()))
             return lang.employeeRegistrationValidationEmployeeFullName();
-
-        if (StringUtils.isBlank(registration.getPosition()))
-            return lang.employeeRegistrationValidationPosition();
 
         if (registration.getEmploymentDate() == null)
             return lang.employeeRegistrationValidationEmploymentDate();
@@ -152,6 +145,9 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
 
         if (registration.getHeadOfDepartment() == null)
             return lang.employeeRegistrationValidationHeadOfDepartment();
+
+        if (StringUtils.isBlank(registration.getPosition()))
+            return lang.employeeRegistrationValidationPosition();
 
         if (registration.getProbationPeriodMonth() == null || registration.getProbationPeriodMonth() < 1)
             return lang.employeeRegistrationValidationProbationPeriod();
