@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
@@ -23,12 +24,12 @@ import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AppServiceAsync;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
+import java.util.HashSet;
 import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -106,6 +107,15 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         loadTable();
     }
 
+    private List<En_ContractState> getStates(List<En_ContractState> states) {
+        if (isEmpty(states)){
+            states = En_ContractState.contractStatesByDefault();
+            filterView.states().setValue(new HashSet<>(En_ContractState.contractStatesByDefault()));
+        }
+
+        return states;
+    }
+
     @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Contract>> asyncCallback) {
         boolean isFirstChunk = offset == 0;
@@ -156,7 +166,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         query.setManagerIds(collectIds(filterView.managers().getValue()));
         query.setTypes(nullIfEmpty(listOfOrNull(filterView.types().getValue())));
         query.setCaseTagsIds(nullIfEmpty(toList(filterView.tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
-        query.setStates(nullIfEmpty(listOfOrNull(filterView.states().getValue())));
+        query.setStates(getStates(listOfOrNull(filterView.states().getValue())));
         ProductDirectionInfo value = filterView.direction().getValue();
         query.setDirectionId(value == null ? null : value.id);
         query.setKind(filterView.kind().getValue());
