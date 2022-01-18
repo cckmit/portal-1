@@ -101,7 +101,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
                 message = join( message, ", ", curator.getDisplayName() );
             }
 
-            List<String> recipients = collectAdditionalRecipients( headOfDepartment );
+            List<String> recipients = collectAdditionalRecipients( employeeRegistration.getCompanyId() );
             notifyAdditionalRecipients( recipients, employeeFullName, employeeId );
 
             for (String recipient : recipients) {
@@ -134,14 +134,14 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
             message = join(message, ", ", curator.getDisplayName());
         }
 
-        List<String> recipients = collectAdditionalRecipients(headOfDepartment);
-        notifyAdditionalRecipients(recipients, employeeFullName, employeeId);
+        List<String> recipients = collectAdditionalRecipients( employeeRegistration.getCompanyId() );
+        notifyAdditionalRecipients( recipients, employeeFullName, employeeId );
 
         for (String recipient : recipients) {
             message = join(message, ", ", recipient);
         }
 
-        addCaseComment(employeeRegistration.getId(), message.toString());
+        addCaseComment( employeeRegistration.getId(), message.toString() );
 
         return ok(true );
     }
@@ -213,9 +213,11 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
                 recipients, employeeFullName, employeeId ) );
     }
 
-    private List<String> collectAdditionalRecipients(Person headOfDepartment) {
-        Long companyId = headOfDepartment.getCompanyId();
+    private List<String> collectAdditionalRecipients(Long companyId) {
         Company company = companyDAO.get(companyId);
+        if (company == null) {
+            return new ArrayList<>();
+        }
         jdbcManyRelationsHelper.fill(company, Company.Fields.CONTACT_ITEMS);
 
         return stream(company.getContactInfo().getItems(En_ContactItemType.EMAIL))
