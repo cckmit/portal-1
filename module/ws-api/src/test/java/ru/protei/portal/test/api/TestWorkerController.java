@@ -470,18 +470,23 @@ public class TestWorkerController {
     @Test
     public void testUpdateWorkerPosition() throws Exception {
         Company company = companyDAO.getCompanyByName("Протей");
-        Long companyDepartmentId = companyDepartmentDAO.persist(createCompanyDepartmentRecord(company.getId()));
+        CompanyDepartment companyDepartment = createCompanyDepartmentRecord(company.getId());
+        Long companyDepartmentId = companyDepartmentDAO.persist(companyDepartment);
+        Assert.assertNotNull(companyDepartmentId);
 
         WorkerPosition workerPosition = createWorkerPositionRecord(company.getId());
-        workerPositionDAO.persist(workerPosition);
+        Long workerPositionId = workerPositionDAO.persist(workerPosition);
+        Assert.assertNotNull(workerPositionId);
 
-        WorkerEntry newWorker = createNewWorker(company.getId(), companyDepartmentId, workerPosition);
-        Long workerId = workerEntryDAO.persist(newWorker);
+        WorkerEntry worker = createWorker(company.getId(), companyDepartmentId, workerPosition);
+        Long workerId = workerEntryDAO.persist(worker);
+        Assert.assertNotNull(workerId);
 
-        WorkerRecord newWorkerPosition = createNewWorkerPosition(workerId, newWorker.getExternalId());
-        Result<Long> updatedWorkerIdResult = updateWorkerPosition(newWorkerPosition);
+        WorkerRecord newWorkerPosition = createNewWorkerPosition(workerId, worker.getExternalId(), companyDepartmentId);
+        Result<Long> updatedWorkerResult = updateWorkerPosition(newWorkerPosition);
+        Assert.assertTrue(updatedWorkerResult.isOk());
 
-        WorkerEntry updatedWorker = workerEntryDAO.get(updatedWorkerIdResult.getData());
+        WorkerEntry updatedWorker = workerEntryDAO.get(updatedWorkerResult.getData());
         Assert.assertNotNull(updatedWorker);
         Assert.assertEquals(newWorkerPosition.getNewPositionName(), updatedWorker.getPositionName());
         Assert.assertEquals(newWorkerPosition.getNewPositionDepartmentId(), updatedWorker.getDepartmentId());
@@ -833,13 +838,10 @@ public class TestWorkerController {
         );
 
         MockHttpServletResponse response = resultActions.andReturn().getResponse();
-        Result<Long> result = (Result<Long>) fromXml(response.getContentAsString());
-        Assert.assertTrue(result.isOk());
-
-        return Result.ok(result.getData());
+        return (Result<Long>) fromXml(response.getContentAsString());
     }
 
-    private WorkerEntry createNewWorker(Long companyId, Long companyDepartmentId, WorkerPosition workerPosition) {
+    private WorkerEntry createWorker(Long companyId, Long companyDepartmentId, WorkerPosition workerPosition) {
         WorkerEntry worker = new WorkerEntry();
         worker.setPersonId(1L);
         worker.setCreated(new Date());
@@ -852,13 +854,13 @@ public class TestWorkerController {
         return worker;
     }
 
-    private WorkerRecord createNewWorkerPosition(Long workerId, String externalId) {
+    private WorkerRecord createNewWorkerPosition(Long workerId, String externalId, Long companyDepartmentId) {
         WorkerRecord position = new WorkerRecord();
         position.setId(workerId);
         position.setCompanyName("Протей");
         position.setWorkerExtId(externalId);
         position.setNewPositionName("Менеджер проектов");
-        position.setNewPositionDepartmentId(13L);
+        position.setNewPositionDepartmentId(companyDepartmentId);
         position.setNewPositionTransferDate(new Date());
         logger.debug("worker = " + position);
         return position;

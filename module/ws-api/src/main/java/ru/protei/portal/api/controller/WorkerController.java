@@ -877,29 +877,49 @@ public class WorkerController {
 
     /**
      * Обновить позицию сотрудника
-     * @param rec данные о сотруднике
+     * @param workerRecord данные о сотруднике
      * @return Result<Long>
      */
     @RequestMapping(method = RequestMethod.PUT,
             consumes = MediaType.APPLICATION_XML_VALUE,
             produces = MediaType.APPLICATION_XML_VALUE,
             value = "/update.worker.position")
-    Result<Long> updateWorkerPosition(@RequestBody WorkerRecord rec,
+    Result<Long> updateWorkerPosition(@RequestBody WorkerRecord workerRecord,
                                       HttpServletRequest request,
                                       HttpServletResponse response) {
 
-        logger.debug("updateWorkerPosition(): rec={}", rec);
+        logger.debug("updateWorkerPosition(): rec={}", workerRecord);
 
         if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
-        Result<Long> isValid = isValidNewEmployeePosition(rec);
+        Result<Long> isValid = isValidNewEmployeePosition(workerRecord);
         if (isValid.isError()) {
             logger.debug("error result: " + isValid.getMessage());
             return isValid;
         }
 
-        Result<Long> result = updateWorkerPosition(rec);
+        Company workerCompany = companyDAO.getCompanyByName(workerRecord.getCompanyName());
+        if (workerCompany == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, "Company " + workerRecord.getCompanyName() + " not found!");
+        }
+
+        WorkerPosition workerPosition = workerPositionDAO.getByName(workerRecord.getPositionName(), workerCompany.getId());
+        if (workerPosition == null) {
+            workerPosition = createWorkerPosition(workerRecord, workerCompany);
+            workerPositionDAO.persist(workerPosition);
+        }
+
+        workerRecord.setId(workerPosition.getId());
+
+        Result<Long> result = updateWorkerPosition(workerCompany, workerRecord);
         return ok(result.getData());
+    }
+
+    private WorkerPosition createWorkerPosition(WorkerRecord newWorkerPositionRecord, Company company) {
+        WorkerPosition workerPosition = new WorkerPosition();
+        workerPosition.setName(newWorkerPositionRecord.getNewPositionName());
+        workerPosition.setCompanyId(company.getId());
+        return workerPosition;
     }
 
     private Result<Long> isValidNewEmployeePosition(WorkerRecord position) {
@@ -918,19 +938,34 @@ public class WorkerController {
         return ok(null);
     }
 
-    private Result<Long> updateWorkerPosition(WorkerRecord rec){
-        try {
-            Company workerCompany = companyDAO.getCompanyByName(rec.getCompanyName());
-            WorkerEntry workerToUpdate = workerEntryDAO.getByExternalId(rec.getWorkerExtId(), workerCompany.getId());
-            if (workerToUpdate != null) {
-                workerToUpdate.setPositionName(rec.getNewPositionName());
-                workerToUpdate.setDepartmentId(rec.getNewPositionDepartmentId());
+    private Result<Long> updateWorkerPosition(Company workerCompany, WorkerRecord newWorkerPosition){
+        WorkerEntry workerToUpdate = workerEntryDAO.getByExternalId(newWorkerPosition.getWorkerExtId(), workerCompany.getId());
+        if (workerToUpdate == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
+        }
 
-                boolean updated = workerEntryDAO.partialMerge(workerToUpdate, POSITION_NAME, POSITION_DEPARTMENT_ID);
-                if (updated) {
-                    logger.debug("success result, workerExtId={}", rec.getWorkerExtId());
-                    return ok(workerToUpdate.getId());
-                }
+        try {
+            boolean updatePositionNow = newWorkerPosition.getNewPositionTransferDate().getTime() <= new Date().getTime();
+            if (updatePositionNow) {
+                workerToUpdate.setPositionId(newWorkerPosition.getId());
+                workerToUpdate.setDepartmentId(newWorkerPosition.getNewPositionDepartmentId());
+            } else {
+                workerToUpdate.setNewPositionName(newWorkerPosition.getNewPositionName());
+                workerToUpdate.setNewPositionDepartmentId(newWorkerPosition.getNewPositionDepartmentId());
+                workerToUpdate.setNewPositionTransferDate(newWorkerPosition.getNewPositionTransferDate());
+            }
+
+            boolean updated;
+            if (updatePositionNow) {
+                updated = workerEntryDAO.partialMerge(workerToUpdate, POSITION_NAME, POSITION_DEPARTMENT_ID);
+            } else {
+                updated = workerEntryDAO.partialMerge(workerToUpdate, NEW_POSITION_NAME, NEW_POSITION_DEPARTMENT_ID,
+                                                                      NEW_POSITION_TRANSFER_DATE);
+            }
+
+            if (updated) {
+                logger.debug("success result, workerExtId={}", newWorkerPosition.getId());
+                return ok(workerToUpdate.getId());
             }
         } catch (Exception e) {
             logger.error("error while update worker's position", e);
