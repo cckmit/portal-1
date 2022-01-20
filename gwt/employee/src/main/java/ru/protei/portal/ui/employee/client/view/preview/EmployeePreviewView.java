@@ -38,6 +38,11 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     }
 
     @Override
+    public void setInn(String inn) {
+        this.inn.setInnerText(inn);
+    }
+
+    @Override
     public void setLogins(String logins) {
         this.login.setInnerText(logins);
     }
@@ -166,6 +171,9 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
 
     @UiField
     HTMLPanel emailContainer;
+
+    @UiField
+    SpanElement inn;
 
     @UiField
     HTMLPanel absencesContainer;

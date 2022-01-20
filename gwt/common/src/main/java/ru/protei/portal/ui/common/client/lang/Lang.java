@@ -431,6 +431,8 @@ public interface Lang extends Messages, ContactItemLang {
     String goToContacts();
 
     String promptFieldLengthExceed(String fieldName, int fieldLength);
+    
+    String promptFieldLengthNotEqual(String fieldName, int fieldLength);
 
     String promptFieldNeedContainAtSign();
 
@@ -1851,6 +1853,8 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeID();
 
     String employeeIPAddress();
+    
+    String employeeInn();
 
     String employeeCompany();
 

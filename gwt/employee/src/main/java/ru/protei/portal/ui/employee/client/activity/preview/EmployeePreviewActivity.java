@@ -152,6 +152,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         ));
         view.setID(employee.getId().toString());
         view.setIP(employee.getIpAddress());
+        view.setInn(employee.getInn());
 
         requestLogins(employee.getId());
 
