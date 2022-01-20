@@ -474,7 +474,7 @@ public class TestWorkerController {
         Long companyDepartmentId = companyDepartmentDAO.persist(companyDepartment);
         Assert.assertNotNull(companyDepartmentId);
 
-        WorkerPosition workerPosition = createWorkerPositionRecord(company.getId());
+        WorkerPosition workerPosition = createInitialWorkerPosition(company.getId());
         Long workerPositionId = workerPositionDAO.persist(workerPosition);
         Assert.assertNotNull(workerPositionId);
 
@@ -482,7 +482,7 @@ public class TestWorkerController {
         Long workerId = workerEntryDAO.persist(worker);
         Assert.assertNotNull(workerId);
 
-        WorkerRecord newWorkerPosition = createNewWorkerPosition(workerId, worker.getExternalId(), companyDepartmentId);
+        WorkerRecord newWorkerPosition = createNewWorkerPosition(workerId, worker.getExternalId(), companyDepartmentId, company.getCname());
         Result<Long> updatedWorkerResult = updateWorkerPosition(newWorkerPosition);
         Assert.assertTrue(updatedWorkerResult.isOk());
 
@@ -854,29 +854,29 @@ public class TestWorkerController {
         return worker;
     }
 
-    private WorkerRecord createNewWorkerPosition(Long workerId, String externalId, Long companyDepartmentId) {
+    private WorkerPosition createInitialWorkerPosition(Long companyId) {
+        WorkerPosition workerPosition = new WorkerPosition();
+        workerPosition.setName("Initial worker position");
+        workerPosition.setCompanyId(companyId);
+        return workerPosition;
+    }
+
+    private WorkerRecord createNewWorkerPosition(Long workerId, String externalId, Long companyDepartmentId, String companyName) {
         WorkerRecord position = new WorkerRecord();
         position.setId(workerId);
-        position.setCompanyName("Протей");
         position.setWorkerExtId(externalId);
-        position.setNewPositionName("Менеджер проектов");
+        position.setCompanyName(companyName);
+        position.setNewPositionName("New worker position");
         position.setNewPositionDepartmentId(companyDepartmentId);
         position.setNewPositionTransferDate(new Date());
         logger.debug("worker = " + position);
         return position;
     }
 
-    private WorkerPosition createWorkerPositionRecord(Long companyId) {
-        WorkerPosition workerPosition = new WorkerPosition();
-        workerPosition.setName("Инженер-програмист");
-        workerPosition.setCompanyId(companyId);
-        return workerPosition;
-    }
-
     private CompanyDepartment createCompanyDepartmentRecord(Long companyId) {
         CompanyDepartment companyDepartment = new CompanyDepartment();
         companyDepartment.setCreated(new Date());
-        companyDepartment.setName("New Company Department");
+        companyDepartment.setName("Company Department");
         companyDepartment.setCompanyId(companyId);
         logger.debug("companyDepartment = " + companyDepartment.toString());
         return companyDepartment;

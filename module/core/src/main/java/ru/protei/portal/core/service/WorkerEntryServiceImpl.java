@@ -72,12 +72,12 @@ public class WorkerEntryServiceImpl implements WorkerEntryService {
             Person person = personDAO.get(entry.getPersonId());
             person.setPosition(entry.getNewPositionName());
             person.setDepartment(companyDepartmentDAO.get(entry.getNewPositionDepartmentId()).getName());
-            personDAO.partialMerge(person, "department", "displayPosition");
+            personDAO.partialMerge(person, Person.Columns.DEPARTMENT, Person.Columns.DISPLAY_POSITION);
 
             entry.setNewPositionName(null);
             entry.setNewPositionDepartmentId(null);
             entry.setNewPositionTransferDate(null);
-            workerEntryDAO.partialMerge(entry, POSITION_NAME, POSITION_DEPARTMENT_ID);
+            workerEntryDAO.partialMerge(entry, NEW_POSITION_NAME, NEW_POSITION_DEPARTMENT_ID, NEW_POSITION_TRANSFER_DATE);
         }
         return ok();
     }

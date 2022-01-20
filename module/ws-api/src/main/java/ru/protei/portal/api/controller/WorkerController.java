@@ -911,7 +911,7 @@ public class WorkerController {
 
         workerRecord.setId(workerPosition.getId());
 
-        Result<Long> result = updateWorkerPosition(workerCompany, workerRecord);
+        Result<Long> result = updateWorkerPosition(workerCompany.getId(), workerRecord);
         return ok(result.getData());
     }
 
@@ -938,8 +938,8 @@ public class WorkerController {
         return ok(null);
     }
 
-    private Result<Long> updateWorkerPosition(Company workerCompany, WorkerRecord newWorkerPosition){
-        WorkerEntry workerToUpdate = workerEntryDAO.getByExternalId(newWorkerPosition.getWorkerExtId(), workerCompany.getId());
+    private Result<Long> updateWorkerPosition(Long workerCompanyId, WorkerRecord newWorkerPosition){
+        WorkerEntry workerToUpdate = workerEntryDAO.getByExternalId(newWorkerPosition.getWorkerExtId(), workerCompanyId);
         if (workerToUpdate == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
         }

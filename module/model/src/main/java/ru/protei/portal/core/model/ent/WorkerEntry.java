@@ -5,8 +5,7 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 
-import static ru.protei.portal.core.model.ent.WorkerEntry.Columns.POSITION_DEPARTMENT_ID;
-import static ru.protei.portal.core.model.ent.WorkerEntry.Columns.POSITION_NAME;
+import static ru.protei.portal.core.model.ent.WorkerEntry.Columns.*;
 
 /**
  * Created by michael on 17.05.16.
