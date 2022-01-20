@@ -31,10 +31,10 @@ public class Person extends AuditableObject {
     @JdbcJoinedObject (localColumn = "company_id", remoteColumn = "id" )
     private Company company;
 
-    @JdbcColumn(name = Columns.DISPLAY_POSITION)
+    @JdbcColumn(name = "displayPosition")
     private String position;
 
-    @JdbcColumn(name = Columns.DEPARTMENT)
+    @JdbcColumn(name = "department")
     private String department;
 
     @JdbcColumn(name="firstname")
@@ -411,7 +411,5 @@ public class Person extends AuditableObject {
         String DISPLAY_NAME = "displayname";
         String IS_FIRED = "isfired";
         String FIRE_DATE = "firedate";
-        String DEPARTMENT = "department";
-        String DISPLAY_POSITION = "displayPosition";
     }
 }

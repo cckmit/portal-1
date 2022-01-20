@@ -1,5 +1,7 @@
 package ru.protei.portal.core.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
@@ -8,10 +10,8 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuditType;
-import ru.protei.portal.core.model.ent.LongAuditableObject;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserLogin;
-import ru.protei.portal.core.model.ent.WorkerEntry;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
@@ -23,11 +23,14 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 
+import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.ent.WorkerEntry.Columns.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 
 public class WorkerEntryServiceImpl implements WorkerEntryService {
+
+    private static final Logger log = LoggerFactory.getLogger(WorkerEntryServiceImpl.class);
 
     @Autowired
     WorkerEntryDAO workerEntryDAO;
@@ -47,6 +50,8 @@ public class WorkerEntryServiceImpl implements WorkerEntryService {
     PortalConfig portalConfig;
     @Autowired
     CompanyDepartmentDAO companyDepartmentDAO;
+    @Autowired
+    WorkerPositionDAO workerPositionDAO;
     
     @Override
     @Transactional
@@ -68,18 +73,39 @@ public class WorkerEntryServiceImpl implements WorkerEntryService {
     @Override
     @Transactional
     public Result<Void> updatePositionByDate(Date now) {
-        for (WorkerEntry entry: workerEntryDAO.getForUpdatePositionByDate(now)) {
-            Person person = personDAO.get(entry.getPersonId());
-            person.setPosition(entry.getNewPositionName());
-            person.setDepartment(companyDepartmentDAO.get(entry.getNewPositionDepartmentId()).getName());
-            personDAO.partialMerge(person, Person.Columns.DEPARTMENT, Person.Columns.DISPLAY_POSITION);
+        for (WorkerEntry worker: workerEntryDAO.getForUpdatePositionByDate(now)) {
+            log.debug(String.format("Update worker with id %s position from '%s' to '%s'",
+                                     worker.getId(), worker.getPositionName(), worker.getNewPositionName()));
 
-            entry.setNewPositionName(null);
-            entry.setNewPositionDepartmentId(null);
-            entry.setNewPositionTransferDate(null);
-            workerEntryDAO.partialMerge(entry, NEW_POSITION_NAME, NEW_POSITION_DEPARTMENT_ID, NEW_POSITION_TRANSFER_DATE);
+            String newPositionName = worker.getNewPositionName();
+            Long companyId = worker.getCompanyId();
+
+            WorkerPosition workerPosition = workerPositionDAO.getByName(newPositionName, companyId);
+            if (workerPosition == null) {
+                workerPosition = createWorkerPosition(newPositionName, companyId);
+                workerPositionDAO.persist(workerPosition);
+            }
+
+            worker.setPositionId(workerPosition.getId());
+            worker.setNewPositionName(null);
+            worker.setNewPositionDepartmentId(null);
+            worker.setNewPositionTransferDate(null);
+            boolean updated = workerEntryDAO.partialMerge(worker, POSITION_ID, NEW_POSITION_NAME,
+                                                                  NEW_POSITION_DEPARTMENT_ID, NEW_POSITION_TRANSFER_DATE);
+            if (updated) {
+                log.debug(String.format("Worker with id %s position changed to '%s'", worker.getId(), newPositionName));
+            } else {
+                return error(En_ResultStatus.NOT_UPDATED, String.format("Worker with id %s position not updated!", worker.getId()));
+            }
         }
         return ok();
+    }
+
+    private WorkerPosition createWorkerPosition(String newWorkerPosition, Long companyId) {
+        WorkerPosition workerPosition = new WorkerPosition();
+        workerPosition.setName(newWorkerPosition);
+        workerPosition.setCompanyId(companyId);
+        return workerPosition;
     }
 
     @Override

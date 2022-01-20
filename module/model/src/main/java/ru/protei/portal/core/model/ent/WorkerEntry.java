@@ -40,10 +40,10 @@ public class WorkerEntry extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "companyId", table = "company", remoteColumn = "id", mappedColumn = "cname")
     private String companyName;
 
-    @JdbcColumn(name="positionId")
+    @JdbcColumn(name=POSITION_ID)
     private Long positionId;
 
-    @JdbcJoinedColumn(localColumn = POSITION_NAME, table = "worker_position", remoteColumn = "id", mappedColumn = "pos_name")
+    @JdbcJoinedColumn(localColumn = POSITION_ID, table = "worker_position", remoteColumn = "id", mappedColumn = "pos_name")
     private String positionName;
 
     @JdbcColumn(name="hireDate")
@@ -260,7 +260,7 @@ public class WorkerEntry extends AuditableObject {
 
     public interface Columns {
         String FIRED_FATE = "fired_date";
-        String POSITION_NAME = "positionId";
+        String POSITION_ID = "positionId";
         String POSITION_DEPARTMENT_ID = "dep_id";
         String NEW_POSITION_NAME = "new_position_name";
         String NEW_POSITION_DEPARTMENT_ID = "new_position_department_id";

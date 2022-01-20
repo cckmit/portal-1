@@ -957,7 +957,7 @@ public class WorkerController {
 
             boolean updated;
             if (updatePositionNow) {
-                updated = workerEntryDAO.partialMerge(workerToUpdate, POSITION_NAME, POSITION_DEPARTMENT_ID);
+                updated = workerEntryDAO.partialMerge(workerToUpdate, POSITION_ID, POSITION_DEPARTMENT_ID);
             } else {
                 updated = workerEntryDAO.partialMerge(workerToUpdate, NEW_POSITION_NAME, NEW_POSITION_DEPARTMENT_ID,
                                                                       NEW_POSITION_TRANSFER_DATE);

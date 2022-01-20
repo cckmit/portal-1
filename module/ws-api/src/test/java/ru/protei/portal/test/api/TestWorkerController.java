@@ -98,9 +98,6 @@ public class TestWorkerController {
 
         removeUserRoles();
 
-        companyDepartmentDAO.removeAll();
-        workerPositionDAO.removeAll();
-        companyDAO.removeAll();
         workerEntryDAO.removeAll();
     }
 

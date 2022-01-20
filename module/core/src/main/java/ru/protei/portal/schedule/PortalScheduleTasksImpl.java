@@ -191,7 +191,6 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         workerEntryService.updatePositionByDate(new Date());
     }
 
-
     private boolean isNotConfiguredSystemId() {
         if (HelperFunc.isEmpty(config.data().getCommonConfig().getSystemId())) {
             log.warn("reports is not started because system.id not set in configuration");
