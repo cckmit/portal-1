@@ -479,7 +479,7 @@ public class TestWorkerController {
         Long workerId = workerEntryDAO.persist(worker);
         Assert.assertNotNull(workerId);
 
-        WorkerRecord newWorkerPosition = createNewWorkerPosition(workerId, worker.getExternalId(), companyDepartmentId, company.getCname());
+        WorkerRecord newWorkerPosition = createNewWorkerPosition(worker.getExternalId(), companyDepartmentId);
         Result<Long> updatedWorkerResult = updateWorkerPosition(newWorkerPosition);
         Assert.assertTrue(updatedWorkerResult.isOk());
 
@@ -858,11 +858,10 @@ public class TestWorkerController {
         return workerPosition;
     }
 
-    private WorkerRecord createNewWorkerPosition(Long workerId, String externalId, Long companyDepartmentId, String companyName) {
+    private WorkerRecord createNewWorkerPosition(String externalId, Long companyDepartmentId) {
         WorkerRecord position = new WorkerRecord();
-        position.setId(workerId);
-        position.setWorkerExtId(externalId);
-        position.setCompanyName(companyName);
+        position.setWorkerId(externalId);
+        position.setCompanyCode("protei");
         position.setNewPositionName("New worker position");
         position.setNewPositionDepartmentId(companyDepartmentId);
         position.setNewPositionTransferDate(new Date());

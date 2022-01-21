@@ -898,61 +898,66 @@ public class WorkerController {
             return isValid;
         }
 
-        Company workerCompany = companyDAO.getCompanyByName(workerRecord.getCompanyName());
-        if (workerCompany == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS, "Company " + workerRecord.getCompanyName() + " not found!");
+        CompanyHomeGroupItem workerCompany = companyGroupHomeDAO.getByExternalCode(workerRecord.getCompanyCode().trim());
+        if (workerCompany == null || workerCompany.getCompanyId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        WorkerPosition workerPosition = workerPositionDAO.getByName(workerRecord.getPositionName(), workerCompany.getId());
-        if (workerPosition == null) {
-            workerPosition = createWorkerPosition(workerRecord, workerCompany);
-            workerPositionDAO.persist(workerPosition);
-        }
+        Long workerCompanyId = workerCompany.getCompanyId();
 
-        workerRecord.setId(workerPosition.getId());
-
-        Result<Long> result = updateWorkerPosition(workerCompany.getId(), workerRecord);
-        return ok(result.getData());
-    }
-
-    private WorkerPosition createWorkerPosition(WorkerRecord newWorkerPositionRecord, Company company) {
-        WorkerPosition workerPosition = new WorkerPosition();
-        workerPosition.setName(newWorkerPositionRecord.getNewPositionName());
-        workerPosition.setCompanyId(company.getId());
-        return workerPosition;
-    }
-
-    private Result<Long> isValidNewEmployeePosition(WorkerRecord position) {
-        if (HelperFunc.isEmpty(position.getNewPositionName())) {
-            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_NEW_EMPLOYEE_POSITION_NAME.getMessage());
-        }
-
-        if (position.getNewPositionDepartmentId() == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_NEW_EMPLOYEE_POSITION_DEPARTMENT_ID.getMessage());
-        }
-
-        if (position.getNewPositionTransferDate() == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.EMPTY_NEW_EMPLOYEE_TRANSFER_DATE.getMessage());
-        }
-
-        return ok(null);
-    }
-
-    private Result<Long> updateWorkerPosition(Long workerCompanyId, WorkerRecord newWorkerPosition){
-        WorkerEntry workerToUpdate = workerEntryDAO.getByExternalId(newWorkerPosition.getWorkerExtId(), workerCompanyId);
+        WorkerEntry workerToUpdate = workerEntryDAO.getByExternalId(String.valueOf(workerRecord.getWorkerId()), workerCompanyId);
         if (workerToUpdate == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
         }
 
+        Long newPositionId = checkAndCreateNewWorkerPosition(workerRecord, workerCompanyId, workerRecord.getNewPositionName());
+        workerRecord.setNewPositionId(newPositionId);
+        return updateWorkerPosition(workerToUpdate, workerRecord);
+    }
+
+    private Result<Long> isValidNewEmployeePosition(WorkerRecord position) {
+        En_ErrorCode errCode = null;
+
+        if (HelperFunc.isEmpty(position.getWorkerId())) {
+            errCode = En_ErrorCode.EMPTY_WORKER_ID;
+        } else if (HelperFunc.isEmpty(position.getCompanyCode())) {
+            errCode = En_ErrorCode.EMPTY_COMP_CODE;
+        } else if (HelperFunc.isEmpty(position.getNewPositionName())) {
+            errCode = En_ErrorCode.EMPTY_NEW_WORKER_POSITION_NAME;
+        } else if (position.getNewPositionDepartmentId() == null) {
+            errCode = En_ErrorCode.EMPTY_NEW_WORKER_POSITION_DEPARTMENT_ID;
+        } else if (position.getNewPositionTransferDate() == null) {
+            errCode = En_ErrorCode.EMPTY_NEW_WORKER_TRANSFER_DATE;
+        }
+
+        return errCode == null ? ok(null)
+                               : error(En_ResultStatus.INCORRECT_PARAMS, errCode.getMessage());
+    }
+
+    private Long checkAndCreateNewWorkerPosition(WorkerRecord workerRecord, Long workerCompanyId, String newPositionName) {
+        WorkerPosition newWorkerPosition = workerPositionDAO.getByName(workerRecord.getPositionName(), workerCompanyId);
+        if (newWorkerPosition == null) {
+            newWorkerPosition = new WorkerPosition();
+            newWorkerPosition.setName(newPositionName);
+            newWorkerPosition.setCompanyId(workerCompanyId);
+            workerPositionDAO.persist(newWorkerPosition);
+        }
+
+        return newWorkerPosition.getId();
+    }
+
+    private Result<Long> updateWorkerPosition(WorkerEntry workerToUpdate, WorkerRecord workerRecord){
         try {
-            boolean updatePositionNow = newWorkerPosition.getNewPositionTransferDate().getTime() <= new Date().getTime();
+            Long newPositionDepartmentId = workerRecord.getNewPositionDepartmentId();
+
+            boolean updatePositionNow = workerRecord.getNewPositionTransferDate().getTime() <= new Date().getTime();
             if (updatePositionNow) {
-                workerToUpdate.setPositionId(newWorkerPosition.getId());
-                workerToUpdate.setDepartmentId(newWorkerPosition.getNewPositionDepartmentId());
+                workerToUpdate.setPositionId(workerRecord.getNewPositionId());
+                workerToUpdate.setDepartmentId(newPositionDepartmentId);
             } else {
-                workerToUpdate.setNewPositionName(newWorkerPosition.getNewPositionName());
-                workerToUpdate.setNewPositionDepartmentId(newWorkerPosition.getNewPositionDepartmentId());
-                workerToUpdate.setNewPositionTransferDate(newWorkerPosition.getNewPositionTransferDate());
+                workerToUpdate.setNewPositionName(workerRecord.getNewPositionName());
+                workerToUpdate.setNewPositionDepartmentId(newPositionDepartmentId);
+                workerToUpdate.setNewPositionTransferDate(workerRecord.getNewPositionTransferDate());
             }
 
             boolean updated;
@@ -963,12 +968,14 @@ public class WorkerController {
                                                                       NEW_POSITION_TRANSFER_DATE);
             }
 
+            Long updatedWorkerId = workerToUpdate.getId();
+
             if (updated) {
-                logger.debug("success result, workerExtId={}", newWorkerPosition.getId());
-                return ok(workerToUpdate.getId());
+                logger.debug("success result, updatedWorkerId={}", updatedWorkerId);
+                return ok(updatedWorkerId);
             }
         } catch (Exception e) {
-            logger.error("error while update worker's position", e);
+            logger.error("Error while update worker's position", e);
         }
 
         return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());

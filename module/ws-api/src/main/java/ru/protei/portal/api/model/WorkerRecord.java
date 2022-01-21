@@ -12,6 +12,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
+import static ru.protei.portal.core.model.ent.WorkerEntry.Columns.*;
+
 /**
  * Created by turik on 17.08.16.
  */
@@ -54,6 +56,7 @@ public class WorkerRecord {
     private String positionName;
 
     private String workerExtId;
+    private Long newPositionId;
     private String newPositionName;
     private Long newPositionDepartmentId;
     private Date newPositionTransferDate;
@@ -339,11 +342,19 @@ public class WorkerRecord {
         this.workerExtId = workerExtId;
     }
 
+    public Long getNewPositionId() {
+        return newPositionId;
+    }
+
+    public void setNewPositionId(Long newPositionId) {
+        this.newPositionId = newPositionId;
+    }
+
     public String getNewPositionName() {
         return newPositionName;
     }
 
-    @XmlElement(name = "new-position-name")
+    @XmlElement(name = NEW_POSITION_NAME)
     public void setNewPositionName(String newPositionName) {
         this.newPositionName = newPositionName;
     }
@@ -352,7 +363,7 @@ public class WorkerRecord {
         return newPositionDepartmentId;
     }
 
-    @XmlElement(name = "new-position-department")
+    @XmlElement(name = NEW_POSITION_DEPARTMENT_ID)
     public void setNewPositionDepartmentId(Long newPositionDepartmentId) {
         this.newPositionDepartmentId = newPositionDepartmentId;
     }
@@ -361,7 +372,7 @@ public class WorkerRecord {
         return newPositionTransferDate;
     }
 
-    @XmlElement(name = "new-position-transfer-date")
+    @XmlElement(name = NEW_POSITION_TRANSFER_DATE)
     public void setNewPositionTransferDate(Date newPositionTransferDate) {
         this.newPositionTransferDate = newPositionTransferDate;
     }

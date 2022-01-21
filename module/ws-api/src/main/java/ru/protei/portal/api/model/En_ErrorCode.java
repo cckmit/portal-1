@@ -39,9 +39,10 @@ public enum En_ErrorCode {
     LOGIN_ALREADY_EXIST("Worker with this login already exist."),
     EMAIL_ALREADY_EXIST("Worker with this email already exist."),
     UNKNOWN_REG("Unknown EmployeeRegistration."),
-    EMPTY_NEW_EMPLOYEE_POSITION_NAME("New employee position name is empty."),
-    EMPTY_NEW_EMPLOYEE_POSITION_DEPARTMENT_ID("New employee position department id is empty."),
-    EMPTY_NEW_EMPLOYEE_TRANSFER_DATE("New employee position transfer date is empty.");
+    EMPTY_WORKER_ID("The worker id is empty."),
+    EMPTY_NEW_WORKER_POSITION_NAME("New worker position name is empty."),
+    EMPTY_NEW_WORKER_POSITION_DEPARTMENT_ID("New worker position department id is empty."),
+    EMPTY_NEW_WORKER_TRANSFER_DATE("New worker position transfer date is empty.");
 
     En_ErrorCode (String message) {
         this.message = message;
