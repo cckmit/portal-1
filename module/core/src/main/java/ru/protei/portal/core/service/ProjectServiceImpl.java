@@ -214,7 +214,7 @@ public class ProjectServiceImpl implements ProjectService {
         project.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
         project.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
         project.getProducts().forEach(product -> product.setProductDirections(new HashSet<>(devUnitDAO.getProductDirections(product.getId()))));
-        project.setContracts(CollectionUtils.toList(contractDAO.getByProjectId(id), Contract::toEntityOption));
+        project.setContracts(CollectionUtils.toList(removeCancelledContracts(contractDAO.getByProjectId(id)), Contract::toEntityOption));
         project.setPlatforms(CollectionUtils.toList(platformDAO.getByProjectId(id), Platform::toEntityOption));
 
         if (!canAccessProject(policyService, token, En_Privilege.PROJECT_VIEW, project.getTeam())) {
@@ -501,6 +501,10 @@ public class ProjectServiceImpl implements ProjectService {
         List<Long> companyIds = new ArrayList<>();
         companyIds.addAll(emptyIfNull(projectQuery.getInitiatorCompanyIds()));
         return companyIds;
+    }
+
+    private List<Contract> removeCancelledContracts(List<Contract> contracts) {
+        return stream(contracts).filter(contract -> !Objects.equals(En_ContractState.CANCELLED, contract.getState())).collect(toList());
     }
 
     private boolean updateCaseObjectPart(AuthToken token, Project project) {

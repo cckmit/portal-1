@@ -1,7 +1,12 @@
 package ru.protei.portal.core.model.dict;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Состояния договоров
@@ -63,10 +68,22 @@ public enum En_ContractState {
         this.id = id;
     }
 
+    @JsonIgnore
+    private static final List<En_ContractState> contractStatesByDefault;
+
+    static {
+        contractStatesByDefault = new ArrayList<>(Arrays.asList(values()));
+        contractStatesByDefault.remove(CANCELLED);
+    }
+
+    private int id;
+
     @JsonValue
     public int getId() {
         return id;
     }
 
-    private int id;
+    @JsonIgnore
+    public static List<En_ContractState> contractStatesByDefault() { return contractStatesByDefault; }
+
 }

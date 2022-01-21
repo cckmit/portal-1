@@ -19,6 +19,8 @@ import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterActivity;
+import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyMultiSelector;
@@ -34,9 +36,8 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
-import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterActivity;
-import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterView;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -65,13 +66,17 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         organizations.setValue(null);
         managers.setValue(null);
         direction.setValue(null);
-        states.setValue(null);
+        resetStates();
         types.setValue(null);
         tags.setValue(null);
         kind.setValue(true);
         dateSigningRange.setValue(null);
         dateValidRange.setValue(null);
         deliveryNumber.setValue(null);
+    }
+
+    private void resetStates() {
+        states.setValue(new HashSet<>(En_ContractState.contractStatesByDefault()));
     }
 
     @Override
