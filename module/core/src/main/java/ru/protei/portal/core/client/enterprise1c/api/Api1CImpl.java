@@ -184,7 +184,9 @@ public class Api1CImpl implements Api1C{
     public Result<String> getEmployeeRestVacationDays(String workerExtId, String companyName) {
         log.debug("workerExtId={}", workerExtId);
 
-        return client.read(buildGetRestVacationDaysByKeyUrl(workerExtId, companyName), Result.class)
+        String url1C = buildGetRestVacationDaysByKeyUrl(workerExtId, companyName);
+        return StringUtils.isEmpty(url1C) ? null
+                                          : client.read(url1C, Result.class)
                 .ifOk( value -> log.info( "buildGetRestVacationDaysByKeyUrl(): OK " ) )
                 .ifError( result -> log.warn( "buildGetRestVacationDaysByKeyUrl(): Can`t get restVacationDays={}. {}", workerExtId, result ))
                 .getData();
@@ -336,8 +338,6 @@ public class Api1CImpl implements Api1C{
             url = config.data().enterprise1C().getApiBaseProteiZiupUrl();
         } else if (PROTEI_ST_HOME_COMPANY_NAME.equals(companyName)) {
             url = config.data().enterprise1C().getApiBaseProteiZiupStUrl();
-        } else {
-            System.out.println();
         }
 
         log.debug("buildGetRestVacationDaysByKeyUrl(): url={}", url + "/" + workerExtId);
