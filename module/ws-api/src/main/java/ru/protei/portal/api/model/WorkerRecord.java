@@ -51,6 +51,8 @@ public class WorkerRecord {
 
     private String positionName;
 
+    private String inn;
+
     public WorkerRecord() {}
 
     public WorkerRecord(Person p) {
@@ -314,6 +316,15 @@ public class WorkerRecord {
         this.positionName = positionName;
     }
 
+    @XmlElement(name = "inn")
+    public String getInn() {
+        return inn;
+    }
+
+    public void setInn(String inn) {
+        this.inn = inn;
+    }
+
     public void copy (Person person) {
         setId (person.getId ());
         setFirstName (person.getFirstName ());
@@ -335,6 +346,7 @@ public class WorkerRecord {
         setFireDate(person.getFireDate() == null ? null : HelperService.DATE.format(person.getFireDate()));
         setFired(person.isFired());
         setDeleted (person.isDeleted ());
+        setInn(person.getInn());
     }
 
     public void copy (WorkerEntry workerEntry) {
@@ -378,6 +390,7 @@ public class WorkerRecord {
                 ", hireOrderNo='" + hireOrderNo + '\'' +
                 ", active=" + active +
                 ", positionName='" + positionName + '\'' +
+                ", inn='" + inn + '\'' +
                 '}';
     }
 }
