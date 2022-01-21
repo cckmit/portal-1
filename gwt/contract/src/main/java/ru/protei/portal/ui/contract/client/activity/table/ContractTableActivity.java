@@ -110,7 +110,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     private List<En_ContractState> getStates(List<En_ContractState> states) {
         if (isEmpty(states)){
             states = En_ContractState.contractStatesByDefault();
-            filterView.states().setValue(new HashSet<>(En_ContractState.contractStatesByDefault()));
+            filterView.states().setValue(new HashSet<>(states));
         }
 
         return states;
