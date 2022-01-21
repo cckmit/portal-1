@@ -112,6 +112,22 @@ public class PlanEvents {
         }
     }
 
+    public static class AddIssueToUnplannedTable {
+        public CaseShortView issue;
+
+        public AddIssueToUnplannedTable(CaseShortView issue) {
+            this.issue = issue;
+        }
+    }
+
+    public static class RemoveIssueFromUnplannedTable {
+        public CaseShortView issue;
+
+        public RemoveIssueFromUnplannedTable(CaseShortView issue) {
+            this.issue = issue;
+        }
+    }
+
     public static class ChangeModel {}
 
     public static class PersistScroll {}

@@ -18,7 +18,6 @@ import ru.protei.portal.ui.common.client.events.PlanEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
 import ru.protei.portal.ui.common.client.widget.popupselector.RemovablePopupSingleSelector;
-import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
@@ -53,24 +52,19 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
     @Event
     public void onAddIssue(PlanEvents.AddIssueToPlan event) {
         if (isNew()){
-            if (issues.contains(event.issue)){
-                fireEvent(new NotifyEvents.Show(lang.errIssueAlreadyExistInPlan(), NotifyEvents.NotifyType.ERROR));
-            } else {
-                issues.add(event.issue);
-                loadTable(issues);
-                fireEvent(new PlanEvents.UpdateIssues(issues));
-            }
+            issues.add(event.issue);
+            loadTable(issues);
+            fireEvent(new PlanEvents.UpdateIssues(issues));
+            fireEvent(new PlanEvents.RemoveIssueFromUnplannedTable(event.issue));
+
         } else {
             planService.addIssueToPlan(planId, event.issue.getId(), new FluentCallback<Plan>()
                     .withError(throwable -> {
-                        if (throwable instanceof RequestFailedException && En_ResultStatus.ALREADY_EXIST.equals(((RequestFailedException) throwable).status)) {
-                            fireEvent(new NotifyEvents.Show(lang.errIssueAlreadyExistInPlan(), NotifyEvents.NotifyType.ERROR));
-                        } else {
-                            defaultErrorHandler.accept(throwable);
-                        }
+                        defaultErrorHandler.accept(throwable);
                     })
                     .withSuccess(plan -> {
                         fireEvent(new NotifyEvents.Show(lang.planIssueAdded(), NotifyEvents.NotifyType.SUCCESS));
+                        fireEvent(new PlanEvents.RemoveIssueFromUnplannedTable(event.issue));
                         issues = plan.getIssueList();
                         loadTable(plan.getIssueList());
                     }));
@@ -83,6 +77,7 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
             issues.remove(value);
             loadTable(issues);
             fireEvent(new PlanEvents.UpdateIssues(issues));
+            fireEvent(new PlanEvents.AddIssueToUnplannedTable(value));
         }
         else {
             fireEvent(new ConfirmDialogEvents.Show(lang.planIssueConfirmRemove(), removeAction(value)));
@@ -175,6 +170,7 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
                 .withSuccess(issueId -> {
                     loadTable(planId);
                     fireEvent(new NotifyEvents.Show(lang.planIssueRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new PlanEvents.AddIssueToUnplannedTable(value));
                 }));
     }
 
