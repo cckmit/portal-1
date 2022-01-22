@@ -1112,6 +1112,8 @@ public class DebugIds {
         String CURATOR_LABEL = "contract-preview-curator-label";
         String PROJECT_MANAGER_LABEL = "contract-preview-project-manager-label";
         String SIGN_MANAGER_LABEL = "contract-preview-sign-manager-label";
+        String DATE_END_WARRANTY_LABEL = "contract-preview-date-end-warranty-label";
+        String DATE_EXECUTION_LABEL = "contract-preview-date-execution-label";
     }
 
     public interface CLEANABLE_SEARCH_BOX {

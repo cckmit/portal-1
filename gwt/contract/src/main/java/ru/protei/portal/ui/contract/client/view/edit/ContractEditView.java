@@ -112,6 +112,16 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
+    public HasValue<Date> dateEndWarranty() {
+        return dateEndWarranty;
+    }
+
+    @Override
+    public HasValue<Date> dateExecution() {
+        return dateExecution;
+    }
+
+    @Override
     public HasValue<Date> dateValidDate() {
         return dateValidDate;
     }
@@ -438,6 +448,12 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     Button addDate;
     @UiField
     TextBox deliveryNumber;
+    @Inject
+    @UiField(provided = true)
+    SinglePicker dateEndWarranty;
+    @Inject
+    @UiField(provided = true)
+    SinglePicker dateExecution;
 
     private AbstractContractEditActivity activity;
 

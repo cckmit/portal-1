@@ -116,4 +116,5 @@
   <include file="2021-11-23-create-rfid-tables.xml" relativeToChangelogFile="true"/>
   <include file="2021-12-16-add-subscription-type-to-contact-item-table.xml" relativeToChangelogFile="true"/>
   <include file="2021-12-24-add-fired_date-to-worker_entry-table.xml" relativeToChangelogFile="true"/>
+  <include file="2022-01-21-add-date_execution-column-and-date_end_warranty-column-to-contract-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

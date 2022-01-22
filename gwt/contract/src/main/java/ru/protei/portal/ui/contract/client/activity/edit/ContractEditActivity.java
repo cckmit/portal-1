@@ -235,6 +235,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.contractSignManager().setValue(createPersonOrNull(contract.getContractSignManagerId(), contract.getContractSignManagerShortName()));
         view.setKind(getContractKind(view.contractParent().getValue()));
         view.deliveryNumber().setValue(contract.getDeliveryNumber());
+        view.dateExecution().setValue(contract.getDateExecution());
+        view.dateEndWarranty().setValue(contract.getDateEndWarranty());
 
         if (contract.getProjectId() == null) {
             view.project().setValue(null);
@@ -276,6 +278,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setContractor(view.contractor().getValue());
         contract.setContractSignManagerId(getPersonIdOrNull(view.contractSignManager().getValue()));
         contract.setDeliveryNumber(view.deliveryNumber().getValue());
+        contract.setDateEndWarranty(view.dateEndWarranty().getValue());
+        contract.setDateExecution(view.dateExecution().getValue());
 
         return contract;
     }
