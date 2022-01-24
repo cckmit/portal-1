@@ -131,7 +131,14 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
                     view.setTotalRecords(0);
                 })
                 .withSuccess(sr -> {
-                    loadUnplannedIssues(sr);
+                    if (planId == null) {
+                        view.setTotalRecords(sr.getTotalCount());
+                        view.putRecords(sr.getResults());
+                        restoreScroll();
+                        return;
+                    }
+                    
+                    loadPlannedIssues(sr, planId);
                 }));
     }
 
@@ -178,14 +185,7 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
         Window.scrollTo(0, scrollTo);
     }
 
-    private void loadUnplannedIssues(SearchResult<CaseShortView> sr) {
-        if (planId == null) {
-            view.setTotalRecords(sr.getTotalCount());
-            view.putRecords(sr.getResults());
-            restoreScroll();
-            return;
-        }
-
+    private void loadPlannedIssues(SearchResult<CaseShortView> sr, Long planId) {
         planService.getPlanWithIssues(planId, new FluentCallback<Plan>()
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
