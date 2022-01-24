@@ -39,6 +39,11 @@ public enum En_ReportType {
      * Отчет по трудозатратам
      */
     YT_WORK,
+
+    /**
+     * Отчет по отправкам (пока из YT)
+     */
+    SEND
     ;
 
     public static boolean isTimeLimitMandatory(En_ReportType type) {

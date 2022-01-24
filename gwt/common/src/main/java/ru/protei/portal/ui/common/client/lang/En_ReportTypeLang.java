@@ -22,6 +22,7 @@ public class En_ReportTypeLang {
             case CONTRACT: return lang.reportTypeContract();
             case NIGHT_WORK: return lang.reportNightWork();
             case YT_WORK: return lang.reportYtWork();
+            case YT_DELIVERY: return lang.reportYtDelivery();
             default: return lang.unknownField();
         }
     }

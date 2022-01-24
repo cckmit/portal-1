@@ -4043,4 +4043,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contractDatesWarningCostFlow();
 
     String inputProjectNumber();
+
+    String reportYtDelivery();
+
+    String send();
 }

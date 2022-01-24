@@ -72,6 +72,8 @@ public class En_PrivilegeEntityLang {
                 return lang.cardBatches();
             case PCB_ORDER:
                 return lang.pcbOrder();
+            case SEND:
+                return lang.send();
             default:
                 return lang.unknownField();
         }
