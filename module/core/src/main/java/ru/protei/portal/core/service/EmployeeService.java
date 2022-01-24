@@ -67,4 +67,7 @@ public interface EmployeeService {
     Result<EmployeesBirthdays> getEmployeesBirthdays(AuthToken token, Date dateFrom, Date dateUntil);
 
     Result<Void> notifyAboutBirthdays();
+
+    @Privileged(En_Privilege.EMPLOYEE_VIEW)
+    Result<String> getEmployeeRestVacationDays(AuthToken token, List<WorkerEntryShortView> workerEntries);
 }

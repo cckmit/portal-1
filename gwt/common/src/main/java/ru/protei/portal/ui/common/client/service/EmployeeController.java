@@ -58,4 +58,6 @@ public interface EmployeeController extends RemoteService {
     boolean fireEmployee(Person person) throws RequestFailedException;
 
     EmployeesBirthdays getEmployeesBirthdays(Date dateFrom, Date dateUntil) throws RequestFailedException;
+
+    String getEmployeeRestVacationDays(List<WorkerEntryShortView> workerEntries) throws RequestFailedException;
 }

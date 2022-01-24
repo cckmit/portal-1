@@ -1138,6 +1138,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String accountLogin();
 
+    String restVacationDays();
+
+    String noData();
+
     String accountPerson();
 
     String accountAuthType();

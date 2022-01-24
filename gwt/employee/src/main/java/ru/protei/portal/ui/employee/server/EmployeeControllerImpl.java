@@ -131,6 +131,12 @@ public class EmployeeControllerImpl implements EmployeeController {
         return ServiceUtils.checkResultAndGetData(employeeService.getEmployeesBirthdays(token, dateFrom, dateUntil));
     }
 
+    @Override
+    public String getEmployeeRestVacationDays(List<WorkerEntryShortView> workerEntries) throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeRestVacationDays(token, workerEntries));
+    }
+
     @Autowired
     SessionService sessionService;
     @Autowired

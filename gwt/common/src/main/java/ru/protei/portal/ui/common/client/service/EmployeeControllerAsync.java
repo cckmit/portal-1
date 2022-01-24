@@ -51,4 +51,6 @@ public interface EmployeeControllerAsync {
     void saveEmployee(Person person, List<WorkerEntry> workerEntries, boolean isEditablePerson, boolean needToChangeAccount, AsyncCallback<Person> async);
 
     void getEmployeesBirthdays(Date dateFrom, Date dateUntil, AsyncCallback<EmployeesBirthdays> async);
+
+    void getEmployeeRestVacationDays(List<WorkerEntryShortView> workerEntries, AsyncCallback<String> async);
 }

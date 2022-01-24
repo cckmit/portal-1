@@ -29,13 +29,14 @@ import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.util.CrmConstants.Company.MAIN_HOME_COMPANY_NAME;
+import static ru.protei.portal.core.model.util.CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME;
 
 public class Api1CImpl implements Api1C{
 
@@ -63,11 +64,11 @@ public class Api1CImpl implements Api1C{
         }
 
         contractor.setComment(CONTRACTOR_COMMENT);
-        if (CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME.equals(homeCompanyName)) {
+        if (PROTEI_ST_HOME_COMPANY_NAME.equals(homeCompanyName)) {
             contractor.setParentKey(config.data().enterprise1C().getParentKeyST());
         }
 
-        if (CrmConstants.Company.MAIN_HOME_COMPANY_NAME.equals(homeCompanyName)){
+        if (MAIN_HOME_COMPANY_NAME.equals(homeCompanyName)){
             if (checkResident(contractor,homeCompanyName)){
                 contractor.setParentKey(config.data().enterprise1C().getParentKeyResident());
             } else {
@@ -177,6 +178,18 @@ public class Api1CImpl implements Api1C{
         }
 
         return ok(checkResident(contractor, homeCompanyName));
+    }
+
+    @Override
+    public Result<String> getEmployeeRestVacationDays(String workerExtId, String companyName) {
+        log.debug("workerExtId={}", workerExtId);
+
+        String url1C = buildGetRestVacationDaysByKeyUrl(workerExtId, companyName);
+        return StringUtils.isEmpty(url1C) ? null
+                                          : client.read(url1C, Result.class)
+                .ifOk( value -> log.info( "buildGetRestVacationDaysByKeyUrl(): OK " ) )
+                .ifError( result -> log.warn( "buildGetRestVacationDaysByKeyUrl(): Can`t get restVacationDays for worker with external id {}. Result={}", workerExtId, result ))
+                .getData();
     }
 
     private void prepareContractProperties(Contract1C contract, String homeCompanyName) {
@@ -319,6 +332,18 @@ public class Api1CImpl implements Api1C{
         return url;
     }
 
+    private String buildGetRestVacationDaysByKeyUrl(String workerExtId, String companyName){
+        String url = "";
+        if (MAIN_HOME_COMPANY_NAME.equals(companyName)) {
+            url = config.data().enterprise1C().getApiBaseProteiZiupUrl();
+        } else if (PROTEI_ST_HOME_COMPANY_NAME.equals(companyName)) {
+            url = config.data().enterprise1C().getApiBaseProteiZiupStUrl();
+        }
+
+        log.debug("buildGetRestVacationDaysByKeyUrl(): url={}", url + "/" + workerExtId);
+        return url;
+    }
+
     private String buildCommonUrl (Class<?> clazz, String homeCompanyName){
         String url = getBaseUrl(homeCompanyName);
         UrlName1C annotation = clazz.getAnnotation(UrlName1C.class);
@@ -418,11 +443,11 @@ public class Api1CImpl implements Api1C{
 
     // todo : выяснить зачем сравнение по названиями и переделать эти костыли =)
     private String getDirPropertyKey(String homeCompanyName) {
-        if (CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME.equals(homeCompanyName)) {
+        if (PROTEI_ST_HOME_COMPANY_NAME.equals(homeCompanyName)) {
             return ContractAdditionalProperty1C.DIRECTION_PROPERTY_KEY_PROTEI_ST;
         }
 
-        if (CrmConstants.Company.MAIN_HOME_COMPANY_NAME.equals(homeCompanyName)) {
+        if (MAIN_HOME_COMPANY_NAME.equals(homeCompanyName)) {
             return ContractAdditionalProperty1C.DIRECTION_PROPERTY_KEY_PROTEI;
         }
 
@@ -430,11 +455,11 @@ public class Api1CImpl implements Api1C{
     }
 
     private String getBaseUrl(String homeCompanyName) {
-        if (CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME.equals(homeCompanyName)) {
+        if (PROTEI_ST_HOME_COMPANY_NAME.equals(homeCompanyName)) {
             return config.data().enterprise1C().getApiBaseProteiStUrl();
         }
 
-        if (CrmConstants.Company.MAIN_HOME_COMPANY_NAME.equals(homeCompanyName)) {
+        if (MAIN_HOME_COMPANY_NAME.equals(homeCompanyName)) {
             return config.data().enterprise1C().getApiBaseProteiUrl();
         }
 

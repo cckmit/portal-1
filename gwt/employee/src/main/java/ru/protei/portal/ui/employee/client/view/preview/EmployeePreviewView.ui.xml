@@ -48,6 +48,11 @@
                     <b><ui:text from="{lang.employeeInn}:"/></b>
                     <span ui:field="inn"/>
                 </div>
+                <div class="small">
+                    <b><ui:text from="{lang.restVacationDays}:"/></b>
+                    <i class='fa fa-spinner fa-pulse' ui:field="restVacationDaysLoading" style="hidden"></i>
+                    <span ui:field="restVacationDays"/>
+                </div>
             </div>
 
             <div ui:field="absencesPanel" class="row hide">

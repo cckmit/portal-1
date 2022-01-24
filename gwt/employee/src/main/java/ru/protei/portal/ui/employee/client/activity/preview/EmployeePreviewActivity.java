@@ -19,12 +19,10 @@ import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.EmailRender;
-import ru.protei.portal.ui.common.client.events.AbsenceEvents;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.EmployeeEvents;
-import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
@@ -35,6 +33,8 @@ import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemAct
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 
@@ -105,7 +105,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         );
     }
 
-    private void fillView(EmployeeShortView employee) {
+    private void fillView(final EmployeeShortView employee) {
 
         this.employee = employee;
 
@@ -156,6 +156,18 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
         requestLogins(employee.getId());
 
+
+        List<String> workerExtIds = employee.getWorkerEntries().stream()
+                                            .map(entry -> entry.getWorkerExtId())
+                                            .collect(Collectors.toList());
+        if (workerExtIds.isEmpty()) {
+            view.setRestVacationDays(lang.noData());
+        } else {
+            view.setRestVacationDays("");
+            view.getRestVacationDaysLoading().removeClassName("hide");
+            requestRestVacationDays(employee.getId(), employee.getWorkerEntries());
+        }
+
         showAbsences(employee.getId());
     }
 
@@ -184,6 +196,28 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
                 .withSuccess(userLoginShortViews ->
                         view.setLogins(
                                 joining(userLoginShortViews, ", ", UserLoginShortView::getUlogin))));
+    }
+
+    private void requestRestVacationDays(final Long employeeId, List<WorkerEntryShortView> workerEntries) {
+        employeeService.getEmployeeRestVacationDays(workerEntries,
+                new FluentCallback<String>()
+                        .withError(throwable -> {
+                            view.getRestVacationDaysLoading().addClassName("hide");
+                            view.setRestVacationDays(lang.noData());
+                            fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                        })
+                        .withSuccess(new Consumer<String>() {
+                            @Override
+                            public void accept(String restVacationDaysResult) {
+                                if (employee == null || !employee.getId().equals(employeeId)) {
+                                    return;
+                                }
+
+                                view.getRestVacationDaysLoading().addClassName("hide");
+                                view.setRestVacationDays(restVacationDaysResult == null ? lang.noData()
+                                                                                        : restVacationDaysResult);
+                            }
+                        }));
     }
 
     private AbstractPositionItemView makePositionView(WorkerEntryShortView workerEntry, PersonShortView head) {

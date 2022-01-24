@@ -22,4 +22,6 @@ public interface Api1C {
     Result<Contract1C> saveContract(Contract1C contract1C, String homeCompanyName);
 
     Result<Contract1C> getContract(Contract1C contract1C, String homeCompanyName);
+
+    Result<String> getEmployeeRestVacationDays(String workerExtId, String companyName);
 }

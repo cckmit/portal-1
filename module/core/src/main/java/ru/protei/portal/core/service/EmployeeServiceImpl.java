@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.client.enterprise1c.api.Api1C;
 import ru.protei.portal.core.event.BirthdaysNotificationEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
@@ -26,6 +27,7 @@ import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import javax.inject.Inject;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -107,6 +109,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     EventPublisherService publisherService;
     @Autowired
     CompanyService companyService;
+    @Autowired
+    Api1C api1CService;
 
     private Pattern workPhone = Pattern.compile(WORK_PHONE_NUMBER_PATTERN);
     private Pattern mobilePhone = Pattern.compile(RUS_PHONE_NUMBER_PATTERN);
@@ -552,6 +556,38 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         log.info("notifyAboutBirthdays(): done");
         return ok();
+    }
+
+    @Override
+    public Result<String> getEmployeeRestVacationDays(AuthToken token, List<WorkerEntryShortView> workerEntries) {
+        log.info("getEmployeeRestVacationDays(): start");
+
+        if (CollectionUtils.isEmpty(workerEntries)) {
+            log.error("getEmployeeRestVacationDays(): workerExtIds is empty");
+            return ok();
+        }
+
+        Double restVacationDays = null;
+        for (WorkerEntryShortView workerEntry: workerEntries) {
+            Result<String> result = api1CService.getEmployeeRestVacationDays(workerEntry.getWorkerExtId(),
+                                                                             workerEntry.getCompanyName());
+            if (result != null && result.isOk()) {
+                double days = Double.parseDouble(String.valueOf(result.getData()));
+                restVacationDays = restVacationDays == null ? days : restVacationDays + days;
+            }
+        }
+
+        if (restVacationDays == null) {
+            log.warn("getEmployeeRestVacationDays(): restVacationDays is empty");
+            return ok();
+        }
+
+        if (restVacationDays.equals(0.0)) {
+            return ok("0");
+        }
+
+        log.info("getEmployeeRestVacationDays(): done");
+        return ok(String.valueOf(restVacationDays));
     }
 
     private List<NotificationEntry> makeNotificationListFromConfiguration() {
