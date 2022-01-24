@@ -28,4 +28,6 @@ public interface AbstractUnplannedIssuesTableView extends IsWidget {
     void setLimitLabel(String value);
 
     void setIssueDefaultCursor(boolean isDefault);
+
+    void removeIssue(CaseShortView issue);
 }
