@@ -188,7 +188,7 @@ public class Api1CImpl implements Api1C{
         return StringUtils.isEmpty(url1C) ? null
                                           : client.read(url1C, Result.class)
                 .ifOk( value -> log.info( "buildGetRestVacationDaysByKeyUrl(): OK " ) )
-                .ifError( result -> log.warn( "buildGetRestVacationDaysByKeyUrl(): Can`t get restVacationDays={}. {}", workerExtId, result ))
+                .ifError( result -> log.warn( "buildGetRestVacationDaysByKeyUrl(): Can`t get restVacationDays for worker with external id {}. Result={}", workerExtId, result ))
                 .getData();
     }
 
