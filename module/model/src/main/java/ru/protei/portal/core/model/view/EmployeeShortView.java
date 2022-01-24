@@ -45,6 +45,9 @@ public class EmployeeShortView implements Serializable {
     @JdbcColumn(name="ipaddress")
     private String ipAddress;
 
+    @JdbcColumn(name = "inn")
+    private String inn;
+
     @JdbcColumn(name="isfired")
     private boolean isFired;
 
@@ -110,6 +113,14 @@ public class EmployeeShortView implements Serializable {
 
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    public String getInn() {
+        return inn;
+    }
+
+    public void setInn(String inn) {
+        this.inn = inn;
     }
 
     public ContactInfo getContactInfo() {

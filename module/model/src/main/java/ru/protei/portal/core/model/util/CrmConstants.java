@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.util;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -113,6 +112,7 @@ public class CrmConstants {
     public interface ContactConstants {
         int FIRST_NAME_SIZE = 80;
         int SECOND_NAME_SIZE = 80;
+        int INN_SIZE = 12;
         int LAST_NAME_SIZE = 80;
         int SHORT_NAME_SIZE = 128;
         int LOGIN_SIZE = 64;

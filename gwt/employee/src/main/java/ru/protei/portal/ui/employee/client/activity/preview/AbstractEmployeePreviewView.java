@@ -24,6 +24,8 @@ public interface AbstractEmployeePreviewView extends IsWidget {
     void setID(String value);
 
     void setIP(String ip);
+    
+    void setInn(String inn);
 
     void setLogins(String logins);
 

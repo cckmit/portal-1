@@ -331,7 +331,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         person.setDisplayShortName(createPersonShortName(person));
         person.setContactInfo(removeSensitiveInformation(person.getContactInfo()));
 
-        boolean success = personDAO.partialMerge(person,  "firstname", "lastname", "secondname", "sex", "birthday", "ipaddress", "displayname", "displayShortName", "isfired", "firedate");
+        boolean success = personDAO.partialMerge(person,  "firstname", "lastname", "secondname", "sex", "birthday", "ipaddress", "displayname", "displayShortName", "isfired", "firedate", "inn");
         if (!success) {
             return error(En_ResultStatus.INTERNAL_ERROR);
         }

@@ -66,6 +66,9 @@ public class Person extends AuditableObject {
 
     @JdbcColumn(name="info")
     private String info;
+    
+    @JdbcColumn(name = "inn")
+    private String inn;
 
     @JdbcColumn(name="isdeleted")
     private boolean isDeleted;
@@ -260,6 +263,14 @@ public class Person extends AuditableObject {
         this.info = info;
     }
 
+    public String getInn() {
+        return inn;
+    }
+
+    public void setInn(String inn) {
+        this.inn = inn;
+    }
+
     public boolean isDeleted() {
         return isDeleted;
     }
@@ -390,6 +401,7 @@ public class Person extends AuditableObject {
                 ", birthday=" + birthday +
                 ", ipAddress='" + ipAddress + '\'' +
                 ", info='" + info + '\'' +
+                ", inn='" + inn + '\'' +
                 ", isDeleted=" + isDeleted +
                 ", isFired=" + isFired +
                 ", fireDate=" + fireDate +

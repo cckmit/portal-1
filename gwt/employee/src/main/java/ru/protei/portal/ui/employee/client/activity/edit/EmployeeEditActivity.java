@@ -196,6 +196,10 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             view.secondNameErrorLabelVisibility().setVisible(view.secondName().getText().length() > SECOND_NAME_SIZE);
         }
 
+        if (view.inn().getText() != null) {
+            view.innErrorLabelVisibility().setVisible(view.inn().getText().length() != INN_SIZE);
+        }
+
         view.saveEnabled().setEnabled(validateSaveButton());
     }
 
@@ -345,6 +349,10 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return false;
         }
 
+        if ((view.inn().getText() != null) && (view.inn().getText().length() != INN_SIZE)) {
+            return false;
+        }
+
         return true;
     }
 
@@ -359,6 +367,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         employee.setFirstName(view.firstName().getValue());
         employee.setLastName(view.lastName().getValue());
         employee.setSecondName(view.secondName().getText());
+        employee.setInn(view.inn().getText());
         employee.setBirthday(view.birthDay().getValue());
 
         employee.getContactItems().clear();
@@ -406,6 +415,10 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
             return lang.errorFieldHasInvalidValue(view.secondNameLabel());
         }
 
+        if ((view.inn().getText() != null) && (view.inn().getText().length() != INN_SIZE)) {
+            return lang.errorFieldHasInvalidValue(view.innLabel());
+        }
+
         if (positionMap.isEmpty()){
             return lang.errEmployeePositionEmpty();
         }
@@ -446,6 +459,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.lastName().setValue(employee.getLastName());
         personLastName = employee.getLastName();
         view.secondName().setText(employee.getSecondName());
+        view.inn().setText(employee.getInn());
         if (employee.getBirthday() != null ) {
             view.setBirthDayTimeZone(TimeZone.createTimeZone(employee.getBirthday().getTimezoneOffset()));
         }
@@ -555,6 +569,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         view.mobilePhoneEnabled().setEnabled(isEnabled);
         view.workPhoneEnabled().setEnabled(isEnabled);
         view.ipAddressEnabled().setEnabled(isEnabled);
+        view.innEnabled().setEnabled(isEnabled);
     }
 
     private void saveEmployee(Person person, List<WorkerEntry> workers, boolean isEditablePerson, boolean needToChangeAccount) {
