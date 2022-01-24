@@ -146,6 +146,7 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        fillDateExecution(contract);
         CaseObject caseObject = fillCaseObjectFromContract(null, contract);
         Long contractId = caseObjectDAO.persist(caseObject);
         if (contractId == null) {
@@ -261,6 +262,7 @@ public class ContractServiceImpl implements ContractService {
             contract.setContractorId(null);
         }
 
+        fillDateExecution(contract);
         fillCaseObjectFromContract(prevContractCaseObject, contract);
 
         boolean contractCaseObjectSaved = caseObjectDAO.merge(prevContractCaseObject);
@@ -570,6 +572,21 @@ public class ContractServiceImpl implements ContractService {
             return null;
         }
         return getFirst(result.getData());
+    }
+
+    // PORTAL-2017 в договорах при сохранении/создании договора если дата исполнения не указана – устанавливаем
+    // минимальную дату из отгрузок, если уже указана – ее модификация производится только в ручном формате.
+    private void fillDateExecution(Contract contract) {
+        if (contract.getDateExecution() != null || CollectionUtils.isEmpty(contract.getContractDates())) {
+            return;
+        }
+
+        Date minSupplyDate = contract.getContractDates().stream()
+                .filter(contractDate -> Objects.equals(contractDate.getType(), En_ContractDatesType.SUPPLY))
+                .map(ContractDate::getDate)
+                .min(Date::compareTo)
+                .orElse(null);
+        contract.setDateExecution(minSupplyDate);
     }
 
     private CaseObject fillCaseObjectFromContract(CaseObject caseObject, Contract contract) {

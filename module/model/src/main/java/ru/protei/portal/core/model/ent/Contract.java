@@ -134,6 +134,12 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcColumn(name = "date_signing")
     private Date dateSigning;
 
+    @JdbcColumn(name = "date_execution")
+    private Date dateExecution;
+
+    @JdbcColumn(name = "date_end_warranty")
+    private Date dateEndWarranty;
+
     @JdbcColumn(name = "date_valid")
     private Date dateValid;
 
@@ -454,6 +460,22 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.contractor = contractor;
     }
 
+    public Date getDateExecution() {
+        return dateExecution;
+    }
+
+    public void setDateExecution(Date dateExecution) {
+        this.dateExecution = dateExecution;
+    }
+
+    public Date getDateEndWarranty() {
+        return dateEndWarranty;
+    }
+
+    public void setDateEndWarranty(Date dateEndWarranty) {
+        this.dateEndWarranty = dateEndWarranty;
+    }
+
     public static Contract fromContractInfo(ContractInfo info) {
         if (info == null) {
             return null;
@@ -511,6 +533,8 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", contractorId=" + contractorId +
                 ", contractor=" + contractor +
                 ", deliveryNumber=" + deliveryNumber +
+                ", dateEndWarranty=" + dateEndWarranty +
+                ", dateExecution=" + dateExecution +
                 '}';
     }
 

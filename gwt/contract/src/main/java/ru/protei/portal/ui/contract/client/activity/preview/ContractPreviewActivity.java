@@ -132,6 +132,8 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                 .collect(Collectors.joining(", ")));
         view.setProject(StringUtils.emptyIfNull(value.getProjectName()) + " (#" + value.getProjectId() + ")", LinkUtils.makePreviewLink(Project.class, value.getProjectId()));
         view.setDeliveryNumber(StringUtils.emptyIfNull(value.getDeliveryNumber()));
+        view.setDateEndWarranty(formatDate(value.getDateEndWarranty()));
+        view.setDateExecution(formatDate(value.getDateExecution()));
 
         fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), En_CaseType.CONTRACT, contractId, true, a -> {}));
         view.getCommentsContainer().clear();

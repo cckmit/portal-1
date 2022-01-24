@@ -1,0 +1,22 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-date_execution-column-and-date_end_warranty-column-to-contract-table" author="ponomareva">
+        <addColumn tableName="contract">
+            <column name="date_execution" type="DATETIME"/>
+        </addColumn>
+        <addColumn tableName="contract">
+            <column name="date_end_warranty" type="DATETIME"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="set-default-date_execution-in-created-contracts" author="ponomareva">
+        <sql>
+            update contract
+            set date_execution = (select min(date) from contract_date where type = 1 and contract_id = contract.id);
+        </sql>
+    </changeSet>
+</databaseChangeLog>

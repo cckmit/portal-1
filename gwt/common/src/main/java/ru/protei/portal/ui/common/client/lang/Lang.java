@@ -4051,4 +4051,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contractDatesWarningCostFlow();
 
     String inputProjectNumber();
+
+    String contractDateExecution();
+
+    String contractDateEndWarranty();
 }
