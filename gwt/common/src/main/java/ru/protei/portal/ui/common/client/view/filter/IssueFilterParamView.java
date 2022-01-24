@@ -334,6 +334,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
             case CASE_OBJECTS: {
                 String searchString = search.getValue();
                 query.setCaseNumbers(searchCaseNumber(searchString, searchByComments.getValue()));
+                query.setSortField(sortField.getValue());
+                query.setSortDir(sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
                 if (isSearchOnlyByCaseNumber(query)) {
                     break;
                 }
@@ -342,8 +344,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setAlternativeSearchString( makeAlternativeSearchString( searchString));
                 query.setViewPrivate(searchPrivate.getValue());
                 query.setPersonIdToIsFavorite(searchFavorite.getValue() == null ? null : new Pair<>(policyService.getProfileId(), searchFavorite.getValue()));
-                query.setSortField(sortField.getValue());
-                query.setSortDir(sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
                 query.setCompanyIds(getCompaniesIdList(companies.getValue()));
                 query.setProductIds(getProductsIdList(products.getValue()));
                 query.setManagerIds(getManagersIdList(managers.getValue()));
