@@ -898,21 +898,24 @@ public class WorkerController {
             return isValid;
         }
 
-        CompanyHomeGroupItem workerCompany = companyGroupHomeDAO.getByExternalCode(workerRecord.getCompanyCode().trim());
-        if (workerCompany == null || workerCompany.getCompanyId() == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+        OperationData operationData = new OperationData(workerRecord)
+                .requireHomeItem()
+                .requireWorker(null);
+
+        if (!operationData.isValid()) {
+            return operationData.failResult();
         }
 
-        Long workerCompanyId = workerCompany.getCompanyId();
+        try {
+            Long newWorkerPositionId = getValidPosition(workerRecord.getNewPositionName(),
+                                                        operationData.homeItem().getCompanyId()).getId();
 
-        WorkerEntry workerToUpdate = workerEntryDAO.getByExternalId(String.valueOf(workerRecord.getWorkerId()), workerCompanyId);
-        if (workerToUpdate == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
+            return updateWorkerPosition(operationData.worker, workerRecord, newWorkerPositionId);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         }
 
-        Long newPositionId = checkAndCreateNewWorkerPosition(workerRecord, workerCompanyId, workerRecord.getNewPositionName());
-        workerRecord.setNewPositionId(newPositionId);
-        return updateWorkerPosition(workerToUpdate, workerRecord);
+        return ok(null);
     }
 
     private Result<Long> isValidNewEmployeePosition(WorkerRecord position) {
@@ -934,25 +937,13 @@ public class WorkerController {
                                : error(En_ResultStatus.INCORRECT_PARAMS, errCode.getMessage());
     }
 
-    private Long checkAndCreateNewWorkerPosition(WorkerRecord workerRecord, Long workerCompanyId, String newPositionName) {
-        WorkerPosition newWorkerPosition = workerPositionDAO.getByName(workerRecord.getPositionName(), workerCompanyId);
-        if (newWorkerPosition == null) {
-            newWorkerPosition = new WorkerPosition();
-            newWorkerPosition.setName(newPositionName);
-            newWorkerPosition.setCompanyId(workerCompanyId);
-            workerPositionDAO.persist(newWorkerPosition);
-        }
-
-        return newWorkerPosition.getId();
-    }
-
-    private Result<Long> updateWorkerPosition(WorkerEntry workerToUpdate, WorkerRecord workerRecord){
+    private Result<Long> updateWorkerPosition(WorkerEntry workerToUpdate, WorkerRecord workerRecord, Long newWorkerPositionId){
         try {
             Long newPositionDepartmentId = workerRecord.getNewPositionDepartmentId();
 
             boolean updatePositionNow = workerRecord.getNewPositionTransferDate().getTime() <= new Date().getTime();
             if (updatePositionNow) {
-                workerToUpdate.setPositionId(workerRecord.getNewPositionId());
+                workerToUpdate.setPositionId(newWorkerPositionId);
                 workerToUpdate.setDepartmentId(newPositionDepartmentId);
             } else {
                 workerToUpdate.setNewPositionName(workerRecord.getNewPositionName());

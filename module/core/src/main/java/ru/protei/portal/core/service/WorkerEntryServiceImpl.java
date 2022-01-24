@@ -52,7 +52,7 @@ public class WorkerEntryServiceImpl implements WorkerEntryService {
     CompanyDepartmentDAO companyDepartmentDAO;
     @Autowired
     WorkerPositionDAO workerPositionDAO;
-    
+
     @Override
     @Transactional
     public Result<Void> updateFiredByDate(Date now) {
@@ -74,8 +74,8 @@ public class WorkerEntryServiceImpl implements WorkerEntryService {
     @Transactional
     public Result<Void> updatePositionByDate(Date now) {
         for (WorkerEntry worker: workerEntryDAO.getForUpdatePositionByDate(now)) {
-            log.debug(String.format("Update worker with id %s position from '%s' to '%s'",
-                                     worker.getId(), worker.getPositionName(), worker.getNewPositionName()));
+            log.debug("Update worker with id " + worker.getId()+ " position from '" +
+                       worker.getPositionName() + "' to '" + worker.getNewPositionName() + "'");
 
             String newPositionName = worker.getNewPositionName();
             Long companyId = worker.getCompanyId();
@@ -87,13 +87,14 @@ public class WorkerEntryServiceImpl implements WorkerEntryService {
             }
 
             worker.setPositionId(workerPosition.getId());
+            worker.setDepartmentId(worker.getNewPositionDepartmentId());
             worker.setNewPositionName(null);
             worker.setNewPositionDepartmentId(null);
             worker.setNewPositionTransferDate(null);
-            boolean updated = workerEntryDAO.partialMerge(worker, POSITION_ID, NEW_POSITION_NAME,
+            boolean updated = workerEntryDAO.partialMerge(worker, POSITION_ID, POSITION_DEPARTMENT_ID, NEW_POSITION_NAME,
                                                                   NEW_POSITION_DEPARTMENT_ID, NEW_POSITION_TRANSFER_DATE);
             if (updated) {
-                log.debug(String.format("Worker with id %s position changed to '%s'", worker.getId(), newPositionName));
+                log.debug("Worker with id " + worker.getId() + " position changed to '" + newPositionName + "'");
             } else {
                 return error(En_ResultStatus.NOT_UPDATED, String.format("Worker with id %s position not updated!", worker.getId()));
             }

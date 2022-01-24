@@ -467,7 +467,7 @@ public class TestWorkerController {
     @Test
     public void testUpdateWorkerPosition() throws Exception {
         Company company = companyDAO.getCompanyByName("Протей");
-        CompanyDepartment companyDepartment = createCompanyDepartmentRecord(company.getId());
+        CompanyDepartment companyDepartment = createCompanyDepartment(company.getId(), "Company Department");
         Long companyDepartmentId = companyDepartmentDAO.persist(companyDepartment);
         Assert.assertNotNull(companyDepartmentId);
 
@@ -479,7 +479,11 @@ public class TestWorkerController {
         Long workerId = workerEntryDAO.persist(worker);
         Assert.assertNotNull(workerId);
 
-        WorkerRecord newWorkerPosition = createNewWorkerPosition(worker.getExternalId(), companyDepartmentId);
+        CompanyDepartment newCompanyDepartment = createCompanyDepartment(company.getId(), "New Company Department");
+        Long newCompanyDepartmentId = companyDepartmentDAO.persist(newCompanyDepartment);
+        Assert.assertNotNull(companyDepartmentId);
+
+        WorkerRecord newWorkerPosition = createNewWorkerPosition(worker.getExternalId(), newCompanyDepartmentId);
         Result<Long> updatedWorkerResult = updateWorkerPosition(newWorkerPosition);
         Assert.assertTrue(updatedWorkerResult.isOk());
 
@@ -869,10 +873,10 @@ public class TestWorkerController {
         return position;
     }
 
-    private CompanyDepartment createCompanyDepartmentRecord(Long companyId) {
+    private CompanyDepartment createCompanyDepartment(Long companyId, String name) {
         CompanyDepartment companyDepartment = new CompanyDepartment();
         companyDepartment.setCreated(new Date());
-        companyDepartment.setName("Company Department");
+        companyDepartment.setName(name);
         companyDepartment.setCompanyId(companyId);
         logger.debug("companyDepartment = " + companyDepartment.toString());
         return companyDepartment;

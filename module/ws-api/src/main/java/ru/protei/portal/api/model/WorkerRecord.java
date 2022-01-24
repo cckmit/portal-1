@@ -21,8 +21,6 @@ import static ru.protei.portal.core.model.ent.WorkerEntry.Columns.*;
 public class WorkerRecord {
 
     private String companyCode;
-    private String companyName;
-
     private Long id;
     private String firstName;
     private String lastName;
@@ -56,7 +54,6 @@ public class WorkerRecord {
     private String positionName;
 
     private String workerExtId;
-    private Long newPositionId;
     private String newPositionName;
     private Long newPositionDepartmentId;
     private Date newPositionTransferDate;
@@ -80,15 +77,6 @@ public class WorkerRecord {
 
     public void setCompanyCode(String companyCode) {
         this.companyCode = companyCode;
-    }
-
-    @XmlElement(name = "company-name")
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
     }
 
     @XmlElement(name = "id")
@@ -342,14 +330,6 @@ public class WorkerRecord {
         this.workerExtId = workerExtId;
     }
 
-    public Long getNewPositionId() {
-        return newPositionId;
-    }
-
-    public void setNewPositionId(Long newPositionId) {
-        this.newPositionId = newPositionId;
-    }
-
     public String getNewPositionName() {
         return newPositionName;
     }
@@ -441,9 +421,11 @@ public class WorkerRecord {
                 ", hireOrderNo='" + hireOrderNo + '\'' +
                 ", active=" + active +
                 ", positionName='" + positionName + '\'' +
+                ", workerExtId='" + workerExtId + '\'' +
                 ", newPositionDepartment='" + newPositionDepartmentId + '\'' +
                 ", newPositionName='" + newPositionName + '\'' +
-                ", newPositionTransferDate='" + newPositionTransferDate + '\'' +
+                ", newPositionDepartmentId=" + newPositionDepartmentId +
+                ", newPositionTransferDate=" + newPositionTransferDate +
                 '}';
     }
 }

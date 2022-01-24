@@ -95,15 +95,19 @@ public class WorkerEntryServiceTest extends BaseServiceTest {
         Person person = createNewPerson(company);
         personDAO.persist(person);
 
-        CompanyDepartment companyDepartment = createCompanyDepartmentRecord(company.getId());
+        CompanyDepartment companyDepartment = createCompanyDepartmentRecord(company.getId(), "Company Department");
         Long companyDepartmentId = companyDepartmentDAO.persist(companyDepartment);
         Assert.assertNotNull(companyDepartmentId);
+
+        CompanyDepartment newCompanyDepartment = createCompanyDepartmentRecord(company.getId(), "New Company Department");
+        Long newCompanyDepartmentId = companyDepartmentDAO.persist(newCompanyDepartment);
+        Assert.assertNotNull(newCompanyDepartmentId);
 
         WorkerPosition workerPosition = createWorkerPosition(company.getId());
         Long workerPositionId = workerPositionDAO.persist(workerPosition);
         Assert.assertNotNull(workerPositionId);
 
-        WorkerEntry worker = createWorker(company.getId(), companyDepartmentId, workerPosition, person.getId());
+        WorkerEntry worker = createWorker(company.getId(), newCompanyDepartmentId, workerPosition, person.getId());
         Long workerId = workerEntryDAO.persist(worker);
         Assert.assertNotNull(workerId);
 
@@ -133,10 +137,10 @@ public class WorkerEntryServiceTest extends BaseServiceTest {
         Assert.assertNotNull(updatedWorker.getNewPositionTransferDate());
     }
 
-    private CompanyDepartment createCompanyDepartmentRecord(Long companyId) {
+    private CompanyDepartment createCompanyDepartmentRecord(Long companyId, String name) {
         CompanyDepartment companyDepartment = new CompanyDepartment();
         companyDepartment.setCreated(new Date());
-        companyDepartment.setName("Company Department");
+        companyDepartment.setName(name);
         companyDepartment.setCompanyId(companyId);
         return companyDepartment;
     }
