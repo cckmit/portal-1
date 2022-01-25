@@ -74,8 +74,8 @@ public class WorkerEntryServiceImpl implements WorkerEntryService {
     @Transactional
     public Result<Void> updatePositionByDate(Date now) {
         for (WorkerEntry worker: workerEntryDAO.getForUpdatePositionByDate(now)) {
-            log.debug("Update worker with id " + worker.getId()+ " position from '" +
-                       worker.getPositionName() + "' to '" + worker.getNewPositionName() + "'");
+            log.debug("Update worker with id {} position from '{}' to '{}'",
+                       worker.getId(), worker.getPositionName(), worker.getNewPositionName());
 
             String newPositionName = worker.getNewPositionName();
             Long companyId = worker.getCompanyId();
@@ -94,9 +94,9 @@ public class WorkerEntryServiceImpl implements WorkerEntryService {
             boolean updated = workerEntryDAO.partialMerge(worker, POSITION_ID, POSITION_DEPARTMENT_ID, NEW_POSITION_NAME,
                                                                   NEW_POSITION_DEPARTMENT_ID, NEW_POSITION_TRANSFER_DATE);
             if (updated) {
-                log.debug("Worker with id " + worker.getId() + " position changed to '" + newPositionName + "'");
+                log.debug("Worker with id {} position changed to '{}'", worker.getId(), newPositionName);
             } else {
-                return error(En_ResultStatus.NOT_UPDATED, String.format("Worker with id %s position not updated!", worker.getId()));
+                return error(En_ResultStatus.NOT_UPDATED, "Worker with id " + worker.getId() + " position not updated!");
             }
         }
         return ok();
