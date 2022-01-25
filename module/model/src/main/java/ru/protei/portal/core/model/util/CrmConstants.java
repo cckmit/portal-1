@@ -20,7 +20,7 @@ public class CrmConstants {
 
     public static final List<String> CONFIG_EXTENSIONS = Arrays.asList(".config", ".cfg", ".properties", ".xml", ".json");
 
-    public static final List<String> PROTEI_DOMAINS = Arrays.asList("@protei.ru", "@sigurd-it.ru", "@neo-s.com");
+    public static final List<String> PROTEI_DOMAINS = Arrays.asList("@protei.ru", "@protei-lab.ru", "@pit.protei.ru", "@tl.protei.ru", "@sigurd-it.ru", "@neo-s.com");
 
     public interface Session {
         String AUTH_TOKEN = "session-auth-token";
