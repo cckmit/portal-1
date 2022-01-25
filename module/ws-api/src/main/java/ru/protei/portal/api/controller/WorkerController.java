@@ -46,6 +46,7 @@ import java.util.function.Supplier;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.ent.WorkerEntry.Columns.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
 
@@ -874,6 +875,103 @@ public class WorkerController {
         return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_DELETE.getMessage());
     }
 
+    /**
+     * Обновить позицию сотрудника
+     * @param workerRecord данные о сотруднике
+     * @return Result<Long>
+     */
+    @RequestMapping(method = RequestMethod.PUT,
+            consumes = MediaType.APPLICATION_XML_VALUE,
+            produces = MediaType.APPLICATION_XML_VALUE,
+            value = "/update.worker.position")
+    Result<Long> updateWorkerPosition(@RequestBody WorkerRecord workerRecord,
+                                      HttpServletRequest request,
+                                      HttpServletResponse response) {
+
+        logger.debug("updateWorkerPosition(): rec={}", workerRecord);
+
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+
+        Result<Long> isValid = isValidNewEmployeePosition(workerRecord);
+        if (isValid.isError()) {
+            logger.debug("error result: " + isValid.getMessage());
+            return isValid;
+        }
+
+        OperationData operationData = new OperationData(workerRecord)
+                .requireHomeItem()
+                .requireWorker(null);
+
+        if (!operationData.isValid()) {
+            return operationData.failResult();
+        }
+
+        try {
+            Long newWorkerPositionId = getValidPosition(workerRecord.getNewPositionName(),
+                                                        operationData.homeItem().getCompanyId()).getId();
+
+            return updateWorkerPosition(operationData.worker, workerRecord, newWorkerPositionId);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return ok(null);
+    }
+
+    private Result<Long> isValidNewEmployeePosition(WorkerRecord position) {
+        En_ErrorCode errCode = null;
+
+        if (HelperFunc.isEmpty(position.getWorkerId())) {
+            errCode = En_ErrorCode.EMPTY_WORKER_ID;
+        } else if (HelperFunc.isEmpty(position.getCompanyCode())) {
+            errCode = En_ErrorCode.EMPTY_COMP_CODE;
+        } else if (HelperFunc.isEmpty(position.getNewPositionName())) {
+            errCode = En_ErrorCode.EMPTY_NEW_WORKER_POSITION_NAME;
+        } else if (position.getNewPositionDepartmentId() == null) {
+            errCode = En_ErrorCode.EMPTY_NEW_WORKER_POSITION_DEPARTMENT_ID;
+        } else if (position.getNewPositionTransferDate() == null) {
+            errCode = En_ErrorCode.EMPTY_NEW_WORKER_TRANSFER_DATE;
+        }
+
+        return errCode == null ? ok(null)
+                               : error(En_ResultStatus.INCORRECT_PARAMS, errCode.getMessage());
+    }
+
+    private Result<Long> updateWorkerPosition(WorkerEntry workerToUpdate, WorkerRecord workerRecord, Long newWorkerPositionId){
+        try {
+            Long newPositionDepartmentId = workerRecord.getNewPositionDepartmentId();
+
+            boolean updatePositionNow = workerRecord.getNewPositionTransferDate().getTime() <= new Date().getTime();
+            if (updatePositionNow) {
+                workerToUpdate.setPositionId(newWorkerPositionId);
+                workerToUpdate.setDepartmentId(newPositionDepartmentId);
+            } else {
+                workerToUpdate.setNewPositionName(workerRecord.getNewPositionName());
+                workerToUpdate.setNewPositionDepartmentId(newPositionDepartmentId);
+                workerToUpdate.setNewPositionTransferDate(workerRecord.getNewPositionTransferDate());
+            }
+
+            boolean updated;
+            if (updatePositionNow) {
+                updated = workerEntryDAO.partialMerge(workerToUpdate, POSITION_ID, POSITION_DEPARTMENT_ID);
+            } else {
+                updated = workerEntryDAO.partialMerge(workerToUpdate, NEW_POSITION_NAME, NEW_POSITION_DEPARTMENT_ID,
+                                                                      NEW_POSITION_TRANSFER_DATE);
+            }
+
+            Long updatedWorkerId = workerToUpdate.getId();
+
+            if (updated) {
+                logger.debug("success result, updatedWorkerId={}", updatedWorkerId);
+                return ok(updatedWorkerId);
+            }
+        } catch (Exception e) {
+            logger.error("Error while update worker's position", e);
+        }
+
+        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
+    }
+
     private <R> R withHomeCompany(String companyCode, Function<CompanyHomeGroupItem, R> func) throws Exception {
         CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyCode.trim());
         return item == null ? null : func.apply(item);
@@ -1272,6 +1370,10 @@ public class WorkerController {
 
             return this;
         }
+
+        private String newPositionName;
+        private Long newPositionDepartmentId;
+        private Date newPositionTransferDate;
 
         private <T> T handle(T value, Supplier<T> optional, En_ErrorCode failCode) {
             return handle(value, optional, failCode, false);

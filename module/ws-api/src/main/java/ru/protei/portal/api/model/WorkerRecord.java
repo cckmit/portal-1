@@ -10,6 +10,9 @@ import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Date;
+
+import static ru.protei.portal.core.model.ent.WorkerEntry.Columns.*;
 
 /**
  * Created by turik on 17.08.16.
@@ -18,7 +21,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class WorkerRecord {
 
     private String companyCode;
-
     private Long id;
     private String firstName;
     private String lastName;
@@ -52,6 +54,11 @@ public class WorkerRecord {
     private String positionName;
 
     private String inn;
+
+    private String workerExtId;
+    private String newPositionName;
+    private Long newPositionDepartmentId;
+    private Date newPositionTransferDate;
 
     public WorkerRecord() {}
 
@@ -325,6 +332,42 @@ public class WorkerRecord {
         this.inn = inn;
     }
 
+    @XmlElement(name = "worker-ext-id")
+    public String getWorkerExtId() {
+        return workerExtId;
+    }
+
+    public void setWorkerExtId(String workerExtId) {
+        this.workerExtId = workerExtId;
+    }
+
+    public String getNewPositionName() {
+        return newPositionName;
+    }
+
+    @XmlElement(name = NEW_POSITION_NAME)
+    public void setNewPositionName(String newPositionName) {
+        this.newPositionName = newPositionName;
+    }
+
+    public Long getNewPositionDepartmentId() {
+        return newPositionDepartmentId;
+    }
+
+    @XmlElement(name = NEW_POSITION_DEPARTMENT_ID)
+    public void setNewPositionDepartmentId(Long newPositionDepartmentId) {
+        this.newPositionDepartmentId = newPositionDepartmentId;
+    }
+
+    public Date getNewPositionTransferDate() {
+        return newPositionTransferDate;
+    }
+
+    @XmlElement(name = NEW_POSITION_TRANSFER_DATE)
+    public void setNewPositionTransferDate(Date newPositionTransferDate) {
+        this.newPositionTransferDate = newPositionTransferDate;
+    }
+
     public void copy (Person person) {
         setId (person.getId ());
         setFirstName (person.getFirstName ());
@@ -391,6 +434,11 @@ public class WorkerRecord {
                 ", active=" + active +
                 ", positionName='" + positionName + '\'' +
                 ", inn='" + inn + '\'' +
+                ", workerExtId='" + workerExtId + '\'' +
+                ", newPositionDepartment='" + newPositionDepartmentId + '\'' +
+                ", newPositionName='" + newPositionName + '\'' +
+                ", newPositionDepartmentId=" + newPositionDepartmentId +
+                ", newPositionTransferDate=" + newPositionTransferDate +
                 '}';
     }
 }

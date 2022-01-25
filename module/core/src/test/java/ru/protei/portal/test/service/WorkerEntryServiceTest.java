@@ -11,6 +11,9 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -83,5 +86,84 @@ public class WorkerEntryServiceTest extends BaseServiceTest {
         Person nextDayBadWorkerEntryDb = personDAO.get(badWorker.getId());
         Assert.assertNotNull("Bad Worker not created", nextDayBadWorkerEntryDb);
         Assert.assertTrue("Bad Worker is still working", nextDayBadWorkerEntryDb.isFired());
+    }
+
+    @Test
+    @Transactional
+    public void testWorkerUpdatePosition() {
+        Company company = companyDAO.get(1L);
+        Person person = createNewPerson(company);
+        personDAO.persist(person);
+
+        CompanyDepartment companyDepartment = createCompanyDepartmentRecord(company.getId(), "Company Department");
+        Long companyDepartmentId = companyDepartmentDAO.persist(companyDepartment);
+        Assert.assertNotNull(companyDepartmentId);
+
+        CompanyDepartment newCompanyDepartment = createCompanyDepartmentRecord(company.getId(), "New Company Department");
+        Long newCompanyDepartmentId = companyDepartmentDAO.persist(newCompanyDepartment);
+        Assert.assertNotNull(newCompanyDepartmentId);
+
+        WorkerPosition workerPosition = createWorkerPosition(company.getId());
+        Long workerPositionId = workerPositionDAO.persist(workerPosition);
+        Assert.assertNotNull(workerPositionId);
+
+        WorkerEntry worker = createWorker(company.getId(), newCompanyDepartmentId, workerPosition, person.getId());
+        Long workerId = workerEntryDAO.persist(worker);
+        Assert.assertNotNull(workerId);
+
+        workerEntryService.updatePositionByDate(new Date());
+        WorkerEntry updatedWorker = workerEntryDAO.get(workerId);
+
+        Assert.assertEquals(worker.getNewPositionName(), updatedWorker.getPositionName());
+        Assert.assertNull(updatedWorker.getNewPositionName());
+        Assert.assertNull(updatedWorker.getNewPositionDepartmentId());
+        Assert.assertNull(updatedWorker.getNewPositionTransferDate());
+
+        // check position not update
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate date = LocalDate.parse("01.01.2030", formatter);
+        Date transferDate = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+        worker = createWorker(company.getId(), companyDepartmentId, workerPosition, person.getId());
+        worker.setNewPositionTransferDate(transferDate);
+        workerId = workerEntryDAO.persist(worker);
+        Assert.assertNotNull(workerId);
+
+        workerEntryService.updatePositionByDate(new Date());
+        updatedWorker = workerEntryDAO.get(workerId);
+
+        Assert.assertNotNull(updatedWorker.getNewPositionName());
+        Assert.assertNotNull(updatedWorker.getNewPositionDepartmentId());
+        Assert.assertNotNull(updatedWorker.getNewPositionTransferDate());
+    }
+
+    private CompanyDepartment createCompanyDepartmentRecord(Long companyId, String name) {
+        CompanyDepartment companyDepartment = new CompanyDepartment();
+        companyDepartment.setCreated(new Date());
+        companyDepartment.setName(name);
+        companyDepartment.setCompanyId(companyId);
+        return companyDepartment;
+    }
+
+    private WorkerPosition createWorkerPosition(Long companyId) {
+        WorkerPosition workerPosition = new WorkerPosition();
+        workerPosition.setName("Initial worker position");
+        workerPosition.setCompanyId(companyId);
+        return workerPosition;
+    }
+
+    private WorkerEntry createWorker(Long companyId, Long companyDepartmentId, WorkerPosition workerPosition, Long personId) {
+        WorkerEntry worker = new WorkerEntry();
+        worker.setPersonId(personId);
+        Date now = new Date();
+        worker.setCreated(now);
+        worker.setCompanyId(companyId);
+        worker.setDepartmentId(companyDepartmentId);
+        worker.setPositionId(workerPosition.getId());
+        worker.setPositionName(workerPosition.getName());
+        worker.setNewPositionName("New worker position");
+        worker.setNewPositionDepartmentId(companyDepartmentId);
+        worker.setNewPositionTransferDate(now);
+        return worker;
     }
 }
