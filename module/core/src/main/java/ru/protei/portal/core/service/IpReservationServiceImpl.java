@@ -32,6 +32,7 @@ import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -764,9 +765,9 @@ public class IpReservationServiceImpl implements IpReservationService {
             } else if (reservedIpReleaseDate == null || releaseDate == null) {
                 exists = checkInfinityReleaseDates(reservedIpReserveDate, reserveDate, reservedIpReleaseDate, releaseDate);
             } else if (reservedIpReserveDate.before(reserveDate)) {
-                exists = reservedIpReleaseDate.after(reserveDate);
+                exists = Objects.equals(new Date(reservedIpReleaseDate.getTime()), reserveDate)  || reservedIpReleaseDate.after(reserveDate);
             } else if (reserveDate.before(reservedIpReserveDate)) {
-                exists = releaseDate.after(reservedIpReserveDate);
+                exists = Objects.equals(new Date(reservedIpReserveDate.getTime()), releaseDate) || releaseDate.after(reservedIpReserveDate);
             }
 
             if (exists) {
