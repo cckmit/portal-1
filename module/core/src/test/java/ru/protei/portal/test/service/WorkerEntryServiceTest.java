@@ -23,6 +23,8 @@ import java.util.GregorianCalendar;
 @ContextConfiguration(classes = {JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
 public class WorkerEntryServiceTest extends BaseServiceTest {
 
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
     @Test
     @Transactional
     public void testWorkerEntry() {
@@ -120,12 +122,8 @@ public class WorkerEntryServiceTest extends BaseServiceTest {
         Assert.assertNull(updatedWorker.getNewPositionTransferDate());
 
         // check position not update
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        LocalDate date = LocalDate.parse("01.01.2030", formatter);
-        Date transferDate = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
-
         worker = createWorker(company.getId(), companyDepartmentId, workerPosition, person.getId());
-        worker.setNewPositionTransferDate(transferDate);
+        worker.setNewPositionTransferDate(createTransferDate("01.01.2050"));
         workerId = workerEntryDAO.persist(worker);
         Assert.assertNotNull(workerId);
 
@@ -163,7 +161,12 @@ public class WorkerEntryServiceTest extends BaseServiceTest {
         worker.setPositionName(workerPosition.getName());
         worker.setNewPositionName("New worker position");
         worker.setNewPositionDepartmentId(companyDepartmentId);
-        worker.setNewPositionTransferDate(now);
+        worker.setNewPositionTransferDate(createTransferDate("01.01.2022"));
         return worker;
+    }
+
+    private Date createTransferDate(String strDate) {
+        LocalDate date = LocalDate.parse(strDate, formatter);
+        return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 }

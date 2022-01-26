@@ -93,7 +93,8 @@ public class WorkerEntryServiceImpl implements WorkerEntryService {
             worker.setNewPositionTransferDate(null);
             boolean updated = workerEntryDAO.partialMerge(worker, POSITION_ID, POSITION_DEPARTMENT_ID, NEW_POSITION_NAME,
                                                                   NEW_POSITION_DEPARTMENT_ID, NEW_POSITION_TRANSFER_DATE);
-            if (updated) {
+
+            if (updated && workerEntryDAO.get(worker.getId()).getPositionName().equals(newPositionName)) {
                 log.debug("Worker with id {} position changed to '{}'", worker.getId(), newPositionName);
             } else {
                 return error(En_ResultStatus.NOT_UPDATED, "Worker with id " + worker.getId() + " position not updated!");
