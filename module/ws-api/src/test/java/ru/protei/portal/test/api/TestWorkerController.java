@@ -844,7 +844,7 @@ public class TestWorkerController {
 
     private WorkerEntry createWorker(Long companyId, Long companyDepartmentId, WorkerPosition workerPosition) {
         WorkerEntry worker = new WorkerEntry();
-        worker.setPersonId(1L);
+        worker.setPersonId(person.getId());
         worker.setCreated(new Date());
         worker.setCompanyId(companyId);
         worker.setDepartmentId(companyDepartmentId);
