@@ -35,8 +35,6 @@ public abstract class DutyLogEditActivity implements AbstractDutyLogEditActivity
         dialogView.setActivity(this);
         dialogView.removeButtonVisibility().setVisible(false);
         dialogView.getBodyContainer().add(view.asWidget());
-
-        query = makeQuery();
     }
 
     @Event
@@ -130,6 +128,7 @@ public abstract class DutyLogEditActivity implements AbstractDutyLogEditActivity
     }
 
     private void loadNewDutyLog() {
+        DutyLogQuery query = makeQuery();        
         dutyLogController.getDutyLogs(query, new FluentCallback<SearchResult<DutyLog>>()
                 .withError(throwable -> {
                     loadDutyLogWithType(En_DutyType.BG);
@@ -224,5 +223,4 @@ public abstract class DutyLogEditActivity implements AbstractDutyLogEditActivity
     DefaultErrorHandler defaultErrorHandler;
 
     private DutyLog dutyLog;
-    private DutyLogQuery query;
 }
