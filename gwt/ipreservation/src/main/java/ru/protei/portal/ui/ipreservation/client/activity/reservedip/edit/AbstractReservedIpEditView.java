@@ -25,6 +25,4 @@ public interface AbstractReservedIpEditView extends IsWidget {
     HasVisibility saveVisibility();
 
     HasEnabled saveEnabled();
-
-    HasVisibility useRangeErrorLabelVisibility();
 }

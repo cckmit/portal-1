@@ -32,7 +32,6 @@ import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -41,7 +40,7 @@ import java.util.stream.Stream;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.event.ReservedIpReleaseRemainingEvent.*;
+import static ru.protei.portal.core.event.ReservedIpReleaseRemainingEvent.Recipient;
 import static ru.protei.portal.core.model.dict.En_ResultStatus.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
@@ -85,17 +84,13 @@ public class IpReservationServiceImpl implements IpReservationService {
     }
 
     @Override
-    public Result<Boolean> isReservedIpAddressExists(String address, Date reserveDate, Date releaseDate, En_DateIntervalType dateIntervalType, Long excludeId) {
+    public Result<Boolean> isReservedIpAddressExists(String address) {
 
         if (address == null || address.isEmpty()) {
             return error(INCORRECT_PARAMS);
         }
 
-        ReservedIp reservedIp = new ReservedIp();
-
-        fillDatesInterval(reserveDate, releaseDate, reservedIp, dateIntervalType);
-
-        return ok(checkReservedIpExists(address, reservedIp.getReserveDate(), reservedIp.getReleaseDate(), excludeId));
+        return ok(checkReservedIpExists(address));
     }
 
     @Override
@@ -302,7 +297,7 @@ public class IpReservationServiceImpl implements IpReservationService {
         fillDatesInterval(reservedIpRequest.getReserveDate(), reservedIpRequest.getReleaseDate(), templateIp, intervalType);
 
         if (reservedIpRequest.isExact()) {
-            if (checkReservedIpExists(reservedIpRequest.getIpAddress(), templateIp.getReserveDate(), templateIp.getReleaseDate())) {
+            if (checkReservedIpExists(reservedIpRequest.getIpAddress())) {
                 return error(ALREADY_EXIST);
             }
 
@@ -404,10 +399,6 @@ public class IpReservationServiceImpl implements IpReservationService {
 
         if (reservedIp == null || reservedIp.getId() == null) {
             return error(INCORRECT_PARAMS);
-        }
-
-        if (checkReservedIpExists(reservedIp.getIpAddress(), reservedIp.getReserveDate(), reservedIp.getReleaseDate(), reservedIp.getId())) {
-            return error(ALREADY_EXIST);
         }
 
         ReservedIp stored = reservedIpDAO.get(reservedIp.getId());
@@ -736,21 +727,9 @@ public class IpReservationServiceImpl implements IpReservationService {
         return true;
     }
 
-    private boolean checkReservedIpExists(String address, Date reserveDate, Date releaseDate) {
-        return checkReservedIpExists(address, reserveDate, releaseDate, null);
-    }
-
-    private boolean checkReservedIpExists(String address, Date reserveDate, Date releaseDate, final Long excludeId) {
-        List<ReservedIp> reservedIps = reservedIpDAO.getReservedIpsByAddress(address)
-                .stream()
-                .filter(reservedIp -> !reservedIp.getId().equals(excludeId))
-                .collect(Collectors.toList());
-
-        if (isEmpty(reservedIps)) {
-            return false;
-        }
-
-        return checkIntersections(reserveDate, releaseDate, reservedIps);
+    private boolean checkReservedIpExists(String address) {
+        List<ReservedIp> reservedIps = reservedIpDAO.getReservedIpsByAddress(address);
+        return !isEmpty(reservedIps);
     }
 
     private boolean checkIntersections(Date reserveDate, Date releaseDate, List<ReservedIp> reservedIps) {
