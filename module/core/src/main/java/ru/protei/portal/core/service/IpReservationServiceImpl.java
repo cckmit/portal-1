@@ -90,7 +90,7 @@ public class IpReservationServiceImpl implements IpReservationService {
             return error(INCORRECT_PARAMS);
         }
 
-        return ok(checkReservedIpExists(address));
+        return ok(isReserved(address));
     }
 
     @Override
@@ -297,7 +297,7 @@ public class IpReservationServiceImpl implements IpReservationService {
         fillDatesInterval(reservedIpRequest.getReserveDate(), reservedIpRequest.getReleaseDate(), templateIp, intervalType);
 
         if (reservedIpRequest.isExact()) {
-            if (checkReservedIpExists(reservedIpRequest.getIpAddress())) {
+            if (isReserved(reservedIpRequest.getIpAddress())) {
                 return error(ALREADY_EXIST);
             }
 
@@ -727,7 +727,7 @@ public class IpReservationServiceImpl implements IpReservationService {
         return true;
     }
 
-    private boolean checkReservedIpExists(String address) {
+    private boolean isReserved(String address) {
         List<ReservedIp> reservedIps = reservedIpDAO.getReservedIpsByAddress(address);
         return !isEmpty(reservedIps);
     }
