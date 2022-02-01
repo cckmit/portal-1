@@ -50,6 +50,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.utils.JiraUtils.getDescriptionWithReplacedImagesFromJira;
 import static ru.protei.portal.core.utils.JiraUtils.setTextWithReplacedImagesFromJira;
 import static ru.protei.portal.jira.config.JiraConfigurationContext.JIRA_INTEGRATION_SINGLE_TASK_QUEUE;
@@ -140,7 +141,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         CachedPersonMapper personMapper = new CachedPersonMapper( personDAO, contactItemDAO, jdbcManyRelationsHelper, endpoint, personDAO.get( endpoint.getPersonId() ));
         Long authorId = personMapper.toProteiPerson( event.getUser() ).getId();
         Person initiator = personMapper.toProteiPerson( issue.getReporter() );
-        return completedFuture( createCaseObject( initiator, authorId, issue, endpoint, personMapper ));
+        Date createDate = event.getIssue().getCreationDate().toDate();
+        return completedFuture( createCaseObject( initiator, authorId, issue, endpoint, personMapper, createDate));
     }
 
     @Async(JIRA_INTEGRATION_SINGLE_TASK_QUEUE)
@@ -163,7 +165,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                 return null;
             }
             Person initiator = personMapper.toProteiPerson( issue.getReporter() );
-            return completedFuture(createCaseObject( initiator, authorId, issue, endpoint, personMapper ));
+            return completedFuture(createCaseObject( initiator, authorId, issue, endpoint, personMapper, new Date(event.getTimestamp())));
         }
 
         if (isTechUser( endpoint.getServerLogin(), user )) {
@@ -171,10 +173,10 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             return null;
         }
 
-        return completedFuture(updateCaseObject( authorId, caseObj, issue, endpoint, personMapper ));
+        return completedFuture(updateCaseObject( authorId, caseObj, event, endpoint, personMapper));
     }
 
-    private AssembledCaseEvent updateCaseObject( Long authorId, CaseObject caseObj, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper ) {
+    private AssembledCaseEvent updateCaseObject(Long authorId, CaseObject caseObj, JiraHookEventData event, JiraEndpoint endpoint, PersonMapper personMapper) {
         if (caseObj.isDeleted()) {
             logger.debug("our case {} is marked as deleted, skip event", caseObj.defGUID());
             return null;
@@ -185,16 +187,18 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             return null;
         }
 
+        final Issue issue = event.getIssue();
         caseObj.setModified(DateUtils.max(issue.getUpdateDate().toDate(), caseObj.getModified()));
         caseObj.setExtAppType(En_ExtAppType.JIRA.getCode());
 
-        long oldStateId = caseObj.getStateId();
+        //обновлять статус caseObj нужно в случае если новое событие позже последнего по истории
+        History lastHistory = historyDAO.getLastHistory(caseObj.getId(), En_HistoryType.CASE_STATE);
         JiraStatusMapEntry newState = getNewCaseState(endpoint.getStatusMapId(), issue.getStatus().getName());
-        if (newState != null) {
+        Date updateDate = event.getIssue().getUpdateDate().toDate();
+        if (newState != null && lastHistory.getDate().before(updateDate)){
             caseObj.setStateId(newState.getLocalStatusId());
             caseObj.setStateName(newState.getLocalStatusName());
         }
-
 
         ImportanceLevel oldImportance = new ImportanceLevel(caseObj.getImpLevel(), caseObj.getImportanceCode());
         ImportanceLevel newImportance = getNewImportanceLevel(endpoint.getPriorityMapId(), getIssueSeverity(issue));
@@ -220,10 +224,16 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         caseObjectDAO.merge(caseObj);
 
-        if (caseObj.getStateId() != oldStateId) {
-            changeStateHistory(new Date(), authorId, caseObj.getId(),
-                    oldStateId, caseStateDAO.get(oldStateId).getState(),
-                    caseObj.getStateId(), caseObj.getStateName());
+        Optional<ChangelogItem> statusChangelogItem = getStatusChangelogItem(event.getChangelogItems());
+
+        if (statusChangelogItem.isPresent()){
+
+            JiraStatusMapEntry fromState = getNewCaseState(endpoint.getStatusMapId(), statusChangelogItem.get().getFromString());
+            JiraStatusMapEntry toState = getNewCaseState(endpoint.getStatusMapId(), statusChangelogItem.get().getToString());
+
+            changeStateHistory(updateDate, authorId, caseObj.getId(),
+                    fromState.getLocalStatusId(), caseStateDAO.get(fromState.getLocalStatusId()).getState(),
+                    toState.getLocalStatusId(), caseStateDAO.get(toState.getLocalStatusId()).getState());
         }
 
         if (!newImportance.equals(oldImportance)) {
@@ -245,7 +255,12 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return caseEvent;
     }
 
-    private AssembledCaseEvent createCaseObject( Person initiator, Long authorId, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper ) {
+    private Optional<ChangelogItem> getStatusChangelogItem(Collection<ChangelogItem> changelogItems) {
+        return stream(changelogItems).filter(item -> item.getFieldType().equals(FieldType.JIRA)
+                && item.getField().equalsIgnoreCase("status")).findFirst();
+    }
+
+    private AssembledCaseEvent createCaseObject(Person initiator, Long authorId, Issue issue, JiraEndpoint endpoint, PersonMapper personMapper, Date createDate) {
         CaseObject caseObj = makeCaseObject( issue, initiator );
         caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
         caseObj.setManagerCompanyId(CrmConstants.Company.HOME_COMPANY_ID);
@@ -286,7 +301,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setInfo(convertDescription(issue.getDescription(), addedAttachments));
         caseObjectDAO.merge(caseObj);
 
-        addStateHistory(caseObj.getCreated(), authorId, caseObj.getId(), caseObj.getStateId(), caseStateDAO.get(caseObj.getStateId()).getState());
+        addStateHistory(createDate, authorId, caseObj.getId(), caseObj.getStateId(), caseStateDAO.get(caseObj.getStateId()).getState());
         addImportanceHistory(caseObj.getCreated(), authorId, caseObj.getId(), newImportance);
 
         List<CaseComment> caseComments = processComments( endpoint.getServerLogin(), issue.getComments(), caseObj,
