@@ -24,16 +24,16 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
-import ru.protei.portal.ui.common.shared.model.ClientConfigData;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
-import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.struct.Vat.NoVat;
 import static ru.protei.portal.ui.common.client.util.DateUtils.*;
@@ -182,7 +182,29 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     @Override
     public void onCopyClicked() {
-        // to do copy
+        view.tagsButtonVisibility().setVisible(false);
+        view.copyButtonVisibility().setVisible(false);
+
+        contract.setId(null);
+
+        view.contractSpecifications().setValue(
+                view.contractSpecifications().getValue().stream()
+                        .peek(contractSpecification -> {
+                            contractSpecification.setId(null);
+                            contractSpecification.setContractId(null);
+                        })
+                        .collect(Collectors.toList())
+        );
+
+        contract.setContractDates(
+                stream(contract.getContractDates()).peek(contractDate -> {
+                    contractDate.setId(null);
+                    contractDate.setContractId(null);
+                }).collect(Collectors.toList())
+        );
+        fireEvent(new ContractDateEvents.ShowTable(view.getContractDateTableContainer(), contract.getContractDates()));
+
+        fireEvent(new NotifyEvents.Show(lang.contractCopySuccess(), NotifyEvents.NotifyType.INFO));
     }
 
     private void requestContract(Long contractId, Consumer<Contract> consumer) {
