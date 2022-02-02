@@ -180,6 +180,11 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         fireEvent(new ContractDateEvents.ShowEdit());
     }
 
+    @Override
+    public void onCopyClicked() {
+        // to do copy
+    }
+
     private void requestContract(Long contractId, Consumer<Contract> consumer) {
         contractService.getContract(contractId, new FluentCallback<Contract>().withSuccess(consumer));
     }
@@ -247,6 +252,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
         view.tagsVisibility().setVisible(!isNew);
         view.tagsButtonVisibility().setVisible(!isNew);
+        view.copyButtonVisibility().setVisible(!isNew);
         if (isNew) {
             view.expenditureContractsVisibility().setVisible(false);
         } else {

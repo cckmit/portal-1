@@ -212,6 +212,11 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
+    public HasVisibility copyButtonVisibility() {
+        return copyButton;
+    }
+
+    @Override
     public HasWidgets tagsContainer() {
         return tagsContainer;
     }
@@ -237,6 +242,13 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     public void onTagAddClicked(ClickEvent event) {
         if (activity != null) {
             activity.onAddTagsClicked(addTagButton);
+        }
+    }
+
+    @UiHandler("copyButton")
+    public void onCopyClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onCopyClicked();
         }
     }
 
@@ -350,6 +362,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         cancelButton.ensureDebugId(DebugIds.CONTRACT.CANCEL_BUTTON);
         backButton.ensureDebugId(DebugIds.CONTRACT.BACK_BUTTON);
         addTagButton.ensureDebugId(DebugIds.CONTRACT.ADD_TAG_BUTTON);
+        copyButton.ensureDebugId(DebugIds.CONTRACT.COPY_BUTTON);
         tabs.setTabNameDebugId(lang.contractDeliveryAndPaymentsPeriodHeader(), DebugIds.CONTRACT.DELIVERY_AND_PAYMENTS_PERIOD_TAB);
         tabs.setTabNameDebugId(lang.contractSpecificationHeader(), DebugIds.CONTRACT.SPECIFICATION_TAB);
         tabs.setTabNameDebugId(lang.contractListOfExpenditureHeader(), DebugIds.CONTRACT.EXPENDITURE_CONTRACTS_TAB);
@@ -442,6 +455,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     Button backButton;
     @UiField
     Button addTagButton;
+    @UiField
+    Button copyButton;
     @UiField
     HTMLPanel datesTableContainer;
     @UiField

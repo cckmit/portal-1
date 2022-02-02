@@ -1023,6 +1023,7 @@ public class DebugIds {
         String CONTRACT_SIGN_MANAGER_SELECTOR = "contract-contract-sign-manager-selector";
         String BACK_BUTTON = "contract-back-button";
         String ADD_TAG_BUTTON = "contract-add-tag-button";
+        String COPY_BUTTON = "contract-copy-button";
         String DELIVERY_AND_PAYMENTS_PERIOD_TAB = "contract-delivery-and-payments-period-tab";
         String SPECIFICATION_TAB = "contract-specification-tab";
         String EXPENDITURE_CONTRACTS_TAB = "expenditure-contracts-tab";
