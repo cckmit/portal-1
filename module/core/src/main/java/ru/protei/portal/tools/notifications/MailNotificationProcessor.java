@@ -997,6 +997,9 @@ public class MailNotificationProcessor {
     @EventListener
     public void onPersonCaseFilterEvent(PersonCaseFilterEvent event) {
         NotificationEntry notifier = fetchNotificationEntryFromPerson(event.getRecipient());
+        if (notifier == null) {
+            return;
+        }
 
         PreparedTemplate subjectTemplate = templateService.getPersonCaseFilterNotificationSubject();
         if (subjectTemplate == null) {

@@ -209,17 +209,21 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
             return;
         }
 
-        result.addAll(stream(personIdsByFavoriteIssueId)
-            .map(Person::new)
-            .map(person -> {
-                jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
-                return person;
-            })
-            .map(Person::getContactInfo)
-            .map(contactInfo -> contactInfo.findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC))
-            .filter(Objects::nonNull)
-            .map(email -> NotificationEntry.email(email.value(), CrmConstants.LocaleTags.RU))
-            .collect(Collectors.toList())
+        List<Person> personByFavoriteIssueId = personDAO.getListByKeys(personIdsByFavoriteIssueId);
+
+        if (CollectionUtils.isEmpty(personByFavoriteIssueId)) {
+            return;
+        }
+
+        jdbcManyRelationsHelper.fill(personByFavoriteIssueId, Person.Fields.CONTACT_ITEMS);
+
+        result.addAll(stream(personByFavoriteIssueId)
+                .filter(person -> !person.isFired())
+                .map(Person::getContactInfo)
+                .map(contactInfo -> contactInfo.findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC))
+                .filter(Objects::nonNull)
+                .map(email -> NotificationEntry.email(email.value(), CrmConstants.LocaleTags.RU))
+                .collect(Collectors.toList())
         );
     }
 
