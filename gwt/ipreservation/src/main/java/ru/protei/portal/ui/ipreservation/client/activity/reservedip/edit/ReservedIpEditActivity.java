@@ -5,14 +5,14 @@ import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.ReservedIp;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.events.IpReservationEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IpReservationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
@@ -77,27 +77,6 @@ public abstract class ReservedIpEditActivity implements AbstractReservedIpEditAc
     @Override
     public void onCancelClicked() {
         fireEvent(new IpReservationEvents.CloseEdit());
-    }
-
-    @Override
-    public void onRangeChanged() {
-        DateInterval value = view.useRange().getValue();
-        if (value == null) {
-            return;
-        }
-
-        ipReservationService.isReservedIpAddressExists(
-                reservedIp.getIpAddress(),
-                value.from,
-                value.to,
-                En_DateIntervalType.FIXED,
-                reservedIp.getId(),
-                new FluentCallback<Boolean>()
-                        .withSuccess(result -> {
-                            view.useRangeErrorLabelVisibility().setVisible(result);
-                            view.saveEnabled().setEnabled(!result);
-                        })
-        );
     }
 
     private void fillView(ReservedIp reservedIp) {

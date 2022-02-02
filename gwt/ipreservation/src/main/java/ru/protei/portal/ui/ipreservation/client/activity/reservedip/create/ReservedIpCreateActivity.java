@@ -121,16 +121,8 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
             return;
         }
 
-        Date dateFrom = view.useRange().getValue().getIntervalType() != En_DateIntervalType.FIXED ?
-                null : view.useRange().getValue().getInterval().from;
-
-        Date dateTo = view.useRange().getValue().getIntervalType() != En_DateIntervalType.FIXED ?
-                null : view.useRange().getValue().getInterval().to;
-
         ipReservationService.isReservedIpAddressExists(
                 view.ipAddress().getValue().trim(),
-                dateFrom, dateTo,
-                view.useRange().getValue().getIntervalType(),
                 new RequestCallback<Boolean>() {
                     @Override
                     public void onError(Throwable throwable) { }
