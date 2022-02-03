@@ -307,8 +307,8 @@ public class ReportYoutrackWorkCollectorTest {
         Set<ReportYtWorkClassificationError> errors = Stream.of(info1, info2).collect(collector).getErrors();
 
         Assert.assertEquals(2, errors.size());
-        Assert.assertTrue(errors.contains(new ReportYtWorkClassificationError(niokrIssue)));
-        Assert.assertTrue(errors.contains(new ReportYtWorkClassificationError(nmaIssue)));
+        Assert.assertTrue(errors.contains(new ReportYtWorkClassificationError(niokrIssue, HOME_COMPANY_NAME)));
+        Assert.assertTrue(errors.contains(new ReportYtWorkClassificationError(nmaIssue, HOME_COMPANY_NAME)));
     }
 
 }

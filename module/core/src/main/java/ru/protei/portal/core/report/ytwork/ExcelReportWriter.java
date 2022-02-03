@@ -161,7 +161,7 @@ public class ExcelReportWriter implements
                 values.add(allTimeSpent);
                 values.add(localizedLang.get("reportYtWorkRepresentTime", new Object[]{allTimeSpent / 60, allTimeSpent % 60}));
                 values.add(String.valueOf(item.getHomeCompanySpentTime()));
-                values.add(item.getWorkedHours().map(String::valueOf).orElseGet(() -> localizedLang.get("reportYtWorkWorkHoursNoData")));
+                values.add(item.getWorkedHours().map(String::valueOf).orElseGet(() -> localizedLang.get("reportYtWorkNoData")));
                 processedWorkTypes.forEach((ytWorkType, strings) ->
                         strings.forEach(value -> values.add(item.selectSpentTimeMap(ytWorkType).getOrDefault(value, 0L))));
             }
@@ -191,15 +191,15 @@ public class ExcelReportWriter implements
         }
     }
 
-    static private class ClassificationErrorSheet implements Sheet {
+    private class ClassificationErrorSheet implements Sheet {
         @Override
         public int[] getColumnsWidth() {
-            return new int[]{5800};
+            return new int[]{5800, 5800};
         }
 
         @Override
         public String[] getLangColumnNames() {
-            return new String[]{"reportYtWorkClassificationError"};
+            return new String[]{"reportYtWorkClassificationError", "reportYtWorkClassificationErrorСustomer"};
         }
 
         @Override
@@ -209,6 +209,7 @@ public class ExcelReportWriter implements
             if (row instanceof ReportYtWorkClassificationError) {
                 ReportYtWorkClassificationError error = (ReportYtWorkClassificationError)row;
                 values.add(error.getIssue());
+                values.add(error.getCustomer() == null? localizedLang.get("reportYtWorkNoData") : error.getCustomer());
             }
 
             return values.toArray();
@@ -216,7 +217,7 @@ public class ExcelReportWriter implements
 
         @Override
         public String[] getFormats() {
-            return new String[]{ExcelFormat.STANDARD};
+            return new String[]{ExcelFormat.STANDARD, ExcelFormat.STANDARD};
         }
     }
 }
