@@ -807,8 +807,8 @@ public class PortalConfigData {
     public static class Enterprise1CConfig {
         private final String apiBaseProteiUrl;
         private final String apiBaseProteiStUrl;
-        private final String apiBaseProteiZiupUrl;
-        private final String apiBaseProteiZiupStUrl;
+        private final String apiRestVacationDaysProteiUrl;
+        private final String apiRestVacationDaysProteiStUrl;
         private final String login;
         private final String password;
         private final String parentKeyST;
@@ -823,8 +823,8 @@ public class PortalConfigData {
         public Enterprise1CConfig(PropertiesWrapper properties) {
             apiBaseProteiUrl = properties.getProperty("enterprise1c.api.base_protei_url");
             apiBaseProteiStUrl = properties.getProperty("enterprise1c.api.base_protei_st_url");
-            apiBaseProteiZiupUrl = properties.getProperty("enterprise1c.api.base_protei_ziup_url");
-            apiBaseProteiZiupStUrl = properties.getProperty("enterprise1c.api.base_protei_ziup_st_url");
+            apiRestVacationDaysProteiUrl = properties.getProperty("enterprise1c.api.work.rest_vacation_days.protei_url");
+            apiRestVacationDaysProteiStUrl = properties.getProperty("enterprise1c.api.work.rest_vacation_days.protei_st_url");
             login = properties.getProperty("enterprise1c.api.login");
             password = properties.getProperty("enterprise1c.api.password");
             parentKeyST = properties.getProperty("enterprise1c.api.parent_key_st");
@@ -845,12 +845,12 @@ public class PortalConfigData {
             return apiBaseProteiStUrl;
         }
 
-        public String getApiBaseProteiZiupUrl() {
-            return apiBaseProteiZiupUrl;
+        public String getApiRestVacationDaysProteiUrl() {
+            return apiRestVacationDaysProteiUrl;
         }
 
-        public String getApiBaseProteiZiupStUrl() {
-            return apiBaseProteiZiupStUrl;
+        public String getApiRestVacationDaysProteiStUrl() {
+            return apiRestVacationDaysProteiStUrl;
         }
 
         public String getLogin() {

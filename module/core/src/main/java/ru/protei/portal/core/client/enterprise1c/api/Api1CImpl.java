@@ -335,9 +335,9 @@ public class Api1CImpl implements Api1C{
     private String buildGetRestVacationDaysByKeyUrl(String workerExtId, String companyName){
         String url = "";
         if (MAIN_HOME_COMPANY_NAME.equals(companyName)) {
-            url = config.data().enterprise1C().getApiBaseProteiZiupUrl();
+            url = config.data().enterprise1C().getApiRestVacationDaysProteiUrl();
         } else if (PROTEI_ST_HOME_COMPANY_NAME.equals(companyName)) {
-            url = config.data().enterprise1C().getApiBaseProteiZiupStUrl();
+            url = config.data().enterprise1C().getApiRestVacationDaysProteiStUrl();
         }
 
         url = url + "/" + workerExtId;
