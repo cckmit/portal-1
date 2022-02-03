@@ -110,22 +110,24 @@ public final class ReportYtWorkRowItem implements ReportYtWorkRow {
         final private String displayName;
         final private Long personId;
         final private String workerId;
+        final private String inn;
         final private NameWithId companyName;
         final private NameWithId departmentParentName;
         final private NameWithId departmentName;
 
-        public PersonInfo(String displayName, Long personId, String workerId,
+        public PersonInfo(String displayName, Long personId, String workerId, String inn,
                           NameWithId companyName, NameWithId departmentParentName, NameWithId departmentName) {
             this.displayName = displayName;
             this.personId = personId;
             this.workerId = workerId;
+            this.inn = inn;
             this.companyName = companyName;
             this.departmentParentName = departmentParentName;
             this.departmentName = departmentName;
         }
 
         public PersonInfo(String displayName, Long personId) {
-            this(displayName, personId, null, nullCompanyName, nullDepartmentParentName, nullDepartmentName);
+            this(displayName, personId, null, null, nullCompanyName, nullDepartmentParentName, nullDepartmentName);
         }
 
         public String getDisplayName() {
@@ -138,6 +140,10 @@ public final class ReportYtWorkRowItem implements ReportYtWorkRow {
 
         public String getWorkerId() {
             return workerId;
+        }
+
+        public String getInn() {
+            return inn;
         }
 
         public NameWithId getCompanyName() {
@@ -162,6 +168,7 @@ public final class ReportYtWorkRowItem implements ReportYtWorkRow {
                     "displayName='" + displayName + '\'' +
                     ", personId=" + personId +
                     ", workerId='" + workerId + '\'' +
+                    ", inn='" + inn + '\'' +
                     ", companyName=" + companyName +
                     ", departmentParentName=" + departmentParentName +
                     ", departmentName=" + departmentName +

@@ -124,7 +124,7 @@ public class ExcelReportWriter implements
         @Override
         public int[] getColumnsWidth() {
             ListBuilder<Integer> columnsWidthList = new ListBuilder<Integer>()
-                    .add(5800).add(5800).add(5800).add(5800).add(5800);
+                    .add(5800).add(5800).add(5800).add(5800).add(5800).add(5800);
             processedWorkTypes.forEach((ytWorkType, strings) ->
                     strings.forEach(value -> columnsWidthList.add(5800)));
             return toPrimitiveIntegerArray(columnsWidthList.build());
@@ -132,7 +132,7 @@ public class ExcelReportWriter implements
 
         @Override
         public String[] getLangColumnNames() {
-            return new String[]{"reportYtWorkPersonName",
+            return new String[]{"reportYtWorkPersonName", "reportYtWorkPersonInn",
                     "reportYtWorkAllSpentTimeInMinutes", "reportYtWorkAllSpentTimeFormatted",
                     "reportYtWorkHomeCompanySpentTime", "reportYtWorkWorkHours"};
         }
@@ -157,6 +157,7 @@ public class ExcelReportWriter implements
                 ReportYtWorkRowItem item = (ReportYtWorkRowItem)row;
 
                 values.add(item.getPersonInfo().getDisplayName() == null? localizedLang.get("reportYtWorkPersonNoName") : item.getPersonInfo().getDisplayName());
+                values.add(item.getPersonInfo().getInn() == null? localizedLang.get("reportYtWorkNoData") : item.getPersonInfo().getInn());
                 long allTimeSpent = item.getAllTimeSpent();
                 values.add(allTimeSpent);
                 values.add(localizedLang.get("reportYtWorkRepresentTime", new Object[]{allTimeSpent / 60, allTimeSpent % 60}));
@@ -176,6 +177,7 @@ public class ExcelReportWriter implements
         @Override
         public String[] getFormats() {
             ListBuilder<String> columnsList = new ListBuilder<String>()
+                    .add(ExcelFormat.STANDARD)
                     .add(ExcelFormat.STANDARD)
                     .add(ExcelFormat.STANDARD)
                     .add(ExcelFormat.STANDARD)
