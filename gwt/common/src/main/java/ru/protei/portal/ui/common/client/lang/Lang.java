@@ -2260,6 +2260,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractProjectHint();
 
+    String contractCopySuccess();
+
     String period();
 
     String reportMissingProduct();
