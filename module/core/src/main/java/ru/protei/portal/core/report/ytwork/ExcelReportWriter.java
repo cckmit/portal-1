@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRow;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowHeader;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem;
 import ru.protei.portal.core.report.ReportWriter;
-import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
 import ru.protei.portal.core.utils.JXLSHelper;
 
 import java.io.IOException;
@@ -19,6 +18,7 @@ import java.io.OutputStream;
 import java.util.*;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.toPrimitiveIntegerArray;
+import static ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat.*;
 
 public class ExcelReportWriter implements
         ReportWriter<ReportYtWorkRow>,
@@ -124,9 +124,9 @@ public class ExcelReportWriter implements
         @Override
         public int[] getColumnsWidth() {
             ListBuilder<Integer> columnsWidthList = new ListBuilder<Integer>()
-                    .add(5800).add(5800).add(5800).add(5800).add(5800).add(5800);
+                    .add(DEFAULT_WIDTH).add(DEFAULT_WIDTH).add(DEFAULT_WIDTH).add(DEFAULT_WIDTH).add(DEFAULT_WIDTH).add(DEFAULT_WIDTH);
             processedWorkTypes.forEach((ytWorkType, strings) ->
-                    strings.forEach(value -> columnsWidthList.add(5800)));
+                    strings.forEach(value -> columnsWidthList.add(DEFAULT_WIDTH)));
             return toPrimitiveIntegerArray(columnsWidthList.build());
         }
 
@@ -177,15 +177,15 @@ public class ExcelReportWriter implements
         @Override
         public String[] getFormats() {
             ListBuilder<String> columnsList = new ListBuilder<String>()
-                    .add(ExcelFormat.STANDARD)
-                    .add(ExcelFormat.STANDARD)
-                    .add(ExcelFormat.STANDARD)
-                    .add(ExcelFormat.STANDARD)
-                    .add(ExcelFormat.STANDARD)
-                    .add(ExcelFormat.STANDARD);
+                    .add(STANDARD)
+                    .add(STANDARD)
+                    .add(STANDARD)
+                    .add(STANDARD)
+                    .add(STANDARD)
+                    .add(STANDARD);
             int count = 0;
             for (Map.Entry<En_YoutrackWorkType, Set<String>> entry : processedWorkTypes.entrySet()) {
-                entry.getValue().forEach(value -> columnsList.add(ExcelFormat.STANDARD));
+                entry.getValue().forEach(value -> columnsList.add(STANDARD));
                 count += entry.getValue().size();
             }
             String[] array = new String[count];
@@ -196,7 +196,7 @@ public class ExcelReportWriter implements
     private class ClassificationErrorSheet implements Sheet {
         @Override
         public int[] getColumnsWidth() {
-            return new int[]{5800, 5800};
+            return new int[]{DEFAULT_WIDTH, DEFAULT_WIDTH};
         }
 
         @Override
@@ -219,7 +219,7 @@ public class ExcelReportWriter implements
 
         @Override
         public String[] getFormats() {
-            return new String[]{ExcelFormat.STANDARD, ExcelFormat.STANDARD};
+            return new String[]{STANDARD, STANDARD};
         }
     }
 }
