@@ -64,7 +64,7 @@ public class ReportYtWorkCollector implements Collector<
             mergeWithItem(ytWorkInfo.getSpentTime(), reportYtWorkRowItem, workTypeAndValue);
             reportYtWorkRowItem.addAllTimeSpent(ytWorkInfo.getSpentTime());
         } else {
-            accumulator.getErrors().add(new ReportYtWorkClassificationError(ytWorkInfo.getIssue()));
+            accumulator.getErrors().add(new ReportYtWorkClassificationError(ytWorkInfo.getIssue(), ytWorkInfo.getCustomer()));
         }
     }
 

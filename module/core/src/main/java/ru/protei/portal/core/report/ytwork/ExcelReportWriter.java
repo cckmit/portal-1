@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRow;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowHeader;
 import ru.protei.portal.core.model.struct.reportytwork.ReportYtWorkRowItem;
 import ru.protei.portal.core.report.ReportWriter;
-import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
 import ru.protei.portal.core.utils.JXLSHelper;
 
 import java.io.IOException;
@@ -19,6 +18,7 @@ import java.io.OutputStream;
 import java.util.*;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.toPrimitiveIntegerArray;
+import static ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat.*;
 
 public class ExcelReportWriter implements
         ReportWriter<ReportYtWorkRow>,
@@ -124,15 +124,15 @@ public class ExcelReportWriter implements
         @Override
         public int[] getColumnsWidth() {
             ListBuilder<Integer> columnsWidthList = new ListBuilder<Integer>()
-                    .add(5800).add(5800).add(5800).add(5800).add(5800);
+                    .add(DEFAULT_WIDTH).add(DEFAULT_WIDTH).add(DEFAULT_WIDTH).add(DEFAULT_WIDTH).add(DEFAULT_WIDTH).add(DEFAULT_WIDTH);
             processedWorkTypes.forEach((ytWorkType, strings) ->
-                    strings.forEach(value -> columnsWidthList.add(5800)));
+                    strings.forEach(value -> columnsWidthList.add(DEFAULT_WIDTH)));
             return toPrimitiveIntegerArray(columnsWidthList.build());
         }
 
         @Override
         public String[] getLangColumnNames() {
-            return new String[]{"reportYtWorkPersonName",
+            return new String[]{"reportYtWorkPersonName", "reportYtWorkPersonInn",
                     "reportYtWorkAllSpentTimeInMinutes", "reportYtWorkAllSpentTimeFormatted",
                     "reportYtWorkHomeCompanySpentTime", "reportYtWorkWorkHours"};
         }
@@ -157,11 +157,12 @@ public class ExcelReportWriter implements
                 ReportYtWorkRowItem item = (ReportYtWorkRowItem)row;
 
                 values.add(item.getPersonInfo().getDisplayName() == null? localizedLang.get("reportYtWorkPersonNoName") : item.getPersonInfo().getDisplayName());
+                values.add(item.getPersonInfo().getInn() == null? localizedLang.get("reportYtWorkNoData") : item.getPersonInfo().getInn());
                 long allTimeSpent = item.getAllTimeSpent();
                 values.add(allTimeSpent);
                 values.add(localizedLang.get("reportYtWorkRepresentTime", new Object[]{allTimeSpent / 60, allTimeSpent % 60}));
                 values.add(String.valueOf(item.getHomeCompanySpentTime()));
-                values.add(item.getWorkedHours().map(String::valueOf).orElseGet(() -> localizedLang.get("reportYtWorkWorkHoursNoData")));
+                values.add(item.getWorkedHours().map(String::valueOf).orElseGet(() -> localizedLang.get("reportYtWorkNoData")));
                 processedWorkTypes.forEach((ytWorkType, strings) ->
                         strings.forEach(value -> values.add(item.selectSpentTimeMap(ytWorkType).getOrDefault(value, 0L))));
             }
@@ -176,14 +177,15 @@ public class ExcelReportWriter implements
         @Override
         public String[] getFormats() {
             ListBuilder<String> columnsList = new ListBuilder<String>()
-                    .add(ExcelFormat.STANDARD)
-                    .add(ExcelFormat.STANDARD)
-                    .add(ExcelFormat.STANDARD)
-                    .add(ExcelFormat.STANDARD)
-                    .add(ExcelFormat.STANDARD);
+                    .add(STANDARD)
+                    .add(STANDARD)
+                    .add(STANDARD)
+                    .add(STANDARD)
+                    .add(STANDARD)
+                    .add(STANDARD);
             int count = 0;
             for (Map.Entry<En_YoutrackWorkType, Set<String>> entry : processedWorkTypes.entrySet()) {
-                entry.getValue().forEach(value -> columnsList.add(ExcelFormat.STANDARD));
+                entry.getValue().forEach(value -> columnsList.add(STANDARD));
                 count += entry.getValue().size();
             }
             String[] array = new String[count];
@@ -191,15 +193,15 @@ public class ExcelReportWriter implements
         }
     }
 
-    static private class ClassificationErrorSheet implements Sheet {
+    private class ClassificationErrorSheet implements Sheet {
         @Override
         public int[] getColumnsWidth() {
-            return new int[]{5800};
+            return new int[]{DEFAULT_WIDTH, DEFAULT_WIDTH};
         }
 
         @Override
         public String[] getLangColumnNames() {
-            return new String[]{"reportYtWorkClassificationError"};
+            return new String[]{"reportYtWorkClassificationError", "reportYtWorkClassificationErrorСustomer"};
         }
 
         @Override
@@ -209,6 +211,7 @@ public class ExcelReportWriter implements
             if (row instanceof ReportYtWorkClassificationError) {
                 ReportYtWorkClassificationError error = (ReportYtWorkClassificationError)row;
                 values.add(error.getIssue());
+                values.add(error.getCustomer() == null? localizedLang.get("reportYtWorkNoData") : error.getCustomer());
             }
 
             return values.toArray();
@@ -216,7 +219,7 @@ public class ExcelReportWriter implements
 
         @Override
         public String[] getFormats() {
-            return new String[]{ExcelFormat.STANDARD};
+            return new String[]{STANDARD, STANDARD};
         }
     }
 }

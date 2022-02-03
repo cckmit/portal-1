@@ -368,6 +368,7 @@ public class ReportYoutrackWorkImpl implements ReportYoutrackWork {
                     employeeShortView.getDisplayShortName(),
                     employeeShortView.getId(),
                     mainEntry.getWorkerExtId(),
+                    employeeShortView.getInn(),
                     mainEntry.getCompanyName() != null ?
                             new NameWithId(mainEntry.getCompanyName(), mainEntry.getCompanyId())
                             : PersonInfo.nullCompanyName,
