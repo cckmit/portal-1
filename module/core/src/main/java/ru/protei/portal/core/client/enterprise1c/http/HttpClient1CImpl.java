@@ -36,7 +36,6 @@ public class HttpClient1CImpl implements HttpClient1C{
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
         headers.set("Authorization", "Basic " + Base64.getEncoder().encodeToString((portalConfig.data().enterprise1C().getLogin() + ":" + portalConfig.data().enterprise1C().getPassword()).getBytes()));
-        headers.set("IBSession", "start");
     }
 
     @Override

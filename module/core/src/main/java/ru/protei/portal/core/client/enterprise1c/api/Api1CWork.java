@@ -8,4 +8,6 @@ public interface Api1CWork {
     Result<WorkPersonInfo1C> getProteiWorkPersonInfo(WorkQuery1C query);
 
     Result<WorkPersonInfo1C> getProteiStWorkPersonInfo(WorkQuery1C query);
+
+    Result<String> getEmployeeRestVacationDays(String workerExtId, String companyName);
 }

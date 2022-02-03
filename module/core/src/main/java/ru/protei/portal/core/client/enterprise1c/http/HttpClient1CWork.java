@@ -10,4 +10,6 @@ public interface HttpClient1CWork {
 
     Result<WorkPersonInfo1C> getProteiStWorkPersonInfo(WorkQuery1C query);
 
+    <T> Result<T> read(String url, Class<T> clazz);
+
 }
