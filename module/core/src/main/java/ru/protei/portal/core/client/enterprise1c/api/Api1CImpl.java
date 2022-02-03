@@ -340,7 +340,8 @@ public class Api1CImpl implements Api1C{
             url = config.data().enterprise1C().getApiBaseProteiZiupStUrl();
         }
 
-        log.debug("buildGetRestVacationDaysByKeyUrl(): url={}", url + "/" + workerExtId);
+        url = url + "/" + workerExtId;
+        log.debug("buildGetRestVacationDaysByKeyUrl(): url={}", url);
         return url;
     }
 
