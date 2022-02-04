@@ -4,12 +4,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.enterprise1c.http.HttpClient1CWork;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.enterprise1c.dto.WorkPersonInfo1C;
 import ru.protei.portal.core.model.enterprise1c.query.WorkQuery1C;
 
 import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+import static ru.protei.portal.core.model.util.CrmConstants.Company.MAIN_HOME_COMPANY_NAME;
+import static ru.protei.portal.core.model.util.CrmConstants.Company.PROTEI_ST_HOME_COMPANY_NAME;
 
 public class Api1CWorkImpl implements Api1CWork{
 
@@ -39,8 +43,34 @@ public class Api1CWorkImpl implements Api1CWork{
                 .ifError( result -> log.warn( "getProteiStWorkPersonInfo(): Can`t get WorkPersonInfo1C={}", result ));
     }
 
+    @Override
+    public Result<String> getEmployeeRestVacationDays(String workerExtId, String companyName) {
+        log.debug("workerExtId={}", workerExtId);
+
+        String url1C = buildGetRestVacationDaysByKeyUrl(workerExtId, companyName);
+        return isEmpty(url1C) ? null : client.read(url1C, Result.class)
+                .ifOk( value -> log.info( "buildGetRestVacationDaysByKeyUrl(): OK " ) )
+                .ifError( result -> log.warn( "buildGetRestVacationDaysByKeyUrl(): Can`t get restVacationDays for worker with external id {}. Result={}", workerExtId, result ))
+                .getData();
+    }
+
+    private String buildGetRestVacationDaysByKeyUrl(String workerExtId, String companyName){
+        String url = "";
+        if (MAIN_HOME_COMPANY_NAME.equals(companyName)) {
+            url = config.data().enterprise1C().getWorkRestVacationDaysProteiUrl();
+        } else if (PROTEI_ST_HOME_COMPANY_NAME.equals(companyName)) {
+            url = config.data().enterprise1C().getWorkRestVacationDaysProteiStUrl();
+        }
+
+        url = url + "/" + workerExtId;
+        log.debug("buildGetRestVacationDaysByKeyUrl(): url={}", url);
+        return url;
+    }
+
     @Autowired
     HttpClient1CWork client;
+    @Autowired
+    PortalConfig config;
 
     private final static Logger log = LoggerFactory.getLogger(Api1CWorkImpl.class);
 }

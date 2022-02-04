@@ -476,7 +476,7 @@ enterprise1c.api.parent_key_resident=adf31e18-691c-11dd-9f1f-001f2908fbfa
 enterprise1c.api.parent_key_not_resident=9bdc36f0-11b8-11e0-8438-001f2908fbfa
 enterprise1c.api.contract.sync.enabled=false
 
-#### 1C API для отработанного времени 
+#### 1C API для отработанного времени и остатка дней отпуска
 
 ## Логин
 ## string, default: ""
@@ -487,9 +487,11 @@ enterprise1c.api.work.password=QuarZ4$rE
 ## Урл запроса для Протей 
 ## string, default: ""
 enterprise1c.api.work.protei_url=http://srv-1cw/ziup/hs/otrabotano
+enterprise1c.api.work.rest_vacation_days.protei_url=http://srv-1cw/ziup/hs/ostatok
 ## Урл запроса для Протей СТ 
 ## string, default: ""
 enterprise1c.api.work.protei_st_url=http://srv-1cw/ziup_st/hs/otrabotano
+enterprise1c.api.work.rest_vacation_days.protei_st_url=http://srv-1cw/ziup_st/hs/ostatok
 
 
 ```
