@@ -353,6 +353,13 @@ public class EmployeeServiceImpl implements EmployeeService {
             createChangeLastNameYoutrackIssueIfNeeded(person.getId(), person.getFirstName(), person.getLastName(), person.getSecondName(), oldPerson.getLastName());
         }
 
+        if (portalConfig.data().legacySysConfig().isExportEnabled()) {
+            if (!updateEmployeeInOldPortal(person.getId())) {
+                log.warn("updateEmployee(): failed to migrate employee to old portal, personId={}", person.getId());
+                return error(En_ResultStatus.EMPLOYEE_MIGRATION_FAILED);
+            }
+        }
+
         return ok(person);
     }
 
