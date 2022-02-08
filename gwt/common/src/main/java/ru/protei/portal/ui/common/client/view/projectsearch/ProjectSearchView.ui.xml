@@ -4,7 +4,8 @@
              xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
-             xmlns:projectlist='urn:import:ru.protei.portal.ui.common.client.widget.projectlist.list'>
+             xmlns:projectlist='urn:import:ru.protei.portal.ui.common.client.widget.projectlist.list'
+             xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -14,7 +15,7 @@
                 <div class="col-4">
                     <div class="form-group form-group-default">
                         <label class="fade"><ui:text from="{lang.projectNumber}"/></label>
-                        <g:LongBox ui:field="id" styleName="form-control"/>
+                        <validatefield:ValidableLongBox ui:field="id" styleName="form-control"/>
                     </div>
                 </div>
                 <div class="col-8">
