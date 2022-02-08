@@ -4055,4 +4055,7 @@ public interface Lang extends Messages, ContactItemLang {
     String contractDateExecution();
 
     String contractDateEndWarranty();
+
+    String errorSetCorrectProjectId();
 }
+

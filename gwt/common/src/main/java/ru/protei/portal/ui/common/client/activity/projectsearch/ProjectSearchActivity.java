@@ -7,11 +7,12 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
@@ -45,8 +46,15 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
 
     @Override
     public void onSearchClicked() {
+        view.clearProjectList();
+        String validationMessage = geValidationMessage();
+        if (StringUtils.isNotEmpty(validationMessage)) {
+            fireEvent(new NotifyEvents.Show(validationMessage, NotifyEvents.NotifyType.ERROR));
+            return;
+        }
         requestProjects();
     }
+
 
     @Override
     public void onResetClicked() {
@@ -59,6 +67,14 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
         if (projectInfo != null) {
             fireEvent(new ProjectEvents.Set(new EntityOption(projectInfo.getName(), projectInfo.getId())));
         }
+    }
+
+
+    private String geValidationMessage() {
+        if (!view.idValidator().isValid()) {
+            return lang.errorSetCorrectProjectId();
+        }
+        return null;
     }
 
     private void requestProjects() {
