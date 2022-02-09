@@ -55,7 +55,6 @@ public class WorkerRecord {
 
     private String inn;
 
-    private String workerExtId;
     private String newPositionName;
     private Long newPositionDepartmentId;
     private Date newPositionTransferDate;
@@ -332,20 +331,11 @@ public class WorkerRecord {
         this.inn = inn;
     }
 
-    @XmlElement(name = "worker-ext-id")
-    public String getWorkerExtId() {
-        return workerExtId;
-    }
-
-    public void setWorkerExtId(String workerExtId) {
-        this.workerExtId = workerExtId;
-    }
-
     public String getNewPositionName() {
         return newPositionName;
     }
 
-    @XmlElement(name = NEW_POSITION_NAME)
+    @XmlElement(name = "new-position-name")
     public void setNewPositionName(String newPositionName) {
         this.newPositionName = newPositionName;
     }
@@ -354,7 +344,7 @@ public class WorkerRecord {
         return newPositionDepartmentId;
     }
 
-    @XmlElement(name = NEW_POSITION_DEPARTMENT_ID)
+    @XmlElement(name = "new-position-department-id")
     public void setNewPositionDepartmentId(Long newPositionDepartmentId) {
         this.newPositionDepartmentId = newPositionDepartmentId;
     }
@@ -363,7 +353,7 @@ public class WorkerRecord {
         return newPositionTransferDate;
     }
 
-    @XmlElement(name = NEW_POSITION_TRANSFER_DATE)
+    @XmlElement(name = "new-position-transfer-date")
     public void setNewPositionTransferDate(Date newPositionTransferDate) {
         this.newPositionTransferDate = newPositionTransferDate;
     }
@@ -434,7 +424,6 @@ public class WorkerRecord {
                 ", active=" + active +
                 ", positionName='" + positionName + '\'' +
                 ", inn='" + inn + '\'' +
-                ", workerExtId='" + workerExtId + '\'' +
                 ", newPositionDepartment='" + newPositionDepartmentId + '\'' +
                 ", newPositionName='" + newPositionName + '\'' +
                 ", newPositionDepartmentId=" + newPositionDepartmentId +
