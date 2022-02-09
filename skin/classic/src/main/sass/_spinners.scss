@@ -93,6 +93,7 @@ $spinner-height-md:       $spinner-width-md !default;
   position: relative;
   width: 80px;
   height: 80px;
+  transform: scale(0.36, 0.36);
   div {
     box-sizing: border-box;
     display: block;
@@ -140,6 +141,7 @@ $spinner-height-md:       $spinner-width-md !default;
   width: 80px;
   height: 80px;
   transform: scale(0.4, 0.4);
+  left: 207px;
   div {
     display: inline-block;
     position: absolute;
@@ -157,7 +159,7 @@ $spinner-height-md:       $spinner-width-md !default;
     }
     &:nth-child(3) {
       left: 56px;
-      animation-delay: 0;
+      animation-delay: 0s;
     }
   }
 }
