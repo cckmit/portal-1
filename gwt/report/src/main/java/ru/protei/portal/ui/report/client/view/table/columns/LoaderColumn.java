@@ -15,20 +15,13 @@ public class LoaderColumn<T> extends ClickColumn<T> {
     @Override
     protected void fillColumnValue(Element cell, T value) {
         com.google.gwt.dom.client.Element parentDiv = DOM.createDiv();
-        parentDiv.setClassName("lds-facebook");
-
+        parentDiv.setClassName("report-loader");
         com.google.gwt.dom.client.Element firstChildDiv = DOM.createDiv();
         parentDiv.appendChild(firstChildDiv);
-
         com.google.gwt.dom.client.Element secondChildDiv = DOM.createDiv();
         parentDiv.appendChild(secondChildDiv);
-
         com.google.gwt.dom.client.Element thirdChildDiv = DOM.createDiv();
         parentDiv.appendChild(thirdChildDiv);
-
-        com.google.gwt.dom.client.Element fourthChildDiv = DOM.createDiv();
-        parentDiv.appendChild(fourthChildDiv);
-
         cell.appendChild(parentDiv);
     }
 }
