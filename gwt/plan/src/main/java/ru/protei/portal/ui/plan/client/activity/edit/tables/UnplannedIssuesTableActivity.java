@@ -32,11 +32,13 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedIssuesTableActivity, Activity {
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+        plannedIssues = new ArrayList<>();
     }
 
     @Event
@@ -52,6 +54,10 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
 
     @Event
     public void onAddIssue(PlanEvents.AddIssueToUnplannedTable event) {
+        if (planId == null) {
+            plannedIssues.remove(event.issue);
+        }
+
         if (StringUtils.isEmpty(view.issueNumber().getValue())) {
             reloadTable();
             return;
@@ -62,6 +68,10 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
 
     @Event
     public void onRemoveIssue(PlanEvents.RemoveIssueFromUnplannedTable event) {
+        if (planId == null) {
+            plannedIssues.add(event.issue);
+        }
+
         if (StringUtils.isEmpty(view.issueNumber().getValue())) {
             view.removeIssue(event.issue);
             return;
@@ -132,6 +142,7 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
                 })
                 .withSuccess(sr -> {
                     if (planId == null) {
+                        sr.getResults().removeAll(plannedIssues);
                         view.setTotalRecords(sr.getTotalCount());
                         view.putRecords(sr.getResults());
                         restoreScroll();
@@ -222,6 +233,7 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
     private Integer scrollTo = 0;
 
     private Long planId;
+    private List<CaseShortView> plannedIssues;
     private final static int TABLE_LIMIT = 100;
     private final static String TABLE_FILTER_ID_KEY = "plan_unplanned_issue_table_filter_id";
 }
