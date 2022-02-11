@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -25,11 +26,15 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparingLong;
 import static java.util.Locale.forLanguageTag;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static ru.protei.portal.core.model.dict.En_PersonRoleType.HEAD_MANAGER;
 import static ru.protei.portal.core.model.dict.En_Privilege.*;
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.MANAGER;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.util.CrmConstants.LocaleTags.EN;
 import static ru.protei.portal.core.model.util.CrmConstants.LocaleTags.RU;
 
@@ -132,7 +137,39 @@ public class BootstrapServiceImpl implements BootstrapService {
         /**
          *  end Спринт */
 
+        /**
+         * begin Спринт 88 */
+        if (!bootstrapAppDAO.isActionExists("setMissingProjectManagerId")) {
+            this.setMissingProjectManagerId();
+            bootstrapAppDAO.createAction("setMissingProjectManagerId");
+        }
+        /**
+         *  end Спринт */
+
         log.info( "bootstrapApplication(): BootstrapService complete."  );
+    }
+
+    private void setMissingProjectManagerId() {
+        log.debug("setMissingProjectManagerId(): start");
+
+        List<CaseShortView> caseObjects = caseShortViewDAO.getListByCondition("manager is null and case_type = ?",
+                                                                               En_CaseType.PROJECT.getId());
+        for (CaseShortView caseObject: caseObjects) {
+            List<CaseMember> caseMembers = caseMemberDAO.getListByCondition("CASE_ID in (" + caseObject.getId() + ")");
+            if (isEmpty(caseMembers)) {
+                continue;
+            }
+
+            Optional<CaseMember> manager = caseMembers.stream().filter(member -> member.getRole().equals(HEAD_MANAGER))
+                                                      .min(comparingLong(CaseMember::getId));
+            if (manager.isPresent()) {
+                caseObject.setManagerId(manager.get().getMemberId());
+                caseShortViewDAO.partialMerge(caseObject, MANAGER);
+                log.info("setMissingProjectManagerId(): caseObject with id={} updated", caseObject.getId());
+            }
+        }
+
+        log.debug("setMissingProjectManagerId(): finish");
     }
 
     private void addIssueGroupManagerId() {
@@ -568,6 +605,8 @@ public class BootstrapServiceImpl implements BootstrapService {
     CardTypeDAO cardTypeDAO;
     @Autowired
     UserRoleDAO userRoleDAO;
+    @Autowired
+    CaseMemberDAO caseMemberDAO;
     @Autowired
     Lang lang;
     @Autowired
