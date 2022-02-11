@@ -80,28 +80,28 @@ public class ReportTableView extends Composite implements AbstractReportTableVie
 
         table.addColumn(loaderColumn.header, loaderColumn.values);
         loaderColumn.setDisplayPredicate(value ->
-                value.getReport().getStatus() == En_ReportStatus.PROCESS ||
-                value.getReport().getStatus() == En_ReportStatus.CREATED);
+                value.getReport().getStatus().equals(En_ReportStatus.PROCESS) ||
+                value.getReport().getStatus().equals(En_ReportStatus.CREATED));
 
         editClickColumn.setEditHandler( activity );
         table.addColumn(editClickColumn.header, editClickColumn.values);
 
         table.addColumn(cancelClickColumn.header, cancelClickColumn.values);
-        cancelClickColumn.setDisplayPredicate(v -> v.getReport().getStatus() == En_ReportStatus.PROCESS);
+        cancelClickColumn.setDisplayPredicate(v -> v.getReport().getStatus().equals(En_ReportStatus.PROCESS));
         cancelClickColumn.setCancelHandler(activity);
 
         table.addColumn(refreshClickColumn.header, refreshClickColumn.values);
         refreshClickColumn.setDisplayPredicate(v ->
-                v.getReport().getStatus() == En_ReportStatus.ERROR ||
-                v.getReport().getStatus() == En_ReportStatus.CANCELLED);
+                v.getReport().getStatus().equals(En_ReportStatus.ERROR) ||
+                v.getReport().getStatus().equals(En_ReportStatus.CANCELLED));
         refreshClickColumn.setRefreshHandler(activity);
 
         table.addColumn(downloadClickColumn.header, downloadClickColumn.values);
-        downloadClickColumn.setDisplayPredicate(v -> v.getReport().getStatus() == En_ReportStatus.READY);
+        downloadClickColumn.setDisplayPredicate(v -> v.getReport().getStatus().equals(En_ReportStatus.READY));
         downloadClickColumn.setDownloadHandler(activity);
 
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
-        removeClickColumn.setDisplayPredicate(v -> v.getReport().getStatus() != En_ReportStatus.PROCESS);
+        removeClickColumn.setDisplayPredicate(v -> !v.getReport().getStatus().equals(En_ReportStatus.PROCESS));
         removeClickColumn.setRemoveHandler(activity);
 
         table.setLoadHandler(activity);
