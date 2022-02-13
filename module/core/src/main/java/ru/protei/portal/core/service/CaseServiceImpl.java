@@ -272,11 +272,25 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
+        if (caseObject.getPauseDate() != null) {
+            Result<Long> resultPauseDate = addPauseDateHistory(token, caseObject.getId(), String.valueOf(caseObject.getPauseDate()));
+            if (resultPauseDate.isError()) {
+                log.error("Pause date history for the issue {} not saved!", caseObject.getId());
+            }
+        }
+
         if (caseObject.getProductId() != null) {
             Result<Long> resultProduct = addProductHistory(token, caseObject.getId(), caseObject.getProductId(),
                     caseObject.getProduct().getName() != null ? caseObject.getProduct().getName() : devUnitDAO.get( caseObject.getProductId() ).getName());
             if (resultProduct.isError()) {
                 log.error("Product history for the issue {} not saved!", caseObject.getId());
+            }
+        }
+
+        if (caseObject.getDeadline() != null) {
+            Result<Long> resultDeadline = addDeadlineHistory(token, caseObject.getId(), String.valueOf(caseObject.getDeadline()));
+            if (resultDeadline.isError()) {
+                log.error("Deadline history for the issue {} not saved!", caseObject.getId());
             }
         }
 
@@ -535,6 +549,23 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
+        if (!Objects.equals(oldCaseMeta.getPauseDate(), caseMeta.getPauseDate())) {
+            Result<Long> resultPauseDate = ok();
+            if (oldCaseMeta.getPauseDate() == null && caseMeta.getPauseDate() != null) {
+                resultPauseDate = addPauseDateHistory(token, caseMeta.getId(), String.valueOf(caseMeta.getPauseDate()));
+            } else if (oldCaseMeta.getPauseDate() != null && caseMeta.getPauseDate() != null) {
+                resultPauseDate = changePauseDateHistory(token, caseMeta.getId(),
+                        String.valueOf(oldCaseMeta.getPauseDate()), String.valueOf(caseMeta.getPauseDate()));
+            } else if (oldCaseMeta.getPauseDate() != null && caseMeta.getPauseDate() == null) {
+                resultPauseDate = removePauseDateHistory(token, caseMeta.getId(),
+                        String.valueOf(oldCaseMeta.getPauseDate()));
+            }
+
+            if (resultPauseDate.isError()) {
+                log.error("Pause date history for the issue {} isn't saved!", caseMeta.getId());
+            }
+        }
+
         if (!Objects.equals(oldCaseMeta.getProductId(), caseMeta.getProductId())) {
             Result<Long> resultProduct = ok();
             if (oldCaseMeta.getProductId() == null && caseMeta.getProductId() != null) {
@@ -551,6 +582,23 @@ public class CaseServiceImpl implements CaseService {
 
             if (resultProduct.isError()) {
                 log.error("Product history for the issue {} isn't saved!", caseMeta.getId());
+            }
+        }
+
+        if (!Objects.equals(oldCaseMeta.getDeadline(), caseMeta.getDeadline())) {
+            Result<Long> resultDeadline = ok();
+            if (oldCaseMeta.getDeadline() == null && caseMeta.getDeadline() != null) {
+                resultDeadline = addDeadlineHistory(token, caseMeta.getId(), String.valueOf(caseMeta.getDeadline()));
+            } else if (oldCaseMeta.getDeadline() != null && caseMeta.getDeadline() != null) {
+                resultDeadline = changeDeadlineHistory(token, caseMeta.getId(),
+                        String.valueOf(oldCaseMeta.getDeadline()), String.valueOf(caseMeta.getDeadline()));
+            } else if (oldCaseMeta.getDeadline() != null && caseMeta.getDeadline() == null) {
+                resultDeadline = removeDeadlineHistory(token, caseMeta.getId(),
+                        String.valueOf(oldCaseMeta.getDeadline()));
+            }
+
+            if (resultDeadline.isError()) {
+                log.error("Deadline history for the issue {} isn't saved!", caseMeta.getId());
             }
         }
 
@@ -1505,6 +1553,30 @@ public class CaseServiceImpl implements CaseService {
 
     private Result<Long> changeStateHistory(AuthToken authToken, Long caseId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
         return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
+    }
+
+    private Result<Long> addPauseDateHistory(AuthToken authToken, Long caseId, String pauseDate) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_PAUSE_DATE,null, null, null, pauseDate);
+    }
+
+    private Result<Long> changePauseDateHistory(AuthToken authToken, Long caseId, String oldPauseDate, String newPauseDate) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_PAUSE_DATE, null, oldPauseDate, null, newPauseDate);
+    }
+
+    private Result<Long> removePauseDateHistory(AuthToken authToken, Long caseId, String oldPauseDate) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_PAUSE_DATE, null, oldPauseDate, null, null);
+    }
+
+    private Result<Long> addDeadlineHistory(AuthToken authToken, Long caseId, String deadline) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_DEADLINE,null, null, null, deadline);
+    }
+
+    private Result<Long> changeDeadlineHistory(AuthToken authToken, Long caseId, String oldDeadline, String newDeadline) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_DEADLINE, null, oldDeadline, null, newDeadline);
+    }
+
+    private Result<Long> removeDeadlineHistory(AuthToken authToken, Long caseId, String oldDeadline) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_DEADLINE, null, oldDeadline, null, null);
     }
 
     private Result<Long> addProductHistory(AuthToken authToken, Long caseId, Long productId, String productName) {
