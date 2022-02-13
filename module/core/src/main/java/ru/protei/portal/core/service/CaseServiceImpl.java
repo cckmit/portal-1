@@ -294,6 +294,13 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
+        if (caseObject.getWorkTrigger() != null) {
+            Result<Long> resultWorkTrigger = addWorkTriggerHistory(token, caseObject.getId(), String.valueOf(caseObject.getWorkTrigger().getId()));
+            if (resultWorkTrigger.isError()) {
+                log.error("Work trigger history for the issue {} not saved!", caseObject.getId());
+            }
+        }
+
         if (caseObject.getTimeElapsed() != null && caseObject.getTimeElapsed() > 0L) {
             Long timeElapsedMessage = createAndPersistTimeElapsedMessage(token.getPersonId(), caseId, caseObject.getTimeElapsed(), caseObject.getTimeElapsedType());
 
@@ -599,6 +606,23 @@ public class CaseServiceImpl implements CaseService {
 
             if (resultDeadline.isError()) {
                 log.error("Deadline history for the issue {} isn't saved!", caseMeta.getId());
+            }
+        }
+
+        if (!Objects.equals(oldCaseMeta.getWorkTrigger(), caseMeta.getWorkTrigger())) {
+            Result<Long> resultWorkTrigger = ok();
+            if (oldCaseMeta.getWorkTrigger() == null && caseMeta.getWorkTrigger() != null) {
+                resultWorkTrigger = addWorkTriggerHistory(token, caseMeta.getId(), String.valueOf(caseMeta.getWorkTrigger().getId()));
+            } else if (oldCaseMeta.getWorkTrigger() != null && caseMeta.getWorkTrigger() != null) {
+                resultWorkTrigger = changeWorkTriggerHistory(token, caseMeta.getId(),
+                        String.valueOf(oldCaseMeta.getWorkTrigger().getId()), String.valueOf(caseMeta.getWorkTrigger().getId()));
+            } else if (oldCaseMeta.getWorkTrigger() != null && caseMeta.getWorkTrigger() == null) {
+                resultWorkTrigger = removeWorkTriggerHistory(token, caseMeta.getId(),
+                        String.valueOf(oldCaseMeta.getWorkTrigger().getId()));
+            }
+
+            if (resultWorkTrigger.isError()) {
+                log.error("Work trigger history for the issue {} isn't saved!", caseMeta.getId());
             }
         }
 
@@ -1565,6 +1589,18 @@ public class CaseServiceImpl implements CaseService {
 
     private Result<Long> removePauseDateHistory(AuthToken authToken, Long caseId, String oldPauseDate) {
         return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_PAUSE_DATE, null, oldPauseDate, null, null);
+    }
+
+    private Result<Long> addWorkTriggerHistory(AuthToken authToken, Long caseId, String workTrigger) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_WORK_TRIGGER,null, null, null, workTrigger);
+    }
+
+    private Result<Long> changeWorkTriggerHistory(AuthToken authToken, Long caseId, String oldWorkTrigger, String newWorkTrigger) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_WORK_TRIGGER, null, oldWorkTrigger, null, newWorkTrigger);
+    }
+
+    private Result<Long> removeWorkTriggerHistory(AuthToken authToken, Long caseId, String oldWorkTrigger) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_WORK_TRIGGER, null, oldWorkTrigger, null, null);
     }
 
     private Result<Long> addDeadlineHistory(AuthToken authToken, Long caseId, String deadline) {
