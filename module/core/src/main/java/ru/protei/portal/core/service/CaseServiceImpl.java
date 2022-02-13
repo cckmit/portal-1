@@ -92,6 +92,9 @@ public class CaseServiceImpl implements CaseService {
     PersonShortViewDAO personShortViewDAO;
 
     @Autowired
+    DevUnitDAO devUnitDAO;
+
+    @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
 
     @Autowired
@@ -253,19 +256,27 @@ public class CaseServiceImpl implements CaseService {
 
         Result<Long> resultState = addStateHistory(token, caseId, caseObject.getStateId(), caseStateDAO.get(caseObject.getStateId()).getState());
         if (resultState.isError()) {
-            log.error("State message for the issue {} not saved!", caseId);
+            log.error("State history for the issue {} not saved!", caseId);
         }
 
         Result<Long> importanceResult = addImportanceHistory(token, caseId, caseObject.getImpLevel().longValue(), importanceLevelDAO.get(caseObject.getImpLevel()).getCode());
         if (importanceResult.isError()) {
-            log.error("Importance level message for the issue {} not saved!", caseId);
+            log.error("Importance level history for the issue {} not saved!", caseId);
         }
 
         if (caseObject.getManager() != null && caseObject.getManager().getId() != null) {
             Result<Long> resultManager = addManagerHistory(token, caseObject.getId(), caseObject.getManager().getId(),
                     caseObject.getManager().getDisplayShortName() != null ? caseObject.getManager().getDisplayShortName() : personShortViewDAO.get(caseObject.getManagerId()).getDisplayShortName());
             if (resultManager.isError()) {
-                log.error("Manager message for the issue {} not saved!", caseObject.getId());
+                log.error("Manager history for the issue {} not saved!", caseObject.getId());
+            }
+        }
+
+        if (caseObject.getProductId() != null) {
+            Result<Long> resultProduct = addProductHistory(token, caseObject.getId(), caseObject.getProductId(),
+                    caseObject.getProduct().getName() != null ? caseObject.getProduct().getName() : devUnitDAO.get( caseObject.getProductId() ).getName());
+            if (resultProduct.isError()) {
+                log.error("Product history for the issue {} not saved!", caseObject.getId());
             }
         }
 
@@ -492,7 +503,7 @@ public class CaseServiceImpl implements CaseService {
                     oldCaseMeta.getStateId(), caseStateDAO.get(oldCaseMeta.getStateId()).getState(),
                     caseMeta.getStateId(), caseStateDAO.get(caseMeta.getStateId()).getState());
             if (resultState.isError()) {
-                log.error("State message for the issue {} isn't saved!", caseMeta.getId());
+                log.error("State history for the issue {} isn't saved!", caseMeta.getId());
             }
         }
 
@@ -501,7 +512,7 @@ public class CaseServiceImpl implements CaseService {
                     oldCaseMeta.getImpLevel().longValue(), importanceLevelDAO.get(oldCaseMeta.getImpLevel()).getCode(),
                     caseMeta.getImpLevel().longValue(), importanceLevelDAO.get(caseMeta.getImpLevel()).getCode());
             if (resultImportance.isError()) {
-                log.error("Importance level message for the issue {} isn't saved!", caseMeta.getId());
+                log.error("Importance level history for the issue {} isn't saved!", caseMeta.getId());
             }
         }
 
@@ -520,7 +531,26 @@ public class CaseServiceImpl implements CaseService {
             }
 
             if (resultManager.isError()) {
-                log.error("Manager message for the issue {} isn't saved!", caseMeta.getId());
+                log.error("Manager history for the issue {} isn't saved!", caseMeta.getId());
+            }
+        }
+
+        if (!Objects.equals(oldCaseMeta.getProductId(), caseMeta.getProductId())) {
+            Result<Long> resultProduct = ok();
+            if (oldCaseMeta.getProductId() == null && caseMeta.getProductId() != null) {
+                resultProduct = addProductHistory(token, caseMeta.getId(),
+                        caseMeta.getProductId(), makeProductName(caseMeta));
+            } else if (oldCaseMeta.getProductId() != null && caseMeta.getProductId() != null) {
+                resultProduct = changeProductHistory(token, caseMeta.getId(),
+                        oldCaseMeta.getProductId(), makeProductName(oldCaseMeta),
+                        caseMeta.getProductId(), makeProductName(caseMeta));
+            } else if (oldCaseMeta.getProductId() != null && caseMeta.getProductId() == null) {
+                resultProduct = removeProductHistory(token, caseMeta.getId(),
+                        oldCaseMeta.getProductId(), makeProductName(oldCaseMeta));
+            }
+
+            if (resultProduct.isError()) {
+                log.error("Product history for the issue {} isn't saved!", caseMeta.getId());
             }
         }
 
@@ -1477,8 +1507,20 @@ public class CaseServiceImpl implements CaseService {
         return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_STATE, oldStateId, oldStateName, newStateId, newStateName);
     }
 
-    private Result<Long> addManagerHistory(AuthToken authToken, Long caseId, Long managerId, String ManagerName) {
-        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_MANAGER,null, null, managerId, ManagerName);
+    private Result<Long> addProductHistory(AuthToken authToken, Long caseId, Long productId, String productName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_PRODUCT,null, null, productId, productName);
+    }
+
+    private Result<Long> changeProductHistory(AuthToken authToken, Long caseId, Long oldProductId, String oldProductName, Long newProductId, String newProductName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_PRODUCT, oldProductId, oldProductName, newProductId, newProductName);
+    }
+
+    private Result<Long> removeProductHistory(AuthToken authToken, Long caseId, Long oldProductId, String oldProductName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_PRODUCT, oldProductId, oldProductName, null, null);
+    }
+
+    private Result<Long> addManagerHistory(AuthToken authToken, Long caseId, Long managerId, String managerName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_MANAGER,null, null, managerId, managerName);
     }
 
     private Result<Long> changeManagerHistory(AuthToken authToken, Long caseId, Long oldManagerId, String oldManagerName, Long newManagerId, String newManagerName) {
@@ -1491,6 +1533,10 @@ public class CaseServiceImpl implements CaseService {
 
     private String makeManagerName(CaseObjectMeta caseObjectMeta) {
         return (caseObjectMeta.getManager() != null ? caseObjectMeta.getManager() : personShortViewDAO.get(caseObjectMeta.getManagerId())).getDisplayShortName();
+    }
+
+    private String makeProductName(CaseObjectMeta caseObjectMeta) {
+        return (caseObjectMeta.getProduct() != null ? caseObjectMeta.getProduct() : devUnitDAO.get(caseObjectMeta.getProductId())).getName();
     }
 
     private Result<Long> addImportanceHistory(AuthToken authToken, Long caseId, Long importanceId, String importanceName) {
