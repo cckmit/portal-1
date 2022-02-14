@@ -2,7 +2,6 @@ package ru.protei.portal.ui.issue.client.activity.create;
 
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
@@ -25,7 +24,6 @@ import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
-import ru.protei.portal.ui.common.client.util.AttachmentUtils;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
@@ -33,6 +31,7 @@ import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductWithChildrenModel;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -172,7 +171,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         lockSave();
         issueController.createIssue(createRequest, new FluentCallback<UiResult<Long>>()
-                .withError(throwable -> unlockSave())
+                .withError(defaultErrorHandler.andThen(throwable -> unlockSave()))
                 .withSuccess(createIssueResult -> {
                     unlockSave();
                     if (SOME_LINKS_NOT_SAVED.equals(createIssueResult.getMessage())) {
@@ -1023,6 +1022,9 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Inject
     ImportanceLevelControllerAsync importanceService;
+
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     @ContextAware
     CaseObjectCreateRequest createRequest;

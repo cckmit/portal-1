@@ -214,7 +214,7 @@ public class CaseServiceImpl implements CaseService {
         CaseObject caseObject = caseObjectCreateRequest.getCaseObject();
 
         if (!validateFieldsOfNew(token, caseObject)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
         Result<CaseObject> fillCaseObjectByScopeResult = fillCaseObjectByScope(token, caseObject);
@@ -449,7 +449,7 @@ public class CaseServiceImpl implements CaseService {
         applyStateBasedOnManager(caseMeta);
 
         if (!validateMetaFields(token, oldCaseMeta, caseMeta)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.VALIDATION_ERROR);
         }
 
         if (!isCaseMetaChanged(caseMeta, oldCaseMeta)) {
