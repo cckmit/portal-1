@@ -133,9 +133,11 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
         DynamicColumn<Project> statusColumn = new DynamicColumn<>(null, "status",
                 value -> {
                     String iconState = projectStateLang.getStateIcon(new CaseState(value.getStateName()));
-                    String style = "'style='color: " + value.getStateColor() + "'";
-                    return "<i class='" + iconState + " fa-2x" + style + "'></i>";
+                    String style = "'style='color: " + value.getStateColor();
+                    String title = "'title='" + projectStateLang.getStateName(new CaseState(value.getStateName()));
+                    return "<i class='" + iconState + " fa-2x" + title + style + "'></i>";
                 });
+
         columns.add(statusColumn);
 
         DynamicColumn<Project> numberColumn = new DynamicColumn<>(lang.projectDirections(), "number",
