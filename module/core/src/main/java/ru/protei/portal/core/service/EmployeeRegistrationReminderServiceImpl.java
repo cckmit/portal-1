@@ -15,7 +15,6 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -241,32 +240,6 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
         List<Person> persons = personDAO.partialGetListByKeys( notifyIds, "id", "displayname", "company_id");
         jdbcManyRelationsHelper.fill(persons, Person.Fields.CONTACT_ITEMS);
         return toMap( persons, Person::getId, person -> person );
-    }
-
-    public List<EmployeeRegistration> collectWorkingEmployees(List<EmployeeRegistration> employeeRegistrations) {
-        List<Long> personsIds = collectPersonsIds(employeeRegistrations);
-        List<Long> firedPersonsIds = collectFiredPersonsIds(personsIds);
-
-        return stream(employeeRegistrations)
-                .filter(employeeRegistration -> employeeRegistration.getPerson() != null)
-                .filter(employeeRegistration -> !firedPersonsIds.contains(employeeRegistration.getPerson().getId()))
-                .collect(Collectors.toList());
-    }
-
-    private List<Long> collectPersonsIds(List<EmployeeRegistration> employeeRegistrations) {
-        return stream(employeeRegistrations)
-                .filter(employeeRegistration -> employeeRegistration.getPerson() != null)
-                .map(employeeRegistration1 -> employeeRegistration1.getPerson().getId())
-                .collect(Collectors.toList());
-    }
-
-    private List<Long> collectFiredPersonsIds(List<Long> personsIds) {
-        PersonQuery personQuery = new PersonQuery(personsIds);
-        List<Person> persons = personDAO.getPersons(personQuery);
-        return stream(persons)
-                .filter(Person::isFired)
-                .map(Person::getId)
-                .collect(Collectors.toList());
     }
 
     private String getLangFor(String key){

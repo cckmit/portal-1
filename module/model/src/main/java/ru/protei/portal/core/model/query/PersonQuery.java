@@ -39,10 +39,6 @@ public class PersonQuery extends BaseQuery {
         this.hasCaseFilter = hasCaseFilter;
     }
 
-    public PersonQuery(Collection<Long> personIds) {
-        this.personIds = personIds;
-    }
-
     public Set<Long> getCompanyIds() {
         return companyIds;
     }
