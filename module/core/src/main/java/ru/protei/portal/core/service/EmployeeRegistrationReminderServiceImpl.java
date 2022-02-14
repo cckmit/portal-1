@@ -52,11 +52,10 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
     @Override
     public Result<Boolean> notifyAboutEmployeeFeedback() {
         List<EmployeeRegistration> probationComplete = employeeRegistrationDAO.getAfterProbationList( SEND_EMPLOYEE_FEEDBACK_AFTER_PROBATION_END_DAYS );
-        List<EmployeeRegistration> workingEmployees = collectWorkingEmployees(probationComplete);
         log.info( "notifyAboutEmployeeFeedback(): {}", toList( probationComplete, EmployeeRegistration::getId ) );
 
         for (EmployeeRegistration employeeRegistration : emptyIfNull( probationComplete )) {
-            if (employeeRegistration.getPerson() == null) continue;
+            if (employeeRegistration.getPerson() == null || employeeRegistration.getPerson().isFired()) continue;
             jdbcManyRelationsHelper.fill(employeeRegistration.getPerson(), Person.Fields.CONTACT_ITEMS);
             notifyEmployerAboutFeedback( employeeRegistration.getPerson() );
             addCaseComment( employeeRegistration.getId(), makeEmployeeFeedbackComment( employeeRegistration.getPerson() ) );
@@ -72,7 +71,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
         log.info( "notifyAboutDevelopmentAgenda(): {}", toList( probationExpires, EmployeeRegistration::getId ) );
 
         for (EmployeeRegistration employeeRegistration : emptyIfNull( probationExpires )) {
-            if (employeeRegistration.getPerson() == null) continue;
+            if (employeeRegistration.getPerson() == null || employeeRegistration.getPerson().isFired()) continue;
             jdbcManyRelationsHelper.fill(employeeRegistration.getPerson(), Person.Fields.CONTACT_ITEMS);
             notifyEmployerAboutAgenda( employeeRegistration.getPerson() );
             addCaseComment( employeeRegistration.getId(), makeDevelopmentAgendaComment( employeeRegistration.getPerson() ) );
@@ -89,6 +88,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
         Map<Long, Person> idToPerson = collectPersonsForNotification( probationExpires );
 
         for (EmployeeRegistration employeeRegistration : emptyIfNull( probationExpires )) {
+            if (employeeRegistration.getPerson() != null && employeeRegistration.getPerson().isFired()) continue;
             Person headOfDepartment = idToPerson.get( employeeRegistration.getHeadOfDepartmentId() );
             String employeeFullName = employeeRegistration.getEmployeeFullName();
             Long employeeId = employeeRegistration.getId();
@@ -233,6 +233,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
         Set<Long> notifyIds = new HashSet<Long>();
 
         for (EmployeeRegistration er : emptyIfNull( probationExpires )) {
+            if (er.getPerson() != null && er.getPerson().isFired()) continue;
             notifyIds.add( er.getHeadOfDepartmentId() );
             notifyIds.addAll( emptyIfNull( er.getCuratorsIds() ) );
         }
