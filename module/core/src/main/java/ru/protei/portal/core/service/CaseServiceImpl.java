@@ -266,7 +266,7 @@ public class CaseServiceImpl implements CaseService {
 
         if (caseObject.getManager() != null && caseObject.getManager().getId() != null) {
             Result<Long> resultManager = addManagerHistory(token, caseObject.getId(), caseObject.getManager().getId(),
-                    caseObject.getManager().getDisplayShortName() != null ? caseObject.getManager().getDisplayShortName() : personShortViewDAO.get(caseObject.getManagerId()).getDisplayShortName());
+                    caseObject.getManager() != null && caseObject.getManager().getDisplayShortName() != null ? caseObject.getManager().getDisplayShortName() : personShortViewDAO.get(caseObject.getManagerId()).getDisplayShortName());
             if (resultManager.isError()) {
                 log.error("Manager history for the issue {} not saved!", caseObject.getId());
             }
@@ -281,7 +281,7 @@ public class CaseServiceImpl implements CaseService {
 
         if (caseObject.getProductId() != null) {
             Result<Long> resultProduct = addProductHistory(token, caseObject.getId(), caseObject.getProductId(),
-                    caseObject.getProduct().getName() != null ? caseObject.getProduct().getName() : devUnitDAO.get( caseObject.getProductId() ).getName());
+                    caseObject.getProduct() != null && caseObject.getProduct().getName() != null ? caseObject.getProduct().getName() : devUnitDAO.get( caseObject.getProductId() ).getName());
             if (resultProduct.isError()) {
                 log.error("Product history for the issue {} not saved!", caseObject.getId());
             }
@@ -319,7 +319,7 @@ public class CaseServiceImpl implements CaseService {
 
         if (caseObject.getInitiatorId() != null) {
             Result<Long> result = addInitiatorHistory(token, caseObject.getId(), caseObject.getInitiatorId(),
-                    caseObject.getInitiator().getDisplayShortName() != null ? caseObject.getInitiator().getDisplayShortName() : personShortViewDAO.get(caseObject.getInitiatorId()).getDisplayShortName());
+                    caseObject.getInitiator() != null && caseObject.getInitiator().getDisplayShortName() != null ? caseObject.getInitiator().getDisplayShortName() : personShortViewDAO.get(caseObject.getInitiatorId()).getDisplayShortName());
             if (result.isError()) {
                 log.error("Initiator history for the issue {} not saved!", caseObject.getId());
             }
