@@ -39,6 +39,7 @@ import ru.protei.portal.ui.issue.client.view.edit.IssueNameDescriptionEditWidget
 import java.util.*;
 import java.util.logging.Logger;
 
+import static ru.protei.portal.core.model.dict.En_ExtAppType.*;
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
@@ -216,7 +217,7 @@ public abstract class IssueEditActivity implements
             if (isTerminalState(event.meta.getStateId())) {
                 fireEvent(new CommentAndHistoryEvents.DisableNewComment());
             }
-            if (En_ExtAppType.JIRA.equals(En_ExtAppType.forCode(event.meta.getExtAppType()))) {
+            if (JIRA.equals(forCode(event.meta.getExtAppType()))) {
                 fireEvent(new CommentAndHistoryEvents.ShowJiraWorkflowWarning(CrmConstants.State.OPENED == event.meta.getStateId()));
             }
         }
@@ -440,8 +441,11 @@ public abstract class IssueEditActivity implements
     private void showCommentsAndHistories(CaseObject issue) {
         issueInfoWidget.getCommentAndHistoryListContainer().clear();
         issueInfoWidget.getCommentAndHistoryListContainer().add(commentAndHistoryView.asWidget());
+//        CommentAndHistoryEvents.Show showCommentsAndHistoriesEvent = new CommentAndHistoryEvents.Show(commentAndHistoryView,
+//                issue.getId(), En_CaseType.CRM_SUPPORT, hasAccess() && !isReadOnly(), issue.getCreatorId() );
+
         CommentAndHistoryEvents.Show showCommentsAndHistoriesEvent = new CommentAndHistoryEvents.Show(commentAndHistoryView,
-                issue.getId(), En_CaseType.CRM_SUPPORT, hasAccess() && !isReadOnly(), issue.getCreatorId() );
+                issue.getId(), En_CaseType.CRM_SUPPORT, hasAccess() && !isReadOnly(), !isJiraOrRedmineSync(issue.getExtAppType()), issue.getCreatorId() );
         showCommentsAndHistoriesEvent.isElapsedTimeEnabled = policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW );
         showCommentsAndHistoriesEvent.isPrivateVisible = !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW );
         showCommentsAndHistoriesEvent.isPrivateCase = issue.isPrivateCase();
@@ -455,7 +459,7 @@ public abstract class IssueEditActivity implements
     }
 
     private boolean selectExtendedPrivacyType(CaseObject issue) {
-        return En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) &&
+        return JIRA.getCode().equals(issue.getExtAppType()) &&
                 !issue.getName().startsWith(NO_EXTENDED_PRIVACY_PROJECT);
     }
 
@@ -468,7 +472,7 @@ public abstract class IssueEditActivity implements
     }
 
     private CaseObjectMetaJira makeMetaJira( CaseObject issue ) {
-        if (!En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType())) return null;
+        if (!JIRA.getCode().equals(issue.getExtAppType())) return null;
         return new CaseObjectMetaJira(issue);
     }
 
@@ -534,7 +538,7 @@ public abstract class IssueEditActivity implements
 
         if (issueName == null) return "";
 
-        jiraUrl = En_ExtAppType.JIRA.getCode().equals( extAppType ) ? jiraUrl : "";
+        jiraUrl = JIRA.getCode().equals( extAppType ) ? jiraUrl : "";
         if (StringUtils.isEmpty(jiraUrl) || stream(jiraProjects).noneMatch(issueName::startsWith)) {
             return SimpleHtmlSanitizer.sanitizeHtml(issueName).asString();
         } else {
@@ -577,7 +581,7 @@ public abstract class IssueEditActivity implements
     }
 
     private En_TextMarkup isJiraMarkupCase(CaseObject issue) {
-        return En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) ? En_TextMarkup.JIRA_WIKI_MARKUP : En_TextMarkup.MARKDOWN;
+        return JIRA.getCode().equals(issue.getExtAppType()) ? En_TextMarkup.JIRA_WIKI_MARKUP : En_TextMarkup.MARKDOWN;
     }
 
     private boolean isJiraOpenedCase(CaseObject issue) {
@@ -585,7 +589,12 @@ public abstract class IssueEditActivity implements
             return false;
         }
 
-        return En_ExtAppType.JIRA.equals(En_ExtAppType.forCode(issue.getExtAppType()));
+        return JIRA.equals(forCode(issue.getExtAppType()));
+    }
+
+    private boolean isJiraOrRedmineSync(String type) {
+        return JIRA.equals(forCode(type)) ||
+               REDMINE.equals(forCode(type));
     }
 
     private void copyToClipboardNotify(Boolean success) {
@@ -597,7 +606,7 @@ public abstract class IssueEditActivity implements
     }
 
     private String makeIntegrationName(CaseObject issue) {
-        En_ExtAppType extAppType = En_ExtAppType.forCode(issue.getExtAppType());
+        En_ExtAppType extAppType = forCode(issue.getExtAppType());
         if (extAppType == null) {
             return null;
         }
@@ -612,7 +621,7 @@ public abstract class IssueEditActivity implements
         return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) &&
                 !isTerminalState(stateId) && CrmConstants.State.CREATED != stateId &&
                 !isAutoOpenIssue &&
-                En_ExtAppType.forCode(extAppType) == null;
+                forCode(extAppType) == null;
     }
 
     @Inject

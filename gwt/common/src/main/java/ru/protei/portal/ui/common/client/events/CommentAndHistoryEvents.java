@@ -28,6 +28,16 @@ public class CommentAndHistoryEvents {
             this.caseCreatorId = caseCreatorId;
         }
 
+        public Show(AbstractCommentAndHistoryListView view, Long caseId, En_CaseType caseType, boolean isModifyEnabled, boolean isEditEnabled, Long caseCreatorId) {
+            this.view = view;
+            this.caseId = caseId;
+            this.caseType = caseType;
+            this.isModifyEnabled = isModifyEnabled;
+            this.caseCreatorId = caseCreatorId;
+            this.isEditEnabled = isEditEnabled;
+        }
+
+
         public AbstractCommentAndHistoryListView view;
         public En_CaseType caseType;
         public Long caseId;
@@ -35,6 +45,7 @@ public class CommentAndHistoryEvents {
         public Long initiatorCompanyId;
         public boolean isElapsedTimeEnabled = false;
         public boolean isModifyEnabled = false;
+        public boolean isEditEnabled = true;
         public boolean isPrivateVisible = false;
         public boolean isPrivateCase = false;
         public boolean isNewCommentEnabled = true;
