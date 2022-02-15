@@ -441,11 +441,8 @@ public abstract class IssueEditActivity implements
     private void showCommentsAndHistories(CaseObject issue) {
         issueInfoWidget.getCommentAndHistoryListContainer().clear();
         issueInfoWidget.getCommentAndHistoryListContainer().add(commentAndHistoryView.asWidget());
-//        CommentAndHistoryEvents.Show showCommentsAndHistoriesEvent = new CommentAndHistoryEvents.Show(commentAndHistoryView,
-//                issue.getId(), En_CaseType.CRM_SUPPORT, hasAccess() && !isReadOnly(), issue.getCreatorId() );
-
         CommentAndHistoryEvents.Show showCommentsAndHistoriesEvent = new CommentAndHistoryEvents.Show(commentAndHistoryView,
-                issue.getId(), En_CaseType.CRM_SUPPORT, hasAccess() && !isReadOnly(), !isJiraOrRedmineSync(issue.getExtAppType()), issue.getCreatorId() );
+                issue.getId(), En_CaseType.CRM_SUPPORT, hasAccess() && !isReadOnly(), issue.getCreatorId() );
         showCommentsAndHistoriesEvent.isElapsedTimeEnabled = policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW );
         showCommentsAndHistoriesEvent.isPrivateVisible = !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW );
         showCommentsAndHistoriesEvent.isPrivateCase = issue.isPrivateCase();
@@ -455,6 +452,7 @@ public abstract class IssueEditActivity implements
         showCommentsAndHistoriesEvent.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
         showCommentsAndHistoriesEvent.extendedPrivacyType =  selectExtendedPrivacyType( issue );
         showCommentsAndHistoriesEvent.isJiraWorkflowWarningVisible = isJiraOpenedCase(issue);
+        showCommentsAndHistoriesEvent.isEditAndDeleteEnabled = !isJiraOrRedmineSync(issue);
         fireEvent( showCommentsAndHistoriesEvent );
     }
 
@@ -592,9 +590,9 @@ public abstract class IssueEditActivity implements
         return JIRA.equals(forCode(issue.getExtAppType()));
     }
 
-    private boolean isJiraOrRedmineSync(String type) {
-        return JIRA.equals(forCode(type)) ||
-               REDMINE.equals(forCode(type));
+    private boolean isJiraOrRedmineSync(CaseObject issue) {
+        return JIRA.equals(forCode(issue.getExtAppType())) ||
+               REDMINE.equals(forCode(issue.getExtAppType()));
     }
 
     private void copyToClipboardNotify(Boolean success) {

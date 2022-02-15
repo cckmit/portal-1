@@ -16,7 +16,7 @@ public class CaseCommentItemEvents {
     public static class Init {
         public Init(En_CaseType caseType, Long caseId, En_TextMarkup textMarkup,
                     boolean isPrivateVisible, boolean isElapsedTimeEnabled,
-                    boolean isModifyEnabled, boolean isEditEnabled, FlowPanel commentsContainer,
+                    boolean isModifyEnabled, boolean isEditAndDeleteEnabled, FlowPanel commentsContainer,
                     Function<CaseComment, String> makeAllowEditValidationString,
                     Function<CaseComment, String> makeAllowRemoveValidationString) {
 
@@ -26,7 +26,7 @@ public class CaseCommentItemEvents {
             this.isPrivateVisible = isPrivateVisible;
             this.isElapsedTimeEnabled = isElapsedTimeEnabled;
             this.isModifyEnabled = isModifyEnabled;
-            this.isEditEnabled = isEditEnabled;
+            this.isEditAndDeleteEnabled = isEditAndDeleteEnabled;
             this.commentsContainer = commentsContainer;
             this.makeAllowEditValidationString = makeAllowEditValidationString;
             this.makeAllowRemoveValidationString = makeAllowRemoveValidationString;
@@ -38,7 +38,7 @@ public class CaseCommentItemEvents {
         public boolean isPrivateVisible;
         public boolean isElapsedTimeEnabled;
         public boolean isModifyEnabled;
-        public boolean isEditEnabled;
+        public boolean isEditAndDeleteEnabled;
         public FlowPanel commentsContainer;
         public Function<CaseComment, String> makeAllowEditValidationString;
         public Function<CaseComment, String> makeAllowRemoveValidationString;
