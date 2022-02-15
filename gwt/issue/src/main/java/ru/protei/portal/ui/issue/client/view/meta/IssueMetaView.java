@@ -583,8 +583,8 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @UiHandler("company")
-    public void onCompanyChanged(ValueChangeEvent<EntityOption> event) {
-        if (activity != null) activity.onCompanyChanged();
+    public void onInitiatorCompanyChanged(ValueChangeEvent<EntityOption> event) {
+        if (activity != null) activity.onInitiatorCompanyChanged();
     }
 
     @UiHandler("initiator")

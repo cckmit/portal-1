@@ -56,6 +56,7 @@ public class LinkUtils {
             case ("Contract"):
             case ("Project"):
             case ("Platform"):
+            case ("Company"):
             case ("DevUnit"):
             case ("EmployeeShortView"):
             case ("Plan"):

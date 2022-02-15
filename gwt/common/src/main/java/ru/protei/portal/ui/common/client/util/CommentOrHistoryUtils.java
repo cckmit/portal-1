@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
@@ -24,6 +25,7 @@ import ru.protei.portal.ui.common.client.view.casehistory.item.link.CaseHistoryL
 import ru.protei.portal.ui.common.client.view.casehistory.item.tag.CaseHistoryTagItemView;
 
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.ui.common.client.common.DateFormatter.formatDateTime;
@@ -216,14 +218,14 @@ public class CommentOrHistoryUtils {
         if (En_HistoryType.CASE_PAUSE_DATE.equals(historyType)
                 || En_HistoryType.CASE_DEADLINE.equals(historyType)) {
             CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
-            caseHistorySimpleItemView.setName(DateFormatter.formatDateTime(new Date(Long.valueOf(value))));
+            caseHistorySimpleItemView.setName(makeDateString(value, historyType));
 
             return caseHistorySimpleItemView;
         }
 
         if (En_HistoryType.CASE_WORK_TRIGGER.equals(historyType)) {
             CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
-            caseHistorySimpleItemView.setName(workTriggerLang.getName(En_WorkTrigger.findById(Integer.valueOf(value))));
+            caseHistorySimpleItemView.setName(workTriggerLang.getName(makeWorkTrigger(value)));
 
             return caseHistorySimpleItemView;
         }
@@ -305,6 +307,24 @@ public class CommentOrHistoryUtils {
         return null;
     }
 
+    private static En_WorkTrigger makeWorkTrigger(String value) {
+        Integer workTriggerValue = NumberUtils.parseInteger(value);
+        if (workTriggerValue == null){
+            log.warning("Parse work trigger error: value = " + value);
+            return null;
+        }
+        return En_WorkTrigger.findById(workTriggerValue);
+    }
+
+    private static String makeDateString(String value, En_HistoryType historyType) {
+        Long millis = NumberUtils.parseLong(value);
+        if (millis == null){
+            log.warning("Parse history date error: value = " + value + ", type = " + historyType);
+            return lang.error();
+        }
+        return DateFormatter.formatDateOnly(new Date(millis));
+    }
+
     @Inject
     private static Lang lang;
     @Inject
@@ -333,4 +353,6 @@ public class CommentOrHistoryUtils {
     private static Provider<CaseHistoryItemsContainer> caseHistoryItemsContainerProvider;
     @Inject
     private static En_WorkTriggerLang workTriggerLang;
+
+    private static final Logger log = Logger.getLogger(CommentOrHistoryUtils.class.getName());
 }

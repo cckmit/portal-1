@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.meta;
 
 public interface AbstractIssueMetaActivity {
-    void onCompanyChanged();
+    void onInitiatorCompanyChanged();
     void onManagerCompanyChanged();
     void onCreateContactClicked();
     default void onCaseMetaNotifiersChanged() {}
