@@ -155,7 +155,7 @@ public class BootstrapServiceImpl implements BootstrapService {
         List<CaseShortView> caseObjects = caseShortViewDAO.getListByCondition("manager is null and case_type = ?",
                                                                                En_CaseType.PROJECT.getId());
         for (CaseShortView caseObject: caseObjects) {
-            List<CaseMember> caseMembers = caseMemberDAO.getListByCondition("CASE_ID in (" + caseObject.getId() + ")");
+            List<CaseMember> caseMembers = caseMemberDAO.getListByCondition("CASE_ID = ?", caseObject.getId());
             if (isEmpty(caseMembers)) {
                 continue;
             }
