@@ -22,10 +22,7 @@ import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.struct.JiraExtAppData;
-import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
-import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.util.DiffCollectionResult;
-import ru.protei.portal.core.model.util.DiffResult;
+import ru.protei.portal.core.model.util.*;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
@@ -213,8 +210,9 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject caseObject = caseObjectCreateRequest.getCaseObject();
 
-        if (!validateFieldsOfNew(token, caseObject)) {
-            return error(En_ResultStatus.VALIDATION_ERROR);
+        En_IssueValidationResult validationResult = validateFieldsOfNew(token, caseObject);
+        if (En_IssueValidationResult.OK != validationResult) {
+            return error(En_ResultStatus.VALIDATION_ERROR, validationResult.name());
         }
 
         Result<CaseObject> fillCaseObjectByScopeResult = fillCaseObjectByScope(token, caseObject);
@@ -448,8 +446,9 @@ public class CaseServiceImpl implements CaseService {
 
         applyStateBasedOnManager(caseMeta);
 
-        if (!validateMetaFields(token, oldCaseMeta, caseMeta)) {
-            return error(En_ResultStatus.VALIDATION_ERROR);
+        En_IssueValidationResult validationResult = validateMetaFields(token, oldCaseMeta, caseMeta);
+        if (En_IssueValidationResult.OK != validationResult) {
+            return error(En_ResultStatus.VALIDATION_ERROR, validationResult.name());
         }
 
         if (!isCaseMetaChanged(caseMeta, oldCaseMeta)) {
@@ -1142,97 +1141,95 @@ public class CaseServiceImpl implements CaseService {
                 .allMatch(caseLink -> isTerminalState(caseLink.getCaseInfo().getStateId()));
     }
 
-    private boolean validateFieldsOfNew(AuthToken token, CaseObject caseObject) {
-        if (!validateFields( caseObject )) {
-            return false;
+    private En_IssueValidationResult validateFieldsOfNew(AuthToken token, CaseObject caseObject) {
+        En_IssueValidationResult result = validateFields(caseObject);
+        if (En_IssueValidationResult.OK != result) {
+            return result;
         }
         CaseObjectMeta caseObjectMeta = new CaseObjectMeta( caseObject );
-        if (!validateMetaFields(token, caseObjectMeta)) {
-            return false;
-        }
-        return true;
+        return validateMetaFields(token, caseObjectMeta);
     }
 
-    private boolean validateFields(CaseObject caseObject) {
+    private En_IssueValidationResult validateFields(CaseObject caseObject) {
         if (caseObject == null) {
             log.warn("Case object cannot be null");
-            return false;
+            return En_IssueValidationResult.NULL;
         }
         if (StringUtils.isEmpty(caseObject.getName())) {
             log.warn("Name must be specified. caseId={}", caseObject.getId());
-            return false;
+            return En_IssueValidationResult.NAME_EMPTY;
         }
         if (caseObject.getType() == null) {
             log.warn("Type must be specified. caseId={}", caseObject.getId());
-            return false;
+            return En_IssueValidationResult.TYPE_EMPTY;
         }
         if (caseObject.getCreatorId() == null) {
             log.warn("Required creator id. caseId={}", caseObject.getId());
-            return false;
+            return En_IssueValidationResult.CREATOR_EMPTY;
         }
-        return true;
+        return En_IssueValidationResult.OK;
     }
 
-    private boolean validateMetaFields(AuthToken token, CaseObjectMeta caseMeta) {
+    private En_IssueValidationResult validateMetaFields(AuthToken token, CaseObjectMeta caseMeta) {
         return validateMetaFields(token, null, caseMeta);
     }
 
-    private boolean validateMetaFields(AuthToken token, CaseObjectMeta oldCaseMeta, CaseObjectMeta caseMeta) {
+    private En_IssueValidationResult validateMetaFields(AuthToken token, CaseObjectMeta oldCaseMeta, CaseObjectMeta caseMeta) {
         if (caseMeta == null) {
             log.warn("Case meta cannot be null");
-            return false;
+            return En_IssueValidationResult.NULL;
         }
         if (caseMeta.getImpLevel() == null) {
             log.warn("Importance level must be specified. caseId={}", caseMeta.getId());
-            return false;
+            return En_IssueValidationResult.IMPORTANCE_EMPTY;
         }
         if (caseMeta.getManagerCompanyId() == null) {
             log.warn("Manager company must be specified. caseId={}", caseMeta.getId());
-            return false;
+            return En_IssueValidationResult.MANAGER_EMPTY;
         }
         if (caseMeta.getManagerId() != null && !personBelongsToCompany(caseMeta.getManagerId(), caseMeta.getManagerCompanyId())) {
             log.warn("Manager doesn't belong to company. caseId={}, managerId={}, managerCompanyId={}",
                     caseMeta.getId(), caseMeta.getManagerId(), caseMeta.getManagerCompanyId());
-            return false;
+            return En_IssueValidationResult.MANAGER_OTHER_COMPANY;
         }
         if (caseMeta.getManagerId() != null && caseMeta.getProductId() == null) {
             log.warn("Manager must be specified with product. caseId={}", caseMeta.getId());
-            return false;
+            return En_IssueValidationResult.MANAGER_WITHOUT_PRODUCT;
         }
         if (caseMeta.getInitiatorCompanyId() == null) {
             log.warn("Initiator company must be specified. caseId={}", caseMeta.getId());
-            return false;
+            return En_IssueValidationResult.INITIATOR_EMPTY;
         }
         if (!isStateValid(caseMeta.getStateId(), caseMeta.getManagerId(), caseMeta.getInitiatorCompanyId(), caseMeta.getPauseDate())) {
             log.warn("State is not valid. caseId={}", caseMeta.getId());
-            return false;
+            return En_IssueValidationResult.STATUS_INVALID;
         }
         if (!importanceBelongsToCompany(caseMeta.getImpLevel(), caseMeta.getInitiatorCompanyId())) {
             log.warn("Importance level doesn't belong to company. caseId={}, importance={}, companyId={}", caseMeta.getId(), caseMeta.getImpLevel(), caseMeta.getInitiatorCompanyId());
-            return false;
+            return En_IssueValidationResult.IMPORTANCE_OTHER_COMPANY;
         }
         if (caseMeta.getInitiatorId() != null && !personBelongsToCompany( caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId() )) {
             log.warn("Initiator doesn't belong to company. caseId={}, initiatorId={}, initiatorCompanyId={}",
                     caseMeta.getId(), caseMeta.getInitiatorId(), caseMeta.getInitiatorCompanyId());
-            return false;
+            return En_IssueValidationResult.INITIATOR_OTHER_COMPANY;
         }
         if (caseMeta.getPlatformId() != null && !platformBelongsToCompany(token, caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId())) {
             log.warn("Platform doesn't belong to initiator company. caseId={}, platformId={}, initiatorCompanyId={}",
                     caseMeta.getId(), caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId());
-            return false;
+            return En_IssueValidationResult.PLATFORM_OTHER_COMPANY;
         }
         if (!isProductValid(token, caseMeta.getProductId(), caseMeta.getPlatformId(), caseMeta.getInitiatorCompanyId())) {
             log.warn("Product is not valid. caseId={}", caseMeta.getId());
-            return false;
+            return En_IssueValidationResult.PRODUCT_INVALID;
         }
 
         Long oldDeadline = oldCaseMeta == null ? null : oldCaseMeta.getDeadline();
 
         if (!Objects.equals(oldDeadline, caseMeta.getDeadline()) && !isDeadlineValid(caseMeta.getDeadline())) {
             log.warn("Deadline has passed. caseId={}", caseMeta.getId());
-            return false;
+            return En_IssueValidationResult.DEADLINE_PASSED;
         }
-        return true;
+        return En_IssueValidationResult.OK;
     }
 
     private boolean importanceBelongsToCompany(Integer importanceLevelId, Long companyId) {
