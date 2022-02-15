@@ -151,7 +151,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                     root.getElement().appendChild(b);
                     root.add(new InlineLabel(" - " + formatDate(p.getDate())
                             + (isNotEmpty(p.getComment()) ? " (" + p.getComment() + ")" : "")
-                            + ((p.getCost() != null) ? (". " + lang.contractCost() + " - " + MoneyRenderer.getInstance().render(p.getCost())
+                            + ((p.getCost() != null) ? (". " + lang.contractCost() + " - " + MoneyRenderer.getInstance().render(p.getCost()) + " "
                             + (p.getCurrency() != null ? p.getCurrency().getCode() : "")) : "")));
                     return root;
                 })
