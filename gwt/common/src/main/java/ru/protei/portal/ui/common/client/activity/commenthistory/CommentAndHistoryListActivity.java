@@ -65,6 +65,7 @@ public abstract class CommentAndHistoryListActivity
         this.textMarkup = event.textMarkup;
         this.isElapsedTimeEnabled = event.isElapsedTimeEnabled;
         this.isModifyEnabled = event.isModifyEnabled;
+        this.isEditAndDeleteEnabled = event.isEditAndDeleteEnabled;
         this.isPrivateVisible = event.isPrivateVisible;
         this.isPrivateCase = event.isPrivateCase;
         this.isNewCommentEnabled = event.isNewCommentEnabled;
@@ -72,7 +73,7 @@ public abstract class CommentAndHistoryListActivity
         fireEvent(new CaseCommentItemEvents.Init(
                 caseType, caseId, textMarkup,
                 isPrivateVisible, isElapsedTimeEnabled,
-                isModifyEnabled, view.commentsAndHistoriesContainer(),
+                isModifyEnabled, isEditAndDeleteEnabled, view.commentsAndHistoriesContainer(),
                 comment -> makeAllowEditValidationString(comment, profile),
                 comment -> makeAllowRemoveValidationString(comment, profile)
         ));
@@ -689,6 +690,7 @@ public abstract class CommentAndHistoryListActivity
     private boolean saving = false;
     private boolean isElapsedTimeEnabled = false;
     private boolean isModifyEnabled = true;
+    private boolean isEditAndDeleteEnabled = true;
     private Long caseId;
     private boolean isPrivateVisible = false;
     private boolean isPrivateCase = false;

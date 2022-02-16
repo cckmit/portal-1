@@ -60,6 +60,7 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
         this.isPrivateVisible = event.isPrivateVisible;
         this.isElapsedTimeEnabled = event.isElapsedTimeEnabled;
         this.isModifyEnabled = event.isModifyEnabled;
+        this.isEditAndDeleteEnabled = event.isEditAndDeleteEnabled;
         this.caseId = event.caseId;
         this.commentsContainer = event.commentsContainer;
 
@@ -311,7 +312,7 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
 
         itemView.setTimeElapsedTypeChangeHandler(event -> updateTimeElapsedType(event.getValue(), value, itemView));
 
-        itemView.enabledEdit(isModifyEnabled && (makeAllowEditValidationString.apply(value) == null));
+        itemView.enabledEdit(isModifyEnabled && isEditAndDeleteEnabled && (makeAllowEditValidationString.apply(value) == null));
         itemView.enableReply(isModifyEnabled);
 
         return itemView;
@@ -463,6 +464,7 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
     private boolean isPrivateVisible;
     private boolean isElapsedTimeEnabled;
     private boolean isModifyEnabled;
+    private boolean isEditAndDeleteEnabled;
     private Long caseId;
 
     private WorkTimeFormatter workTimeFormatter;

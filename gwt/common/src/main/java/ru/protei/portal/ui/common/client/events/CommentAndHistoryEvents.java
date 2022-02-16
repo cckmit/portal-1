@@ -35,6 +35,7 @@ public class CommentAndHistoryEvents {
         public Long initiatorCompanyId;
         public boolean isElapsedTimeEnabled = false;
         public boolean isModifyEnabled = false;
+        public boolean isEditAndDeleteEnabled = true;
         public boolean isPrivateVisible = false;
         public boolean isPrivateCase = false;
         public boolean isNewCommentEnabled = true;
