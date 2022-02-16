@@ -97,6 +97,7 @@ public class BaseServiceTest {
         person.setCompanyId( company.getId() );
         person.setCompany( company );
         person.setDisplayName( "Test_Person" );
+        person.setDisplayShortName("Test_P");
         person.setGender( En_Gender.MALE );
         return person;
     }

@@ -5,6 +5,10 @@ import ru.protei.portal.core.model.dict.En_WorkTrigger;
 
 public class En_WorkTriggerLang {
     public String getName(En_WorkTrigger value) {
+        if (value == null){
+            return lang.unknownField();
+        }
+
         switch (value) {
             case NONE:
                 return lang.workTriggerNone();

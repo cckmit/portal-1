@@ -226,7 +226,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     @Override
-    public void onCompanyChanged() {
+    public void onInitiatorCompanyChanged() {
         Company companyOption = issueMetaView.getCompany();
 
         fillImportanceSelector(companyOption.getId());

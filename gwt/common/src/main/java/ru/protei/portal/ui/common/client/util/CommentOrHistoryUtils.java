@@ -7,8 +7,10 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
+import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
@@ -18,13 +20,12 @@ import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItem;
 import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItemsContainer;
 import ru.protei.portal.ui.common.client.view.casehistory.item.casestate.CaseHistoryStateItemView;
 import ru.protei.portal.ui.common.client.view.casehistory.item.importance.CaseHistoryImportanceItemView;
+import ru.protei.portal.ui.common.client.view.casehistory.item.link.CaseHistoryLinkItemView;
 import ru.protei.portal.ui.common.client.view.casehistory.item.simple.CaseHistorySimpleItemView;
 import ru.protei.portal.ui.common.client.view.casehistory.item.tag.CaseHistoryTagItemView;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.ui.common.client.common.DateFormatter.formatDateTime;
@@ -108,6 +109,14 @@ public class CommentOrHistoryUtils {
             case CARD_MANAGER: return makeHistoryItem(history, lang.cardManager(), EmployeeShortView.class);
             case CARD_BATCH_STATE: return makeHistoryItem(history, lang.cardBatchState(), CaseState.class);
             case CARD_BATCH_IMPORTANCE: return makeHistoryItem(history, lang.issueImportance(), ImportanceLevel.class);
+            case CASE_PAUSE_DATE: return makeHistoryItem(history, lang.issuePauseDateValidity(), Long.class);
+            case CASE_PRODUCT: return makeHistoryItem(history, lang.issueProduct(), DevUnit.class);
+            case CASE_DEADLINE: return makeHistoryItem(history, lang.issueDeadline(), Long.class);
+            case CASE_WORK_TRIGGER: return makeHistoryItem(history, lang.issueWorkTrigger(), En_WorkTrigger.class);
+            case CASE_MANAGER_COMPANY: return makeHistoryItem(history, lang.issueCompany(), Company.class);
+            case CASE_INITIATOR_COMPANY: return makeHistoryItem(history, lang.issueInitiatorCompany(), Company.class);
+            case CASE_INITIATOR: return makeHistoryItem(history, lang.issueInitiator(), EmployeeShortView.class);
+            case CASE_PLATFORM: return makeHistoryItem(history, lang.siteFolderPlatform(), Platform.class);
             default: return null;
         }
     }
@@ -206,15 +215,36 @@ public class CommentOrHistoryUtils {
             return caseHistoryTagItemView;
         }
 
-        if (En_HistoryType.CASE_MANAGER.equals(historyType) || En_HistoryType.PLAN.equals(historyType)) {
+        if (En_HistoryType.CASE_PAUSE_DATE.equals(historyType)
+                || En_HistoryType.CASE_DEADLINE.equals(historyType)) {
             CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
-            caseHistorySimpleItemView.setLink(transliteration(value), link);
+            caseHistorySimpleItemView.setName(makeDateString(value, historyType));
 
             return caseHistorySimpleItemView;
         }
 
+        if (En_HistoryType.CASE_WORK_TRIGGER.equals(historyType)) {
+            CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
+            caseHistorySimpleItemView.setName(workTriggerLang.getName(En_WorkTrigger.valueOf(value)));
+
+            return caseHistorySimpleItemView;
+        }
+
+        if (En_HistoryType.CASE_MANAGER.equals(historyType)
+                || En_HistoryType.PLAN.equals(historyType)
+                || En_HistoryType.CASE_PRODUCT.equals(historyType)
+                || En_HistoryType.CASE_PLATFORM.equals(historyType)
+                || En_HistoryType.CASE_INITIATOR.equals(historyType)
+                || En_HistoryType.CASE_MANAGER_COMPANY.equals(historyType)
+                || En_HistoryType.CASE_INITIATOR_COMPANY.equals(historyType)) {
+            CaseHistoryLinkItemView caseHistoryLinkItemView = caseHistoryLinkItemViewProvider.get();
+            caseHistoryLinkItemView.setLink(transliteration(value), link);
+
+            return caseHistoryLinkItemView;
+        }
+
         if (En_HistoryType.DEPARTURE_DATE.equals(historyType)) {
-            CaseHistorySimpleItemView caseHistoryDateItemView = caseHistorySimpleItemViewProvider.get();
+            CaseHistoryLinkItemView caseHistoryDateItemView = caseHistoryLinkItemViewProvider.get();
             caseHistoryDateItemView.setLink(value, null);
 
             return caseHistoryDateItemView;
@@ -237,7 +267,7 @@ public class CommentOrHistoryUtils {
         }
 
         if (En_HistoryType.BUILD_DATE.equals(historyType)) {
-            CaseHistorySimpleItemView caseHistoryDateItemView = caseHistorySimpleItemViewProvider.get();
+            CaseHistoryLinkItemView caseHistoryDateItemView = caseHistoryLinkItemViewProvider.get();
             caseHistoryDateItemView.setLink(value, null);
 
             return caseHistoryDateItemView;
@@ -252,10 +282,10 @@ public class CommentOrHistoryUtils {
         }
 
         if (En_HistoryType.CARD_MANAGER.equals(historyType)) {
-            CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
-            caseHistorySimpleItemView.setLink(transliteration(value), link);
+            CaseHistoryLinkItemView caseHistoryLinkItemView = caseHistoryLinkItemViewProvider.get();
+            caseHistoryLinkItemView.setLink(transliteration(value), link);
 
-            return caseHistorySimpleItemView;
+            return caseHistoryLinkItemView;
         }
 
         if (En_HistoryType.CARD_BATCH_STATE.equals(historyType)) {
@@ -277,6 +307,15 @@ public class CommentOrHistoryUtils {
         return null;
     }
 
+    private static String makeDateString(String value, En_HistoryType historyType) {
+        Long millis = NumberUtils.parseLong(value);
+        if (millis == null){
+            log.warning("Parse history date error: value = " + value + ", type = " + historyType);
+            return lang.error();
+        }
+        return DateFormatter.formatDateOnly(new Date(millis));
+    }
+
     @Inject
     private static Lang lang;
     @Inject
@@ -287,6 +326,8 @@ public class CommentOrHistoryUtils {
     private static Provider<CaseHistoryImportanceItemView> caseHistoryImportanceItemViewProvider;
     @Inject
     private static Provider<CaseHistoryTagItemView> caseHistoryTagItemViewProvider;
+    @Inject
+    private static Provider<CaseHistoryLinkItemView> caseHistoryLinkItemViewProvider;
     @Inject
     private static Provider<CaseHistorySimpleItemView> caseHistorySimpleItemViewProvider;
     @Inject
@@ -301,4 +342,8 @@ public class CommentOrHistoryUtils {
     private static CardBatchStateLang cardBatchStateLang;
     @Inject
     private static Provider<CaseHistoryItemsContainer> caseHistoryItemsContainerProvider;
+    @Inject
+    private static En_WorkTriggerLang workTriggerLang;
+
+    private static final Logger log = Logger.getLogger(CommentOrHistoryUtils.class.getName());
 }

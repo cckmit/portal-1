@@ -180,6 +180,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             fireEvent(new IssueEvents.IssueProductChanged(meta.getId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
             onParentIssueChanged(meta.getId());
+            fireEvent(new CommentAndHistoryEvents.Reload());
         });
     }
 
@@ -200,6 +201,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         onCaseMetaChanged( meta, () -> {
             fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CommentAndHistoryEvents.Reload());
         } );
     }
 
@@ -209,6 +211,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         Runnable onChanged = () -> {
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CommentAndHistoryEvents.Reload());
         };
 
         if (isCompanyWithAutoOpenIssues(currentCompany)) {
@@ -218,6 +221,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             onChanged = () -> {
                 fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
                 fireEvent(new IssueEvents.IssueMetaChanged(meta));
+                fireEvent(new CommentAndHistoryEvents.Reload());
             };
         }
 
@@ -290,7 +294,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     @Override
-    public void onCompanyChanged() {
+    public void onInitiatorCompanyChanged() {
         Company company = metaView.getCompany();
         if (company.getId().equals(meta.getInitiatorCompanyId())) {
             return;
@@ -364,6 +368,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         onCaseMetaChanged(meta, () -> {
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CommentAndHistoryEvents.Reload());
         });
     }
 
@@ -400,6 +405,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         onCaseMetaChanged(meta, () -> {
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CommentAndHistoryEvents.Reload());
         });
     }
 
@@ -408,6 +414,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         meta.setWorkTrigger(metaView.workTrigger().getValue());
         onCaseMetaChanged( meta, () -> {
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CommentAndHistoryEvents.Reload());
         } );
     }
 
@@ -880,7 +887,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             }
 
             requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, metaView.importance().getValue())));
-            onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.ChangeIssue(meta.getId())));
+            onCaseMetaChanged(meta, () -> {
+                fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
+                fireEvent(new CommentAndHistoryEvents.Reload());
+            });
         });
     }
 

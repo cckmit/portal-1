@@ -4089,5 +4089,7 @@ public interface Lang extends Messages, ContactItemLang {
     String issueValidationResultProductInvalid();
 
     String issueValidationResultDeadlinePassed();
+
+    String issueInitiatorCompany();
 }
 

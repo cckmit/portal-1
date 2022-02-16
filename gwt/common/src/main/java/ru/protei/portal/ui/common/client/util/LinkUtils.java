@@ -23,6 +23,8 @@ public class LinkUtils {
                 return href.substring(0, href.indexOf("#") + 1) + "employee_preview:id=" + id;
             case ("Plan"):
                 return href.substring(0, href.indexOf("#") + 1) + "plan_preview:id=" + id;
+            case ("Company"):
+                return href.substring(0, href.indexOf("#") + 1) + "company:id=" + id;
             default:
                 return "";
         }
@@ -54,6 +56,7 @@ public class LinkUtils {
             case ("Contract"):
             case ("Project"):
             case ("Platform"):
+            case ("Company"):
             case ("DevUnit"):
             case ("EmployeeShortView"):
             case ("Plan"):
