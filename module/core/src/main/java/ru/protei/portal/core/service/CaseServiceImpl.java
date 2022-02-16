@@ -265,8 +265,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (caseObject.getManager() != null && caseObject.getManager().getId() != null) {
-            Result<Long> resultManager = addManagerHistory(token, caseObject.getId(), caseObject.getManager().getId(),
-                    caseObject.getManager() != null && caseObject.getManager().getDisplayShortName() != null ? caseObject.getManager().getDisplayShortName() : personShortViewDAO.get(caseObject.getManagerId()).getDisplayShortName());
+            Result<Long> resultManager = addManagerHistory(token, caseObject.getId(), caseObject.getManager().getId(), makeManagerName(caseObject));
             if (resultManager.isError()) {
                 log.error("Manager history for the issue {} not saved!", caseObject.getId());
             }
@@ -280,8 +279,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (caseObject.getProductId() != null) {
-            Result<Long> resultProduct = addProductHistory(token, caseObject.getId(), caseObject.getProductId(),
-                    caseObject.getProduct() != null && caseObject.getProduct().getName() != null ? caseObject.getProduct().getName() : devUnitDAO.get( caseObject.getProductId() ).getName());
+            Result<Long> resultProduct = addProductHistory(token, caseObject.getId(), caseObject.getProductId(), makeProductName(caseObject));
             if (resultProduct.isError()) {
                 log.error("Product history for the issue {} not saved!", caseObject.getId());
             }
@@ -295,7 +293,8 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (caseObject.getWorkTrigger() != null) {
-            Result<Long> resultWorkTrigger = addWorkTriggerHistory(token, caseObject.getId(), String.valueOf(caseObject.getWorkTrigger().getId()));
+            Result<Long> resultWorkTrigger = addWorkTriggerHistory(token, caseObject.getId(),
+                    (long)caseObject.getWorkTrigger().getId(), caseObject.getWorkTrigger().name());
             if (resultWorkTrigger.isError()) {
                 log.error("Work trigger history for the issue {} not saved!", caseObject.getId());
             }
@@ -318,16 +317,14 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (caseObject.getInitiatorId() != null) {
-            Result<Long> result = addInitiatorHistory(token, caseObject.getId(), caseObject.getInitiatorId(),
-                    caseObject.getInitiator() != null && caseObject.getInitiator().getDisplayShortName() != null ? caseObject.getInitiator().getDisplayShortName() : personShortViewDAO.get(caseObject.getInitiatorId()).getDisplayShortName());
+            Result<Long> result = addInitiatorHistory(token, caseObject.getId(), caseObject.getInitiatorId(), makeInitiatorName(caseObject));
             if (result.isError()) {
                 log.error("Initiator history for the issue {} not saved!", caseObject.getId());
             }
         }
 
         if (caseObject.getPlatformId() != null) {
-            Result<Long> result = addPlatformHistory(token, caseObject.getId(), caseObject.getPlatformId(),
-                    caseObject.getPlatformName() != null ? caseObject.getPlatformName() : platformDAO.get(caseObject.getPlatformId()).getName());
+            Result<Long> result = addPlatformHistory(token, caseObject.getId(), caseObject.getPlatformId(), makePlatformName(caseObject));
             if (result.isError()) {
                 log.error("Platform history for the issue {} not saved!", caseObject.getId());
             }
@@ -1609,13 +1606,14 @@ public class CaseServiceImpl implements CaseService {
     private void updateWorkTriggerHistory(AuthToken token, CaseObjectMeta caseMeta, CaseObjectMeta oldCaseMeta) {
         Result<Long> resultWorkTrigger = ok();
         if (oldCaseMeta.getWorkTrigger() == null && caseMeta.getWorkTrigger() != null) {
-            resultWorkTrigger = addWorkTriggerHistory(token, caseMeta.getId(), String.valueOf(caseMeta.getWorkTrigger().getId()));
+            resultWorkTrigger = addWorkTriggerHistory(token, caseMeta.getId(), (long)caseMeta.getWorkTrigger().getId(), caseMeta.getWorkTrigger().name());
         } else if (oldCaseMeta.getWorkTrigger() != null && caseMeta.getWorkTrigger() != null) {
             resultWorkTrigger = changeWorkTriggerHistory(token, caseMeta.getId(),
-                    String.valueOf(oldCaseMeta.getWorkTrigger().getId()), String.valueOf(caseMeta.getWorkTrigger().getId()));
+                    (long)oldCaseMeta.getWorkTrigger().getId(), oldCaseMeta.getWorkTrigger().name(),
+                    (long)caseMeta.getWorkTrigger().getId(), caseMeta.getWorkTrigger().name() );
         } else if (oldCaseMeta.getWorkTrigger() != null && caseMeta.getWorkTrigger() == null) {
             resultWorkTrigger = removeWorkTriggerHistory(token, caseMeta.getId(),
-                    String.valueOf(oldCaseMeta.getWorkTrigger().getId()));
+                    (long)oldCaseMeta.getWorkTrigger().getId(), oldCaseMeta.getWorkTrigger().name());
         }
 
         if (resultWorkTrigger.isError()) {
@@ -1736,16 +1734,16 @@ public class CaseServiceImpl implements CaseService {
         return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_PAUSE_DATE, null, oldPauseDate, null, null);
     }
 
-    private Result<Long> addWorkTriggerHistory(AuthToken authToken, Long caseId, String workTrigger) {
-        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_WORK_TRIGGER,null, null, null, workTrigger);
+    private Result<Long> addWorkTriggerHistory(AuthToken authToken, Long caseId, Long workTriggerId, String workTriggerName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_WORK_TRIGGER,null, null, workTriggerId, workTriggerName);
     }
 
-    private Result<Long> changeWorkTriggerHistory(AuthToken authToken, Long caseId, String oldWorkTrigger, String newWorkTrigger) {
-        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_WORK_TRIGGER, null, oldWorkTrigger, null, newWorkTrigger);
+    private Result<Long> changeWorkTriggerHistory(AuthToken authToken, Long caseId, Long oldWorkTriggerId, String oldWorkTriggerName, Long newWorkTriggerId, String newWorkTriggerName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_WORK_TRIGGER, oldWorkTriggerId, oldWorkTriggerName, newWorkTriggerId, newWorkTriggerName);
     }
 
-    private Result<Long> removeWorkTriggerHistory(AuthToken authToken, Long caseId, String oldWorkTrigger) {
-        return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_WORK_TRIGGER, null, oldWorkTrigger, null, null);
+    private Result<Long> removeWorkTriggerHistory(AuthToken authToken, Long caseId, Long oldWorkTriggerId, String oldWorkTriggerName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_WORK_TRIGGER, oldWorkTriggerId, oldWorkTriggerName, null, null);
     }
 
     private Result<Long> addDeadlineHistory(AuthToken authToken, Long caseId, String deadline) {
@@ -1832,31 +1830,6 @@ public class CaseServiceImpl implements CaseService {
         return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_MANAGER, oldManagerId, oldManagerName, null, null);
     }
 
-    private String makeManagerName(CaseObjectMeta meta) {
-        return (meta.getManager() != null ? meta.getManager() : personShortViewDAO.get(meta.getManagerId())).getDisplayShortName();
-    }
-
-    private String makeInitiatorName(CaseObjectMeta meta) {
-        return meta.getInitiator() != null && StringUtils.isNotEmpty(meta.getInitiator().getDisplayShortName())
-                ? meta.getInitiator().getDisplayShortName() : personShortViewDAO.get(meta.getInitiatorId()).getDisplayShortName();
-    }
-
-    private String makeProductName(CaseObjectMeta meta) {
-        return (meta.getProduct() != null ? meta.getProduct() : devUnitDAO.get(meta.getProductId())).getName();
-    }
-
-    private String makeManagerCompanyName(String companyName, Long companyId) {
-        return companyName != null ? companyName : companyDAO.get(companyId).getCname();
-    }
-
-    private String makeInitiatorCompanyName(Company company, Long companyId) {
-        return company != null ? company.getCname() : companyDAO.get(companyId).getCname();
-    }
-
-    private String makePlatformName(CaseObjectMeta meta) {
-        return meta.getPlatformName() != null ? meta.getPlatformName() : platformDAO.get(meta.getPlatformId()).getName();
-    }
-
     private Result<Long> addImportanceHistory(AuthToken authToken, Long caseId, Long importanceId, String importanceName) {
         return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_IMPORTANCE, null, null, importanceId, importanceName);
     }
@@ -1865,4 +1838,73 @@ public class CaseServiceImpl implements CaseService {
         return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_IMPORTANCE, oldImportanceId, oldImportanceName, newImportanceId, newImportanceName);
     }
 
+    private String makeManagerName(CaseObjectMeta meta) {
+        if (meta.getManager() == null){
+            return personShortViewDAO.get(meta.getManagerId()).getDisplayShortName();
+        }
+        return meta.getManager().getDisplayShortName();
+    }
+
+    private String makeManagerName(CaseObject caseObject) {
+        if (caseObject.getManager().getDisplayShortName() == null){
+            return personShortViewDAO.get(caseObject.getManagerId()).getDisplayShortName();
+        }
+        return caseObject.getManager().getDisplayShortName();
+    }
+
+    private String makeInitiatorName(CaseObjectMeta meta) {
+        if (meta.getInitiator() == null || meta.getInitiator().getDisplayShortName() == null){
+            return personShortViewDAO.get(meta.getInitiatorId()).getDisplayShortName();
+        }
+        return meta.getInitiator().getDisplayShortName();
+    }
+
+    private String makeInitiatorName(CaseObject caseObject) {
+        if (caseObject.getInitiator() == null || caseObject.getInitiator().getDisplayShortName() == null){
+            return personShortViewDAO.get(caseObject.getInitiatorId()).getDisplayShortName();
+        }
+        return caseObject.getInitiator().getDisplayShortName();
+    }
+
+    private String makeProductName(CaseObjectMeta meta) {
+        if (meta.getProduct() == null){
+            return devUnitDAO.get(meta.getProductId()).getName();
+        }
+        return meta.getProduct().getName();
+    }
+
+    private String makeProductName(CaseObject caseObject) {
+        if (caseObject.getProduct() == null || caseObject.getProduct().getName() == null){
+            return devUnitDAO.get(caseObject.getProductId()).getName();
+        }
+        return caseObject.getProduct().getName();
+    }
+
+    private String makeManagerCompanyName(String companyName, Long companyId) {
+        if (companyName == null){
+            return companyDAO.get(companyId).getCname();
+        }
+        return companyName;
+    }
+
+    private String makeInitiatorCompanyName(Company company, Long companyId) {
+        if (company == null) {
+            return companyDAO.get(companyId).getCname();
+        }
+        return company.getCname();
+    }
+
+    private String makePlatformName(CaseObjectMeta meta) {
+        if (meta.getPlatformName() == null) {
+            return platformDAO.get(meta.getPlatformId()).getName();
+        }
+        return meta.getPlatformName();
+    }
+
+    private String makePlatformName(CaseObject caseObject) {
+        if (caseObject.getPlatformName() == null) {
+            return platformDAO.get(caseObject.getPlatformId()).getName();
+        }
+        return caseObject.getPlatformName();
+    }
 }

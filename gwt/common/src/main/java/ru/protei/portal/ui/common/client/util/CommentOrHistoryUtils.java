@@ -20,8 +20,8 @@ import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItem;
 import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItemsContainer;
 import ru.protei.portal.ui.common.client.view.casehistory.item.casestate.CaseHistoryStateItemView;
 import ru.protei.portal.ui.common.client.view.casehistory.item.importance.CaseHistoryImportanceItemView;
-import ru.protei.portal.ui.common.client.view.casehistory.item.simple.CaseHistorySimpleItemView;
 import ru.protei.portal.ui.common.client.view.casehistory.item.link.CaseHistoryLinkItemView;
+import ru.protei.portal.ui.common.client.view.casehistory.item.simple.CaseHistorySimpleItemView;
 import ru.protei.portal.ui.common.client.view.casehistory.item.tag.CaseHistoryTagItemView;
 
 import java.util.*;
@@ -225,7 +225,7 @@ public class CommentOrHistoryUtils {
 
         if (En_HistoryType.CASE_WORK_TRIGGER.equals(historyType)) {
             CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
-            caseHistorySimpleItemView.setName(workTriggerLang.getName(makeWorkTrigger(value)));
+            caseHistorySimpleItemView.setName(workTriggerLang.getName(En_WorkTrigger.valueOf(value)));
 
             return caseHistorySimpleItemView;
         }
@@ -305,15 +305,6 @@ public class CommentOrHistoryUtils {
         }
 
         return null;
-    }
-
-    private static En_WorkTrigger makeWorkTrigger(String value) {
-        Integer workTriggerValue = NumberUtils.parseInteger(value);
-        if (workTriggerValue == null){
-            log.warning("Parse work trigger error: value = " + value);
-            return null;
-        }
-        return En_WorkTrigger.findById(workTriggerValue);
     }
 
     private static String makeDateString(String value, En_HistoryType historyType) {
