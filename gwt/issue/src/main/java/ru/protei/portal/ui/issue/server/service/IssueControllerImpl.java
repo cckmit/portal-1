@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_IssueValidationResult;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -86,7 +87,11 @@ public class IssueControllerImpl implements IssueController {
 
         if (response.isError()) {
             log.info("createIssue(): status={}", response.getStatus());
-            throw new RequestFailedException(response.getStatus());
+            if (response.getStatus() == En_ResultStatus.VALIDATION_ERROR) {
+                throw new RequestFailedException(En_IssueValidationResult.valueOf(response.getMessage()));
+            } else {
+                throw new RequestFailedException(response.getStatus());
+            }
         }
 
         if (response.getMessage() != null) {
@@ -114,7 +119,14 @@ public class IssueControllerImpl implements IssueController {
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
         Result<CaseObjectMeta> result = caseService.updateCaseObjectMeta(token, caseMeta);
         log.info("updateIssueMeta(): caseId={} | status={}", caseMeta.getId(), result.getStatus());
-        return checkResultAndGetData(result);
+        if (result.isError()) {
+            if (result.getStatus() == En_ResultStatus.VALIDATION_ERROR) {
+                throw new RequestFailedException(En_IssueValidationResult.valueOf(result.getMessage()));
+            } else {
+                throw new RequestFailedException(result.getStatus());
+            }
+        }
+        return result.getData();
     }
 
     @Override
