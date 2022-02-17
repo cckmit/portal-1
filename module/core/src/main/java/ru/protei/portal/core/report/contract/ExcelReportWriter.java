@@ -29,6 +29,8 @@ public class ExcelReportWriter implements
         ReportWriter<Contract>,
         JXLSHelper.ReportBook.Writer<Contract> {
 
+    static final private int COST_CELL_NUMBER = 3;
+
     private final JXLSHelper.ReportBook<Contract> book;
     private final Lang.LocalizedLang lang;
     private final EnumLangUtil enumLangUtil;
@@ -86,10 +88,14 @@ public class ExcelReportWriter implements
 
     @Override
     public CellStyle getCellStyle(Workbook workbook, int columnIndex) {
-        return book.makeCellStyle(0, cs -> {
+        return book.makeCellStyle(columnIndex, cs -> {
             cs.setFont(book.getDefaultFont());
             cs.setVerticalAlignment(VerticalAlignment.CENTER);
             cs.setWrapText(true);
+            if (columnIndex == COST_CELL_NUMBER) {
+                cs.setQuotePrefixed(false);
+                cs.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
+            }
         });
     }
 
@@ -99,7 +105,7 @@ public class ExcelReportWriter implements
                 "cr_number",
                 "cr_contractor",
                 "cr_description",
-                "cr_cost",
+                "cr_cost",      // COST_CELL_NUMBER
                 "cr_currency",
                 "cr_delivery_and_payments",
                 "cr_direction",
@@ -115,7 +121,7 @@ public class ExcelReportWriter implements
         values.add(makeContractNumber(contract));
         values.add(makeContractorName(contract));
         values.add(emptyIfNull(contract.getDescription()));
-        values.add(makeCost(contract));
+        values.add(makeCost(contract));     // COST_CELL_NUMBER
         values.add(makeCurrency(contract));
         values.add(makeContractDates(contract));
         values.add(joining(contract.getProductDirections(), ", ", DevUnit::getName));
@@ -144,10 +150,10 @@ public class ExcelReportWriter implements
         return emptyIfNull(contract.getContractor().getName());
     }
 
-    private String makeCost(Contract contract) {
+    private Double makeCost(Contract contract) {
         return Optional.ofNullable(contract.getCost())
-                .map(money -> decimalFormat.format(money.getFull() / 100.0))
-                .orElse("");
+                .map(money -> money.getFull() / 100.0)
+                .orElse(0.0);
     }
 
     private String makeCurrency(Contract contract) {
