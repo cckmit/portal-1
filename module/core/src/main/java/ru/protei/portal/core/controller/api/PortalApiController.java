@@ -737,6 +737,34 @@ public class PortalApiController {
                 .ifOk(result -> log.info("createProjectByApi(): OK"));
     }
 
+    @PostMapping(value = "/case_time_elapsed_report")
+    public Result<List<Object>> getCaseTimeElapsedReport(
+            @RequestBody CaseTimeElapsedApiQuery query,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+
+        log.info("API | getCaseTimeElapsedReport(): query={}", query);
+
+        try {
+            Result<AuthToken> authTokenAPIResult = authenticate(request, response, authService, sidGen, log);
+
+            if (authTokenAPIResult.isError()) {
+                return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
+            }
+
+            AuthToken authToken = authTokenAPIResult.getData();
+
+            return ok(new ArrayList<>());
+
+        } catch (IllegalArgumentException ex) {
+            log.error(ex.getMessage());
+            return error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
+        }
+    }
+
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, apiQuery.getSearchString(), apiQuery.getSortField(), apiQuery.getSortDir());
         query.setLimit(apiQuery.getLimit());
