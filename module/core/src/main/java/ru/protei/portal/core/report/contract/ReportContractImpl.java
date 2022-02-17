@@ -17,7 +17,6 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
-import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Predicate;
@@ -37,7 +36,7 @@ public class ReportContractImpl implements ReportContract {
         int count = contractDAO.countByQuery(query);
         if (count < 1) {
             log.info("writeReport : reportId={} has no corresponding contracts", report.getId());
-            ReportWriter<Contract> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), dateFormat, NumberFormat.getNumberInstance(locale));
+            ReportWriter<Contract> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), dateFormat);
             writer.createSheet();
             writer.collect(buffer);
             return true;
@@ -45,7 +44,7 @@ public class ReportContractImpl implements ReportContract {
 
         log.info("writeReport : reportId={} has {} contracts to process", report.getId(), count);
 
-        try (ReportWriter<Contract> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), dateFormat, NumberFormat.getNumberInstance(locale))) {
+        try (ReportWriter<Contract> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), dateFormat)) {
             int sheetNumber = writer.createSheet();
             if (writeReport(writer, sheetNumber, report.getId(), query, count, isCancel)) {
                 writer.collect(buffer);

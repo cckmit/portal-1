@@ -13,8 +13,6 @@ import ru.protei.portal.core.utils.JXLSHelper;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,14 +33,12 @@ public class ExcelReportWriter implements
     private final Lang.LocalizedLang lang;
     private final EnumLangUtil enumLangUtil;
     private final DateFormat dateFormat;
-    private final DecimalFormat decimalFormat;
 
-    public ExcelReportWriter(Lang.LocalizedLang localizedLang, EnumLangUtil enumLangUtil, DateFormat dateFormat, NumberFormat numberFormat) {
+    public ExcelReportWriter(Lang.LocalizedLang localizedLang, EnumLangUtil enumLangUtil, DateFormat dateFormat) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.enumLangUtil = enumLangUtil;
         this.dateFormat = dateFormat;
-        this.decimalFormat = (DecimalFormat) numberFormat;
     }
 
     @Override
