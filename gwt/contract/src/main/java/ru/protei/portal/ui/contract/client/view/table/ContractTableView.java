@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
+import ru.protei.portal.ui.common.client.columns.CopyClickColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.MoneyRenderer;
 import ru.protei.portal.ui.common.client.lang.En_ContractKindLang;
@@ -31,7 +32,6 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 import static ru.protei.portal.core.model.util.ContractSupportService.getContractKind;
 import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
-import static ru.protei.portal.core.model.helper.StringUtils.isNotBlank;
 
 public class ContractTableView extends Composite implements AbstractContractTableView {
 
@@ -124,6 +124,13 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         table.addColumn(columnCost.header, columnCost.values);
         columnCost.setHandler(activity);
         columnCost.setColumnProvider(columnProvider);
+
+        copyClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTRACT_EDIT));
+        table.addColumn(copyClickColumn.header, copyClickColumn.values);
+        copyClickColumn.setActionHandler(activity);
+        copyClickColumn.setCopyHandler(activity);
+        copyClickColumn.setHandler(activity);
+        copyClickColumn.setColumnProvider(columnProvider);
 
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTRACT_EDIT));
         table.addColumn(editClickColumn.header, editClickColumn.values);
@@ -298,6 +305,8 @@ public class ContractTableView extends Composite implements AbstractContractTabl
 
     @Inject
     private EditClickColumn<Contract> editClickColumn;
+    @Inject
+    private CopyClickColumn<Contract> copyClickColumn;
     @Inject
     private En_ContractStateLang contractStateLang;
     @Inject

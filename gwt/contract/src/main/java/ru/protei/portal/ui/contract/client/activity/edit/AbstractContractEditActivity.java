@@ -29,6 +29,4 @@ public interface AbstractContractEditActivity{
     void onAddTagsClicked(IsWidget target);
 
     void onAddDateClicked();
-
-    void onCopyClicked();
 }
