@@ -30,8 +30,7 @@ public class ReportContractImpl implements ReportContract {
                                DateFormat dateFormat,
                                Predicate<Long> isCancel) throws IOException {
 
-        Locale locale = Locale.forLanguageTag(report.getLocale());
-        Lang.LocalizedLang localizedLang = lang.getFor(locale);
+        Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
 
         int count = contractDAO.countByQuery(query);
         if (count < 1) {

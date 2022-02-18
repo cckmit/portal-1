@@ -101,7 +101,7 @@ public class ExcelReportWriter implements
                 "cr_number",
                 "cr_contractor",
                 "cr_description",
-                "cr_cost",      // COST_CELL_NUMBER
+                "cr_cost",
                 "cr_currency",
                 "cr_delivery_and_payments",
                 "cr_direction",
@@ -117,7 +117,7 @@ public class ExcelReportWriter implements
         values.add(makeContractNumber(contract));
         values.add(makeContractorName(contract));
         values.add(emptyIfNull(contract.getDescription()));
-        values.add(makeCost(contract));     // COST_CELL_NUMBER
+        values.add(makeCost(contract));     // в getCellStyle выставляется отдельный стиль для ячейки COST_CELL_NUMBER
         values.add(makeCurrency(contract));
         values.add(makeContractDates(contract));
         values.add(joining(contract.getProductDirections(), ", ", DevUnit::getName));
