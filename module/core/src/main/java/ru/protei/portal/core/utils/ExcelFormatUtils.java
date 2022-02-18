@@ -13,6 +13,7 @@ public class ExcelFormatUtils {
         String FULL_DATE_TIME = "DD.MM.YYYY HH:MM";
         String NUMBER = "0";
         String REVERSED_DASHED_FULL_DATE = "YYYY-MM-DD";
+        String CURRENCY_COST = "#,##0.00";
         
         int DEFAULT_WIDTH = 5800;
     }
