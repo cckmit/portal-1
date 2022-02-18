@@ -1,6 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:issuefilterselector='urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector'>
+             xmlns:issuefilterselector='urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector'
+             xmlns:projectfilterselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.project.filter'>
+
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -14,8 +16,8 @@
             </div>
             <div class="row">
                 <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.dashboardTableFilter}"/></label>
-                    <issuefilterselector:IssueFilterSelector ui:field="filter" defaultValue="{lang.issueFilterNotDefined}"/>
+                    <label><ui:text from="{lang.dashboardTableIssueFilter}"/></label>
+                    <issuefilterselector:IssueFilterSelector ui:field="issueFilter" defaultValue="{lang.issueFilterNotDefined}"/>
                 </div>
             </div>
             <g:HTMLPanel styleName="row" ui:field="filterCreateContainer">
@@ -31,6 +33,12 @@
                     </div>
                 </div>
             </g:HTMLPanel>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.dashboardTableProjectFilter}"/></label>
+                    <projectfilterselector:ProjectFilterSelector ui:field="projectFilter" defaultValue="{lang.projectFilterIsNotDefined}"/>
+                </div>
+            </div>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

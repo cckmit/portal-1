@@ -9,11 +9,13 @@ public interface AbstractDashboardTableEditView extends IsWidget {
 
     void setActivity(AbstractDashboardTableEditActivity activity);
 
-    void updateFilterSelector();
+    void updateIssueFilterSelector();
 
     HasValue<String> name();
 
-    HasValue<FilterShortView> filter();
+    HasValue<FilterShortView> issueFilter();
+
+    HasValue<FilterShortView> projectFilter();
 
     HasVisibility filterCreateContainer();
 

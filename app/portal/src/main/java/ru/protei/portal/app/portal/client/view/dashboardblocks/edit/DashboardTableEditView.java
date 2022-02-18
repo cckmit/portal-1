@@ -13,6 +13,7 @@ import ru.protei.portal.app.portal.client.activity.dashboardblocks.edit.Abstract
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.view.FilterShortView;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
+import ru.protei.portal.ui.common.client.widget.selector.project.filter.ProjectFilterSelector;
 
 public class DashboardTableEditView extends Composite implements AbstractDashboardTableEditView {
 
@@ -27,8 +28,8 @@ public class DashboardTableEditView extends Composite implements AbstractDashboa
     }
 
     @Override
-    public void updateFilterSelector() {
-        filter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
+    public void updateIssueFilterSelector() {
+        issueFilter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
     }
 
     @Override
@@ -37,8 +38,13 @@ public class DashboardTableEditView extends Composite implements AbstractDashboa
     }
 
     @Override
-    public HasValue<FilterShortView> filter() {
-        return filter;
+    public HasValue<FilterShortView> issueFilter() {
+        return issueFilter;
+    }
+
+    @Override
+    public HasValue<FilterShortView> projectFilter() {
+        return projectFilter;
     }
 
     @Override
@@ -56,8 +62,15 @@ public class DashboardTableEditView extends Composite implements AbstractDashboa
         return createFilterActiveIssues;
     }
 
-    @UiHandler("filter")
-    public void onFilterChanged(ValueChangeEvent<FilterShortView> event) {
+    @UiHandler("issueFilter")
+    public void onIssueFilterChanged(ValueChangeEvent<FilterShortView> event) {
+        if (activity != null) {
+            activity.onFilterChanged(event.getValue());
+        }
+    }
+
+    @UiHandler("projectFilter")
+    public void onProjectFilterChanged(ValueChangeEvent<FilterShortView> event) {
         if (activity != null) {
             activity.onFilterChanged(event.getValue());
         }
@@ -81,7 +94,10 @@ public class DashboardTableEditView extends Composite implements AbstractDashboa
     TextBox name;
     @Inject
     @UiField(provided = true)
-    IssueFilterSelector filter;
+    IssueFilterSelector issueFilter;
+    @Inject
+    @UiField(provided = true)
+    ProjectFilterSelector projectFilter;
     @UiField
     HTMLPanel filterCreateContainer;
     @UiField

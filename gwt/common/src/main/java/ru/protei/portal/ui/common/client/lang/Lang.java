@@ -840,6 +840,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dashboardTableFilter();
 
+    String dashboardTableIssueFilter();
+
+    String dashboardTableProjectFilter();
+
     String dashboardTableCreate();
 
     String dashboardTableEdit();
@@ -993,6 +997,8 @@ public interface Lang extends Messages, ContactItemLang {
     String projectTeamRole();
 
     String projectCommentCreationDate();
+
+    String projectFilterIsNotDefined();
 
     String inputProjectName();
 
