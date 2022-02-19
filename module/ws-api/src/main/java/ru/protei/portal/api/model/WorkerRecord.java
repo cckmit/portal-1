@@ -56,7 +56,7 @@ public class WorkerRecord {
     private String inn;
 
     private String newPositionName;
-    private Long newPositionDepartmentId;
+    private String newPositionDepartmentId;
     private Date newPositionTransferDate;
 
     public WorkerRecord() {}
@@ -340,12 +340,12 @@ public class WorkerRecord {
         this.newPositionName = newPositionName;
     }
 
-    public Long getNewPositionDepartmentId() {
+    public String getNewPositionDepartmentId() {
         return newPositionDepartmentId;
     }
 
     @XmlElement(name = "new-position-department-id")
-    public void setNewPositionDepartmentId(Long newPositionDepartmentId) {
+    public void setNewPositionDepartmentId(String newPositionDepartmentId) {
         this.newPositionDepartmentId = newPositionDepartmentId;
     }
 
@@ -424,9 +424,8 @@ public class WorkerRecord {
                 ", active=" + active +
                 ", positionName='" + positionName + '\'' +
                 ", inn='" + inn + '\'' +
-                ", newPositionDepartment='" + newPositionDepartmentId + '\'' +
                 ", newPositionName='" + newPositionName + '\'' +
-                ", newPositionDepartmentId=" + newPositionDepartmentId +
+                ", newPositionDepartmentId='" + newPositionDepartmentId + '\'' +
                 ", newPositionTransferDate=" + newPositionTransferDate +
                 '}';
     }

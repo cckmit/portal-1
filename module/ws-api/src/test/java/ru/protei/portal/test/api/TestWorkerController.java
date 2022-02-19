@@ -867,7 +867,7 @@ public class TestWorkerController {
         position.setWorkerId(externalId);
         position.setCompanyCode("protei");
         position.setNewPositionName("New worker position");
-        position.setNewPositionDepartmentId(companyDepartmentId);
+        position.setNewPositionDepartmentId(String.valueOf(companyDepartmentId));
         position.setNewPositionTransferDate(new Date());
         logger.debug("worker = " + position);
         return position;
