@@ -375,6 +375,9 @@ public abstract class ReportEditActivity implements Activity,
             }
             case YT_WORK:
                 YoutrackWorkQuery query = getYoutracktWorkQuery();
+                if (!validateYoutrackWorkQuery(query)) {
+                    return null;
+                }
                 return new ReportYoutrackWorkQuery(report, query);
         }
         throw new IllegalStateException("No switch branch matched for En_ReportType");
@@ -431,6 +434,7 @@ public abstract class ReportEditActivity implements Activity,
             case YT_WORK:
                 youtrackWorkFilterView.resetFilter(true);
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
+                validateDateRanges(reportType);
                 view.getFilterContainer().clear();
                 view.getFilterContainer().add(youtrackWorkFilterView.asWidget());
                 view.scheduledTypeContainerVisibility().setVisible(false);
@@ -583,6 +587,25 @@ public abstract class ReportEditActivity implements Activity,
         return true;
     }
 
+    private boolean validateYoutrackWorkQuery(YoutrackWorkQuery query) {
+        if (query == null) {
+            return false;
+        }
+
+        if (!query.isParamsPresent()) {
+            fireEvent(new NotifyEvents.Show(lang.reportCaseObjectIsAnySelectedParamNotPresentError(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        boolean dateRangeValid = validateYoutrackCommentCreationRange(query.getDateRange(), true);
+        if (!dateRangeValid) {
+            fireEvent(new NotifyEvents.Show(lang.reportNotValidPeriod(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        return true;
+    }
+
 
     private boolean isValidMaxPeriod(DateRange dateRange) {
         if (dateRange != null && dateRange.getIntervalType() == En_DateIntervalType.FIXED &&
@@ -632,6 +655,14 @@ public abstract class ReportEditActivity implements Activity,
         return typeValid && rangeValid;
     }
 
+    private boolean validateYoutrackCommentCreationRange(DateRange dateRange, boolean isMandatory) {
+        boolean typeValid = validateTypeRange(dateRange, isMandatory);
+        boolean rangeValid = typeValid ? validateDateRange(dateRange) : true;
+
+        validateYoutrackWorkRange(typeValid, rangeValid);
+        return typeValid && rangeValid;
+    }
+
     private void validateCreatedRange(boolean isTypeValid, boolean isRangeValid) {
         issueFilterWidget.getIssueFilterParams().setCreatedRangeValid(isTypeValid, isRangeValid);
     }
@@ -642,6 +673,10 @@ public abstract class ReportEditActivity implements Activity,
 
     private void validateProjectCommentCreation(boolean isTypeValid, boolean isRangeValid) {
         projectFilterWidget.getFilterParamView().setCommentCreationRangeValid(isTypeValid, isRangeValid);
+    }
+
+    private void validateYoutrackWorkRange(boolean isTypeValid, boolean isRangeValid) {
+        youtrackWorkFilterView.setDateValid(isTypeValid, isRangeValid);
     }
 
     private void applyIssueFilterVisibilityByPrivileges() {

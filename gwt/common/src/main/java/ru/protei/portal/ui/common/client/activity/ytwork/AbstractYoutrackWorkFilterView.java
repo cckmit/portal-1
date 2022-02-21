@@ -13,4 +13,6 @@ public interface AbstractYoutrackWorkFilterView extends IsWidget {
     void clearFooterStyle();
 
     HasValue<DateIntervalWithType> date();
+
+    void setDateValid(boolean isTypeValid, boolean isRangeValid);
 }
