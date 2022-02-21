@@ -86,7 +86,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         // at 04:04:00 am every day
         scheduler.schedule(this::updateFiredByDate, new CronTrigger( "0 04 4 * * ?"));
         // at 04:00:00 am every day
-        scheduler.schedule(this::updatePositionByDate, new CronTrigger( "0 04 0 * * ?"));
+        scheduler.schedule(this::updatePositionByDate, new CronTrigger( "0 0 4 * * ?"));
 
         scheduleNotificationsAboutPauseTime();
     }

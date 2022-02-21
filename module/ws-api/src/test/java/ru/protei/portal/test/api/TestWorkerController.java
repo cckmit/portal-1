@@ -467,7 +467,7 @@ public class TestWorkerController {
     @Test
     public void testUpdateWorkerPosition() throws Exception {
         Company company = companyDAO.getCompanyByName("Протей");
-        CompanyDepartment companyDepartment = createCompanyDepartment(company.getId(), "Company Department");
+        CompanyDepartment companyDepartment = createCompanyDepartment(company.getId(), "Company Department", "000000001");
         Long companyDepartmentId = companyDepartmentDAO.persist(companyDepartment);
         Assert.assertNotNull(companyDepartmentId);
 
@@ -479,18 +479,19 @@ public class TestWorkerController {
         Long workerId = workerEntryDAO.persist(worker);
         Assert.assertNotNull(workerId);
 
-        CompanyDepartment newCompanyDepartment = createCompanyDepartment(company.getId(), "New Company Department");
+        String departmentExternalId = "000000002";
+        CompanyDepartment newCompanyDepartment = createCompanyDepartment(company.getId(), "New Company Department", departmentExternalId);
         Long newCompanyDepartmentId = companyDepartmentDAO.persist(newCompanyDepartment);
-        Assert.assertNotNull(companyDepartmentId);
+        Assert.assertNotNull(newCompanyDepartmentId);
 
-        WorkerRecord newWorkerPosition = createNewWorkerPosition(worker.getExternalId(), newCompanyDepartmentId);
+        WorkerRecord newWorkerPosition = createNewWorkerPosition(worker.getExternalId(), departmentExternalId);
         Result<Long> updatedWorkerResult = updateWorkerPosition(newWorkerPosition);
         Assert.assertTrue(updatedWorkerResult.isOk());
 
         WorkerEntry updatedWorker = workerEntryDAO.get(updatedWorkerResult.getData());
         Assert.assertNotNull(updatedWorker);
         Assert.assertEquals(newWorkerPosition.getNewPositionName(), updatedWorker.getPositionName());
-        Assert.assertEquals(newWorkerPosition.getNewPositionDepartmentId(), updatedWorker.getDepartmentId());
+        Assert.assertEquals(newCompanyDepartmentId, updatedWorker.getDepartmentId());
     }
 
     private void createPhotosById(Long id) throws Exception{
@@ -862,22 +863,23 @@ public class TestWorkerController {
         return workerPosition;
     }
 
-    private WorkerRecord createNewWorkerPosition(String externalId, Long companyDepartmentId) {
+    private WorkerRecord createNewWorkerPosition(String externalId, String departmentExternalId) {
         WorkerRecord position = new WorkerRecord();
         position.setWorkerId(externalId);
         position.setCompanyCode("protei");
         position.setNewPositionName("New worker position");
-        position.setNewPositionDepartmentId(companyDepartmentId);
+        position.setNewPositionDepartmentId(departmentExternalId);
         position.setNewPositionTransferDate(new Date());
         logger.debug("worker = " + position);
         return position;
     }
 
-    private CompanyDepartment createCompanyDepartment(Long companyId, String name) {
+    private CompanyDepartment createCompanyDepartment(Long companyId, String name, String extId) {
         CompanyDepartment companyDepartment = new CompanyDepartment();
         companyDepartment.setCreated(new Date());
         companyDepartment.setName(name);
         companyDepartment.setCompanyId(companyId);
+        companyDepartment.setExternalId(extId);
         logger.debug("companyDepartment = " + companyDepartment.toString());
         return companyDepartment;
     }
