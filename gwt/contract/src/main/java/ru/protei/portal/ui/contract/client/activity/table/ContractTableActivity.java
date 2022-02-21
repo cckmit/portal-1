@@ -149,6 +149,11 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         view.scrollTo(page);
     }
 
+    @Override
+    public void onCopyClicked(Contract value) {
+        fireEvent(new ContractEvents.Edit(value.getId(), true));
+    }
+
     private void loadTable() {
         animation.closeDetails();
         view.clearRecords();

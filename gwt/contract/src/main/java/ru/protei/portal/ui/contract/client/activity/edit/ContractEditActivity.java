@@ -68,11 +68,11 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         initDetails.parent.add(view.asWidget());
 
         if (event.id == null) {
-            fillView(new Contract());
+            fillView(new Contract(), false);
             return;
         }
 
-        requestContract(event.id, this::fillView);
+        requestContract(event.id, requestedContract -> fillView(requestedContract, event.isCopy));
     }
 
     @Event
@@ -180,33 +180,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         fireEvent(new ContractDateEvents.ShowEdit());
     }
 
-    @Override
-    public void onCopyClicked() {
-        view.tagsButtonVisibility().setVisible(false);
-        view.copyButtonVisibility().setVisible(false);
-
-        contract.setId(null);
-
-        view.contractSpecifications().setValue(
-                view.contractSpecifications().getValue().stream()
-                        .peek(contractSpecification -> {
-                            contractSpecification.setId(null);
-                            contractSpecification.setContractId(null);
-                        })
-                        .collect(Collectors.toList())
-        );
-
-        contract.setContractDates(
-                stream(contract.getContractDates()).peek(contractDate -> {
-                    contractDate.setId(null);
-                    contractDate.setContractId(null);
-                }).collect(Collectors.toList())
-        );
-        fireEvent(new ContractDateEvents.ShowTable(view.getContractDateTableContainer(), contract.getContractDates()));
-
-        fireEvent(new NotifyEvents.Show(lang.contractCopySuccess(), NotifyEvents.NotifyType.INFO));
-    }
-
     private void requestContract(Long contractId, Consumer<Contract> consumer) {
         contractService.getContract(contractId, new FluentCallback<Contract>().withSuccess(consumer));
     }
@@ -234,9 +207,9 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.setProjectManager("");
     }
 
-    private void fillView(Contract value) {
+    private void fillView(Contract value, boolean isCopy) {
         this.contract = value;
-        boolean isNew = isNew(contract);
+        boolean isNew = isCopy || isNew(contract) ;
 
         view.type().setValue(contract.getContractType());
         if ( contract.getState() == null ) {
@@ -253,7 +226,19 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.dateSigning().setValue(contract.getDateSigning());
         view.dateValidDate().setValue(contract.getDateValid());
         view.dateValidDays().setValue(getDaysBetween(contract.getDateSigning(), contract.getDateValid()));
+
+        if (isNew && isNotEmpty(contract.getContractSpecifications())) {
+            contract.setContractSpecifications(
+                    contract.getContractSpecifications().stream()
+                            .peek(contractSpecification -> {
+                                contractSpecification.setId(null);
+                                contractSpecification.setContractId(null);
+                            })
+                            .collect(Collectors.toList())
+            );
+        }
         view.contractSpecifications().setValue(contract.getContractSpecifications());
+
         view.contractParent().setValue(createContractInfoOrNull(contract.getParentContractId(), contract.getParentContractNumber()));
         view.organization().setValue(createOptionOrNull(contract.getOrganizationId(), contract.getOrganizationName()));
         view.setOrganization(contract.getOrganizationName());
@@ -274,7 +259,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
         view.tagsVisibility().setVisible(!isNew);
         view.tagsButtonVisibility().setVisible(!isNew);
-        view.copyButtonVisibility().setVisible(!isNew);
         if (isNew) {
             view.expenditureContractsVisibility().setVisible(false);
         } else {
@@ -283,8 +267,19 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         }
         if (contract.getContractDates() == null) {
             contract.setContractDates(new ArrayList<>());
+        } else if (isNew) {
+            contract.setContractDates(
+                    stream(contract.getContractDates()).peek(contractDate -> {
+                        contractDate.setId(null);
+                        contractDate.setContractId(null);
+                    }).collect(Collectors.toList())
+            );
         }
         fireEvent(new ContractDateEvents.ShowTable(view.getContractDateTableContainer(), contract.getContractDates()));
+
+        if (isCopy) {
+            contract.setId(null);
+        }
     }
 
     private Contract fillDto() {

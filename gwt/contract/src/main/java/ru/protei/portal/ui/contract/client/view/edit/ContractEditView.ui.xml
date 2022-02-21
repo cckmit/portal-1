@@ -28,10 +28,6 @@
                                       title="{lang.tagAdd}">
                                 <i class="fas fa-tag"/>
                             </g:Button>
-                            <g:Button ui:field="copyButton" styleName="btn btn-default btn-xs btn-cons-toolbar"
-                                      title="{lang.buttonCopy}">
-                                <i class="fas fa-copy"/>
-                            </g:Button>
                         </div>
                     </div>
                 </div>
