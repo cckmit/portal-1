@@ -232,7 +232,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     private void fillView(Contract value, boolean isCopy) {
         this.contract = value;
-        boolean isNew = isNew(contract);
+        boolean isNew = isCopy || isNew(contract) ;
 
         view.type().setValue(contract.getContractType());
         if ( contract.getState() == null ) {
@@ -249,7 +249,19 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.dateSigning().setValue(contract.getDateSigning());
         view.dateValidDate().setValue(contract.getDateValid());
         view.dateValidDays().setValue(getDaysBetween(contract.getDateSigning(), contract.getDateValid()));
+
+        if (isNew && isNotEmpty(contract.getContractSpecifications())) {
+            contract.setContractSpecifications(
+                    contract.getContractSpecifications().stream()
+                            .peek(contractSpecification -> {
+                                contractSpecification.setId(null);
+                                contractSpecification.setContractId(null);
+                            })
+                            .collect(Collectors.toList())
+            );
+        }
         view.contractSpecifications().setValue(contract.getContractSpecifications());
+
         view.contractParent().setValue(createContractInfoOrNull(contract.getParentContractId(), contract.getParentContractNumber()));
         view.organization().setValue(createOptionOrNull(contract.getOrganizationId(), contract.getOrganizationName()));
         view.setOrganization(contract.getOrganizationName());
@@ -268,27 +280,17 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             requestProject(contract.getProjectId(), this::fillProject);
         }
 
-        view.tagsVisibility().setVisible(!(isNew && isCopy));
-        view.tagsButtonVisibility().setVisible(!(isNew && isCopy));
+        view.tagsVisibility().setVisible(!isNew);
+        view.tagsButtonVisibility().setVisible(!isNew);
         if (isNew) {
             view.expenditureContractsVisibility().setVisible(false);
         } else {
-            if (isCopy) {
-                view.contractSpecifications().setValue(
-                        view.contractSpecifications().getValue().stream()
-                                .peek(contractSpecification -> {
-                                    contractSpecification.setId(null);
-                                    contractSpecification.setContractId(null);
-                                })
-                                .collect(Collectors.toList())
-                );
-            }
             fireEvent(new CaseTagEvents.ShowList(view.tagsContainer(), En_CaseType.CONTRACT, contract.getId(), false, a -> tagListActivity = a));
             fireEvent(new ContractEvents.ShowConciseTable(view.expenditureContractsContainer(), contract.getId()));
         }
         if (contract.getContractDates() == null) {
             contract.setContractDates(new ArrayList<>());
-        } else if (isCopy) {
+        } else if (isNew) {
             contract.setContractDates(
                     stream(contract.getContractDates()).peek(contractDate -> {
                         contractDate.setId(null);
