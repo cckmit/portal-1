@@ -4057,6 +4057,38 @@ public interface Lang extends Messages, ContactItemLang {
     String contractDateEndWarranty();
 
     String errorSetCorrectProjectId();
+    
+    String issueValidationResultOk();
+    
+    String issueValidationResultNull();
+    
+    String issueValidationResultNameEmpty();
+    
+    String issueValidationResultTypeEmpty();
+    
+    String issueValidationResultCreatorEmpty();
+
+    String issueValidationResultImportanceEmpty();
+
+    String issueValidationResultManagerEmpty();
+
+    String issueValidationResultManagerOtherCompany();
+    
+    String issueValidationResultManagerWithoutProduct();
+
+    String issueValidationResultInitiatorEmpty();
+
+    String issueValidationResultStatusInvalid();
+
+    String issueValidationResultImportanceOtherCompany();
+    
+    String issueValidationResultInitiatorOtherCompany();
+    
+    String issueValidationResultPlatformOtherCompany();
+
+    String issueValidationResultProductInvalid();
+
+    String issueValidationResultDeadlinePassed();
 
     String issueInitiatorCompany();
 }

@@ -1,26 +1,22 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.InsertPanel;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.History;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
-import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class CaseCommentItemEvents {
     public static class Init {
         public Init(En_CaseType caseType, Long caseId, En_TextMarkup textMarkup,
                     boolean isPrivateVisible, boolean isElapsedTimeEnabled,
-                    boolean isModifyEnabled, FlowPanel commentsContainer,
+                    boolean isModifyEnabled, boolean isEditAndDeleteEnabled, FlowPanel commentsContainer,
                     Function<CaseComment, String> makeAllowEditValidationString,
                     Function<CaseComment, String> makeAllowRemoveValidationString) {
 
@@ -30,6 +26,7 @@ public class CaseCommentItemEvents {
             this.isPrivateVisible = isPrivateVisible;
             this.isElapsedTimeEnabled = isElapsedTimeEnabled;
             this.isModifyEnabled = isModifyEnabled;
+            this.isEditAndDeleteEnabled = isEditAndDeleteEnabled;
             this.commentsContainer = commentsContainer;
             this.makeAllowEditValidationString = makeAllowEditValidationString;
             this.makeAllowRemoveValidationString = makeAllowRemoveValidationString;
@@ -41,6 +38,7 @@ public class CaseCommentItemEvents {
         public boolean isPrivateVisible;
         public boolean isElapsedTimeEnabled;
         public boolean isModifyEnabled;
+        public boolean isEditAndDeleteEnabled;
         public FlowPanel commentsContainer;
         public Function<CaseComment, String> makeAllowEditValidationString;
         public Function<CaseComment, String> makeAllowRemoveValidationString;

@@ -171,7 +171,7 @@ public class TestPortalApiController extends BaseServiceTest {
         ResultActions actions = createPostResultAction("/api/cases/create", caseObject);
         actions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.VALIDATION_ERROR.toString())));
 
         company.setAutoOpenIssue(false);
         companyDAO.saveOrUpdate(company);
@@ -196,7 +196,7 @@ public class TestPortalApiController extends BaseServiceTest {
         ResultActions actions = createPostResultAction("/api/cases/create", caseObject);
         actions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.VALIDATION_ERROR.toString())));
 
         company.setAutoOpenIssue(false);
         companyDAO.saveOrUpdate(company);
