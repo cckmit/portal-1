@@ -180,29 +180,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         fireEvent(new ContractDateEvents.ShowEdit());
     }
 
-    public void onCopy(Contract contract) {
-/*
-        view.contractSpecifications().setValue(
-                view.contractSpecifications().getValue().stream()
-                        .peek(contractSpecification -> {
-                            contractSpecification.setId(null);
-                            contractSpecification.setContractId(null);
-                        })
-                        .collect(Collectors.toList())
-        );
-*/
-
-/*        contract.setContractDates(
-                stream(contract.getContractDates()).peek(contractDate -> {
-                    contractDate.setId(null);
-                    contractDate.setContractId(null);
-                }).collect(Collectors.toList())
-        );
-        fireEvent(new ContractDateEvents.ShowTable(view.getContractDateTableContainer(), contract.getContractDates()));
-*/
-//        fireEvent(new NotifyEvents.Show(lang.contractCopySuccess(), NotifyEvents.NotifyType.INFO));
-    }
-
     private void requestContract(Long contractId, Consumer<Contract> consumer) {
         contractService.getContract(contractId, new FluentCallback<Contract>().withSuccess(consumer));
     }
