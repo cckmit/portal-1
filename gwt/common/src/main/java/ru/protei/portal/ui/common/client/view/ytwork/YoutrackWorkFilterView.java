@@ -74,7 +74,7 @@ public class YoutrackWorkFilterView extends Composite implements AbstractYoutrac
     }
 
     @UiHandler("date")
-    public void onDateRangeChanged(ValueChangeEvent<DateIntervalWithType> event) {
+    public void onDateChanged(ValueChangeEvent<DateIntervalWithType> event) {
         validate();
     }
 
@@ -87,12 +87,12 @@ public class YoutrackWorkFilterView extends Composite implements AbstractYoutrac
     }
 
     private boolean validate() {
-        return isDateRangeValid(date.getValue());
+        return isDateValid(date.getValue());
     }
 
-    public boolean isDateRangeValid(DateIntervalWithType dateRange) {
+    public boolean isDateValid(DateIntervalWithType dateRange) {
         if (dateRange == null || dateRange.getIntervalType() == null) {
-            return true;
+            return false;
         }
 
         return !Objects.equals(dateRange.getIntervalType(), En_DateIntervalType.FIXED) || dateRange.getInterval().isValid();

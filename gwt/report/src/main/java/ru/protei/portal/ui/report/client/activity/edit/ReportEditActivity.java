@@ -651,7 +651,7 @@ public abstract class ReportEditActivity implements Activity,
         boolean typeValid = validateTypeRange(dateRange, isMandatory);
         boolean rangeValid = typeValid ? validateDateRange(dateRange) : true;
 
-        validateProjectCommentCreation(typeValid, rangeValid);
+        setValidProjectCommentCreation(typeValid, rangeValid);
         return typeValid && rangeValid;
     }
 
@@ -659,7 +659,7 @@ public abstract class ReportEditActivity implements Activity,
         boolean typeValid = validateTypeRange(dateRange, isMandatory);
         boolean rangeValid = typeValid ? validateDateRange(dateRange) : true;
 
-        validateYoutrackWorkRange(typeValid, rangeValid);
+        setValidYoutrackWorkRange(typeValid, rangeValid);
         return typeValid && rangeValid;
     }
 
@@ -671,11 +671,11 @@ public abstract class ReportEditActivity implements Activity,
         issueFilterWidget.getIssueFilterParams().setModifiedRangeValid(isTypeValid, isRangeValid);
     }
 
-    private void validateProjectCommentCreation(boolean isTypeValid, boolean isRangeValid) {
+    private void setValidProjectCommentCreation(boolean isTypeValid, boolean isRangeValid) {
         projectFilterWidget.getFilterParamView().setCommentCreationRangeValid(isTypeValid, isRangeValid);
     }
 
-    private void validateYoutrackWorkRange(boolean isTypeValid, boolean isRangeValid) {
+    private void setValidYoutrackWorkRange(boolean isTypeValid, boolean isRangeValid) {
         youtrackWorkFilterView.setDateValid(isTypeValid, isRangeValid);
     }
 
