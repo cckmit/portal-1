@@ -39,11 +39,6 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     }
 
     @Override
-    public void setInn(String inn) {
-        this.inn.setInnerText(inn);
-    }
-
-    @Override
     public void setLogins(String logins) {
         this.login.setInnerText(logins);
     }
@@ -103,6 +98,7 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
         return absencesContainer;
     }
 
+    @Override
     public void showAbsencesPanel(boolean isShow) {
         if (isShow) {
             absencesPanel.removeClassName("hide");
@@ -110,6 +106,7 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
             absencesPanel.addClassName("hide");
         }
     }
+
     @Override
     public void showFullScreen(boolean isFullScreen) {
         backButtonPanel.setVisible(isFullScreen);
@@ -119,6 +116,24 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     @Override
     public Element getRestVacationDaysLoading() {
         return restVacationDaysLoading;
+    }
+
+    @Override
+    public void showRestVacationDaysPanel(boolean isShow) {
+        if (isShow) {
+            restVacationDaysPanel.removeClassName("hide");
+        } else {
+            restVacationDaysPanel.addClassName("hide");
+        }
+    }
+
+    @Override
+    public void showLoginsPanel(boolean isShow) {
+        if (isShow) {
+            loginsPanel.removeClassName("hide");
+        } else {
+            loginsPanel.addClassName("hide");
+        }
     }
 
     @UiHandler("backButton")
@@ -190,9 +205,6 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     HTMLPanel emailContainer;
 
     @UiField
-    SpanElement inn;
-
-    @UiField
     HTMLPanel absencesContainer;
 
     @UiField
@@ -206,6 +218,12 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
 
     @UiField
     Button createAbsenceButton;
+
+    @UiField
+    DivElement restVacationDaysPanel;
+
+    @UiField
+    DivElement loginsPanel;
 
     AbstractEmployeePreviewActivity activity;
 

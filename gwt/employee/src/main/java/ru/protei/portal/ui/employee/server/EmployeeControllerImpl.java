@@ -42,13 +42,6 @@ public class EmployeeControllerImpl implements EmployeeController {
         return ServiceUtils.checkResultAndGetData(employeeService.employeeList(token, query));
     }
 
-    @Override
-    public SearchResult<EmployeeShortView> getEmployeesWithChangedHiddenCompanyNames(EmployeeQuery query) throws RequestFailedException {
-        log.info("getEmployeesWithChangedHiddenCompanyNames(): query={}", query);
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(employeeService.employeeListWithChangedHiddenCompanyNames(token, query));
-    }
-
     public List< PersonShortView > getEmployeeViewList( EmployeeQuery query ) throws RequestFailedException {
 
         log.info( "getEmployeeViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
@@ -62,13 +55,6 @@ public class EmployeeControllerImpl implements EmployeeController {
     }
 
     @Override
-    public EmployeeShortView getEmployee(Long employeeId) throws RequestFailedException {
-        log.info("getEmployee(): employeeId={}", employeeId);
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(employeeService.getEmployee(token, employeeId));
-    }
-
-    @Override
     public PersonShortView getDepartmentHead(Long departmentId) throws RequestFailedException {
         log.info("getDepartmentHead(): departmentId={}", departmentId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
@@ -76,10 +62,17 @@ public class EmployeeControllerImpl implements EmployeeController {
     }
 
     @Override
-    public EmployeeShortView getEmployeeWithChangedHiddenCompanyNames(Long employeeId) throws RequestFailedException {
-        log.info("getEmployeeShortViewWithChangedHiddenCompanyNames(): employeeId={}", employeeId);
+    public EmployeeShortView getEmployee(Long employeeId) throws RequestFailedException {
+        log.info("getEmployee(): employeeId={}", employeeId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeWithChangedHiddenCompanyNames(token, employeeId));
+        return ServiceUtils.checkResultAndGetData(employeeService.getEmployee(token, employeeId));
+    }
+
+    @Override
+    public EmployeeShortView getEmployeeWithPrivacyInfo(Long employeeId) throws RequestFailedException {
+        log.info("getEmployeeWithPrivacyInfo(): employeeId={}", employeeId);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeWithPrivacyInfo(token, employeeId));
     }
 
     @Override
@@ -132,9 +125,9 @@ public class EmployeeControllerImpl implements EmployeeController {
     }
 
     @Override
-    public String getEmployeeRestVacationDays(List<WorkerEntryShortView> workerEntries) throws RequestFailedException {
+    public String getEmployeeRestVacationDays(Long employeeId) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeRestVacationDays(token, workerEntries));
+        return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeRestVacationDays(token, employeeId));
     }
 
     @Autowired

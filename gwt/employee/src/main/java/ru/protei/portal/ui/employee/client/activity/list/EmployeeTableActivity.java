@@ -84,7 +84,7 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
             return;
         }
 
-        employeeService.getEmployeeWithChangedHiddenCompanyNames(event.id, new FluentCallback<EmployeeShortView>()
+        employeeService.getEmployee(event.id, new FluentCallback<EmployeeShortView>()
                 .withSuccess(employee -> {
 
                     if (employee.getCurrentAbsence() == null && query.getAbsent()) {
@@ -137,7 +137,7 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
         query.setOffset( page*PAGE_SIZE );
         query.setLimit( PAGE_SIZE );
 
-        employeeService.getEmployeesWithChangedHiddenCompanyNames( query, new FluentCallback< SearchResult< EmployeeShortView > >()
+        employeeService.getEmployees( query, new FluentCallback< SearchResult< EmployeeShortView > >()
                 .withMarkedSuccess( marker, ( m, r ) -> {
                     if ( marker == m ) {
                         if ( isFirstChunk ) {

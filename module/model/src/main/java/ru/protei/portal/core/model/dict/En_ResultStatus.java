@@ -396,5 +396,10 @@ public enum En_ResultStatus {
      *  Партии плат, в партии есть платы
      */
     CARD_BATCH_HAS_CARD,
+
+    /**
+     *  Сотрудник не синхронизируется с 1С (worker_extId == null)
+     */
+    EMPLOYEE_NOT_SYNCHRONIZING_WITH_1C
     ;
 }

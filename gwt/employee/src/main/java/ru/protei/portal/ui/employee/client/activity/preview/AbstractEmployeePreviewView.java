@@ -25,8 +25,6 @@ public interface AbstractEmployeePreviewView extends IsWidget {
     void setID(String value);
 
     void setIP(String ip);
-    
-    void setInn(String inn);
 
     void setLogins(String logins);
 
@@ -47,4 +45,8 @@ public interface AbstractEmployeePreviewView extends IsWidget {
     void showAbsencesPanel(boolean isShow);
 
     Element getRestVacationDaysLoading();
+
+    void showRestVacationDaysPanel(boolean isShow);
+
+    void showLoginsPanel(boolean isShow);
 }

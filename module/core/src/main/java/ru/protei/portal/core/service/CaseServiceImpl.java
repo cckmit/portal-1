@@ -1502,8 +1502,8 @@ public class CaseServiceImpl implements CaseService {
         if ( caseObject.getCreator() != null ) {
             caseObject.getCreator().resetPrivacyInfo();
         }
-        if ( isNotEmpty(caseObject.getNotifiers())) {
-            caseObject.getNotifiers().forEach( Person::resetPrivacyInfo);
+        if ( isNotEmpty(caseObject.getNotifiers()) ) {
+            caseObject.getNotifiers().forEach( Person::resetPrivacyInfo );
         }
 
         return ok(caseObject);

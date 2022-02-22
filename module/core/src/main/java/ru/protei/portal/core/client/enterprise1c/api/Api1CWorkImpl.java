@@ -7,8 +7,12 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.enterprise1c.http.HttpClient1CWork;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.enterprise1c.annotation.UrlName1C;
 import ru.protei.portal.core.model.enterprise1c.dto.WorkPersonInfo1C;
 import ru.protei.portal.core.model.enterprise1c.query.WorkQuery1C;
+import ru.protei.portal.core.model.helper.StringUtils;
+
+import java.util.Optional;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
@@ -45,26 +49,28 @@ public class Api1CWorkImpl implements Api1CWork{
 
     @Override
     public Result<String> getEmployeeRestVacationDays(String workerExtId, String companyName) {
-        log.debug("workerExtId={}", workerExtId);
+        log.debug("getEmployeeRestVacationDays(): workerExtId={}, companyName={}", workerExtId, companyName);
 
-        String url1C = buildGetRestVacationDaysByKeyUrl(workerExtId, companyName);
-        return isEmpty(url1C) ? null : client.read(url1C, Result.class)
-                .ifOk( value -> log.info( "buildGetRestVacationDaysByKeyUrl(): OK " ) )
-                .ifError( result -> log.warn( "buildGetRestVacationDaysByKeyUrl(): Can`t get restVacationDays for worker with external id {}. Result={}", workerExtId, result ))
-                .getData();
+        return buildGetRestVacationDaysByKeyUrl(workerExtId, companyName)
+                .map(url1C -> client.read(url1C, Result.class)
+                        .ifOk(value -> log.info("getEmployeeRestVacationDays(): OK "))
+                        .ifError(result -> log.warn("getEmployeeRestVacationDays(): Can`t get restVacationDays for worker with external id {}. Result={}", workerExtId, result))
+                        .map(result -> String.valueOf(result.getData())))
+                .orElse(Result.error(En_ResultStatus.INTERNAL_ERROR));
     }
 
-    private String buildGetRestVacationDaysByKeyUrl(String workerExtId, String companyName){
-        String url = "";
-        if (MAIN_HOME_COMPANY_NAME.equals(companyName)) {
-            url = config.data().enterprise1C().getWorkRestVacationDaysProteiUrl();
-        } else if (PROTEI_ST_HOME_COMPANY_NAME.equals(companyName)) {
-            url = config.data().enterprise1C().getWorkRestVacationDaysProteiStUrl();
-        }
+    private Optional<String> buildGetRestVacationDaysByKeyUrl(String workerExtId, String companyName){
+        return buildGetRestVacationDaysBaseUrl(companyName)
+                .map(url -> url + "/" + workerExtId);
+    }
 
-        url = url + "/" + workerExtId;
-        log.debug("buildGetRestVacationDaysByKeyUrl(): url={}", url);
-        return url;
+    private Optional<String> buildGetRestVacationDaysBaseUrl (String companyName) {
+        if (MAIN_HOME_COMPANY_NAME.equals(companyName)) {
+            return Optional.ofNullable(config.data().enterprise1C().getWorkRestVacationDaysProteiUrl());
+        } else if (PROTEI_ST_HOME_COMPANY_NAME.equals(companyName)) {
+            return Optional.ofNullable(config.data().enterprise1C().getWorkRestVacationDaysProteiStUrl());
+        }
+        return Optional.empty();
     }
 
     @Autowired

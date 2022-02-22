@@ -368,6 +368,7 @@ public class Person extends AuditableObject {
         position = null;
         info = null;
         ipAddress = null;
+        inn = null;
 
         if (contactItems != null) {
             contactItems.removeIf((info) -> !info.isItemOf(En_ContactItemType.EMAIL));

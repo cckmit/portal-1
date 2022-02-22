@@ -128,32 +128,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
 
-        SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
-        jdbcManyRelationsHelper.fill(sr.getResults(), CONTACT_ITEMS);
-        sr.setResults(stream(sr.getResults())
-                .map(this::removeSensitiveInformation)
-                .collect(Collectors.toList()));
-        List<EmployeeShortView> results = sr.getResults();
-
-        if (CollectionUtils.isNotEmpty(results)) {
-            Set<Long> employeeIds = results.stream().map(e -> e.getId()).collect(Collectors.toSet());
-            List<WorkerEntryShortView> workerEntries = workerEntryShortViewDAO.listByPersonIds(employeeIds);
-            results.forEach(employee ->
-                employee.setWorkerEntries(workerEntries.stream().filter(workerEntry -> workerEntry.getPersonId().equals(employee.getId())).collect(Collectors.toList()))
-             );
-        }
-        return ok(sr);
-    }
-
-    @Override
-    public Result<SearchResult<EmployeeShortView>> employeeListWithChangedHiddenCompanyNames(AuthToken token, EmployeeQuery query) {
-
         query.setHomeCompanies(fillHiddenCompaniesIfProteiChosen(query.getHomeCompanies()));
 
         SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
         jdbcManyRelationsHelper.fill(sr.getResults(), EmployeeShortView.Fields.CONTACT_ITEMS);
         sr.setResults(stream(sr.getResults())
-                .map(this::removeSensitiveInformation)
+                .map(this::removeAllPrivacyInfo)
                 .collect(Collectors.toList()));
         List<EmployeeShortView> results = sr.getResults();
 
@@ -178,26 +158,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Result<EmployeeShortView> getEmployee(AuthToken token, Long employeeId) {
-
-        if (employeeId == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        EmployeeShortView employeeShortView = employeeShortViewDAO.get(employeeId);
-
-        if (employeeShortView == null) {
-            return error(En_ResultStatus.NOT_FOUND);
-        }
-
-        jdbcManyRelationsHelper.fill(employeeShortView, CONTACT_ITEMS);
-        jdbcManyRelationsHelper.fill(employeeShortView, WORKER_ENTRIES);
-        employeeShortView = removeSensitiveInformation(employeeShortView);
-
-        return ok(employeeShortView);
-    }
-
-    @Override
     public Result<List<WorkerEntryShortView>> getWorkerEntryList(AuthToken token, int offset, int limit) {
         SearchResult<WorkerEntryShortView> result = workerEntryShortViewDAO.getAll(offset, limit);
         if (result == null) {
@@ -207,27 +167,20 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Result<EmployeeShortView> getEmployeeWithChangedHiddenCompanyNames(AuthToken token, Long employeeId) {
+    public Result<EmployeeShortView> getEmployee(AuthToken token, Long employeeId) {
+        return getEmployee(employeeId).map(this::removeAllPrivacyInfo);
+    }
 
-        if (employeeId == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+    @Override
+    public Result<EmployeeShortView> getEmployeeWithPrivacyInfo(AuthToken token, Long employeeId) {
+        if (!portalConfig.data().getCommonConfig().isProductionServer()) {
+            return getEmployee(token, employeeId);
         }
 
-        EmployeeShortView employeeShortView = employeeShortViewDAO.get(employeeId);
-
-        if (employeeShortView == null) {
-            return error(En_ResultStatus.NOT_FOUND);
-        }
-
-        jdbcManyRelationsHelper.fill(employeeShortView, CONTACT_ITEMS);
-        jdbcManyRelationsHelper.fill(employeeShortView, WORKER_ENTRIES);
-
-        employeeShortView = removeSensitiveInformation(employeeShortView);
-
-        employeeShortView.setWorkerEntries(changeCompanyNameIfHidden(employeeShortView.getWorkerEntries()));
-        employeeShortView.setCurrentAbsence(personAbsenceDAO.currentAbsence(employeeId));
-
-        return ok(employeeShortView);
+        return getEmployee(employeeId).map(employee -> {
+            employee.setContactInfo(removeContactPrivacyInfo(employee.getContactInfo()));
+            return employee;
+        });
     }
 
     @Override
@@ -332,7 +285,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         person.setDisplayName(person.getLastName() + " " + person.getFirstName() + (StringUtils.isNotEmpty(person.getSecondName()) ? " " + person.getSecondName() : ""));
         person.setDisplayShortName(createPersonShortName(person));
-        person.setContactInfo(removeSensitiveInformation(person.getContactInfo()));
+        person.setContactInfo(removeContactPrivacyInfo(person.getContactInfo()));
 
         boolean success = personDAO.partialMerge(person,  "firstname", "lastname", "secondname", "sex", "birthday", "ipaddress", "displayname", "displayShortName", "isfired", "firedate", "inn");
         if (!success) {
@@ -565,35 +518,27 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Result<String> getEmployeeRestVacationDays(AuthToken token, List<WorkerEntryShortView> workerEntries) {
-        log.info("getEmployeeRestVacationDays(): start");
-
-        if (CollectionUtils.isEmpty(workerEntries)) {
-            log.error("getEmployeeRestVacationDays(): workerExtIds is empty");
-            return ok();
+    public Result<String> getEmployeeRestVacationDays(AuthToken token, Long employeeId) {
+        if (employeeId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Double restVacationDays = null;
-        for (WorkerEntryShortView workerEntry: workerEntries) {
-            Result<String> result = api1CWorkService.getEmployeeRestVacationDays(workerEntry.getWorkerExtId(),
-                                                                                 workerEntry.getCompanyName());
-            if (result != null && result.isOk()) {
-                double days = Double.parseDouble(String.valueOf(result.getData()));
-                restVacationDays = restVacationDays == null ? days : restVacationDays + days;
-            }
+        EmployeeShortView employee = employeeShortViewDAO.get(employeeId);
+
+        if (employee == null) {
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
-        if (restVacationDays == null) {
-            log.warn("getEmployeeRestVacationDays(): restVacationDays is empty");
-            return ok();
+        jdbcManyRelationsHelper.fill(employee, WORKER_ENTRIES);
+        WorkerEntryFacade entryFacade = new WorkerEntryFacade(employee.getWorkerEntries());
+        WorkerEntryShortView mainEntry = entryFacade.getMainEntry();
+
+        if (mainEntry == null || mainEntry.getWorkerExtId() == null) {
+            return error(En_ResultStatus.EMPLOYEE_NOT_SYNCHRONIZING_WITH_1C);
         }
 
-        if (restVacationDays.equals(0.0)) {
-            return ok("0");
-        }
-
-        log.info("getEmployeeRestVacationDays(): done");
-        return ok(String.valueOf(restVacationDays));
+        return api1CWorkService.getEmployeeRestVacationDays(
+                mainEntry.getWorkerExtId(), mainEntry.getCompanyName());
     }
 
     private List<NotificationEntry> makeNotificationListFromConfiguration() {
@@ -606,22 +551,44 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .collect(Collectors.toList());
     }
 
-    private EmployeeShortView removeSensitiveInformation(EmployeeShortView employeeShortView) {
-        List<ContactItem> sensitive = getSensitiveContactItems(employeeShortView.getContactInfo().getItems());
+    private Result<EmployeeShortView> getEmployee(Long employeeId) {
+
+        if (employeeId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        EmployeeShortView employeeShortView = employeeShortViewDAO.get(employeeId);
+
+        if (employeeShortView == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        jdbcManyRelationsHelper.fill(employeeShortView, CONTACT_ITEMS);
+        jdbcManyRelationsHelper.fill(employeeShortView, WORKER_ENTRIES);
+        employeeShortView.setWorkerEntries(changeCompanyNameIfHidden(employeeShortView.getWorkerEntries()));
+        employeeShortView.setCurrentAbsence(personAbsenceDAO.currentAbsence(employeeId));
+
+        return ok(employeeShortView);
+    }
+
+    private EmployeeShortView removeAllPrivacyInfo(EmployeeShortView employeeShortView) {
+        List<ContactItem> sensitive = getPrivateContactItems(employeeShortView.getContactInfo().getItems());
         employeeShortView.setContactInfo(new ContactInfo(stream(employeeShortView.getContactInfo().getItems())
                 .filter(item -> !sensitive.contains(item))
                 .collect(Collectors.toList())));
+
+        employeeShortView.setInn(null);
         return employeeShortView;
     }
 
-    private ContactInfo removeSensitiveInformation(ContactInfo contactInfo) {
-        List<ContactItem> sensitive = getSensitiveContactItems(contactInfo.getItems());
+    private ContactInfo removeContactPrivacyInfo(ContactInfo contactInfo) {
+        List<ContactItem> sensitive = getPrivateContactItems(contactInfo.getItems());
         return new ContactInfo(stream(contactInfo.getItems())
                 .filter(item -> !sensitive.contains(item))
                 .collect(Collectors.toList()));
     }
 
-    private List<ContactItem> getSensitiveContactItems(List<ContactItem> contactItems) {
+    private List<ContactItem> getPrivateContactItems(List<ContactItem> contactItems) {
         List<En_ContactItemType> types = listOf(En_ContactItemType.ADDRESS, En_ContactItemType.ADDRESS_LEGAL);
         return stream(contactItems)
                 .filter(item -> types.contains(item.type()))

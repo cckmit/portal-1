@@ -435,7 +435,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     }
 
     private void fillView(Long employeeId) {
-        employeeService.getEmployeeWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>()
+        employeeService.getEmployeeWithPrivacyInfo(employeeId, new FluentCallback<EmployeeShortView>()
                 .withError(throwable -> {
                     if (En_ResultStatus.NOT_FOUND.equals(getStatus(throwable))) {
                         fireEvent(new ErrorPageEvents.ShowNotFound(initDetails.parent, lang.errEmployeeNotFound()));
