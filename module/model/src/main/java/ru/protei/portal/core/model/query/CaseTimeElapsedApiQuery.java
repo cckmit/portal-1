@@ -14,10 +14,6 @@ public class CaseTimeElapsedApiQuery extends BaseQuery {
     private List<Long> companyIds;
 
     private List<Long> employeeIds;     // commentAuthorIds;
-
-    private List<Integer> timeElapsedTypeIds;
-
-    private List<String> caseTagsNames;
     
     public CaseTimeElapsedApiQuery() {}
 
@@ -53,22 +49,6 @@ public class CaseTimeElapsedApiQuery extends BaseQuery {
         this.employeeIds = employeeIds;
     }
 
-    public List<Integer> getTimeElapsedTypeIds() {
-        return timeElapsedTypeIds;
-    }
-
-    public void setTimeElapsedTypeIds(List<Integer> timeElapsedTypeIds) {
-        this.timeElapsedTypeIds = timeElapsedTypeIds;
-    }
-
-    public List<String> getCaseTagsNames() {
-        return caseTagsNames;
-    }
-
-    public void setCaseTagsNames(List<String> caseTagsNames) {
-        this.caseTagsNames = caseTagsNames;
-    }
-
     @Override
     public String toString() {
         return "CaseTimeElapsedApiQuery{" +
@@ -81,8 +61,6 @@ public class CaseTimeElapsedApiQuery extends BaseQuery {
                 ", productIds=" + productIds +
                 ", companyIds=" + companyIds +
                 ", employeeIds=" + employeeIds +
-                ", timeElapsedTypeIds=" + timeElapsedTypeIds +
-                ", caseTagsNames=" + caseTagsNames +
                 '}';
     }
 }

@@ -679,6 +679,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CaseTimeElapsedApiSumDAO caseTimeElapsedApiSumDAO() {
+        return new CaseTimeElapsedApiSumDAO_Impl();
+    }
+    
+    @Bean
     public CardSqlBuilder cardSqlBuilder() {
         return new CardSqlBuilder();
     }
@@ -1303,6 +1308,11 @@ public class MainConfiguration {
     @Bean
     public RFIDLabelService getRFIDLabelService() {
         return new RFIDLabelServiceImpl();
+    }
+
+    @Bean
+    public CaseTimeElapsedApiService caseTimeElapsedApiService() {
+        return new CaseTimeElapsedApiServiceImpl();
     }
 
     /* ASPECT/INTERCEPTORS */

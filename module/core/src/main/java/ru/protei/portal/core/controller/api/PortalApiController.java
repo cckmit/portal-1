@@ -22,10 +22,7 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
-import ru.protei.portal.core.model.struct.AuditableObject;
-import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
-import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
-import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -94,6 +91,8 @@ public class PortalApiController {
     private DocumentService documentService;
     @Autowired
     private ProjectService projectService;
+    @Autowired
+    private CaseTimeElapsedApiService caseTimeElapsedApiService;
     @Autowired
     PortalConfig config;
 
@@ -737,8 +736,8 @@ public class PortalApiController {
                 .ifOk(result -> log.info("createProjectByApi(): OK"));
     }
 
-    @PostMapping(value = "/case_time_elapsed_report")
-    public Result<List<Object>> getCaseTimeElapsedReport(
+    @PostMapping(value = "/caseTimeElapsedReport")
+    public Result<List<CaseTimeElapsedApiSum>> getCaseTimeElapsedReport(
             @RequestBody CaseTimeElapsedApiQuery query,
             HttpServletRequest request,
             HttpServletResponse response) {
@@ -754,7 +753,7 @@ public class PortalApiController {
 
             AuthToken authToken = authTokenAPIResult.getData();
 
-            return ok(new ArrayList<>());
+            return caseTimeElapsedApiService.getByQuery(authToken, query);
 
         } catch (IllegalArgumentException ex) {
             log.error(ex.getMessage());
