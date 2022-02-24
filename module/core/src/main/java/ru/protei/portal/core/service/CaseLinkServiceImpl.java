@@ -67,6 +67,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Autowired
     CaseObjectMetaDAO caseObjectMetaDAO;
     @Autowired
+    HistoryService historyService;
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Override
@@ -135,6 +137,10 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                             "failed to add subtask notifier with result = " + addedNotifierResult + " | link = " + createdLink);
                 }
 
+                if (En_CaseType.CRM_SUPPORT.equals(caseType)){
+                    addCaseLinkHistory(authToken, createdLink.getCaseId(), createdLink.getId(), createdLink.getRemoteId());
+                }
+
                 CaseLink newState = caseLinkDAO.get(createdLink.getId());
                 successfullyCreatedLinks.add(newState);
             }
@@ -172,6 +178,10 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         }
 
         synchronizeYouTrackLinks(Collections.singletonList(link), caseType);
+
+        if (En_CaseType.CRM_SUPPORT.equals(caseType)){
+            addCaseLinkHistory(authToken, createdLink.getCaseId(), createdLink.getId(), createdLink.getRemoteId());
+        }
 
         CaseLink newState = caseLinkDAO.get(createdLink.getId());
         return sendNotificationLinkAdded(authToken, link.getCaseId(), newState, caseType)
@@ -222,8 +232,20 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         synchronizeYouTrackLinks(Collections.singletonList(deletedLink), caseType);
 
+        if (En_CaseType.CRM_SUPPORT.equals(caseType)){
+            removeCaseLinkHistory(authToken, deletedLink.getCaseId(), id, deletedLink.getRemoteId());
+        }
+
         return sendNotificationLinkRemoved(authToken, deletedLink.getCaseId(), deletedLink, caseType)
                 .publishEvents(openedIssueResult.getEvents());
+    }
+
+    private Result<Long> addCaseLinkHistory(AuthToken authToken, Long caseId, Long caseLinkId, String remoteId) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_LINK,null, null, caseLinkId, remoteId);
+    }
+
+    private Result<Long> removeCaseLinkHistory(AuthToken authToken, Long caseId, Long oldCaseLinkId, String oldRemoteId) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_LINK,oldCaseLinkId, oldRemoteId, null, null);
     }
 
     private Result<CaseObjectMeta> blockParentIssue(AuthToken authToken, CaseLink caseLink) {

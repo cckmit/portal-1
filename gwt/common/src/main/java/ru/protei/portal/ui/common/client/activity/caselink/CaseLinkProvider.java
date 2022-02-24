@@ -4,12 +4,14 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.ent.CaseInfo;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.UitsIssueInfo;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.ui.common.client.service.CaseLinkControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class CaseLinkProvider {
@@ -26,7 +28,7 @@ public class CaseLinkProvider {
         });
     }
 
-    public String getLink(En_CaseLink caseLink, String id) {
+    public static String getLink(En_CaseLink caseLink, String id) {
         if (linkMap == null || !linkMap.containsKey(caseLink) || id == null) {
             return "";
         }
@@ -45,11 +47,26 @@ public class CaseLinkProvider {
         caseLinkService.getUitsLinkInfo( uitsId, async );
     }
 
+    public static String getLink(Long caseLinkId) {
+
+        CaseLink caseLink = idToCaseLinkMap.get(caseLinkId);
+        if (caseLink == null){
+            return null;
+        }
+        return getLink(caseLink.getType(), caseLink.getRemoteId());
+    }
+
+    public static void setCaseLinkMap(Map<Long, CaseLink> idToCaseLinkMap) {
+        CaseLinkProvider.idToCaseLinkMap = idToCaseLinkMap;
+    }
+
     @Inject
     CaseLinkControllerAsync caseLinkService;
 
     @Inject
     IssueControllerAsync caseService;
 
-    private Map<En_CaseLink, String> linkMap = null;
+    private static Map<En_CaseLink, String> linkMap = null;
+
+    private static Map<Long, CaseLink> idToCaseLinkMap = Collections.emptyMap();
 }

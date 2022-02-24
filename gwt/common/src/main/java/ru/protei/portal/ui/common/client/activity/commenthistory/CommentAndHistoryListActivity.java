@@ -12,15 +12,13 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.ValidationResult;
 import ru.protei.portal.ui.common.client.activity.attachment.AttachmentLinkProvider;
+import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
-import ru.protei.portal.ui.common.client.service.AttachmentControllerAsync;
-import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
-import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
+import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
@@ -31,6 +29,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -560,13 +559,13 @@ public abstract class CommentAndHistoryListActivity
                     .withSuccess(commentsAndHistories -> {
 
                         AttachmentLinkProvider.setLinkMap(Collections.emptyMap());
+                        CaseLinkProvider.setCaseLinkMap(Collections.emptyMap());
                         attachmentService.getAttachmentsByCaseId(En_CaseType.CRM_SUPPORT, caseId, new FluentCallback<List<Attachment>>()
                                 .withSuccess(attachments -> {
-                                    Map<Long, String> attachmentIdToLink = stream(attachments)
-                                            .collect(Collectors.toMap(Attachment::getId, Attachment::getExtLink));
-                                    AttachmentLinkProvider.setLinkMap(attachmentIdToLink);
-                                    fillView(commentsAndHistories);
-                                    displayItems(getCommentAndHistorySelectedTabs(storage));
+                                    caseLinkController.getCaseLinks( caseId, new FluentCallback<List<CaseLink>>()
+                                            .withSuccess( caseLinks -> {
+                                                showHistoryItems(commentsAndHistories, attachments, caseLinks);
+                                            }));
                                 }));
                     })
             );
@@ -581,6 +580,18 @@ public abstract class CommentAndHistoryListActivity
                     displayItems(singletonList(COMMENT));
                 })
         );
+    }
+
+    private void showHistoryItems(CommentsAndHistories commentsAndHistories, List<Attachment> attachments, List<CaseLink> caseLinks) {
+        Map<Long, String> attachmentIdToLink = stream(attachments)
+                .collect(Collectors.toMap(Attachment::getId, Attachment::getExtLink));
+        AttachmentLinkProvider.setLinkMap(attachmentIdToLink);
+
+        Map<Long, CaseLink> caseLinkMap = stream(caseLinks)
+                .collect(Collectors.toMap(CaseLink::getId, Function.identity()));
+        CaseLinkProvider.setCaseLinkMap(caseLinkMap);
+        fillView(commentsAndHistories);
+        displayItems(getCommentAndHistorySelectedTabs(storage));
     }
 
     private boolean isCommentWithHistoryCase(En_CaseType caseType) {
@@ -685,11 +696,14 @@ public abstract class CommentAndHistoryListActivity
     private LocalStorageService storage;
     @Inject
     AccountControllerAsync accountService;
-
+    @Inject
+    CaseLinkProvider caseLinkProvider;
     @Inject
     ConfigStorage configStorage;
     @Inject
     PolicyService policyService;
+    @Inject
+    CaseLinkControllerAsync caseLinkController;
 
     private CaseComment comment;
 

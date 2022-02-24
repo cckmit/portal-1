@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemActivity;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemView;
 import ru.protei.portal.ui.common.client.events.CaseLinkEvents;
+import ru.protei.portal.ui.common.client.events.CommentAndHistoryEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_BundleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -104,6 +105,7 @@ public abstract class CaseLinkListActivity
                     hideOrShowIfNoLinks();
                     fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulRemoved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new CaseLinkEvents.Changed(caseLink, caseType));
+                    fireEvent(new CommentAndHistoryEvents.Reload());
                 })
         );
     }
@@ -232,6 +234,7 @@ public abstract class CaseLinkListActivity
             addLinkToParentAndModifyLinksCount(value);
             hideOrShowIfNoLinks();
             view.selectTab(bundleTypeLang.getName(value.getBundleType()));
+            fireEvent(new CommentAndHistoryEvents.Reload());
             return;
         }
 
@@ -244,6 +247,7 @@ public abstract class CaseLinkListActivity
                     view.selectTab(bundleTypeLang.getName(value.getBundleType()));
                     fireEvent(new NotifyEvents.Show(lang.caseLinkSuccessfulCreated(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new CaseLinkEvents.Changed(value, caseType));
+                    fireEvent(new CommentAndHistoryEvents.Reload());
                 })
         );
     }

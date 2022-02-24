@@ -393,6 +393,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                 HelperFunc.subtract(comment.getCaseAttachments(), prevComment.getCaseAttachments())
         ).getData();
 
+        if (caseType.equals(CRM_SUPPORT) && ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty(addedAttachments)){
+            stream(addedAttachments).forEach(a -> {
+                addCaseAttachmentHistory(token, comment.getCaseId(), a.getId(), a.getFileName());
+            });
+        }
+
         return ok( new CaseCommentSaveOrUpdateResult(comment, prevComment, addedAttachments, removedAttachments));
     }
 
