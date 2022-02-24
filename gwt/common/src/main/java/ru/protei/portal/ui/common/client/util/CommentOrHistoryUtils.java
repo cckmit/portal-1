@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.NumberUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
@@ -117,6 +118,11 @@ public class CommentOrHistoryUtils {
             case CASE_INITIATOR_COMPANY: return makeHistoryItem(history, lang.issueInitiatorCompany(), Company.class);
             case CASE_INITIATOR: return makeHistoryItem(history, lang.issueInitiator(), EmployeeShortView.class);
             case CASE_PLATFORM: return makeHistoryItem(history, lang.siteFolderPlatform(), Platform.class);
+            case CASE_NAME: return makeHistoryItem(history, lang.issueName(), String.class);
+            //описание обращения в истории будет сделано в отдельной YT задаче
+            //case CASE_INFO: return makeHistoryItem(history, lang.description(), String.class);
+            case CASE_ATTACHMENT: return makeHistoryItem(history, lang.attachment(), CaseAttachment.class);
+            case CASE_LINK: return makeHistoryItem(history, lang.linkedWith(), CaseLink.class);
             default: return null;
         }
     }
@@ -215,6 +221,21 @@ public class CommentOrHistoryUtils {
             return caseHistoryTagItemView;
         }
 
+        if (En_HistoryType.CASE_NAME.equals(historyType)) {
+            CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
+            caseHistorySimpleItemView.setName(value);
+
+            return caseHistorySimpleItemView;
+        }
+
+        //описание обращения в истории будет сделано в отдельной YT задаче
+//        if (En_HistoryType.CASE_INFO.equals(historyType)) {
+//            CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
+//            caseHistorySimpleItemView.setName(value);
+//
+//            return caseHistorySimpleItemView;
+//        }
+
         if (En_HistoryType.CASE_PAUSE_DATE.equals(historyType)
                 || En_HistoryType.CASE_DEADLINE.equals(historyType)) {
             CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
@@ -230,13 +251,27 @@ public class CommentOrHistoryUtils {
             return caseHistorySimpleItemView;
         }
 
+        if (En_HistoryType.CASE_ATTACHMENT.equals(historyType)){
+            if (StringUtils.isEmpty(link)){
+                CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
+                caseHistorySimpleItemView.setName(transliteration(value));
+                return caseHistorySimpleItemView;
+            } else {
+                CaseHistoryLinkItemView caseHistoryLinkItemView = caseHistoryLinkItemViewProvider.get();
+                caseHistoryLinkItemView.setLink(transliteration(value), link);
+                return caseHistoryLinkItemView;
+            }
+        }
+
         if (En_HistoryType.CASE_MANAGER.equals(historyType)
                 || En_HistoryType.PLAN.equals(historyType)
                 || En_HistoryType.CASE_PRODUCT.equals(historyType)
                 || En_HistoryType.CASE_PLATFORM.equals(historyType)
                 || En_HistoryType.CASE_INITIATOR.equals(historyType)
                 || En_HistoryType.CASE_MANAGER_COMPANY.equals(historyType)
-                || En_HistoryType.CASE_INITIATOR_COMPANY.equals(historyType)) {
+                || En_HistoryType.CASE_INITIATOR_COMPANY.equals(historyType)
+                || En_HistoryType.CASE_LINK.equals(historyType)
+        ) {
             CaseHistoryLinkItemView caseHistoryLinkItemView = caseHistoryLinkItemViewProvider.get();
             caseHistoryLinkItemView.setLink(transliteration(value), link);
 

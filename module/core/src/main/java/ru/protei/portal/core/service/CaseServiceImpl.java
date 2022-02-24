@@ -262,6 +262,21 @@ public class CaseServiceImpl implements CaseService {
             log.error("Importance level history for the issue {} not saved!", caseId);
         }
 
+        if (StringUtils.isNotEmpty(caseObject.getName())) {
+            Result<Long> resultManager = addNameHistory(token, caseObject.getId(), caseObject.getName());
+            if (resultManager.isError()) {
+                log.error("Case name history for the issue {} not saved!", caseObject.getId());
+            }
+        }
+
+        //описание обращения в истории будет сделано в отдельной YT задаче
+//        if (StringUtils.isNotEmpty(caseObject.getInfo())) {
+//            Result<Long> resultManager = addInfoHistory(token, caseObject.getId(), "Issue info changed");
+//            if (resultManager.isError()) {
+//                log.error("Case info history for the issue {} not saved!", caseObject.getId());
+//            }
+//        }
+
         if (caseObject.getManager() != null && caseObject.getManager().getId() != null) {
             Result<Long> resultManager = addManagerHistory(token, caseObject.getId(), caseObject.getManager().getId(), makeManagerName(caseObject));
             if (resultManager.isError()) {
@@ -436,6 +451,15 @@ public class CaseServiceImpl implements CaseService {
                 log.info("Failed to update issue {} at db", caseObject.getId());
                 return error(En_ResultStatus.NOT_UPDATED);
             }
+
+            if (!Objects.equals(oldCaseObject.getName(), changeRequest.getName())) {
+                updateNameHistory(token, changeRequest.getId(), oldCaseObject.getName(), changeRequest.getName());
+            }
+
+            //описание обращения в истории будет сделано в отдельной YT задаче
+//            if (!Objects.equals(oldCaseObject.getInfo(), changeRequest.getInfo())) {
+//                updateInfoHistory(token, changeRequest.getId(), "Issue info changed", "Issue info changed");
+//            }
 
             if(isNotEmpty(changeRequest.getAttachments())){
                 caseObject.setAttachmentExists(true);
@@ -1544,6 +1568,36 @@ public class CaseServiceImpl implements CaseService {
         return true;
     }
 
+    private void updateNameHistory(AuthToken token, Long caseId, String oldCaseName, String newCaseName) {
+        Result<Long> resultName = ok();
+        if (StringUtils.isEmpty(oldCaseName) && StringUtils.isNotEmpty(newCaseName)) {
+            resultName = addNameHistory(token, caseId, newCaseName);
+        } else if (StringUtils.isNotEmpty(oldCaseName) && StringUtils.isNotEmpty(newCaseName)) {
+            resultName = changeNameHistory(token, caseId, oldCaseName, newCaseName);
+        } else if (StringUtils.isNotEmpty(oldCaseName) && StringUtils.isEmpty(newCaseName)) {
+            resultName = removeNameHistory(token, caseId, oldCaseName);
+        }
+
+        if (resultName.isError()) {
+            log.error("Case name history for the issue {} isn't saved!", caseId);
+        }
+    }
+
+    //описание обращения в истории будет сделано в отдельной YT задаче
+    private void updateInfoHistory(AuthToken token, Long caseId, String oldCaseName, String newCaseName) {
+        Result<Long> resultName = ok();
+        if (StringUtils.isEmpty(oldCaseName) && StringUtils.isNotEmpty(newCaseName)) {
+            resultName = addInfoHistory(token, caseId, newCaseName);
+        } else if (StringUtils.isNotEmpty(oldCaseName) && StringUtils.isNotEmpty(newCaseName)) {
+            resultName = changeInfoHistory(token, caseId, oldCaseName, newCaseName);
+        } else if (StringUtils.isNotEmpty(oldCaseName) && StringUtils.isEmpty(newCaseName)) {
+            resultName = removeInfoHistory(token, caseId, oldCaseName);
+        }
+
+        if (resultName.isError()) {
+            log.error("Case info history for the issue {} isn't saved!", caseId);
+        }
+    }
 
     private void updateManagerHistory(AuthToken token, CaseObjectMeta caseMeta, CaseObjectMeta oldCaseMeta) {
         Result<Long> resultManager = ok();
@@ -1813,6 +1867,30 @@ public class CaseServiceImpl implements CaseService {
 
     private Result<Long> removeProductHistory(AuthToken authToken, Long caseId, Long oldProductId, String oldProductName) {
         return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_PRODUCT, oldProductId, oldProductName, null, null);
+    }
+
+    private Result<Long> addNameHistory(AuthToken authToken, Long caseId, String caseName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_NAME,null, null, null, caseName);
+    }
+
+    private Result<Long> changeNameHistory(AuthToken authToken, Long caseId, String oldCaseName, String newCaseName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_NAME, null, oldCaseName, null, newCaseName);
+    }
+
+    private Result<Long> removeNameHistory(AuthToken authToken, Long caseId, String oldCaseName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_NAME, null, oldCaseName, null, null);
+    }
+
+    private Result<Long> addInfoHistory(AuthToken authToken, Long caseId, String caseInfo) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_INFO,null, null, null, caseInfo);
+    }
+
+    private Result<Long> changeInfoHistory(AuthToken authToken, Long caseId, String oldCaseInfo, String newCaseInfo) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_INFO, null, oldCaseInfo, null, newCaseInfo);
+    }
+
+    private Result<Long> removeInfoHistory(AuthToken authToken, Long caseId, String oldCaseInfo) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_INFO, null, oldCaseInfo, null, null);
     }
 
     private Result<Long> addManagerHistory(AuthToken authToken, Long caseId, Long managerId, String managerName) {

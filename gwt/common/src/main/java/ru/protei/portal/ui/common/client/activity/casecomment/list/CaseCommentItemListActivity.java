@@ -174,6 +174,7 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
                         commentsContainer.remove(itemView.asWidget());
                         itemViewToModel.remove(itemView);
                         updateTimeElapsedInIssue(itemViewToModel.values());
+                        fireEvent(new CommentAndHistoryEvents.Reload());
                     })
             );
         };

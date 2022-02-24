@@ -308,6 +308,7 @@ public abstract class IssueEditActivity implements
         issueInfoWidget.descriptionReadOnlyVisibility().setVisible(true);
         fillView(issue);
         fireEvent(new IssueEvents.ChangeIssue(issue.getId()));
+        fireEvent(new CommentAndHistoryEvents.Reload());
     }
 
     @Override

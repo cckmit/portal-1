@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.ValidationResult;
+import ru.protei.portal.ui.common.client.activity.attachment.AttachmentLinkProvider;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
@@ -388,6 +389,7 @@ public abstract class CommentAndHistoryListActivity
                 .withSuccess(result -> {
                     unlockSave();
                     onCommentSent(isEdit, result);
+                    fireEvent(new CommentAndHistoryEvents.Reload());
                 })
         );
     }
@@ -556,8 +558,16 @@ public abstract class CommentAndHistoryListActivity
             caseCommentController.getCommentsAndHistories(caseType, caseId, new FluentCallback<CommentsAndHistories>()
                     .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
                     .withSuccess(commentsAndHistories -> {
-                        fillView(commentsAndHistories);
-                        displayItems(getCommentAndHistorySelectedTabs(storage));
+
+                        AttachmentLinkProvider.setLinkMap(Collections.emptyMap());
+                        attachmentService.getAttachmentsByCaseId(En_CaseType.CRM_SUPPORT, caseId, new FluentCallback<List<Attachment>>()
+                                .withSuccess(attachments -> {
+                                    Map<Long, String> attachmentIdToLink = stream(attachments)
+                                            .collect(Collectors.toMap(Attachment::getId, Attachment::getExtLink));
+                                    AttachmentLinkProvider.setLinkMap(attachmentIdToLink);
+                                    fillView(commentsAndHistories);
+                                    displayItems(getCommentAndHistorySelectedTabs(storage));
+                                }));
                     })
             );
 
