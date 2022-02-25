@@ -700,6 +700,11 @@ public class JiraTestConfiguration {
     public RFIDDeviceDAO getRFIDDeviceDAO() {
         return new RFIDDeviceDAO_Impl();
     }
+
+    @Bean
+    public CaseTimeElapsedApiSumDAO getCaseTimeElapsedApiSumDAO() {
+        return new CaseTimeElapsedApiSumDAO_Impl();
+    }
     
     /* DAO converters */
 

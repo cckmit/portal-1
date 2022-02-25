@@ -514,4 +514,9 @@ public class DaoMockTestConfiguration {
     public RFIDDeviceDAO getRFIDDeviceDAO() {
         return mock(RFIDDeviceDAO.class);
     }
+
+    @Bean
+    public CaseTimeElapsedApiSumDAO getCaseTimeElapsedApiSumDAO() {
+        return mock(CaseTimeElapsedApiSumDAO.class);
+    }
 }
