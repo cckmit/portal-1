@@ -227,6 +227,7 @@ public abstract class CommentAndHistoryListActivity
         Runnable removeTempAttachmentAction = () -> {
             tempAttachments.remove(attachment);
             view.attachmentContainer().remove(attachment);
+            fireEvent(new CommentAndHistoryEvents.Reload());
         };
 
         if(comment != null && extractIds(comment.getCaseAttachments()).contains(attachment.getId())){
@@ -276,7 +277,7 @@ public abstract class CommentAndHistoryListActivity
     }
 
     private void removeAttachment(Long id, Runnable successAction) {
-        attachmentService.removeAttachmentEverywhere(caseType, id, new FluentCallback<Long>()
+        attachmentService.removeAttachmentEverywhere(caseType, caseId, id, new FluentCallback<Long>()
                 .withError(getRemoveErrorHandler(this, lang))
                 .withSuccess(result -> successAction.run())
         );

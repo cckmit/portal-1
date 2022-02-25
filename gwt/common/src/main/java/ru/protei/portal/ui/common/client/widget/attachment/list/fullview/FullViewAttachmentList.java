@@ -123,7 +123,6 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
 
         activity.fireEvent(new ConfirmDialogEvents.Show(lang.attachmentRemoveConfirmMessage(), () -> {
             RemoveEvent.fire(this, viewToAttachment.get(attachment));
-            activity.fireEvent(new CommentAndHistoryEvents.Reload());
         }));
     }
 

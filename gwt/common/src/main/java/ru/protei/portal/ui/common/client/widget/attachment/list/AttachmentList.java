@@ -124,7 +124,6 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
 
         activity.fireEvent(new ConfirmDialogEvents.Show(lang.attachmentRemoveConfirmMessage(), () -> {
             RemoveEvent.fire(this, viewToAttachment.get(attachment));
-            activity.fireEvent(new CommentAndHistoryEvents.Reload());
         }));
     }
 

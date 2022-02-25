@@ -393,8 +393,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                 HelperFunc.subtract(comment.getCaseAttachments(), prevComment.getCaseAttachments())
         ).getData();
 
-        if (caseType.equals(CRM_SUPPORT) && ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty(addedAttachments)){
-            stream(addedAttachments).forEach(a -> {
+        if (caseType.equals(CRM_SUPPORT) && isNotEmpty(addedAttachments)){
+            addedAttachments.forEach(a -> {
                 addCaseAttachmentHistory(token, comment.getCaseId(), a.getId(), a.getFileName());
             });
         }
@@ -933,11 +933,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     private void removeAttachments(AuthToken token, En_CaseType caseType, Collection<CaseAttachment> list) {
         list.forEach(ca -> {
             String fileNameToBeRemoved = StringUtils.emptyIfNull(attachmentDAO.get(ca.getAttachmentId()).getFileName());
-            Long caseId = ca.getCaseId();
             Result<Long> removeAttachmentResult = attachmentService.removeAttachment(token, caseType, ca.getAttachmentId());
 
             if (removeAttachmentResult.isOk() && caseType.equals(CRM_SUPPORT)){
-                removeCaseAttachmentHistory(token, caseId, ca.getAttachmentId(), fileNameToBeRemoved);
+                removeCaseAttachmentHistory(token, ca.getCaseId(), ca.getAttachmentId(), fileNameToBeRemoved);
             }
         });
     }

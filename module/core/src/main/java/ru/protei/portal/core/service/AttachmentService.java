@@ -99,4 +99,6 @@ public interface AttachmentService {
     Result<Long> saveAttachment(Attachment attachment);
 
     Result<Attachment> getAttachmentByExtLink( String extLink);
+
+    Result<Attachment> getAttachment(AuthToken token, Long attachmentId);
 }

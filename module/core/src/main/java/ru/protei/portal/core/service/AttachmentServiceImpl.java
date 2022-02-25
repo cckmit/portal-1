@@ -228,6 +228,15 @@ public class AttachmentServiceImpl implements AttachmentService {
         return ok( attachment );
     }
 
+    @Override
+    public Result<Attachment> getAttachment(AuthToken token, Long attachmentId) {
+        Attachment attachment = attachmentDAO.get(attachmentId);
+        if (attachment == null) {
+            return error( En_ResultStatus.NOT_FOUND);
+        }
+        return ok( attachment );
+    }
+
     private boolean hasAccessForPrivateAttachments(AuthToken token, En_CaseType caseType) {
         if (!En_CaseType.CRM_SUPPORT.equals(caseType)) {
             return true;

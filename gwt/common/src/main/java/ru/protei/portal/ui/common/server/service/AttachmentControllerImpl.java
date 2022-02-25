@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_HistoryAction;
+import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.service.HistoryService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.AttachmentController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
@@ -48,13 +51,25 @@ public class AttachmentControllerImpl implements AttachmentController {
     }
 
     @Override
-    public Long removeAttachmentEverywhere(En_CaseType caseType, Long attachmentId) throws RequestFailedException{
-        log.info("removeAttachmentEverywhere(): caseType={}, attachmentId={}", caseType, attachmentId);
+    public Long removeAttachmentEverywhere(En_CaseType caseType, Long caseId, Long attachmentId) throws RequestFailedException{
+        log.info("removeAttachmentEverywhere(): caseType={}, caseId={}, attachmentId={}", caseType, caseId, attachmentId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+
+        Attachment attachment = null;
+        if (En_CaseType.CRM_SUPPORT.equals(caseType)){
+            Result<Attachment> result =  attachmentService.getAttachment(token, attachmentId);
+            if(result.isOk())
+                attachment = result.getData();
+        }
+
         Result<Long> response =  attachmentService.removeAttachmentEverywhere( token, caseType, attachmentId);
 
         if(response.isError())
             throw new RequestFailedException( response.getStatus() );
+
+        if (En_CaseType.CRM_SUPPORT.equals(caseType) && attachment != null && caseId != null){
+            historyService.createHistory(token, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_ATTACHMENT, attachmentId, attachment.getFileName(), null, null);
+        }
 
         return response.getData();
     }
@@ -65,6 +80,13 @@ public class AttachmentControllerImpl implements AttachmentController {
         sessionService.clearAllFiles(httpServletRequest);
     }
 
+    @Override
+    public Long addCaseAttachmentHistory(Long caseObjectId, Long attachmentId, String fileName) throws RequestFailedException {
+        log.info("addCaseAttachmentHistory(): caseObjectId={}, attachmentId={}, fileName={}", caseObjectId, attachmentId, fileName);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(historyService.createHistory(token, caseObjectId, En_HistoryAction.ADD, En_HistoryType.CASE_ATTACHMENT,null, null, attachmentId, fileName));
+    }
+
     @Autowired
     SessionService sessionService;
 
@@ -73,6 +95,9 @@ public class AttachmentControllerImpl implements AttachmentController {
 
     @Autowired
     ru.protei.portal.core.service.AttachmentService attachmentService;
+
+    @Autowired
+    HistoryService historyService;
 
     private static final Logger log = LoggerFactory.getLogger(AttachmentControllerImpl.class);
 
