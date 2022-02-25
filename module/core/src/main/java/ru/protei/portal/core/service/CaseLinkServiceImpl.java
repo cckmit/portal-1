@@ -35,6 +35,7 @@ import static java.util.stream.Collectors.toList;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.NumberUtils.parseLong;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 
@@ -138,7 +139,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 }
 
                 if (En_CaseType.CRM_SUPPORT.equals(caseType)){
-                    addCaseLinkHistory(authToken, createdLink.getCaseId(), createdLink.getId(), createdLink.getRemoteId());
+                    addCaseLinkHistory(authToken, createdLink.getCaseId(), createdLink.getId(), getLinkHistoryName(createdLink));
                 }
 
                 CaseLink newState = caseLinkDAO.get(createdLink.getId());
@@ -180,7 +181,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         synchronizeYouTrackLinks(Collections.singletonList(link), caseType);
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)){
-            addCaseLinkHistory(authToken, createdLink.getCaseId(), createdLink.getId(), createdLink.getRemoteId());
+            addCaseLinkHistory(authToken, createdLink.getCaseId(), createdLink.getId(), getLinkHistoryName(createdLink));
         }
 
         CaseLink newState = caseLinkDAO.get(createdLink.getId());
@@ -233,7 +234,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         synchronizeYouTrackLinks(Collections.singletonList(deletedLink), caseType);
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)){
-            removeCaseLinkHistory(authToken, deletedLink.getCaseId(), id, deletedLink.getRemoteId());
+            removeCaseLinkHistory(authToken, deletedLink.getCaseId(), id, getLinkHistoryName(deletedLink));
         }
 
         return sendNotificationLinkRemoved(authToken, deletedLink.getCaseId(), deletedLink, caseType)
@@ -637,6 +638,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                             crossCrmLink.setType(En_CaseLink.CRM);
                             crossCrmLink.setBundleType(makeCrossBundleType(link.getBundleType()));
                             caseLinkDAO.persist(crossCrmLink);
+                            addCaseLinkHistory(token, crossCrmLink.getCaseId(), crossCrmLink.getId(), getLinkHistoryName(crossCrmLink));
                         }
                     }
                     return ok(createdLinkId);
@@ -921,5 +923,16 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             return false;
         }
         return true;
+    }
+
+    private String getLinkHistoryName(CaseLink caseLink) {
+        if (En_CaseLink.CRM.equals(caseLink.getType()) ) {
+
+            Long caseId = parseLong(caseLink.getRemoteId());
+            if (caseId == null) return caseLink.getRemoteId();
+
+            return En_CaseLink.CRM.name() + "-" + caseObjectDAO.getCaseNumberById(caseId);
+        }
+        return caseLink.getRemoteId();
     }
 }

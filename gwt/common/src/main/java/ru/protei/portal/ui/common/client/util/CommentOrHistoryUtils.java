@@ -251,18 +251,6 @@ public class CommentOrHistoryUtils {
             return caseHistorySimpleItemView;
         }
 
-        if (En_HistoryType.CASE_ATTACHMENT.equals(historyType)){
-            if (StringUtils.isEmpty(link)){
-                CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
-                caseHistorySimpleItemView.setName(transliteration(value));
-                return caseHistorySimpleItemView;
-            } else {
-                CaseHistoryLinkItemView caseHistoryLinkItemView = caseHistoryLinkItemViewProvider.get();
-                caseHistoryLinkItemView.setLink(transliteration(value), link);
-                return caseHistoryLinkItemView;
-            }
-        }
-
         if (En_HistoryType.CASE_MANAGER.equals(historyType)
                 || En_HistoryType.PLAN.equals(historyType)
                 || En_HistoryType.CASE_PRODUCT.equals(historyType)
@@ -271,6 +259,7 @@ public class CommentOrHistoryUtils {
                 || En_HistoryType.CASE_MANAGER_COMPANY.equals(historyType)
                 || En_HistoryType.CASE_INITIATOR_COMPANY.equals(historyType)
                 || En_HistoryType.CASE_LINK.equals(historyType)
+                || En_HistoryType.CASE_ATTACHMENT.equals(historyType)
         ) {
             CaseHistoryLinkItemView caseHistoryLinkItemView = caseHistoryLinkItemViewProvider.get();
             caseHistoryLinkItemView.setLink(transliteration(value), link);
