@@ -3,8 +3,7 @@ package ru.protei.portal.core.model.query;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import ru.protei.portal.core.model.dict.En_ContractState;
+import ru.protei.portal.core.model.ent.CaseState;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -23,7 +22,7 @@ public class ContractApiQuery implements Serializable {
 
     private Date openStateDate;
 
-    private List<En_ContractState> states;
+    private List<CaseState> states;
 
     private List<Long> organizationIds;
 
@@ -46,11 +45,11 @@ public class ContractApiQuery implements Serializable {
         this.openStateDate = openStateDate;
     }
 
-    public List<En_ContractState> getStates() {
+    public List<CaseState> getStates() {
         return states;
     }
 
-    public void setStates(List<En_ContractState> states) {
+    public void setStates(List<CaseState> states) {
         this.states = states;
     }
 

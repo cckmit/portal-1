@@ -234,6 +234,14 @@ public class CrmConstants {
         long STICKER_LABELING_IN_QUEUE = 60;
         long STICKER_LABELING = 61;
         long TRANSFERRED_FOR_TESTING = 62;
+        long AGREEMENT = 63;
+        long HAVE_AN_ORIGINAL = 64;
+        long COPIES_SEND_TO_CUSTOMER = 65;
+        long WAITING_FOR_COPIES_FROM_CUSTOMER = 66;
+        long WAITING_FOR_ORIGINAL = 67;
+        long CANCELLED = 68;
+        long SIGNED_ON_SITE = 69;
+        long EDS_SIGNED = 70;
     }
 
     public interface Style {

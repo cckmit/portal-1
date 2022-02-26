@@ -25,7 +25,6 @@ import ru.protei.portal.ui.contract.client.activity.table.concise.AbstractContra
 import ru.protei.portal.ui.contract.client.activity.table.concise.AbstractContractConciseTableView;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.util.ContractSupportService.getContractKind;
@@ -84,8 +83,8 @@ public class ContractConciseTableView extends Composite implements AbstractContr
             Element root = DOM.createDiv();
             ImageElement image = DOM.createImg().cast();
             image.addClassName("height-30");
-            image.setSrc("./images/contract_" + contract.getState().name().toLowerCase() + ".png");
-            image.setTitle(stateLang.getName(contract.getState()));
+            image.setSrc("./images/contract_" + contract.getStateName().toLowerCase() + ".png");
+            image.setTitle(stateLang.getName(contract.getStateName()));
             root.appendChild(image);
             cell.appendChild(root);
         }

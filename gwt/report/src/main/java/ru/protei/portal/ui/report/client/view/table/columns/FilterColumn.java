@@ -283,7 +283,7 @@ public class FilterColumn extends StaticColumn<ReportDto> {
         if (isNotEmpty(contractQuery.getStates())) {
             Element managerElement = DOM.createElement("p");
             managerElement.setInnerText(lang.contractState() + ": " + stream(contractQuery.getStates())
-                    .map(state -> contractStateLang.getName(state))
+                    .map(state -> contractStateLang.getName(state.getState()))
                     .collect(Collectors.joining(", ")));
             element.appendChild(managerElement);
         }

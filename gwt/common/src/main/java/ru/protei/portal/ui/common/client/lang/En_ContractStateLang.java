@@ -1,29 +1,28 @@
 package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_ContractState;
 
 public class En_ContractStateLang {
-    public String getName(En_ContractState value) {
-        if (value == null)
+    public String getName(String state) {
+        if (state == null)
             return "";
 
-        switch (value) {
-            case AGREEMENT:
+        switch (state.toLowerCase()) {
+            case "agreement":
                 return lang.contractStateAgreement();
-            case COPIES_SEND_TO_CUSTOMER:
+            case "copies send to customer":
                 return lang.contractStateCopiesSendToCustomer();
-            case HAVE_ORIGINAL:
+            case "have an original":
                 return lang.contractStateHaveOriginal();
-            case WAIT_ORIGINAL:
+            case "waiting for original":
                 return lang.contractStateWaitOriginal();
-            case WAITING_COPIES_FROM_CUSTOMER:
+            case "waiting for copies from customer":
                 return lang.contractWaitingCopiesFromCustomer();
-            case CANCELLED:
+            case "cancelled":
                 return lang.contractCancelled();
-            case EDS_SIGNED:
+            case "eds signed":
                 return lang.contractEDSSigned();
-            case SIGNED_ON_SITE:
+            case "signed on site":
                 return lang.contractSignedOnSite();
         }
         return lang.unknownField();

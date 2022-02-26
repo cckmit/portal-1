@@ -152,8 +152,8 @@ public class ContractTableView extends Composite implements AbstractContractTabl
             image.addClassName("height-40");
             // https://www.flaticon.com/authors/flat_circular/flat
             // https://www.flaticon.com/packs/business-strategy-2
-            image.setSrc( "./images/contract_" + contract.getState().name().toLowerCase() + ".png" );
-            image.setTitle( contractStateLang.getName(contract.getState()) );
+            image.setSrc( "./images/contract_" + contract.getStateName().toLowerCase() + ".png" );
+            image.setTitle( contractStateLang.getName(contract.getStateName()) );
             root.appendChild(image);
             cell.appendChild(root);
         }

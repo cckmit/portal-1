@@ -1,0 +1,65 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-contract-states-to-case_state-table" author="novikov_a">
+        <insert tableName="case_state">
+            <column name="id" value="63"/>
+            <column name="STATE" value="agreement"/>
+            <column name="INFO" value="agreement"/>
+            <column name="usage_in_companies" value="null"/>
+            <column name="color" value=""/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="64"/>
+            <column name="STATE" value="copies send to customer"/>
+            <column name="INFO" value="copies send to customer"/>
+            <column name="usage_in_companies" value="null"/>
+            <column name="color" value=""/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="65"/>
+            <column name="STATE" value="have an original"/>
+            <column name="INFO" value="have an original"/>
+            <column name="usage_in_companies" value="null"/>
+            <column name="color" value=""/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="66"/>
+            <column name="STATE" value="waiting for original"/>
+            <column name="INFO" value="waiting for original"/>
+            <column name="usage_in_companies" value="null"/>
+            <column name="color" value=""/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="67"/>
+            <column name="STATE" value="waiting for copies from customer"/>
+            <column name="INFO" value="waiting for copies from customer"/>
+            <column name="usage_in_companies" value="null"/>
+            <column name="color" value=""/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="68"/>
+            <column name="STATE" value="cancelled"/>
+            <column name="INFO" value="cancelled"/>
+            <column name="usage_in_companies" value="null"/>
+            <column name="color" value=""/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="69"/>
+            <column name="STATE" value="eds signed"/>
+            <column name="INFO" value="eds signed"/>
+            <column name="usage_in_companies" value="null"/>
+            <column name="color" value=""/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="70"/>
+            <column name="STATE" value="signed on site"/>
+            <column name="INFO" value="signed on site"/>
+            <column name="usage_in_companies" value="null"/>
+            <column name="color" value=""/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

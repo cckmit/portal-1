@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
-import ru.protei.portal.core.model.enterprise1c.dto.ContractAdditionalProperty1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -44,6 +43,7 @@ import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
+import static ru.protei.portal.core.model.util.CrmConstants.State.AGREEMENT;
 
 public class ContractServiceImpl implements ContractService {
 
@@ -59,6 +59,8 @@ public class ContractServiceImpl implements ContractService {
     ContractorDAO contractorDAO;
     @Autowired
     DevUnitDAO devUnitDAO;
+    @Autowired
+    CaseStateDAO caseStateDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
@@ -136,7 +138,7 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.PROJECT_NOT_SELECTED);
         }
 
-        if (contract.getState() == null) {
+        if (contract.getStateId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -172,7 +174,7 @@ public class ContractServiceImpl implements ContractService {
             throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
-        Result<Long> historyResult = createStateHistory(token, contractId, En_HistoryAction.ADD, null, contract.getState());
+        Result<Long> historyResult = createStateHistory(token, contractId, En_HistoryAction.ADD, null, caseStateDAO.get(contract.getStateId()));
         if (historyResult.isError()) {
             log.error("createContract(): id = {} | failed to create history for contract state : {}", contractId, historyResult.getStatus());
             throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
@@ -226,7 +228,7 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.PROJECT_NOT_SELECTED);
         }
 
-        if (contract.getState() == null) {
+        if (contract.getStateId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -277,9 +279,11 @@ public class ContractServiceImpl implements ContractService {
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
-        boolean contractStateChanged = prevContract.getState() != contract.getState();
+        boolean contractStateChanged = prevContract.getStateId() != contract.getStateId();
         if (contractStateChanged) {
-            Result<Long> historyResult = createStateHistory(token, contractId, En_HistoryAction.CHANGE, prevContract.getState(), contract.getState());
+            Result<Long> historyResult = createStateHistory(token, contractId, En_HistoryAction.CHANGE,
+                                                            caseStateDAO.get(prevContract.getStateId()),
+                                                            caseStateDAO.get(contract.getStateId()));
             if (historyResult.isError()) {
                 log.error("updateContract(): id = {} | failed to create history for changed contract state : {}", contractId, historyResult.getStatus());
                 throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
@@ -552,16 +556,16 @@ public class ContractServiceImpl implements ContractService {
     }
 
     private Result<Long> createStateHistory(AuthToken token, Long contractId, En_HistoryAction action,
-                                            En_ContractState oldState, En_ContractState newState) {
+                                            CaseState oldState, CaseState newState) {
         return historyService.createHistory(
             token,
             contractId,
             action,
             En_HistoryType.CONTRACT_STATE,
-            oldState == null ? null : (long) oldState.getId(),
-            oldState == null ? null : oldState.name(),
-            newState == null ? null : (long) newState.getId(),
-            newState == null ? null : newState.name()
+            oldState == null ? null : oldState.getId(),
+            oldState == null ? null : oldState.getState(),
+            newState == null ? null : newState.getId(),
+            newState == null ? null : newState.getState()
         );
     }
 
@@ -601,7 +605,7 @@ public class ContractServiceImpl implements ContractService {
 
         caseObject.setInfo(contract.getDescription());
         caseObject.setName(contract.getNumber());
-        caseObject.setStateId(contract.getState().getId());
+        caseObject.setStateId(contract.getStateId());
         caseObject.setManagerId(contract.getContractSignManagerId());
         caseObject.setInitiatorId(contract.getCuratorId());
 
@@ -658,7 +662,7 @@ public class ContractServiceImpl implements ContractService {
 
     private boolean is1cSyncEnabled(Contract contract) {
         boolean sync1cEnabled = config.data().enterprise1C().isContractSyncEnabled();
-        boolean stateAgreement = contract.getState() == En_ContractState.AGREEMENT;
+        boolean stateAgreement = contract.getStateId() == AGREEMENT;
         return sync1cEnabled && !stateAgreement;
     }
 

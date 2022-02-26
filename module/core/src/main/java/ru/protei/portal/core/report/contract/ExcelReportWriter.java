@@ -181,10 +181,10 @@ public class ExcelReportWriter implements
     }
 
     private String makeState(Contract contract) {
-        if (contract.getState() == null) {
+        if (contract.getStateId() == null) {
             return "";
         }
-        return enumLangUtil.contractStateLang(contract.getState(), lang.getLanguageTag());
+        return enumLangUtil.contractStateLang(contract.getStateName(), lang.getLanguageTag());
     }
 
     private String makeExpenditureContracts(Contract contract) {

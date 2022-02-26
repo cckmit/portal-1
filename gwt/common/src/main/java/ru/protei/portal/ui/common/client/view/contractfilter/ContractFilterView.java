@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.query.EmployeeQuery;
@@ -76,7 +77,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     }
 
     private void resetStates() {
-        states.setValue(new HashSet<>(En_ContractState.contractStatesByDefault()));
+        states.setValue(new HashSet<>(ContractState.contractStatesByDefault()));
     }
 
     @Override
@@ -126,7 +127,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     }
 
     @Override
-    public HasValue<Set<En_ContractState>> states() {
+    public HasValue<Set<CaseState>> states() {
         return states;
     }
 
@@ -223,7 +224,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     }
 
     @UiHandler("states")
-    public void onStateChanged(ValueChangeEvent<Set<En_ContractState>> event) {
+    public void onStateChanged(ValueChangeEvent<Set<CaseState>> event) {
         restartChangeTimer();
     }
 

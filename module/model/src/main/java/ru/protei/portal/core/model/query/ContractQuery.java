@@ -1,8 +1,8 @@
 package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_ContractKind;
-import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.DateRange;
 
@@ -25,7 +25,7 @@ public class ContractQuery extends BaseQuery {
 
     private List<Long> caseTagsIds;
 
-    private List<En_ContractState> states;
+    private List<CaseState> states;
 
     private List<Long> managerIds;
 
@@ -109,11 +109,11 @@ public class ContractQuery extends BaseQuery {
         this.contractorIds = contractorIds;
     }
 
-    public List<En_ContractState> getStates() {
+    public List<CaseState> getStates() {
         return states;
     }
 
-    public void setStates(List<En_ContractState> states) {
+    public void setStates(List<CaseState> states) {
         this.states = states;
     }
 
