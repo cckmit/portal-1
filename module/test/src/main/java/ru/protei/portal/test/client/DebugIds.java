@@ -1002,6 +1002,7 @@ public class DebugIds {
         String PARENT_SELECTOR = "contract-parent-selector";
         String DELIVERY_NUMBER_INPUT = "contract-delivery-number-input";
         String DESCRIPTION_INPUT = "contract-description-input";
+        String FILE_LOCATION_INPUT = "contract-file-location-input";
         String DATE_SIGNING_CONTAINER = "contract-date-signing-container";
         String DATE_VALID_CONTAINER = "contract-date-valid-container";
         String COST_WITH_CURRENCY_CONTAINER = "contract-cost-with-currency-container";

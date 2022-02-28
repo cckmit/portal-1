@@ -183,6 +183,9 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcColumn(name = "delivery_number")
     private String deliveryNumber;
 
+    @JdbcColumn(name = "file_location")
+    private String fileLocation;
+
     public Contract() {}
 
     public Contract(Long id, String number) {
@@ -476,6 +479,14 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.dateEndWarranty = dateEndWarranty;
     }
 
+    public String getFileLocation() {
+        return fileLocation;
+    }
+
+    public void setFileLocation(String fileLocation) {
+        this.fileLocation = fileLocation;
+    }
+
     public static Contract fromContractInfo(ContractInfo info) {
         if (info == null) {
             return null;
@@ -535,6 +546,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", deliveryNumber=" + deliveryNumber +
                 ", dateEndWarranty=" + dateEndWarranty +
                 ", dateExecution=" + dateExecution +
+                ", fileLocation='" + fileLocation + '\'' +
                 '}';
     }
 

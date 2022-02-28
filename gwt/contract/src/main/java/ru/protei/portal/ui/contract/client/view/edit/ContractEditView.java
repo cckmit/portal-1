@@ -226,6 +226,11 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         return tabs.tabVisibility(lang.contractListOfExpenditureHeader());
     }
 
+    @Override
+    public HasValue<String> fileLocation() {
+        return fileLocation;
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -330,6 +335,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         deliveryNumber.ensureDebugId(DebugIds.CONTRACT.DELIVERY_NUMBER_INPUT);
         descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DESCRIPTION);
         description.ensureDebugId(DebugIds.CONTRACT.DESCRIPTION_INPUT);
+        fileLocation.ensureDebugId(DebugIds.CONTRACT.FILE_LOCATION_INPUT);
         dateSigningLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DATE_SIGNING);
         dateSigning.setEnsureDebugId(DebugIds.CONTRACT.DATE_SIGNING_CONTAINER);
         dateValidLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DATE_VALID);
@@ -384,6 +390,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     ValidableTextBox number;
     @UiField
     ValiableAutoResizeTextArea description;
+    @UiField
+    TextBox fileLocation;
     @Inject
     @UiField(provided = true)
     SinglePicker dateSigning;

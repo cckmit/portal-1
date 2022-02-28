@@ -85,4 +85,6 @@ public interface AbstractContractEditView extends IsWidget {
     HasWidgets expenditureContractsContainer();
 
     HasVisibility expenditureContractsVisibility();
+
+    HasValue<String> fileLocation();
 }

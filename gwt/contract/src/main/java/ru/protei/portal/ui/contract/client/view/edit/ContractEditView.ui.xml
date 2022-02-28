@@ -87,6 +87,14 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group form-group-default">
+                                <label class="fade"><ui:text from="{lang.contractFileLocation}"/></label>
+                                <g:TextBox ui:field="fileLocation" styleName="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-6">
                             <div class="form-group form-group-default">
                                 <label class="fade" ui:field="costWithCurrencyLabel">
