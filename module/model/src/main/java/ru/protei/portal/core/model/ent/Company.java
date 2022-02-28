@@ -8,11 +8,10 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 @JdbcEntity(table = "company")
 public class Company extends AuditableObject implements EntityOptionSupport {
@@ -245,11 +244,12 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     }
 
     public Collection<Long> getCompanyAndChildIds() {
-        ArrayList<Long> ids = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
         ids.add(getId());
-        if (getChildCompanies() != null) {
-            ids.addAll(getChildCompanies().stream().map(Company::getId).collect(Collectors.toList()));
-        }
+        ids.addAll(stream(getChildCompanies())
+                .filter(company -> !company.isArchived)
+                .map(Company::getId)
+                .collect(Collectors.toList()));
         return ids;
     }
 
