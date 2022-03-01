@@ -13,7 +13,7 @@ public class ContractState {
 
     private static String[] states = new String[]{"agreement", "have an original", "copies send to customer",
                                                   "waiting for copies from customer", "waiting for original",
-                                                  "cancelled", "eds signed", "signed on site"};
+                                                  "cancelled", "signed on site", "eds signed", };
     @JsonIgnore
     private static final List<CaseState> allContractStates;
     @JsonIgnore
@@ -51,5 +51,5 @@ public class ContractState {
     @JsonIgnore
     public static List<CaseState> contractStatesByDefault() { return contractStatesByDefault; }
     @JsonIgnore
-    public static List<CaseState> getOpenedContractStates() { return openedContractStates; }
+    public static List<CaseState> openedContractStates() { return openedContractStates; }
 }

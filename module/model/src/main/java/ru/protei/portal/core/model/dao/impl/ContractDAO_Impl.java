@@ -17,7 +17,7 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
 
-import static ru.protei.portal.core.model.dict.ContractState.getOpenedContractStates;
+import static ru.protei.portal.core.model.dict.ContractState.openedContractStates;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
@@ -234,7 +234,7 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                 condition.append(" ) hww");
                 condition.append(" WHERE 1=1");
                 condition.append(" AND hww.rownumber = 1");
-                condition.append(" AND hww.new_id IN ").append(makeInArg(getOpenedContractStates(), s -> String.valueOf(s.getId())));
+                condition.append(" AND hww.new_id IN ").append(makeInArg(openedContractStates(), s -> String.valueOf(s.getId())));
                 condition.append(")");
                 args.add(query.getOpenStateDate());
             }

@@ -1,0 +1,42 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="update-contract-states-in-case_object-table" author="novikov_a">
+        <update tableName="case_object">
+            <column name="STATE" value="63"/>
+            <where>CASE_TYPE = 12 AND STATE = 1</where>
+        </update>
+        <update tableName="case_object">
+            <column name="STATE" value="64"/>
+            <where>CASE_TYPE = 12 AND STATE = 2</where>
+        </update>
+        <update tableName="case_object">
+            <column name="STATE" value="65"/>
+            <where>CASE_TYPE = 12 AND STATE = 3</where>
+        </update>
+        <update tableName="case_object">
+            <column name="STATE" value="66"/>
+            <where>CASE_TYPE = 12 AND STATE = 4</where>
+        </update>
+        <update tableName="case_object">
+            <column name="STATE" value="67"/>
+            <where>CASE_TYPE = 12 AND STATE = 5</where>
+        </update>
+        <update tableName="case_object">
+            <column name="STATE" value="68"/>
+            <where>CASE_TYPE = 12 AND STATE = 6</where>
+        </update>
+        <update tableName="case_object">
+            <column name="STATE" value="69"/>
+            <where>CASE_TYPE = 12 AND STATE = 7</where>
+        </update>
+        <update tableName="case_object">
+            <column name="STATE" value="70"/>
+            <where>CASE_TYPE = 12 AND STATE = 8</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>

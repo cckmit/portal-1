@@ -42,6 +42,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static ru.protei.portal.core.model.dict.ContractState.contractStatesByDefault;
+
 public class ContractFilterView extends Composite implements AbstractContractFilterView {
 
     @Inject
@@ -77,7 +79,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     }
 
     private void resetStates() {
-        states.setValue(new HashSet<>(ContractState.contractStatesByDefault()));
+        states.setValue(new HashSet<>(contractStatesByDefault()));
     }
 
     @Override

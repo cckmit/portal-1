@@ -17,7 +17,7 @@ import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.En_ContractKindLang;
-import ru.protei.portal.ui.common.client.lang.En_ContractStateLang;
+import ru.protei.portal.ui.common.client.lang.ContractStateLang;
 import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.util.HtmlUtils;
@@ -133,7 +133,7 @@ public class ContractConciseTableView extends Composite implements AbstractContr
     @Inject
     PolicyService policyService;
     @Inject
-    En_ContractStateLang stateLang;
+    ContractStateLang stateLang;
     @Inject
     En_ContractTypeLang typeLang;
     @Inject
