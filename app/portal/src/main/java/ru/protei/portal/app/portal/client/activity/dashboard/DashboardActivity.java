@@ -76,17 +76,6 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     }
 
     @Event
-    public void onProjectCreateClicked(ActionBarEvents.Clicked event) {
-        if (!UiConstants.ActionBarIdentity.DASHBOARD_CREATE_PROJECT.equals(event.identity)) {
-            return;
-        }
-        if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_CREATE)) {
-            return;
-        }
-        fireEvent(new ProjectEvents.Edit());
-    }
-
-    @Event
     public void onTableCreateClicked(ActionBarEvents.Clicked event) {
         if (!UiConstants.ActionBarIdentity.DASHBOARD_CREATE_TABLE.equals(event.identity)) {
             return;
@@ -104,9 +93,6 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         fireEvent(new ActionBarEvents.Clear());
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_CREATE)) {
             fireEvent(new ActionBarEvents.Add(lang.issueCreate(), null, UiConstants.ActionBarIdentity.DASHBOARD_CREATE_ISSUE));
-        }
-        if (policyService.hasPrivilegeFor(En_Privilege.PROJECT_CREATE)) {
-            fireEvent(new ActionBarEvents.Add(lang.projectCreate(), null, UiConstants.ActionBarIdentity.DASHBOARD_CREATE_PROJECT));
         }
         fireEvent(new ActionBarEvents.Add(lang.dashboardAddTable(), null, UiConstants.ActionBarIdentity.DASHBOARD_CREATE_TABLE));
     }
