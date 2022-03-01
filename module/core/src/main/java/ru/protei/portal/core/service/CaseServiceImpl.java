@@ -1551,6 +1551,7 @@ public class CaseServiceImpl implements CaseService {
         subtask.setProductId(parent.getProductId());
         subtask.setPlatformId(parent.getPlatformId());
         subtask.setNotifiers(setOf(Person.fromPersonShortView(parent.getManager())));
+        subtask.setWorkTrigger(En_WorkTrigger.NONE);
 
         CaseLink caseLink = new CaseLink();
         caseLink.setType(En_CaseLink.CRM);
