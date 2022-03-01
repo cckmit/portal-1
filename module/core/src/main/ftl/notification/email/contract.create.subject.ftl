@@ -1,0 +1,1 @@
+${contractNotifyCreate} [<#noparse>${EnumLangUtil.contractTypeLang(contractType, lang)} ${contractNumber}</#noparse>]
