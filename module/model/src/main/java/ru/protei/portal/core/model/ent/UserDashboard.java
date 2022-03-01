@@ -71,8 +71,9 @@ public class UserDashboard implements Serializable {
     }
 
     public void setProjectFilterId(Long projectFilterId) {
+        if (caseFilterId != null) return;
         this.caseFilterId = projectFilterId;
-        if (caseFilterDto != null &&
+        if (projectFilterDto != null &&
                 projectFilterDto.getCaseFilter() != null &&
                 !Objects.equals(projectFilterDto.getCaseFilter().getId(), projectFilterId)) {
 

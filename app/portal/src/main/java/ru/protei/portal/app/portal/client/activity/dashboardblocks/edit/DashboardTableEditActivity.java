@@ -49,9 +49,9 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
             dashboard = new UserDashboard();
         }
 
-        view.name().setValue(dashboard.getName());
         view.issueFilter().setValue(dashboard.getCaseFilter() == null ? null : dashboard.getCaseFilter().toShortView(), true);
         view.projectFilter().setValue(dashboard.getProjectFilter() == null ? null : dashboard.getProjectFilter().toShortView(), true);
+        view.name().setValue(dashboard.getName());
         view.updateIssueFilterSelector();
 
         dialogView.saveButtonVisibility().setVisible(true);
@@ -70,10 +70,9 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
         FilterShortView issueFilter = view.issueFilter().getValue();
         FilterShortView projectFilter = view.projectFilter().getValue();
 
-
         dashboard.setName(view.name().getValue());
-        dashboard.setCaseFilterId(!isFilterBlank(issueFilter) ? issueFilter.getId() : null);
-        dashboard.setProjectFilterId(!isFilterBlank(projectFilter) ? projectFilter.getId() : null);
+        dashboard.setCaseFilterId(issueFilter != null ? issueFilter.getId() : null);
+        dashboard.setProjectFilterId(projectFilter != null ? projectFilter.getId() : null);
 
         userLoginController.saveUserDashboard(dashboard, new FluentCallback<Long>()
                 .withSuccess(id -> {
@@ -144,12 +143,12 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
         FilterShortView issueFilter = view.issueFilter().getValue();
         FilterShortView projectFilter = view.projectFilter().getValue();
 
-        if (isFilterBlank(issueFilter) && isFilterBlank(projectFilter)) {
+        if (issueFilter == null && projectFilter == null) {
             fireEvent(new NotifyEvents.Show(lang.errDashboardChooseFilter(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
-        if (!isFilterBlank(issueFilter) && !isFilterBlank(projectFilter)) {
+        if (issueFilter != null && projectFilter != null) {
             fireEvent(new NotifyEvents.Show(lang.errDashboardChooseFilter(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
@@ -160,10 +159,6 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
         }
 
         return true;
-    }
-
-    private boolean isFilterBlank(FilterShortView filter) {
-        return filter == null || filter.getId() == null;
     }
 
     private CaseFilterDto<CaseQuery> makeFilterNewIssues() {

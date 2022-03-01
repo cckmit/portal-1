@@ -186,7 +186,14 @@ public class UserDashboardServiceImpl implements UserDashboardService {
         for (UserDashboard userDashboard : userDashboards) {
             try {
                 CaseFilter caseFilter = idToCaseFilter.get(userDashboard.getCaseFilterId());
-                setDashboardFilterDtoByType(caseFilter, userDashboard);
+                if (En_CaseFilterType.CASE_OBJECTS.equals(caseFilter.getType())) {
+                    CaseQuery caseQuery = objectMapper.readValue(caseFilter.getParams(), CaseQuery.class);
+                    userDashboard.setCaseFilterDto(new CaseFilterDto<>(caseFilter, caseQuery));
+                }
+                if (En_CaseFilterType.PROJECT.equals(caseFilter.getType())) {
+                    ProjectQuery projectQuery = objectMapper.readValue(caseFilter.getParams(), ProjectQuery.class);
+                    userDashboard.setProjectFilterDto(new CaseFilterDto<>(caseFilter, projectQuery));
+                }
             } catch (IOException e) {
                 log.warn("fillDashboardsWithCaseFilterDto(): cannot read filter params. caseFilter={}", userDashboard.getCaseFilter());
                 e.printStackTrace();
@@ -195,17 +202,6 @@ public class UserDashboardServiceImpl implements UserDashboardService {
         }
 
         return ok(userDashboards);
-    }
-
-    private void setDashboardFilterDtoByType(CaseFilter caseFilter, UserDashboard userDashboard) throws IOException {
-        if (En_CaseFilterType.CASE_OBJECTS.equals(caseFilter.getType())) {
-            CaseQuery caseQuery = objectMapper.readValue(caseFilter.getParams(), CaseQuery.class);
-            userDashboard.setCaseFilterDto(new CaseFilterDto<>(caseFilter, caseQuery));
-        }
-        if (En_CaseFilterType.PROJECT.equals(caseFilter.getType())) {
-            ProjectQuery projectQuery = objectMapper.readValue(caseFilter.getParams(), ProjectQuery.class);
-            userDashboard.setProjectFilterDto(new CaseFilterDto<>(caseFilter, projectQuery));
-        }
     }
 
     private List<UserDashboard> updateOrders(List<UserDashboard> userDashboards) {
