@@ -88,7 +88,6 @@ import ru.protei.portal.ui.common.client.widget.employeeregstate.EmployeeRegistr
 import ru.protei.portal.ui.common.client.widget.issuestate.StateOptionsModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateSelectorModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
-import ru.protei.portal.ui.common.client.widget.selector.contract.ContractModel;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionModel;
@@ -196,8 +195,6 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( ProjectSearchActivity.class ).asEagerSingleton();
         bind(AbstractProjectSearchView.class ).to( ProjectSearchView.class ).in( Singleton.class );
-
-        bind(ContractModel.class).asEagerSingleton();
 
         bind(AbstractYoutrackWorkFilterActivity.class).to(YoutrackWorkFilterActivity.class);
         bind(AbstractYoutrackWorkFilterView.class).to(YoutrackWorkFilterView.class);

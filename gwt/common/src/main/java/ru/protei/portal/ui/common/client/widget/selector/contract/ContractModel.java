@@ -6,60 +6,82 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.struct.ContractInfo;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.ContractEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
-import ru.protei.portal.ui.common.client.selector.model.BaseSelectorModel;
+import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCache;
+import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHandler;
+import ru.protei.portal.ui.common.client.selector.pageable.SelectorItemRenderer;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.person.Refreshable;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class ContractModel extends BaseSelectorModel<ContractInfo> implements Activity {
+public abstract class ContractModel implements Activity, AsyncSelectorModel<ContractInfo>, SelectorItemRenderer<ContractInfo> {
 
     @Event
     public void onInit(AuthEvents.Success event) {
-        clean();
+        cache.clearCache();
     }
 
     @Event
     public void onContractListChanged(ContractEvents.ChangeModel event) {
-        clean();
+        cache.clearCache();
     }
 
-    public void updateProject(Refreshable selector, Long projectId) {
-        this.refreshable = selector;
-        query.setProjectId( projectId );
-        clean();
+    public ContractModel() {
+        query = makeQuery();
+        cache.setLoadHandler(makeLoadHandler(query));
     }
 
     @Override
-    protected void requestData(LoadingHandler selector, String searchText ) {
-        contractController.getContracts(query, new FluentCallback<SearchResult<Contract>>()
-                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
-                .withSuccess(contracts -> {
-                    List<ContractInfo> options = contracts.getResults().stream()
-                            .map(Contract::toContactInfo)
-                            .collect(Collectors.toList());
-                    updateElements(options, selector);
-                    if(refreshable!=null){
-                        refreshable.refresh();
-                    }
-                })
-        );
+    public ContractInfo get(int elementIndex, LoadingHandler loadingHandler) {
+        return cache.get(elementIndex, loadingHandler);
     }
 
-    private ContractQuery query = new ContractQuery();
-    private Refreshable refreshable;
+    @Override
+    public String getElementName(ContractInfo value) {
+        return value == null ? "" : value.getNumber();
+    }
+
+    public void setProject(Long projectId) {
+        cache.clearCache();
+        query.setProjectId(projectId);
+    }
+
+    private ContractQuery makeQuery() {
+        return new ContractQuery();
+    }
+
+    private SelectorDataCacheLoadHandler<ContractInfo> makeLoadHandler(final ContractQuery query) {
+        return (offset, limit, handler) -> {
+            query.setOffset(offset);
+            query.setLimit(limit);
+            contractController.getContracts(query, new FluentCallback<SearchResult<Contract>>()
+                    .withError(throwable -> {
+                        fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                        handler.onFailure( throwable );
+                    })
+                    .withSuccess(contracts -> {
+                        handler.onSuccess(contracts.getResults().stream()
+                                .map(Contract::toContactInfo)
+                                .collect(Collectors.toList()));
+                    })
+            );
+        };
+    }
 
     @Inject
     Lang lang;
     @Inject
     ContractControllerAsync contractController;
 
+    private ContractQuery query;
+
+    private SelectorDataCache<ContractInfo> cache = new SelectorDataCache<>();
 }
