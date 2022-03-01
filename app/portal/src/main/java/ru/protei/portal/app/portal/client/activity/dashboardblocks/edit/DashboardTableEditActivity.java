@@ -51,6 +51,7 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
 
         view.name().setValue(dashboard.getName());
         view.issueFilter().setValue(dashboard.getCaseFilter() == null ? null : dashboard.getCaseFilter().toShortView(), true);
+        view.projectFilter().setValue(dashboard.getProjectFilter() == null ? null : dashboard.getProjectFilter().toShortView(), true);
         view.updateIssueFilterSelector();
 
         dialogView.saveButtonVisibility().setVisible(true);
@@ -71,7 +72,8 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
 
 
         dashboard.setName(view.name().getValue());
-        dashboard.setCaseFilterId(!isFilterBlank(issueFilter) ? issueFilter.getId() : projectFilter.getId() );
+        dashboard.setCaseFilterId(!isFilterBlank(issueFilter) ? issueFilter.getId() : null);
+        dashboard.setProjectFilterId(!isFilterBlank(projectFilter) ? projectFilter.getId() : null);
 
         userLoginController.saveUserDashboard(dashboard, new FluentCallback<Long>()
                 .withSuccess(id -> {

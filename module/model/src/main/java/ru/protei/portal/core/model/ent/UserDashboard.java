@@ -1,7 +1,10 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dto.CaseFilterDto;
+import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.HasFilterQueryIds;
+import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -29,6 +32,8 @@ public class UserDashboard implements Serializable {
     private Integer orderNumber;
 
     private CaseFilterDto<CaseQuery> caseFilterDto;
+
+    private CaseFilterDto<ProjectQuery> projectFilterDto;
 
     public UserDashboard() {}
 
@@ -65,8 +70,25 @@ public class UserDashboard implements Serializable {
         }
     }
 
+    public void setProjectFilterId(Long projectFilterId) {
+        this.caseFilterId = projectFilterId;
+        if (caseFilterDto != null &&
+                projectFilterDto.getCaseFilter() != null &&
+                !Objects.equals(projectFilterDto.getCaseFilter().getId(), projectFilterId)) {
+
+            CaseFilter caseFilter = new CaseFilter();
+            caseFilter.setId(projectFilterId);
+
+            this.projectFilterDto.setCaseFilter(caseFilter);
+        }
+    }
+
     public CaseFilter getCaseFilter() {
         return caseFilterDto == null ? null : caseFilterDto.getCaseFilter();
+    }
+
+    public CaseFilter getProjectFilter() {
+        return projectFilterDto == null ? null : projectFilterDto.getCaseFilter();
     }
 
     public void setCaseFilter(CaseFilter caseFilter) {
@@ -79,6 +101,10 @@ public class UserDashboard implements Serializable {
 
     public CaseQuery getCaseQuery() {
         return caseFilterDto == null ? null : caseFilterDto.getQuery();
+    }
+
+    public ProjectQuery getProjectQuery() {
+        return projectFilterDto == null ? null : projectFilterDto.getQuery();
     }
 
     public String getName() {
@@ -109,8 +135,16 @@ public class UserDashboard implements Serializable {
         return caseFilterDto;
     }
 
+    public CaseFilterDto<ProjectQuery> getProjectFilterDto() {
+        return projectFilterDto;
+    }
+
     public void setCaseFilterDto(CaseFilterDto<CaseQuery> caseFilterDto) {
         this.caseFilterDto = caseFilterDto;
+    }
+
+    public void setProjectFilterDto(CaseFilterDto<ProjectQuery> projectFilterDto) {
+        this.projectFilterDto = projectFilterDto;
     }
 
     @Override

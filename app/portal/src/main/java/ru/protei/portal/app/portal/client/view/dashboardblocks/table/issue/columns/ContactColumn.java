@@ -1,4 +1,4 @@
-package ru.protei.portal.app.portal.client.view.dashboardblocks.table.columns;
+package ru.protei.portal.app.portal.client.view.dashboardblocks.table.issue.columns;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;

@@ -9,7 +9,10 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ProjectAccessType;
+import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.dto.Project;
+import ru.protei.portal.core.model.ent.SelectorsParams;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -18,6 +21,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.widget.project.filter.ProjectFilterWidget;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -74,7 +78,10 @@ public abstract class ProjectTableActivity
 
         this.preScroll = event.preScroll;
 
-        loadTable();
+        if (event.caseFilterDto != null && event.caseFilterDto.getQuery() != null ) {
+            fillFilterFieldsByCaseQuery(event.caseFilterDto);
+        }
+//        loadTable();
     }
 
     @Event
@@ -204,6 +211,24 @@ public abstract class ProjectTableActivity
         return view.getFilterWidget().getFilterParamView().getQuery();
     }
 
+    private void fillFilterFieldsByCaseQuery(CaseFilterDto<ProjectQuery> caseFilterDto) {
+        view.getFilterWidget().resetFilter();
+
+        final ProjectQuery projectQuery = caseFilterDto.getQuery();
+
+        filterService.getSelectorsParams(projectQuery, new RequestCallback<SelectorsParams>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(SelectorsParams selectorsParams) {
+                view.getFilterWidget().getFilterParamView().fillFilterFields(projectQuery, selectorsParams);
+            }
+        });
+    }
+
     private Runnable removeAction(Long projectId) {
         return () -> regionService.removeProject(projectId, new FluentCallback<Long>()
                 .withSuccess(result -> {
@@ -232,6 +257,8 @@ public abstract class ProjectTableActivity
     TableAnimation animation;
     @Inject
     PolicyService policyService;
+    @Inject
+    CaseFilterControllerAsync filterService;
 
     private ProjectQuery query = null;
 

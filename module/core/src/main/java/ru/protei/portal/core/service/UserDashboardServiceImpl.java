@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CaseFilterDAO;
 import ru.protei.portal.core.model.dao.UserDashboardDAO;
+import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -16,6 +17,7 @@ import ru.protei.portal.core.model.ent.UserDashboard;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.ProjectQuery;
 
 import java.io.IOException;
 import java.util.*;
@@ -184,8 +186,7 @@ public class UserDashboardServiceImpl implements UserDashboardService {
         for (UserDashboard userDashboard : userDashboards) {
             try {
                 CaseFilter caseFilter = idToCaseFilter.get(userDashboard.getCaseFilterId());
-                CaseQuery caseQuery = objectMapper.readValue(caseFilter.getParams(), CaseQuery.class);
-                userDashboard.setCaseFilterDto(new CaseFilterDto<>(caseFilter, caseQuery));
+                setDashboardFilterDtoByType(caseFilter, userDashboard);
             } catch (IOException e) {
                 log.warn("fillDashboardsWithCaseFilterDto(): cannot read filter params. caseFilter={}", userDashboard.getCaseFilter());
                 e.printStackTrace();
@@ -194,6 +195,17 @@ public class UserDashboardServiceImpl implements UserDashboardService {
         }
 
         return ok(userDashboards);
+    }
+
+    private void setDashboardFilterDtoByType(CaseFilter caseFilter, UserDashboard userDashboard) throws IOException {
+        if (En_CaseFilterType.CASE_OBJECTS.equals(caseFilter.getType())) {
+            CaseQuery caseQuery = objectMapper.readValue(caseFilter.getParams(), CaseQuery.class);
+            userDashboard.setCaseFilterDto(new CaseFilterDto<>(caseFilter, caseQuery));
+        }
+        if (En_CaseFilterType.PROJECT.equals(caseFilter.getType())) {
+            ProjectQuery projectQuery = objectMapper.readValue(caseFilter.getParams(), ProjectQuery.class);
+            userDashboard.setProjectFilterDto(new CaseFilterDto<>(caseFilter, projectQuery));
+        }
     }
 
     private List<UserDashboard> updateOrders(List<UserDashboard> userDashboards) {
