@@ -130,6 +130,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                 .filter(contract -> !Objects.equals(En_ContractState.CANCELLED, contract.getState()))
                 .map(contract -> sanitizeHtml(typeLang.getName(contract.getContractType()) + " " + contract.getNumber()))
                 .collect(Collectors.joining(", ")));
+        view.setFileLocation(value.getFileLocation());
         view.setProject(StringUtils.emptyIfNull(value.getProjectName()) + " (#" + value.getProjectId() + ")", LinkUtils.makePreviewLink(Project.class, value.getProjectId()));
         view.setDeliveryNumber(StringUtils.emptyIfNull(value.getDeliveryNumber()));
         view.setDateEndWarranty(formatDate(value.getDateEndWarranty()));

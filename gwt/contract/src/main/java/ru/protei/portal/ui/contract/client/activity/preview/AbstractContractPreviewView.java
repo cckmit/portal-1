@@ -52,6 +52,8 @@ public interface AbstractContractPreviewView extends IsWidget {
     void setChildContracts(String value);
 
     void setProject(String value, String link);
+    
+    void setFileLocation(String value);
 
     HasVisibility footerVisibility();
 

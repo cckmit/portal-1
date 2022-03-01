@@ -134,6 +134,11 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
 
     @Override
+    public void setFileLocation(String value) {
+        this.fileLocation.setInnerText(value);
+    }
+    
+    @Override
     public void setProject(String value, String link) {
         project.setText(value);
         project.setHref(link);
@@ -225,6 +230,8 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     SpanElement contractParent;
     @UiField
     SpanElement contractChild;
+    @UiField
+    SpanElement fileLocation;
     @UiField
     Anchor project;
     @UiField
