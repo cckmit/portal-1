@@ -13,9 +13,7 @@ import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseAttachment;
@@ -73,6 +71,9 @@ public class AttachmentServiceImpl implements AttachmentService {
     PolicyService policyService;
 
     @Autowired
+    HistoryService historyService;
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
 /*
@@ -86,11 +87,11 @@ public class AttachmentServiceImpl implements AttachmentService {
      */
     @Override
     @Transactional
-    public Result<Long> removeAttachmentEverywhere(AuthToken token, En_CaseType caseType, Long id) {
+    public Result<Long> removeAttachmentEverywhere(AuthToken token, En_CaseType caseType, Long caseId, Long id) {
         CaseAttachment caseAttachment = caseAttachmentDAO.getByAttachmentId(id);
 
         if (caseAttachment == null || !caseAttachmentDAO.removeByKey(caseAttachment.getId())) {
-            return removeAttachment(token, caseType, id);
+            return removeAttachment(token, caseType, caseId, id);
         } else {
             caseService.updateCaseModified(token, caseAttachment.getCaseId(), new Date());
 
@@ -102,7 +103,7 @@ public class AttachmentServiceImpl implements AttachmentService {
 
             Attachment attachment = attachmentDAO.get(id);
 
-            Result<Long> result = removeAttachment(token, caseType, id);
+            Result<Long> result = removeAttachment(token, caseType, caseId, id);
 
             if (!result.isOk() || token == null) {
                 return error(result.getStatus());
@@ -146,8 +147,8 @@ public class AttachmentServiceImpl implements AttachmentService {
      */
     @Override
     @Transactional
-    public Result<Long> removeAttachment(AuthToken token, En_CaseType caseType, Long id) {
-        Attachment attachment = attachmentDAO.partialGet(id, "ext_link");
+    public Result<Long> removeAttachment(AuthToken token, En_CaseType caseType, Long caseId, Long id) {
+        Attachment attachment = attachmentDAO.partialGet(id, "ext_link","file_name");
 
         if (attachment == null) {
             return error(En_ResultStatus.NOT_FOUND);
@@ -158,6 +159,10 @@ public class AttachmentServiceImpl implements AttachmentService {
         }
 
         if (fileStorage.deleteFile(attachment.getExtLink())) {
+
+            if (En_CaseType.CRM_SUPPORT.equals(caseType) && caseId != null){
+                historyService.createHistory(token, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_ATTACHMENT, id, attachment.getFileName(), null, null);
+            }
             return ok(id);
         }
 

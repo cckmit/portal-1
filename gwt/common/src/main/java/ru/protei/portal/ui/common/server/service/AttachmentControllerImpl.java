@@ -55,21 +55,10 @@ public class AttachmentControllerImpl implements AttachmentController {
         log.info("removeAttachmentEverywhere(): caseType={}, caseId={}, attachmentId={}", caseType, caseId, attachmentId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        Attachment attachment = null;
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)){
-            Result<Attachment> result =  attachmentService.getAttachment(token, attachmentId);
-            if(result.isOk())
-                attachment = result.getData();
-        }
-
-        Result<Long> response =  attachmentService.removeAttachmentEverywhere( token, caseType, attachmentId);
+        Result<Long> response =  attachmentService.removeAttachmentEverywhere( token, caseType, caseId, attachmentId);
 
         if(response.isError())
             throw new RequestFailedException( response.getStatus() );
-
-        if (En_CaseType.CRM_SUPPORT.equals(caseType) && attachment != null && caseId != null){
-            historyService.createHistory(token, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_ATTACHMENT, attachmentId, attachment.getFileName(), null, null);
-        }
 
         return response.getData();
     }

@@ -451,16 +451,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         boolean isCaseChanged = true;
         if (CollectionUtils.isNotEmpty(commentToBeRemoved.getCaseAttachments())) {
             caseAttachmentDAO.removeByCommentId(caseId);
-            commentToBeRemoved.getCaseAttachments().forEach(ca -> {
-
-                String fileNameToBeRemoved = StringUtils.emptyIfNull(attachmentDAO.get(ca.getAttachmentId()).getFileName());
-                Result<Long> removeAttachmentResult = attachmentService.removeAttachment(token, caseType, ca.getAttachmentId());
-
-                if (removeAttachmentResult.isOk() && caseType.equals(CRM_SUPPORT)){
-                    removeCaseAttachmentHistory(token, commentToBeRemoved.getCaseId(), ca.getAttachmentId(), fileNameToBeRemoved);
-                }
-
-            });
+            commentToBeRemoved.getCaseAttachments().forEach(ca -> attachmentService.removeAttachment(token, caseType, caseId, ca.getAttachmentId()));
 
             isCaseChanged = caseService.isExistAnyAttachments( toList(commentToBeRemoved.getCaseAttachments(), CaseAttachment::getAttachmentId) ).flatMap(isExists -> {
                 if (isExists) {
@@ -931,14 +922,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     private void removeAttachments(AuthToken token, En_CaseType caseType, Collection<CaseAttachment> list) {
-        list.forEach(ca -> {
-            String fileNameToBeRemoved = StringUtils.emptyIfNull(attachmentDAO.get(ca.getAttachmentId()).getFileName());
-            Result<Long> removeAttachmentResult = attachmentService.removeAttachment(token, caseType, ca.getAttachmentId());
-
-            if (removeAttachmentResult.isOk() && caseType.equals(CRM_SUPPORT)){
-                removeCaseAttachmentHistory(token, ca.getCaseId(), ca.getAttachmentId(), fileNameToBeRemoved);
-            }
-        });
+        list.forEach(ca -> attachmentService.removeAttachment(token, caseType, ca.getCaseId(), ca.getAttachmentId()));
     }
 
     /**
