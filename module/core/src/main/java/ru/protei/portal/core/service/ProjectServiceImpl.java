@@ -404,7 +404,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         if (result) {
             caseLinkService.getLinks(token, caseObject.getId())
-                .ifOk(links -> caseLinkService.deleteLinks(token, links));
+                .ifOk(links -> caseLinkService.deleteLinks(token, links, En_CaseType.PROJECT));
         }
         return ok(projectId);
     }

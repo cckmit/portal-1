@@ -18,11 +18,13 @@ public interface AttachmentControllerAsync {
      * {@link ru.protei.portal.core.model.ent.CaseAttachment}
      * и из облака
      */
-    void removeAttachmentEverywhere(En_CaseType caseType, Long attachmentId, AsyncCallback<Long> async);
+    void removeAttachmentEverywhere(En_CaseType caseType, Long caseId, Long attachmentId, AsyncCallback<Long> async);
 
     /**
      * Очистка кэша загрузки
      * @param async
      */
     void clearUploadedAttachmentsCache(AsyncCallback<Void> async);
+
+    void addCaseAttachmentHistory(Long caseObjectId, Long attachmentId, String fileName, AsyncCallback<Long> async);
 }

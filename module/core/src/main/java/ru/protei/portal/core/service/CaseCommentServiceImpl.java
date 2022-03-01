@@ -209,7 +209,13 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         if (CollectionUtils.isNotEmpty(comment.getCaseAttachments())) {
             caseService.updateExistsAttachmentsFlag(comment.getCaseId(), true);
-            comment.getCaseAttachments().forEach(ca -> ca.setCommentId(commentId));
+            comment.getCaseAttachments().forEach(ca -> {
+                ca.setCommentId(commentId);
+                if (caseType.equals(CRM_SUPPORT)){
+                    String fileName = StringUtils.emptyIfNull(attachmentDAO.get(ca.getAttachmentId()).getFileName());
+                    addCaseAttachmentHistory(token, comment.getCaseId(), ca.getAttachmentId(), fileName);
+                }
+            });
             caseAttachmentDAO.persistBatch(comment.getCaseAttachments());
 
             if (comment.isPrivateComment()) {
@@ -387,6 +393,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                 HelperFunc.subtract(comment.getCaseAttachments(), prevComment.getCaseAttachments())
         ).getData();
 
+        if (caseType.equals(CRM_SUPPORT) && isNotEmpty(addedAttachments)){
+            addedAttachments.forEach(a -> {
+                addCaseAttachmentHistory(token, comment.getCaseId(), a.getId(), a.getFileName());
+            });
+        }
+
         return ok( new CaseCommentSaveOrUpdateResult(comment, prevComment, addedAttachments, removedAttachments));
     }
 
@@ -401,20 +413,20 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return removeCaseComment(token, caseType, comment, false);
     }
 
-    public Result<Long> removeCaseComment(AuthToken token, En_CaseType caseType, CaseComment removedComment, boolean isTimeCheck) {
+    public Result<Long> removeCaseComment(AuthToken token, En_CaseType caseType, CaseComment commentToBeRemoved, boolean isTimeCheck) {
         En_ResultStatus checkAccessStatus = null;
-        if (removedComment == null || removedComment.getId() == null || token.getPersonId() == null) {
+        if (commentToBeRemoved == null || commentToBeRemoved.getId() == null || token.getPersonId() == null) {
             checkAccessStatus = En_ResultStatus.INCORRECT_PARAMS;
         }
         if (checkAccessStatus == null) {
-            checkAccessStatus = checkAccessForCaseObjectById(token, caseType, removedComment.getCaseId());
+            checkAccessStatus = checkAccessForCaseObjectById(token, caseType, commentToBeRemoved.getCaseId());
         }
         if (checkAccessStatus == null) {
-            if (!Objects.equals(token.getPersonId(), removedComment.getAuthorId())) {
+            if (!Objects.equals(token.getPersonId(), commentToBeRemoved.getAuthorId())) {
                 checkAccessStatus = En_ResultStatus.NOT_REMOVED;
             }
 
-            if (isTimeCheck && isCaseCommentReadOnlyByTime(removedComment.getCreated())) {
+            if (isTimeCheck && isCaseCommentReadOnlyByTime(commentToBeRemoved.getCreated())) {
                 return error(En_ResultStatus.NOT_ALLOWED_REMOVE_COMMENT_BY_TIME);
             }
         }
@@ -422,60 +434,61 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return error(checkAccessStatus);
         }
 
-        Collection<Attachment> removedAttachments = attachmentService.getAttachments(
+        Collection<Attachment> attachmentsToBeRemoved = attachmentService.getAttachments(
                 token,
                 caseType,
-                removedComment.getCaseAttachments()
+                commentToBeRemoved.getCaseAttachments()
         ).getData();
 
-        long caseId = removedComment.getCaseId();
+        long caseId = commentToBeRemoved.getCaseId();
 
-        boolean isRemoved = caseCommentDAO.remove(removedComment);
+        boolean isRemoved = caseCommentDAO.remove(commentToBeRemoved);
         if (!isRemoved) {
-            log.info("Failed to remove comment {} at db", removedComment.getId());
+            log.info("Failed to remove comment {} at db", commentToBeRemoved.getId());
             throw new RollbackTransactionException(En_ResultStatus.NOT_REMOVED);
         }
 
         boolean isCaseChanged = true;
-        if (CollectionUtils.isNotEmpty(removedComment.getCaseAttachments())) {
+        if (CollectionUtils.isNotEmpty(commentToBeRemoved.getCaseAttachments())) {
             caseAttachmentDAO.removeByCommentId(caseId);
-            removedComment.getCaseAttachments().forEach(ca -> attachmentService.removeAttachment(token, caseType, ca.getAttachmentId()));
-            isCaseChanged = caseService.isExistAnyAttachments( toList(removedComment.getCaseAttachments(), CaseAttachment::getAttachmentId) ).flatMap(isExists -> {
+            commentToBeRemoved.getCaseAttachments().forEach(ca -> attachmentService.removeAttachment(token, caseType, caseId, ca.getAttachmentId()));
+
+            isCaseChanged = caseService.isExistAnyAttachments( toList(commentToBeRemoved.getCaseAttachments(), CaseAttachment::getAttachmentId) ).flatMap(isExists -> {
                 if (isExists) {
                     return ok( false );
                 }
-                return caseService.updateExistsAttachmentsFlag( removedComment.getCaseId(), false );
+                return caseService.updateExistsAttachmentsFlag( commentToBeRemoved.getCaseId(), false );
             } ).orElseGet( result -> ok( false ) ).getData();
         }
         isCaseChanged &= caseService.updateCaseModified(token, caseId, new Date()).getData();
         if (!isCaseChanged) {
-            log.info("Failed to update case modifiedDate for comment {}", removedComment.getId());
+            log.info("Failed to update case modifiedDate for comment {}", commentToBeRemoved.getId());
             throw new RollbackTransactionException(En_ResultStatus.NOT_REMOVED);
         }
 
-        if (!updateTimeElapsed(token, removedComment.getCaseId()).getData()) {
-            log.info("Failed to update time elapsed on removeCaseComment for comment {}", removedComment.getId());
+        if (!updateTimeElapsed(token, commentToBeRemoved.getCaseId()).getData()) {
+            log.info("Failed to update time elapsed on removeCaseComment for comment {}", commentToBeRemoved.getId());
             throw new RollbackTransactionException(En_ResultStatus.NOT_REMOVED);
         }
 
-        Result<Long> okResult = ok(removedComment.getId());
+        Result<Long> okResult = ok(commentToBeRemoved.getId());
 
         if (PROJECT.equals(caseType)) {
             okResult.publishEvent(new ProjectCommentEvent(this,
-                    null, null, removedComment, token.getPersonId(), caseId)
+                    null, null, commentToBeRemoved, token.getPersonId(), caseId)
             );
 
-            okResult.publishEvent(new ProjectAttachmentEvent(this, Collections.emptyList(), removedAttachments, removedComment.getId(),
+            okResult.publishEvent(new ProjectAttachmentEvent(this, Collections.emptyList(), attachmentsToBeRemoved, commentToBeRemoved.getId(),
                     token.getPersonId(), caseId)
             );
         }
 
         if (DELIVERY.equals(caseType)) {
             okResult.publishEvent(new DeliveryCommentEvent(this,
-                    null, null, removedComment, token.getPersonId(), caseId)
+                    null, null, commentToBeRemoved, token.getPersonId(), caseId)
             );
 
-            okResult.publishEvent(new DeliveryAttachmentEvent(this, Collections.emptyList(), removedAttachments, removedComment.getId(),
+            okResult.publishEvent(new DeliveryAttachmentEvent(this, Collections.emptyList(), attachmentsToBeRemoved, commentToBeRemoved.getId(),
                     token.getPersonId(), caseId)
             );
         }
@@ -484,16 +497,16 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             boolean isEagerEvent = En_ExtAppType.REDMINE.getCode().equals(caseObjectDAO.getExternalAppName(caseId));
 
             okResult
-                    .publishEvent(new CaseAttachmentEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, null, removedAttachments))
-                    .publishEvent(new CaseCommentEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, isEagerEvent, null, null, removedComment));
+                    .publishEvent(new CaseAttachmentEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, null, attachmentsToBeRemoved))
+                    .publishEvent(new CaseCommentEvent(this, ServiceModule.GENERAL, token.getPersonId(), caseId, isEagerEvent, null, null, commentToBeRemoved));
         }
 
         if (EMPLOYEE_REGISTRATION.equals(caseType)) {
             okResult.publishEvent(new EmployeeRegistrationCommentEvent(this,
-                    null, null, removedComment, token.getPersonId(), caseId)
+                    null, null, commentToBeRemoved, token.getPersonId(), caseId)
             );
 
-            okResult.publishEvent(new EmployeeRegistrationAttachmentEvent(this, Collections.emptyList(), removedAttachments, removedComment.getId(),
+            okResult.publishEvent(new EmployeeRegistrationAttachmentEvent(this, Collections.emptyList(), attachmentsToBeRemoved, commentToBeRemoved.getId(),
                     token.getPersonId(), caseId)
             );
         }
@@ -909,7 +922,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     private void removeAttachments(AuthToken token, En_CaseType caseType, Collection<CaseAttachment> list) {
-        list.forEach(ca -> attachmentService.removeAttachment(token, caseType, ca.getAttachmentId()));
+        list.forEach(ca -> attachmentService.removeAttachment(token, caseType, ca.getCaseId(), ca.getAttachmentId()));
     }
 
     /**
@@ -1029,4 +1042,13 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     private List<String> prepareLoginList(List<String> loginList) {
         return stream(loginList).map(login -> login.replace("'", "\\'")).collect(Collectors.toList());
     }
+
+    private Result<Long> addCaseAttachmentHistory(AuthToken authToken, Long caseId, Long caseAttachmentId, String attachmentName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_ATTACHMENT,null, null, caseAttachmentId, attachmentName);
+    }
+
+    private Result<Long> removeCaseAttachmentHistory(AuthToken authToken, Long caseId, Long oldCaseAttachmentId, String oldAttachmentName) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_ATTACHMENT,oldCaseAttachmentId, oldAttachmentName, null, null);
+    }
+
 }

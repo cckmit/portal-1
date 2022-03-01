@@ -73,6 +73,12 @@ public abstract class IssueEditActivity implements
                 issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
                 issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
 
+                attachmentController.addCaseAttachmentHistory(issue.getId(), attachment.getId(), attachment.getFileName(), new FluentCallback<Long>()
+                        .withSuccess(r -> {
+                            fireEvent(new CommentAndHistoryEvents.Reload());
+                        })
+                );
+
                 fireIssueChanged(issue.getId());
             }
 
@@ -266,7 +272,7 @@ public abstract class IssueEditActivity implements
     @Override
     public void removeAttachment(Attachment attachment) {
         if (isReadOnly()) return;
-        attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Long>()
+        attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, issue.getId(), attachment.getId(), new FluentCallback<Long>()
                 .withError(getRemoveErrorHandler(this, lang))
                 .withSuccess(result -> {
                     issueInfoWidget.attachmentsListContainer().remove(attachment);
@@ -308,6 +314,7 @@ public abstract class IssueEditActivity implements
         issueInfoWidget.descriptionReadOnlyVisibility().setVisible(true);
         fillView(issue);
         fireEvent(new IssueEvents.ChangeIssue(issue.getId()));
+        fireEvent(new CommentAndHistoryEvents.Reload());
     }
 
     @Override

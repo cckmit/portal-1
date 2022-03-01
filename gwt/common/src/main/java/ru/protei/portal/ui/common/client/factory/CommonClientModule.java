@@ -60,6 +60,7 @@ import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.service.HomeCompanyService;
 import ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.view.casecomment.list.CommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.view.caselink.item.CaseLinkItemView;
@@ -108,6 +109,7 @@ public class CommonClientModule extends AbstractGinModule {
     @Override
     protected void configure() {
 
+        requestStaticInjection(LinkUtils.class);
         requestStaticInjection(CommentOrHistoryUtils.class);
 
         bind( ExternalLinkActivity.class ).asEagerSingleton();
