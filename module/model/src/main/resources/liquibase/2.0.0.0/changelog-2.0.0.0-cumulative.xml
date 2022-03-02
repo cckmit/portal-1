@@ -120,4 +120,5 @@
   <include file="2022-01-21-add-date_execution-column-and-date_end_warranty-column-to-contract-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-01-25-add-new-worker-position-data-to-worker-entry-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-02-21-modify-new_position_department_id-data-type-in-worker_entry-table.xml" relativeToChangelogFile="true"/>
+  <include file="2022-03-02-add-member-role.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

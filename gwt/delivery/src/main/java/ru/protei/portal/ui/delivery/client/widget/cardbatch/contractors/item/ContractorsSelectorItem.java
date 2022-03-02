@@ -47,7 +47,7 @@ public class ContractorsSelectorItem extends Composite implements AbstractContra
         if (availableRoles == null || availableRoles.size() == 0) {
             return;
         }
-        availableRoles.sort(Comparator.comparingInt(En_PersonRoleType::getId));
+        availableRoles.sort(Comparator.comparingInt(En_PersonRoleType::getOrder));
         role.fillOptions(availableRoles);
     }
 
