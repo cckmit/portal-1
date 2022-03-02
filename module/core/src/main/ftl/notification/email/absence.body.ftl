@@ -58,7 +58,7 @@
                         <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                             <#if multiAddAbsenceList??>
                                 <#list multiAddAbsenceList as absence>
-                                    ${(absence.getFromTime())!'?'} - ${(absence.getTillTime())!'?'} <br>
+                                    ${absence.getFromTime()?string("dd.MM.yyyy HH:mm")} - ${absence.getTillTime()?string("dd.MM.yyyy HH:mm")} <br>
                                 </#list>
                             <#else>
                                 <#if fromTimeChanged>
