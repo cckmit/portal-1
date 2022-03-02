@@ -7,23 +7,28 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.enterprise1c.api.Api1C;
+import ru.protei.portal.core.event.ContractCreateEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
-import ru.protei.portal.core.model.enterprise1c.dto.ContractAdditionalProperty1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ContractApiQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
+import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContractorQuery;
+import ru.protei.portal.core.model.struct.NotificationEntry;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.ContractorUtils;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -79,6 +84,10 @@ public class ContractServiceImpl implements ContractService {
     PersonService personService;
     @Autowired
     ProductService productService;
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    EventPublisherService publisherService;
 
     @Override
     public Result<SearchResult<Contract>> getContracts( AuthToken token, ContractQuery query) {
@@ -203,6 +212,19 @@ public class ContractServiceImpl implements ContractService {
             }
         }
 
+        log.info("createContract(): notification for contract={}", contract.getId());
+        Set<Long> personIdList = makePersonIdListForNotification(contract);
+        if (CollectionUtils.isEmpty(personIdList)) {
+            log.info("createContract(): notification for contract={}: no persons to be notified", contract.getId());
+        } else {
+            Set<NotificationEntry> notificationEntries = getNotificationEntries(personIdList);
+            if (CollectionUtils.isEmpty(notificationEntries)) {
+                log.info("createContract(): notification for contract={}: no entries to be notified", contract.getId());
+            } else {
+                log.info("createContract(): notification for contract={}: entries to be notified: {}", contract.getId(), notificationEntries);
+                publisherService.publishEvent(new ContractCreateEvent(this, contract, notificationEntries));
+            }
+        }
         return ok(contractId);
     }
 
@@ -737,6 +759,44 @@ public class ContractServiceImpl implements ContractService {
         query.setRefKey(refKey);
         return query;
     }
+
+    private Set<Long> makePersonIdListForNotification(Contract contract) {
+        Set<Long> personIdList = new HashSet<>();
+        if (contract.getCreatorId() != null) {
+            personIdList.add(contract.getCreatorId());
+        }
+        if (contract.getProjectManagerId() != null) {
+            personIdList.add(contract.getProjectManagerId());
+        }
+        if (contract.getCuratorId() != null) {
+            personIdList.add(contract.getCuratorId());
+        }
+        if (contract.getContractSignManagerId() != null) {
+            personIdList.add(contract.getContractSignManagerId());
+        }
+        return personIdList;
+    }
+
+    private Set<NotificationEntry> getNotificationEntries(Set<Long> personIdList) {
+        Set<NotificationEntry> notificationEntries = new HashSet<>();
+        List<Person> personList = personDAO.partialGetListByKeys(personIdList, "id", "locale");
+        jdbcManyRelationsHelper.fill(personList, Person.Fields.CONTACT_ITEMS);
+        for (Person person : personList) {
+            ContactInfo contactInfo = person.getContactInfo();
+            if (contactInfo == null) {
+                continue;
+            }
+            String email = new PlainContactInfoFacade(contactInfo).getEmail();
+            String locale = person.getLocale() == null ? CrmConstants.DEFAULT_LOCALE : person.getLocale();
+            if (StringUtils.isBlank(email)) {
+                continue;
+            }
+            notificationEntries.add(NotificationEntry.email(email, locale));
+        }
+        return notificationEntries;
+    }
+
+
 
     public static Contractor from1C(Contractor1C contractor1C, String country) {
         Contractor contractor = new Contractor();

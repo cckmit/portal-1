@@ -662,6 +662,52 @@ public class MailNotificationProcessor {
         sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
     }
 
+    @EventListener
+    public void onContractCreateEvent(ContractCreateEvent event) {
+        Contract contract = event.getContract();
+        Set<NotificationEntry> notifiers = event.getNotificationEntryList();
+        if (contract == null || notifiers == null) {
+            log.error("Failed to send contract reate notification: incomplete data provided: " +
+                    "contract={}, notifiers={}", contract, notifiers);
+            return;
+        }
+
+        if (CollectionUtils.isEmpty(notifiers)) {
+            log.info("Failed to send contract create notification: empty notifiers set: contract={}", contract);
+            return;
+        }
+
+        List<String> recipients = getNotifiersAddresses(notifiers);
+
+        performContractCreateNotification(
+                contract,
+                config.data().getMailNotificationConfig().getCrmUrlInternal() +
+                        config.data().getMailNotificationConfig().getContractUrl(),
+                recipients,
+                new HashSet<>(notifiers)
+        );
+    }
+
+    private void performContractCreateNotification(Contract contract, String urlTemplate, List<String> recipients, Set<NotificationEntry> notifiers) {
+        if (CollectionUtils.isEmpty(notifiers)) {
+            log.error("Failed to send contract create notification: notifiers is empty: " +
+                    "contract={}", contract);
+        }
+
+        PreparedTemplate bodyTemplate = templateService.getContractCreateNotificationBody(contract, urlTemplate, recipients, new EnumLangUtil(lang));
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for contractId={}", contract.getId());
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getContractCreateNotificationSubject(contract, new EnumLangUtil(lang));
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for contractId={}", contract.getId());
+            return;
+        }
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
+    }
+    
     // -----------------------
     // Document notifications
     // -----------------------

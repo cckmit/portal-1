@@ -401,6 +401,42 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
+    public PreparedTemplate getContractCreateNotificationSubject(Contract contract, EnumLangUtil enumLangUtil) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("EnumLangUtil", enumLangUtil);
+
+        templateModel.put("contractType", contract.getContractType());
+        templateModel.put("contractNumber", contract.getNumber());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/contract.create.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getContractCreateNotificationBody(Contract contract, String urlTemplate, Collection<String> recipients, EnumLangUtil enumLangUtil) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("EnumLangUtil", enumLangUtil);
+
+        templateModel.put("contractType", contract.getContractType());
+        templateModel.put("contractNumber", contract.getNumber());
+        templateModel.put("contractDateSigning", contract.getDateSigning());
+        templateModel.put("contractOrganization", contract.getOrganizationName());
+        templateModel.put("contractContractor", contract.getContractor() != null? contract.getContractor().getName() : null);
+        templateModel.put("contractDescription", escapeTextAndReplaceLineBreaks(contract.getDescription()));
+        templateModel.put("contractDeliveryNumber", contract.getDeliveryNumber());
+        templateModel.put("contractFileLocation", contract.getFileLocation());
+        templateModel.put("linkToContract", String.format(urlTemplate, contract.getId()));
+        templateModel.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/contract.create.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
     public PreparedTemplate getDocumentMemberAddedBody(String documentName, String url) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("url", url);

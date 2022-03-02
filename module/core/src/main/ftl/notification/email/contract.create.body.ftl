@@ -27,49 +27,49 @@
                 <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                     ${_contract_number}
                 </td>
-                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;"><b><a href="${linkToContract}">${contractNumber?c}</a></b></td>
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;"><b><a href="${linkToContract}">${contractNumber}</a></b></td>
             </tr>
             <tr>
                 <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                     ${_contract_type}
                 </td>
-                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${contractType}</td>-->
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${EnumLangUtil.contractTypeLang(contractType, lang)}</td>-->
             </tr>
             <tr>
                 <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                    ${_contractDateSigning}
+                    ${_contract_date_signing}
                 </td>
-                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${contractDateSigning}</td>-->
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${contractDateSigning???then(contractDateSigning?date, '?')}</td>-->
             </tr>
             <tr>
                 <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                    ${_contractOrganization}
+                    ${_contract_organization}
                 </td>
-                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${contractOrganization}</td>-->
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${(contractOrganization)!'?'}</td>-->
             </tr>
             <tr>
                 <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                    ${_contractContractor}
+                    ${_contract_contractor}
                 </td>
-                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${contractContractor}</td>-->
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${(contractContractor)!'?'}</td>-->
             </tr>
             <tr>
                 <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                    ${_contractDescription}
+                    ${_contract_description}
                 </td>
-                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${contractDescription}</td>-->
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${(contractDescription)!'?'}</td>-->
             </tr>
             <tr>
                 <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                    ${_contractDeliveryNumber}
+                    ${_contract_delivery_number}
                 </td>
-                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${contractDeliveryNumber}</td>-->
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${(contractDeliveryNumber)!'?'}</td>-->
             </tr>
             <tr>
                 <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
-                    ${_contractFileLocation}
+                    ${_contract_file_location}
                 </td>
-                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${contractFileLocation}</td>-->
+                <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">${(contractFileLocation)!'?'}</td>-->
             </tr>
             </tbody>
         </table>
