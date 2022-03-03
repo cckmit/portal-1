@@ -41,7 +41,9 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
     }
 
     @Event
-    public void onShow(DashboardEvents.EditTable event) {
+    public void onEditIssueTable(DashboardEvents.EditIssueTable event) {
+        view.showIssueFilter();
+        view.hideProjectFilter();
 
         dashboard = event.dashboard;
         boolean isNew = dashboard == null || dashboard.getId() == null;
@@ -50,15 +52,35 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
         }
 
         view.issueFilter().setValue(dashboard.getCaseFilter() == null ? null : dashboard.getCaseFilter().toShortView(), true);
-        view.projectFilter().setValue(dashboard.getProjectFilter() == null ? null : dashboard.getProjectFilter().toShortView(), true);
         view.name().setValue(dashboard.getName());
         view.updateIssueFilterSelector();
 
+        dialogView.getBodyContainer().add(view.asWidget());
         dialogView.saveButtonVisibility().setVisible(true);
         dialogView.setHeader(isNew ? lang.dashboardTableCreate() : lang.dashboardTableEdit());
         dialogView.showPopup();
 
         loadFilters(this::autoHideExistingFiltersFromCreation);
+    }
+
+    @Event
+    public void onEditProjectTable(DashboardEvents.EditProjectTable event) {
+        view.showProjectFilter();
+        view.hideIssueFilter();
+
+        dashboard = event.dashboard;
+        boolean isNew = dashboard == null || dashboard.getId() == null;
+        if (isNew) {
+            dashboard = new UserDashboard();
+        }
+
+        view.projectFilter().setValue(dashboard.getProjectFilter() == null ? null : dashboard.getProjectFilter().toShortView(), true);
+        view.name().setValue(dashboard.getName());
+
+        dialogView.getBodyContainer().add(view.asWidget());
+        dialogView.saveButtonVisibility().setVisible(true);
+        dialogView.setHeader(isNew ? lang.dashboardTableCreate() : lang.dashboardTableEdit());
+        dialogView.showPopup();
     }
 
     @Override
@@ -144,11 +166,6 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
         FilterShortView projectFilter = view.projectFilter().getValue();
 
         if (issueFilter == null && projectFilter == null) {
-            fireEvent(new NotifyEvents.Show(lang.errDashboardChooseFilter(), NotifyEvents.NotifyType.ERROR));
-            return false;
-        }
-
-        if (issueFilter != null && projectFilter != null) {
             fireEvent(new NotifyEvents.Show(lang.errDashboardChooseFilter(), NotifyEvents.NotifyType.ERROR));
             return false;
         }

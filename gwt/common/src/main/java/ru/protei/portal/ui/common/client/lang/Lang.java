@@ -830,7 +830,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dashboard();
 
-    String dashboardAddTable();
+    String dashboardAddIssueTable();
+
+    String dashboardAddProjectTable();
 
     String dashboardEmpty();
 

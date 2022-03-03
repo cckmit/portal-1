@@ -76,11 +76,19 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     }
 
     @Event
-    public void onTableCreateClicked(ActionBarEvents.Clicked event) {
-        if (!UiConstants.ActionBarIdentity.DASHBOARD_CREATE_TABLE.equals(event.identity)) {
+    public void onIssueTableCreateClicked(ActionBarEvents.Clicked event) {
+        if (!UiConstants.ActionBarIdentity.DASHBOARD_CREATE_ISSUE_TABLE.equals(event.identity)) {
             return;
         }
-        fireEvent(new DashboardEvents.EditTable());
+        fireEvent(new DashboardEvents.EditIssueTable());
+    }
+
+    @Event
+    public void onProjectTableCreateClicked(ActionBarEvents.Clicked event) {
+        if (!UiConstants.ActionBarIdentity.DASHBOARD_CREATE_PROJECT_TABLE.equals(event.identity)) {
+            return;
+        }
+        fireEvent(new DashboardEvents.EditProjectTable());
     }
 
     private void showView() {
@@ -94,7 +102,8 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_CREATE)) {
             fireEvent(new ActionBarEvents.Add(lang.issueCreate(), null, UiConstants.ActionBarIdentity.DASHBOARD_CREATE_ISSUE));
         }
-        fireEvent(new ActionBarEvents.Add(lang.dashboardAddTable(), null, UiConstants.ActionBarIdentity.DASHBOARD_CREATE_TABLE));
+        fireEvent(new ActionBarEvents.Add(lang.dashboardAddIssueTable(), null, UiConstants.ActionBarIdentity.DASHBOARD_CREATE_ISSUE_TABLE));
+        fireEvent(new ActionBarEvents.Add(lang.dashboardAddProjectTable(),null,  UiConstants.ActionBarIdentity.DASHBOARD_CREATE_PROJECT_TABLE));
     }
 
     private void showLoader() {
@@ -216,7 +225,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             }
             @Override
             public void onEditClicked() {
-                fireEvent(new DashboardEvents.EditTable(dashboard));
+                fireEvent(new DashboardEvents.EditIssueTable(dashboard));
             }
             @Override
             public void onRemoveClicked() {
@@ -280,7 +289,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
             @Override
             public void onEditClicked() {
-                fireEvent(new DashboardEvents.EditTable(dashboard));
+                fireEvent(new DashboardEvents.EditProjectTable(dashboard));
             }
 
             @Override

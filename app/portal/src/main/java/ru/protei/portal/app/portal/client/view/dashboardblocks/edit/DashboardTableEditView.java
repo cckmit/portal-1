@@ -7,6 +7,9 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Label;
 import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.activity.dashboardblocks.edit.AbstractDashboardTableEditActivity;
 import ru.protei.portal.app.portal.client.activity.dashboardblocks.edit.AbstractDashboardTableEditView;
@@ -20,6 +23,8 @@ public class DashboardTableEditView extends Composite implements AbstractDashboa
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        hideIssueFilter();
+        hideProjectFilter();
     }
 
     @Override
@@ -45,6 +50,32 @@ public class DashboardTableEditView extends Composite implements AbstractDashboa
     @Override
     public HasValue<FilterShortView> projectFilter() {
         return projectFilter;
+    }
+
+    @Override
+    public void showIssueFilter() {
+        issueFilter.setVisible(true);
+        issueFilterLabel.setVisible(true);
+        filterCreateContainer.setVisible(true);
+    }
+
+    @Override
+    public void showProjectFilter() {
+        projectFilter.setVisible(true);
+        projectFilterLabel.setVisible(true);
+    }
+
+    @Override
+    public void hideIssueFilter() {
+        issueFilter.setVisible(false);
+        issueFilterLabel.setVisible(false);
+        filterCreateContainer.setVisible(false);
+    }
+
+    @Override
+    public void hideProjectFilter() {
+        projectFilter.setVisible(false);
+        projectFilterLabel.setVisible(false);
     }
 
     @Override
@@ -92,9 +123,13 @@ public class DashboardTableEditView extends Composite implements AbstractDashboa
 
     @UiField
     TextBox name;
+    @UiField
+    Label issueFilterLabel;
     @Inject
     @UiField(provided = true)
     IssueFilterSelector issueFilter;
+    @UiField
+    Label projectFilterLabel;
     @Inject
     @UiField(provided = true)
     ProjectFilterSelector projectFilter;

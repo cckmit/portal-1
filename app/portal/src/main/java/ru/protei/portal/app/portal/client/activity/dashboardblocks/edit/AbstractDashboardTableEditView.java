@@ -17,6 +17,14 @@ public interface AbstractDashboardTableEditView extends IsWidget {
 
     HasValue<FilterShortView> projectFilter();
 
+    void showIssueFilter();
+
+    void showProjectFilter();
+
+    void hideIssueFilter();
+
+    void hideProjectFilter();
+
     HasVisibility filterCreateContainer();
 
     HasVisibility filterCreateNewIssues();

@@ -15,8 +15,8 @@
                 </div>
             </div>
             <div class="row">
-                <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.dashboardTableIssueFilter}"/></label>
+                <div class="form-group col-md-12 mt-3">
+                    <g:Label ui:field="issueFilterLabel"><ui:text from="{lang.dashboardTableIssueFilter}"/></g:Label>
                     <issuefilterselector:IssueFilterSelector ui:field="issueFilter" defaultValue="{lang.issueFilterNotDefined}"/>
                 </div>
             </div>
@@ -35,7 +35,7 @@
             </g:HTMLPanel>
             <div class="row">
                 <div class="form-group col-md-12">
-                    <label><ui:text from="{lang.dashboardTableProjectFilter}"/></label>
+                    <g:Label ui:field="projectFilterLabel" ><ui:text from="{lang.dashboardTableProjectFilter}"/></g:Label>
                     <projectfilterselector:ProjectFilterSelector ui:field="projectFilter" defaultValue="{lang.projectFilterIsNotDefined}"/>
                 </div>
             </div>
