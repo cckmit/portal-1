@@ -79,7 +79,14 @@ public class EnumLangUtil {
                 return localizedLang.get("personQadDocumentation");
             case SPECIAL_CHECK_SPECIAL_RESEARCH:
                 return localizedLang.get("personSpecialCheckSpecialResearch");
-
+            case AUTOMATIC_MOUNTING:
+                return localizedLang.get("personAutomaticMounting");
+            case MANUAL_MOUNTING:
+                return localizedLang.get("personManualMounting");
+            case OUTPUT_CONTROL:
+                return localizedLang.get("personOutputControl");
+            case EQUIPMENT_ASSEMBLY:
+                return localizedLang.get("personEquipmentAssembly");
         }
 
         return localizedLang.get("personRoleUnknown");
@@ -235,7 +242,7 @@ public class EnumLangUtil {
         return "";
     }
 
-    public String dutyLogTypeLang(En_AbsenceReason absenceReason, String langCode) {
+    public String absenceReasonLang(En_AbsenceReason absenceReason, String langCode) {
         if (absenceReason == null) {
             return "";
         }

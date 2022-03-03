@@ -79,6 +79,7 @@ public class PersonServiceImpl implements PersonService {
     public Result<List<Person>> getPersonsByIds(AuthToken token, Collection<Long> ids) {
         List<Person> persons = personDAO.getListByKeys(ids);
         jdbcManyRelationsHelper.fill(persons, Person.Fields.CONTACT_ITEMS);
+        persons.forEach(Person::resetPrivacyInfo);
         return ok(persons);
     }
 
