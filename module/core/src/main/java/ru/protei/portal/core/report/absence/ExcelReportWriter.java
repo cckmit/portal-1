@@ -7,6 +7,7 @@ import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.report.ReportWriter;
+import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
 import ru.protei.portal.core.utils.JXLSHelper;
 
@@ -22,11 +23,13 @@ public class ExcelReportWriter implements
     private final JXLSHelper.ReportBook<PersonAbsence> book;
     private final Lang.LocalizedLang lang;
     private final String[] formats;
+    private final EnumLangUtil enumLangUtil;
 
-    public ExcelReportWriter(Lang.LocalizedLang lang) {
+    public ExcelReportWriter(Lang.LocalizedLang lang, EnumLangUtil enumLangUtil) {
         this.book = new JXLSHelper.ReportBook<>(lang, this);
         this.lang = lang;
         this.formats = getFormats();
+        this.enumLangUtil = enumLangUtil;
     }
 
     @Override
@@ -80,7 +83,7 @@ public class ExcelReportWriter implements
         values.add(object.getPerson() != null && HelperFunc.isNotEmpty(object.getPerson().getName()) ? object.getPerson().getName() : "");
         values.add(object.getFromTime() != null ? object.getFromTime() : "");
         values.add(object.getTillTime() != null ? object.getTillTime() : "");
-        values.add(object.getReason() != null ? lang.get("absenceReasonValue" + object.getReason().getId()) : "");
+        values.add(object.getReason() != null ? enumLangUtil.absenceReasonLang(object.getReason(), lang.getLanguageTag()) : "");
         values.add(HelperFunc.isNotEmpty(object.getUserComment()) ? object.getUserComment() : "");
         return values.toArray();
     }
