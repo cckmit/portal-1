@@ -1763,6 +1763,30 @@ a {
       position: relative;
     }
   }
+
+  .project-status {
+    width: 10%;
+  }
+
+  .project-number {
+    width: 14%;
+    p {
+      font-size: 16px;
+    }
+  }
+
+  .project-customers {
+    width: 20%;
+    .font-size-12 {
+      font-size: 12.15px;
+    }
+  }
+  .project-managers {
+    width: 20%;
+  }
+  .project-info {
+
+  }
 }
 
 .collapse-icon {
@@ -2259,6 +2283,10 @@ a {
   .select2-search-choice {
     margin: 3px 5px 3px 0 !important;
   }
+}
+
+.text-gray {
+  color: #adadad !important;
 }
 
 /****************/
