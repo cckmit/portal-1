@@ -1,0 +1,16 @@
+{
+  "name": "@protei-portal/common-model",
+  "version": "1.0.0",
+  "private": true,
+  "main": "lib/index",
+  "types": "lib/index",
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "@protei-libs/eventbus": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "4.5.4"
+  }
+}

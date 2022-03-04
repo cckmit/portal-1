@@ -1,0 +1,26 @@
+{
+  "name": "@protei-portal/unit-test1",
+  "version": "1.0.0",
+  "private": true,
+  "main": "lib/index",
+  "types": "lib/index",
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "@protei-libs/eventbus": "workspace:*",
+    "@protei-libs/logger": "workspace:*",
+    "@protei-libs/module": "workspace:*",
+    "@protei-portal/common-model": "workspace:*"
+  },
+  "peerDependencies": {
+    "inversify": "*",
+    "mobx": "*",
+    "mobx-react-lite": "*",
+    "react": "*",
+    "react-dom": "*"
+  },
+  "devDependencies": {
+    "typescript": "4.5.4"
+  }
+}

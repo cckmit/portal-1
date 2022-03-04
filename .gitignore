@@ -6,3 +6,20 @@ target
 
 debug/
 module/core/index/
+
+
+# Typescript web ignore :: start
+web/src/main/resources/ru/protei/portal/ui/web/public
+node_modules
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+# Enable zero installs https://yarnpkg.com/features/zero-installs
+#!.yarn/cache
+# Disable zero installs https://yarnpkg.com/features/zero-installs
+.yarn/cache
+.pnp.*
+# Typescript web ignore :: end

@@ -1,0 +1,13 @@
+{
+  "name": "@protei-libs/eventbus",
+  "version": "1.0.0",
+  "private": true,
+  "main": "lib/index",
+  "types": "lib/index",
+  "files": [
+    "lib"
+  ],
+  "devDependencies": {
+    "typescript": "4.5.4"
+  }
+}

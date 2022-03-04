@@ -1,0 +1,16 @@
+{
+  "name": "@protei-libs/animation",
+  "version": "1.0.0",
+  "private": true,
+  "main": "lib/index",
+  "types": "lib/index",
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "@protei-libs/scheduler": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "4.5.4"
+  }
+}

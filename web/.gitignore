@@ -1,0 +1,25 @@
+node_modules
+build
+
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.idea
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+# Enable zero installs https://yarnpkg.com/features/zero-installs
+#!.yarn/cache
+# Disable zero installs https://yarnpkg.com/features/zero-installs
+.yarn/cache
+.pnp.*

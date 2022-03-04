@@ -51,6 +51,8 @@
 
                 <module>skin/classic</module>
 
+                <module>web</module>
+
                 <module>gwt/common</module>
                 <module>gwt/company</module>
                 <module>gwt/product</module>

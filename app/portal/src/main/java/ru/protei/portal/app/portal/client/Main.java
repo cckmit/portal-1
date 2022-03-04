@@ -8,6 +8,7 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.app.portal.client.factory.ClientFactory;
+import ru.protei.portal.ui.web.client.TypescriptWebEntryPoint;
 
 import java.util.logging.Logger;
 
@@ -19,8 +20,8 @@ public class Main implements EntryPoint {
     public void onModuleLoad() {
         DebugInfo.setDebugIdPrefix(DebugIds.DEBUG_ID_PREFIX);
 
-        ClientFactory factory = GWT.create( ClientFactory.class);
-
+        ClientFactory factory = GWT.create(ClientFactory.class);
+        TypescriptWebEntryPoint.setFactoryReference(factory.getAppActivity());
         factory.getAppActivity().fireEvent( new AuthEvents.Init( RootPanel.get() ));
         factory.getAppActivity().fireEvent( new AppEvents.Init( RootPanel.get() ));
     }
