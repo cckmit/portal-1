@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.XL_MODAL;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 import static ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils.getSortedCommentOrHistoryList;
-import static ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils.transliteration;
 
 public abstract class DeliveryKitEditActivity implements Activity, AbstractDeliveryKitEditActivity,
         AbstractDialogDetailsActivity {

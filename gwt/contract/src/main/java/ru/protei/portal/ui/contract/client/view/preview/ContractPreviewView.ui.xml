@@ -94,6 +94,10 @@
                         <span ui:field="contractSignManager"/>
                     </div>
 
+                    <div class="small">
+                        <b><ui:text from="{lang.contractNotifiers}: "/></b>
+                        <span ui:field="notifies"/>
+                    </div>
 
                     <tab:TabWidget styleName="" ui:field="tabs">
                         <tab:pane.TabWidgetPane tabName="{lang.contractDeliveryAndPaymentsPeriodHeader}">

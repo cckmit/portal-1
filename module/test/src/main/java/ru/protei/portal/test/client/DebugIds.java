@@ -1027,6 +1027,11 @@ public class DebugIds {
         String DELIVERY_AND_PAYMENTS_PERIOD_TAB = "contract-delivery-and-payments-period-tab";
         String SPECIFICATION_TAB = "contract-specification-tab";
         String EXPENDITURE_CONTRACTS_TAB = "expenditure-contracts-tab";
+        String NOTIFIERS_SELECTOR_ADD_BUTTON = "contract-notifiers-selector-add-button";
+        String NOTIFIERS_SELECTOR_CLEAR_BUTTON = "contract-notifiers-selector-clear-button";
+        String NOTIFIERS_SELECTOR_ITEM_CONTAINER = "contract-notifiers-selector-item-container";
+        String NOTIFIERS_SELECTOR_LABEL = "contract-notifiers-selector-label";
+        String NOTIFIERS_SELECTOR = "contract-subscriptions-selector";
 
         interface LABEL {
             String COMMON_HEADER = "contract-common-header";
@@ -1048,6 +1053,7 @@ public class DebugIds {
             String MANAGER = "contract-manager-label";
             String CONTRACTOR = "contract-contractor-label";
             String CONTRACT_SIGN_MANAGER = "contract-contract-sign-manager-label";
+            String NOTIFIERS = "contract-label-notifiers";
         }
 
         interface DATE_ITEM {
@@ -1115,6 +1121,7 @@ public class DebugIds {
         String SIGN_MANAGER_LABEL = "contract-preview-sign-manager-label";
         String DATE_END_WARRANTY_LABEL = "contract-preview-date-end-warranty-label";
         String DATE_EXECUTION_LABEL = "contract-preview-date-execution-label";
+        String NOTIFIERS = "contract-label-notifiers";
     }
 
     public interface CLEANABLE_SEARCH_BOX {

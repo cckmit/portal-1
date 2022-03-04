@@ -186,6 +186,9 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcColumn(name = "file_location")
     private String fileLocation;
 
+    @JdbcManyToMany(linkTable = "case_notifier", localLinkColumn = "case_id", remoteLinkColumn = "person_id")
+    private Set<Person> notifiers; //may contain partially filled objects!
+
     public Contract() {}
 
     public Contract(Long id, String number) {
@@ -487,6 +490,14 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.fileLocation = fileLocation;
     }
 
+    public Set<Person> getNotifiers() {
+        return notifiers;
+    }
+
+    public void setNotifiers(Set<Person> notifiers) {
+        this.notifiers = notifiers;
+    }
+
     public static Contract fromContractInfo(ContractInfo info) {
         if (info == null) {
             return null;
@@ -547,6 +558,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", dateEndWarranty=" + dateEndWarranty +
                 ", dateExecution=" + dateExecution +
                 ", fileLocation='" + fileLocation + '\'' +
+                ", notifiers=" + notifiers +
                 '}';
     }
 

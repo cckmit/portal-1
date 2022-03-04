@@ -1,13 +1,13 @@
 package ru.protei.portal.ui.issue.client.view.table.columns;
 
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
+
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 
 /**
  * Колонка "Менеджер"
@@ -42,10 +42,6 @@ public class ManagerColumn extends ClickColumn<CaseShortView> {
         divElement.appendChild( managerElement );
 
         cell.appendChild( divElement );
-    }
-
-    private String transliteration(String input) {
-        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     Lang lang;

@@ -2122,6 +2122,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractFileLocation();
 
+    String contractNotifiers();
+
     String contractContractor();
 
     String contractContractorDropped();

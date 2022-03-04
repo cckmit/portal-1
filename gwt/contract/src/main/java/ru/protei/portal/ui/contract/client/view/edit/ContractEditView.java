@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
@@ -35,6 +36,7 @@ import ru.protei.portal.ui.common.client.widget.selector.contract.state.Contract
 import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeCustomFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableLongBox;
@@ -46,9 +48,12 @@ import ru.protei.portal.ui.contract.client.widget.contractspecification.list.Con
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
 import static ru.protei.portal.core.model.struct.Vat.*;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliterateNotifiers;
 
 public class ContractEditView extends Composite implements AbstractContractEditView {
 
@@ -58,6 +63,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         dateValidDays.getElement().setAttribute("placeholder", lang.days());
         dateValidDays.setValidationFunction(value -> value == null || value >= 0);
         costWithCurrency.setVatOptions(listOf(Vat20, Vat0, NoVat));
+        notifiers.setItemRenderer( PersonShortView::getName );
         ensureDebugIds();
     }
 
@@ -231,6 +237,16 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         return fileLocation;
     }
 
+    @Override
+    public void setNotifiers(Set<Person> notifiers) {
+        this.notifiers.setValue(transliterateNotifiers(notifiers));
+    }
+
+    @Override
+    public Set<Person> getNotifiers() {
+        return notifiers.getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet());
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -359,6 +375,12 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         tabs.setTabNameDebugId(lang.contractDeliveryAndPaymentsPeriodHeader(), DebugIds.CONTRACT.DELIVERY_AND_PAYMENTS_PERIOD_TAB);
         tabs.setTabNameDebugId(lang.contractSpecificationHeader(), DebugIds.CONTRACT.SPECIFICATION_TAB);
         tabs.setTabNameDebugId(lang.contractListOfExpenditureHeader(), DebugIds.CONTRACT.EXPENDITURE_CONTRACTS_TAB);
+        notifiers.setAddEnsureDebugId(DebugIds.CONTRACT.NOTIFIERS_SELECTOR_ADD_BUTTON);
+        notifiers.setClearEnsureDebugId(DebugIds.CONTRACT.NOTIFIERS_SELECTOR_CLEAR_BUTTON);
+        notifiers.setItemContainerEnsureDebugId(DebugIds.CONTRACT.NOTIFIERS_SELECTOR_ITEM_CONTAINER);
+        notifiers.setLabelEnsureDebugId(DebugIds.CONTRACT.NOTIFIERS_SELECTOR_LABEL);
+        notifiers.ensureDebugId(DebugIds.CONTRACT.NOTIFIERS_SELECTOR);
+        notifiersLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.NOTIFIERS);
     }
 
 
@@ -425,6 +447,13 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     ContractorWidget contractorWidget;
+    @UiField
+    HTMLPanel notifiersContainer;
+    @UiField
+    LabelElement notifiersLabel;
+    @Inject
+    @UiField(provided = true)
+    EmployeeMultiSelector notifiers;
     @UiField
     HTMLPanel tags;
     @UiField

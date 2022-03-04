@@ -1,10 +1,8 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -15,6 +13,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
 
 /**
@@ -26,12 +25,8 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
         this.lang = lang;
         setAddName( lang.buttonAdd() );
         setClearName( lang.buttonClear() );
-        setItemRenderer(this::makeName);
+        setItemRenderer(personShortView -> transliteration(personShortView.getName()));
         selectCompanyMessage = lang.initiatorSelectACompany();
-    }
-
-    private String makeName(PersonShortView personShortView) {
-        return TransliterationUtils.transliterate(personShortView.getName(), LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     @Override

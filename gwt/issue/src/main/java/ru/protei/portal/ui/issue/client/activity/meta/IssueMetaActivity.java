@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.issue.client.activity.meta;
 
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -12,7 +11,6 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
@@ -40,6 +38,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CaseStateWorkflowUtil.recognizeWorkflow;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 
 /**
  *
@@ -806,10 +805,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     private boolean isStateWithRestrictions(long caseStateId) {
         return CrmConstants.State.CREATED != caseStateId &&
                 CrmConstants.State.CANCELED != caseStateId;
-    }
-
-    private String transliteration(String input) {
-        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     private boolean isJiraIssue() {

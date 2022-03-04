@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -15,6 +16,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public interface AbstractContractEditView extends IsWidget {
 
@@ -87,4 +89,8 @@ public interface AbstractContractEditView extends IsWidget {
     HasVisibility expenditureContractsVisibility();
 
     HasValue<String> fileLocation();
+
+    void setNotifiers(Set<Person> notifiers);
+
+    Set<Person> getNotifiers();
 }

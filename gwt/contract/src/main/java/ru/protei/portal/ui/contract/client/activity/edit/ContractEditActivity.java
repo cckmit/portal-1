@@ -223,6 +223,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.cost().setValue(new MoneyWithCurrencyWithVat(contract.getCost(), contract.getCurrency(), contract.getVat()));
         view.description().setValue(contract.getDescription());
         view.fileLocation().setValue(contract.getFileLocation());
+        view.setNotifiers(contract.getNotifiers());
         view.curator().setValue(createPersonOrNull(contract.getCuratorId(), contract.getCuratorShortName()));
         view.dateSigning().setValue(contract.getDateSigning());
         view.dateValidDate().setValue(contract.getDateValid());
@@ -292,6 +293,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setVat(view.cost().getValue().getVatPercent());
         contract.setDescription(view.description().getValue());
         contract.setFileLocation(view.fileLocation().getValue());
+        contract.setNotifiers(view.getNotifiers());
         contract.setCuratorId(getPersonIdOrNull(view.curator().getValue()));
         contract.setDateSigning(view.dateSigning().getValue());
         contract.setDateValid(view.dateValidDate().getValue());

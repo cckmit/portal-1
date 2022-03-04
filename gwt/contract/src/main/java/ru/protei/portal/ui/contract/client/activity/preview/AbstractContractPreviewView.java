@@ -55,6 +55,8 @@ public interface AbstractContractPreviewView extends IsWidget {
     
     void setFileLocation(String value);
 
+    void setNotifies(String value);
+
     HasVisibility footerVisibility();
 
     void isFullScreen(boolean isFullScreen);

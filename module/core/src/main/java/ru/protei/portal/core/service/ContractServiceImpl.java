@@ -38,6 +38,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -87,6 +88,8 @@ public class ContractServiceImpl implements ContractService {
     @Autowired
     PersonDAO personDAO;
     @Autowired
+    CaseNotifierDAO caseNotifierDAO;
+    @Autowired
     EventPublisherService publisherService;
 
     @Override
@@ -123,6 +126,7 @@ public class ContractServiceImpl implements ContractService {
         jdbcManyRelationsHelper.fill(contract, "childContracts");
         jdbcManyRelationsHelper.fill(contract, "contractDates");
         jdbcManyRelationsHelper.fill(contract, "contractSpecifications");
+        jdbcManyRelationsHelper.fill(contract, "notifiers");
         Collections.sort(contract.getContractSpecifications());
 
         contract.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(contract.getProjectId())));
@@ -212,12 +216,20 @@ public class ContractServiceImpl implements ContractService {
             }
         }
 
+        if(CollectionUtils.isNotEmpty(contract.getNotifiers())){
+            caseNotifierDAO.persistBatch(
+                    contract.getNotifiers()
+                            .stream()
+                            .map(person -> new CaseNotifier(contract.getId(), person.getId()))
+                            .collect(Collectors.toList()));
+        }
+
         log.info("createContract(): notification for contract={}", contract.getId());
         Set<Long> personIdList = makePersonIdListForNotification(contract);
-        if (CollectionUtils.isEmpty(personIdList)) {
+        if (CollectionUtils.isEmpty(personIdList) && CollectionUtils.isEmpty(contract.getNotifiers()) ) {
             log.info("createContract(): notification for contract={}: no persons to be notified", contract.getId());
         } else {
-            Set<NotificationEntry> notificationEntries = getNotificationEntries(personIdList);
+            Set<NotificationEntry> notificationEntries = getNotificationEntries(personIdList, contract.getNotifiers());
             if (CollectionUtils.isEmpty(notificationEntries)) {
                 log.info("createContract(): notification for contract={}: no entries to be notified", contract.getId());
             } else {
@@ -311,6 +323,7 @@ public class ContractServiceImpl implements ContractService {
         try {
             jdbcManyRelationsHelper.persist(contract, "contractDates");
             jdbcManyRelationsHelper.persist(contract, "contractSpecifications");
+            jdbcManyRelationsHelper.persist(contract, "notifiers");
         } catch (Exception e) {
             log.error("updateContract(): id = {} | failed to save contract's relations to db", contractId, e);
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED, e);
@@ -777,9 +790,10 @@ public class ContractServiceImpl implements ContractService {
         return personIdList;
     }
 
-    private Set<NotificationEntry> getNotificationEntries(Set<Long> personIdList) {
+    private Set<NotificationEntry> getNotificationEntries(Set<Long> personIdList, Set<Person> notifiers) {
         Set<NotificationEntry> notificationEntries = new HashSet<>();
         List<Person> personList = personDAO.partialGetListByKeys(personIdList, "id", "locale");
+        personList.addAll(notifiers);
         jdbcManyRelationsHelper.fill(personList, Person.Fields.CONTACT_ITEMS);
         for (Person person : personList) {
             ContactInfo contactInfo = person.getContactInfo();

@@ -46,7 +46,7 @@ import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.ui.common.client.common.DateFormatter.formatDateOnly;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.ERROR;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.SUCCESS;
-import static ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils.transliteration;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
 

@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.util;
 
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
@@ -11,7 +10,6 @@ import ru.protei.portal.core.model.dict.En_WorkTrigger;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.NumberUtils;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -29,6 +27,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.ui.common.client.common.DateFormatter.formatDateTime;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 
 public class CommentOrHistoryUtils {
 
@@ -88,10 +87,6 @@ public class CommentOrHistoryUtils {
         currentHistoryItemsContainers.forEach(itemsContainer -> historyContainer.insert(itemsContainer, 0));
 
         return currentHistoryItemsContainers;
-    }
-
-    public static String transliteration(String name) {
-        return TransliterationUtils.transliterate(name, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     private static CaseHistoryItem makeHistoryItem(History history) {

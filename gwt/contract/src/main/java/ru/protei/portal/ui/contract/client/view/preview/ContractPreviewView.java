@@ -139,6 +139,11 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
     
     @Override
+    public void setNotifies(String value) {
+        this.notifies.setInnerText(value);
+    }
+
+    @Override
     public void setProject(String value, String link) {
         project.setText(value);
         project.setHref(link);
@@ -194,6 +199,7 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
         contractSignManager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.SIGN_MANAGER_LABEL);
         dateEndWarranty.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.DATE_END_WARRANTY_LABEL);
         dateExecution.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.DATE_EXECUTION_LABEL);
+        notifies.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.NOTIFIERS);
         tabs.setTabNameDebugId(lang.contractDeliveryAndPaymentsPeriodHeader(), DebugIds.CONTRACT.DELIVERY_AND_PAYMENTS_PERIOD_TAB);
         tabs.setTabNameDebugId(lang.contractSpecificationHeader(), DebugIds.CONTRACT.SPECIFICATION_TAB);
     }
@@ -242,6 +248,8 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     HTMLPanel tagsContainer;
     @UiField
     SpanElement contractSignManager;
+    @UiField
+    SpanElement notifies;
     @UiField
     SpanElement deliveryNumber;
     @UiField

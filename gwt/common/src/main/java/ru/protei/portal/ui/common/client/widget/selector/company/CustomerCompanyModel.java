@@ -1,10 +1,8 @@
 package ru.protei.portal.ui.common.client.widget.selector.company;
 
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
@@ -19,6 +17,8 @@ import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
+
+import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
 
 public abstract class CustomerCompanyModel implements Activity, AsyncSelectorModel<EntityOption>, SelectorItemRenderer<EntityOption> {
 
@@ -70,7 +70,7 @@ public abstract class CustomerCompanyModel implements Activity, AsyncSelectorMod
     }
 
     private void transliteration(List<EntityOption> options) {
-        options.forEach(option -> option.setDisplayText(TransliterationUtils.transliterate(option.getDisplayText(), LocaleInfo.getCurrentLocale().getLocaleName())));
+        options.forEach(option -> option.setDisplayText(transliterate(option.getDisplayText())));
     }
 
     @Inject
