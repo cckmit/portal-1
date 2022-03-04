@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
-import static ru.protei.portal.core.model.util.CrmConstants.State.CANCELLED;
+import static ru.protei.portal.core.model.util.CrmConstants.State.CANCELED;
 import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
 
 public abstract class ContractPreviewActivity implements AbstractContractPreviewActivity, Activity {
@@ -127,7 +127,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setSpecifications(getAllSpecificationsAsWidgets(value.getContractSpecifications()));
         view.setParentContract(value.getParentContractNumber() == null ? "" : lang.contractNum(value.getParentContractNumber()));
         view.setChildContracts(stream(value.getChildContracts())
-                .filter(contract -> !Objects.equals(CANCELLED, contract.getStateId()))
+                .filter(contract -> !Objects.equals(CANCELED, contract.getStateId()))
                 .map(contract -> sanitizeHtml(typeLang.getName(contract.getContractType()) + " " + contract.getNumber()))
                 .collect(Collectors.joining(", ")));
         view.setProject(StringUtils.emptyIfNull(value.getProjectName()) + " (#" + value.getProjectId() + ")", LinkUtils.makePreviewLink(Project.class, value.getProjectId()));

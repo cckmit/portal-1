@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
@@ -24,15 +25,17 @@ import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import static ru.protei.portal.core.model.dict.ContractState.contractStatesByDefault;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
 
@@ -110,11 +113,38 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
 
     private List<CaseState> getStates(List<CaseState> states) {
         if (isEmpty(states)){
-            states = contractStatesByDefault();
-            filterView.states().setValue(new HashSet<>(states));
+            fillContractStates();
         }
 
         return states;
+    }
+
+    private void fillContractStates() {
+        caseStateService.getCaseStates(En_CaseType.CONTRACT, new RequestCallback<List<CaseState>>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(List<CaseState> result) {
+                Set<CaseState> states = new HashSet<>();
+                for (CaseState caseState : result) {
+                    if (caseState.getId().equals(CrmConstants.State.CANCELED)) {
+                        continue;
+                    }
+
+                    states.add(caseState);
+                }
+
+                filterView.states().setValue(states);
+            }
+        });
+    }
+
+    @Override
+    public void resetContractStates() {
+        fillContractStates();
     }
 
     @Override
@@ -218,6 +248,8 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     private AbstractContractFilterView filterView;
     @Inject
     private ContractControllerAsync contractService;
+    @Inject
+    private CaseStateControllerAsync caseStateService;
     @Inject
     private DefaultErrorHandler errorHandler;
     @Inject

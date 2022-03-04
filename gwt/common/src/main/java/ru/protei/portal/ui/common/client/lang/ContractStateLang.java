@@ -4,8 +4,9 @@ import com.google.inject.Inject;
 
 public class ContractStateLang {
     public String getName(String state) {
-        if (state == null)
-            return "";
+        if (state == null) {
+            return lang.unknownField();
+        }
 
         switch (state.toLowerCase()) {
             case "agreement":
@@ -18,7 +19,7 @@ public class ContractStateLang {
                 return lang.contractWaitingCopiesFromCustomer();
             case "waiting for original":
                 return lang.contractStateWaitOriginal();
-            case "cancelled":
+            case "canceled":
                 return lang.contractCancelled();
             case "signed on site":
                 return lang.contractSignedOnSite();

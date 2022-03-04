@@ -239,9 +239,8 @@ public class CrmConstants {
         long COPIES_SEND_TO_CUSTOMER = 65;
         long WAITING_FOR_COPIES_FROM_CUSTOMER = 66;
         long WAITING_FOR_ORIGINAL = 67;
-        long CANCELLED = 68;
-        long SIGNED_ON_SITE = 69;
-        long EDS_SIGNED = 70;
+        long SIGNED_ON_SITE = 68;
+        long EDS_SIGNED = 69;
     }
 
     public interface Style {

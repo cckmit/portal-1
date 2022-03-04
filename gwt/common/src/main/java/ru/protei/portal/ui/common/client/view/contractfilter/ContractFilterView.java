@@ -38,11 +38,8 @@ import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static ru.protei.portal.core.model.dict.ContractState.contractStatesByDefault;
 
 public class ContractFilterView extends Composite implements AbstractContractFilterView {
 
@@ -79,7 +76,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     }
 
     private void resetStates() {
-        states.setValue(new HashSet<>(contractStatesByDefault()));
+        activity.resetContractStates();
     }
 
     @Override

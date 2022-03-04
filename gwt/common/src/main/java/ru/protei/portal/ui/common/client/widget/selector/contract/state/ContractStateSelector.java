@@ -5,24 +5,14 @@ import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.ui.common.client.lang.ContractStateLang;
 import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 
-import java.util.List;
-
-import static ru.protei.portal.core.model.dict.ContractState.allContractStates;
-import static ru.protei.portal.core.model.helper.CollectionUtils.size;
-
 public class ContractStateSelector extends FormPopupSingleSelector<CaseState> {
 
     @Inject
-    public void init() {
+    public void init(ContractStateModel model) {
+        setAsyncModel(model);
         setItemRenderer(value -> value == null ? defaultValue : lang.getName(value.getState()));
-        setModel(elementIndex -> {
-            if (size(values) <= elementIndex) return null;
-            return values.get(elementIndex);
-        });
     }
 
     @Inject
     ContractStateLang lang;
-
-    private List<CaseState> values = allContractStates();
 }

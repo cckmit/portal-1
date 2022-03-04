@@ -185,7 +185,7 @@ public class EnumLangUtil {
             case "have an original": return localizedLang.get("contractStateHaveOriginal");
             case "waiting for original": return localizedLang.get("contractStateWaitOriginal");
             case "waiting for copies from customer": return localizedLang.get("contractWaitingCopiesFromCustomer");
-            case "cancelled": return localizedLang.get("contractCancelled");
+            case "canceled": return localizedLang.get("contractCancelled");
             case "eds signed": return localizedLang.get("contractEdsSigned");
             case "signed on site": return localizedLang.get("contractSignedOnSite");
         }
