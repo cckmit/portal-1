@@ -60,6 +60,7 @@ import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.service.HomeCompanyService;
 import ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.view.casecomment.list.CommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.view.caselink.item.CaseLinkItemView;
@@ -88,7 +89,6 @@ import ru.protei.portal.ui.common.client.widget.employeeregstate.EmployeeRegistr
 import ru.protei.portal.ui.common.client.widget.issuestate.StateOptionsModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateSelectorModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
-import ru.protei.portal.ui.common.client.widget.selector.contract.ContractModel;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionModel;
@@ -108,6 +108,7 @@ public class CommonClientModule extends AbstractGinModule {
     @Override
     protected void configure() {
 
+        requestStaticInjection(LinkUtils.class);
         requestStaticInjection(CommentOrHistoryUtils.class);
 
         bind( ExternalLinkActivity.class ).asEagerSingleton();
@@ -196,8 +197,6 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( ProjectSearchActivity.class ).asEagerSingleton();
         bind(AbstractProjectSearchView.class ).to( ProjectSearchView.class ).in( Singleton.class );
-
-        bind(ContractModel.class).asEagerSingleton();
 
         bind(AbstractYoutrackWorkFilterActivity.class).to(YoutrackWorkFilterActivity.class);
         bind(AbstractYoutrackWorkFilterView.class).to(YoutrackWorkFilterView.class);

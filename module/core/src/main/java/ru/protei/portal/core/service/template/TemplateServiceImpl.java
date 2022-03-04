@@ -762,12 +762,14 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action, Collection<String> recipients) {
+    public PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action,
+                                                       Collection<String> recipients, EnumLangUtil enumLangUtil) {
         PersonAbsence oldState = event.getOldState();
         PersonAbsence newState = event.getNewState();
         List<PersonAbsence> multiAddAbsenceList = event.getMultiAddAbsenceList();
 
         Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("EnumLangUtil", enumLangUtil);
         templateModel.put("is_created", action == EventAction.CREATED);
         templateModel.put("is_updated", action == EventAction.UPDATED);
         templateModel.put("is_removed", action == EventAction.REMOVED);
@@ -784,7 +786,7 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("multiAddAbsenceList", multiAddAbsenceList);
 
-        templateModel.put("reason", newState.getReason().getId());
+        templateModel.put("reason", newState.getReason());
 
         templateModel.put("commentChanged", event.isUserCommentChanged());
         templateModel.put("oldComment", getNullOrElse(oldState, PersonAbsence::getUserComment));

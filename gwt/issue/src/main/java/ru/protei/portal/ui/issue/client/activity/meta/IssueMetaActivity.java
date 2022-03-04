@@ -443,7 +443,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
 
         if (!validateCaseMeta(caseMeta)) {
-            fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.INFO));
             return;
         }
 

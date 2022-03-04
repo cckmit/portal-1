@@ -1,4 +1,4 @@
-package ru.protei.portal.app.portal.client.view.dashboardblocks.table;
+package ru.protei.portal.app.portal.client.view.dashboardblocks.table.issue;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
@@ -14,10 +14,10 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
-import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardTableActivity;
-import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardTableView;
-import ru.protei.portal.app.portal.client.view.dashboardblocks.table.columns.ContactColumn;
-import ru.protei.portal.app.portal.client.view.dashboardblocks.table.columns.ManagerColumn;
+import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardIssueTableActivity;
+import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardIssueTableView;
+import ru.protei.portal.app.portal.client.view.dashboardblocks.table.issue.columns.ContactColumn;
+import ru.protei.portal.app.portal.client.view.dashboardblocks.table.issue.columns.ManagerColumn;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -28,7 +28,7 @@ import ru.protei.portal.ui.issue.client.view.table.columns.NumberColumn;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class DashboardTableView extends Composite implements AbstractDashboardTableView {
+public class DashboardIssueTableView extends Composite implements AbstractDashboardIssueTableView {
 
     @Inject
     public void onInit() {
@@ -37,7 +37,7 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     }
 
     @Override
-    public void setActivity(AbstractDashboardTableActivity activity) {
+    public void setActivity(AbstractDashboardIssueTableActivity activity) {
         this.activity = activity;
         initTable();
     }
@@ -220,9 +220,9 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @UiField
     Element headerContainer;
 
-    private AbstractDashboardTableActivity activity;
+    private AbstractDashboardIssueTableActivity activity;
     private ClickColumnProvider<CaseShortView> columnProvider = new ClickColumnProvider<>();
 
-    interface CaseTableViewUiBinder extends UiBinder<HTMLPanel, DashboardTableView> {}
+    interface CaseTableViewUiBinder extends UiBinder<HTMLPanel, DashboardIssueTableView> {}
     private static CaseTableViewUiBinder ourUiBinder = GWT.create(CaseTableViewUiBinder.class);
 }
