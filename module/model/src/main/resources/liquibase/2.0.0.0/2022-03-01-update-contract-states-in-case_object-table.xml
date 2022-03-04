@@ -26,15 +26,15 @@
             <where>CASE_TYPE = 12 AND STATE = 5</where>
         </update>
         <update tableName="case_object">
-            <column name="STATE" value="68"/>
+            <column name="STATE" value="33"/>
             <where>CASE_TYPE = 12 AND STATE = 6</where>
         </update>
         <update tableName="case_object">
-            <column name="STATE" value="69"/>
+            <column name="STATE" value="68"/>
             <where>CASE_TYPE = 12 AND STATE = 7</where>
         </update>
         <update tableName="case_object">
-            <column name="STATE" value="70"/>
+            <column name="STATE" value="69"/>
             <where>CASE_TYPE = 12 AND STATE = 8</where>
         </update>
     </changeSet>

@@ -42,20 +42,13 @@
         </insert>
         <insert tableName="case_state">
             <column name="id" value="68"/>
-            <column name="STATE" value="cancelled"/>
-            <column name="INFO" value="cancelled"/>
-            <column name="usage_in_companies" value="null"/>
-            <column name="color" value=""/>
-        </insert>
-        <insert tableName="case_state">
-            <column name="id" value="69"/>
             <column name="STATE" value="signed on site"/>
             <column name="INFO" value="signed on site"/>
             <column name="usage_in_companies" value="null"/>
             <column name="color" value=""/>
         </insert>
         <insert tableName="case_state">
-            <column name="id" value="70"/>
+            <column name="id" value="69"/>
             <column name="STATE" value="eds signed"/>
             <column name="INFO" value="eds signed"/>
             <column name="usage_in_companies" value="null"/>

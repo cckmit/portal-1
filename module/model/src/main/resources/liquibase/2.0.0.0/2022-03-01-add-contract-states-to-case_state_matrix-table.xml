@@ -42,19 +42,19 @@
         </insert>
         <insert tableName="case_state_matrix">
             <column name="CASE_TYPE" value="12"/>
-            <column name="CASE_STATE" value="68"/>
+            <column name="CASE_STATE" value="33"/>
             <column name="view_order" value="6"/>
             <column name="info" value="Отменен"/>
         </insert>
         <insert tableName="case_state_matrix">
             <column name="CASE_TYPE" value="12"/>
-            <column name="CASE_STATE" value="69"/>
+            <column name="CASE_STATE" value="68"/>
             <column name="view_order" value="7"/>
             <column name="info" value="Подписан на площадке"/>
         </insert>
         <insert tableName="case_state_matrix">
             <column name="CASE_TYPE" value="12"/>
-            <column name="CASE_STATE" value="70"/>
+            <column name="CASE_STATE" value="69"/>
             <column name="view_order" value="8"/>
             <column name="info" value="Подписан ЭЦП"/>
         </insert>
