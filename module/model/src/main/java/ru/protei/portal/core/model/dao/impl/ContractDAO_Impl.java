@@ -21,7 +21,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeLikeArg;
-import static ru.protei.portal.core.model.util.ContractStateUtil.OPENED_CONTRACT_STATES;
+import static ru.protei.portal.core.model.util.ContractStateUtil.CLOSED_CONTRACT_STATES;
 import static ru.protei.portal.core.model.util.CrmConstants.State.CANCELED;
 
 public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements ContractDAO {
@@ -234,7 +234,7 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                 condition.append(" ) hww");
                 condition.append(" WHERE 1=1");
                 condition.append(" AND hww.rownumber = 1");
-                condition.append(" AND hww.new_id IN ").append(makeInArg(OPENED_CONTRACT_STATES));
+                condition.append(" AND hww.new_id NOT IN ").append(makeInArg(CLOSED_CONTRACT_STATES));
                 condition.append(")");
                 args.add(query.getOpenStateDate());
             }

@@ -24,7 +24,7 @@ public abstract class ContractStateModel extends BaseSelectorModel<CaseState> im
 
     @Override
     protected void requestData(LoadingHandler selector, String searchText) {
-        caseStateController.getCaseStates(En_CaseType.CONTRACT, new FluentCallback<List<CaseState>>()
+        caseStateController.getCaseStatesOmitPrivileges(En_CaseType.CONTRACT, new FluentCallback<List<CaseState>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(caseStates -> updateElements(caseStates, selector)));
     }

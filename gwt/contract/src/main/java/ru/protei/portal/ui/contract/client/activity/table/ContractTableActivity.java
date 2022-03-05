@@ -34,7 +34,9 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
@@ -111,35 +113,16 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         loadTable();
     }
 
-    private List<CaseState> getStates(List<CaseState> states) {
-        if (isEmpty(states)){
-            fillContractStates();
-        }
-
-        return states;
-    }
-
     private void fillContractStates() {
-        caseStateService.getCaseStates(En_CaseType.CONTRACT, new RequestCallback<List<CaseState>>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(List<CaseState> result) {
-                Set<CaseState> states = new HashSet<>();
-                for (CaseState caseState : result) {
-                    if (caseState.getId().equals(CrmConstants.State.CANCELED)) {
-                        continue;
-                    }
-
-                    states.add(caseState);
-                }
-
-                filterView.states().setValue(states);
-            }
-        });
+        caseStateService.getCaseStatesOmitPrivileges(En_CaseType.CONTRACT, new FluentCallback<List<CaseState>>()
+                .withError(errorHandler -> {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                })
+                .withSuccess(caseStates -> {
+                    filterView.states().setValue(stream(caseStates)
+                              .filter(state -> !Objects.equals(CrmConstants.State.CANCELED, state.getId()))
+                              .collect(Collectors.toSet()));
+                }));
     }
 
     @Override
@@ -202,7 +185,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         query.setManagerIds(collectIds(filterView.managers().getValue()));
         query.setTypes(nullIfEmpty(listOfOrNull(filterView.types().getValue())));
         query.setCaseTagsIds(nullIfEmpty(toList(filterView.tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
-        query.setStates(getStates(listOfOrNull(filterView.states().getValue())));
+        query.setStates(listOfOrNull(filterView.states().getValue()));
         ProductDirectionInfo value = filterView.direction().getValue();
         query.setDirectionId(value == null ? null : value.id);
         query.setKind(filterView.kind().getValue());
