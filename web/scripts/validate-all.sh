@@ -1,11 +1,21 @@
 #!/bin/sh
 set -e
+dir_current="${0%/*}"
+dir_root="./../.."
+dir_scripts="./web/scripts"
+cd "$dir_current"
 
 echo "> Validating with eslint (whole project)"
-npx yarn eslint --format unix --ignore-pattern 'node_modules/*' packages
+cd "$dir_root"
+npx yarn eslint --format unix --ignore-pattern 'node_modules/*' web/packages
+cd "$dir_scripts"
 
 echo "> Validating with prettier (whole project)"
-npx yarn prettier --check packages
+cd "$dir_root"
+npx yarn prettier --check web/packages
+cd "$dir_scripts"
 
 echo "> Validating with tsc (whole project)"
+cd "$dir_root"
 npx tsc --noEmit
+cd "$dir_scripts"
