@@ -49,7 +49,11 @@
       "@protei-portal/app-portal": [ "./web/packages/app/portal/src/" ]
     }
   },
+  "include": [
+    "web/packages/**/*"
+  ],
   "exclude": [
+    "**/target/**/*",
     "**/build/**/*",
     "**/node_modules/**/*"
   ]

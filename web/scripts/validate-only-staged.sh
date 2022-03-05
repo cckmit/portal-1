@@ -1,9 +1,8 @@
 #!/bin/sh
 set -e
-dir_current="${0%/*}"
 dir_root="./../.."
 dir_scripts="./web/scripts"
-cd "$dir_current"
+cd "${0%/*}"
 
 files="$(./git/list-staged-code-files.sh | grep '^web/packages/.*/src/.*' | grep '\.\(js\|ts\|jsx\|tsx\)$' | xargs echo)"
 if [ "$files" ]; then
@@ -25,7 +24,12 @@ else
   echo "> Validating with prettier (only staged files): no staged files found"
 fi
 
-echo "> Validating with tsc (whole project)"
-cd "$dir_root"
-npx tsc --noEmit
-cd "$dir_scripts"
+files="$(./git/list-staged-code-files.sh | grep '^web/packages/.*/src/.*' | xargs echo)"
+if [ "$files" ]; then
+  echo "> Validating with tsc (whole project)"
+  cd "$dir_root"
+  npx tsc --noEmit
+  cd "$dir_scripts"
+else
+  echo "> Validating with tsc (whole project): no changed files found"
+fi

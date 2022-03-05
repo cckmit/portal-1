@@ -1,9 +1,8 @@
 #!/bin/sh
 set -e
-dir_current="${0%/*}"
 dir_root="./../.."
 dir_scripts="./web/scripts"
-cd "$dir_current"
+cd "${0%/*}"
 
 files="$(./git/list-changed-code-files.sh | grep '^web/packages/.*/src/.*' | grep '\.\(js\|ts\|jsx\|tsx\|html\|css\|scss\|sass\|json\)$' | xargs echo)"
 if [ "$files" ]; then
