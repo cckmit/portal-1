@@ -41,9 +41,9 @@ public class CaseTimeElapsedApiSumDAO_Impl extends PortalBaseJdbcDAO<CaseTimeEla
                         .append(makeInArg(query.getCompanyIds(), true));
             }
 
-            if (query.getEmployeeIds() != null) {
+            if (query.getAuthorIds() != null) {
                 condition.append(" and author_id in")
-                        .append(makeInArg(query.getEmployeeIds(), true));
+                        .append(makeInArg(query.getAuthorIds(), true));
             }
         });
     }

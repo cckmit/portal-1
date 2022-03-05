@@ -7,13 +7,13 @@ import java.util.Set;
 
 public class CaseTimeElapsedApiQuery extends BaseQuery {
 
-    private DateRange period;       //createdRange;
+    private DateRange period;
 
     private Set<Long> productIds;
 
     private List<Long> companyIds;
 
-    private List<Long> employeeIds;     // commentAuthorIds;
+    private List<Long> authorIds;
     
     public CaseTimeElapsedApiQuery() {}
 
@@ -41,12 +41,12 @@ public class CaseTimeElapsedApiQuery extends BaseQuery {
         this.companyIds = companyIds;
     }
 
-    public List<Long> getEmployeeIds() {
-        return employeeIds;
+    public List<Long> getAuthorIds() {
+        return authorIds;
     }
 
-    public void setEmployeeIds(List<Long> employeeIds) {
-        this.employeeIds = employeeIds;
+    public void setAuthorIds(List<Long> authorIds) {
+        this.authorIds = authorIds;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class CaseTimeElapsedApiQuery extends BaseQuery {
                 ", period=" + period +
                 ", productIds=" + productIds +
                 ", companyIds=" + companyIds +
-                ", employeeIds=" + employeeIds +
+                ", authorIds=" + authorIds +
                 '}';
     }
 }

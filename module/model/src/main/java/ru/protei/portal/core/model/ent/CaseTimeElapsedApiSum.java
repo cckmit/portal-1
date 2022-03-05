@@ -17,10 +17,10 @@ public class CaseTimeElapsedApiSum {
     private Long elapsedTime;
 
     @JdbcColumn(name = "author_id")
-    private Long personId;
+    private Long authorId;
 
     @JdbcColumn(name = CASE_ID)
-    private Long issueId;
+    private Long caseId;
 
     @JdbcJoinedColumn(localColumn = CASE_ID, remoteColumn = CaseObject.Columns.ID,
             table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS,
@@ -108,20 +108,20 @@ public class CaseTimeElapsedApiSum {
         this.elapsedTime = elapsedTime;
     }
 
-    public Long getPersonId() {
-        return personId;
+    public Long getAuthorId() {
+        return authorId;
     }
 
-    public void setPersonId(Long personId) {
-        this.personId = personId;
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
     }
 
-    public Long getIssueId() {
-        return issueId;
+    public Long getCaseId() {
+        return caseId;
     }
 
-    public void setIssueId(Long issueId) {
-        this.issueId = issueId;
+    public void setCaseId(Long caseId) {
+        this.caseId = caseId;
     }
 
     public Long getCaseNumber() {
@@ -229,8 +229,8 @@ public class CaseTimeElapsedApiSum {
         return "CaseTimeElapsedApiSum{" +
                 "date=" + date +
                 ", elapsedTime=" + elapsedTime +
-                ", personId=" + personId +
-                ", issueId=" + issueId +
+                ", authorId=" + authorId +
+                ", caseId=" + caseId +
                 ", issueNumber='" + caseNumber + '\'' +
                 ", impLevel=" + impLevel +
                 ", stateId=" + stateId +
