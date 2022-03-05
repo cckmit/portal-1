@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.*;
@@ -39,8 +40,10 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
-import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
-import static ru.protei.portal.core.model.view.EmployeeShortView.Fields.*;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.RUS_PHONE_NUMBER_PATTERN;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.WORK_PHONE_NUMBER_PATTERN;
+import static ru.protei.portal.core.model.view.EmployeeShortView.Fields.CONTACT_ITEMS;
+import static ru.protei.portal.core.model.view.EmployeeShortView.Fields.WORKER_ENTRIES;
 
 
 /**
@@ -116,6 +119,22 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Result<List<PersonShortView>> shortViewList( EmployeeQuery query) {
+        if (query.isAccounting()) {
+            List<String> departmentIds = query.getDepartmentIds();
+            if (departmentIds == null) {
+                departmentIds = new ArrayList<>();
+            }
+            departmentIds.addAll(Arrays.asList(portalConfig.data().getCommonConfig().getContractNotifierDepartmentIds()));
+            query.setDepartmentIds(departmentIds);
+
+            List<Long> contractNotifierIds = makeContractNotifierAccountingIds(portalConfig.data().getCommonConfig().getContractNotifierIds());
+            List<Long> ids = query.getIds();
+            if (ids == null) {
+                ids = new ArrayList<>();
+            }
+            ids.addAll(contractNotifierIds);
+            query.setIds(ids);
+        }
         List<PersonShortView> list = personShortViewDAO.getEmployees(query);
 
         if (list == null) {
@@ -123,6 +142,20 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         return ok(list);
+    }
+
+    private List<Long> makeContractNotifierAccountingIds(String[] strings) {
+        List<Long> temp = new ArrayList<>(strings.length);
+        for (int i = 0; i < strings.length; i++) {
+            String stringId = strings[i];
+            Long id = NumberUtils.parseLong(stringId);
+            if (id == null) {
+                log.error("makeContractNotifierAccountingIds = {}", stringId);
+            } else {
+                temp.add(id);
+            }
+        }
+        return temp;
     }
 
     @Override

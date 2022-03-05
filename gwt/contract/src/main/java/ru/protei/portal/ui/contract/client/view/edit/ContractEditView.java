@@ -36,6 +36,7 @@ import ru.protei.portal.ui.common.client.widget.selector.contract.state.Contract
 import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeCustomFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -63,7 +64,9 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         dateValidDays.getElement().setAttribute("placeholder", lang.days());
         dateValidDays.setValidationFunction(value -> value == null || value >= 0);
         costWithCurrency.setVatOptions(listOf(Vat20, Vat0, NoVat));
+        notifierModel.setAccounting(true);
         notifiers.setItemRenderer( PersonShortView::getName );
+        notifiers.setModel(notifierModel);
         ensureDebugIds();
     }
 
@@ -454,6 +457,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector notifiers;
+    @Inject
+    EmployeeModel notifierModel;
     @UiField
     HTMLPanel tags;
     @UiField

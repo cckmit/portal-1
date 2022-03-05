@@ -54,7 +54,11 @@ public abstract class EmployeeModel implements Activity,
         cache.clearCache();
     }
 
-    public SelectorDataCacheLoadHandler<PersonShortView> makeLoadHandler( EmployeeQuery query ) {
+    public void setAccounting(boolean isAccounting) {
+        employeeQuery.setAccounting(isAccounting);
+    }
+
+    private SelectorDataCacheLoadHandler<PersonShortView> makeLoadHandler( EmployeeQuery query ) {
         return new SelectorDataCacheLoadHandler() {
             @Override
             public void loadData( int offset, int limit, AsyncCallback handler ) {

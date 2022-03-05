@@ -25,6 +25,10 @@ public class EmployeeMultiSelector
         setNullItem(() -> new PersonShortView(lang.employeeWithoutManager(), CrmConstants.Employee.UNDEFINED));
     }
 
+    public void setModel(EmployeeModel model) {
+        this.model = model;
+    }
+
     @Override
     protected SelectorItem<PersonShortView> makeSelectorItem( PersonShortView value, String elementHtml ) {
         return PersonSelectorItemRenderer.makeMultipleSelectorItem(value, elementHtml, isSelected(value));

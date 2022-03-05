@@ -183,6 +183,8 @@ public class PortalConfigData {
             systemUserId = properties.getProperty("system.user.id", Long.class, null);
             cardbatchCompanyPartnerId = properties.getProperty("cardbatch.company.partner.id", Long.class, null);
             contractCuratorsDepartmentsIds = properties.getProperty("contract.curators_departments_ids", String.class, "").split(",");
+            contractNotifierDepartmentIds = properties.getProperty("contract.notifier_departments_ids", String.class, "").split(",");
+            contractNotifierIds = properties.getProperty("contract.notifier_departments_ids", String.class, "").split(",");
         }
         public String getCrmUrlInternal() {
             return crmUrlInternal;
@@ -220,6 +222,14 @@ public class PortalConfigData {
             return contractCuratorsDepartmentsIds;
         }
 
+        public String[] getContractNotifierDepartmentIds() {
+            return contractNotifierDepartmentIds;
+        }
+
+        public String[] getContractNotifierIds() {
+            return contractNotifierIds;
+        }
+
         private final String crmUrlInternal;
         private final String crmUrlExternal;
         private final String crmUrlCurrent;
@@ -229,6 +239,8 @@ public class PortalConfigData {
         private final Long systemUserId;
         private final Long cardbatchCompanyPartnerId;
         private final String[] contractCuratorsDepartmentsIds;
+        private final String[] contractNotifierDepartmentIds;
+        private final String[] contractNotifierIds;
     }
 
     public static class MailNotificationConfig extends CommonConfig {

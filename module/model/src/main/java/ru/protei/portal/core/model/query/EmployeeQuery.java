@@ -43,6 +43,8 @@ public class EmployeeQuery extends BaseQuery {
 
     private Boolean absent;
 
+    private boolean isAccounting;
+
     private List<String> departmentIds;
 
     public EmployeeQuery() {
@@ -203,6 +205,14 @@ public class EmployeeQuery extends BaseQuery {
 
     public void setBirthdayInterval( Interval birthdayInterval ) {
         this.birthdayInterval = birthdayInterval;
+    }
+
+    public boolean isAccounting() {
+        return isAccounting;
+    }
+
+    public void setAccounting(boolean accounting) {
+        isAccounting = accounting;
     }
 
     @Override

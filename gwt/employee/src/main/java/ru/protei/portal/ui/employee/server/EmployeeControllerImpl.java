@@ -44,7 +44,7 @@ public class EmployeeControllerImpl implements EmployeeController {
 
     public List< PersonShortView > getEmployeeViewList( EmployeeQuery query ) throws RequestFailedException {
 
-        log.info( "getEmployeeViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
+        log.info( "getEmployeeViewList(): searchPattern={} | isFired={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getFired(), query.getSortField(), query.getSortDir() );
 
         Result< List< PersonShortView > > result = employeeService.shortViewList( query );
