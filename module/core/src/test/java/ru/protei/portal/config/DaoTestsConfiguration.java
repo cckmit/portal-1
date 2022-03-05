@@ -549,4 +549,9 @@ public class DaoTestsConfiguration {
     public RFIDDeviceDAO getRFIDDeviceDAO() {
         return new RFIDDeviceDAO_Impl();
     }
+
+    @Bean
+    public CaseElapsedTimeApiDAO getCaseElapsedTimeApiDAO() {
+        return new CaseElapsedTimeApiDAO_Impl();
+    }
 }

@@ -467,4 +467,9 @@ public class RedmineTestConfigurationMockDao {
     public RFIDDeviceDAO getRFIDDeviceDAO() {
         return mock(RFIDDeviceDAO.class);
     }
+
+    @Bean
+    public CaseElapsedTimeApiDAO getCaseTimeElapsedApiSumDAO() {
+        return mock(CaseElapsedTimeApiDAO.class);
+    }
 }

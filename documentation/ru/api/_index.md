@@ -411,6 +411,97 @@ __auth147=`printf 'manager01:manager01' | base64`; curl -d '{ "caseNumber" : 100
 - **newColor** - новый цвет
 - **initiatorName** - имя создателя записи
 
+
+### Получение записи по затраченному времени
+
+
+- **путь**: /case/elapsedTimes
+- **метод**: POST
+- **авторизация**: Basic
+- **тело запроса**: json
+
+*возможные параметры:*
+
+- **from** - дата создания (от)
+- **to** - дата создания (до)
+- **productIds** - список идентификаторов продуктов
+- **companyIds** - список идентификаторов компаний
+- **authorIds** - список идентификаторов авторов записей
+- **offset** - пропуск первых нескольких элементов; отступ
+- **limit** - количество элементов в запросе
+
+**Пример запроса:**
+
+```
+POST /Portal/springApi/api/case/elapsedTimes
+Host: 127.0.0.1:8888
+Authorization: Basic ZnJvc3Q6YWxleGFfZg==
+Content-Type: application/json
+Cache-Control: no-cache
+    
+{
+  "from": "2022-02-23",
+  "to": "2021-03-08",
+  "productIds": [ 1, 2, 3 ],
+  "companyIds": [ 11, 22, 33 ],
+  "authorIds": [ 7777 ],
+  "limit" : 2,
+  "offset" : 0
+}
+```
+
+**Ответ:**
+
+```
+{
+  "status": "OK",
+  "data": [
+    {
+      "id": 821832,
+      "date": 1579685719000,
+      "elapsedTime": 480,
+      "timeElapsedType": "WATCH",
+      "authorId": 7777,
+      "caseId": 168474,
+      "caseNumber": 1027392,
+      "caseImpLevel": 3,
+      "caseStateId": 5,
+      "caseStateName": "verified",
+      "caseInitiatorCompanyId": 2934,
+      "caseInitiatorCompanyName": "Департамент Всех Департаментов",
+      "caseProductId": 6618,
+      "caseProductName": "Система-112",
+      "caseManagerId": 42,
+      "caseManagerName": "Иванов Д.Е.",
+      "caseManagerCompanyId": 1,
+      "caseManagerCompanyName": "НТЦ Протей"
+    }
+  ]
+}
+```
+
+где:
+
+- **id** - идентификатор записи по затраченному времени
+- **date** - дата создания записи (Unix time)
+- **elapsedTime** - потраченное время (м.)
+- **timeElapsedType** - тип записи
+- **authorId** - автор записи
+- **caseId** - идентификатор обращения
+- **caseNumber** - номер обращения
+- **caseImpLevel** - уровень критичности обращения, статус
+- **caseStateId** - идентификатор состояния обращения
+- **caseStateName** - название состояния обращения
+- **caseInitiatorCompanyId** - идентификатор компании заявителя
+- **caseInitiatorCompanyName** - название компании заявителя
+- **caseProductId** - идентификатор продукта
+- **caseProductName** - название продукта
+- **caseManagerId** - идентификатор менеджера
+- **caseManagerName** - имя менеджера
+- **caseManagerCompanyId** - идентификатор компании менеджера
+- **caseManagerCompanyName** - название компании менеджера
+
+
 ## Продукты / Компоненты
 
 реализовано 4.1.57.3 Добавлены api методы: 
@@ -1567,6 +1658,25 @@ id | Код | Описание
 |0|ADD|добавление|
 |1|CHANGE|изменение|
 |2|REMOVE|удаление|
+
+
+**timeElapsedType** - тип записи по затраченному времени:
+
+
+ id  | Код | Описание   
+-----| --- |------------
+| 0   |NONE| Без типа   |
+| 1   |WATCH| Дежурство |
+| 2   |NIGHT_WORK| Ночные работы |
+| 3   |SOFT_INSTALL| установка ПО |
+| 4   |SOFT_UPDATE| обновление ПО |
+| 5   |SOFT_CONFIG| настройка ПО |
+| 6   |TESTING| тестирование |
+| 7   |CONSULTATION| консультация |
+| 8   |MEETING| совещание/конференц колл |
+| 9   |DISCUSSION_OF_IMPROVEMENTS| обсуждение доработок |
+| 10  |LOG_ANALYSIS| анализ логов |
+| 11  |SOLVE_PROBLEMS| решение проблем |
 
 **companyCategoryId** - категория компании:
 
