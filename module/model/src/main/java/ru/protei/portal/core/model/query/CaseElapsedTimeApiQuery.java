@@ -1,13 +1,14 @@
 package ru.protei.portal.core.model.query;
 
-import ru.protei.portal.core.model.struct.DateRange;
-
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-public class CaseTimeElapsedApiQuery extends BaseQuery {
+public class CaseElapsedTimeApiQuery extends BaseQuery {
 
-    private DateRange period;
+    private Date from;
+    
+    private Date to;
 
     private Set<Long> productIds;
 
@@ -15,14 +16,22 @@ public class CaseTimeElapsedApiQuery extends BaseQuery {
 
     private List<Long> authorIds;
     
-    public CaseTimeElapsedApiQuery() {}
+    public CaseElapsedTimeApiQuery() {}
 
-    public DateRange getPeriod() {
-        return period;
+    public Date getFrom() {
+        return from;
     }
 
-    public void setPeriod(DateRange period) {
-        this.period = period;
+    public void setFrom(Date from) {
+        this.from = from;
+    }
+
+    public Date getTo() {
+        return to;
+    }
+
+    public void setTo(Date to) {
+        this.to = to;
     }
 
     public Set<Long> getProductIds() {
@@ -51,13 +60,14 @@ public class CaseTimeElapsedApiQuery extends BaseQuery {
 
     @Override
     public String toString() {
-        return "CaseTimeElapsedApiQuery{" +
+        return "CaseElapsedTimeApiQuery{" +
                 "searchString='" + searchString + '\'' +
                 ", sortField=" + sortField +
                 ", sortDir=" + sortDir +
                 ", limit=" + limit +
                 ", offset=" + offset +
-                ", period=" + period +
+                ", from=" + from +
+                ", to=" + to +
                 ", productIds=" + productIds +
                 ", companyIds=" + companyIds +
                 ", authorIds=" + authorIds +

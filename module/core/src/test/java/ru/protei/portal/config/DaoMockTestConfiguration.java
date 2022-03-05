@@ -516,7 +516,7 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
-    public CaseTimeElapsedApiSumDAO getCaseTimeElapsedApiSumDAO() {
-        return mock(CaseTimeElapsedApiSumDAO.class);
+    public CaseElapsedTimeApiDAO getCaseElapsedTimeApiDAO() {
+        return mock(CaseElapsedTimeApiDAO.class);
     }
 }

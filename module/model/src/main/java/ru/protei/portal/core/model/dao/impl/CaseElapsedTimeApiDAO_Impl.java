@@ -1,34 +1,29 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
-import ru.protei.portal.core.model.dao.CaseTimeElapsedApiSumDAO;
+import ru.protei.portal.core.model.dao.CaseElapsedTimeApiDAO;
+import ru.protei.portal.core.model.ent.CaseElapsedTimeApi;
 import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.CaseTimeElapsedApiSum;
-import ru.protei.portal.core.model.query.CaseTimeElapsedApiQuery;
+import ru.protei.portal.core.model.query.CaseElapsedTimeApiQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
-import ru.protei.portal.core.model.struct.Interval;
 
-import static ru.protei.portal.core.model.ent.CaseTimeElapsedApiSum.*;
-import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
+import static ru.protei.portal.core.model.ent.CaseElapsedTimeApi.CASE_OBJECT_ALIAS;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
 
-public class CaseTimeElapsedApiSumDAO_Impl extends PortalBaseJdbcDAO<CaseTimeElapsedApiSum> implements CaseTimeElapsedApiSumDAO {
+public class CaseElapsedTimeApiDAO_Impl extends PortalBaseJdbcDAO<CaseElapsedTimeApi> implements CaseElapsedTimeApiDAO {
     @Override
     @SqlConditionBuilder
-    public SqlCondition createSqlCondition(CaseTimeElapsedApiQuery query) {
+    public SqlCondition createSqlCondition(CaseElapsedTimeApiQuery query) {
         return new SqlCondition().build((condition, args) -> {
             condition.append("case_comment.time_elapsed is not NULL");
 
-            if (query.getPeriod() != null) {
-                Interval interval = makeInterval(query.getPeriod());
-                if (interval.from != null) {
-                    condition.append( " and created >= ?" );
-                    args.add(interval.from );
-                }
-                if (interval.to != null) {
-                    condition.append( " and created < ?" );
-                    args.add( interval.to );
-                }
+            if (query.getFrom() != null) {
+                condition.append( " and case_comment.created >= ?" );
+                args.add(query.getFrom());
+            }
+            if (query.getTo() != null) {
+                condition.append( " and case_comment.created < ?" );
+                args.add( query.getTo() );
             }
 
             if (query.getProductIds() != null) {

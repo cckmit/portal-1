@@ -551,7 +551,7 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public CaseTimeElapsedApiSumDAO getCaseTimeElapsedApiSumDAO() {
-        return new CaseTimeElapsedApiSumDAO_Impl();
+    public CaseElapsedTimeApiDAO getCaseElapsedTimeApiDAO() {
+        return new CaseElapsedTimeApiDAO_Impl();
     }
 }

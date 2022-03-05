@@ -1672,9 +1672,9 @@ public class TestPortalApiController extends BaseServiceTest {
         CaseObject caseObject = makeCaseObject( person );
         makeTimeElapsedCaseComment( person, caseObject.getId(), En_TimeElapsedType.CONSULTATION, 42L);
 
-        CaseTimeElapsedApiQuery query = new CaseTimeElapsedApiQuery();
+        CaseElapsedTimeApiQuery query = new CaseElapsedTimeApiQuery();
         query.setAuthorIds(listOf(person.getId()));
-        createPostResultAction("/api/caseTimeElapsedReport", query)
+        createPostResultAction("/api/case/elapsedTimes", query)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
                 .andExpect(jsonPath("$.data[0].elapsedTime", is(42)))

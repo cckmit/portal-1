@@ -679,8 +679,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public CaseTimeElapsedApiSumDAO caseTimeElapsedApiSumDAO() {
-        return new CaseTimeElapsedApiSumDAO_Impl();
+    public CaseElapsedTimeApiDAO getCaseElapsedTimeApiDAO() {
+        return new CaseElapsedTimeApiDAO_Impl();
     }
     
     @Bean
@@ -1311,8 +1311,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public CaseTimeElapsedApiService caseTimeElapsedApiService() {
-        return new CaseTimeElapsedApiServiceImpl();
+    public CaseElapsedTimeApiService getCaseElapsedTimeApiService() {
+        return new CaseElapsedTimeApiServiceImpl();
     }
 
     /* ASPECT/INTERCEPTORS */

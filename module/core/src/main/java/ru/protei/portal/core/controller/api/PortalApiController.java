@@ -92,7 +92,7 @@ public class PortalApiController {
     @Autowired
     private ProjectService projectService;
     @Autowired
-    private CaseTimeElapsedApiService caseTimeElapsedApiService;
+    private CaseElapsedTimeApiService caseElapsedTimeApiService;
     @Autowired
     PortalConfig config;
 
@@ -736,13 +736,13 @@ public class PortalApiController {
                 .ifOk(result -> log.info("createProjectByApi(): OK"));
     }
 
-    @PostMapping(value = "/caseTimeElapsedReport")
-    public Result<List<CaseTimeElapsedApiSum>> getCaseTimeElapsedReport(
-            @RequestBody CaseTimeElapsedApiQuery query,
+    @PostMapping(value = "/case/elapsedTimes")
+    public Result<List<CaseElapsedTimeApi>> getCaseElapsedTimes(
+            @RequestBody CaseElapsedTimeApiQuery query,
             HttpServletRequest request,
             HttpServletResponse response) {
 
-        log.info("API | getCaseTimeElapsedReport(): query={}", query);
+        log.info("API | getCaseElapsedTime(): query={}", query);
 
         try {
             Result<AuthToken> authTokenAPIResult = authenticate(request, response, authService, sidGen, log);
@@ -753,7 +753,7 @@ public class PortalApiController {
 
             AuthToken authToken = authTokenAPIResult.getData();
 
-            return caseTimeElapsedApiService.getByQuery(authToken, query);
+            return caseElapsedTimeApiService.getByQuery(authToken, query);
 
         } catch (IllegalArgumentException ex) {
             log.error(ex.getMessage());

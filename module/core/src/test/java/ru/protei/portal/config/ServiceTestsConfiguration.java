@@ -581,7 +581,7 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
-    public CaseTimeElapsedApiService caseTimeElapsedApiService() {
-        return new CaseTimeElapsedApiServiceImpl();
+    public CaseElapsedTimeApiService getCaseElapsedTimeApiService() {
+        return new CaseElapsedTimeApiServiceImpl();
     }
 }
