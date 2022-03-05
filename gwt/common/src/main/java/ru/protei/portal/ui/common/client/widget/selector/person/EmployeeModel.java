@@ -11,11 +11,11 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
-import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCache;
-import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHandler;
 import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
+import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCache;
+import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHandler;
+import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -33,7 +33,6 @@ public abstract class EmployeeModel implements Activity,
     public void onInit( AuthEvents.Success event ) {
         requestCurrentPerson(event.profile.getId());
         cache.clearCache();
-        employeeQuery = new EmployeeQuery( null, false, true, En_SortField.person_full_name, En_SortDir.ASC );
         cache.setLoadHandler(makeLoadHandler(employeeQuery));
     }
 
@@ -101,6 +100,6 @@ public abstract class EmployeeModel implements Activity,
     Lang lang;
 
     PersonShortView currentPerson;
-    EmployeeQuery employeeQuery;
+    EmployeeQuery employeeQuery = new EmployeeQuery( null, false, true, En_SortField.person_full_name, En_SortDir.ASC );
     private SelectorDataCache<PersonShortView> cache = new SelectorDataCache<>();
 }

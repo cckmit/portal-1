@@ -65,8 +65,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         dateValidDays.setValidationFunction(value -> value == null || value >= 0);
         costWithCurrency.setVatOptions(listOf(Vat20, Vat0, NoVat));
         notifierModel.setAccounting(true);
-        notifiers.setItemRenderer( PersonShortView::getName );
         notifiers.setModel(notifierModel);
+        notifiers.setItemRenderer( PersonShortView::getName );
         ensureDebugIds();
     }
 

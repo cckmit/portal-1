@@ -27,6 +27,7 @@ public class EmployeeMultiSelector
 
     public void setModel(EmployeeModel model) {
         this.model = model;
+        setAsyncModel( model);
     }
 
     @Override

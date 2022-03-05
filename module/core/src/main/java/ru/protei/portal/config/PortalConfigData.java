@@ -184,7 +184,7 @@ public class PortalConfigData {
             cardbatchCompanyPartnerId = properties.getProperty("cardbatch.company.partner.id", Long.class, null);
             contractCuratorsDepartmentsIds = properties.getProperty("contract.curators_departments_ids", String.class, "").split(",");
             contractNotifierDepartmentIds = properties.getProperty("contract.notifier_departments_ids", String.class, "").split(",");
-            contractNotifierIds = properties.getProperty("contract.notifier_departments_ids", String.class, "").split(",");
+            contractNotifierIds = properties.getProperty("contract.notifier_ids", String.class, "").split(",");
         }
         public String getCrmUrlInternal() {
             return crmUrlInternal;
