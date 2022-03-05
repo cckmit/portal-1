@@ -12,7 +12,6 @@ import ru.protei.portal.core.model.dict.En_ProjectAccessType;
 import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.SelectorsParams;
-import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -23,15 +22,12 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
-import ru.protei.portal.ui.common.client.widget.project.filter.ProjectFilterWidget;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.common.client.widget.project.filter.ProjectFilterWidgetModel;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 import static ru.protei.portal.ui.project.client.util.AccessUtil.getAccessType;
 
 /**
@@ -78,10 +74,11 @@ public abstract class ProjectTableActivity
 
         this.preScroll = event.preScroll;
 
-        if (event.caseFilterDto != null && event.caseFilterDto.getQuery() != null ) {
+        if (event.caseFilterDto == null || event.caseFilterDto.getQuery() == null ) {
+            loadTable();
+        } else {
             fillFilterFieldsByCaseQuery(event.caseFilterDto);
         }
-//        loadTable();
     }
 
     @Event
@@ -213,6 +210,7 @@ public abstract class ProjectTableActivity
 
     private void fillFilterFieldsByCaseQuery(CaseFilterDto<ProjectQuery> caseFilterDto) {
         view.getFilterWidget().resetFilter();
+        view.getFilterWidget().userFilter().setValue(caseFilterDto.getCaseFilter().toShortView());
 
         final ProjectQuery projectQuery = caseFilterDto.getQuery();
 

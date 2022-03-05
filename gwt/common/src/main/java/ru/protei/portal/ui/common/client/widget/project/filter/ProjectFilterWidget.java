@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.project.filter;
 
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dto.CaseFilterDto;
@@ -35,6 +36,10 @@ public class ProjectFilterWidget extends FilterWidget<CaseFilterDto<ProjectQuery
         caseFilterDto.setCaseFilter(caseFilter);
 
         return caseFilterDto;
+    }
+
+    public HasValue<FilterShortView> userFilter() {
+        return filterSelector;
     }
 
     private final ProjectFilterParamWidget projectFilterParamWidget;
