@@ -1,40 +1,29 @@
-import { scheduleMacroTask, scheduleNow, Scheduler } from "@protei-libs/scheduler"
 import { Unsubscribe } from "@protei-libs/types"
+import { scheduleMacroTask, scheduleNow, Scheduler } from "@protei-libs/scheduler"
 import {
   EventBus,
   EventBusEvent,
-  newEventBus,
   EventListener,
   EventTopic,
+  newEventBus,
 } from "@protei-libs/eventbus"
+import { EventBusModule } from "./EventBusModule"
 import { arrayFilterInPlace } from "../util/array"
-import { ModuleWithEventBus } from "./ModuleWithEventBus"
-import { ModuleLoader } from "../loader"
 
-export abstract class ModuleWithEventBusAbstractImpl<MODULE_TYPE>
-  implements ModuleWithEventBus<MODULE_TYPE>
-{
-  abstract get loader(): ModuleLoader<MODULE_TYPE>
-
-  private externalEventBuses: Array<EventBus<EventBusEvent<unknown>>> = []
+export class EventBusModuleImpl implements EventBusModule {
   private internalEventBus = newEventBus<EventBusEvent<unknown>>()
-
-  addExternalEventbus(eventbus: EventBus<EventBusEvent<unknown>>): Unsubscribe {
-    this.externalEventBuses.push(eventbus)
-    const registration = eventbus.subscribeBroadcast((event) => {
-      this.onExternalEvent(event)
-    })
-    return () => {
-      registration()
-      arrayFilterInPlace(this.externalEventBuses, (eb) => eb !== eventbus)
-    }
-  }
+  private externalEventBuses: Array<EventBus<EventBusEvent<unknown>>> = []
+  private externalListeners: Array<(event: EventBusEvent<unknown>) => void> = []
 
   fireEvent(event: EventBusEvent<unknown>): void {
     this.internalEventBus.send(event.type, event)
     for (const externalEventBus of this.externalEventBuses) {
       externalEventBus.send(event.type, event)
     }
+  }
+
+  fireEventOnlyInternal(event: EventBusEvent<unknown>): void {
+    this.internalEventBus.send(event.type, event)
   }
 
   listenEvent<T extends EventBusEvent<unknown>>(
@@ -65,22 +54,29 @@ export abstract class ModuleWithEventBusAbstractImpl<MODULE_TYPE>
     return eventbus.subscribe(config.topic, listenerScheduler)
   }
 
-  protected onExternalEvent(event: EventBusEvent<unknown>): void {
-    if (this.isLoaded()) {
-      this.internalEventBus.send(event.type, event)
-      return
-    }
-    if (!this.shouldLoadModuleByEvent(event)) {
-      return
-    }
-    this.loader.load().then(() => {
-      this.internalEventBus.send(event.type, event)
+  addExternalEventbus(eventbus: EventBus<EventBusEvent<unknown>>): Unsubscribe {
+    this.externalEventBuses.push(eventbus)
+    const registration = eventbus.subscribeBroadcast((event) => {
+      this.onExternalEvent(event)
     })
+    return () => {
+      registration()
+      arrayFilterInPlace(this.externalEventBuses, (eb) => eb !== eventbus)
+    }
   }
 
-  protected isLoaded(): boolean {
-    return this.loader.get() !== undefined
+  protected onExternalEvent(event: EventBusEvent<unknown>): void {
+    if (this.externalListeners.length === 0) {
+      this.fireEventOnlyInternal(event)
+      return
+    }
+    for (const listener of this.externalListeners) {
+      listener(event)
+    }
   }
 
-  protected abstract shouldLoadModuleByEvent(event: EventBusEvent<unknown>): boolean
+  addExternalEventListener(listener: (event: EventBusEvent<unknown>) => void): Unsubscribe {
+    this.externalListeners.push(listener)
+    return () => arrayFilterInPlace(this.externalListeners, (l) => l !== listener)
+  }
 }
