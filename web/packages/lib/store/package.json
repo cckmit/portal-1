@@ -1,0 +1,16 @@
+{
+  "name": "@protei-libs/store",
+  "version": "1.0.0",
+  "private": true,
+  "main": "lib/index",
+  "types": "lib/index",
+  "files": [
+    "lib"
+  ],
+  "peerDependencies": {
+    "mobx": "*"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.4"
+  }
+}

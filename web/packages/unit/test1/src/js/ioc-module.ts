@@ -7,6 +7,8 @@ import { Test1Service, Test1Service$type, Test1ServiceImpl } from "./service/Tes
 export const iocUnitTest1 = new ContainerModule((bind) => {
   bind<EventBusModule>(EventBusModule$type).toConstantValue(unitTest1Module)
   bind<UnitTest1Module>(UnitTest1Module$type).toConstantValue(unitTest1Module)
+
   bind<Test1Service>(Test1Service$type).to(Test1ServiceImpl)
-  bind<Test1Store>(Test1Store$type).toDynamicValue(() => test1Store)
+
+  bind<Test1Store>(Test1Store$type).toConstantValue(test1Store)
 })

@@ -11,7 +11,7 @@ import { arrayFilterInPlace } from "../util/array"
 import { ModuleWithEventBus } from "./ModuleWithEventBus"
 import { ModuleLoader } from "../loader"
 
-export abstract class ModuleWithEventBusTemplate<MODULE_TYPE>
+export abstract class ModuleWithEventBusAbstractImpl<MODULE_TYPE>
   implements ModuleWithEventBus<MODULE_TYPE>
 {
   abstract get loader(): ModuleLoader<MODULE_TYPE>

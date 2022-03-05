@@ -1,4 +1,4 @@
-import { EventBus, EventBusEvent, EventTopic, EventListener } from "@protei-libs/eventbus"
+import { EventBus, EventBusEvent, EventListener, EventTopic } from "@protei-libs/eventbus"
 import { Unsubscribe } from "@protei-libs/types"
 
 export const EventBusModule$type = Symbol("EventBusModule")

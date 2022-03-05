@@ -12,7 +12,7 @@ public class TypescriptWebModule extends AbstractGinModule {
     @Override
     protected void configure() {
         bind(TypescriptWebActivity.class).asEagerSingleton();
-        bind(TypescriptWebView.class);
+        bind(TypescriptWebView.class); // not singleton
         bind(NativeWebIntegration.class).to(NativeWebIntegrationImpl.class).in(Singleton.class);
 
         bind(Test1Page.class).asEagerSingleton();

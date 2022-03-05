@@ -1,7 +1,7 @@
 import {
   ModuleLoaderES6Import,
   ModuleWithEventBus,
-  ModuleWithEventBusTemplate,
+  ModuleWithEventBusAbstractImpl,
 } from "@protei-libs/module"
 import { EventBusEvent } from "@protei-libs/eventbus"
 import { loadModuleEvents } from "./loadModuleEvents"
@@ -11,11 +11,15 @@ export const UnitTest1Module$type = Symbol("UnitTest1Module")
 export interface UnitTest1Module extends ModuleWithEventBus<typeof import("../index")> {}
 
 class UnitTest1ModuleImpl
-  extends ModuleWithEventBusTemplate<typeof import("../index")>
+  extends ModuleWithEventBusAbstractImpl<typeof import("../index")>
   implements UnitTest1Module
 {
   readonly loader = new ModuleLoaderES6Import({
-    moduleImportFunction: () => import("../index"),
+    moduleImportFunction: () =>
+      import("../index").then((module) => {
+        module.setup()
+        return module
+      }),
   })
 
   protected shouldLoadModuleByEvent(event: EventBusEvent<unknown>): boolean {

@@ -1,5 +1,5 @@
 {
-  "name": "@protei-portal/unit-test2",
+  "name": "@protei-portal/common",
   "version": "1.0.0",
   "private": true,
   "main": "lib/index",
@@ -12,15 +12,11 @@
     "@protei-libs/logger": "workspace:*",
     "@protei-libs/module": "workspace:*",
     "@protei-libs/store": "workspace:*",
-    "@protei-portal/common": "workspace:*",
     "@protei-portal/common-model": "workspace:*"
   },
   "peerDependencies": {
     "inversify": "*",
-    "mobx": "*",
-    "mobx-react-lite": "*",
-    "react": "*",
-    "react-dom": "*"
+    "mobx": "*"
   },
   "devDependencies": {
     "typescript": "4.5.4"

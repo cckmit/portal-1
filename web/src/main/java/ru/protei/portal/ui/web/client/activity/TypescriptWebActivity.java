@@ -10,11 +10,14 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.Test1Events;
 import ru.protei.portal.ui.web.client.integration.NativeWebIntegration;
 import ru.protei.portal.ui.web.client.model.TsWebUnit;
 import ru.protei.portal.ui.web.client.model.TypescriptWebGwtEvents;
-import ru.protei.portal.ui.web.client.model.event.TestEventBusEvent;
+import ru.protei.portal.ui.web.client.model.event.EventBusEventAuthLoginDone;
+import ru.protei.portal.ui.web.client.model.event.EventBusEventAuthLogoutDone;
+import ru.protei.portal.ui.web.client.model.event.EventBusEventTest;
 import ru.protei.portal.ui.web.client.view.TypescriptWebView;
 
 public abstract class TypescriptWebActivity implements Activity {
@@ -28,6 +31,18 @@ public abstract class TypescriptWebActivity implements Activity {
     public void onTypescriptWebInit(TypescriptWebGwtEvents.Init ev) {
         nativeWebIntegration.setup();
         testEventbus();
+    }
+
+    @Event
+    public void onAuthLogin(AuthEvents.Success event) {
+        Long personId = event.profile.getId();
+        Long loginId = event.profile.getLoginId();
+        nativeWebIntegration.fireEvent(EventBusEventAuthLoginDone.create(personId, loginId));
+    }
+
+    @Event
+    public void onAuthLogout(AppEvents.Logout event) {
+        nativeWebIntegration.fireEvent(EventBusEventAuthLogoutDone.create(true));
     }
 
     @Event(Type.FILL_CONTENT)
@@ -56,10 +71,10 @@ public abstract class TypescriptWebActivity implements Activity {
     }-*/;
 
     private void testEventbus() { // TODO test remove later
-        nativeWebIntegration.<TestEventBusEvent>listenEvent(TestEventBusEvent.type, (event) -> {
+        nativeWebIntegration.<EventBusEventTest>listenEvent(EventBusEventTest.type, (event) -> {
             GWT.log("TEST EVENT RECEIVED AT GWT " + event.getType() + " " + event.getSource() + " " + event.getText());
         });
-        nativeWebIntegration.fireEvent(TestEventBusEvent.create("hello from gwt"));
+        nativeWebIntegration.fireEvent(EventBusEventTest.create("hello from gwt"));
     }
 
     @Inject

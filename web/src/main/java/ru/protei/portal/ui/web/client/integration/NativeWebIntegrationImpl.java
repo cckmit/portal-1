@@ -9,24 +9,35 @@ import ru.protei.portal.ui.web.client.model.Unsubscribe;
 import ru.protei.portal.ui.web.client.model.connector.ConnectorMessage;
 import ru.protei.portal.ui.web.client.model.event.EventBusEvent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class NativeWebIntegrationImpl implements NativeWebIntegration {
 
     private final IntegrationMountImpl integrationMount;
     private final IntegrationEventBusImpl integrationEventBus;
+    private boolean loaded;
+    private List<EventBusEvent> eventBusEventsFiredBeforeLoad;
 
     public NativeWebIntegrationImpl() {
         integrationMount = new IntegrationMountImpl();
         integrationEventBus = new IntegrationEventBusImpl();
+        loaded = false;
+        eventBusEventsFiredBeforeLoad = new ArrayList<>();
     }
 
     @Override
     public void setup() {
-        setupInternal();
+        setupNative();
+        loaded = true;
+        for (EventBusEvent event : eventBusEventsFiredBeforeLoad) {
+            fireEvent(event);
+        }
+        eventBusEventsFiredBeforeLoad.clear();
     }
 
-    private native void setupInternal()/*-{
+    private native void setupNative()/*-{
         var self = this;
         if (!$wnd.ProteiPortalGwtBridge) {
             $wnd.ProteiPortalGwtBridge = {};
@@ -56,6 +67,10 @@ public class NativeWebIntegrationImpl implements NativeWebIntegration {
 
     @Override
     public void fireEvent(EventBusEvent event) {
+        if (!loaded) {
+            eventBusEventsFiredBeforeLoad.add(event);
+            return;
+        }
         integrationEventBus.fireEvent(event);
     }
 

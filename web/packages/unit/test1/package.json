@@ -11,6 +11,8 @@
     "@protei-libs/eventbus": "workspace:*",
     "@protei-libs/logger": "workspace:*",
     "@protei-libs/module": "workspace:*",
+    "@protei-libs/store": "workspace:*",
+    "@protei-portal/common": "workspace:*",
     "@protei-portal/common-model": "workspace:*"
   },
   "peerDependencies": {

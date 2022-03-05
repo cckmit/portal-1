@@ -16,6 +16,8 @@
     "@protei-libs/logger": "workspace:*",
     "@protei-libs/module": "workspace:*",
     "@protei-libs/scheduler": "workspace:*",
+    "@protei-libs/store": "workspace:*",
+    "@protei-portal/common": "workspace:*",
     "@protei-portal/common-logger": "workspace:*",
     "@protei-portal/common-model": "workspace:*",
     "@protei-portal/unit-test1": "workspace:*",

@@ -7,6 +7,7 @@ import {
   EventBusSourcePortalUiGwt,
 } from "@protei-portal/common-model"
 import { setupIntegrationPortalGwt } from "./integration/portalgwt/setupIntegrationPortalGwt"
+import { commonModule } from "@protei-portal/common/src/jsmodule"
 import { unitTest1Module } from "@protei-portal/unit-test1/src/jsmodule"
 import { unitTest2Module } from "@protei-portal/unit-test2/src/jsmodule"
 
@@ -16,6 +17,8 @@ export function setup(): void {
   const eventbus = setupEventbus()
   testEventbus(eventbus)
   setupIntegrationPortalGwt(eventbus)
+  commonModule.loader.load()
+  commonModule.addExternalEventbus(eventbus)
   unitTest1Module.addExternalEventbus(eventbus)
   unitTest2Module.addExternalEventbus(eventbus)
   log.info("Setup - done")

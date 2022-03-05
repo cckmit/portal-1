@@ -1648,6 +1648,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@protei-libs/store@workspace:*, @protei-libs/store@workspace:web/packages/lib/store":
+  version: 0.0.0-use.local
+  resolution: "@protei-libs/store@workspace:web/packages/lib/store"
+  dependencies:
+    typescript: ^4.5.4
+  peerDependencies:
+    mobx: "*"
+  languageName: unknown
+  linkType: soft
+
 "@protei-libs/types@workspace:*, @protei-libs/types@workspace:web/packages/lib/types":
   version: 0.0.0-use.local
   resolution: "@protei-libs/types@workspace:web/packages/lib/types"
@@ -1670,6 +1680,8 @@ __metadata:
     "@protei-libs/logger": "workspace:*"
     "@protei-libs/module": "workspace:*"
     "@protei-libs/scheduler": "workspace:*"
+    "@protei-libs/store": "workspace:*"
+    "@protei-portal/common": "workspace:*"
     "@protei-portal/common-logger": "workspace:*"
     "@protei-portal/common-model": "workspace:*"
     "@protei-portal/unit-test1": "workspace:*"
@@ -1739,6 +1751,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@protei-portal/common@workspace:*, @protei-portal/common@workspace:web/packages/common/common":
+  version: 0.0.0-use.local
+  resolution: "@protei-portal/common@workspace:web/packages/common/common"
+  dependencies:
+    "@protei-libs/eventbus": "workspace:*"
+    "@protei-libs/logger": "workspace:*"
+    "@protei-libs/module": "workspace:*"
+    "@protei-libs/store": "workspace:*"
+    "@protei-portal/common-model": "workspace:*"
+    typescript: 4.5.4
+  peerDependencies:
+    inversify: "*"
+    mobx: "*"
+  languageName: unknown
+  linkType: soft
+
 "@protei-portal/monorepo@workspace:.":
   version: 0.0.0-use.local
   resolution: "@protei-portal/monorepo@workspace:."
@@ -1763,6 +1791,8 @@ __metadata:
     "@protei-libs/eventbus": "workspace:*"
     "@protei-libs/logger": "workspace:*"
     "@protei-libs/module": "workspace:*"
+    "@protei-libs/store": "workspace:*"
+    "@protei-portal/common": "workspace:*"
     "@protei-portal/common-model": "workspace:*"
     typescript: 4.5.4
   peerDependencies:
@@ -1781,6 +1811,8 @@ __metadata:
     "@protei-libs/eventbus": "workspace:*"
     "@protei-libs/logger": "workspace:*"
     "@protei-libs/module": "workspace:*"
+    "@protei-libs/store": "workspace:*"
+    "@protei-portal/common": "workspace:*"
     "@protei-portal/common-model": "workspace:*"
     typescript: 4.5.4
   peerDependencies:
@@ -8038,6 +8070,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:^4.5.4":
+  version: 4.6.2
+  resolution: "typescript@npm:4.6.2"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 8a44ed7e6f6c4cb1ebe8cf236ecda2fb119d84dcf0fbd77e707b2dfea1bbcfc4e366493a143513ce7f57203c75da9d4e20af6fe46de89749366351046be7577c
+  languageName: node
+  linkType: hard
+
 "typescript@patch:typescript@4.5.4#~builtin<compat/typescript>":
   version: 4.5.4
   resolution: "typescript@patch:typescript@npm%3A4.5.4#~builtin<compat/typescript>::version=4.5.4&hash=bda367"
@@ -8045,6 +8087,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: eda87927f9cfb94aca9b5e47842daf37347ad3073133e17f556fbb6c18f3493c5b551eedab0f4b26774235ddb7acbe0087250d5285f72ce6819a0891dd5a74ed
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@^4.5.4#~builtin<compat/typescript>":
+  version: 4.6.2
+  resolution: "typescript@patch:typescript@npm%3A4.6.2#~builtin<compat/typescript>::version=4.6.2&hash=bda367"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 40b493a71747fb89fa70df104e2c4a5e284b43750af5bea024090a5261cefa387f7a9372411b13030f7bf5555cee4275443d08805642ae5c74ef76740854a4c7
   languageName: node
   linkType: hard
 

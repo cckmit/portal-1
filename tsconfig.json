@@ -36,10 +36,12 @@
       "@protei-libs/react": [ "./web/packages/lib/react/src/" ],
       "@protei-libs/scheduler": [ "./web/packages/lib/scheduler/src/" ],
       "@protei-libs/storage": [ "./web/packages/lib/storage/src/" ],
+      "@protei-libs/store": [ "./web/packages/lib/store/src/" ],
       "@protei-libs/types": [ "./web/packages/lib/types/src/" ],
 
-      "@protei-portal/common-model": [ "./web/packages/common/model/src/" ],
+      "@protei-portal/common": [ "./web/packages/common/common/src/" ],
       "@protei-portal/common-logger": [ "./web/packages/common/logger/src/" ],
+      "@protei-portal/common-model": [ "./web/packages/common/model/src/" ],
 
       "@protei-portal/unit-test1": [ "./web/packages/unit/test1/src/" ],
       "@protei-portal/unit-test2": [ "./web/packages/unit/test2/src/" ],

@@ -1,6 +1,4 @@
-import { AnyToVoidFunction, Unsubscribe } from "@protei-libs/types"
 import { ModuleLoader } from "./ModuleLoader"
-import { arrayFilterInPlace } from "../util/array"
 
 export class ModuleLoaderES6Import<MODULE_TYPE> implements ModuleLoader<MODULE_TYPE> {
   get(): MODULE_TYPE | undefined {
@@ -15,15 +13,7 @@ export class ModuleLoaderES6Import<MODULE_TYPE> implements ModuleLoader<MODULE_T
       this.loadPromise = this.moduleImportFunction()
     }
     this.memoryCache = await this.loadPromise
-    this.onLoadedListeners.forEach((l) => l())
     return this.memoryCache
-  }
-
-  addOnLoadedListener(listener: AnyToVoidFunction): Unsubscribe {
-    this.onLoadedListeners.push(listener)
-    return () => {
-      arrayFilterInPlace(this.onLoadedListeners, (l) => l !== listener)
-    }
   }
 
   constructor(opts: { moduleImportFunction: () => Promise<MODULE_TYPE> }) {
@@ -31,7 +21,6 @@ export class ModuleLoaderES6Import<MODULE_TYPE> implements ModuleLoader<MODULE_T
   }
 
   private readonly moduleImportFunction: () => Promise<MODULE_TYPE>
-  private readonly onLoadedListeners: Array<AnyToVoidFunction> = []
   private loadPromise: Promise<MODULE_TYPE> | undefined = undefined
   private memoryCache: MODULE_TYPE | undefined = undefined
 }

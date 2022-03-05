@@ -1,3 +1,3 @@
 export * from "./Module"
 export * from "./ModuleWithEventBus"
-export * from "./ModuleWithEventBusTemplate"
+export * from "./ModuleWithEventBusAbstractImpl"
