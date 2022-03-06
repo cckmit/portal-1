@@ -5,13 +5,10 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.core.model.dict.En_HistoryAction;
-import ru.protei.portal.core.model.dict.En_HistoryType;
-import ru.protei.portal.core.model.dict.En_WorkTrigger;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.NumberUtils;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
@@ -122,9 +119,22 @@ public class CommentOrHistoryUtils {
             //описание обращения в истории будет сделано в отдельной YT задаче
             //case CASE_INFO: return makeHistoryItem(history, lang.description(), String.class);
             case CASE_ATTACHMENT: return makeHistoryItem(history, lang.attachment(), CaseAttachment.class);
-            case CASE_LINK: return makeHistoryItem(history, lang.linkedWith(), CaseLink.class);
+            case CASE_LINK: return makeHistoryItem(history, getLinkBundleName(history), CaseLink.class);
             default: return null;
         }
+    }
+
+    private static String getLinkBundleName(History history) {
+
+        if (En_HistoryAction.ADD.equals(history.getAction())
+                || En_HistoryAction.CHANGE.equals(history.getAction())){
+            En_BundleType bundleType = CaseLinkProvider.getBundleType(history.getNewId());
+            if (bundleType == null){
+                return lang.linkedWith();
+            }
+            return bundleTypeLang.getName(bundleType);
+        }
+        return lang.linkedWith();
     }
 
     private static CaseHistoryItem makeHistoryItem(History history, String historyType, Class<?> clazz) {
@@ -364,6 +374,8 @@ public class CommentOrHistoryUtils {
     private static CardStateLang cardStateLang;
     @Inject
     private static CardBatchStateLang cardBatchStateLang;
+    @Inject
+    private static En_BundleTypeLang bundleTypeLang;
     @Inject
     private static Provider<CaseHistoryItemsContainer> caseHistoryItemsContainerProvider;
     @Inject

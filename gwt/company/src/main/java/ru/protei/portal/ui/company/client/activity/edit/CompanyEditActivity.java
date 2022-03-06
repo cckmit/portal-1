@@ -56,6 +56,12 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Event
     public void onShow(CompanyEvents.Edit event) {
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.COMPANY_VIEW)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden());
+            return;
+        }
+
         initDetails.parent.clear();
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());

@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.activity.caselink;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_BundleType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseLink;
@@ -54,6 +55,15 @@ public class CaseLinkProvider {
             return null;
         }
         return getLink(caseLink.getType(), caseLink.getRemoteId());
+    }
+
+    public static En_BundleType getBundleType(Long caseLinkId) {
+
+        CaseLink caseLink = idToCaseLinkMap.get(caseLinkId);
+        if (caseLink == null){
+            return null;
+        }
+        return caseLink.getBundleType();
     }
 
     public static void setCaseLinkMap(Map<Long, CaseLink> idToCaseLinkMap) {
