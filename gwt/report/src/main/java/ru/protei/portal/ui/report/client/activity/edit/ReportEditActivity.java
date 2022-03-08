@@ -280,7 +280,8 @@ public abstract class ReportEditActivity implements Activity,
                 stream(query.getCaseTagsIds()).map(id -> id.equals(CrmConstants.CaseTag.NOT_SPECIFIED) ? null : new CaseTag(id)).collect(Collectors.toSet())
             );
         }
-        contractFilterView.states().setValue(query.getStates() == null ? null : new HashSet<>(query.getStates()));
+        contractFilterView.states().setValue(stream(query.getStateIds()).map(CaseState::new)
+                                                         .collect(Collectors.toSet()));
         contractFilterView.direction().setValue(query.getDirectionId() == null ? null : new ProductDirectionInfo(query.getDirectionId(), ""));
         contractFilterView.kind().setValue(query.getKind());
         contractFilterView.dateSigningRange().setValue(fromDateRange(query.getDateSigningRange()));
@@ -713,7 +714,8 @@ public abstract class ReportEditActivity implements Activity,
         query.setManagerIds(collectIds(contractFilterView.managers().getValue()));
         query.setTypes(nullIfEmpty(listOfOrNull(contractFilterView.types().getValue())));
         query.setCaseTagsIds(nullIfEmpty(toList(contractFilterView.tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
-        query.setStates(nullIfEmpty(listOfOrNull(contractFilterView.states().getValue())));
+        query.setStateIds(listOfOrNull(contractFilterView.states().getValue().stream().map(CaseState::getId)
+                                                                             .collect(Collectors.toList())));
         ProductDirectionInfo value = contractFilterView.direction().getValue();
         query.setDirectionId(value == null ? null : value.id);
         query.setKind(contractFilterView.kind().getValue());

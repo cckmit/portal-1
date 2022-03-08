@@ -217,7 +217,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         if ( contract.getStateId() == null ) {
             contract.setStateId(AGREEMENT);
         }
-        view.state().setValue(new CaseState(contract.getStateId()));
+        view.state().setValue(new CaseState(contract.getStateId(), contract.getStateName()));
         view.number().setValue(contract.getNumber());
         if ( contract.getCost() == null ) {
             contract.setCost(new Money(0L));

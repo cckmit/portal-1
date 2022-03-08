@@ -5,7 +5,7 @@ import com.google.inject.Inject;
 public class ContractStateLang {
     public String getName(String state) {
         if (state == null) {
-            return lang.unknownField();
+            return "";
         }
 
         switch (state.toLowerCase()) {

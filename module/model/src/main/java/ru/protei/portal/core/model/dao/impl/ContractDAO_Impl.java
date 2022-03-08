@@ -114,8 +114,8 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                 args.add(likeArg);
             }
 
-            if (CollectionUtils.isNotEmpty(query.getStates())) {
-                String inArg = HelperFunc.makeInArg(query.getStates(), state -> String.valueOf(state.getId()));
+            if (CollectionUtils.isNotEmpty(query.getStateIds())) {
+                String inArg = HelperFunc.makeInArg(query.getStateIds());
                 condition.append(" and CO.state in ").append(inArg);
             } else {
                 condition.append(" and CO.state != ?");

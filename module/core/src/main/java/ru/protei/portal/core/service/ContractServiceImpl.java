@@ -32,6 +32,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -492,7 +493,8 @@ public class ContractServiceImpl implements ContractService {
         ContractQuery query = new ContractQuery();
         query.setOpenStateDate(apiQuery.getOpenStateDate());
         query.setOrganizationIds(apiQuery.getOrganizationIds());
-        query.setStates(apiQuery.getStates());
+        query.setStateIds(apiQuery.getStates().stream().map(CaseState::getId)
+                                              .collect(Collectors.toList()));
         SearchResult<Contract> result = contractDAO.getSearchResult(query);
         List<Contract> contracts = result.getResults();
 

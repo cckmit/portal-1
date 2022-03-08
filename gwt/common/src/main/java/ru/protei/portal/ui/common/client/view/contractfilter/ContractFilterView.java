@@ -76,7 +76,9 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     }
 
     private void resetStates() {
-        activity.resetContractStates();
+        if (activity != null) {
+            activity.resetContractStates();
+        }
     }
 
     @Override

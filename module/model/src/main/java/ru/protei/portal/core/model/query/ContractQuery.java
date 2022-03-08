@@ -2,7 +2,6 @@ package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_ContractKind;
 import ru.protei.portal.core.model.dict.En_ContractType;
-import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.DateRange;
 
@@ -25,7 +24,7 @@ public class ContractQuery extends BaseQuery {
 
     private List<Long> caseTagsIds;
 
-    private List<CaseState> states;
+    private List<Long> stateIds;
 
     private List<Long> managerIds;
 
@@ -109,12 +108,12 @@ public class ContractQuery extends BaseQuery {
         this.contractorIds = contractorIds;
     }
 
-    public List<CaseState> getStates() {
-        return states;
+    public List<Long> getStateIds() {
+        return stateIds;
     }
 
-    public void setStates(List<CaseState> states) {
-        this.states = states;
+    public void setStateIds(List<Long> stateIds) {
+        this.stateIds = stateIds;
     }
 
     public List<Long> getOrganizationIds() {
@@ -184,7 +183,7 @@ public class ContractQuery extends BaseQuery {
                 StringUtils.isNotEmpty(deliveryNumber) ||
                 projectId != null ||
                 isNotEmpty(types) ||
-                isNotEmpty(states) ||
+                isNotEmpty(stateIds) ||
                 isNotEmpty(caseTagsIds) ||
                 isNotEmpty(managerIds) ||
                 isNotEmpty(contractorIds) ||
@@ -203,7 +202,7 @@ public class ContractQuery extends BaseQuery {
                 ", kind=" + kind +
                 ", types=" + types +
                 ", caseTagsIds=" + caseTagsIds +
-                ", states=" + states +
+                ", states=" + stateIds +
                 ", managerIds=" + managerIds +
                 ", contractorIds=" + contractorIds +
                 ", organizationIds=" + organizationIds +
