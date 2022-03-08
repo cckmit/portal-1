@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.ContractDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContractQuery;
@@ -22,7 +21,8 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeLikeArg;
-import static ru.protei.portal.core.model.util.ContractStateUtil.getOpenedContractStates;
+import static ru.protei.portal.core.model.util.ContractStateUtil.CLOSED_CONTRACT_STATES;
+import static ru.protei.portal.core.model.util.CrmConstants.State.CANCELED;
 
 public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements ContractDAO {
 
@@ -114,12 +114,12 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                 args.add(likeArg);
             }
 
-            if (CollectionUtils.isNotEmpty(query.getStates())) {
-                String inArg = HelperFunc.makeInArg(query.getStates(), state -> String.valueOf(state.getId()));
+            if (CollectionUtils.isNotEmpty(query.getStateIds())) {
+                String inArg = HelperFunc.makeInArg(query.getStateIds());
                 condition.append(" and CO.state in ").append(inArg);
             } else {
                 condition.append(" and CO.state != ?");
-                args.add(En_ContractState.CANCELLED.getId());
+                args.add(CANCELED);
             }
 
             if (CollectionUtils.isNotEmpty(query.getTypes())) {
@@ -234,7 +234,7 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                 condition.append(" ) hww");
                 condition.append(" WHERE 1=1");
                 condition.append(" AND hww.rownumber = 1");
-                condition.append(" AND hww.new_id IN ").append(makeInArg(getOpenedContractStates(), s -> String.valueOf(s.getId())));
+                condition.append(" AND hww.new_id NOT IN ").append(makeInArg(CLOSED_CONTRACT_STATES));
                 condition.append(")");
                 args.add(query.getOpenStateDate());
             }

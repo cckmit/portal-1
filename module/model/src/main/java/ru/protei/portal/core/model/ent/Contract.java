@@ -1,7 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
-import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.dict.En_CustomerType;
@@ -23,6 +22,8 @@ import java.util.Set;
  */
 @JdbcEntity(table = "contract")
 public class Contract extends AuditableObject implements Serializable, EntityOptionSupport {
+
+    public static final String CASE_OBJECT_ALIAS = "CO";
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.EXPLICIT)
     private Long id;
@@ -91,7 +92,16 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
      * Текущее состояние договора
      */
     @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "STATE", sqlTableAlias = "CO")
-    private Integer stateId;
+    private Long stateId;
+
+    /**
+     * Текущее состояние договора в строковом виде
+     */
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = Contract.Columns.STATE, remoteColumn = "id", table = "case_state", sqlTableAlias = CASE_OBJECT_ALIAS),
+    }, mappedColumn = "state")
+    private String stateName;
 
     /**
      * Предмет договора
@@ -220,14 +230,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.refKey = refKey;
     }
 
-    public En_ContractState getState () {
-        return En_ContractState.getById(this.stateId);
-    }
-
-    public void setState (En_ContractState state) {
-        this.stateId = state.getId();
-    }
-
     public Long getCreatorId() {
         return creatorId;
     }
@@ -268,12 +270,20 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.curatorId = curatorId;
     }
 
-    public Integer getStateId() {
+    public Long getStateId() {
         return stateId;
     }
 
-    public void setStateId(Integer stateId) {
+    public void setStateId(Long stateId) {
         this.stateId = stateId;
+    }
+
+    public String getStateName() {
+        return stateName;
+    }
+
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
     }
 
     public String getDescription() {
@@ -545,5 +555,9 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public ContractInfo toContactInfo(){
         return new ContractInfo(id, number, organizationName);
+    }
+
+    public interface Columns {
+        String STATE = CaseObject.Columns.STATE;
     }
 }

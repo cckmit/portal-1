@@ -181,22 +181,20 @@ public class EnumLangUtil {
         return "";
     }
 
-    public String contractStateLang(En_ContractState contractState, String langCode) {
-        if (contractState == null) {
-            return "";
-        }
+    public String contractStateLang(String state, String langCode) {
         if (localizedLang == null) {
             localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         }
-        switch (contractState) {
-            case AGREEMENT: return localizedLang.get("contractStateAgreement");
-            case COPIES_SEND_TO_CUSTOMER: return localizedLang.get("contractStateCopiesSendToCustomer");
-            case HAVE_ORIGINAL: return localizedLang.get("contractStateHaveOriginal");
-            case WAIT_ORIGINAL: return localizedLang.get("contractStateWaitOriginal");
-            case WAITING_COPIES_FROM_CUSTOMER: return localizedLang.get("contractWaitingCopiesFromCustomer");
-            case CANCELLED: return localizedLang.get("contractCancelled");
-            case EDS_SIGNED: return localizedLang.get("contractEdsSigned");
-            case SIGNED_ON_SITE: return localizedLang.get("contractSignedOnSite");
+
+        switch (state.toLowerCase()) {
+            case "agreement": return localizedLang.get("contractStateAgreement");
+            case "copies send to customer": return localizedLang.get("contractStateCopiesSendToCustomer");
+            case "have an original": return localizedLang.get("contractStateHaveOriginal");
+            case "waiting for original": return localizedLang.get("contractStateWaitOriginal");
+            case "waiting for copies from customer": return localizedLang.get("contractWaitingCopiesFromCustomer");
+            case "canceled": return localizedLang.get("contractCancelled");
+            case "eds signed": return localizedLang.get("contractEdsSigned");
+            case "signed on site": return localizedLang.get("contractSignedOnSite");
         }
         return "";
     }

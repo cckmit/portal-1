@@ -22,7 +22,7 @@ import ru.protei.portal.ui.common.client.columns.CopyClickColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.MoneyRenderer;
 import ru.protei.portal.ui.common.client.lang.En_ContractKindLang;
-import ru.protei.portal.ui.common.client.lang.En_ContractStateLang;
+import ru.protei.portal.ui.common.client.lang.ContractStateLang;
 import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contract.client.activity.table.AbstractContractTableActivity;
@@ -152,8 +152,8 @@ public class ContractTableView extends Composite implements AbstractContractTabl
             image.addClassName("height-40");
             // https://www.flaticon.com/authors/flat_circular/flat
             // https://www.flaticon.com/packs/business-strategy-2
-            image.setSrc( "./images/contract_" + contract.getState().name().toLowerCase() + ".png" );
-            image.setTitle( contractStateLang.getName(contract.getState()) );
+            image.setSrc( "./images/contract_" + contract.getStateName().toLowerCase() + ".png" );
+            image.setTitle( contractStateLang.getName(contract.getStateName()) );
             root.appendChild(image);
             cell.appendChild(root);
         }
@@ -308,7 +308,7 @@ public class ContractTableView extends Composite implements AbstractContractTabl
     @Inject
     private CopyClickColumn<Contract> copyClickColumn;
     @Inject
-    private En_ContractStateLang contractStateLang;
+    private ContractStateLang contractStateLang;
     @Inject
     private En_ContractTypeLang contractTypeLang;
     @Inject
