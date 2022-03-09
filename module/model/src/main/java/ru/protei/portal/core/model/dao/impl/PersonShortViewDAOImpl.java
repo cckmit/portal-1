@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
 
@@ -19,10 +18,17 @@ public class PersonShortViewDAOImpl extends PortalBaseJdbcDAO<PersonShortView> i
     PersonSqlBuilder personSqlBuilder;
     @Autowired
     ContactSqlBuilder contactSqlBuilder;
+    @Autowired
+    AccountingEmployeeSqlBuilder accountingEmployeeSqlBuilder;
 
     @Override
     public List<PersonShortView> getPersonsShortView( PersonQuery query ) {
         return getList( personSqlBuilder.makeParameters( query ) );
+    }
+
+    @Override
+    public List<PersonShortView> getAccountEmployees(List<String> ids, List<String> departmentIds) {
+        return getList(accountingEmployeeSqlBuilder.makeParameters(ids, departmentIds));
     }
 
     @Override

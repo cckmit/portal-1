@@ -179,7 +179,7 @@
                                 <label ui:field="notifiersLabel">
                                     <ui:text from="{lang.contractNotifiers}"/>
                                 </label>
-                                <person:EmployeeMultiSelector ui:field="notifiers" styleName="case-subscribers"
+                                <person:AccountEmployeeMultiSelector ui:field="notifiers" styleName="case-subscribers"
                                                               buttonStyle="btn-info btn-xs" fixedStrategy="false"/>
                             </g:HTMLPanel>
                         </div>

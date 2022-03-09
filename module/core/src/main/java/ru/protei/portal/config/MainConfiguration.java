@@ -229,6 +229,11 @@ public class MainConfiguration {
         return new ContactSqlBuilder();
     }
 
+    @Bean
+    public AccountingEmployeeSqlBuilder getAccountingEmployeeSqlBuilder() {
+        return new AccountingEmployeeSqlBuilder();
+    }
+
     /* DAO converters */
 
     @Bean

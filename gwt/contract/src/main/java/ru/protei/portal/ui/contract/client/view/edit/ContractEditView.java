@@ -34,10 +34,9 @@ import ru.protei.portal.ui.common.client.widget.project.ProjectWidget;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStateSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypeSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.AccountEmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeCustomFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableLongBox;
@@ -52,8 +51,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
-import static ru.protei.portal.core.model.struct.Vat.*;
 import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliterateNotifiers;
 
 public class ContractEditView extends Composite implements AbstractContractEditView {
@@ -63,10 +60,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         initWidget(ourUiBinder.createAndBindUi(this));
         dateValidDays.getElement().setAttribute("placeholder", lang.days());
         dateValidDays.setValidationFunction(value -> value == null || value >= 0);
-        costWithCurrency.setVatOptions(listOf(Vat20, Vat0, NoVat));
-        notifierModel.setAccounting(true);
-        notifiers.setModel(notifierModel);
-        notifiers.setItemRenderer( PersonShortView::getName );
         ensureDebugIds();
     }
 
@@ -456,9 +449,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     LabelElement notifiersLabel;
     @Inject
     @UiField(provided = true)
-    EmployeeMultiSelector notifiers;
-    @Inject
-    EmployeeModel notifierModel;
+    AccountEmployeeMultiSelector notifiers;
     @UiField
     HTMLPanel tags;
     @UiField

@@ -123,6 +123,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public AccountingEmployeeSqlBuilder getAccountingEmployeeSqlBuilder() {
+        return new AccountingEmployeeSqlBuilder();
+    }
+
+    @Bean
     public CompanyDAO getCompanyDAO() {
         return new CompanyDAO_Impl();
     }

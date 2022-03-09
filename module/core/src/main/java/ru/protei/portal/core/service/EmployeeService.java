@@ -68,4 +68,6 @@ public interface EmployeeService {
 
     @Privileged(En_Privilege.EMPLOYEE_VIEW)
     Result<String> getEmployeeRestVacationDays(AuthToken token, Long employeeId);
+
+    Result<List<PersonShortView>> getAccountingEmployee(AuthToken token);
 }

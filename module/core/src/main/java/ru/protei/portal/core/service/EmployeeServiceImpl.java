@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.*;
@@ -119,22 +118,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Result<List<PersonShortView>> shortViewList( EmployeeQuery query) {
-        if (query.isAccounting()) {
-            List<String> departmentIds = query.getDepartmentIds();
-            if (departmentIds == null) {
-                departmentIds = new ArrayList<>();
-            }
-            departmentIds.addAll(Arrays.asList(portalConfig.data().getCommonConfig().getContractNotifierDepartmentIds()));
-            query.setDepartmentIds(departmentIds);
-
-            List<Long> contractNotifierIds = makeContractNotifierAccountingIds(portalConfig.data().getCommonConfig().getContractNotifierIds());
-            List<Long> ids = query.getIds();
-            if (ids == null) {
-                ids = new ArrayList<>();
-            }
-            ids.addAll(contractNotifierIds);
-            query.setIds(ids);
-        }
         List<PersonShortView> list = personShortViewDAO.getEmployees(query);
 
         if (list == null) {
@@ -142,20 +125,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         return ok(list);
-    }
-
-    private List<Long> makeContractNotifierAccountingIds(String[] strings) {
-        List<Long> temp = new ArrayList<>(strings.length);
-        for (int i = 0; i < strings.length; i++) {
-            String stringId = strings[i];
-            Long id = NumberUtils.parseLong(stringId);
-            if (id == null) {
-                log.error("makeContractNotifierAccountingIds = {}", stringId);
-            } else {
-                temp.add(id);
-            }
-        }
-        return temp;
     }
 
     @Override
@@ -572,6 +541,21 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         return api1CWorkService.getEmployeeRestVacationDays(
                 mainEntry.getWorkerExtId(), mainEntry.getCompanyName());
+    }
+
+    @Override
+    public Result<List<PersonShortView>> getAccountingEmployee(AuthToken token) {
+        String contractNotifierDepartmentIds = portalConfig.data().getCommonConfig().getContractNotifierDepartmentIds();
+        String contractNotifierIds = portalConfig.data().getCommonConfig().getContractNotifierIds();
+
+        List<PersonShortView> accountEmployees = personShortViewDAO.getAccountEmployees(
+                StringUtils.isNotEmpty(contractNotifierIds) ?
+                        Arrays.asList(contractNotifierIds.split(",")) : Collections.emptyList(),
+                StringUtils.isNotEmpty(contractNotifierDepartmentIds) ?
+                        Arrays.asList(contractNotifierDepartmentIds.split(",")) : Collections.emptyList()
+        );
+
+        return ok(accountEmployees);
     }
 
     private List<NotificationEntry> makeNotificationListFromConfiguration() {

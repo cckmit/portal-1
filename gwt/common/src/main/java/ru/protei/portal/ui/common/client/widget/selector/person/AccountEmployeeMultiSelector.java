@@ -10,13 +10,12 @@ import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSe
 /**
  * Селектор сотрудников
  */
-public class EmployeeMultiSelector
+public class AccountEmployeeMultiSelector
     extends InputPopupMultiSelector<PersonShortView>
 {
 
     @Inject
-    public void init(EmployeeModel model, Lang lang) {
-        this.model = model;
+    public void init(EmployeeAccountModel model, Lang lang) {
         setAsyncModel( model);
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
@@ -29,18 +28,4 @@ public class EmployeeMultiSelector
     protected SelectorItem<PersonShortView> makeSelectorItem( PersonShortView value, String elementHtml ) {
         return PersonSelectorItemRenderer.makeMultipleSelectorItem(value, elementHtml, isSelected(value));
     }
-
-    @Override
-    public void onUnload() {
-        super.onUnload();
-        model.clear();
-    }
-
-    public void setFiredEmployeesVisible(boolean firedEmployeesVisible) {
-        if (firedEmployeesVisible) {
-            setFilter(null);
-        }
-    }
-
-    private EmployeeModel model;
 }
