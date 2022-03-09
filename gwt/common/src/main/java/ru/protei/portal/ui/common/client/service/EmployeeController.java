@@ -55,5 +55,5 @@ public interface EmployeeController extends RemoteService {
 
     String getEmployeeRestVacationDays(Long employeeId) throws RequestFailedException;
 
-    List<PersonShortView> getAccountEmployee() throws RequestFailedException;
+    List<PersonShortView> getAccountingEmployee() throws RequestFailedException;
 }

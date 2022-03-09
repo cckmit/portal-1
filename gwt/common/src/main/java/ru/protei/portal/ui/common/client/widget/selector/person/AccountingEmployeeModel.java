@@ -12,7 +12,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
 
-public abstract class EmployeeAccountModel extends BaseSelectorModel<PersonShortView> implements Activity {
+public abstract class AccountingEmployeeModel extends BaseSelectorModel<PersonShortView> implements Activity {
 
     @Event
     public void onInit(AuthEvents.Success event) {
@@ -21,7 +21,7 @@ public abstract class EmployeeAccountModel extends BaseSelectorModel<PersonShort
 
     @Override
     protected void requestData( LoadingHandler selector, String searchText ) {
-        employeeController.getAccountEmployee(new FluentCallback<List<PersonShortView>>()
+        employeeController.getAccountingEmployee(new FluentCallback<List<PersonShortView>>()
                 .withSuccess( result -> updateElements( result, selector ) ));
     }
     

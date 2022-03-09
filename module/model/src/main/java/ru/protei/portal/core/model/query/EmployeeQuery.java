@@ -224,6 +224,7 @@ public class EmployeeQuery extends BaseQuery {
                 ", birthdayInterval=" + birthdayInterval +
                 ", absent=" + absent +
                 ", departmentIds=" + departmentIds +
+                ", absent=" + absent +
                 '}';
     }
 }

@@ -90,6 +90,7 @@ import ru.protei.portal.ui.common.client.widget.issuestate.StateSelectorModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractModel;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeModel;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionModel;
 import ru.protei.portal.ui.common.client.widget.selector.worker.entry.WorkerEntryModel;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
@@ -127,7 +128,8 @@ public class CommonClientModule extends AbstractGinModule {
         bind( ContactItemActivity.class ).asEagerSingleton();
         bind( AbstractContactItemListView.class ).to( ContactItemListView.class );
         bind( AbstractContactItemView.class ).to( ContactItemView.class );
- 
+
+        bind( EmployeeModel.class ).asEagerSingleton();
         bind( StateOptionsModel.class ).asEagerSingleton();
         bind( StateSelectorModel.class ).asEagerSingleton();
         bind( EmployeeRegistrationStateModel.class ).asEagerSingleton();

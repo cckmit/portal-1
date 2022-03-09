@@ -548,14 +548,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         String contractNotifierDepartmentIds = portalConfig.data().getCommonConfig().getContractNotifierDepartmentIds();
         String contractNotifierIds = portalConfig.data().getCommonConfig().getContractNotifierIds();
 
-        List<PersonShortView> accountEmployees = personShortViewDAO.getAccountEmployees(
+        List<PersonShortView> accountingEmployees = personShortViewDAO.getAccountingEmployees(
                 StringUtils.isNotEmpty(contractNotifierIds) ?
                         Arrays.asList(contractNotifierIds.split(",")) : Collections.emptyList(),
                 StringUtils.isNotEmpty(contractNotifierDepartmentIds) ?
                         Arrays.asList(contractNotifierDepartmentIds.split(",")) : Collections.emptyList()
         );
 
-        return ok(accountEmployees);
+        return ok(accountingEmployees);
     }
 
     private List<NotificationEntry> makeNotificationListFromConfiguration() {

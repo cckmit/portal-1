@@ -27,7 +27,7 @@ public class PersonShortViewDAOImpl extends PortalBaseJdbcDAO<PersonShortView> i
     }
 
     @Override
-    public List<PersonShortView> getAccountEmployees(List<String> ids, List<String> departmentIds) {
+    public List<PersonShortView> getAccountingEmployees(List<String> ids, List<String> departmentIds) {
         return getList(accountingEmployeeSqlBuilder.makeParameters(ids, departmentIds));
     }
 

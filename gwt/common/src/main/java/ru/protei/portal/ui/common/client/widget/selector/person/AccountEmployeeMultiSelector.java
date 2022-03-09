@@ -15,7 +15,7 @@ public class AccountEmployeeMultiSelector
 {
 
     @Inject
-    public void init(EmployeeAccountModel model, Lang lang) {
+    public void init(AccountingEmployeeModel model, Lang lang) {
         setAsyncModel( model);
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());

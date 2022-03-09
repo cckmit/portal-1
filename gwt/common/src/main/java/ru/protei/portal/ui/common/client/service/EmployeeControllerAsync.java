@@ -52,5 +52,5 @@ public interface EmployeeControllerAsync {
 
     void getEmployeeRestVacationDays(Long employeeId, AsyncCallback<String> async);
 
-    void getAccountEmployee(AsyncCallback<List<PersonShortView>> async);
+    void getAccountingEmployee(AsyncCallback<List<PersonShortView>> async);
 }

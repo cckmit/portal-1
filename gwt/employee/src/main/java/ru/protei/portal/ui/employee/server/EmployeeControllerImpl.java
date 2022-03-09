@@ -131,7 +131,7 @@ public class EmployeeControllerImpl implements EmployeeController {
     }
 
     @Override
-    public List<PersonShortView> getAccountEmployee() throws RequestFailedException {
+    public List<PersonShortView> getAccountingEmployee() throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(employeeService.getAccountingEmployee(token));
     }
