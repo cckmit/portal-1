@@ -1115,6 +1115,7 @@ public class DebugIds {
         String EXPENDITURE_AGREEMENT_LABEL = "contract-preview-expenditure-agreement-label";
         String TAGS_LABEL = "contract-preview-tags-label";
         String ORGANIZATION_LABEL = "contract-preview-organization-label";
+        String FILE_LOCATION = "contract-file-location";
         String PROJECT_LABEL = "contract-preview-project-label";
         String CURATOR_LABEL = "contract-preview-curator-label";
         String PROJECT_MANAGER_LABEL = "contract-preview-project-manager-label";

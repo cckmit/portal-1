@@ -183,8 +183,8 @@ public class PortalConfigData {
             systemUserId = properties.getProperty("system.user.id", Long.class, null);
             cardbatchCompanyPartnerId = properties.getProperty("cardbatch.company.partner.id", Long.class, null);
             contractCuratorsDepartmentsIds = properties.getProperty("contract.curators_departments_ids", String.class, "").split(",");
-            contractNotifierDepartmentIds = properties.getProperty("contract.notifier_departments_ids", String.class, "");
-            contractNotifierIds = properties.getProperty("contract.notifier_ids", String.class, "");
+            contractAccountingDepartmentIds = properties.getProperty("contract.accounting_department_ids", String.class, "");
+            contractAccountingEmployeeIds = properties.getProperty("contract.accounting_employee_ids", String.class, "");
         }
         public String getCrmUrlInternal() {
             return crmUrlInternal;
@@ -222,12 +222,12 @@ public class PortalConfigData {
             return contractCuratorsDepartmentsIds;
         }
 
-        public String getContractNotifierDepartmentIds() {
-            return contractNotifierDepartmentIds;
+        public String getContractAccountingDepartmentIds() {
+            return contractAccountingDepartmentIds;
         }
 
-        public String getContractNotifierIds() {
-            return contractNotifierIds;
+        public String getContractAccountingEmployeeIds() {
+            return contractAccountingEmployeeIds;
         }
 
         private final String crmUrlInternal;
@@ -239,8 +239,8 @@ public class PortalConfigData {
         private final Long systemUserId;
         private final Long cardbatchCompanyPartnerId;
         private final String[] contractCuratorsDepartmentsIds;
-        private final String contractNotifierDepartmentIds;
-        private final String contractNotifierIds;
+        private final String contractAccountingDepartmentIds;
+        private final String contractAccountingEmployeeIds;
     }
 
     public static class MailNotificationConfig extends CommonConfig {

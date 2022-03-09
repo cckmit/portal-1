@@ -193,6 +193,7 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
         contractChild.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.EXPENDITURE_AGREEMENT_LABEL);
         tagsContainer.ensureDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.TAGS_LABEL);
         organization.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.ORGANIZATION_LABEL);
+        fileLocation.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.FILE_LOCATION);
         project.ensureDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.PROJECT_LABEL);
         curator.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.CURATOR_LABEL);
         projectManager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.PROJECT_MANAGER_LABEL);

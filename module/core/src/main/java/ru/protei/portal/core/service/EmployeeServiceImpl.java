@@ -545,8 +545,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Result<List<PersonShortView>> getAccountingEmployee(AuthToken token) {
-        String contractNotifierDepartmentIds = portalConfig.data().getCommonConfig().getContractNotifierDepartmentIds();
-        String contractNotifierIds = portalConfig.data().getCommonConfig().getContractNotifierIds();
+        String contractNotifierDepartmentIds = portalConfig.data().getCommonConfig().getContractAccountingDepartmentIds();
+        String contractNotifierIds = portalConfig.data().getCommonConfig().getContractAccountingEmployeeIds();
 
         List<PersonShortView> accountingEmployees = personShortViewDAO.getAccountingEmployees(
                 StringUtils.isNotEmpty(contractNotifierIds) ?
