@@ -792,8 +792,8 @@ public class ContractServiceImpl implements ContractService {
 
     private Set<NotificationEntry> getNotificationEntries(Set<Long> personIdList, Set<Person> notifiers) {
         Set<NotificationEntry> notificationEntries = new HashSet<>();
+        personIdList.addAll(notifiers.stream().map(Person::getId).collect(Collectors.toList()));
         List<Person> personList = personDAO.partialGetListByKeys(personIdList, "id", "locale");
-        personList.addAll(notifiers);
         jdbcManyRelationsHelper.fill(personList, Person.Fields.CONTACT_ITEMS);
         for (Person person : personList) {
             ContactInfo contactInfo = person.getContactInfo();
