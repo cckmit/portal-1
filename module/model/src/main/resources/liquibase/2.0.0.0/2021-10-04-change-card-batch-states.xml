@@ -1,0 +1,125 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="update-card-batch-case-states" author="butusov">
+        <update tableName="case_state">
+            <column name="STATE" value="in queue: build equipment"/>
+            <column name="INFO" value="in queue: build equipment"/>
+            <where>ID = 52</where>
+        </update>
+        <update tableName="case_state">
+            <column name="STATE" value="build equipment"/>
+            <column name="INFO" value="build equipment"/>
+            <where>ID = 53</where>
+        </update>
+        <update tableName="case_state">
+            <column name="STATE" value="in queue: automatic mounting"/>
+            <column name="INFO" value="in queue: automatic mounting"/>
+            <where>ID = 54</where>
+        </update>
+        <update tableName="case_state">
+            <column name="STATE" value="automatic mounting"/>
+            <column name="INFO" value="automatic mounting"/>
+            <where>ID = 55</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="add-card-batch-case-states" author="butusov">
+        <insert tableName="case_state">
+            <column name="id" value="58"/>
+            <column name="STATE" value="in queue: manual mounting"/>
+            <column name="color" value="#9d9da0"/>
+            <column name="INFO" value="in queue: manual mounting"/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="59"/>
+            <column name="STATE" value="manual mounting"/>
+            <column name="color" value="#00bcd4"/>
+            <column name="INFO" value="manual mounting"/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="60"/>
+            <column name="STATE" value="in queue: sticker labeling"/>
+            <column name="color" value="#e6c89b"/>
+            <column name="INFO" value="in queue: sticker labeling"/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="61"/>
+            <column name="STATE" value="sticker labeling"/>
+            <column name="color" value="#f79e1a"/>
+            <column name="INFO" value="sticker labeling"/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="62"/>
+            <column name="STATE" value="transferred for testing"/>
+            <column name="color" value="#7af0a3"/>
+            <column name="INFO" value="transferred for testing"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="remove-old-card-batch-case-state-matrix" author="butusov">
+        <sql>
+            delete from case_state_matrix where CASE_TYPE = 17 AND CASE_STATE = 39;
+            delete from case_state_matrix where CASE_TYPE = 17 AND CASE_STATE = 41;
+        </sql>
+    </changeSet>
+
+    <changeSet id="update-card-batch-case-state-matrix" author="butusov">
+        <update tableName="case_state_matrix">
+            <column name="info" value="В очереди на сбор комплектации"/>
+            <column name="view_order" value="1"/>
+            <where>CASE_TYPE = 17 AND CASE_STATE = 52</where>
+        </update>
+        <update tableName="case_state_matrix">
+            <column name="info" value="Сбор комплектации"/>
+            <column name="view_order" value="2"/>
+            <where>CASE_TYPE = 17 AND CASE_STATE = 53</where>
+        </update>
+        <update tableName="case_state_matrix">
+            <column name="info" value="В очереди на автоматический монтаж"/>
+            <column name="view_order" value="3"/>
+            <where>CASE_TYPE = 17 AND CASE_STATE = 54</where>
+        </update>
+        <update tableName="case_state_matrix">
+            <column name="info" value="Автоматический монтаж"/>
+            <column name="view_order" value="4"/>
+            <where>CASE_TYPE = 17 AND CASE_STATE = 55</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="add-card-batch-case-state-matrix" author="butusov">
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="17"/>
+            <column name="CASE_STATE" value="58"/>
+            <column name="view_order" value="5"/>
+            <column name="info" value="В очереди на ручной монтаж"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="17"/>
+            <column name="CASE_STATE" value="59"/>
+            <column name="view_order" value="6"/>
+            <column name="info" value="Ручной монтаж"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="17"/>
+            <column name="CASE_STATE" value="60"/>
+            <column name="view_order" value="7"/>
+            <column name="info" value="В очереди на маркировку наклейками"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="17"/>
+            <column name="CASE_STATE" value="61"/>
+            <column name="view_order" value="8"/>
+            <column name="info" value="Маркировка наклейками"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="17"/>
+            <column name="CASE_STATE" value="62"/>
+            <column name="view_order" value="9"/>
+            <column name="info" value="Передано в отдел тестирования"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

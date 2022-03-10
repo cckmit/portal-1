@@ -1,0 +1,8 @@
+syntax: glob
+**.iml
+**.orig
+.idea
+target
+
+debug/
+module/core/index/

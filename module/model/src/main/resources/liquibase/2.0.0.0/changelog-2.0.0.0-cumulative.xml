@@ -101,4 +101,28 @@
   <include file="2021-06-15-add-commercial-negotiations-case-state.xml" relativeToChangelogFile="true"/>
   <include file="2021-06-17-fix-next_id-for-kit-case-type.xml" relativeToChangelogFile="true"/>
   <include file="2021-07-12-remove-type_id-from-module.xml" relativeToChangelogFile="true"/>
+  <include file="2021-09-01-create-yt-report-dictionaries.xml" relativeToChangelogFile="true"/>
+  <include file="2021-09-10-remove-hw-manager-qc-manager-from-delivery.xml" relativeToChangelogFile="true"/>
+  <include file="2021-09-12-create-card-tables.xml" relativeToChangelogFile="true"/>
+  <include file="2021-09-17-add-new-project-roles.xml" relativeToChangelogFile="true"/>
+  <include file="2021-09-23-rename-dev_unit_mrole-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-09-28-add-member-roles.xml" relativeToChangelogFile="true"/>
+  <include file="2021-10-04-change-card-batch-states.xml" relativeToChangelogFile="true"/>
+  <include file="2021-10-04-rework-fk_history_case_object_id_to_case_object.xml" relativeToChangelogFile="true"/>
+  <include file="2021-10-20-rework-FK_CO_CASE.xml" relativeToChangelogFile="true"/>
+  <include file="2021-10-20-modify-dev_unit-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-11-03-add-probation-period-end-date-to-employee-registration-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-20-21-remove-history_version-cdr_description-configuration-from-dev_unit.xml" relativeToChangelogFile="true"/>
+  <include file="2021-10-29-create-pcb-order-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-11-23-create-rfid-tables.xml" relativeToChangelogFile="true"/>
+  <include file="2021-12-16-add-subscription-type-to-contact-item-table.xml" relativeToChangelogFile="true"/>
+  <include file="2021-12-24-add-fired_date-to-worker_entry-table.xml" relativeToChangelogFile="true"/>
+  <include file="2022-01-20-add-inn-to-person-table.xml" relativeToChangelogFile="true"/>
+  <include file="2022-01-21-add-date_execution-column-and-date_end_warranty-column-to-contract-table.xml" relativeToChangelogFile="true"/>
+  <include file="2022-01-25-add-new-worker-position-data-to-worker-entry-table.xml" relativeToChangelogFile="true"/>
+  <include file="2022-02-21-modify-new_position_department_id-data-type-in-worker_entry-table.xml" relativeToChangelogFile="true"/>
+  <include file="2022-02-26-add-contract-states-to-case_state-table.xml" relativeToChangelogFile="true"/>
+  <include file="2022-03-01-add-contract-states-to-case_state_matrix-table.xml" relativeToChangelogFile="true"/>
+  <include file="2022-03-01-update-contract-states-in-case_object-table.xml" relativeToChangelogFile="true"/>
+  <include file="2022-03-02-add-member-role.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -84,6 +84,11 @@ public class UnplannedIssuesTableView extends Composite implements AbstractUnpla
         issue.setStyleName(isDefault ? "cursor-default" : null);
     }
 
+    @Override
+    public void removeIssue(CaseShortView issue) {
+        table.removeRow(issue);
+    }
+
     @UiHandler("filter")
     public void onFilterChanged(ValueChangeEvent<FilterShortView> event) {
         if (activity != null) {

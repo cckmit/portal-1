@@ -167,7 +167,7 @@ public abstract class PlatformEditActivity implements AbstractPlatformEditActivi
 
     @Override
     public void onRemoveAttachment(Attachment attachment) {
-        attachmentService.removeAttachmentEverywhere(En_CaseType.SF_PLATFORM, attachment.getId(), new FluentCallback<Long>()
+        attachmentService.removeAttachmentEverywhere(En_CaseType.SF_PLATFORM, platform.getCaseId(), attachment.getId(), new FluentCallback<Long>()
                 .withError(getRemoveErrorHandler(this, lang))
                 .withSuccess(result -> {
                     view.attachmentsContainer().remove(attachment);

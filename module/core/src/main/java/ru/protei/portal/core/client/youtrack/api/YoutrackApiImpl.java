@@ -15,13 +15,12 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.youtrack.YtFieldDescriptor;
 import ru.protei.portal.core.model.youtrack.dto.activity.YtActivityCategory;
 import ru.protei.portal.core.model.youtrack.dto.activity.YtActivityItem;
+import ru.protei.portal.core.model.youtrack.dto.activity.singlevalue.YtWorkItemDurationActivityItem;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.bundleelemenet.YtEnumBundleElement;
 import ru.protei.portal.core.model.youtrack.dto.customfield.issue.YtIssueCustomField;
 import ru.protei.portal.core.model.youtrack.dto.filterfield.YtFilterField;
-import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
-import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueAttachment;
-import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
+import ru.protei.portal.core.model.youtrack.dto.issue.*;
 import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 
@@ -108,6 +107,22 @@ public class YoutrackApiImpl implements YoutrackApi {
     }
 
     @Override
+    public Result<List<IssueWorkItem>> getWorkItems(Date from, Date to, int offset, int limit) {
+        log.debug("getWorkItems(): from ={}, to={}, offset={}, limit={}", from, to, offset, limit);
+        return read(new YoutrackRequest<>(IssueWorkItem[].class)
+                .url(new YoutrackUrlProvider(getBaseUrl()).workItems())
+                .params(new HashMap<String, String>() {{
+                    if (from != null) put("start", String.valueOf(from.getTime()));
+                    if (to != null) put("end", String.valueOf(to.getTime()));
+                    put("$skip", String.valueOf(offset));
+                    put("$top", String.valueOf(limit));
+                }})
+                .fillSimpleFields()
+                .fillYtFields(YtWorkItemDurationActivityItem.class, IssueWorkItem.class, YtUser.class, DurationValue.class, YtIssue.class, YtIssueCustomField.class, YtProject.class)
+        ).map(Arrays::asList);
+    }
+
+    @Override
     public Result<List<YtActivityItem>> getIssueCustomFieldActivityItems(String issueId) {
         return read(new YoutrackRequest<>(YtActivityItem[].class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).issueActivities(issueId))
@@ -116,6 +131,17 @@ public class YoutrackApiImpl implements YoutrackApi {
                 }})
                 .fillSimpleFields()
                 .fillYtFields(YtFilterField.class, YtBundleElement.class, YtUser.class))
+                .map(Arrays::asList);
+    }
+
+    @Override
+    public Result<List<YtProject>> getAllProjects(int offset, int limit) {
+        return read(new YoutrackRequest<>(YtProject[].class)
+                .url(new YoutrackUrlProvider(getBaseUrl()).projects())
+                .params(new HashMap<String, String>() {{
+                    put("$skip", String.valueOf(offset));
+                    put("$top", String.valueOf(limit));
+                }}))
                 .map(Arrays::asList);
     }
 

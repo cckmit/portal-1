@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.struct;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
+import ru.protei.portal.core.model.dict.En_ContactEmailSubscriptionType;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 
 import java.util.List;
@@ -25,6 +26,15 @@ public interface AbstractContactInfo {
      */
     @JsonIgnore
     List<ContactItem> getItems (En_ContactItemType type);
+
+
+    /**
+     * Возвращает список всех найденных элементов с типом подписки subscriptionType
+     * @param subscriptionType
+     * @return
+     */
+    @JsonIgnore
+    List<ContactItem> getItems(En_ContactEmailSubscriptionType subscriptionType);
 
     /**
      * Возвращает первый найденный элемент с типом type или null, если такого элемента нет в списке

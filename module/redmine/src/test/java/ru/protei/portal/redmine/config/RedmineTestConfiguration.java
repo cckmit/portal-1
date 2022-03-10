@@ -18,7 +18,6 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.model.dao.DeliveryDAO;
 import ru.protei.portal.core.model.dao.impl.DeliveryDAO_Impl;
-import ru.protei.portal.core.model.dao.impl.DeliverySqlBuilder;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
@@ -171,6 +170,11 @@ public class RedmineTestConfiguration {
     }
 
     @Bean
+    public EventEmployeeRegistrationAssemblerService getEventEmployeeRegistrationAssemblerService() {
+        return new EventEmployeeRegistrationAssemblerServiceImpl();
+    }
+
+    @Bean
     public AssemblerDeliveryService getAssemblerDeliveryService() {
         return new AssemblerDeliveryServiceImpl();
     }
@@ -181,14 +185,24 @@ public class RedmineTestConfiguration {
     }
 
     @Bean
-    public DeliverySqlBuilder deliverySqlBuilder() {
-        return new DeliverySqlBuilder();
-    }
-
-    @Bean
     @Lazy
     public DeliveryService getDeliveryService() {
         return new DeliveryServiceImpl();
+    }
+
+    @Bean
+    public CardService getCardService() {
+        return new CardServiceImpl();
+    }
+
+    @Bean
+    public CardBatchService getCardBatchService() {
+        return new CardBatchServiceImpl();
+    }
+
+    @Bean
+    public PcbOrderService getPcbOrderService() {
+        return new PcbOrderServiceImpl();
     }
 
     @Bean
@@ -199,6 +213,11 @@ public class RedmineTestConfiguration {
     @Bean
     public AssemblerProjectService getAssemblerProjectService() {
         return new AssemblerProjectServiceImpl();
+    }
+
+    @Bean
+    public AssemblerEmployeeRegistrationService getAssemblerEmployeeRegistrationService() {
+        return new AssemblerEmployeeRegistrationServiceImpl();
     }
 
     @Bean

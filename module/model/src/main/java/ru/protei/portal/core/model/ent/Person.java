@@ -66,6 +66,9 @@ public class Person extends AuditableObject {
 
     @JdbcColumn(name="info")
     private String info;
+    
+    @JdbcColumn(name = "inn")
+    private String inn;
 
     @JdbcColumn(name="isdeleted")
     private boolean isDeleted;
@@ -73,7 +76,7 @@ public class Person extends AuditableObject {
     @JdbcColumn(name = Columns.IS_FIRED)
     private boolean isFired;
 
-    @JdbcColumn(name = "firedate")
+    @JdbcColumn(name = Columns.FIRE_DATE)
     private Date fireDate;
 
     @JdbcManyToMany(linkTable = "contact_item_person", localLinkColumn = "person_id", remoteLinkColumn = "contact_item_id")
@@ -260,6 +263,14 @@ public class Person extends AuditableObject {
         this.info = info;
     }
 
+    public String getInn() {
+        return inn;
+    }
+
+    public void setInn(String inn) {
+        this.inn = inn;
+    }
+
     public boolean isDeleted() {
         return isDeleted;
     }
@@ -357,6 +368,7 @@ public class Person extends AuditableObject {
         position = null;
         info = null;
         ipAddress = null;
+        inn = null;
 
         if (contactItems != null) {
             contactItems.removeIf((info) -> !info.isItemOf(En_ContactItemType.EMAIL));
@@ -390,6 +402,7 @@ public class Person extends AuditableObject {
                 ", birthday=" + birthday +
                 ", ipAddress='" + ipAddress + '\'' +
                 ", info='" + info + '\'' +
+                ", inn='" + inn + '\'' +
                 ", isDeleted=" + isDeleted +
                 ", isFired=" + isFired +
                 ", fireDate=" + fireDate +
@@ -410,5 +423,6 @@ public class Person extends AuditableObject {
         String DISPLAY_SHORT_NAME = "displayShortName";
         String DISPLAY_NAME = "displayname";
         String IS_FIRED = "isfired";
+        String FIRE_DATE = "firedate";
     }
 }

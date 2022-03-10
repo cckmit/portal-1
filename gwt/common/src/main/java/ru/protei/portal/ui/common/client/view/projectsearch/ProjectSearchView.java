@@ -24,9 +24,11 @@ import ru.protei.portal.ui.common.client.activity.projectsearch.AbstractProjectS
 import ru.protei.portal.ui.common.client.activity.projectsearch.AbstractProjectSearchView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.projectlist.list.ProjectList;
-import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
+import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableLongBox;
 
 import java.util.List;
 import java.util.Set;
@@ -42,6 +44,7 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         name.getElement().setAttribute("placeholder", lang.inputProjectName());
+        name.getElement().setAttribute("placeholder", lang.inputProjectNumber());
         products.setState(En_DevUnitState.ACTIVE);
         products.setTypes(En_DevUnitType.COMPLEX, En_DevUnitType.PRODUCT);
         dateCreatedRange.setPlaceholder(lang.selectDate());
@@ -64,6 +67,11 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     }
 
     @Override
+    public HasValue<Long> id() {
+        return id;
+    }
+
+    @Override
     public HasValue<Set<ProductShortView>> products() {
         return products;
     }
@@ -82,6 +90,11 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     }
 
     @Override
+    public HasValidable idValidator() {
+        return id;
+    }
+
+    @Override
     public void setVisibleProducts(boolean value) {
         productsContainer.setVisible(value);
     }
@@ -94,6 +107,7 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     @Override
     public void clearProjectList() {
         project.clearItems();
+        searchInfo.addClassName(HIDE);
     }
 
     @Override
@@ -105,6 +119,7 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
 
     @Override
     public void resetFilter() {
+        id.setValue(null);
         name.setValue(null);
         customerType.setValue(null);
         products.setValue(null);
@@ -113,6 +128,16 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
         searchInfo.addClassName(HIDE);
         projectsContainer.addClassName(HIDE);
         project.clearItems();
+    }
+
+    @Override
+    public void setSeparateFormView(boolean isSeparateFormView) {
+        if (isSeparateFormView) {
+            searchForm.removeClassName("form-group-attached");
+            return;
+        }
+
+        searchForm.addClassName("form-group-attached");
     }
 
     @UiHandler("search")
@@ -139,6 +164,7 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     }
 
     private void ensureDebugIds() {
+        id.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.ID_INPUT);
         name.ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.NAME_INPUT);
         dateCreatedRange.setEnsureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.CREATION_DATE_INPUT);
         dateCreatedRange.getRelative().ensureDebugId(DebugIds.DOCUMENT.PROJECT_SEARCH.CREATION_DATE_BUTTON);
@@ -152,7 +178,7 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
 
         nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_SEARCH.NAME_LABEL);
         dateCreatedRangeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_SEARCH.CREATION_DATE_LABEL);
-        customerTypeLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_SEARCH.CUSTOMER_TYPE_LABEL);
+        customerType.ensureLabelDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_SEARCH.CUSTOMER_TYPE_LABEL);
         productsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_SEARCH.PRODUCT_LABEL);
         searchInfo.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.PROJECT_SEARCH.SHOW_FIRST_RECORDS_LABEL);
     }
@@ -162,7 +188,7 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
 
     @Inject
     @UiField(provided = true)
-    CustomerTypeSelector customerType;
+    CustomerFormSelector customerType;
 
     @Inject
     @UiField(provided = true)
@@ -205,14 +231,15 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     LabelElement dateCreatedRangeLabel;
 
     @UiField
-    LabelElement customerTypeLabel;
-
-    @UiField
     LabelElement productsLabel;
 
     @Inject
     @UiField
     Lang lang;
+    @UiField
+    ValidableLongBox id;
+    @UiField
+    DivElement searchForm;
 
     private AbstractProjectSearchActivity activity;
 

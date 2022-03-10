@@ -42,6 +42,26 @@ public class DaoTestsConfiguration {
         return new ContactSqlBuilder();
     }
 
+    @Bean
+    public DeliverySqlBuilder deliverySqlBuilder() {
+        return new DeliverySqlBuilder();
+    }
+
+    @Bean
+    public CardSqlBuilder cardSqlBuilder() {
+        return new CardSqlBuilder();
+    }
+
+    @Bean
+    public CardBatchSqlBuilder cardBatchSqlBuilder() {
+        return new CardBatchSqlBuilder();
+    }
+
+    @Bean
+    public PcbOrderSqlBuilder pcbOrderSqlBuilder() {
+        return new PcbOrderSqlBuilder();
+    }
+
     /* DAO converters */
 
     @Bean
@@ -481,12 +501,57 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
-    public DeliverySqlBuilder deliverySqlBuilder() {
-        return new DeliverySqlBuilder();
+    public KitDAO getKitDAO() {
+        return new KitDAO_Impl();
     }
 
     @Bean
-    public KitDAO getKitDAO() {
-        return new KitDAO_Impl();
+    public ModuleDAO getModuleDAO() {
+        return new ModuleDAO_Impl();
+    }
+
+    @Bean
+    public YoutrackProjectDAO getYoutrackProjectDAO() {
+        return new YoutrackProjectDAO_Impl();
+    }
+
+    @Bean
+    public YoutrackWorkDictionaryDAO getYoutrackWorkDictionaryDAO() {
+        return new YoutrackWorkDictionaryDAO_Impl();
+    }
+
+    @Bean
+    public CardTypeDAO getCardTypeDAO() {
+        return new CardTypeDAO_Impl();
+    }
+
+    @Bean
+    public CardDAO getCardDAO() {
+        return new CardDAO_Impl();
+    }
+
+    @Bean
+    public CardBatchDAO getCardBatchDAO() {
+        return new CardBatchDAO_Impl();
+    }
+
+    @Bean
+    public PcbOrderDAO getPcbOrderDAO() {
+        return new PcbOrderDAO_Impl();
+    }
+
+    @Bean
+    public RFIDLabelDAO getRFIDLabelDAO() {
+        return new RFIDLabelDAO_Impl();
+    }
+
+    @Bean
+    public RFIDDeviceDAO getRFIDDeviceDAO() {
+        return new RFIDDeviceDAO_Impl();
+    }
+
+    @Bean
+    public CaseElapsedTimeApiDAO getCaseElapsedTimeApiDAO() {
+        return new CaseElapsedTimeApiDAO_Impl();
     }
 }

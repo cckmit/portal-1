@@ -22,6 +22,8 @@ public enum En_CaseType implements HasId {
     DELIVERY(14, "delivery"),
     KIT(15, "kit"),
     MODULE(16, "module"),
+    CARD_BATCH(17, "card-batch"),
+    CARD(18, "card")
     ;
 
     En_CaseType (int id, String code) {

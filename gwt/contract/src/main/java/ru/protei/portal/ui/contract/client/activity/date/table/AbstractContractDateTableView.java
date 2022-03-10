@@ -16,7 +16,9 @@ public interface AbstractContractDateTableView extends IsWidget {
 
     void removeRow(ContractDate value);
 
-    HasVisibility costOverflowWarningVisibility();
-
     void addRow(ContractDate value);
+
+    void showWarning(String message);
+
+    void hideWarning();
 }

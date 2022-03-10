@@ -62,8 +62,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.State.CREATED;
 import static ru.protei.portal.core.model.util.CrmConstants.State.UNKNOWN;
 
@@ -171,7 +170,7 @@ public class TestPortalApiController extends BaseServiceTest {
         ResultActions actions = createPostResultAction("/api/cases/create", caseObject);
         actions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.VALIDATION_ERROR.toString())));
 
         company.setAutoOpenIssue(false);
         companyDAO.saveOrUpdate(company);
@@ -196,7 +195,7 @@ public class TestPortalApiController extends BaseServiceTest {
         ResultActions actions = createPostResultAction("/api/cases/create", caseObject);
         actions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.VALIDATION_ERROR.toString())));
 
         company.setAutoOpenIssue(false);
         companyDAO.saveOrUpdate(company);
@@ -338,11 +337,9 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.status", is( En_ResultStatus.OK.toString() ) ) )
                 .andExpect( jsonPath( "$.data.id").value(  product.getId().intValue() ) )
-                .andExpect( jsonPath( "$.data.historyVersion", is( product.getHistoryVersion() ) ) )
-                .andExpect( jsonPath( "$.data.cdrDescription", is( product.getCdrDescription() ) ) )
-                .andExpect( jsonPath( "$.data.configuration", is( product.getConfiguration() ) ) )
                 .andExpect( jsonPath( "$.data.description", is( product.getInfo() ) ) )
-                .andExpect( jsonPath( "$.data.wikiLink", is( product.getWikiLink() ) ) )
+                .andExpect( jsonPath( "$.data.internalDocLink", is( product.getInternalDocLink() ) ) )
+                .andExpect( jsonPath( "$.data.externalDocLink", is( product.getExternalDocLink() ) ) )
                 .andExpect( jsonPath( "$.data.type", is( product.getType().name() ) ) )
         ;
     }
@@ -357,26 +354,10 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
                 .andExpect(jsonPath("$.data.id", notNullValue()))
                 .andExpect(jsonPath("$.data.name", is(product.getName())))
-                .andExpect(jsonPath("$.data.historyVersion", is(product.getHistoryVersion())))
-                .andExpect(jsonPath("$.data.cdrDescription", is(product.getCdrDescription())))
-                .andExpect(jsonPath("$.data.configuration", is(product.getConfiguration())))
                 .andExpect(jsonPath("$.data.description", is(product.getInfo())))
-                .andExpect(jsonPath("$.data.wikiLink", is(product.getWikiLink())))
+                .andExpect(jsonPath("$.data.internalDocLink", is(product.getInternalDocLink())))
+                .andExpect(jsonPath("$.data.externalDocLink", is(product.getExternalDocLink())))
                 .andExpect(jsonPath("$.data.type", is(product.getType().name())));
-    }
-
-    @Test
-    @Transactional
-    public void updateProduct() throws Exception {
-        DevUnit devUnit = makeProduct( );
-
-        DevUnitInfo product = DevUnitInfo.toInfo(devUnit);
-
-        createPostResultAction( "/api/products/update", product )
-                .andExpect( status().isOk() )
-                .andExpect( jsonPath( "$.status", is( En_ResultStatus.OK.toString() ) ) )
-                .andExpect( jsonPath( "$.data").value(  product.getId().intValue() ) )
-        ;
     }
 
     @Test
@@ -1685,6 +1666,23 @@ public class TestPortalApiController extends BaseServiceTest {
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
     }
 
+    @Test
+    @Transactional
+    public void caseTimeElapsedReportError() throws Exception {
+        CaseObject caseObject = makeCaseObject( person );
+        makeTimeElapsedCaseComment( person, caseObject.getId(), En_TimeElapsedType.CONSULTATION, 42L);
+
+        CaseElapsedTimeApiQuery query = new CaseElapsedTimeApiQuery();
+        query.setAuthorIds(listOf(person.getId()));
+        createPostResultAction("/api/case/elapsedTimes", query)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data[0].elapsedTime", is(42)))
+                .andExpect(jsonPath("$.data[0].authorId", is(person.getId().intValue())))
+                .andExpect(jsonPath("$.data[0].caseId", is(caseObject.getId().intValue())))
+        ;
+    }
+
     private String getPlatformId (String strResult) {
         int idIndex = strResult.indexOf("id");
         strResult = strResult.substring(idIndex);
@@ -1918,7 +1916,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         List<PersonProjectMemberView> team = new ArrayList<>();
         PersonProjectMemberView headManager = new PersonProjectMemberView();
-        headManager.setRole(En_DevUnitPersonRoleType.HEAD_MANAGER);
+        headManager.setRole(En_PersonRoleType.HEAD_MANAGER);
         team.add(headManager);
         apiProject.setTeam(team);
 

@@ -107,9 +107,12 @@ public class DebugIds {
         String CRM = "sidebar-menu-archive-crm";
         String ADMIN_CRM = "sidebar-menu-archive-admin-crm";
         String TEST_ZONE = "sidebar-menu-archive-test-zone";
-        String STORE_AND_DELIVERY = "sidebar-menu-store-delivery";
         String CARD_SEARCH = "sidebar-menu-store-delivery-card-search";
-        String DELIVERY = "sidebar-menu-store-delivery-delivery";
+        String STORE_AND_DELIVERY = "sidebar-menu-new-store-delivery";
+        String DELIVERY = "sidebar-menu-store-delivery-new-delivery";
+        String CARD = "sidebar-menu-new-store-delivery-delivery";
+        String CARD_BATCH = "sidebar-menu-new-store-delivery-card-batch";
+        String PCB_ORDER = "sidebar-menu-new-store-delivery-pcb-order";
         String STORE = "sidebar-menu-store-delivery-store";
         String FLOOR_PLAN = "sidebar-menu-floor-plan";
         String NOTIFICATION_SYSTEM = "sidebar-menu-notification-system";
@@ -223,6 +226,23 @@ public class DebugIds {
 
         String COMMENT_INPUT = "filter-comment-input";
 
+        String CARD_BATCH_SEARCH_BY_NUMBER_AND_ARTICLE_INPUT = "filter-card-batch-search-by-number-and-article-input";
+        String CARD_BATCH_CONTRACTORS_SELECTOR = "filter-card-batch-contractors-selector";
+        String CARD_BATCH_CONTRACTORS_ADD_BUTTON = "filter-card-batch-contractors-add-button";
+        String CARD_BATCH_CONTRACTORS_CLEAR_BUTTON = "filter-card-batch-contractors-clear-button";
+        String CARD_BATCH_CONTRACTORS_ITEM_CONTAINER = "filter-card-batch-contractors-item-container";
+
+        String CARD_BATCH_CARD_TYPE_SELECTOR = "filter-card-batch-card-type-selector";
+        String CARD_BATCH_CARD_TYPE_ADD_BUTTON = "filter-card-batch-card-type-add-button";
+        String CARD_BATCH_CARD_TYPE_CLEAR_BUTTON = "filter-card-batch-card-type-clear-button";
+        String CARD_BATCH_CARD_TYPE_ITEM_CONTAINER = "filter-card-batch-card-type-item-container";
+
+        String CARD_BATCH_STATE_SELECTOR = "filter-card-batch-state-selector";
+        String CARD_BATCH_SORT_FIELD = "filter-card-batch-sort-field-selector";
+        String CARD_BATCH_SORT_DIRECTION = "filter-card-batch-sort-direction-selector";
+        String CARD_BATCH_DEADLINE_SELECTOR = "filter-card-batch-deadline-selector";
+        String CARD_BATCH_IMPORTANCE_SELECTOR = "filter-card-batch-importance-selector";
+
         interface USER_FILTER {
             String FILTERS_BUTTON = "filter-user-filters-button";
             String FILTER_NAME_INPUT = "filter-user-filter-name-input";
@@ -331,6 +351,19 @@ public class DebugIds {
         String SUPPORT = "project-state-support";
         String FINISHED = "project-state-finished";
         String CANCELED = "project-state-canceled";
+    }
+
+    public interface CARD_BATCH_STATE {
+        String DEFAULT = "card-batch-state-";
+        String IN_QUEUE_BUILD_EQUIPMENT = "card-batch-state-in-queue-build-equipment";
+        String BUILD_EQUIPMENT = "card-batch-state-build-equipment";
+        String IN_QUEUE_AUTOMATIC_MOUNTING = "card-batch-state-in-queue-automatic-mounting";
+        String AUTOMATIC_MOUNTING = "card-batch-state-automatic-mounting";
+        String IN_QUEUE_MANUAL_MOUNTING = "card-batch-state-in-queue-manual-mounting";
+        String MANUAL_MOUNTING = "card-batch-state-manual-mounting";
+        String IN_QUEUE_STICKER_LABELING = "card-batch-state-in-queue-sticker-labeling";
+        String STICKER_LABELING = "card-batch-state-sticker-labeling";
+        String TRANSFERRED_FOR_TESTING = "card-batch-state-transferred-for-testing";
     }
 
     public interface ISSUE {
@@ -632,6 +665,8 @@ public class DebugIds {
         String COMMENT = "company-comment";
         String AUTO_OPEN_ISSUES = "company-auto-open-issues";
         String SUBSCRIPTIONS = "company-subscriptions";
+        String EMPLOYEE_REGISTRATION_GENERAL_EMAILS = "company-employee-registration-general-emails";
+        String EMPLOYEE_REGISTRATION_EMAILS = "company-employee-registration-emails";
         String PROBATION_GENERAL_EMAILS = "company-probation-general-emails";
         String PROBATION_EMAILS = "company-probation-emails";
         interface GROUP {
@@ -680,46 +715,30 @@ public class DebugIds {
 
     public interface PRODUCT {
         String NAME = "product-name";
-        String WIKI_LINK = "product-wiki-link";
+        String INTERNAL_DOC_LINK = "internal_doc_link";
+        String EXTERNAL_DOC_LINK = "external_doc_link";
         String DESCRIPTION = "product-description";
         String SUBSCRIPTIONS = "product-subscriptions";
         String INCLUDES = "product-includes";
         String PRODUCTS = "product-products";
         String ALIASES = "product-aliases";
-        String HISTORY_VERSION = "product-history-version";
-        String CONFIGURATION = "product-configuration";
-        String CDR_DESCRIPTION = "product-cdr-description";
         String SAVE_BUTTON = "product-save-button";
         String CANCEL_BUTTON = "product-cancel-button";
         String DIRECTION = "product-direction";
         String DIRECTIONS = "product-directions";
         String DIRECTION_LABEL = "product-direction-label";
         String COMMON_MANAGER = "product-common-manager";
-
-        interface TAB {
-            String HISTORY_VERSION = "product-tab-history-version";
-            String CONFIGURATION = "product-tab-configuration";
-            String CDR_DESCRIPTION = "product-tab-cdr-description";
-        }
     }
 
     public interface PRODUCT_PREVIEW {
         String NAME = "product-preview-name";
-        String WIKI_LINK = "product-preview-wiki-link";
+        String INTERNAL_DOC_LINK = "product-preview-internal-doc-link";
+        String EXTERNAL_DOC_LINK = "product-preview-external-doc-link";
         String DESCRIPTION = "product-preview-description";
-        String HISTORY_VERSION = "product-preview-history-version";
-        String CONFIGURATION = "product-preview-configuration";
-        String CDR_DESCRIPTION = "product-preview-cdr-description";
         String BACK_BUTTON = "product-preview-back-button";
         String DIRECTION_LABEL = "product-preview-direction-label";
         String PARENTS_CONTAINER = "product-preview-parents-container";
         String CHILDREN_CONTAINER = "product-preview-children-container";
-
-        interface TAB {
-            String HISTORY_VERSION = "product-preview-tab-history-version";
-            String CONFIGURATION = "product-preview-tab-configuration";
-            String CDR_DESCRIPTION = "product-preview-tab-cdr-description";
-        }
     }
 
     public interface PRODUCT_ITEM {
@@ -884,6 +903,7 @@ public class DebugIds {
             String FIND_BUTTON = "document-project-search-find-button";
             String RESET_BUTTON = "document-project-search-reset-button";
             String SHOW_FIRST_RECORDS_LABEL = "document-project-search-show-first-records-label";
+            String ID_INPUT ="document-project-search-id";
         }
 
         interface PROJECT_CREATE {
@@ -940,6 +960,7 @@ public class DebugIds {
             String ATTACHMENT = "table-attachment-button";
             String COPY = "table-copy-button";
             String CANCEL = "table-cancel-button";
+            String CREATE_CARD = "table-create-card-button";
         }
 
         interface ISSUE {
@@ -1091,6 +1112,8 @@ public class DebugIds {
         String CURATOR_LABEL = "contract-preview-curator-label";
         String PROJECT_MANAGER_LABEL = "contract-preview-project-manager-label";
         String SIGN_MANAGER_LABEL = "contract-preview-sign-manager-label";
+        String DATE_END_WARRANTY_LABEL = "contract-preview-date-end-warranty-label";
+        String DATE_EXECUTION_LABEL = "contract-preview-date-execution-label";
     }
 
     public interface CLEANABLE_SEARCH_BOX {
@@ -1287,9 +1310,7 @@ public class DebugIds {
         String CUSTOMER_COMPANY = "delivery-customer-company";
         String CUSTOMER_INITIATOR = "delivery-customer-initiator-selector";
         String CONTRACT_COMPANY = "delivery-contract-company";
-        String MANAGER = "delivery-manager";
-        String HW_MANAGER = "delivery-hw-manager-selector";
-        String QC_MANAGER = "delivery-qc-manager-selector";
+        String TEAM = "delivery-team";
         String ATTRIBUTE = "delivery-attribute-selector";
         String CONTRACT = "delivery-contract-selector";
         String PRODUCTS = "delivery-products-selector";
@@ -1312,6 +1333,37 @@ public class DebugIds {
             String ADD_BUTTON = "kit-item-add-button";
             String REFRESH_BUTTON = "kit-item-refresh-button";
             String REMOVE_BUTTON = "kit-item-remove-button";
+            String SAVE_BUTTON = "kit-item-save-button";
+            String CANCEL_BUTTON = "kit-item-cancel-button";
+            String TAB_HISTORY = "kit-item-tab-history";
+            String BACK_BUTTON = "kit-back-button";
+            String ACTION_MENU_BUTTON = "kit-action-menu-button";
+            String ACTION_MENU_ITEM_COPY_BUTTON = "kit-action-menu-copy-item-button";
+            String ACTION_MENU_ITEM_CHANGE_STATE_BUTTON = "kit-action-menu-item-change-state-button";
+            String ACTION_MENU_ITEM_EDIT_BUTTON = "kit-action-menu-item-edit-button";
+            String ACTION_MENU_ITEM_REMOVE_BUTTON = "kit-action-menu-item-remove-button";
+
+            interface MODULE {
+                String NAME = "module-name-input";
+                String DESCRIPTION = "module-description-input";
+                String STATE = "module-state-selector";
+                String MANAGER = "module-manager";
+                String HW_MANAGER = "module-hw-manager-selector";
+                String QC_MANAGER = "module-qc-manager-selector";
+                String CUSTOMER_COMPANY = "module-customer-company";
+                String BUILD_DATE = "module-build-date-container";
+                String DEPARTURE_DATE = "module-departure-date-container";
+                String RFID_LABEL = "module-rfid-label-container";
+                String ADD_BUTTON = "module-add-button";
+                String SAVE_BUTTON = "module-save-button";
+                String CANCEL_BUTTON = "module-cancel-button";
+                String EDIT_NAME_AND_DESCRIPTION_BUTTON = "module-edit-name-and-desc-button";
+                String EDIT_NAME_AND_DESC_ACCEPT = "module-edit-name-and-desc-accept";
+                String EDIT_NAME_AND_DESC_REJECT = "module-edit-name-and-desc-reject";
+                String TAB_COMMENT = "module-tab-comments";
+                String TAB_HISTORY = "module-tab-history";
+                String CHANGE_STATE_POPUP = "module-change-state-";
+            }
         }
 
         interface FILTER {
@@ -1325,5 +1377,105 @@ public class DebugIds {
     public interface CONFIRM_DIALOG {
         String OK_BUTTON = "confirm-dialog-ok-button";
         String CANCEL_BUTTON = "confirm-dialog-cancel-button";
+    }
+
+    public interface YOUTRACK_WORK {
+        String TABLE = "youtrack-work-report-table-";
+
+        interface DIALOG {
+            String NAME = "youtrack-work-report-dialog-name";
+            String TYPE = "youtrack-work-report-dialog-type";
+            String PROJECTS = "youtrack-work-report-dialog-projects";
+            String PROJECTS_ADD = "youtrack-work-report-dialog-projects-add";
+            String PROJECTS_CLEAR = "youtrack-work-report-dialog-projects-clear";
+            String PROJECTS_ITEM_CONTAINER = "youtrack-work-report-dialog-projects-item-container";
+        }
+    }
+
+    public interface CARD {
+        String SAVE_BUTTON = "card-save-button";
+        String CANCEL_BUTTON = "card-cancel-button";
+
+        String SERIAL_NUMBER = "card-serial-number";
+
+        String EDIT_NOTE_COMMENT_BUTTON = "card-edit-note-comment-button";
+        String NOTE_COMMENT_SAVE_BUTTON = "card-note-comment-save-button";
+        String NOTE_COMMENT_CANCEL_BUTTON = "card-note-comment-cancel-button";
+        String NOTE = "card-note";
+        String COMMENT = "card-comment";
+
+        String TAB_HISTORY = "card-tab-history";
+
+        String STATE = "card-state-selector";
+        String TYPE = "card-type-selector";
+        String CARD_BATCH = "card-card-batch-selector";
+        String ARTICLE = "card-article-input";
+        String MANAGER = "card-manager-selector";
+        String TEST_DATE = "card-test-date-container";
+        String AMOUNT = "card-amount-input";
+    }
+
+    public interface CARD_BATCH {
+        String BACK_BUTTON = "card-batch-back-button";
+        String SAVE_BUTTON = "card-batch-save-button";
+        String CANCEL_BUTTON = "card-batch-cancel-button";
+        String TYPE = "card-batch-type-selector";
+        String NUMBER_INPUT = "card-batch-number-input";
+        String ARTICLE = "card-batch-article-input";
+        String AMOUNT = "card-batch-amount-input";
+        String PARAMS = "card-batch-params-input";
+        String STATE_SELECTOR = "card-batch-state-selector";
+        String PRIORITY_SELECTOR = "card-batch-priority-selector";
+        String DEADLINE_DATE = "card-batch-deadline-date-container";
+        String CONTRACTOR_SELECTOR = "card-batch-contractor-selector";
+        String NUMBER = "card-batch-number";
+        String EDIT_COMMON_INFO_BUTTON = "card-batch-edit-common-info-button";
+        String TAB_COMMENT = "card-batch-tab-comments";
+        String TAB_HISTORY = "card-batch-tab-history";
+    }
+
+    public interface PCB_ORDER {
+        String SAVE_BUTTON = "pcb-order-save-button";
+        String CANCEL_BUTTON = "pcb-order-cancel-button";
+        String CARD_TYPE_SELECTOR = "pcb-order-type-selector";
+        String AMOUNT = "pcb-order-amount";
+        String MODIFICATION = "pcb-order-modification";
+        String COMMENT = "pcb-order-comment";
+        String STATE_SELECTOR = "pcb-order-state-selector";
+        String PROMPTNESS_SELECTOR = "pcb-order-promptness-selector";
+        String ORDER_TYPE_SELECTOR = "pcb-order-order-type-selector";
+        String STENCIL_TYPE_SELECTOR = "pcb-order-stencil-type-selector";
+        String CONTRACTOR_SELECTOR = "pcb-order-contractor-selector";
+        String ORDER_DATE = "pcb-order-order-date";
+        String READY_DATE = "pcb-order-ready-date";
+        String RECEIPT_DATE = "pcb-order-receipt-date";
+        String EDIT_COMMON_INFO_BUTTON = "pcb-order-edit-common-info-button";
+    }
+
+    public interface PCB_ORDER_STATE {
+        String DEFAULT = "pcb-order-state-";
+        String RECEIVED = "pcb-order-state-received";
+        String ACCEPTED = "pcb-order-state-accepted";
+        String SENT = "pcb-order-state-sent";
+    }
+
+    public interface PCB_ORDER_PROMPTNESS {
+        String DEFAULT = "pcb-order-promptness-";
+        String REGULAR = "pcb-order-promptness-regular";
+        String URGENT = "pcb-order-promptness-urgent";
+        String VERY_URGENT = "pcb-order-promptness-very-urgent";
+    }
+
+    public interface PCB_ORDER_TYPE {
+        String DEFAULT = "pcb-order-type-";
+        String CARD = "pcb-order-type-card";
+        String STENCIL = "pcb-order-type-stencil";
+        String FRONT_PANEL = "pcb-order-type-very-front-panel";
+    }
+
+    public interface RFID_LABEL {
+        String EPC = "rfid-label-epc";
+        String DEVICE = "rfid-label-device";
+        String LAST_SCAN_DATE = "rfid-label-last-scan-date";
     }
 }

@@ -3,10 +3,9 @@ package ru.protei.portal.core.model.dao.impl;
 import org.apache.commons.lang3.StringUtils;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.ContractDAO;
-import ru.protei.portal.core.model.dict.En_ContractState;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.query.ContractApiQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.Interval;
@@ -22,7 +21,8 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeLikeArg;
-import static ru.protei.portal.core.model.util.ContractStateUtil.getOpenedContractStates;
+import static ru.protei.portal.core.model.util.ContractStateUtil.CLOSED_CONTRACT_STATES;
+import static ru.protei.portal.core.model.util.CrmConstants.State.CANCELED;
 
 public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements ContractDAO {
 
@@ -61,6 +61,26 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
         return partialMerge(contract, "ref_key");
     }
 
+    @Override
+    public List<Contract> getByCustomerAndProject(String customerName) {
+        JdbcQueryParameters parameters = new JdbcQueryParameters();
+        parameters.withJoins("inner join case_object co_contract on contract.id = co_contract.id " +
+                        "   inner join case_object co_project on co_project.ID = contract.project_id" +
+                        "   inner join company on company.id = co_project.initiator_company")
+                .withCondition("company.cname = ? and co_project.CASE_TYPE = " + En_CaseType.PROJECT.getId(), customerName)
+                .withDistinct(true);
+
+        return getList(parameters);
+    }
+
+    @Override
+    public List<Contract> getByPlatformId(Long platformId) {
+        JdbcQueryParameters parameters = new JdbcQueryParameters();
+        parameters.withJoins("join platform on platform.project_id = contract.project_id")
+                .withCondition("platform.id = ?", platformId);
+        return getList(parameters);
+    }
+
     private JdbcQueryParameters buildJdbcQueryParameters(ContractQuery query) {
 
         JdbcQueryParameters parameters = new JdbcQueryParameters();
@@ -94,12 +114,12 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                 args.add(likeArg);
             }
 
-            if (CollectionUtils.isNotEmpty(query.getStates())) {
-                String inArg = HelperFunc.makeInArg(query.getStates(), state -> String.valueOf(state.getId()));
+            if (CollectionUtils.isNotEmpty(query.getStateIds())) {
+                String inArg = HelperFunc.makeInArg(query.getStateIds());
                 condition.append(" and CO.state in ").append(inArg);
             } else {
                 condition.append(" and CO.state != ?");
-                args.add(En_ContractState.CANCELLED.getId());
+                args.add(CANCELED);
             }
 
             if (CollectionUtils.isNotEmpty(query.getTypes())) {
@@ -214,7 +234,7 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                 condition.append(" ) hww");
                 condition.append(" WHERE 1=1");
                 condition.append(" AND hww.rownumber = 1");
-                condition.append(" AND hww.new_id IN ").append(makeInArg(getOpenedContractStates(), s -> String.valueOf(s.getId())));
+                condition.append(" AND hww.new_id NOT IN ").append(makeInArg(CLOSED_CONTRACT_STATES));
                 condition.append(")");
                 args.add(query.getOpenStateDate());
             }

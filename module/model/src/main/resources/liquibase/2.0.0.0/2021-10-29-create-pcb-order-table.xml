@@ -1,0 +1,108 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create-pcb-order-table" author="butusov">
+        <createTable tableName="pcb_order">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="created" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="card_type_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modification" type="VARCHAR(8)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="type" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stencil_type" type="INT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="state" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="company_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parent_id" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="promptness" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_date" type="DATETIME">
+                <constraints nullable="true"/>
+            </column>
+            <column name="ready_date" type="DATETIME">
+                <constraints nullable="true"/>
+            </column>
+            <column name="receipt_date" type="DATETIME">
+                <constraints nullable="true"/>
+            </column>
+            <column name="recipient_id" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="comment" type="TEXT">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-pcb-order-creator-id-foreign-key" author="butusov">
+        <addForeignKeyConstraint baseTableName="pcb_order"
+                                 baseColumnNames="creator_id"
+                                 constraintName="pcb_order_creator_id_to_person_fk"
+                                 referencedTableName="person"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="NO ACTION"/>
+    </changeSet>
+
+    <changeSet id="add-pcb-order-card-type-id-foreign-key" author="butusov">
+        <addForeignKeyConstraint baseTableName="pcb_order"
+                                 baseColumnNames="card_type_id"
+                                 constraintName="pcb_order_card_type_id_to_card_type_fk"
+                                 referencedTableName="card_type"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="NO ACTION"/>
+    </changeSet>
+
+    <changeSet id="add-pcb-order-company-id-foreign-key" author="butusov">
+        <addForeignKeyConstraint baseTableName="pcb_order"
+                                 baseColumnNames="company_id"
+                                 constraintName="pcb_order_company_id_to_company_fk"
+                                 referencedTableName="company"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="NO ACTION"/>
+    </changeSet>
+
+    <changeSet id="add-pcb-order-parent-id-foreign-key" author="butusov">
+        <addForeignKeyConstraint baseTableName="pcb_order"
+                                 baseColumnNames="parent_id"
+                                 constraintName="pcb_order_parent_id_to_pcb_order_fk"
+                                 referencedTableName="pcb_order"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="SET NULL"/>
+    </changeSet>
+
+    <changeSet id="add-pcb-order-recipient-id-foreign-key" author="butusov">
+        <addForeignKeyConstraint baseTableName="pcb_order"
+                                 baseColumnNames="recipient_id"
+                                 constraintName="pcb_order_recipient_id_to_person_fk"
+                                 referencedTableName="person"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="SET NULL"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -51,7 +51,7 @@ public abstract class DocumentTypePage implements Activity {
     private void fireSelectTab() {
         fireEvent(new ActionBarEvents.Clear());
         if (policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_TYPE_VIEW)) {
-            fireEvent(new MenuEvents.Select(TAB));
+            fireEvent(new MenuEvents.Select(TAB, CATEGORY));
         }
     }
 

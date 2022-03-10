@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.DeliveryQuery;
+import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.policy.PolicyService;
@@ -31,11 +32,15 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.ent.Delivery.Columns.KITS;
-import static ru.protei.portal.core.model.ent.Delivery.Columns.SUBSCRIBERS;
+import static ru.protei.portal.core.model.dict.En_Privilege.DELIVERY_VIEW;
+import static ru.protei.portal.core.model.dict.En_ResultStatus.INCORRECT_PARAMS;
+import static ru.protei.portal.core.model.dict.En_ResultStatus.PERMISSION_DENIED;
+import static ru.protei.portal.core.model.ent.Delivery.Fields.*;
+import static ru.protei.portal.core.model.dto.Project.Fields.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.DELIVERY_KIT_SERIAL_NUMBER_PATTERN;
+import static ru.protei.portal.core.utils.HistoryUtils.*;
 
 /**
  * Реализация сервиса управления поставками
@@ -64,6 +69,8 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Autowired
     DeliveryDAO deliveryDAO;
     @Autowired
+    WorkerEntryDAO workerEntryDAO;
+    @Autowired
     KitDAO kitDAO;
 
     @Autowired
@@ -82,6 +89,17 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public Result<SearchResult<Delivery>> getDeliveries(AuthToken token, DeliveryQuery query) {
+
+        Set<UserRole> roles = token.getRoles();
+        if (policyService.hasScopeForPrivilege( roles, DELIVERY_VIEW, En_Scope.USER )) {
+            return error(PERMISSION_DENIED);
+        }
+
+        query = applyFilterByScope(token, roles, query);
+        if (query == null){
+            return error(INCORRECT_PARAMS);
+        }
+
         SearchResult<Delivery> sr = deliveryDAO.getSearchResult(query);
 
         for (Delivery delivery : emptyIfNull(sr.getResults())){
@@ -145,6 +163,10 @@ public class DeliveryServiceImpl implements DeliveryService {
                 log.warn("createDelivery(): kit not created, kit={}", kit);
                 throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
             }
+            Result<Long> resultState = addDeliveryStateHistory(token, kitCaseObjectId, kit.getStateId(), caseStateDAO.get(kit.getStateId()).getState());
+            if (resultState.isError()) {
+                log.error("State for the kit {} not saved!", kitCaseObjectId);
+            }
         });
 
         if(isNotEmpty(deliveryCaseObject.getNotifiers())){
@@ -158,7 +180,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
         long stateId = delivery.getStateId();
-        Result<Long> resultState = addStateHistory(token, deliveryId, stateId, caseStateDAO.get(stateId).getState());
+        Result<Long> resultState = addDeliveryStateHistory(token, deliveryId, stateId, caseStateDAO.get(stateId).getState());
         if (resultState.isError()) {
             log.error("State message for the delivery {} not saved!", deliveryCaseId);
         }
@@ -192,6 +214,19 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     @Transactional
+    public Result<Void> updateKitListStates(AuthToken token, List<Long> kitsIds, Long caseStateId) {
+        if (caseStateId == null){
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        List<CaseObject> objects = caseObjectDAO.getListByKeys(kitsIds);
+        stream(objects).forEach(caseObject -> caseObject.setStateId(caseStateId));
+        caseObjectDAO.mergeBatch(objects);
+        return ok();
+    }
+
+    @Override
+    @Transactional
     public Result<Delivery> updateMeta(AuthToken token, Delivery meta) {
         if (meta == null || meta.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -221,20 +256,20 @@ public class DeliveryServiceImpl implements DeliveryService {
         caseObject = createDeliveryCaseObject(caseObject, meta, null, null, new Date());
         boolean isUpdated = caseObjectDAO.merge(caseObject);
         if (!isUpdated) {
-            log.info("Failed to update issue meta data {} at db", caseObject.getId());
+            log.info("Failed to update delivery meta data {} at db", meta);
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         isUpdated = deliveryDAO.merge(meta);
         if (!isUpdated) {
-            log.warn("createDelivery(): delivery not created. delivery={}",  caseObject.getId());
+            log.warn("updateMeta(): delivery not updated. delivery={}",  meta);
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
         // update kits
 
         if (meta.getStateId() != oldMeta.getStateId()) {
-            Result<Long> resultState = changeStateHistory(token, meta.getId(), oldMeta.getStateId(), caseStateDAO.get(oldMeta.getStateId()).getState(),
+            Result<Long> resultState = changeDeliveryStateHistory(token, meta.getId(), oldMeta.getStateId(), caseStateDAO.get(oldMeta.getStateId()).getState(),
                                                           meta.getStateId(), caseStateDAO.get(meta.getStateId()).getState());
 
             if (resultState.isError()) {
@@ -246,15 +281,15 @@ public class DeliveryServiceImpl implements DeliveryService {
         Date newDate = meta.getDepartureDate();
         Result<Long> resultDate = ok();
 
-        if (departureDateAdded(oldDate, newDate)) {
+        if (dateAdded(oldDate, newDate)) {
             resultDate = addDateHistory(token, meta.getId(), meta.getDepartureDate());
         }
 
-        if (departureDateChanged(oldDate, newDate)) {
+        if (dateChanged(oldDate, newDate)) {
             resultDate = changeDateHistory(token, meta.getId(), oldMeta.getDepartureDate(), meta.getDepartureDate());
         }
 
-        if (departureDateRemoved(oldDate, newDate)) {
+        if (dateRemoved(oldDate, newDate)) {
             resultDate = removeDateHistory(token, meta.getId(), oldMeta.getDepartureDate());
         }
 
@@ -350,18 +385,135 @@ public class DeliveryServiceImpl implements DeliveryService {
                     log.warn("createKits(): kit not created, kit={}", kit);
                     throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
                 }
+                createKitHistory(token, kit);
             });
 
             return ok(kitDAO.listByDeliveryId(deliveryId));
         });
     }
 
+    @Override
+    public Result<Kit> getKit(AuthToken token, Long kitId) {
+
+        if (kitId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Kit kit = kitDAO.get(kitId);
+        if (kit == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+        return ok(kit);
+    }
+
+    @Override
+    @Transactional
+    public Result<Kit> updateKit(AuthToken token, Kit kit) {
+        if (kit == null || kit.getId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!isValid(kit)) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        Kit oldKit = kitDAO.get(kit.getId());
+        if (oldKit == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        Delivery delivery = deliveryDAO.get(kit.getDeliveryId());
+        if (delivery == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (isInvalidKitStates(listOf(kit), delivery.getStateId())) {
+            return error(En_ResultStatus.VALIDATION_ERROR);
+        }
+
+        CaseObject caseObject = caseObjectDAO.get(kit.getId());
+        caseObject = createKitCaseObject(caseObject, kit, null, null, new Date());
+        boolean isUpdated = caseObjectDAO.merge(caseObject);
+        if (!isUpdated) {
+            log.info("Failed to update kit meta data {} at db", caseObject.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        isUpdated = kitDAO.merge(kit);
+        if (!isUpdated) {
+            log.warn("updateKit(): kit not updated = {}",  caseObject.getId());
+            throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        updateKitHistory(token, kit, oldKit);
+
+        return ok(kit);
+    }
+
+    @Override
+    public Result<Long> getDeliveryStateId(AuthToken token, Long deliveryId) {
+        CaseObject deliveryCaseObject = caseObjectDAO.partialGet(deliveryId, CaseObject.Columns.STATE);
+        if (deliveryCaseObject == null) {
+            return error(En_ResultStatus.NOT_FOUND);
+        }
+        return ok(deliveryCaseObject.getStateId());
+    }
+
+    private void createKitHistory(AuthToken token, Kit kit) {
+
+        Result<Long> resultState = addModuleStateHistory(token, kit.getId(), kit.getStateId(), caseStateDAO.get(kit.getStateId()).getState());
+
+        if (resultState.isError()) {
+            log.error("State message for the kit {} not created!", kit.getId());
+        }
+    }
+
+    private DeliveryQuery applyFilterByScope(AuthToken token, Set<UserRole> roles, DeliveryQuery query) {
+        if (policyService.hasGrantAccessFor(roles, En_Privilege.DELIVERY_VIEW)) {
+            return query;
+        }
+        if (policyService.hasScopeForPrivilege( roles, DELIVERY_VIEW, En_Scope.COMPANY )) {
+
+            List<WorkerEntry> workers = workerEntryDAO.getWorkers(new WorkerEntryQuery(token.getPersonId()));
+            if (isEmpty(workers)) {
+                log.error("Can't get getDeliveries. No WorkerEntry specified for personId = {}", token.getPersonId());
+                return null;
+            }
+            query.setCreatorCompanyIds(stream(workers).map(WorkerEntry::getCompanyId).collect(Collectors.toList()));
+        }
+        return query;
+    }
+
+    private void updateKitHistory(AuthToken token, Kit newKit, Kit oldKit) {
+        if (!Objects.equals(newKit.getStateId(), oldKit.getStateId())) {
+            Result<Long> resultState = changeModuleStateHistory(token, newKit.getId(), oldKit.getStateId(), caseStateDAO.get(oldKit.getStateId()).getState(),
+                    newKit.getStateId(), caseStateDAO.get(newKit.getStateId()).getState());
+
+            if (resultState.isError()) {
+                log.error("State message for the kit {} not saved!", newKit.getId());
+            }
+        }
+    }
+
     private Delivery getDelivery(Long id) {
         Delivery delivery = deliveryDAO.get(id);
         jdbcManyRelationsHelper.fill(delivery, KITS);
         jdbcManyRelationsHelper.fill(delivery, SUBSCRIBERS);
+        jdbcManyRelationsHelper.fill(delivery.getProject(), PROJECT_MEMBERS);
         delivery.getProject().setProducts(new HashSet<>(devUnitDAO.getProjectProducts(delivery.getProject().getId())));
+        fillModulesCount(delivery.getId(), delivery.getKits());
         return delivery;
+    }
+
+    private void fillModulesCount(Long deliveryId, List<Kit> kits) {
+
+        List<Kit> modulesGroupedByKit = kitDAO.getModulesGroupedByKit(deliveryId);
+
+        for (Kit kit : kits){
+            stream(modulesGroupedByKit)
+                    .filter(o -> Objects.equals(o.getId(), kit.getId()))
+                    .findAny().ifPresent(kitShort -> kit.setModulesCount(kitShort.getModulesCount()));
+        }
     }
 
     private int getCurrentYear() {
@@ -387,9 +539,6 @@ public class DeliveryServiceImpl implements DeliveryService {
             return false;
         }
         if (delivery.getProjectId() == null) {
-            return false;
-        }
-        if (En_DeliveryAttribute.DELIVERY == delivery.getAttribute() && delivery.getContractId() == null) {
             return false;
         }
         if (isEmpty(delivery.getKits())) {
@@ -471,39 +620,35 @@ public class DeliveryServiceImpl implements DeliveryService {
         return caseObject;
     }
 
-    private boolean departureDateAdded(Date oldDate, Date newDate) {
-        return oldDate == null && newDate != null;
+    private Result<Long> addDeliveryStateHistory(AuthToken authToken, Long caseObjectId, Long stateId, String stateName) {
+        return historyService.createHistory(authToken, caseObjectId, En_HistoryAction.ADD, En_HistoryType.DELIVERY_STATE, null, null, stateId, stateName);
     }
 
-    private boolean departureDateChanged(Date oldDate, Date newDate) {
-        return oldDate != null && newDate != null && oldDate.getTime() != newDate.getTime();
+    private Result<Long> addModuleStateHistory(AuthToken authToken, Long caseObjectId, Long stateId, String stateName) {
+        return historyService.createHistory(authToken, caseObjectId, En_HistoryAction.ADD, En_HistoryType.MODULE_STATE, null, null, stateId, stateName);
     }
 
-    private boolean departureDateRemoved(Date oldDate, Date newDate) {
-        return oldDate != null && newDate == null;
+    private Result<Long> changeDeliveryStateHistory(AuthToken token, Long caseObjectId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
+        return historyService.createHistory(token, caseObjectId, En_HistoryAction.CHANGE, En_HistoryType.DELIVERY_STATE, oldStateId, oldStateName, newStateId, newStateName);
     }
 
-    private Result<Long> addStateHistory(AuthToken authToken, Long deliveryId, Long stateId, String stateName) {
-        return historyService.createHistory(authToken, deliveryId, En_HistoryAction.ADD, En_HistoryType.DELIVERY_STATE, null, null, stateId, stateName);
-    }
-
-    private Result<Long> changeStateHistory(AuthToken token, Long deliveryId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
-        return historyService.createHistory(token, deliveryId, En_HistoryAction.CHANGE, En_HistoryType.DELIVERY_STATE, oldStateId, oldStateName, newStateId, newStateName);
+    private Result<Long> changeModuleStateHistory(AuthToken token, Long caseObjectId, Long oldStateId, String oldStateName, Long newStateId, String newStateName) {
+        return historyService.createHistory(token, caseObjectId, En_HistoryAction.CHANGE, En_HistoryType.MODULE_STATE, oldStateId, oldStateName, newStateId, newStateName);
     }
 
     private Result<Long> addDateHistory(AuthToken token, Long deliveryId, Date date) {
-        return historyService.createHistory(token, deliveryId, En_HistoryAction.ADD, En_HistoryType.DATE,
+        return historyService.createHistory(token, deliveryId, En_HistoryAction.ADD, En_HistoryType.DEPARTURE_DATE,
                                             null, null, deliveryId, DEPARTURE_DATE_FORMAT.format(date));
     }
 
     private Result<Long> changeDateHistory(AuthToken token, Long deliveryId, Date oldDate, Date newDate) {
-        return historyService.createHistory(token, deliveryId, En_HistoryAction.CHANGE, En_HistoryType.DATE, null,
+        return historyService.createHistory(token, deliveryId, En_HistoryAction.CHANGE, En_HistoryType.DEPARTURE_DATE, null,
                                             oldDate != null ? DEPARTURE_DATE_FORMAT.format(oldDate) : null, deliveryId,
                                             newDate != null ? DEPARTURE_DATE_FORMAT.format(newDate) : null);
     }
 
     private Result<Long> removeDateHistory(AuthToken token, Long deliveryId, Date oldDate) {
-        return historyService.createHistory(token, deliveryId, En_HistoryAction.REMOVE, En_HistoryType.DATE,
+        return historyService.createHistory(token, deliveryId, En_HistoryAction.REMOVE, En_HistoryType.DEPARTURE_DATE,
                                             null, DEPARTURE_DATE_FORMAT.format(oldDate), deliveryId, null);
     }
 }

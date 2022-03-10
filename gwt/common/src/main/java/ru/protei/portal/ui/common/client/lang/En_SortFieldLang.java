@@ -89,6 +89,20 @@ public class En_SortFieldLang {
                 return lang.deliveryName();
             case delivery_departure_date:
                 return lang.deliveryDepartureDate();
+            case card_serial_number:
+                return lang.cardSerialNumber();
+            case card_test_date:
+                return lang.cardTestDate();
+            case card_batch_number:
+                return lang.cardBatchNumber();
+            case card_batch_type:
+                return lang.cardBatchType();
+            case card_batch_deadline:
+                return lang.cardBatchDeadline();
+            case pcb_order_card_type:
+                return lang.cardType();
+            case pcb_order_receipt_date:
+                return lang.pcbOrderReceiptDate();
             default:
                 return lang.unknownField();
         }

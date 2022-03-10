@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employeeregistration.client.activity.filter.AbstractEmployeeRegistrationFilterActivity;
 import ru.protei.portal.ui.employeeregistration.client.activity.filter.AbstractEmployeeRegistrationFilterView;
@@ -89,6 +90,20 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
     public void onItemClicked(EmployeeRegistration value) {
         persistScroll();
         showPreview(value);
+    }
+
+    @Override
+    public void onCompleteProbationClicked(EmployeeRegistration value) {
+        employeeRegistrationService.completeProbationPeriod(value.getId(), new FluentCallback<EmployeeRegistration>()
+                .withError(throwable -> {
+                    defaultErrorHandler.accept(throwable);
+                })
+                .withSuccess(employeeRegistration -> {
+                    view.updateRow(employeeRegistration);
+                    fireEvent(new CommentAndHistoryEvents.Reload());
+                    fireEvent(new NotifyEvents.Show(lang.probationCompletedSuccessfully(), NotifyEvents.NotifyType.SUCCESS));
+                })
+        );
     }
 
     @Override
@@ -175,6 +190,8 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
     private AbstractEmployeeRegistrationFilterView filterView;
     @Inject
     private EmployeeRegistrationControllerAsync employeeRegistrationService;
+    @Inject
+    private DefaultErrorHandler defaultErrorHandler;
 
     private AppEvents.InitDetails init;
 

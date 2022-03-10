@@ -10,10 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.query.BaseQuery;
-import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.query.ContractQuery;
-import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.util.CaseStateUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -23,6 +20,8 @@ import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContrac
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYoutrackWorkFilterActivity;
+import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYoutrackWorkFilterView;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseFilterControllerAsync;
@@ -63,6 +62,10 @@ public abstract class ReportEditActivity implements Activity,
         projectFilterWidget.clearFooterStyles();
 
         contractFilterView.clearFooterStyle();
+
+        youtrackWorkFilterView.setActivity(youtrackWorkFilterActivity);
+        youtrackWorkFilterView.clearFooterStyle();
+
         view.fillReportScheduledTypes(asList(En_ReportScheduledType.values()));
     }
 
@@ -73,9 +76,10 @@ public abstract class ReportEditActivity implements Activity,
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        issueFilterWidget.resetFilter(null);
+        issueFilterWidget.resetFilter();
         projectFilterWidget.resetFilter();
         contractFilterView.resetFilter();
+        youtrackWorkFilterView.resetFilter(false);
         updateCompanyModels(event.profile);
     }
 
@@ -216,6 +220,9 @@ public abstract class ReportEditActivity implements Activity,
                 fillFilter((ContractQuery)query);
                 break;
             }
+            case YT_WORK:
+                fillFilter((YoutrackWorkQuery)query);
+                break;
         }
         view.additionalParams().setValue(additionalParams);
     }
@@ -273,7 +280,8 @@ public abstract class ReportEditActivity implements Activity,
                 stream(query.getCaseTagsIds()).map(id -> id.equals(CrmConstants.CaseTag.NOT_SPECIFIED) ? null : new CaseTag(id)).collect(Collectors.toSet())
             );
         }
-        contractFilterView.states().setValue(query.getStates() == null ? null : new HashSet<>(query.getStates()));
+        contractFilterView.states().setValue(stream(query.getStateIds()).map(CaseState::new)
+                                                         .collect(Collectors.toSet()));
         contractFilterView.direction().setValue(query.getDirectionId() == null ? null : new ProductDirectionInfo(query.getDirectionId(), ""));
         contractFilterView.kind().setValue(query.getKind());
         contractFilterView.dateSigningRange().setValue(fromDateRange(query.getDateSigningRange()));
@@ -300,6 +308,10 @@ public abstract class ReportEditActivity implements Activity,
                 }
             }
         });
+    }
+
+    private void fillFilter(YoutrackWorkQuery query) {
+        youtrackWorkFilterView.date().setValue(fromDateRange(query.getDateRange()));
     }
 
     private Set<EntityOption> collectCompanies(Collection<EntityOption> companies, Collection<Long> companyIds) {
@@ -362,6 +374,12 @@ public abstract class ReportEditActivity implements Activity,
                 ContractQuery query = getContractQuery();
                 return new ReportContractQuery(report, query);
             }
+            case YT_WORK:
+                YoutrackWorkQuery query = getYoutracktWorkQuery();
+                if (!validateYoutrackWorkQuery(query)) {
+                    return null;
+                }
+                return new ReportYoutrackWorkQuery(report, query);
         }
         throw new IllegalStateException("No switch branch matched for En_ReportType");
     }
@@ -414,6 +432,15 @@ public abstract class ReportEditActivity implements Activity,
                 view.getFilterContainer().add(issueFilterWidget.asWidget());
                 break;
             }
+            case YT_WORK:
+                youtrackWorkFilterView.resetFilter(true);
+                view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
+                validateDateRanges(reportType);
+                view.getFilterContainer().clear();
+                view.getFilterContainer().add(youtrackWorkFilterView.asWidget());
+                view.scheduledTypeContainerVisibility().setVisible(false);
+                view.additionalParamsVisibility().setVisible(false);
+                view.additionalParams().setValue(null);
         }
     }
 
@@ -561,6 +588,25 @@ public abstract class ReportEditActivity implements Activity,
         return true;
     }
 
+    private boolean validateYoutrackWorkQuery(YoutrackWorkQuery query) {
+        if (query == null) {
+            return false;
+        }
+
+        if (!query.isParamsPresent()) {
+            fireEvent(new NotifyEvents.Show(lang.reportCaseObjectIsAnySelectedParamNotPresentError(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        boolean dateRangeValid = validateYoutrackCommentCreationRange(query.getDateRange(), true);
+        if (!dateRangeValid) {
+            fireEvent(new NotifyEvents.Show(lang.reportNotValidPeriod(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        return true;
+    }
+
 
     private boolean isValidMaxPeriod(DateRange dateRange) {
         if (dateRange != null && dateRange.getIntervalType() == En_DateIntervalType.FIXED &&
@@ -606,7 +652,15 @@ public abstract class ReportEditActivity implements Activity,
         boolean typeValid = validateTypeRange(dateRange, isMandatory);
         boolean rangeValid = typeValid ? validateDateRange(dateRange) : true;
 
-        validateProjectCommentCreation(typeValid, rangeValid);
+        setValidProjectCommentCreation(typeValid, rangeValid);
+        return typeValid && rangeValid;
+    }
+
+    private boolean validateYoutrackCommentCreationRange(DateRange dateRange, boolean isMandatory) {
+        boolean typeValid = validateTypeRange(dateRange, isMandatory);
+        boolean rangeValid = typeValid ? validateDateRange(dateRange) : true;
+
+        setValidYoutrackWorkRange(typeValid, rangeValid);
         return typeValid && rangeValid;
     }
 
@@ -618,8 +672,12 @@ public abstract class ReportEditActivity implements Activity,
         issueFilterWidget.getIssueFilterParams().setModifiedRangeValid(isTypeValid, isRangeValid);
     }
 
-    private void validateProjectCommentCreation(boolean isTypeValid, boolean isRangeValid) {
+    private void setValidProjectCommentCreation(boolean isTypeValid, boolean isRangeValid) {
         projectFilterWidget.getFilterParamView().setCommentCreationRangeValid(isTypeValid, isRangeValid);
+    }
+
+    private void setValidYoutrackWorkRange(boolean isTypeValid, boolean isRangeValid) {
+        youtrackWorkFilterView.setDateValid(isTypeValid, isRangeValid);
     }
 
     private void applyIssueFilterVisibilityByPrivileges() {
@@ -656,12 +714,19 @@ public abstract class ReportEditActivity implements Activity,
         query.setManagerIds(collectIds(contractFilterView.managers().getValue()));
         query.setTypes(nullIfEmpty(listOfOrNull(contractFilterView.types().getValue())));
         query.setCaseTagsIds(nullIfEmpty(toList(contractFilterView.tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
-        query.setStates(nullIfEmpty(listOfOrNull(contractFilterView.states().getValue())));
+        query.setStateIds(listOfOrNull(contractFilterView.states().getValue().stream().map(CaseState::getId)
+                                                                             .collect(Collectors.toList())));
         ProductDirectionInfo value = contractFilterView.direction().getValue();
         query.setDirectionId(value == null ? null : value.id);
         query.setKind(contractFilterView.kind().getValue());
         query.setDateSigningRange(toDateRange(contractFilterView.dateSigningRange().getValue()));
         query.setDateValidRange(toDateRange(contractFilterView.dateValidRange().getValue()));
+        return query;
+    }
+
+    private YoutrackWorkQuery getYoutracktWorkQuery() {
+        YoutrackWorkQuery query = new YoutrackWorkQuery();
+        query.setDateRange(toDateRange(youtrackWorkFilterView.date().getValue()));
         return query;
     }
 
@@ -699,6 +764,10 @@ public abstract class ReportEditActivity implements Activity,
     ProjectFilterWidgetModel projectFilterModel;
     @Inject
     AbstractContractFilterView contractFilterView;
+    @Inject
+    AbstractYoutrackWorkFilterView youtrackWorkFilterView;
+    @Inject
+    AbstractYoutrackWorkFilterActivity youtrackWorkFilterActivity;
 
     @Inject
     CompanyModel companyModel;

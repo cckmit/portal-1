@@ -81,10 +81,12 @@ public class PlanEvents {
     public static class ShowUnplannedIssueTable {
         public HasWidgets parent;
         public Long planId;
+        public Integer scrollTo;
 
-        public ShowUnplannedIssueTable(HasWidgets parent, Long planId) {
+        public ShowUnplannedIssueTable(HasWidgets parent, Long planId, Integer scrollTo) {
             this.parent = parent;
             this.planId = planId;
+            this.scrollTo = scrollTo;
         }
     }
 
@@ -92,11 +94,13 @@ public class PlanEvents {
         public HasWidgets parent;
         public List<Plan> planList;
         public Long planId;
+        public Integer scrollTo;
 
-        public ShowPlannedIssueTable(HasWidgets parent, List<Plan> planList, Long planId) {
+        public ShowPlannedIssueTable(HasWidgets parent, List<Plan> planList, Long planId, Integer scrollTo) {
             this.planList = planList;
             this.parent = parent;
             this.planId = planId;
+            this.scrollTo = scrollTo;
         }
     }
 
@@ -108,5 +112,23 @@ public class PlanEvents {
         }
     }
 
+    public static class AddIssueToUnplannedTable {
+        public CaseShortView issue;
+
+        public AddIssueToUnplannedTable(CaseShortView issue) {
+            this.issue = issue;
+        }
+    }
+
+    public static class RemoveIssueFromUnplannedTable {
+        public CaseShortView issue;
+
+        public RemoveIssueFromUnplannedTable(CaseShortView issue) {
+            this.issue = issue;
+        }
+    }
+
     public static class ChangeModel {}
+
+    public static class PersistScroll {}
 }

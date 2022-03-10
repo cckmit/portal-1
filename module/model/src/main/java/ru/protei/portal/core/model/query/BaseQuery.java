@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.Pair;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by michael on 12.10.16.
@@ -20,6 +22,8 @@ public class BaseQuery implements Serializable, DataQuery {
 
     public En_SortDir sortDir;
 
+    private List<Pair<En_SortField, En_SortDir>> sortParameters;
+
     public int limit;
 
     public int offset = 0;
@@ -32,6 +36,11 @@ public class BaseQuery implements Serializable, DataQuery {
         this.sortDir = sortDir;
     }
 
+    public BaseQuery(String searchString, List<Pair<En_SortField, En_SortDir>> sortParameters) {
+        this.searchString = searchString;
+        this.sortParameters = sortParameters;
+    }
+
     public BaseQuery useSearch(String searchString) {
         this.searchString = searchString;
         return this;
@@ -42,6 +51,11 @@ public class BaseQuery implements Serializable, DataQuery {
         this.sortDir = sortDir;
         this.sortField = sortField;
         return this;
+    }
+
+    @Override
+    public List<Pair<En_SortField, En_SortDir>> getSortParameters() {
+        return sortParameters;
     }
 
     @Override

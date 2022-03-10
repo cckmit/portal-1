@@ -21,7 +21,7 @@ public class ModuleStateFormSelector extends FormPopupSingleSelector<CaseState> 
 
     @Override
     protected SelectorItem<CaseState> makeSelectorItem(CaseState element, String elementHtml) {
-        PopupSelectorItem<CaseState> item = new PopupSelectorItem();
+        PopupSelectorItem<CaseState> item = new PopupSelectorItem<>();
         item.setName(elementHtml);
         if (element != null) {
             item.setTitle(getStateName(element));
@@ -36,12 +36,7 @@ public class ModuleStateFormSelector extends FormPopupSingleSelector<CaseState> 
         return moduleStateLang.getStateName(state);
     }
 
-    public void setDefaultValue(String value) {
-        this.defaultValue = value;
-    }
-
     @Inject
     ModuleStateLang moduleStateLang;
 
-    private String defaultValue;
 }

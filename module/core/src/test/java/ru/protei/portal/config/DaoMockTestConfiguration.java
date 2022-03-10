@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static org.mockito.Mockito.mock;
@@ -457,5 +458,65 @@ public class DaoMockTestConfiguration {
     @Bean
     public KitDAO getKitDAO() {
         return mock(KitDAO.class);
+    }
+
+    @Bean
+    public ModuleDAO getModuleDAO() {
+        return mock(ModuleDAO.class);
+    }
+
+    @Bean
+    public YoutrackProjectDAO getYoutrackProjectDAO() {
+        return mock(YoutrackProjectDAO.class);
+    }
+
+    @Bean
+    public YoutrackWorkDictionaryDAO getYoutrackWorkDictionaryDAO() {
+        return mock(YoutrackWorkDictionaryDAO.class);
+    }
+
+    @Bean
+    public CardTypeDAO getCardTypeDAO() {
+        return mock(CardTypeDAO.class);
+    }
+
+    @Bean
+    public CardSqlBuilder cardSqlBuilder() {
+        return mock(CardSqlBuilder.class);
+    }
+
+    @Bean
+    public CardDAO getCardDAO() {
+        return mock(CardDAO.class);
+    }
+
+    @Bean
+    public CardBatchDAO getCardBatchDAO() {
+        return mock(CardBatchDAO.class);
+    }
+
+    @Bean
+    public CardBatchSqlBuilder cardBatchSqlBuilder() {
+        return mock(CardBatchSqlBuilder.class);
+    }
+
+    @Bean
+    public PcbOrderDAO getPcbOrderDAO() {
+        return mock(PcbOrderDAO.class);
+    }
+
+    @Bean
+    public RFIDLabelDAO getRFIDLabelDAO() {
+        return mock(RFIDLabelDAO.class);
+    }
+
+    @Bean
+    public RFIDDeviceDAO getRFIDDeviceDAO() {
+        return mock(RFIDDeviceDAO.class);
+    }
+
+    @Bean
+    public CaseElapsedTimeApiDAO getCaseElapsedTimeApiDAO() {
+        return mock(CaseElapsedTimeApiDAO.class);
     }
 }

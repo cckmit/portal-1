@@ -6,13 +6,11 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_EmploymentType;
-import ru.protei.portal.core.model.dict.En_InternalResource;
-import ru.protei.portal.core.model.dict.En_PhoneOfficeType;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -24,10 +22,10 @@ import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerA
 import ru.protei.portal.ui.common.client.widget.selector.employeedepartment.EmployeeDepartmentModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.Date;
-import java.util.HashSet;
+import java.util.*;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.util.CrmConstants.Company.*;
 
 
 public abstract class EmployeeRegistrationCreateActivity implements Activity, AbstractEmployeeRegistrationCreateActivity {
@@ -61,8 +59,9 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
     @Override
     public void onSaveClicked() {
         EmployeeRegistration newEmployeeRegistration = fillDto( new EmployeeRegistration() );
-        if (getValidationError(newEmployeeRegistration) != null) {
-            showValidationError(newEmployeeRegistration);
+        String error = getValidationError(newEmployeeRegistration);
+        if (error != null) {
+            fireEvent(new NotifyEvents.Show(error, NotifyEvents.NotifyType.ERROR));
             return;
         }
         saveEmployeeRegistration(newEmployeeRegistration);
@@ -111,22 +110,44 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         departmentModel.refreshOptions(view.headOfDepartment().getValue() == null ? null : view.headOfDepartment().getValue().getId());
     }
 
-    private void showValidationError(EmployeeRegistration employeeRegistration) {
-        fireEvent(new NotifyEvents.Show(getValidationError(employeeRegistration), NotifyEvents.NotifyType.ERROR));
+    @Override
+    public void onCompanySelected() {
+        if (isSelectProteiOrProteiST(view.company().getValue())) {
+            setPhoneEquipmentEnabled(true);
+            Set<En_PhoneOfficeType> value = view.phoneOfficeTypeList().getValue();
+            value.add(En_PhoneOfficeType.OFFICE);
+            view.phoneOfficeTypeList().setValue(value);
+        } else {
+            setPhoneEquipmentEnabled(false);
+            Set<En_EmployeeEquipment> value = view.equipmentList().getValue();
+            value.remove(En_EmployeeEquipment.TELEPHONE);
+            view.equipmentList().setValue(value);
+            view.phoneOfficeTypeList().setValue(new HashSet<>());
+        }
+    }
+
+    @Override
+    public void onIDEChanged() {
+        if (view.ide().getValue()) {
+            view.setFocusOnAdditionalSoft();
+        }
     }
 
     private String getValidationError(EmployeeRegistration registration) {
         if (StringUtils.isBlank(registration.getEmployeeFullName()))
             return lang.employeeRegistrationValidationEmployeeFullName();
 
-        if (StringUtils.isBlank(registration.getPosition()))
-            return lang.employeeRegistrationValidationPosition();
-
         if (registration.getEmploymentDate() == null)
             return lang.employeeRegistrationValidationEmploymentDate();
 
+        if (registration.getCompanyId() == null)
+            return lang.employeeRegistrationValidationCompany();
+
         if (registration.getHeadOfDepartment() == null)
             return lang.employeeRegistrationValidationHeadOfDepartment();
+
+        if (StringUtils.isBlank(registration.getPosition()))
+            return lang.employeeRegistrationValidationPosition();
 
         if (registration.getProbationPeriodMonth() == null || registration.getProbationPeriodMonth() < 1)
             return lang.employeeRegistrationValidationProbationPeriod();
@@ -189,11 +210,10 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         employeeRegistration.setPhoneOfficeTypeList(view.phoneOfficeTypeList().getValue());
         employeeRegistration.setWithRegistration(view.withRegistration().getValue());
         employeeRegistration.setEmploymentType(view.employmentType().getValue());
-
         employeeRegistration.setProbationPeriodMonth( view.probationPeriod().getValue() );
         employeeRegistration.setResourceComment( view.resourceComment().getValue() );
         employeeRegistration.setOperatingSystem( view.operatingSystem().getValue() );
-        employeeRegistration.setAdditionalSoft( view.additionalSoft().getValue() );
+        employeeRegistration.setAdditionalSoft(createAdditionalSoft(view.additionalSoft().getValue(), view.ide().getValue()));
         employeeRegistration.setCuratorsIds( toSet( view.curators().getValue(), PersonShortView::getId ));
         employeeRegistration.setCompanyId(view.company().getValue() == null ? null : view.company().getValue().getId());
         employeeRegistration.setDepartmentId(view.department().getValue() == null ? null : view.department().getValue().getId());
@@ -210,13 +230,13 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         view.resourceComment().setValue(null);
         view.operatingSystem().setValue(null);
         view.additionalSoft().setValue(null);
+        view.ide().setValue(false);
         view.employmentDate().setValue(new Date());
         view.headOfDepartment().setValue(null);
         view.department().setValue(null);
         view.equipmentList().setValue(new HashSet<>());
-        HashSet<En_PhoneOfficeType> phoneOfficeTypes = new HashSet<>();
-        phoneOfficeTypes.add(En_PhoneOfficeType.OFFICE);
-        view.phoneOfficeTypeList().setValue(phoneOfficeTypes);
+        view.phoneOfficeTypeList().setValue(new HashSet<>());
+        setPhoneEquipmentEnabled(false);
         HashSet<En_InternalResource> resources = new HashSet<>();
         resources.add(En_InternalResource.EMAIL);
         view.resourcesList().setValue(resources);
@@ -241,6 +261,28 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         view.saveEnabled().setEnabled(true);
     }
 
+    private void setPhoneEquipmentEnabled(boolean isEnabled) {
+        view.setEquipmentOptionEnabled(En_EmployeeEquipment.TELEPHONE, isEnabled);
+        view.setPhoneOptionEnabled(En_PhoneOfficeType.INTERNATIONAL, isEnabled);
+        view.setPhoneOptionEnabled(En_PhoneOfficeType.LONG_DISTANCE, isEnabled);
+        view.setPhoneOptionEnabled(En_PhoneOfficeType.OFFICE, isEnabled);
+    }
+
+    public String createAdditionalSoft(String additionalSoft, Boolean needIDE) {
+        if (!needIDE){
+            return additionalSoft;
+        }
+        if (StringUtils.isBlank(additionalSoft)) {
+            return ADDITIONAL_SOFT_IDE;
+        }
+        return ADDITIONAL_SOFT_IDE + ", " + additionalSoft;
+    }
+
+    private boolean isSelectProteiOrProteiST(EntityOption value) {
+        if (value == null) return false;
+        return MAIN_HOME_COMPANY_NAME.equals(value.getDisplayText()) || PROTEI_ST_HOME_COMPANY_NAME.equals(value.getDisplayText());
+    }
+
     @Inject
     private Lang lang;
     @Inject
@@ -252,5 +294,6 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
     @Inject
     private EmployeeDepartmentModel departmentModel;
 
+    public static final String ADDITIONAL_SOFT_IDE = "IDE";
     private AppEvents.InitDetails initDetails;
 }

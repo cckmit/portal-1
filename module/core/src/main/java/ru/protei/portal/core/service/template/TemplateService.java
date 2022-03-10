@@ -25,7 +25,7 @@ public interface TemplateService {
 
     PreparedTemplate getCrmEmailNotificationSubject( AssembledCaseEvent event, Person currentPerson );
 
-    PreparedTemplate getEmployeeRegistrationEmailNotificationBody(AssembledEmployeeRegistrationEvent event, String urlTemplate, Collection<String> recipients);
+    PreparedTemplate getEmployeeRegistrationEmailNotificationBody(AssembledEmployeeRegistrationEvent event, String urlTemplate, List<CaseComment> comments, Collection<String> recipients);
 
     PreparedTemplate getEmployeeRegistrationEmailNotificationSubject( EmployeeRegistration employeeRegistration);
 
@@ -100,7 +100,7 @@ public interface TemplateService {
 
     PreparedTemplate getAbsenceNotificationSubject(Person initiator, PersonAbsence absence);
 
-    PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action, Collection<String> recipients);
+    PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action, Collection<String> recipients, EnumLangUtil enumLangUtil);
 
     PreparedTemplate getAbsenceReportSubject(String title);
 

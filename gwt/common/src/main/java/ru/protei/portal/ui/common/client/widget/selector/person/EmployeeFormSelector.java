@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.selector.SelectorItem;
 import ru.protei.portal.ui.common.client.selector.popup.item.PopupSelectorItem;
 import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
+import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
 
 /**
  * Селектор сотрудников домашней компании
@@ -22,7 +23,7 @@ public class EmployeeFormSelector extends FormPopupSingleSelector<PersonShortVie
     @Override
     protected SelectorItem makeSelectorItem( PersonShortView value, String elementHtml ) {
         PopupSelectorItem item = new PopupSelectorItem();
-        item.setName(elementHtml);
+        item.setName(sanitizeHtml(elementHtml));
         if(value!=null){
             item.setIcon( value.isFired() ? "not-active" : "" );
             item.setIcon( value.isFired() ? "fa fa-ban ban" : "" );

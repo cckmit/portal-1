@@ -5,14 +5,18 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
-import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardTableActivity;
-import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardTableView;
+import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardIssueTableActivity;
+import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardIssueTableView;
+import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardProjectTableActivity;
+import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardProjectTableView;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dto.CaseFilterDto;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.UserDashboard;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -22,9 +26,11 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
+import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.service.UserLoginControllerAsync;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -70,11 +76,19 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     }
 
     @Event
-    public void onTableCreateClicked(ActionBarEvents.Clicked event) {
-        if (!UiConstants.ActionBarIdentity.DASHBOARD_CREATE_TABLE.equals(event.identity)) {
+    public void onIssueTableCreateClicked(ActionBarEvents.Clicked event) {
+        if (!UiConstants.ActionBarIdentity.DASHBOARD_CREATE_ISSUE_TABLE.equals(event.identity)) {
             return;
         }
-        fireEvent(new DashboardEvents.EditTable());
+        fireEvent(new DashboardEvents.EditIssueTable());
+    }
+
+    @Event
+    public void onProjectTableCreateClicked(ActionBarEvents.Clicked event) {
+        if (!UiConstants.ActionBarIdentity.DASHBOARD_CREATE_PROJECT_TABLE.equals(event.identity)) {
+            return;
+        }
+        fireEvent(new DashboardEvents.EditProjectTable());
     }
 
     private void showView() {
@@ -88,7 +102,8 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_CREATE)) {
             fireEvent(new ActionBarEvents.Add(lang.issueCreate(), null, UiConstants.ActionBarIdentity.DASHBOARD_CREATE_ISSUE));
         }
-        fireEvent(new ActionBarEvents.Add(lang.dashboardAddTable(), null, UiConstants.ActionBarIdentity.DASHBOARD_CREATE_TABLE));
+        fireEvent(new ActionBarEvents.Add(lang.dashboardAddIssueTable(), null, UiConstants.ActionBarIdentity.DASHBOARD_CREATE_ISSUE_TABLE));
+        fireEvent(new ActionBarEvents.Add(lang.dashboardAddProjectTable(),null,  UiConstants.ActionBarIdentity.DASHBOARD_CREATE_PROJECT_TABLE));
     }
 
     private void showLoader() {
@@ -159,15 +174,25 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
         for (int i = 0; i < dashboardList.size(); i++) {
             UserDashboard dashboard = dashboardList.get(i);
-            if (dashboard.getCaseFilter() == null || dashboard.getCaseFilter().getParams() == null) {
-                continue;
-            }
-            CaseQuery caseQuery = dashboard.getCaseQuery();
-            String name = dashboard.getName();
-            AbstractDashboardTableView table = createIssueTable(dashboard, i, name, dashboard.getCaseFilterDto());
+            createDashboardElement(dashboard, i);
+        }
+    }
+
+    private void createDashboardElement(UserDashboard dashboard, int order ) {
+        String name = dashboard.getName();
+        if (dashboard.getCaseFilterDto() != null) {
+            CaseQuery caseQuery = dashboard.getCaseFilterDto().getQuery();
+            AbstractDashboardIssueTableView table = createIssueTable(dashboard, order, name, dashboard.getCaseFilterDto());
             dragAndDropElementsHandler.addDraggableElement(dashboard.getId(), table);
             view.addTableToContainer(table.asWidget());
-            loadTable(table, new CaseQuery(caseQuery));
+            loadIssueTable(table, new CaseQuery(caseQuery));
+        }
+        if (dashboard.getProjectFilterDto() != null) {
+            ProjectQuery projectQuery = dashboard.getProjectFilterDto().getQuery();
+            AbstractDashboardProjectTableView table = createProjectTable(dashboard, order, name, dashboard.getProjectFilterDto());
+            dragAndDropElementsHandler.addDraggableElement(dashboard.getId(), table);
+            view.addTableToContainer(table.asWidget());
+            loadProjectTable(table, projectQuery);
         }
     }
 
@@ -181,13 +206,13 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         );
     }
 
-    private AbstractDashboardTableView createIssueTable(UserDashboard dashboard, int order, String name, CaseFilterDto<CaseQuery> caseFilterDto) {
-        AbstractDashboardTableView table = tableProvider.get();
+    private AbstractDashboardIssueTableView createIssueTable(UserDashboard dashboard, int order, String name, CaseFilterDto<CaseQuery> caseFilterDto) {
+        AbstractDashboardIssueTableView table = issueTableProvider.get();
         table.setEnsureDebugId(DebugIds.DASHBOARD.TABLE + order);
         table.setName(name);
         table.setCollapsed(dashboard.getCollapsed() == null ? false : dashboard.getCollapsed());
         table.setChangeSelectionIfSelectedPredicate(caseShortView -> view.isQuickviewShow());
-        table.setActivity(new AbstractDashboardTableActivity() {
+        table.setActivity(new AbstractDashboardIssueTableActivity() {
             @Override
             public void onItemClicked(CaseShortView value) {
                 if (value != null) {
@@ -200,7 +225,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             }
             @Override
             public void onEditClicked() {
-                fireEvent(new DashboardEvents.EditTable(dashboard));
+                fireEvent(new DashboardEvents.EditIssueTable(dashboard));
             }
             @Override
             public void onRemoveClicked() {
@@ -213,13 +238,13 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             }
             @Override
             public void onReloadClicked() {
-                loadTable(table, caseFilterDto.getQuery());
+                loadIssueTable(table, caseFilterDto.getQuery());
             }
         });
         return table;
     }
 
-    private void loadTable(AbstractDashboardTableView table, CaseQuery query) {
+    private void loadIssueTable(AbstractDashboardIssueTableView table, CaseQuery query) {
         table.showLoader(true);
         table.clearRecords();
         table.hideTableOverflow();
@@ -241,6 +266,76 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
                         table.showTableOverflow(TABLE_LIMIT);
                     }
                 }));
+    }
+
+    private AbstractDashboardProjectTableView createProjectTable(UserDashboard dashboard, int order, String name, CaseFilterDto<ProjectQuery> projectFilterDto) {
+        AbstractDashboardProjectTableView table = projectTableProvider.get();
+        table.setEnsureDebugId(DebugIds.DASHBOARD.TABLE + order);
+        table.setName(name);
+        table.setCollapsed(dashboard.getCollapsed() == null ? false : dashboard.getCollapsed());
+        table.setChangeSelectionIfSelectedPredicate(project -> view.isQuickviewShow());
+        table.setActivity(new AbstractDashboardProjectTableActivity() {
+            @Override
+            public void onItemClicked(Project project) {
+                if (project != null) {
+                    showProjectPreview(project.getId());
+                }
+            }
+
+            @Override
+            public void onOpenClicked() {
+                fireEvent(new ProjectEvents.Show(projectFilterDto));
+            }
+
+            @Override
+            public void onEditClicked() {
+                fireEvent(new DashboardEvents.EditProjectTable(dashboard));
+            }
+
+            @Override
+            public void onRemoveClicked() {
+                removeTable(dashboard);
+            }
+
+            @Override
+            public void onCollapseClicked(boolean isCollapsed) {
+                dashboard.setCollapsed(isCollapsed);
+                userLoginController.saveUserDashboard(dashboard, new FluentCallback<Long>());
+            }
+
+            @Override
+            public void onReloadClicked() {
+                loadProjectTable(table, projectFilterDto.getQuery());
+            }
+        });
+        return table;
+    }
+
+    private void loadProjectTable(AbstractDashboardProjectTableView table, ProjectQuery query) {
+        table.showLoader(true);
+        table.clearRecords();
+        table.hideTableOverflow();
+        query.setOffset(0);
+        query.setLimit(TABLE_LIMIT);
+        projectController.getProjects(query, new RequestCallback<SearchResult<Project>>() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                table.showLoader(false);
+                table.setTotalRecords(0);
+                table.hideTableOverflow();
+            }
+
+            @Override
+            public void onSuccess( SearchResult<Project> sr ) {
+                table.showLoader(false);
+                table.setTotalRecords(sr.getTotalCount());
+                table.putRecords(sr.getResults());
+                if (sr.getTotalCount() > TABLE_LIMIT) {
+                    table.showTableOverflow(TABLE_LIMIT);
+                }
+            }
+        } );
     }
 
     private void removeTable(UserDashboard dashboard) {
@@ -265,6 +360,12 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         view.showQuickview(true);
     }
 
+    private void showProjectPreview(Long projectNumber) {
+        view.showQuickview(false);
+        fireEvent(new ProjectEvents.ShowPreview(view.quickview(), projectNumber));
+        view.showQuickview(true);
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -274,9 +375,13 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     @Inject
     IssueControllerAsync issueController;
     @Inject
+    RegionControllerAsync projectController;
+    @Inject
     AbstractDashboardView view;
     @Inject
-    Provider<AbstractDashboardTableView> tableProvider;
+    Provider<AbstractDashboardIssueTableView> issueTableProvider;
+    @Inject
+    Provider<AbstractDashboardProjectTableView> projectTableProvider;
     @Inject
     PolicyService policyService;
     @Inject

@@ -12,19 +12,6 @@
 <@set name="_absenceDateRange" value="${absenceDateRange}"/>
 <@set name="_absenceReason" value="${absenceReason}"/>
 <@set name="_absenceComment" value="${absenceComment}"/>
-<@set name="_absenceReasonValue1" value="${absenceReasonValue1}"/>
-<@set name="_absenceReasonValue2" value="${absenceReasonValue2}"/>
-<@set name="_absenceReasonValue3" value="${absenceReasonValue3}"/>
-<@set name="_absenceReasonValue4" value="${absenceReasonValue4}"/>
-<@set name="_absenceReasonValue5" value="${absenceReasonValue5}"/>
-<@set name="_absenceReasonValue6" value="${absenceReasonValue6}"/>
-<@set name="_absenceReasonValue7" value="${absenceReasonValue7}"/>
-<@set name="_absenceReasonValue8" value="${absenceReasonValue8}"/>
-<@set name="_absenceReasonValue9" value="${absenceReasonValue9}"/>
-<@set name="_absenceReasonValue10" value="${absenceReasonValue10}"/>
-<@set name="_absenceReasonValue11" value="${absenceReasonValue11}"/>
-<@set name="_absenceReasonValue12" value="${absenceReasonValue12}"/>
-
 
 <#noparse>
     <#macro changeTo old, new>
@@ -58,7 +45,7 @@
                         <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                             <#if multiAddAbsenceList??>
                                 <#list multiAddAbsenceList as absence>
-                                    ${(absence.getFromTime())!'?'} - ${(absence.getTillTime())!'?'} <br>
+                                    ${absence.getFromTime()?string("dd.MM.yyyy HH:mm")} - ${absence.getTillTime()?string("dd.MM.yyyy HH:mm")} <br>
                                 </#list>
                             <#else>
                                 <#if fromTimeChanged>
@@ -77,19 +64,7 @@
                     <tr>
                         <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">${_absenceReason}</td>
                         <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                            <#if     reason == 1>${_absenceReasonValue1}
-                            <#elseif reason == 2>${_absenceReasonValue2}
-                            <#elseif reason == 3>${_absenceReasonValue3}
-                            <#elseif reason == 4>${_absenceReasonValue4}
-                            <#elseif reason == 5>${_absenceReasonValue5}
-                            <#elseif reason == 6>${_absenceReasonValue6}
-                            <#elseif reason == 7>${_absenceReasonValue7}
-                            <#elseif reason == 8>${_absenceReasonValue8}
-                            <#elseif reason == 9>${_absenceReasonValue9}
-                            <#elseif reason == 10>${_absenceReasonValue10}
-                            <#elseif reason == 11>${_absenceReasonValue11}
-                            <#elseif reason == 12>${_absenceReasonValue12}
-                            <#else>${reason}</#if>
+                            ${EnumLangUtil.absenceReasonLang(reason, lang)}
                         </td>
                     </tr>
                     <tr>

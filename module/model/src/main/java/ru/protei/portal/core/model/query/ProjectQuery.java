@@ -54,13 +54,16 @@ public class ProjectQuery extends BaseQuery implements HasFilterQueryIds {
 
     private boolean isActive;
 
+    private Long idSearch;
+
     public ProjectQuery() {
         sortField = En_SortField.case_name;
         sortDir = En_SortDir.ASC;
     }
 
-    public ProjectQuery( String searchString, En_SortField sortField, En_SortDir sortDir ) {
+    public ProjectQuery(String searchString, Long id, En_SortField sortField, En_SortDir sortDir ) {
         super(searchString, sortField, sortDir);
+        this.idSearch = id;
     }
 
     public List<Long> getCaseIds() {
@@ -222,6 +225,14 @@ public class ProjectQuery extends BaseQuery implements HasFilterQueryIds {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public Long getIdSearch() {
+        return idSearch;
+    }
+
+    public void setIdSearch(Long idSearch) {
+        this.idSearch = idSearch;
     }
 
     @Override

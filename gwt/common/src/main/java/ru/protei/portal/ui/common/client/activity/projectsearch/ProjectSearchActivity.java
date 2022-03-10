@@ -7,11 +7,12 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
@@ -40,12 +41,20 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
         view.clearProjectList();
         view.setVisibleProducts(event.showProducts);
         view.setVisibleManagers(event.showManagers);
+        view.setSeparateFormView(event.separateFormView);
     }
 
     @Override
     public void onSearchClicked() {
+        view.clearProjectList();
+        String validationMessage = geValidationMessage();
+        if (StringUtils.isNotEmpty(validationMessage)) {
+            fireEvent(new NotifyEvents.Show(validationMessage, NotifyEvents.NotifyType.ERROR));
+            return;
+        }
         requestProjects();
     }
+
 
     @Override
     public void onResetClicked() {
@@ -60,6 +69,14 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
         }
     }
 
+
+    private String geValidationMessage() {
+        if (!view.idValidator().isValid()) {
+            return lang.errorSetCorrectProjectId();
+        }
+        return null;
+    }
+
     private void requestProjects() {
         ProjectQuery query = makeQuery();
         view.clearProjectList();
@@ -71,7 +88,7 @@ public abstract class ProjectSearchActivity implements Activity, AbstractProject
     }
 
     private ProjectQuery makeQuery() {
-        ProjectQuery query = new ProjectQuery(view.name().getValue(), En_SortField.project_creation_date, En_SortDir.DESC);
+        ProjectQuery query = new ProjectQuery(view.name().getValue(), view.id().getValue(), En_SortField.project_creation_date, En_SortDir.DESC);
         DateInterval createdInterval = view.dateCreatedRange().getValue();
         if (createdInterval != null) {
             query.setCreatedFrom(createdInterval.from);

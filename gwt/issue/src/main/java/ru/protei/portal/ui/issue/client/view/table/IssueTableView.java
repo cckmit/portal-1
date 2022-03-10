@@ -5,6 +5,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
@@ -18,6 +19,7 @@ import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.columns.FavoritesClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.loading.IndeterminateCircleLoading;
 import ru.protei.portal.ui.common.client.widget.separator.Separator;
 import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableActivity;
 import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableView;
@@ -139,6 +141,11 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
         columnProvider.setChangeSelectionIfSelectedPredicate(changeSelectionIfSelectedPredicate);
     }
 
+    @Override
+    public HasVisibility loadingVisibility() {
+        return loading;
+    }
+
     private void initTable () {
         attachClickColumn = new AttachClickColumn<CaseShortView>(lang) {};
         attachClickColumn.setDisplayPredicate(caseShortView -> policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW) || caseShortView.isPublicAttachmentsExist());
@@ -173,6 +180,8 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     Lang lang;
     @UiField
     HTMLPanel pagerContainer;
+    @UiField
+    IndeterminateCircleLoading loading;
 
     @Inject
     PolicyService policyService;

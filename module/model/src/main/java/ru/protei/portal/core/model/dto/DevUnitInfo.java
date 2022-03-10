@@ -16,13 +16,9 @@ public class DevUnitInfo extends AuditableObject {
 
     private String description;
 
-    private String wikiLink;
+    private String internalDocLink;
 
-    private String configuration;
-
-    private String cdrDescription;
-
-    private String historyVersion;
+    private String externalDocLink;
 
     private Long commonManagerId;
 
@@ -38,30 +34,6 @@ public class DevUnitInfo extends AuditableObject {
 
     public void setId( Long id ) {
         this.id = id;
-    }
-
-    public String getCdrDescription() {
-        return cdrDescription;
-    }
-
-    public void setCdrDescription( String cdrDescription ) {
-        this.cdrDescription = cdrDescription;
-    }
-
-    public String getHistoryVersion() {
-        return historyVersion;
-    }
-
-    public void setHistoryVersion( String historyVersion ) {
-        this.historyVersion = historyVersion;
-    }
-
-    public String getConfiguration() {
-        return configuration;
-    }
-
-    public void setConfiguration( String configuration ) {
-        this.configuration = configuration;
     }
 
     public String getDescription() {
@@ -101,12 +73,20 @@ public class DevUnitInfo extends AuditableObject {
         this.name = name;
     }
 
-    public String getWikiLink() {
-        return wikiLink;
+    public String getInternalDocLink() {
+        return internalDocLink;
     }
 
-    public void setWikiLink(String wikiLink) {
-        this.wikiLink = wikiLink;
+    public void setInternalDocLink(String internalDocLink) {
+        this.internalDocLink = internalDocLink;
+    }
+
+    public String getExternalDocLink() {
+        return externalDocLink;
+    }
+
+    public void setExternalDocLink(String externalDocLink) {
+        this.externalDocLink = externalDocLink;
     }
 
     public Long getCommonManagerId() {
@@ -124,13 +104,11 @@ public class DevUnitInfo extends AuditableObject {
 
         DevUnitInfo info = new DevUnitInfo();
         info.setId( devUnit.getId() );
-        info.setConfiguration( devUnit.getConfiguration() );
-        info.setCdrDescription( devUnit.getCdrDescription() );
-        info.setHistoryVersion( devUnit.getHistoryVersion() );
         info.setDescription( devUnit.getInfo() );
         info.setName( devUnit.getName() );
         info.setType( devUnit.getType() );
-        info.setWikiLink( devUnit.getWikiLink() );
+        info.setInternalDocLink( devUnit.getInternalDocLink() );
+        info.setExternalDocLink( devUnit.getExternalDocLink() );
         info.setCommonManagerId( devUnit.getCommonManagerId() );
         return info;
     }
@@ -145,10 +123,8 @@ public class DevUnitInfo extends AuditableObject {
         devUnit.setName(info.getName());
         devUnit.setInfo(info.getDescription());
         devUnit.setType( info.getType() );
-        devUnit.setCdrDescription(info.getCdrDescription());
-        devUnit.setConfiguration(info.getConfiguration());
-        devUnit.setHistoryVersion(info.getHistoryVersion());
-        devUnit.setWikiLink(info.getWikiLink());
+        devUnit.setInternalDocLink(info.getInternalDocLink());
+        devUnit.setExternalDocLink(info.getExternalDocLink());
         devUnit.setCommonManagerId(info.getCommonManagerId());
 
         return devUnit;
@@ -174,9 +150,6 @@ public class DevUnitInfo extends AuditableObject {
         return "Product{" +
                 "id=" + id +
                 ", description='" + description + '\'' +
-                ", cdrDescription='" + cdrDescription + '\'' +
-                ", historyVersion='" + historyVersion + '\'' +
-                ", configuration='" + configuration + '\'' +
                 '}';
     }
 }

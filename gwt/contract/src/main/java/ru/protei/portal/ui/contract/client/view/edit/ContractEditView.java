@@ -2,6 +2,7 @@ package ru.protei.portal.ui.contract.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -15,12 +16,12 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.test.client.DebugIds;
@@ -44,9 +45,7 @@ import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditVie
 import ru.protei.portal.ui.contract.client.widget.contractor.ContractorWidget;
 import ru.protei.portal.ui.contract.client.widget.contractspecification.list.ContractSpecificationList;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
@@ -60,7 +59,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         dateValidDays.getElement().setAttribute("placeholder", lang.days());
         dateValidDays.setValidationFunction(value -> value == null || value >= 0);
         costWithCurrency.setVatOptions(listOf(Vat20, Vat0, NoVat));
-        initCuratorSelector();
         ensureDebugIds();
     }
 
@@ -95,7 +93,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<En_ContractState> state() {
+    public HasValue<CaseState> state() {
         return state;
     }
 
@@ -112,6 +110,16 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Override
     public HasValue<Date> dateSigning() {
         return dateSigning;
+    }
+
+    @Override
+    public HasValue<Date> dateEndWarranty() {
+        return dateEndWarranty;
+    }
+
+    @Override
+    public HasValue<Date> dateExecution() {
+        return dateExecution;
     }
 
     @Override
@@ -303,9 +311,10 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         }
     }
 
-    private void initCuratorSelector() {
+    @Override
+    public void initCuratorsSelector(List<String> contractCuratorsDepartmentsIds) {
         EmployeeQuery query = new EmployeeQuery(null, false, true, En_SortField.person_full_name, En_SortDir.ASC);
-        query.setDepartmentIds(new HashSet<>(Collections.singletonList(CrmConstants.Department.CONTRACT)));
+        query.setDepartmentIds(contractCuratorsDepartmentsIds);
         curator.setEmployeeQuery(query);
     }
 
@@ -400,7 +409,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @UiField(provided = true)
     ProjectWidget projectWidget;
     @UiField
-    SpanElement directions;
+    DivElement directions;
     @UiField
     SpanElement projectManager;
     @Inject
@@ -440,6 +449,12 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     Button addDate;
     @UiField
     TextBox deliveryNumber;
+    @Inject
+    @UiField(provided = true)
+    SinglePicker dateEndWarranty;
+    @Inject
+    @UiField(provided = true)
+    SinglePicker dateExecution;
 
     private AbstractContractEditActivity activity;
 

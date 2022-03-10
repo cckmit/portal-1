@@ -22,10 +22,7 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
-import ru.protei.portal.core.model.struct.AuditableObject;
-import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
-import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
-import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -94,6 +91,8 @@ public class PortalApiController {
     private DocumentService documentService;
     @Autowired
     private ProjectService projectService;
+    @Autowired
+    private CaseElapsedTimeApiService caseElapsedTimeApiService;
     @Autowired
     PortalConfig config;
 
@@ -240,18 +239,6 @@ public class PortalApiController {
                 .flatMap(authToken -> productService.createProductByInfo(authToken, product))
                 .ifError(devUnitResult -> log.warn("createProduct(): Can't create product={}. {}", product, devUnitResult))
                 .ifOk(devUnit -> log.info("createProduct(): OK"));
-    }
-
-    @PostMapping(value = "/products/update")
-    public Result<Long> updateProductByInfo( HttpServletRequest request, HttpServletResponse response,
-                                             @RequestBody DevUnitInfo product) {
-        log.info( "updateProductByInfo() product={} ", product);
-
-        return authenticate(request, response, authService, sidGen, log ).flatMap( authToken ->
-                productService.updateProductFromInfo( authToken, product ) )
-                .ifOk( id -> log.info( "updateProductByInfo(): OK " ) )
-                .ifError( result -> log.warn( "updateProductByInfo(): Can`t update product by info={}. {}",
-                        product, result ) );
     }
 
     @PostMapping(value = "/products/updateState/{productId}/{productState}")
@@ -747,6 +734,34 @@ public class PortalApiController {
                 .flatMap(authToken -> projectService.createProject(authToken, toProject(apiProject)))
                 .ifError(project -> log.warn("createProjectByApi(): Can't create project={}. {}", project, project))
                 .ifOk(result -> log.info("createProjectByApi(): OK"));
+    }
+
+    @PostMapping(value = "/case/elapsedTimes")
+    public Result<List<CaseElapsedTimeApi>> getCaseElapsedTimes(
+            @RequestBody CaseElapsedTimeApiQuery query,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+
+        log.info("API | getCaseElapsedTime(): query={}", query);
+
+        try {
+            Result<AuthToken> authTokenAPIResult = authenticate(request, response, authService, sidGen, log);
+
+            if (authTokenAPIResult.isError()) {
+                return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
+            }
+
+            AuthToken authToken = authTokenAPIResult.getData();
+
+            return caseElapsedTimeApiService.getByQuery(authToken, query);
+
+        } catch (IllegalArgumentException ex) {
+            log.error(ex.getMessage());
+            return error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
+        }
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {

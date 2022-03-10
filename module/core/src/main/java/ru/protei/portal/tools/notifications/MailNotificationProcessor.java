@@ -31,10 +31,7 @@ import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.service.CaseCommentService;
-import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.EmployeeService;
-import ru.protei.portal.core.service.ReportService;
+import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.events.CaseSubscriptionService;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TemplateService;
@@ -339,13 +336,14 @@ public class MailNotificationProcessor {
         return formNotifiers(defaultNotifiers,
                 event.getInitiator(),
                 event.getCreator(),
-                event.getManager());
+                event.getManager(),
+                event.getPreviousManager());
     }
 
     /**
      * Form case notifiers with initiator, creator and manager
      */
-    private Collection<NotificationEntry> formNotifiers(Set<NotificationEntry> allNotifiers, Person initiator, Person creator, Person manager){
+    private Collection<NotificationEntry> formNotifiers(Set<NotificationEntry> allNotifiers, Person initiator, Person creator, Person manager, Person previousManager){
 
         NotificationEntry initiatorEmail = fetchNotificationEntryFromPerson(initiator);
         if (initiatorEmail != null) {
@@ -360,6 +358,11 @@ public class MailNotificationProcessor {
         NotificationEntry managerEmail = fetchNotificationEntryFromPerson(manager);
         if (managerEmail != null) {
             allNotifiers.add(managerEmail);
+        }
+
+        NotificationEntry previousManagerEmail = fetchNotificationEntryFromPerson(previousManager);
+        if (previousManagerEmail != null) {
+            allNotifiers.add(previousManagerEmail);
         }
 
         return allNotifiers;
@@ -432,15 +435,24 @@ public class MailNotificationProcessor {
         EmployeeRegistration employeeRegistration = event.getNewState();
 
         Set<NotificationEntry> notifiers = subscriptionService.subscribers(event);
+        List<NotificationEntry> additionalNotifiers = event.getRegistrationSubscribers();
+        notifiers.addAll(additionalNotifiers);
         if (CollectionUtils.isEmpty(notifiers)) {
             return;
+        }
+
+        List<CaseComment> caseComments = Collections.emptyList();
+        if (event.hasComments()){
+            List<ReplaceLoginWithUsernameInfo<CaseComment>> commentReplacementInfoList = caseCommentService.replaceLoginWithUsername(event.getAllComments()).getData();
+            notifiers.addAll(collectCommentNotifiers(event, commentReplacementInfoList, true));
+            caseComments = selectPublicComments(commentReplacementInfoList.stream().map(ReplaceLoginWithUsernameInfo::getObject).collect(Collectors.toList()));
         }
 
         List<String> recipients = getNotifiersAddresses(notifiers);
 
         String urlTemplate = getEmployeeRegistrationUrl();
 
-        PreparedTemplate bodyTemplate = templateService.getEmployeeRegistrationEmailNotificationBody(event, urlTemplate, recipients);
+        PreparedTemplate bodyTemplate = templateService.getEmployeeRegistrationEmailNotificationBody(event, urlTemplate, caseComments, recipients);
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for employeeRegistrationId={}", employeeRegistration.getId());
             return;
@@ -985,6 +997,9 @@ public class MailNotificationProcessor {
     @EventListener
     public void onPersonCaseFilterEvent(PersonCaseFilterEvent event) {
         NotificationEntry notifier = fetchNotificationEntryFromPerson(event.getRecipient());
+        if (notifier == null) {
+            return;
+        }
 
         PreparedTemplate subjectTemplate = templateService.getPersonCaseFilterNotificationSubject();
         if (subjectTemplate == null) {
@@ -1025,7 +1040,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        PreparedTemplate bodyTemplate = templateService.getAbsenceNotificationBody(event, action, recipients);
+        PreparedTemplate bodyTemplate = templateService.getAbsenceNotificationBody(event, action, recipients, new EnumLangUtil(lang));
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for absence notification with id={} and action={}",
                     absence.getId(), action);
@@ -1403,7 +1418,8 @@ public class MailNotificationProcessor {
         return stream(new ArrayList<Person>() {{
             addAll(event.getNotifiers());
             add(event.getInitiator());
-        }}).map(this::fetchNotificationEntryFromPerson)
+        }}).map(this::fetchNotificationEntriesFromPerson)
+                .flatMap(Collection::stream)
                 .filter(Objects::nonNull)
                 .distinct()
                 .collect(Collectors.toList());
@@ -1503,6 +1519,18 @@ public class MailNotificationProcessor {
         return NotificationEntry.email(email, locale);
     }
 
+    private Set<NotificationEntry> fetchNotificationEntriesFromPerson(Person person) {
+        if (person == null || person.isFired() || person.isDeleted()) {
+            return Collections.emptySet();
+        }
+        String locale = person.getLocale() == null ? "ru" : person.getLocale();
+        return new PlainContactInfoFacade(person.getContactInfo())
+                .emailsStream()
+                .filter(contactItem -> contactItem.isPublicItem() || contactItem.isInternalItem())
+                .map(contactItem -> NotificationEntry.email(contactItem.value(), locale))
+                .collect(Collectors.toSet());
+    }
+
     private String getEmployeeRegistrationUrl() {
         return config.data().getMailNotificationConfig().getCrmUrlInternal() +
                 config.data().getMailNotificationConfig().getCrmEmployeeRegistrationUrl();
@@ -1598,9 +1626,7 @@ public class MailNotificationProcessor {
                 || event.isInitiatorChanged()
                 || event.isProjectChanged()
                 || event.isStateChanged()
-                || event.isContractChanged()
-                || event.isHwManagerChanged()
-                || event.isQcManagerChanged();
+                || event.isContractChanged();
     }
 
 
@@ -1622,6 +1648,14 @@ public class MailNotificationProcessor {
         }
 
         if (event.isCuratorsChanged()) {
+            return true;
+        }
+
+        if (event.isCommentsChanged()) {
+            return true;
+        }
+
+        if (event.isAttachmentChanged()) {
             return true;
         }
 

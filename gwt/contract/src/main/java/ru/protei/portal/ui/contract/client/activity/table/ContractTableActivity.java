@@ -7,9 +7,11 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -19,15 +21,19 @@ import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
@@ -47,6 +53,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
         filterView.resetFilter();
+        filterView.initCuratorsSelector(configStorage.getConfigData().contractCuratorsDepartmentsIds);
     }
 
     @Event
@@ -103,6 +110,23 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         loadTable();
     }
 
+    private void fillContractStates() {
+        caseStateService.getCaseStatesOmitPrivileges(En_CaseType.CONTRACT, new FluentCallback<List<CaseState>>()
+                .withError(errorHandler -> {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                })
+                .withSuccess(caseStates -> {
+                    filterView.states().setValue(stream(caseStates)
+                              .filter(state -> !Objects.equals(CrmConstants.State.CANCELED, state.getId()))
+                              .collect(Collectors.toSet()));
+                }));
+    }
+
+    @Override
+    public void resetContractStates() {
+        fillContractStates();
+    }
+
     @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Contract>> asyncCallback) {
         boolean isFirstChunk = offset == 0;
@@ -136,6 +160,11 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         view.scrollTo(page);
     }
 
+    @Override
+    public void onCopyClicked(Contract value) {
+        fireEvent(new ContractEvents.Edit(value.getId(), true));
+    }
+
     private void loadTable() {
         animation.closeDetails();
         view.clearRecords();
@@ -153,7 +182,8 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         query.setManagerIds(collectIds(filterView.managers().getValue()));
         query.setTypes(nullIfEmpty(listOfOrNull(filterView.types().getValue())));
         query.setCaseTagsIds(nullIfEmpty(toList(filterView.tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
-        query.setStates(nullIfEmpty(listOfOrNull(filterView.states().getValue())));
+        query.setStateIds(listOfOrNull(filterView.states().getValue().stream().map(CaseState::getId)
+                                                                     .collect(Collectors.toList())));
         ProductDirectionInfo value = filterView.direction().getValue();
         query.setDirectionId(value == null ? null : value.id);
         query.setKind(filterView.kind().getValue());
@@ -200,9 +230,13 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     @Inject
     private ContractControllerAsync contractService;
     @Inject
+    private CaseStateControllerAsync caseStateService;
+    @Inject
     private DefaultErrorHandler errorHandler;
     @Inject
     private AbstractPagerView pagerView;
+    @Inject
+    ConfigStorage configStorage;
 
     private Integer scrollTo = 0;
     private Boolean preScroll = false;

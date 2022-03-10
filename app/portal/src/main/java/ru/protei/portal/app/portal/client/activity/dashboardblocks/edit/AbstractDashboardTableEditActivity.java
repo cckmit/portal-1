@@ -4,7 +4,7 @@ import ru.protei.portal.core.model.view.FilterShortView;
 
 public interface AbstractDashboardTableEditActivity {
 
-    void onFilterChanged(FilterShortView filterShortView);
+    void   onFilterChanged(FilterShortView filterShortView);
 
     void onCreateFilterNewIssuesClicked();
 

@@ -85,6 +85,8 @@ public class JiraIntegrationServiceTest {
 
     private final String FILE_PATH_JSON = "issue.json";
     private final String FILE_PATH_UPDATED_JSON = "issue.updated.json";
+    private final String FILE_PATH_UPDATE_STATUS_OPENED_JSON = "issue.update.status1.json";
+    private final String FILE_PATH_UPDATE_STATUS_VERIFIED_JSON = "issue.update.status2.json";
     private final String FILE_PATH_EMPTY_PROJECT_JSON = "issue.empty.project.json";
     private final String FILE_PATH_EMPTY_STATUS_JSON = "issue.empty.status.json";
     private final String FILE_PATH_COMPANY_GROUP_JSON = "issue.companygroup.json";
@@ -94,6 +96,8 @@ public class JiraIntegrationServiceTest {
 
     private String jsonString;
     private String updatedJsonString;
+    private String updateStatusToOpenedJsonString;
+    private String updateStatusToVerifiedJsonString;
     private String emptyKeyJsonString;
     private String unknownStatusJsonString;
     private String companyGroupJsonString;
@@ -114,6 +118,10 @@ public class JiraIntegrationServiceTest {
         jsonString = new String(encoded, StandardCharsets.UTF_8);
         encoded = Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(FILE_PATH_UPDATED_JSON).getFile()));
         updatedJsonString = new String(encoded, StandardCharsets.UTF_8);
+        encoded = Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(FILE_PATH_UPDATE_STATUS_OPENED_JSON).getFile()));
+        updateStatusToOpenedJsonString = new String(encoded, StandardCharsets.UTF_8);
+        encoded = Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(FILE_PATH_UPDATE_STATUS_VERIFIED_JSON).getFile()));
+        updateStatusToVerifiedJsonString = new String(encoded, StandardCharsets.UTF_8);
         encoded = Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(FILE_PATH_EMPTY_PROJECT_JSON).getFile()));
         emptyKeyJsonString = new String(encoded, StandardCharsets.UTF_8);
         encoded = Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(FILE_PATH_EMPTY_STATUS_JSON).getFile()));
@@ -140,6 +148,40 @@ public class JiraIntegrationServiceTest {
 
         Issue issue = makeIssue(unknownStatusJsonString);
         Assert.assertNull("Parsed json with empty status", issue);
+    }
+
+    /**
+     * Эмулируем некорректный порядок хуков об изменении статусов Jira
+     * Проверям что статус обращения изменился в соотв-ии с датой последнего изменения на Jira
+     */
+    @Test
+    public void updateIssueStatuses() throws Exception {
+
+        Issue issue = makeIssue(jsonString, 1, 1);
+        Assert.assertNotNull("Error parsing json for create", issue);
+
+        Company company = makeCompany();
+        Person person = makePerson(company);
+
+        JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId(company.getId(), issue.getProject().getId());
+        endpoint.setPersonId(person.getId());
+
+        CompletableFuture<AssembledCaseEvent> caseEvent = jiraIntegrationService.create(endpoint, new JiraHookEventData(JiraHookEventType.ISSUE_CREATED, issue));
+        Assert.assertNotNull("Issue not created", caseEvent.get().getCaseObject().getId());
+
+        JiraHookEventData data = parseJson(updateStatusToVerifiedJsonString, 1, 1);
+        Assert.assertNotNull("Error parsing json for update status2", data);
+
+        caseEvent = jiraIntegrationService.updateOrCreate(endpoint, data);
+        CaseObject objectChangedStatus2 = caseObjectDAO.get(caseEvent.get().getCaseObjectId());
+        Assert.assertEquals("Issue not updated 2", CrmConstants.State.VERIFIED, objectChangedStatus2.getStateId());
+
+        data = parseJson(updateStatusToOpenedJsonString, 1, 1);
+        Assert.assertNotNull("Error parsing json for update status1", data);
+
+        caseEvent = jiraIntegrationService.updateOrCreate(endpoint, data);
+        CaseObject objectChangedStatus1 = caseObjectDAO.get(caseEvent.get().getCaseObjectId());
+        Assert.assertEquals("Issue updated with earlier status", CrmConstants.State.VERIFIED, objectChangedStatus1.getStateId() );
     }
 
     @Test
@@ -281,11 +323,21 @@ public class JiraIntegrationServiceTest {
     }
 
     private Issue makeIssue(String jsonString) {
-        int index = uniqueIndex.getAndIncrement();
-        return makeIssue(jsonString, index, index);
+        JiraHookEventData data = parseJson(jsonString);
+        return data == null ? null : data.getIssue();
     }
 
     private Issue makeIssue(String jsonString, Integer uniqueIndexId, Integer uniqueIndexCldId) {
+        JiraHookEventData data = parseJson(jsonString, uniqueIndexId, uniqueIndexCldId);
+        return data == null ? null : data.getIssue();
+    }
+
+    private JiraHookEventData parseJson(String jsonString) {
+        int index = uniqueIndex.getAndIncrement();
+        return parseJson(jsonString, index, index);
+    }
+
+    private JiraHookEventData parseJson(String jsonString, Integer uniqueIndexId, Integer uniqueIndexCldId) {
         if (uniqueIndexId != null) {
             jsonString = jsonString.replaceAll(JIRA_ID, JIRA_ID + uniqueIndexId);
         }
@@ -293,8 +345,7 @@ public class JiraIntegrationServiceTest {
             jsonString = jsonString.replaceAll(CLM_ID, CLM_ID + uniqueIndexCldId);
         }
         try {
-            JiraHookEventData data = JiraHookEventParser.parse(jsonString);
-            return data == null ? null : data.getIssue();
+            return JiraHookEventParser.parse(jsonString);
         } catch (JSONException e) {
             return null;
         }

@@ -3,12 +3,14 @@ package ru.protei.portal.ui.contract.client.activity.edit;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.events.ReplaceLastEvent;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.struct.Money;
@@ -18,6 +20,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
@@ -29,11 +32,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
-import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.struct.Vat.NoVat;
+import static ru.protei.portal.core.model.util.CrmConstants.State.AGREEMENT;
 import static ru.protei.portal.ui.common.client.util.DateUtils.*;
 
 public abstract class ContractEditActivity implements Activity, AbstractContractEditActivity {
@@ -41,6 +45,11 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+    }
+
+    @Event
+    public void onAuthSuccess(AuthEvents.Success event) {
+        view.initCuratorsSelector(configStorage.getConfigData().contractCuratorsDepartmentsIds);
     }
 
     @Event
@@ -60,12 +69,12 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
 
-        if(event.id == null) {
-            fillView(new Contract());
+        if (event.id == null) {
+            fillView(new Contract(), false);
             return;
         }
 
-        requestContract(event.id, this::fillView);
+        requestContract(event.id, requestedContract -> fillView(requestedContract, event.isCopy));
     }
 
     @Event
@@ -200,15 +209,15 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.setProjectManager("");
     }
 
-    private void fillView(Contract value) {
+    private void fillView(Contract value, boolean isCopy) {
         this.contract = value;
-        boolean isNew = isNew(contract);
+        boolean isNew = isCopy || isNew(contract) ;
 
         view.type().setValue(contract.getContractType());
-        if ( contract.getState() == null ) {
-            contract.setState(En_ContractState.AGREEMENT);
+        if ( contract.getStateId() == null ) {
+            contract.setStateId(AGREEMENT);
         }
-        view.state().setValue(contract.getState());
+        view.state().setValue(new CaseState(contract.getStateId(), contract.getStateName()));
         view.number().setValue(contract.getNumber());
         if ( contract.getCost() == null ) {
             contract.setCost(new Money(0L));
@@ -219,7 +228,19 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.dateSigning().setValue(contract.getDateSigning());
         view.dateValidDate().setValue(contract.getDateValid());
         view.dateValidDays().setValue(getDaysBetween(contract.getDateSigning(), contract.getDateValid()));
+
+        if (isNew && isNotEmpty(contract.getContractSpecifications())) {
+            contract.setContractSpecifications(
+                    contract.getContractSpecifications().stream()
+                            .peek(contractSpecification -> {
+                                contractSpecification.setId(null);
+                                contractSpecification.setContractId(null);
+                            })
+                            .collect(Collectors.toList())
+            );
+        }
         view.contractSpecifications().setValue(contract.getContractSpecifications());
+
         view.contractParent().setValue(createContractInfoOrNull(contract.getParentContractId(), contract.getParentContractNumber()));
         view.organization().setValue(createOptionOrNull(contract.getOrganizationId(), contract.getOrganizationName()));
         view.setOrganization(contract.getOrganizationName());
@@ -228,6 +249,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.contractSignManager().setValue(createPersonOrNull(contract.getContractSignManagerId(), contract.getContractSignManagerShortName()));
         view.setKind(getContractKind(view.contractParent().getValue()));
         view.deliveryNumber().setValue(contract.getDeliveryNumber());
+        view.dateExecution().setValue(contract.getDateExecution());
+        view.dateEndWarranty().setValue(contract.getDateEndWarranty());
 
         if (contract.getProjectId() == null) {
             view.project().setValue(null);
@@ -246,13 +269,24 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         }
         if (contract.getContractDates() == null) {
             contract.setContractDates(new ArrayList<>());
+        } else if (isNew) {
+            contract.setContractDates(
+                    stream(contract.getContractDates()).peek(contractDate -> {
+                        contractDate.setId(null);
+                        contractDate.setContractId(null);
+                    }).collect(Collectors.toList())
+            );
         }
         fireEvent(new ContractDateEvents.ShowTable(view.getContractDateTableContainer(), contract.getContractDates()));
+
+        if (isCopy) {
+            contract.setId(null);
+        }
     }
 
     private Contract fillDto() {
         contract.setContractType(view.type().getValue());
-        contract.setState(view.state().getValue());
+        contract.setStateId(view.state().getValue().getId());
         contract.setNumber(view.number().getValue());
         contract.setCost(view.cost().getValue().getMoney());
         contract.setCurrency(view.cost().getValue().getCurrency());
@@ -269,6 +303,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setContractor(view.contractor().getValue());
         contract.setContractSignManagerId(getPersonIdOrNull(view.contractSignManager().getValue()));
         contract.setDeliveryNumber(view.deliveryNumber().getValue());
+        contract.setDateEndWarranty(view.dateEndWarranty().getValue());
+        contract.setDateExecution(view.dateExecution().getValue());
 
         return contract;
     }
@@ -304,7 +340,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         if (contract.getStateId() == null)
             return lang.contractValidationEmptyState();
 
-        if (contract.getDateSigning() == null && !(contract.getState().equals(En_ContractState.AGREEMENT)))
+        if (contract.getDateSigning() == null && !(contract.getStateId().equals(AGREEMENT)))
             return lang.contractValidationEmptyDateSigning();
 
         if (contract.getDateSigning() != null && contract.getDateValid() != null &&
@@ -324,15 +360,19 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     }
 
     private void saveContract() {
-        boolean isNew = isNew(contract);
-        Runnable onDone = () -> {
-            fireEvent(new ContractEvents.ChangeModel());
-            fireEvent(new ProjectEvents.ChangeModel());
-            fireEvent(new ContractEvents.Show(!isNew));
+        final boolean isNew = isNew(contract);
+        Consumer<Long> onDone = id -> {
+                ContractEditActivity.this.fireEvent(new ContractEvents.ChangeModel());
+                ContractEditActivity.this.fireEvent(new ProjectEvents.ChangeModel());
+                if (!isNew) {
+                    ContractEditActivity.this.fireEvent(new ContractEvents.Show(true));
+                } else {
+                    ContractEditActivity.this.fireEvent(new ReplaceLastEvent(new ContractEvents.Edit(id)));
+                }
         };
+
         saveContract(contract,
-            throwable -> {},
-            id -> onDone.run()
+            throwable -> {}, onDone
         );
     }
 
@@ -406,6 +446,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     RegionControllerAsync regionService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    ConfigStorage configStorage;
 
     private Contract contract;
     private AbstractCaseTagListActivity tagListActivity;

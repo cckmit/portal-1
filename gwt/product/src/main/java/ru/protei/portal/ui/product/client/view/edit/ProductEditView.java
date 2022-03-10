@@ -33,7 +33,6 @@ import ru.protei.portal.ui.common.client.widget.selector.productdirection.Produc
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
-import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditActivity;
@@ -57,15 +56,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-
-        historyVersion.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
-        configuration.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
-        cdrDescription.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
         info.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
-
-        historyVersion.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged( HISTORY_VERSION, isDisplay ));
-        configuration.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged( CONFIGURATION, isDisplay ));
-        cdrDescription.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged( CDR_DESCRIPTION, isDisplay ));
         info.setDisplayPreviewHandler(isDisplay -> activity.onDisplayPreviewChanged(INFO, isDisplay));
         commonManagerModel.setIsPeople(false);
         commonManager.setAsyncPersonModel( commonManagerModel );
@@ -150,21 +141,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
-    public void setHistoryVersionPreviewAllowing( boolean isPreviewAllowed ) {
-        historyVersion.setDisplayPreview( isPreviewAllowed );
-    }
-
-    @Override
-    public void setConfigurationPreviewAllowing( boolean isPreviewAllowed ) {
-        configuration.setDisplayPreview( isPreviewAllowed );
-    }
-
-    @Override
-    public void setCdrDescriptionPreviewAllowed( boolean isPreviewAllowed ) {
-       cdrDescription.setDisplayPreview( isPreviewAllowed );
-    }
-
-    @Override
     public void setInfoPreviewAllowed(boolean isPreviewAllowed) {
         info.setDisplayPreview(isPreviewAllowed);
     }
@@ -183,23 +159,13 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
-    public HasValue<String> wikiLink() {
-        return wikiLink;
+    public HasValue<String> internalDocLink() {
+        return internalDocLink;
     }
 
     @Override
-    public HasValue<String> historyVersion() {
-        return historyVersion;
-    }
-
-    @Override
-    public HasValue<String> configuration() {
-        return configuration;
-    }
-
-    @Override
-    public HasValue<String> cdrDescription() {
-        return cdrDescription;
+    public HasValue<String> externalDocLink() {
+        return externalDocLink;
     }
 
     @Override
@@ -329,20 +295,14 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     private void ensureDebugIds() {
         name.ensureDebugId(DebugIds.PRODUCT.NAME);
         info.ensureDebugId(DebugIds.PRODUCT.DESCRIPTION);
-        wikiLink.ensureDebugId(DebugIds.PRODUCT.WIKI_LINK);
+        internalDocLink.ensureDebugId(DebugIds.PRODUCT.INTERNAL_DOC_LINK);
+        externalDocLink.ensureDebugId(DebugIds.PRODUCT.EXTERNAL_DOC_LINK);
         
         children.ensureDebugId(DebugIds.PRODUCT.INCLUDES);
         parents.ensureDebugId(DebugIds.PRODUCT.PRODUCTS);
         aliases.ensureDebugId(DebugIds.PRODUCT.ALIASES);
 
         commonManager.ensureDebugId(DebugIds.PRODUCT.COMMON_MANAGER);
-
-        tabWidget.setTabNameDebugId(lang.productHistoryVersion(), DebugIds.PRODUCT.TAB.HISTORY_VERSION);
-        historyVersion.getElement().setId(DebugIds.PRODUCT.HISTORY_VERSION);
-        tabWidget.setTabNameDebugId(lang.productConfiguration(), DebugIds.PRODUCT.TAB.CONFIGURATION);
-        configuration.getElement().setId(DebugIds.PRODUCT.CONFIGURATION);
-        tabWidget.setTabNameDebugId(lang.productCDRDescription(), DebugIds.PRODUCT.TAB.CDR_DESCRIPTION);
-        cdrDescription.getElement().setId(DebugIds.PRODUCT.CDR_DESCRIPTION);
 
         productDirection.ensureDebugId(DebugIds.PRODUCT.DIRECTION);
         productMultiDirections.ensureDebugId(DebugIds.PRODUCT.DIRECTIONS);
@@ -395,15 +355,9 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @UiField( provided = true )
     SubscriptionList subscriptions;
     @UiField
-    TabWidget tabWidget;
+    TextBox internalDocLink;
     @UiField
-    MarkdownAreaWithPreview historyVersion;
-    @UiField
-    MarkdownAreaWithPreview configuration;
-    @UiField
-    MarkdownAreaWithPreview cdrDescription;
-    @UiField
-    TextBox wikiLink;
+    TextBox externalDocLink;
     @Inject
     @UiField(provided = true)
     StringSelectInput aliases;

@@ -1,0 +1,22 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel ui:field="root" styleName="form-group form-group-default rfid-label-widget">
+        <label class="fade">
+            <ui:text from="{lang.RFIDLabels}"/>
+        </label>
+        <g:TextBox ui:field="rfidLabelEpc" styleName="form-control"/>
+        <label class="fade">
+            <ui:text from="{lang.RFIDLabelsDevice}"/>
+            <g:Label ui:field="rfidLabelDevice"/>
+            <g:Label ui:field="rfidLabelDeviceName"/>
+        </label>
+        <label class="fade">
+            <ui:text from="{lang.RFIDLabelsLastScanDate}"/>
+            <g:Label ui:field="rfidLabelLastScanDate"/>
+        </label>
+    </g:HTMLPanel>
+</ui:UiBinder>

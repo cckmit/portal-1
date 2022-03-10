@@ -1,0 +1,21 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-new-member-roles" author="butusov">
+        <insert tableName="case_member_role">
+            <column name="UROLE_CODE" value="automatic_mounting"/>
+            <column name="UROLE_INFO" value="автоматический монтаж"/>
+        </insert>
+        <insert tableName="case_member_role">
+            <column name="UROLE_CODE" value="manual_mounting"/>
+            <column name="UROLE_INFO" value="ручной монтаж"/>
+        </insert>
+        <insert tableName="case_member_role">
+            <column name="UROLE_CODE" value="output_control"/>
+            <column name="UROLE_INFO" value="выходной контроль"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

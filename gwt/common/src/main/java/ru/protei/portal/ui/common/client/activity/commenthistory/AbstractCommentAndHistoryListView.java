@@ -69,4 +69,6 @@ public interface AbstractCommentAndHistoryListView extends IsWidget {
     HasValue<En_CaseCommentPrivacyType> privacyType();
 
     void restyleFirstVisibleItemContainer();
+
+    void setJiraWorkflowWarningVisible(boolean isVisible);
 }

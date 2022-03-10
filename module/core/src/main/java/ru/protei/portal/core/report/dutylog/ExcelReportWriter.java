@@ -73,7 +73,7 @@ public class ExcelReportWriter implements
     }
 
     @Override
-    public String[] getColumnNames() {
+    public String[] getLangColumnNames() {
         return new String[] { "dl_from_time", "dl_till_time", "dl_duty",  "dl_type"};
     }
 

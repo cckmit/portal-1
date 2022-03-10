@@ -4,33 +4,52 @@
              xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
-             xmlns:projectlist='urn:import:ru.protei.portal.ui.common.client.widget.projectlist.list'>
+             xmlns:projectlist='urn:import:ru.protei.portal.ui.common.client.widget.projectlist.list'
+             xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="card-body">
-        <div class="row">
-            <div class="form-group col-md-4 resize-md-12 resize-lg-6">
-                <label ui:field="nameLabel"><ui:text from="{lang.projectName}"/></label>
-                <g:TextBox ui:field="name" styleName="form-control"/>
+    <g:HTMLPanel styleName="m-t-20">
+        <div class="form-group-attached" ui:field="searchForm">
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group form-group-default">
+                        <label class="fade"><ui:text from="{lang.projectNumber}"/></label>
+                        <validatefield:ValidableLongBox ui:field="id" styleName="form-control"/>
+                    </div>
+                </div>
+                <div class="col-8">
+                    <div class="form-group form-group-default">
+                        <label class="fade" ui:field="nameLabel"><ui:text from="{lang.projectName}"/></label>
+                        <g:TextBox ui:field="name" styleName="form-control"/>
+                    </div>
+                </div>
             </div>
-            <div class="form-group col-md-4 resize-md-12 resize-lg-6">
-                <label ui:field="dateCreatedRangeLabel"><ui:text from="{lang.created}"/></label>
-                <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
+            <div class="row">
+                <cutomertype:CustomerFormSelector ui:field="customerType" header="{lang.projectCustomerType}" styleName="col-6"/>
+                <div class="col-6">
+                    <div class="form-group form-group-default date-picker">
+                        <label class="fade" ui:field="dateCreatedRangeLabel"><ui:text from="{lang.created}"/></label>
+                        <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
+                    </div>
+                </div>
             </div>
-            <div class="form-group col-md-4 resize-md-12 resize-lg-6">
-                <label ui:field="customerTypeLabel"><ui:text from="{lang.projectCustomerType}"/></label>
-                <cutomertype:CustomerTypeSelector ui:field="customerType"/>
-            </div>
-            <g:HTMLPanel ui:field="productsContainer" addStyleNames="form-group col-md-12">
+        </div>
+
+        <div class="row p-t-10">
+            <g:HTMLPanel ui:field="productsContainer" addStyleNames="form-group col-12">
                 <label ui:field="productsLabel"><ui:text from="{lang.projectProducts}"/></label>
                 <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false"/>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="managersContainer" addStyleNames="form-group col-md-12">
+        </div>
+
+        <div class="row p-t-10">
+            <g:HTMLPanel ui:field="managersContainer" addStyleNames="form-group col-12">
                 <label ui:field="managersLabel"><ui:text from="{lang.projectManagers}"/></label>
                 <person:EmployeeMultiSelector ui:field="managers"/>
             </g:HTMLPanel>
         </div>
+
         <div class="text-right p-t-10">
             <small ui:field="searchInfo" class="hide p-r-10 v-a-b hint-text">Показаны первые 100 записей</small>
             <g:Anchor href='#' ui:field="search" styleName="btn btn-complete" text="{lang.buttonSearch}"/>

@@ -16,10 +16,11 @@ import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
-import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
+import ru.protei.portal.core.model.util.MarkupUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
+import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
@@ -38,6 +39,7 @@ import ru.protei.portal.ui.issue.client.view.edit.IssueNameDescriptionEditWidget
 import java.util.*;
 import java.util.logging.Logger;
 
+import static ru.protei.portal.core.model.dict.En_ExtAppType.*;
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
@@ -70,6 +72,12 @@ public abstract class IssueEditActivity implements
 
                 issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
                 issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
+
+                attachmentController.addCaseAttachmentHistory(issue.getId(), attachment.getId(), attachment.getFileName(), new FluentCallback<Long>()
+                        .withSuccess(r -> {
+                            fireEvent(new CommentAndHistoryEvents.Reload());
+                        })
+                );
 
                 fireIssueChanged(issue.getId());
             }
@@ -215,6 +223,9 @@ public abstract class IssueEditActivity implements
             if (isTerminalState(event.meta.getStateId())) {
                 fireEvent(new CommentAndHistoryEvents.DisableNewComment());
             }
+            if (JIRA.equals(forCode(event.meta.getExtAppType()))) {
+                fireEvent(new CommentAndHistoryEvents.ShowJiraWorkflowWarning(CrmConstants.State.OPENED == event.meta.getStateId()));
+            }
         }
         boolean isCreatingSubtaskAllowed = isCreatingSubtaskAllowed(
                 event.meta.getStateId(),
@@ -255,13 +266,13 @@ public abstract class IssueEditActivity implements
     @Override
     public void selectedTabsChanged(List<En_CommentOrHistoryType> selectedTabs) {
         saveCommentAndHistorySelectedTabs(localStorageService, selectedTabs);
-        fireEvent(new CommentAndHistoryEvents.ShowItems(selectedTabs));
+        fireEvent(new CommentAndHistoryEvents.ShowItems(commentAndHistoryView, selectedTabs));
     }
 
     @Override
     public void removeAttachment(Attachment attachment) {
         if (isReadOnly()) return;
-        attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Long>()
+        attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, issue.getId(), attachment.getId(), new FluentCallback<Long>()
                 .withError(getRemoveErrorHandler(this, lang))
                 .withSuccess(result -> {
                     issueInfoWidget.attachmentsListContainer().remove(attachment);
@@ -291,7 +302,7 @@ public abstract class IssueEditActivity implements
         issueInfoWidget.descriptionReadOnlyVisibility().setVisible(false);
         view.getInfoContainer().add(issueInfoWidget);
 
-        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
+        En_TextMarkup textMarkup = MarkupUtils.recognizeTextMarkup(issue);
         issueNameDescriptionEditWidget.setIssueIdNameDescription(
                 new CaseNameAndDescriptionChangeRequest(issue.getId(), issue.getName(), issue.getInfo(), issue.getAttachments()), textMarkup);
     }
@@ -303,6 +314,7 @@ public abstract class IssueEditActivity implements
         issueInfoWidget.descriptionReadOnlyVisibility().setVisible(true);
         fillView(issue);
         fireEvent(new IssueEvents.ChangeIssue(issue.getId()));
+        fireEvent(new CommentAndHistoryEvents.Reload());
     }
 
     @Override
@@ -434,21 +446,25 @@ public abstract class IssueEditActivity implements
     }
 
     private void showCommentsAndHistories(CaseObject issue) {
-        CommentAndHistoryEvents.Show showCommentsAndHistoriesEvent = new CommentAndHistoryEvents.Show( issueInfoWidget.getCommentAndHistoryListContainer(),
+        issueInfoWidget.getCommentAndHistoryListContainer().clear();
+        issueInfoWidget.getCommentAndHistoryListContainer().add(commentAndHistoryView.asWidget());
+        CommentAndHistoryEvents.Show showCommentsAndHistoriesEvent = new CommentAndHistoryEvents.Show(commentAndHistoryView,
                 issue.getId(), En_CaseType.CRM_SUPPORT, hasAccess() && !isReadOnly(), issue.getCreatorId() );
         showCommentsAndHistoriesEvent.isElapsedTimeEnabled = policyService.hasPrivilegeFor( En_Privilege.ISSUE_WORK_TIME_VIEW );
         showCommentsAndHistoriesEvent.isPrivateVisible = !issue.isPrivateCase() && policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW );
         showCommentsAndHistoriesEvent.isPrivateCase = issue.isPrivateCase();
         showCommentsAndHistoriesEvent.isNewCommentEnabled = !isTerminalState(issue.getStateId());
-        showCommentsAndHistoriesEvent.textMarkup =  CaseTextMarkupUtil.recognizeTextMarkup( issue );
+        showCommentsAndHistoriesEvent.textMarkup =  MarkupUtils.recognizeTextMarkup( issue );
         showCommentsAndHistoriesEvent.initiatorCompanyId = issue.getInitiatorCompany().getId();
         showCommentsAndHistoriesEvent.isMentionEnabled = policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
         showCommentsAndHistoriesEvent.extendedPrivacyType =  selectExtendedPrivacyType( issue );
+        showCommentsAndHistoriesEvent.isJiraWorkflowWarningVisible = isJiraOpenedCase(issue);
+        showCommentsAndHistoriesEvent.isEditAndDeleteEnabled = !isJiraOrRedmineSync(issue);
         fireEvent( showCommentsAndHistoriesEvent );
     }
 
     private boolean selectExtendedPrivacyType(CaseObject issue) {
-        return En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) &&
+        return JIRA.getCode().equals(issue.getExtAppType()) &&
                 !issue.getName().startsWith(NO_EXTENDED_PRIVACY_PROJECT);
     }
 
@@ -461,7 +477,7 @@ public abstract class IssueEditActivity implements
     }
 
     private CaseObjectMetaJira makeMetaJira( CaseObject issue ) {
-        if (!En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType())) return null;
+        if (!JIRA.getCode().equals(issue.getExtAppType())) return null;
         return new CaseObjectMetaJira(issue);
     }
 
@@ -489,7 +505,7 @@ public abstract class IssueEditActivity implements
         view.setIntegration(makeIntegrationName(issue));
 
         view.setCaseNumber( issue.getCaseNumber() );
-        issueInfoWidget.setDescription(issue.getInfo(), CaseTextMarkupUtil.recognizeTextMarkup(issue));
+        issueInfoWidget.setDescription(issue.getInfo(), MarkupUtils.recognizeTextMarkup(issue));
 
         issueInfoWidget.setPrivateCase(issue.isPrivateCase());
 
@@ -527,7 +543,7 @@ public abstract class IssueEditActivity implements
 
         if (issueName == null) return "";
 
-        jiraUrl = En_ExtAppType.JIRA.getCode().equals( extAppType ) ? jiraUrl : "";
+        jiraUrl = JIRA.getCode().equals( extAppType ) ? jiraUrl : "";
         if (StringUtils.isEmpty(jiraUrl) || stream(jiraProjects).noneMatch(issueName::startsWith)) {
             return SimpleHtmlSanitizer.sanitizeHtml(issueName).asString();
         } else {
@@ -570,7 +586,20 @@ public abstract class IssueEditActivity implements
     }
 
     private En_TextMarkup isJiraMarkupCase(CaseObject issue) {
-        return En_ExtAppType.JIRA.getCode().equals(issue.getExtAppType()) ? En_TextMarkup.JIRA_WIKI_MARKUP : En_TextMarkup.MARKDOWN;
+        return JIRA.getCode().equals(issue.getExtAppType()) ? En_TextMarkup.JIRA_WIKI_MARKUP : En_TextMarkup.MARKDOWN;
+    }
+
+    private boolean isJiraOpenedCase(CaseObject issue) {
+        if (issue.getStateId() != CrmConstants.State.OPENED) {
+            return false;
+        }
+
+        return JIRA.equals(forCode(issue.getExtAppType()));
+    }
+
+    private boolean isJiraOrRedmineSync(CaseObject issue) {
+        return JIRA.equals(forCode(issue.getExtAppType())) ||
+               REDMINE.equals(forCode(issue.getExtAppType()));
     }
 
     private void copyToClipboardNotify(Boolean success) {
@@ -582,7 +611,7 @@ public abstract class IssueEditActivity implements
     }
 
     private String makeIntegrationName(CaseObject issue) {
-        En_ExtAppType extAppType = En_ExtAppType.forCode(issue.getExtAppType());
+        En_ExtAppType extAppType = forCode(issue.getExtAppType());
         if (extAppType == null) {
             return null;
         }
@@ -597,7 +626,7 @@ public abstract class IssueEditActivity implements
         return policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_EDIT) &&
                 !isTerminalState(stateId) && CrmConstants.State.CREATED != stateId &&
                 !isAutoOpenIssue &&
-                En_ExtAppType.forCode(extAppType) == null;
+                forCode(extAppType) == null;
     }
 
     @Inject
@@ -619,7 +648,8 @@ public abstract class IssueEditActivity implements
     IssueNameDescriptionEditWidget issueNameDescriptionEditWidget;
     @Inject
     IssueInfoWidget issueInfoWidget;
-
+    @Inject
+    private AbstractCommentAndHistoryListView commentAndHistoryView;
     @ContextAware
     CaseObject issue;
 

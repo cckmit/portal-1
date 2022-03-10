@@ -222,7 +222,7 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
   }
 
   .calendar-container .grid {
-    overflow: hidden;
+    overflow: auto;
   }
 
   .calendar-container .event-container {
@@ -332,4 +332,121 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
   border-radius: 3px;
   font-size: 13px;
   background-color: $bg_light_grey;
+}
+
+.kit-info {
+  .form-group.form-group-default {
+    height: 100%;
+    width: 100%;
+    margin-bottom: 0;
+  }
+}
+
+//KIT popup menu
+.kit-menu-list {
+  margin: 0;
+  padding: 4px 0 4px 0;
+  max-height: 60vh;
+  overflow: auto;
+  z-index: 1000;
+  box-sizing: border-box;
+  background: #fff;
+  box-shadow: 0 1px 3px 0 rgba(136, 153, 178, 0.68);
+  -webkit-box-shadow: 0 1px 3px 0 rgba(136, 153, 178, 0.68);
+  border: 1px solid #ced2d7;
+
+  .kit-menu-item {
+    text-align: center;
+    line-height: 22px;
+    display: flex;
+    cursor: pointer;
+    white-space: nowrap;
+    padding-left: 0;
+    border-radius: 4px;
+
+    .kit-menu-item-info{
+
+      display: flex;
+      padding-bottom: 5px;
+      padding-top: 5px;
+      padding-left: 3px;
+
+      &:hover {
+        background-color: $bg_light_gray;
+      }
+    }
+
+    a {
+      width: 100%;
+
+      .kit-text {
+        float: left;
+        -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-negative: 1;
+        flex-shrink: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: left;
+        line-height: 21px;
+        padding-left: 3px;
+
+        &.module-text {
+          font-size: 0.9em;
+        }
+      }
+
+      .kit-icon {
+        float: left;
+        min-width: 16px;
+        margin: 3px 2px 2px 3px;
+        height: 16px;
+        width: 16px;
+        line-height: 16px;
+        border-radius: 2px;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 0.8em;
+        font-weight: bold;
+
+        &.module-icon {
+          font-size: 0.7em;
+          margin-top: 2px;
+        }
+      }
+
+      .state-submenu-list {
+        padding: 5px 0 0;
+
+        .state-submenu-item {
+          text-align: center;
+          line-height: 22px;
+          display: flex;
+          cursor: pointer;
+          font-size: 0.9em;
+          white-space: nowrap;
+          padding-left: 0;
+          border-radius: 4px;
+
+          .kit-icon {
+            margin-top: 2px;
+          }
+
+          &:hover {
+            background-color: $bg_light_gray;
+          }
+
+          a {
+            width: 100%;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            padding-left: 30px;
+            margin-bottom: 4px;
+          }
+        }
+      }
+    }
+  }
 }

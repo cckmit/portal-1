@@ -359,7 +359,7 @@ public class ProductServiceImpl implements ProductService {
         );
     }
 
-    private void saveParents(DevUnit product) {
+    private void  saveParents(DevUnit product) {
         devUnitChildRefDAO.removeParents(product.getId());
 
         if (CollectionUtils.isEmpty(product.getParents())) {
@@ -432,11 +432,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private DevUnit updateFields( DevUnit devUnit, DevUnitInfo product ) {
-        if (product.getConfiguration() != null) devUnit.setConfiguration( product.getConfiguration() );
-        if (product.getCdrDescription() != null) devUnit.setCdrDescription( product.getCdrDescription() );
-        if (product.getHistoryVersion() != null) devUnit.setHistoryVersion( product.getHistoryVersion() );
         if (product.getDescription() != null) devUnit.setInfo( product.getDescription() );
-        if (product.getWikiLink() != null) devUnit.setWikiLink( product.getWikiLink() );
+        if (product.getInternalDocLink() != null) devUnit.setInternalDocLink( product.getInternalDocLink() );
+        if (product.getExternalDocLink() != null) devUnit.setExternalDocLink( product.getExternalDocLink() );
         if (product.getName() != null) devUnit.setName( product.getName() );
         if (product.getCommonManagerId() != null) devUnit.setCommonManagerId( product.getCommonManagerId() );
         return devUnit;

@@ -27,10 +27,7 @@ import ru.protei.portal.ui.common.client.service.UserLoginControllerAsync;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -44,7 +41,9 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
     }
 
     @Event
-    public void onShow(DashboardEvents.EditTable event) {
+    public void onEditIssueTable(DashboardEvents.EditIssueTable event) {
+        view.showIssueFilter();
+        view.hideProjectFilter();
 
         dashboard = event.dashboard;
         boolean isNew = dashboard == null || dashboard.getId() == null;
@@ -52,15 +51,36 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
             dashboard = new UserDashboard();
         }
 
+        view.issueFilter().setValue(dashboard.getCaseFilter() == null ? null : dashboard.getCaseFilter().toShortView(), true);
         view.name().setValue(dashboard.getName());
-        view.filter().setValue(dashboard.getCaseFilter() == null ? null : dashboard.getCaseFilter().toShortView(), true);
-        view.updateFilterSelector();
+        view.updateIssueFilterSelector();
 
+        dialogView.getBodyContainer().add(view.asWidget());
         dialogView.saveButtonVisibility().setVisible(true);
         dialogView.setHeader(isNew ? lang.dashboardTableCreate() : lang.dashboardTableEdit());
         dialogView.showPopup();
 
         loadFilters(this::autoHideExistingFiltersFromCreation);
+    }
+
+    @Event
+    public void onEditProjectTable(DashboardEvents.EditProjectTable event) {
+        view.showProjectFilter();
+        view.hideIssueFilter();
+
+        dashboard = event.dashboard;
+        boolean isNew = dashboard == null || dashboard.getId() == null;
+        if (isNew) {
+            dashboard = new UserDashboard();
+        }
+
+        view.projectFilter().setValue(dashboard.getProjectFilter() == null ? null : dashboard.getProjectFilter().toShortView(), true);
+        view.name().setValue(dashboard.getName());
+
+        dialogView.getBodyContainer().add(view.asWidget());
+        dialogView.saveButtonVisibility().setVisible(true);
+        dialogView.setHeader(isNew ? lang.dashboardTableCreate() : lang.dashboardTableEdit());
+        dialogView.showPopup();
     }
 
     @Override
@@ -69,8 +89,12 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
             return;
         }
 
+        FilterShortView issueFilter = view.issueFilter().getValue();
+        FilterShortView projectFilter = view.projectFilter().getValue();
+
         dashboard.setName(view.name().getValue());
-        dashboard.setCaseFilterId(view.filter().getValue().getId());
+        dashboard.setCaseFilterId(issueFilter != null ? issueFilter.getId() : null);
+        dashboard.setProjectFilterId(projectFilter != null ? projectFilter.getId() : null);
 
         userLoginController.saveUserDashboard(dashboard, new FluentCallback<Long>()
                 .withSuccess(id -> {
@@ -131,14 +155,17 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
     private void createNewFilter(CaseFilterDto<CaseQuery> caseFilterDto) {
         filterController.saveIssueFilter(caseFilterDto, new FluentCallback<CaseFilterDto<CaseQuery>>()
                 .withSuccess(result -> {
-                    view.updateFilterSelector();
-                    view.filter().setValue(result.getCaseFilter().toShortView(), true);
+                    view.updateIssueFilterSelector();
+                    view.issueFilter().setValue(result.getCaseFilter().toShortView(), true);
                     loadFilters(this::autoHideExistingFiltersFromCreation);
                 }));
     }
 
     private boolean validate() {
-        if (view.filter().getValue() == null || view.filter().getValue().getId() == null) {
+        FilterShortView issueFilter = view.issueFilter().getValue();
+        FilterShortView projectFilter = view.projectFilter().getValue();
+
+        if (issueFilter == null && projectFilter == null) {
             fireEvent(new NotifyEvents.Show(lang.errDashboardChooseFilter(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
@@ -168,7 +195,7 @@ public abstract class DashboardTableEditActivity implements Activity, AbstractDa
     private CaseQuery generateQueryNewIssues() {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
         query.setStateIds(CaseStateUtils.getNewStateIds());
-        query.setManagerIds(Collections.singletonList(CrmConstants.Employee.UNDEFINED));
+        query.setManagerIds(Arrays.asList(CrmConstants.Employee.UNDEFINED, CrmConstants.Employee.GROUP_MANAGER));
         if (policyService.getProfile() != null) {
             query.setManagerCompanyIds(new ArrayList<>(Collections.singletonList(policyService.getUserCompany().getId())));
         }

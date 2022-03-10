@@ -48,10 +48,19 @@ import ru.protei.portal.ui.common.client.activity.projectsearch.AbstractProjectS
 import ru.protei.portal.ui.common.client.activity.projectsearch.ProjectSearchActivity;
 import ru.protei.portal.ui.common.client.activity.workerposition.edit.AbstractWorkerPositionEditView;
 import ru.protei.portal.ui.common.client.activity.workerposition.edit.WorkerPositionEditActivity;
+import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYoutrackWorkFilterActivity;
+import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYoutrackWorkFilterView;
+import ru.protei.portal.ui.common.client.activity.ytwork.YoutrackWorkFilterActivity;
+import ru.protei.portal.ui.common.client.activity.ytwork.dialog.AbstractYoutrackWorkDictionaryDialogView;
+import ru.protei.portal.ui.common.client.activity.ytwork.table.AbstractYoutrackWorkDictionaryTableActivity;
+import ru.protei.portal.ui.common.client.activity.ytwork.table.AbstractYoutrackWorkDictionaryTableView;
+import ru.protei.portal.ui.common.client.activity.ytwork.table.YoutrackWorkDictionaryTableActivity;
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.service.HomeCompanyService;
+import ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.view.casecomment.list.CommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.view.caselink.item.CaseLinkItemView;
@@ -73,11 +82,13 @@ import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
 import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
 import ru.protei.portal.ui.common.client.view.projectsearch.ProjectSearchView;
 import ru.protei.portal.ui.common.client.view.workerposition.edit.WorkerPositionEditView;
+import ru.protei.portal.ui.common.client.view.ytwork.YoutrackWorkFilterView;
+import ru.protei.portal.ui.common.client.view.ytwork.dialog.YoutrackWorkDictionaryView;
+import ru.protei.portal.ui.common.client.view.ytwork.table.YoutrackDictionaryTableView;
 import ru.protei.portal.ui.common.client.widget.employeeregstate.EmployeeRegistrationStateModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateOptionsModel;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateSelectorModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
-import ru.protei.portal.ui.common.client.widget.selector.contract.ContractModel;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionModel;
@@ -96,6 +107,9 @@ public class CommonClientModule extends AbstractGinModule {
 
     @Override
     protected void configure() {
+
+        requestStaticInjection(LinkUtils.class);
+        requestStaticInjection(CommentOrHistoryUtils.class);
 
         bind( ExternalLinkActivity.class ).asEagerSingleton();
 
@@ -184,7 +198,13 @@ public class CommonClientModule extends AbstractGinModule {
         bind( ProjectSearchActivity.class ).asEagerSingleton();
         bind(AbstractProjectSearchView.class ).to( ProjectSearchView.class ).in( Singleton.class );
 
-        bind(ContractModel.class).asEagerSingleton();
+        bind(AbstractYoutrackWorkFilterActivity.class).to(YoutrackWorkFilterActivity.class);
+        bind(AbstractYoutrackWorkFilterView.class).to(YoutrackWorkFilterView.class);
+
+        bind(AbstractYoutrackWorkDictionaryTableActivity.class).to(YoutrackWorkDictionaryTableActivity.class);
+        bind(AbstractYoutrackWorkDictionaryTableView.class).to(YoutrackDictionaryTableView.class);
+
+        bind(AbstractYoutrackWorkDictionaryDialogView.class).to(YoutrackWorkDictionaryView.class);
     }
 }
 

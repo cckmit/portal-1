@@ -36,12 +36,6 @@ public class DeliveryStateFormSelector extends FormPopupSingleSelector<CaseState
         return deliveryStateLang.getStateName(state);
     }
 
-    public void setDefaultValue(String value) {
-        this.defaultValue = value;
-    }
-
     @Inject
     DeliveryStateLang deliveryStateLang;
-
-    private String defaultValue;
 }

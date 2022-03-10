@@ -13,8 +13,12 @@ import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
 import ru.protei.portal.core.client.enterprise1c.api.Api1C;
 import ru.protei.portal.core.client.enterprise1c.api.Api1CImpl;
+import ru.protei.portal.core.client.enterprise1c.api.Api1CWork;
+import ru.protei.portal.core.client.enterprise1c.api.Api1CWorkImpl;
 import ru.protei.portal.core.client.enterprise1c.http.HttpClient1C;
 import ru.protei.portal.core.client.enterprise1c.http.HttpClient1CImpl;
+import ru.protei.portal.core.client.enterprise1c.http.HttpClient1CWork;
+import ru.protei.portal.core.client.enterprise1c.http.HttpClient1CWorkImpl;
 import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1C;
 import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1CImpl;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
@@ -45,6 +49,8 @@ import ru.protei.portal.core.report.nightwork.ReportNightWork;
 import ru.protei.portal.core.report.nightwork.ReportNightWorkImpl;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.report.projects.ReportProjectImpl;
+import ru.protei.portal.core.report.ytwork.ReportYoutrackWork;
+import ru.protei.portal.core.report.ytwork.ReportYoutrackWorkImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
@@ -75,8 +81,6 @@ import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
-import ru.protei.portal.core.service.UitsService;
-import ru.protei.portal.core.service.UitsServiceImpl;
 
 import java.util.concurrent.Executor;
 
@@ -132,6 +136,11 @@ public class ServiceTestsConfiguration {
     @Bean
     public YoutrackService getYoutrackService() {
         return new YoutrackServiceImpl();
+    }
+
+    @Bean
+    public YoutrackWorkDictionaryService getYoutrackWorkDictionaryService() {
+        return new YoutrackWorkDictionaryServiceImpl();
     }
 
     @Bean
@@ -249,6 +258,11 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
+    public EventEmployeeRegistrationAssemblerService getEventEmployeeRegistrationAssemblerService() {
+        return new EventEmployeeRegistrationAssemblerServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
         return new AssemblerServiceStub();
     }
@@ -256,6 +270,11 @@ public class ServiceTestsConfiguration {
     @Bean
     public AssemblerProjectService getAssemblerProjectService() {
         return new AssemblerProjectServiceStub();
+    }
+
+    @Bean
+    public AssemblerEmployeeRegistrationService getAssemblerEmployeeRegistrationService() {
+        return new AssemblerEmployeeRegistrationServiceStub();
     }
 
     @Bean
@@ -425,6 +444,11 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
+    public WorkerEntryService getWorkerEntryService() {
+        return new WorkerEntryServiceImpl();
+    }
+
+    @Bean
     public ReportCase getReportCase() {
         return new ReportCaseImpl();
     }
@@ -460,6 +484,11 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
+    public ReportYoutrackWork getReportYoutrackWork() {
+        return new ReportYoutrackWorkImpl();
+    }
+
+    @Bean
     public HTMLRenderer getHTMLRenderer() {
         return new HTMLRendererImpl();
     }
@@ -485,8 +514,18 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
+    public HttpClient1CWork getHttpClient1CWork() {
+        return new HttpClient1CWorkImpl();
+    }
+
+    @Bean
     public Api1C getApi1C() {
         return new Api1CImpl();
+    }
+
+    @Bean
+    public Api1CWork getApi1CWork() {
+        return new Api1CWorkImpl();
     }
 
     @Bean
@@ -497,6 +536,21 @@ public class ServiceTestsConfiguration {
     @Bean
     public DeliveryService getDeliveryService() {
         return new DeliveryServiceImpl();
+    }
+
+    @Bean
+    public CardService getCardService() {
+        return new CardServiceImpl();
+    }
+
+    @Bean
+    public CardBatchService getCardBatchService() {
+        return new CardBatchServiceImpl();
+    }
+
+    @Bean
+    public PcbOrderService getPcbOrderService() {
+        return new PcbOrderServiceImpl();
     }
 
     /* ASPECT/INTERCEPTORS */
@@ -514,5 +568,20 @@ public class ServiceTestsConfiguration {
     @Bean
     public NRPEProcessor getNRPERequest() {
         return new NRPEProcessor(new NRPEExecutorTest());
+    }
+
+    @Bean
+    public ModuleService getModuleService() {
+        return new ModuleServiceImpl();
+    }
+
+    @Bean
+    public RFIDLabelService getRFIDLabelService() {
+        return new RFIDLabelServiceImpl();
+    }
+
+    @Bean
+    public CaseElapsedTimeApiService getCaseElapsedTimeApiService() {
+        return new CaseElapsedTimeApiServiceImpl();
     }
 }

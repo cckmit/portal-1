@@ -48,7 +48,7 @@ public class YoutrackServiceImpl implements YoutrackService {
                 .map(ytActivityItems -> {
                     ytActivityItems.sort(Comparator.comparing(
                             ytActivityItem -> ytActivityItem.timestamp,
-                            Comparator.nullsFirst(Long::compareTo)
+                            Comparator.nullsFirst(Date::compareTo)
                     ));
                     return ytActivityItems;
                 })
@@ -80,7 +80,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     public Result<String> createFireWorkerIssue(String summary, String description) {
         log.info("createFireWorkerIssue(): summary={}, description={}", summary, description);
 
-        Result<String> projectResult = getProjectIdByName(config.data().youtrack().getAdminProject());
+        Result<String> projectResult = getProjectIdByName(config.data().youtrack().getSupportProject());
 
         YtIssue issue = makeNewBasicIssue(projectResult.getData(), summary, description);
         YtIssueCustomField requestType = makeRequestTypeCustomField();
@@ -232,7 +232,13 @@ public class YoutrackServiceImpl implements YoutrackService {
         return ok(caseComment);
     }
 
-    private Result<String> getProjectIdByName (String projectName){
+    @Override
+    public Result<List<YoutrackProject>> getProjects(AuthToken token, int offset, int limit) {
+        return api.getAllProjects(offset, limit)
+                .map(company -> company.stream().map(this::convertYtProject).collect(Collectors.toList()));
+    }
+
+    private Result<String> getProjectIdByName(String projectName){
         Result<String> projectResult = api.getProjectIdByName(projectName)
                 .flatMap(projects -> {
                     if (projects.size() == 1) return ok(projects.get(0));
@@ -276,6 +282,13 @@ public class YoutrackServiceImpl implements YoutrackService {
         return issueInfo;
     }
 
+    private YoutrackProject convertYtProject(YtProject ytProject) {
+        YoutrackProject project = new YoutrackProject();
+        project.setYoutrackId(ytProject.id);
+        project.setShortName(ytProject.shortName);
+        return project;
+    }
+
     private Pair<Attachment, CaseAttachment> convertYtIssueAttachment(YtIssueAttachment issueAttachment) {
         Attachment attachment = new Attachment();
         attachment.setCreated(issueAttachment.created == null ? null : new Date(issueAttachment.created));
@@ -298,7 +311,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         YouTrackIssueStateChange issueStateChange = new YouTrackIssueStateChange();
         issueStateChange.setAddedCaseStateId(YoutrackConstansMapping.toCaseState(added != null ? added.name : null));
         issueStateChange.setRemovedCaseStateId(YoutrackConstansMapping.toCaseState(removed != null ? removed.name : null));
-        issueStateChange.setTimestamp(activityItem.timestamp);
+        issueStateChange.setTimestamp(activityItem.timestamp.getTime());
         issueStateChange.setAuthorLogin(activityItem.author != null ? activityItem.author.login : null);
         issueStateChange.setAuthorFullName(activityItem.author != null ? activityItem.author.fullName : null);
         return issueStateChange;
@@ -386,7 +399,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     private String dateToYtString(Date date) {
-        return new SimpleDateFormat("yyyy-MM-dd_hh:mm:ss").format(date);
+        return new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(date);
     }
 
     private String getIssuePriority(YtIssue issue) {

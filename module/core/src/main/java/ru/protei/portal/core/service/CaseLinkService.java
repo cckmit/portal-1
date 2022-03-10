@@ -33,7 +33,7 @@ public interface CaseLinkService {
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_REMOVE)
-    Result deleteLinks(AuthToken token, List<CaseLink> links);
+    Result deleteLinks(AuthToken token, List<CaseLink> links, En_CaseType caseType);
 
     @Privileged(requireAny = { En_Privilege.ISSUE_EDIT, En_Privilege.PROJECT_EDIT })
     @Auditable(En_AuditType.LINK_REMOVE)

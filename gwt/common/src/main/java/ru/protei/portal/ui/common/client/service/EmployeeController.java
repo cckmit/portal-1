@@ -25,7 +25,7 @@ public interface EmployeeController extends RemoteService {
      * Получение списка сотрудников
      * @return список сотрудников
      */
-    SearchResult<EmployeeShortView> getEmployees (EmployeeQuery query) throws RequestFailedException;
+    SearchResult<EmployeeShortView> getEmployees(EmployeeQuery query) throws RequestFailedException;
 
     /**
      * Получение списка сокращенного представления сотрудника
@@ -33,14 +33,6 @@ public interface EmployeeController extends RemoteService {
      * @return
      */
     List<PersonShortView> getEmployeeViewList(EmployeeQuery query) throws RequestFailedException;
-
-    SearchResult<EmployeeShortView> getEmployeesWithChangedHiddenCompanyNames(EmployeeQuery query) throws RequestFailedException;
-
-    /**
-     * Получение сотрудника
-     * @return сотрудник
-     */
-    EmployeeShortView getEmployee(Long employeeId) throws RequestFailedException;
 
     /**
      * Получение руководителя подразделения
@@ -51,11 +43,15 @@ public interface EmployeeController extends RemoteService {
 
     List<WorkerEntryShortView> getWorkerEntryList(int offset, int limit) throws RequestFailedException;
 
-    EmployeeShortView getEmployeeWithChangedHiddenCompanyNames(Long employeeId) throws RequestFailedException;
+    EmployeeShortView getEmployee(Long employeeId) throws RequestFailedException;
+
+    EmployeeShortView getEmployeeWithPrivacyInfo(Long employeeId) throws RequestFailedException;
 
     Person saveEmployee(Person person, List<WorkerEntry> workerEntries, boolean isEditablePerson, boolean needToChangeAccount) throws RequestFailedException;
 
     boolean fireEmployee(Person person) throws RequestFailedException;
 
     EmployeesBirthdays getEmployeesBirthdays(Date dateFrom, Date dateUntil) throws RequestFailedException;
+
+    String getEmployeeRestVacationDays(Long employeeId) throws RequestFailedException;
 }

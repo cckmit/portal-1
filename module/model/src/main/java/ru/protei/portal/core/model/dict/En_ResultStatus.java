@@ -31,6 +31,11 @@ public enum En_ResultStatus {
     INVALID_LOGIN_OR_PWD,
 
     /**
+     *  учетная запись заблокирована
+     */
+    ACCOUNT_IS_LOCKED,
+
+    /**
      * ошибка получения данных
      */
     GET_DATA_ERROR,
@@ -59,6 +64,11 @@ public enum En_ResultStatus {
      * действие недоступно
      */
     NOT_AVAILABLE,
+
+    /**
+     * Отменено
+     */
+    CANCELED,
 
     /**
      * объект не определен
@@ -255,6 +265,11 @@ public enum En_ResultStatus {
     REQUEST_1C_FAILED,
 
     /**
+     * Не найдено при запросе в 1С
+     */
+    REQUEST_1C_NOT_FOUND,
+
+    /**
      * Найдено пересечение с другими отсутствиями
      */
     ABSENCE_HAS_INTERSECTIONS,
@@ -359,6 +374,11 @@ public enum En_ResultStatus {
     NOT_AVAILABLE_DELIVERY_KIT_SERIAL_NUMBER,
 
     /**
+     * Модули, серийный номер занят
+     */
+    NOT_AVAILABLE_MODULE_SERIAL_NUMBER,
+
+    /**
      * Поставки, серийный номер комплекта не соответствует номеру поставки
      */
     KIT_SERIAL_NUMBER_NOT_MATCH_DELIVERY_NUMBER,
@@ -391,5 +411,21 @@ public enum En_ResultStatus {
     /**
      * Нужно заполнить время (расписание)
      */
-    SCHEDULE_NEED_FEEL_TIME_RANGES
+    SCHEDULE_NEED_FEEL_TIME_RANGES,
+
+    /**
+     * Поставки, запрещено менять проект поставки
+     */
+    DELIVERY_FORBIDDEN_CHANGE_PROJECT,
+
+    /**
+     *  Партии плат, в партии есть платы
+     */
+    CARD_BATCH_HAS_CARD,
+
+    /**
+     *  Сотрудник не синхронизируется с 1С (worker_extId == null)
+     */
+    EMPLOYEE_NOT_SYNCHRONIZING_WITH_1C
+    ;
 }

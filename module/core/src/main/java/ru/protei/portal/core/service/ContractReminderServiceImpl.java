@@ -101,7 +101,7 @@ public class ContractReminderServiceImpl implements ContractReminderService {
 
     private Set<NotificationEntry> getNotificationEntries(Set<Long> personIdList) {
         Set<NotificationEntry> notificationEntries = new HashSet<>();
-        List<Person> personList = personDAO.partialGetListByKeys(personIdList, "locale");
+        List<Person> personList = personDAO.partialGetListByKeys(personIdList, "id", "locale");
         jdbcManyRelationsHelper.fill(personList, Person.Fields.CONTACT_ITEMS);
         for (Person person : personList) {
             ContactInfo contactInfo = person.getContactInfo();

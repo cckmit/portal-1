@@ -74,6 +74,15 @@
                                         </label>
                                         <dict:GenderButtonSelector ui:field="gender" validation="false"/>
                                     </div>
+
+
+                                    <div class="form-group col-md-4">
+                                        <label ui:field="innLabel">
+                                            <ui:text from="{lang.employeeInn}"/>
+                                        </label>
+                                        <validablefield:ValidableTextBox ui:field="inn" styleName="form-control" notNull="false"/>
+                                        <g:Label ui:field="innErrorLabel" styleName="text-danger size-error" visible="false"/>
+                                    </div>
                                 </div>
 
                                 <div class="block-header">

@@ -1,0 +1,42 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel ui:field="root" tag="ul" styleName="kit-menu-list">
+        <li class="kit-menu-item">
+            <g:Anchor ui:field="copy">
+                <div class="kit-menu-item-info">
+                    <i class="kit-icon far fa-clone"/>
+                    <span class="kit-text"><ui:text from="{lang.buttonCopy}"/></span>
+                </div>
+            </g:Anchor>
+        </li>
+        <li class="kit-menu-item">
+            <g:Anchor ui:field="edit">
+                <div class="kit-menu-item-info">
+                    <i class="kit-icon fa fa-pen"/>
+                    <span class="kit-text"><ui:text from="{lang.edit}"/></span>
+                </div>
+            </g:Anchor>
+        </li>
+        <li class="kit-menu-item">
+            <g:Anchor ui:field="remove">
+                <div class="kit-menu-item-info">
+                    <i class="kit-icon fa fa-trash-alt"/>
+                    <span class="kit-text"><ui:text from="{lang.buttonRemove}"/></span>
+                </div>
+            </g:Anchor>
+        </li>
+        <li class="kit-menu-item">
+            <g:Anchor ui:field="changeState">
+                <div class="kit-menu-item-info">
+                    <i class="kit-icon far fa-circle"/>
+                    <span class="kit-text"><ui:text from="{lang.buttonState}"/></span>
+                </div>
+                <ul ui:field="statesContainer" class="state-submenu-list hide"/>
+            </g:Anchor>
+        </li>
+    </g:HTMLPanel>
+</ui:UiBinder>

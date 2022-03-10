@@ -15,6 +15,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
+
 /**
  * Селектор контактов
  */
@@ -70,7 +72,7 @@ public class PersonMultiSelector extends InputPopupMultiSelector<PersonShortView
             item.setIcon("fa fa-ban ban m-r-5");
         }
 
-        item.setElementHtml(elementHtml);
+        item.setElementHtml(sanitizeHtml(elementHtml));
         item.setSelected(isSelected(value));
         return item;
     }

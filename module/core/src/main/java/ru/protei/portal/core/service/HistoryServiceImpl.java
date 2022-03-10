@@ -48,7 +48,7 @@ public class HistoryServiceImpl implements HistoryService {
     public Result<Long> createHistory(AuthToken token, Long caseObjectId, En_HistoryAction action,
                                       En_HistoryType type, Long oldId, String oldValue, Long newId, String newValue) {
 
-        if (token == null || caseObjectId == null || type == null || action == null || (oldId == null && newId == null) || (oldValue == null && newValue == null)){
+        if (token == null || caseObjectId == null || type == null || action == null || (oldValue == null && newValue == null)){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -148,8 +148,12 @@ public class HistoryServiceImpl implements HistoryService {
 
         fillCaseStateHistoriesWithColors(typeToHistories.get(En_HistoryType.CASE_STATE));
         fillCaseStateHistoriesWithColors(typeToHistories.get(En_HistoryType.DELIVERY_STATE));
+        fillCaseStateHistoriesWithColors(typeToHistories.get(En_HistoryType.MODULE_STATE));
+        fillCaseStateHistoriesWithColors(typeToHistories.get(En_HistoryType.CARD_STATE));
         fillImportanceHistoriesWithColors(typeToHistories.get(En_HistoryType.CASE_IMPORTANCE));
         fillTagHistoriesWithColors(typeToHistories.get(En_HistoryType.TAG));
+        fillCaseStateHistoriesWithColors(typeToHistories.get(En_HistoryType.CARD_BATCH_STATE));
+        fillImportanceHistoriesWithColors(typeToHistories.get(En_HistoryType.CARD_BATCH_IMPORTANCE));
 
         return histories;
     }

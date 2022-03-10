@@ -10,21 +10,25 @@ import ru.protei.portal.app.portal.client.activity.dashboard.AbstractDashboardVi
 import ru.protei.portal.app.portal.client.activity.dashboard.DashboardActivity;
 import ru.protei.portal.app.portal.client.activity.dashboardblocks.edit.AbstractDashboardTableEditView;
 import ru.protei.portal.app.portal.client.activity.dashboardblocks.edit.DashboardTableEditActivity;
-import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardTableView;
+import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardIssueTableView;
+import ru.protei.portal.app.portal.client.activity.dashboardblocks.table.AbstractDashboardProjectTableView;
 import ru.protei.portal.app.portal.client.activity.page.DashboardPage;
 import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageView;
 import ru.protei.portal.app.portal.client.activity.profile.ProfilePageActivity;
 import ru.protei.portal.app.portal.client.activity.profile.general.AbstractProfileGeneralView;
 import ru.protei.portal.app.portal.client.activity.profile.general.ProfileGeneralActivity;
+import ru.protei.portal.app.portal.client.activity.profile.general.changepassword.AbstractChangePasswordView;
 import ru.protei.portal.app.portal.client.activity.profile.subscription.AbstractProfileSubscriptionView;
 import ru.protei.portal.app.portal.client.activity.profile.subscription.ProfileSubscriptionActivity;
 import ru.protei.portal.app.portal.client.view.app.AppView;
 import ru.protei.portal.app.portal.client.view.auth.AuthView;
 import ru.protei.portal.app.portal.client.view.dashboard.DashboardView;
 import ru.protei.portal.app.portal.client.view.dashboardblocks.edit.DashboardTableEditView;
-import ru.protei.portal.app.portal.client.view.dashboardblocks.table.DashboardTableView;
+import ru.protei.portal.app.portal.client.view.dashboardblocks.table.issue.DashboardIssueTableView;
+import ru.protei.portal.app.portal.client.view.dashboardblocks.table.project.DashboardProjectTableView;
 import ru.protei.portal.app.portal.client.view.profile.ProfilePageView;
 import ru.protei.portal.app.portal.client.view.profile.general.ProfileGeneralView;
+import ru.protei.portal.app.portal.client.view.profile.general.changepassword.ChangePasswordView;
 import ru.protei.portal.app.portal.client.view.profile.subscription.ProfileSubscriptionView;
 
 /**
@@ -43,7 +47,8 @@ public class ClientModule extends AbstractGinModule {
 
         bind(DashboardActivity.class).asEagerSingleton();
         bind(AbstractDashboardView.class).to(DashboardView.class).in(Singleton.class);
-        bind(AbstractDashboardTableView.class).to(DashboardTableView.class);
+        bind(AbstractDashboardIssueTableView.class).to(DashboardIssueTableView.class);
+        bind(AbstractDashboardProjectTableView.class).to(DashboardProjectTableView.class);
         bind(DashboardTableEditActivity.class).asEagerSingleton();
         bind(AbstractDashboardTableEditView.class).to(DashboardTableEditView.class);
 
@@ -52,6 +57,7 @@ public class ClientModule extends AbstractGinModule {
 
         bind(ProfileGeneralActivity.class).asEagerSingleton();
         bind(AbstractProfileGeneralView.class).to(ProfileGeneralView.class).in(Singleton.class);
+        bind(AbstractChangePasswordView.class).to(ChangePasswordView.class).in(Singleton.class);
 
         bind(ProfileSubscriptionActivity.class).asEagerSingleton();
         bind(AbstractProfileSubscriptionView.class).to(ProfileSubscriptionView.class).in(Singleton.class);

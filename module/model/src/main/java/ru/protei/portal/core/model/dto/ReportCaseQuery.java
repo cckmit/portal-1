@@ -33,6 +33,19 @@ public class ReportCaseQuery implements ReportDto {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReportCaseQuery that = (ReportCaseQuery) o;
+        return report.equals(that.report);
+    }
+
+    @Override
+    public int hashCode() {
+        return report.hashCode();
+    }
+
+    @Override
     public String toString() {
         return "ReportCaseQuery{" +
                 "report=" + report +

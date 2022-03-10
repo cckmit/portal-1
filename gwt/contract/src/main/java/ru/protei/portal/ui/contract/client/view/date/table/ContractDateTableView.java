@@ -7,6 +7,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasVisibility;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.TableWidget;
@@ -62,13 +63,20 @@ public class ContractDateTableView extends Composite implements AbstractContract
     }
 
     @Override
-    public HasVisibility costOverflowWarningVisibility() {
-        return costOverflowWarning;
+    public void addRow(ContractDate value) {
+        table.addRow(value);
     }
 
     @Override
-    public void addRow(ContractDate value) {
-        table.addRow(value);
+    public void showWarning(String message) {
+        warning.setVisible(true);
+        warningText.setText(message);
+    }
+
+    @Override
+    public void hideWarning() {
+        warning.setVisible(false);
+        warningText.setText(null);
     }
 
     private void initTable() {
@@ -119,7 +127,9 @@ public class ContractDateTableView extends Composite implements AbstractContract
     @UiField
     Lang lang;
     @UiField
-    HTMLPanel costOverflowWarning;
+    HTMLPanel warning;
+    @UiField
+    InlineLabel warningText;
 
     @Inject
     En_ContractDatesTypeLang datesTypeLang;

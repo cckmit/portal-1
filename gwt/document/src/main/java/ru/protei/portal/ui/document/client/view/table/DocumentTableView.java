@@ -16,7 +16,6 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
-import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableActivity;
@@ -24,6 +23,8 @@ import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableV
 
 import java.util.LinkedList;
 import java.util.List;
+
+import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
 
 public class DocumentTableView extends Composite implements AbstractDocumentTableView {
 
@@ -166,17 +167,18 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         @Override
         public void fillColumnValue(Element cell, Document value) {
             StringBuilder html = new StringBuilder();
+            String valueName = sanitizeHtml(value.getName());
 
             if (value.isDeprecatedUnit()) {
                 html
                         .append("<div class =\"document-name text-overflow-dynamic-container\">")
                         .append("<i class=\"fa fa-lock m-r-5\" id=\"" + DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT.TABLE.LOCK_ICON + "\"></i> ")
-                        .append("<span class=\"text-overflow-dynamic-ellipsis m-l-20\">" + value.getName() + "</span>")
+                        .append("<span class=\"text-overflow-dynamic-ellipsis m-l-20\">" + valueName + "</span>")
                         .append("</div>");
             } else {
                 html
                         .append( "<div class=\"document-name text-overflow-dynamic-container\">")
-                        .append("<span class=\"text-overflow-dynamic-ellipsis\">" + value.getName() + "</span>")
+                        .append("<span class=\"text-overflow-dynamic-ellipsis\">" + valueName + "</span>")
                         .append("</div>");
             }
 

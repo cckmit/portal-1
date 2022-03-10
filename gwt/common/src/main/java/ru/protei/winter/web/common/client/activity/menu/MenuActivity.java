@@ -80,8 +80,12 @@ public abstract class MenuActivity implements Activity, AbstractSectionItemActiv
         }
 
         if (identityToHasSubSections.get(identity)) {
+            boolean subSectionVisible = itemView.isSubSectionVisible();
             itemView.toggleSubSection(null);
-            return;
+            // если подменю уже открыто – событие по клику на секцию не рассылаем
+            if (subSectionVisible) {
+                return;
+            }
         }
 
         fireEvent(new MenuEvents.Clicked(identity));
@@ -106,7 +110,7 @@ public abstract class MenuActivity implements Activity, AbstractSectionItemActiv
         } else {
             AbstractSectionItemView parentView = identityToItemView.get(parent);
             parentView.getChildContainer().add(itemView.asWidget());
-            parentView.setSubMenuVisible(true);
+            parentView.setSubSectionVisible(true);
             identityToHasSubSections.put(parent, true);
         }
 

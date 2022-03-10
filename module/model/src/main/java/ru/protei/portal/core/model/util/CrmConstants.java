@@ -14,12 +14,13 @@ public class CrmConstants {
     public static final float BYTES_IN_MEGABYTE = 1024 * 1024;
 
     public static final String SOME_LINKS_NOT_SAVED = "some links not saved";
+    public static final String SOME_CARDS_NOT_UPDATED = "some cards not updated";
 
     public static final String DEFAULT_LOCALE = "ru";
 
     public static final List<String> CONFIG_EXTENSIONS = Arrays.asList(".config", ".cfg", ".properties", ".xml", ".json");
 
-    public static final List<String> PROTEI_DOMAINS = Arrays.asList("@protei.ru", "@sigurd-it.ru", "@neo-s.com");
+    public static final List<String> PROTEI_DOMAINS = Arrays.asList("@protei.ru", "@protei-lab.ru", "@pit.protei.ru", "@tl.protei.ru", "@sigurd-it.ru", "@neo-s.com");
 
     public interface Session {
         String AUTH_TOKEN = "session-auth-token";
@@ -40,6 +41,7 @@ public class CrmConstants {
 
     public interface Employee {
         Long UNDEFINED = -1L;
+        Long GROUP_MANAGER = -2L;
     }
 
     public interface Region {
@@ -96,6 +98,8 @@ public class CrmConstants {
         String RUS_PHONE_NUMBER_PATTERN = "^((\\+7|8)[0-9]{9,10}|[0-9]{6,7})$"; // [+7 или 8] + [3 код региона] + [6-7 номер] ИЛИ [6-7 номер]
         String WORK_PHONE_NUMBER_PATTERN = "^\\d*#?\\d+$";
         String DELIVERY_KIT_SERIAL_NUMBER_PATTERN = "^\\d{3}\\.\\d{3}$";
+        String CARD_BATCH_NUMBER_PATTERN = "^\\d{3}$";
+        String CARD_BATCH_ARTICLE_PATTERN = "^\\d{4}[a-zA-Z]?-\\d{2}-\\d{3}$";  // "XXXXA-XX-XXX" (X-цифра, A-буква(необязательна))
     }
 
     public interface Time {
@@ -108,6 +112,7 @@ public class CrmConstants {
     public interface ContactConstants {
         int FIRST_NAME_SIZE = 80;
         int SECOND_NAME_SIZE = 80;
+        int INN_SIZE = 12;
         int LAST_NAME_SIZE = 80;
         int SHORT_NAME_SIZE = 128;
         int LOGIN_SIZE = 64;
@@ -203,6 +208,7 @@ public class CrmConstants {
         long CANCELED = 33;
         long ACTIVE = 16;
         long TEST_LOCAL = 19;
+        long TESTING = 28;
         long INFO_REQUEST = 31;
         long NX_REQUEST = 35;
         long CUST_REQUEST = 36;
@@ -219,10 +225,8 @@ public class CrmConstants {
         long FINISHED = 32;
         long PRELIMINARY = 39;
         long COMMERCIAL_NEGOTIATIONS = 51;
-    }
-
-    public interface Department {
-        Long CONTRACT = 384L;
+        long BUILD_EQUIPMENT_IN_QUEUE = 52;
+        long AGREEMENT = 63;
     }
 
     public interface Style {
@@ -253,5 +257,9 @@ public class CrmConstants {
         String FEEDBACK_EXPECT = "2"; //Ожидание обратной связи
         String WON = "WON"; //Решено (Услуги оказаны)
         String LOSE = "LOSE"; //Отклонено (отказ)
+    }
+
+    public interface CardBatch {
+        List<Integer> CARD_BATCH_PRIORITY_IDS = Arrays.asList(1, 2, 3, 8);
     }
 }

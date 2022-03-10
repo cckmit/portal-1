@@ -1,32 +1,41 @@
 package ru.protei.portal.core.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
-
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
+import ru.protei.portal.core.model.struct.ContactItem;
+import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
-import static ru.protei.portal.api.struct.Result.error;
-import static ru.protei.portal.api.struct.Result.ok;
 
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
+
+    private static Logger log = LoggerFactory.getLogger(EmployeeRegistrationServiceImpl.class);
 
     @Autowired
     EmployeeRegistrationDAO employeeRegistrationDAO;
@@ -39,6 +48,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     @Autowired
     PersonShortViewDAO personShortDAO;
     @Autowired
+    CompanyDAO companyDAO;
+    @Autowired
     YoutrackService youtrackService;
     @Autowired
     CaseLinkDAO caseLinkDAO;
@@ -48,6 +59,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     EventPublisherService publisherService;
     @Autowired
     PortalConfig portalConfig;
+    @Autowired
+    EmployeeRegistrationReminderService employeeRegistrationReminderService;
 
     @Override
     public Result<SearchResult<EmployeeRegistration>> getEmployeeRegistrations( AuthToken token, EmployeeRegistrationQuery query) {
@@ -78,6 +91,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             return error(En_ResultStatus.NOT_CREATED);
 
         employeeRegistration.setId(id);
+        setProbationPeriodEndDate(employeeRegistration);
         Long employeeRegistrationId = employeeRegistrationDAO.persist(employeeRegistration);
 
         if (employeeRegistrationId == null)
@@ -88,15 +102,17 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
         employeeRegistration.setCurators(personShortDAO.getListByKeys(employeeRegistration.getCuratorsIds()));
 
+        List <NotificationEntry> CompanyEmployeeRegistrationSubscribers = getCompanyEmployeeRegistrationSubscribers(employeeRegistration);
+
         final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEnabled();
 
         if (YOUTRACK_INTEGRATION_ENABLED) {
-            String youTrackIssueId = createAdminYoutrackIssueIfNeeded( employeeRegistration );
+            String youTrackIssueId = createSupportYoutrackIssueIfNeeded( employeeRegistration );
             createPhoneYoutrackIssueIfNeeded(employeeRegistration, youTrackIssueId);
             createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
         }
 
-        return ok(id).publishEvent(new AssembledEmployeeRegistrationEvent(this, null, employeeRegistration));
+        return ok(id).publishEvent(new AssembledEmployeeRegistrationEvent(this, null, employeeRegistration, CompanyEmployeeRegistrationSubscribers));
     }
 
     @Override
@@ -116,14 +132,15 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         EmployeeRegistration newEmployeeRegistration = employeeRegistrationDAO.get(employeeRegistrationShortView.getId());
         newEmployeeRegistration.setCuratorsIds(employeeRegistrationShortView.getCuratorIds());
         newEmployeeRegistration.setEmploymentDate(employeeRegistrationShortView.getEmploymentDate());
+        setProbationPeriodEndDate(newEmployeeRegistration);
 
-        if (!employeeRegistrationDAO.partialMerge(newEmployeeRegistration, "employment_date", "curators")) {
+        if (!employeeRegistrationDAO.partialMerge(newEmployeeRegistration, "employment_date", "curators", "probation_period_end_date")) {
             return error(En_ResultStatus.NOT_UPDATED);
         }
 
         newEmployeeRegistration.setCurators(personShortDAO.partialGetListByKeys(newEmployeeRegistration.getCuratorsIds(), "id", "displayname"));
 
-        boolean isEmploymentDateChanged = !Objects.equals(oldEmployeeRegistration.getEmploymentDate(), newEmployeeRegistration.getEmploymentDate());
+        boolean isEmploymentDateChanged = !Objects.equals(oldEmployeeRegistration.getEmploymentDate().getTime(), newEmployeeRegistration.getEmploymentDate().getTime());
 
         final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEnabled();
 
@@ -132,6 +149,26 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         }
 
         return ok(oldEmployeeRegistration.getId()).publishEvent(new AssembledEmployeeRegistrationEvent(this, oldEmployeeRegistration, newEmployeeRegistration));
+    }
+
+    @Override
+    @Transactional
+    public Result<EmployeeRegistration> completeProbationPeriod(AuthToken token, Long employeeRegistrationId) {
+        if (employeeRegistrationId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(employeeRegistrationId);
+        employeeRegistration.setProbationPeriodEndDate(new Date());
+
+        if (!employeeRegistrationDAO.partialMerge(employeeRegistration, "probation_period_end_date")) {
+            return error(En_ResultStatus.NOT_UPDATED);
+        }
+
+        employeeRegistrationReminderService.notifyAboutEmployeeProbationPeriod(employeeRegistration);
+        employeeRegistrationReminderService.notifyEmployeeAboutDevelopmentAgenda(employeeRegistration);
+
+        return ok(employeeRegistration);
     }
 
     private void updateYouTrackEmploymentDate(Long employeeRegistrationId, Date employmentDate) {
@@ -178,7 +215,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         return caseObject;
     }
 
-    private String createAdminYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
+    private String createSupportYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
         Set<En_InternalResource> resourceList = employeeRegistration.getResourceList();
         if (isEmpty(resourceList)) {
             return null;
@@ -201,9 +238,12 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                         "\n Дополнительный комментарий: " + employeeRegistration.getComment()
         ).toString();
 
-        final String ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
+        final String USER_SUPPORT_PROJECT_NAME = portalConfig.data().youtrack().getSupportProject();
+        if (StringUtils.isEmpty(USER_SUPPORT_PROJECT_NAME)){
+            log.error("createSupportYoutrackIssueIfNeeded(): YT issue will not be created because no support project specified in configuration");
+        }
 
-        return youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description ).ifOk( issueId ->
+        return youtrackService.createIssue( USER_SUPPORT_PROJECT_NAME, summary, description ).ifOk( issueId ->
                 saveCaseLink( employeeRegistration.getId(), issueId )
         ).getData();
     }
@@ -249,6 +289,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         String summary = "Настройка офисной телефонии для сотрудника " + employeeRegistration.getEmployeeFullName();
 
         final String PHONE_PROJECT_NAME = portalConfig.data().youtrack().getPhoneProject();
+        if (StringUtils.isEmpty(PHONE_PROJECT_NAME)) {
+            log.error("createPhoneYoutrackIssueIfNeeded(): YT issue will not be created because no phone project specified in configuration");
+        }
 
         youtrackService.createIssue( PHONE_PROJECT_NAME, summary, description ).ifOk( issueId ->
                 saveCaseLink( employeeRegistration.getId(), issueId )
@@ -281,6 +324,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         ).toString();
 
         final String EQUIPMENT_PROJECT_NAME = portalConfig.data().youtrack().getEquipmentProject();
+        if (StringUtils.isEmpty(EQUIPMENT_PROJECT_NAME)) {
+            log.error("createEquipmentYoutrackIssueIfNeeded(): YT issue will not be created because no equipment project specified in configuration");
+        }
 
         youtrackService.createIssue( EQUIPMENT_PROJECT_NAME, summary, description ).ifOk( issueId ->
                 saveCaseLink( employeeRegistration.getId(), issueId )
@@ -289,8 +335,10 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
     private CharSequence makeCommonDescriptionString( EmployeeRegistration er ) {
         return join( "Анкета: ", makeYtLinkToCrmRegistration( er.getId(), er.getEmployeeFullName() ),
+                "\n", "Компания: ", er.getCompanyName(),
                 "\n", "Отдел: ", er.getDepartment(),
                 "\n", "Руководитель: ", er.getHeadOfDepartmentShortName(),
+                "\n", "Кураторы: ", join( er.getCurators(), PersonShortView::getDisplayShortName, "," ),
                 "\n", "Расположение рабочего места: ", er.getWorkplace()
         );
     }
@@ -324,6 +372,27 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         caseLink.setRemoteId(issueId);
         caseLink.setWithCrosslink(false);
         caseLinkDAO.persist(caseLink);
+    }
+
+    private void setProbationPeriodEndDate(EmployeeRegistration employeeRegistration) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(employeeRegistration.getEmploymentDate());
+        calendar.add(Calendar.MONTH, employeeRegistration.getProbationPeriodMonth());
+        Date probationPeriodEndDate = calendar.getTime();
+        employeeRegistration.setProbationPeriodEndDate(probationPeriodEndDate);
+    }
+
+    private List<NotificationEntry> getCompanyEmployeeRegistrationSubscribers(EmployeeRegistration employeeRegistration) {
+        Person head = personDAO.get(employeeRegistration.getHeadOfDepartmentId());
+        Company company = companyDAO.get(employeeRegistration.getCompanyId());
+        if (company == null) return new ArrayList<>();
+        jdbcManyRelationsHelper.fill(company, Company.Fields.CONTACT_ITEMS);
+
+        return stream(company.getContactInfo().getItems(En_ContactEmailSubscriptionType.SUBSCRIPTION_TO_EMPLOYEE_REGISTRATION))
+                .map(ContactItem::value)
+                .filter(Strings::isNotEmpty)
+                .map(email -> NotificationEntry.email(email, head == null ? CrmConstants.DEFAULT_LOCALE : head.getLocale()))
+                .collect(Collectors.toList());
     }
 
     private static String getResourceName(En_InternalResource internalResource) {

@@ -41,9 +41,15 @@
                                                                        maxRows="10"/>
                             </div>
                             <div class="form-group col-md-12">
-                                <label><ui:text from="{lang.productWikiLink}"/></label>
-                                <g:TextBox ui:field="wikiLink" styleName="form-control"/>
+                                <label><ui:text from="{lang.productInternalDocLink}"/></label>
+                                <g:TextBox ui:field="internalDocLink" styleName="form-control"/>
                             </div>
+
+                            <div class="form-group col-md-12">
+                                <label><ui:text from="{lang.productExternalDocLink}"/></label>
+                                <g:TextBox ui:field="externalDocLink" styleName="form-control"/>
+                            </div>
+
                             <div class="form-group col-md-12">
                                 <label>
                                     <ui:text from="{lang.companySubscription}"/>
@@ -83,22 +89,6 @@
                         </g:HTMLPanel>
                     </div>
                 </div>
-            </div>
-
-            <div class="container-fluid padding-15 bg-white">
-                <tab:TabWidget styleName="" ui:field="tabWidget">
-                    <tab:pane.TabWidgetPane tabName="{lang.productHistoryVersion}">
-                        <markdown:MarkdownAreaWithPreview ui:field="historyVersion"/>
-                    </tab:pane.TabWidgetPane>
-
-                    <tab:pane.TabWidgetPane tabName="{lang.productConfiguration}">
-                        <markdown:MarkdownAreaWithPreview ui:field="configuration"/>
-                    </tab:pane.TabWidgetPane>
-
-                    <tab:pane.TabWidgetPane tabName="{lang.productCDRDescription}">
-                        <markdown:MarkdownAreaWithPreview ui:field="cdrDescription"/>
-                    </tab:pane.TabWidgetPane>
-                </tab:TabWidget>
             </div>
         </div>
         <div class="card-footer">

@@ -18,8 +18,6 @@ import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
@@ -81,34 +79,20 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
         view.setName(product.getName() + (isEmpty(product.getAliases()) ? "" : " (" + joining(product.getAliases(), ", ") + ")"));
         view.setTypeImage(product.getType() == null ? null : product.getType().getImgSrc());
         view.setDirection(product.getProductDirections() == null ? "" : joining(product.getProductDirections(), ", ", DevUnit::getName));
-        view.setWikiLink(StringUtils.emptyIfNull(product.getWikiLink()));
+        view.setInternalDocLink(StringUtils.emptyIfNull(product.getInternalDocLink()));
+        view.setExternalDocLink(StringUtils.emptyIfNull(product.getExternalDocLink()));
 
         view.setParents(emptyIfNull(product.getParents()).stream().collect(Collectors.toMap(DevUnit::getName, devUnit -> LinkUtils.makePreviewLink(DevUnit.class, devUnit.getId()))));
         view.setChildren(emptyIfNull(product.getChildren()).stream().collect(Collectors.toMap(DevUnit::getName, devUnit -> LinkUtils.makePreviewLink(DevUnit.class, devUnit.getId()))));
 
         view.parentsContainerVisibility().setVisible(!En_DevUnitType.COMPLEX.equals(product.getType()));
 
-        List<String> list = new ArrayList<>();
-        list.add(product.getConfiguration());
-        list.add(product.getCdrDescription());
-        list.add(product.getHistoryVersion());
-        list.add(product.getInfo());
-        view.setConfiguration(list.get(0));
-        view.setCdrDescription(list.get(1));
-        view.setHistoryVersion(list.get(2));
-        view.setInfo(list.get(3));
-        textRenderController.render(En_TextMarkup.MARKDOWN, list, new FluentCallback<List<String>>()
+        textRenderController.render(product.getInfo(), En_TextMarkup.MARKDOWN, new FluentCallback<String>()
                 .withError(throwable -> {
-                    view.setConfiguration(list.get(0));
-                    view.setCdrDescription(list.get(1));
-                    view.setHistoryVersion(list.get(2));
-                    view.setInfo(list.get(3));
+                    view.setInfo(product.getInfo());
                 })
                 .withSuccess(converted -> {
-                    view.setConfiguration(converted.get(0));
-                    view.setCdrDescription(converted.get(1));
-                    view.setHistoryVersion(converted.get(2));
-                    view.setInfo(converted.get(3));
+                    view.setInfo(converted);
                 })
         );
     }

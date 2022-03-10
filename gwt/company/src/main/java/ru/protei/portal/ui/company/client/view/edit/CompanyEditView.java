@@ -129,6 +129,16 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
+    public HasWidgets employeeRegistrationEmailsContainer() {
+        return employeeRegistrationEmailsContainer;
+    }
+
+    @Override
+    public HasVisibility employeeRegistrationEmailsContainerVisibility() {
+        return employeeRegistrationEmailsGeneralContainer;
+    }
+
+    @Override
     public HasWidgets probationEmailsContainer() {
         return probationEmailsContainer;
     }
@@ -209,6 +219,8 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         autoOpenIssues.ensureDebugId(DebugIds.COMPANY.AUTO_OPEN_ISSUES);
         subscriptions.ensureDebugId(DebugIds.COMPANY.SUBSCRIPTIONS);
         webSite.ensureDebugId(DebugIds.COMPANY.WEB_SITE);
+        employeeRegistrationEmailsGeneralContainer.ensureDebugId(DebugIds.COMPANY.EMPLOYEE_REGISTRATION_GENERAL_EMAILS);
+        employeeRegistrationEmailsContainer.ensureDebugId(DebugIds.COMPANY.EMPLOYEE_REGISTRATION_EMAILS);
         probationEmailsGeneralContainer.ensureDebugId(DebugIds.COMPANY.PROBATION_GENERAL_EMAILS);
         probationEmailsContainer.ensureDebugId(DebugIds.COMPANY.PROBATION_EMAILS);
         phonesContainer.ensureDebugId(DebugIds.COMPANY.PHONES);
@@ -258,6 +270,12 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @UiField
     CheckBox autoOpenIssues;
+
+    @UiField
+    HTMLPanel employeeRegistrationEmailsGeneralContainer;
+
+    @UiField
+    HTMLPanel employeeRegistrationEmailsContainer;
 
     @UiField
     HTMLPanel probationEmailsGeneralContainer;

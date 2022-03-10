@@ -18,8 +18,6 @@ import ru.protei.portal.ui.common.client.selector.cache.SelectorDataCacheLoadHan
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
 import ru.protei.portal.ui.common.client.selector.pageable.SelectorItemRenderer;
 import ru.protei.portal.ui.common.client.selector.AsyncSelectorModel;
-//import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
-//import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
@@ -91,6 +89,7 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
 
     private CompanyQuery makeQuery( List<En_CompanyCategory> categories, boolean isParentIdIsNull ) {
         CompanyQuery query = new CompanyQuery();
+
         if(categories != null) {
             query.setCategoryIds(
                     categories.stream()
@@ -120,5 +119,6 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
             En_CompanyCategory.HOME);
 
     private CompanyQuery query;
+
     private SelectorDataCache<EntityOption> cache = new SelectorDataCache<>();
 }

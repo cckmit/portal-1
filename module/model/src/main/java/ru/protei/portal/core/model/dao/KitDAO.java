@@ -12,4 +12,5 @@ public interface KitDAO extends PortalBaseDAO<Kit> {
     String getLastSerialNumber(boolean isArmyProject);
     String getLastSerialNumber(Long deliveryId);
     boolean isExistAnySerialNumbers(List<String> serialNumbers);
+    List<Kit> getModulesGroupedByKit(Long deliveryId);
 }

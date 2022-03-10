@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.ReportWriter;
+import ru.protei.portal.core.utils.EnumLangUtil;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class ReportAbsenceImpl implements ReportAbsence {
 
         int limit = config.data().reportConfig().getChunkSize();
         int offset = 0;
-        try (ReportWriter<PersonAbsence> writer = new ExcelReportWriter(localizedLang)) {
+        try (ReportWriter<PersonAbsence> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang))) {
             int sheetNumber = writer.createSheet();
             writer.setSheetName(sheetNumber, localizedLang.get("ar_absences"));
 

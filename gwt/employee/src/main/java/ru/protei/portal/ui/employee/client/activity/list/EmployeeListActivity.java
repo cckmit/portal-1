@@ -86,7 +86,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         if(event.viewType != ViewType.LIST)
             return;
 
-        employeeService.getEmployeeWithChangedHiddenCompanyNames(event.id, new FluentCallback<EmployeeShortView>()
+        employeeService.getEmployee(event.id, new FluentCallback<EmployeeShortView>()
                 .withSuccess(employee -> {
 
                     AbstractEmployeeItemView itemView = modelToItemView.get(employee);
@@ -128,7 +128,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         query.setOffset( page*PAGE_SIZE );
         query.setLimit( PAGE_SIZE );
 
-        employeeService.getEmployeesWithChangedHiddenCompanyNames( query, new FluentCallback< SearchResult< EmployeeShortView > >()
+        employeeService.getEmployees( query, new FluentCallback< SearchResult< EmployeeShortView > >()
                 .withMarkedSuccess( marker, ( m, r ) -> {
                     if ( marker == m ) {
                         if ( isFirstChunk ) {

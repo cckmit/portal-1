@@ -234,3 +234,15 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
   right: 10px;
   top: 2px;
 }
+
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  .inner-content {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 991px) {
+  .inner-content {
+    margin: 0;
+  }
+}

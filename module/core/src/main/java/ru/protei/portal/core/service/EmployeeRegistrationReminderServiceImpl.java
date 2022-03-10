@@ -54,13 +54,17 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
         log.info( "notifyAboutEmployeeFeedback(): {}", toList( probationComplete, EmployeeRegistration::getId ) );
 
         for (EmployeeRegistration employeeRegistration : emptyIfNull( probationComplete )) {
-            if (employeeRegistration.getPerson() == null) continue;
-            jdbcManyRelationsHelper.fill(employeeRegistration.getPerson(), Person.Fields.CONTACT_ITEMS);
-            notifyEmployerAboutFeedback( employeeRegistration.getPerson() );
-            addCaseComment( employeeRegistration.getId(), makeEmployeeFeedbackComment( employeeRegistration.getPerson() ) );
+            Person employee = employeeRegistration.getPerson();
+            if (isFired( employee )) {
+                continue;
+            }
+
+            jdbcManyRelationsHelper.fill( employee, Person.Fields.CONTACT_ITEMS );
+            notifyEmployerAboutFeedback( employee );
+            addCaseComment( employeeRegistration.getId(), makeEmployeeFeedbackComment( employee ) );
         }
 
-        return ok(true );
+        return ok( true );
     }
 
 
@@ -70,10 +74,14 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
         log.info( "notifyAboutDevelopmentAgenda(): {}", toList( probationExpires, EmployeeRegistration::getId ) );
 
         for (EmployeeRegistration employeeRegistration : emptyIfNull( probationExpires )) {
-            if (employeeRegistration.getPerson() == null) continue;
-            jdbcManyRelationsHelper.fill(employeeRegistration.getPerson(), Person.Fields.CONTACT_ITEMS);
-            notifyEmployerAboutAgenda( employeeRegistration.getPerson() );
-            addCaseComment( employeeRegistration.getId(), makeDevelopmentAgendaComment( employeeRegistration.getPerson() ) );
+            Person employee = employeeRegistration.getPerson();
+            if (isFired( employee )) {
+                continue;
+            }
+
+            jdbcManyRelationsHelper.fill( employee, Person.Fields.CONTACT_ITEMS );
+            notifyEmployerAboutAgenda( employee );
+            addCaseComment( employeeRegistration.getId(), makeDevelopmentAgendaComment( employee ) );
         }
 
         return ok(true );
@@ -87,6 +95,10 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
         Map<Long, Person> idToPerson = collectPersonsForNotification( probationExpires );
 
         for (EmployeeRegistration employeeRegistration : emptyIfNull( probationExpires )) {
+            if (isFired(employeeRegistration.getPerson())) {
+                continue;
+            }
+
             Person headOfDepartment = idToPerson.get( employeeRegistration.getHeadOfDepartmentId() );
             String employeeFullName = employeeRegistration.getEmployeeFullName();
             Long employeeId = employeeRegistration.getId();
@@ -101,8 +113,8 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
                 message = join( message, ", ", curator.getDisplayName() );
             }
 
-            List<String> recipients = collectAdditionalRecipients(headOfDepartment);
-            notifyAdditionalRecipients(recipients, employeeFullName, employeeId);
+            List<String> recipients = collectAdditionalRecipients( employeeRegistration.getCompanyId() );
+            notifyAdditionalRecipients( recipients, employeeFullName, employeeId );
 
             for (String recipient : recipients) {
                 message = join(message, ", ", recipient);
@@ -113,6 +125,53 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
 
         return ok(true );
     }
+
+    @Override
+    public Result<Boolean> notifyAboutEmployeeProbationPeriod(EmployeeRegistration employeeRegistration) {
+        log.info( "notifyAboutProbationPeriod(): {}", employeeRegistration.getId() );
+
+        Person headOfDepartment = personDAO.get( employeeRegistration.getHeadOfDepartmentId() );
+        jdbcManyRelationsHelper.fill( headOfDepartment, Person.Fields.CONTACT_ITEMS );
+        String employeeFullName = employeeRegistration.getEmployeeFullName();
+        Long employeeId = employeeRegistration.getId();
+
+        notifyHeadOfDepartment( headOfDepartment, employeeFullName, employeeId );
+        StringBuilder message = makeProbationComment( employeeRegistration.getHeadOfDepartmentShortName() );
+
+        List<Person> personList = personDAO.partialGetListByKeys( employeeRegistration.getCuratorsIds(), "id", "displayname", "company_id" );
+        jdbcManyRelationsHelper.fill( personList, Person.Fields.CONTACT_ITEMS );
+
+        for (Person curator : emptyIfNull( personList )) {
+            notifyEmployeeCurator(curator, employeeFullName, employeeId);
+            message = join(message, ", ", curator.getDisplayName());
+        }
+
+        List<String> recipients = collectAdditionalRecipients( employeeRegistration.getCompanyId() );
+        notifyAdditionalRecipients( recipients, employeeFullName, employeeId );
+
+        for (String recipient : recipients) {
+            message = join(message, ", ", recipient);
+        }
+
+        addCaseComment( employeeRegistration.getId(), message.toString() );
+
+        return ok(true );
+    }
+
+
+    @Override
+    public Result<Boolean> notifyEmployeeAboutDevelopmentAgenda(EmployeeRegistration employeeRegistration) {
+        if (employeeRegistration.getPerson() == null) return ok(true);
+
+        Person employee = employeeRegistration.getPerson();
+        jdbcManyRelationsHelper.fill(employee, Person.Fields.CONTACT_ITEMS);
+
+        notifyEmployerAboutAgenda( employee );
+        addCaseComment( employeeRegistration.getId(), makeDevelopmentAgendaComment( employee ) );
+
+        return ok(true );
+    }
+
 
     private StringBuilder makeProbationComment( String headOfDepartmentName ) {
         return join( getLangFor( "sent_reminder_about_response" ), "\n",
@@ -166,13 +225,15 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
                 recipients, employeeFullName, employeeId ) );
     }
 
-    private List<String> collectAdditionalRecipients(Person headOfDepartment) {
-        Long companyId = headOfDepartment.getCompanyId();
+    private List<String> collectAdditionalRecipients(Long companyId) {
         Company company = companyDAO.get(companyId);
+        if (company == null) {
+            return new ArrayList<>();
+        }
         jdbcManyRelationsHelper.fill(company, Company.Fields.CONTACT_ITEMS);
 
         return stream(company.getContactInfo().getItems(En_ContactItemType.EMAIL))
-                .filter(ContactItem::isInternalItem)
+                .filter(ContactItem::isSubscribedToTheEndOfProbation)
                 .map(ContactItem::value)
                 .filter(Strings::isNotEmpty)
                 .collect(Collectors.toList());
@@ -180,15 +241,22 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
 
     private Map<Long, Person> collectPersonsForNotification( List<EmployeeRegistration> probationExpires ) {
         Set<Long> notifyIds = new HashSet<Long>();
+        for (EmployeeRegistration employeeRegistration : emptyIfNull( probationExpires )) {
+            if (isFired(employeeRegistration.getPerson())) {
+                continue;
+            }
 
-        for (EmployeeRegistration er : emptyIfNull( probationExpires )) {
-            notifyIds.add( er.getHeadOfDepartmentId() );
-            notifyIds.addAll( emptyIfNull( er.getCuratorsIds() ) );
+            notifyIds.add( employeeRegistration.getHeadOfDepartmentId() );
+            notifyIds.addAll( emptyIfNull( employeeRegistration.getCuratorsIds() ) );
         }
 
         List<Person> persons = personDAO.partialGetListByKeys( notifyIds, "id", "displayname", "company_id");
         jdbcManyRelationsHelper.fill(persons, Person.Fields.CONTACT_ITEMS);
         return toMap( persons, Person::getId, person -> person );
+    }
+
+    private boolean isFired(Person employee) {
+        return employee != null && employee.isFired();
     }
 
     private String getLangFor(String key){

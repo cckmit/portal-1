@@ -43,7 +43,7 @@ public class EmployeeQuery extends BaseQuery {
 
     private Boolean absent;
 
-    private Set<Long> departmentIds;
+    private List<String> departmentIds;
 
     public EmployeeQuery() {
         fired = false;
@@ -72,7 +72,7 @@ public class EmployeeQuery extends BaseQuery {
         this.ipAddress = ipAddress;
         this.emailByLike = emailByLike;
         this.departmentParent = departmentParent;
-        this.limit = 1000;
+        this.limit = 1500;
         this.ids = ids;
         this.absent = absent;
     }
@@ -189,11 +189,11 @@ public class EmployeeQuery extends BaseQuery {
         this.absent = absent;
     }
 
-    public Set<Long> getDepartmentIds() {
+    public List<String> getDepartmentIds() {
         return departmentIds;
     }
 
-    public void setDepartmentIds(Set<Long> departmentIds) {
+    public void setDepartmentIds(List<String> departmentIds) {
         this.departmentIds = departmentIds;
     }
 

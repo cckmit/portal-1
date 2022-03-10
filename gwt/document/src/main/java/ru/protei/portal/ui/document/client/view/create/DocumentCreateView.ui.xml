@@ -27,7 +27,7 @@
                         </div>
                     </div>
                 </g:HTMLPanel>
-                <g:HTMLPanel ui:field="projectSearchContainer"/>
+                <g:HTMLPanel ui:field="projectSearchContainer" styleName="card-body"/>
                 <g:HTMLPanel ui:field="projectCreateContainer"/>
             </wizard:pane.WizardWidgetPane>
 

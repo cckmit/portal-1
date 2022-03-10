@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentList;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
+import ru.protei.portal.ui.common.client.events.CommentAndHistoryEvents;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
@@ -27,6 +28,9 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
+import static ru.protei.portal.ui.common.client.util.LocaleUtils.isLocaleEn;
 
 /**
  * Created by bondarenko on 17.01.17.
@@ -72,7 +76,8 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
             public void onSuccess(Map<Long, String> names) {
                 viewToAttachment.forEach((view, attachment) -> {
                     if (attachments.contains(attachment)) {
-                        view.setCreationInfo(names.get(attachment.getCreatorId()), attachment.getCreated());
+                        String name = names.get(attachment.getCreatorId());
+                        view.setCreationInfo(isLocaleEn() ? transliterate(name) : name, attachment.getCreated());
                     }
                 });
             }
@@ -117,7 +122,9 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
             return;
         }
 
-        activity.fireEvent(new ConfirmDialogEvents.Show(lang.attachmentRemoveConfirmMessage(), () -> RemoveEvent.fire(this, viewToAttachment.get(attachment))));
+        activity.fireEvent(new ConfirmDialogEvents.Show(lang.attachmentRemoveConfirmMessage(), () -> {
+            RemoveEvent.fire(this, viewToAttachment.get(attachment));
+        }));
     }
 
     @Override
@@ -168,6 +175,14 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
 
         return view;
     }
+
+//    public void setCreationInfo(AbstractAttachmentView view, Attachment attachment, Map<Long, String> names) {
+//        if (LocaleUtils.isLocaleEn()) {
+//            view.setCreationInfo(TransliterationUtils.transliterate(names.get(attachment.getCreatorId())), attachment.getCreated());
+//            return;
+//        }
+//        view.setCreationInfo(names.get(attachment.getCreatorId()), attachment.getCreated());
+//    }
 
     @Inject
     Provider<AttachmentView> attachmentViewFactory;

@@ -54,4 +54,14 @@ public class PortalTestApiController {
     public void notifyExpiringTechnicalSupportValidity () {
         portalScheduleTasks.notifyExpiringTechnicalSupportValidity();
     }
+
+    @GetMapping(value = "/employee/fire-by-date")
+    public void updateFiredByDate () {
+        portalScheduleTasks.updateFiredByDate();
+    }
+
+    @GetMapping(value = "/employee/update-position-by-date")
+    public void updatePositionByDate () {
+        portalScheduleTasks.updatePositionByDate();
+    }
 }

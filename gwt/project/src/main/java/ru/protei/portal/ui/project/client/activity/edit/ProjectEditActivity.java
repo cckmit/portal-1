@@ -11,12 +11,12 @@ import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PlanOption;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -256,8 +256,10 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
                 : En_Privilege.PROJECT_EDIT;
 
         if (!isNew(project)) {
+            view.getCommentsContainer().clear();
+            view.getCommentsContainer().add(commentAndHistoryView.asWidget());
             CommentAndHistoryEvents.Show show = new CommentAndHistoryEvents.Show(
-                view.getCommentsContainer(),
+                commentAndHistoryView,
                 project.getId(),
                 En_CaseType.PROJECT,
                 canAccessProject(policyService, actionPrivilege, project.getTeam()),
@@ -414,7 +416,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     }
 
     private boolean hasHeadManager(Set<PersonProjectMemberView> team) {
-        return team.stream().anyMatch(personProjectMemberView -> En_DevUnitPersonRoleType.HEAD_MANAGER.equals(personProjectMemberView.getRole()));
+        return team.stream().anyMatch(personProjectMemberView -> En_PersonRoleType.HEAD_MANAGER.equals(personProjectMemberView.getRole()));
     }
 
     @Inject
@@ -429,6 +431,8 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     DefaultErrorHandler defaultErrorHandler;
     @Inject
     CompanyControllerAsync companyService;
+    @Inject
+    private AbstractCommentAndHistoryListView commentAndHistoryView;
 
     private Project project;
     private Set<ProductShortView> selectedComplexes = new HashSet<>();

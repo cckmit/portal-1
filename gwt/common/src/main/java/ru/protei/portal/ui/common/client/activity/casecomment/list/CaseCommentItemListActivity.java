@@ -60,6 +60,7 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
         this.isPrivateVisible = event.isPrivateVisible;
         this.isElapsedTimeEnabled = event.isElapsedTimeEnabled;
         this.isModifyEnabled = event.isModifyEnabled;
+        this.isEditAndDeleteEnabled = event.isEditAndDeleteEnabled;
         this.caseId = event.caseId;
         this.commentsContainer = event.commentsContainer;
 
@@ -158,18 +159,25 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
             return;
         }
 
-        caseCommentController.removeCaseComment(caseType, caseComment, new FluentCallback<Long>()
-                .withSuccess(result -> {
-                    Collection<Attachment> commentAttachments = itemView.attachmentContainer().getAll();
-                    if (CollectionUtils.isNotEmpty(commentAttachments)) {
-                        fireEvent(new AttachmentEvents.Remove(caseId, commentAttachments));
-                    }
+        fireEvent(new ConfirmDialogEvents.Show(lang.commentRemoveConfirmMessage(), removeAction(caseComment, itemView)));
+    }
 
-                    commentsContainer.remove(itemView.asWidget());
-                    itemViewToModel.remove(itemView);
-                    updateTimeElapsedInIssue(itemViewToModel.values());
-                })
-        );
+    private Runnable removeAction(CaseComment caseComment, AbstractCaseCommentItemView itemView) {
+        return () -> {
+            caseCommentController.removeCaseComment(caseType, caseComment, new FluentCallback<Long>()
+                    .withSuccess(result -> {
+                        Collection<Attachment> commentAttachments = itemView.attachmentContainer().getAll();
+                        if (CollectionUtils.isNotEmpty(commentAttachments)) {
+                            fireEvent(new AttachmentEvents.Remove(caseId, commentAttachments));
+                        }
+
+                        commentsContainer.remove(itemView.asWidget());
+                        itemViewToModel.remove(itemView);
+                        updateTimeElapsedInIssue(itemViewToModel.values());
+                        fireEvent(new CommentAndHistoryEvents.Reload());
+                    })
+            );
+        };
     }
 
     @Override
@@ -305,7 +313,7 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
 
         itemView.setTimeElapsedTypeChangeHandler(event -> updateTimeElapsedType(event.getValue(), value, itemView));
 
-        itemView.enabledEdit(isModifyEnabled && (makeAllowEditValidationString.apply(value) == null));
+        itemView.enabledEdit(isModifyEnabled && isEditAndDeleteEnabled && (makeAllowEditValidationString.apply(value) == null));
         itemView.enableReply(isModifyEnabled);
 
         return itemView;
@@ -457,6 +465,7 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
     private boolean isPrivateVisible;
     private boolean isElapsedTimeEnabled;
     private boolean isModifyEnabled;
+    private boolean isEditAndDeleteEnabled;
     private Long caseId;
 
     private WorkTimeFormatter workTimeFormatter;

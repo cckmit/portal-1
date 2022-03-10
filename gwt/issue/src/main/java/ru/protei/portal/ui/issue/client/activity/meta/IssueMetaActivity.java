@@ -16,6 +16,8 @@ import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.En_IssueValidationResultLang;
+import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
@@ -24,6 +26,8 @@ import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompany
 import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductWithChildrenModel;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -176,6 +180,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             fireEvent(new IssueEvents.IssueProductChanged(meta.getId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
             onParentIssueChanged(meta.getId());
+            fireEvent(new CommentAndHistoryEvents.Reload());
         });
     }
 
@@ -196,6 +201,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         onCaseMetaChanged( meta, () -> {
             fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CommentAndHistoryEvents.Reload());
         } );
     }
 
@@ -205,6 +211,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         Runnable onChanged = () -> {
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CommentAndHistoryEvents.Reload());
         };
 
         if (isCompanyWithAutoOpenIssues(currentCompany)) {
@@ -214,6 +221,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             onChanged = () -> {
                 fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
                 fireEvent(new IssueEvents.IssueMetaChanged(meta));
+                fireEvent(new CommentAndHistoryEvents.Reload());
             };
         }
 
@@ -286,7 +294,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     @Override
-    public void onCompanyChanged() {
+    public void onInitiatorCompanyChanged() {
         Company company = metaView.getCompany();
         if (company.getId().equals(meta.getInitiatorCompanyId())) {
             return;
@@ -360,6 +368,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         onCaseMetaChanged(meta, () -> {
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CommentAndHistoryEvents.Reload());
         });
     }
 
@@ -396,6 +405,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         onCaseMetaChanged(meta, () -> {
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CommentAndHistoryEvents.Reload());
         });
     }
 
@@ -404,6 +414,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         meta.setWorkTrigger(metaView.workTrigger().getValue());
         onCaseMetaChanged( meta, () -> {
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CommentAndHistoryEvents.Reload());
         } );
     }
 
@@ -436,6 +447,17 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
 
         issueController.updateIssueMeta(caseMeta, new FluentCallback<CaseObjectMeta>()
+                .withError(throwable -> {
+                    if (throwable instanceof RequestFailedException &&
+                            ((RequestFailedException)throwable).status == En_ResultStatus.VALIDATION_ERROR) {
+                        RequestFailedException rf = (RequestFailedException)throwable;
+                        fireEvent(new NotifyEvents.Show( resultStatusLang.getMessage(rf.status) + ": " +
+                                validationResultLang.getMessage(rf.issueValidationResult),
+                                NotifyEvents.NotifyType.ERROR));
+                    } else {
+                        defaultErrorHandler.accept(throwable);
+                    }
+                })
                 .withSuccess(caseMetaUpdated -> {
                     meta.setStateId(caseMetaUpdated.getStateId());
                     meta.setStateName(caseMetaUpdated.getStateName());
@@ -864,7 +886,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             }
 
             requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, metaView.importance().getValue())));
-            onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.ChangeIssue(meta.getId())));
+            onCaseMetaChanged(meta, () -> {
+                fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
+                fireEvent(new CommentAndHistoryEvents.Reload());
+            });
         });
     }
 
@@ -992,6 +1017,12 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     CustomerCompanyModel customerCompanyModel;
     @Inject
     ImportanceLevelControllerAsync importanceService;
+    @Inject
+    En_ResultStatusLang resultStatusLang;
+    @Inject
+    En_IssueValidationResultLang validationResultLang;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     @ContextAware
     CaseObjectMeta meta;

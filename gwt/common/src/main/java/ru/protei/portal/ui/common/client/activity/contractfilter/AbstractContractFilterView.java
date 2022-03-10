@@ -4,16 +4,17 @@ import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_ContractKind;
-import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 
+import java.util.List;
 import java.util.Set;
 
 public interface AbstractContractFilterView extends IsWidget {
@@ -23,6 +24,8 @@ public interface AbstractContractFilterView extends IsWidget {
     void resetFilter();
 
     void clearFooterStyle();
+
+    void initCuratorsSelector(List<String> contractCuratorsDepartmentsIds);
 
     HasValue<String> searchString();
 
@@ -40,7 +43,7 @@ public interface AbstractContractFilterView extends IsWidget {
 
     HasValue<Set<CaseTag>> tags();
 
-    HasValue<Set<En_ContractState>> states();
+    HasValue<Set<CaseState>> states();
 
     HasValue<ProductDirectionInfo> direction();
 

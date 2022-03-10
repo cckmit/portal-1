@@ -100,6 +100,11 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
     }
 
     @Override
+    public void setEquipmentOptionEnabled(En_EmployeeEquipment equipment, boolean isEnabled) {
+        equipmentList.setOptionEnabled(equipment, isEnabled);
+    }
+
+    @Override
     public HasValue<Set<En_InternalResource>> resourcesList() {
         return resourcesList;
     }
@@ -107,6 +112,11 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
     @Override
     public HasValue<Set<En_PhoneOfficeType>> phoneOfficeTypeList() {
         return phoneTypeList;
+    }
+
+    @Override
+    public void setPhoneOptionEnabled(En_PhoneOfficeType phone, boolean isEnabled) {
+        phoneTypeList.setOptionEnabled(phone, isEnabled);
     }
 
     @Override
@@ -149,6 +159,10 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
     @Override
     public HasValue<String> additionalSoft() {
         return additionalSoft;
+    }
+    @Override
+    public HasValue<Boolean> ide() {
+        return ide;
     }
 
     @Override
@@ -226,6 +240,18 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
         department.setModel(model);
     }
 
+    @Override
+    public void setFocusOnAdditionalSoft() {
+        additionalSoft.getElement().focus();
+    }
+
+    @UiHandler("company")
+    public void onCompanySelected(ValueChangeEvent<EntityOption> event) {
+        if (activity != null) {
+            activity.onCompanySelected();
+        }
+    }
+
     @UiHandler("headOfDepartment")
     public void onHeadOfDepartment(ValueChangeEvent<PersonShortView> event) {
         if (activity != null) {
@@ -244,6 +270,13 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
     public void onCancelClicked(ClickEvent event) {
         if (activity != null) {
             activity.onCancelClicked();
+        }
+    }
+
+    @UiHandler("ide")
+    public void onIDEChanged(ValueChangeEvent<Boolean> event) {
+        if (activity != null) {
+            activity.onIDEChanged();
         }
     }
 
@@ -317,6 +350,8 @@ public class EmployeeRegistrationCreateView extends Composite implements Abstrac
     AutoResizeTextArea additionalSoft;
     @UiField
     Label additionalSoftErrorLabel;
+    @UiField
+    CheckBox ide;
 
     @UiField
     Lang lang;

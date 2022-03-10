@@ -56,11 +56,21 @@ public class Kit extends AuditableObject implements HasLongId {
     @JdbcColumn(name = DELIVERY_ID)
     private Long deliveryId;
 
+
+    @JdbcJoinedColumn(localColumn = DELIVERY_ID, remoteColumn = CaseObject.Columns.ID,
+            mappedColumn = CaseObject.Columns.STATE, table = CASE_OBJECT_TABLE, sqlTableAlias = "DCO")
+    private Long deliveryStateId;
+
     /**
      * Серийный номер
      */
     @JdbcColumn(name = "serial_number")
     private String serialNumber;
+
+    /**
+     * Кол-во модулей первого уровня
+     */
+    private Integer modulesCount;
 
     /**
      * Статус комплекта
@@ -74,6 +84,11 @@ public class Kit extends AuditableObject implements HasLongId {
             @JdbcJoinPath(localColumn = CaseObject.Columns.STATE, remoteColumn = "id", table = "case_state", sqlTableAlias = CASE_OBJECT_ALIAS),
     })
     private CaseState state;
+
+    @JdbcJoinedObject(joinPath = {
+            @JdbcJoinPath(localColumn = ID, remoteColumn = CaseObject.Columns.ID, table = CASE_OBJECT_TABLE, sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = CaseObject.Columns.CREATOR, remoteColumn = "id", table = "person")})
+    private Person creator;
 
     public Kit() {}
 
@@ -155,11 +170,31 @@ public class Kit extends AuditableObject implements HasLongId {
         return state;
     }
 
+    public Person getCreator() {
+        return creator;
+    }
+
     public void setState(CaseState state) {
         this.state = state;
         if (state != null) {
             this.stateId = state.getId();
         }
+    }
+
+    public Integer getModulesCount() {
+        return modulesCount;
+    }
+
+    public void setModulesCount(Integer modulesCount) {
+        this.modulesCount = modulesCount;
+    }
+
+    public Long getDeliveryStateId() {
+        return deliveryStateId;
+    }
+
+    public void setDeliveryStateId(Long deliveryStateId) {
+        this.deliveryStateId = deliveryStateId;
     }
 
     @Override
@@ -187,6 +222,7 @@ public class Kit extends AuditableObject implements HasLongId {
                 ", serialNumber='" + serialNumber + '\'' +
                 ", stateId=" + stateId +
                 ", state=" + state +
+                ", creator=" + creator +
                 '}';
     }
 

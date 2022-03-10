@@ -11,7 +11,7 @@ import ru.protei.portal.core.model.query.DeliveryQuery;
 
 public class DeliveryEvents {
 
-    @Url( value = "deliveries", primary = true )
+    @Url(value = "deliveries", primary = true)
     public static class Show {
         public Show () {}
         public Show (Boolean preScroll) {
@@ -34,7 +34,7 @@ public class DeliveryEvents {
         public Create() {}
     }
 
-    @Url( value = "delivery")
+    @Url(value = "delivery")
     public static class Edit {
         public Edit() {}
 
@@ -45,9 +45,9 @@ public class DeliveryEvents {
         public Long id;
     }
 
-    public static class ChangeDelivery {
+    public static class Change {
         public Long id;
-        public ChangeDelivery(Long deliveryId){
+        public Change(Long deliveryId){
             id = deliveryId;
         }
     }
@@ -74,12 +74,12 @@ public class DeliveryEvents {
         public Long deliveryId;
     }
 
-    public static class EditDeliveryMeta {
+    public static class EditMeta {
         public HasWidgets parent;
         public Delivery delivery;
         public CaseObjectMetaNotifiers metaNotifiers;
 
-        public EditDeliveryMeta(HasWidgets parent, Delivery delivery, CaseObjectMetaNotifiers metaNotifiers) {
+        public EditMeta(HasWidgets parent, Delivery delivery, CaseObjectMetaNotifiers metaNotifiers) {
             this.parent = parent;
             this.delivery = delivery;
             this.metaNotifiers = metaNotifiers;

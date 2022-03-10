@@ -1,0 +1,25 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:kits='urn:import:ru.protei.portal.ui.common.client.widget.delivery.optionlist.kit'
+             xmlns:kitsmenu='urn:import:ru.protei.portal.ui.delivery.client.view.delivery.kit.actionmenu'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="full-height">
+        <nav class="secondary-sidebar">
+            <kitsmenu:KitMenu ui:field="kitsMenu"/>
+            <kits:KitList ui:field="kits"/>
+        </nav>
+        <div class="inner-content full-height">
+            <div class="split-view">
+                <g:HTMLPanel ui:field="modulesContainer" styleName="split-list">
+                    <h4 ui:field="kitNotSelectedMessage" class="no-result"><ui:text from="{lang.kitNotSelectedMessage}"/></h4>
+                </g:HTMLPanel>
+                <g:HTMLPanel ui:field="moduleEditContainer" styleName="split-details">
+                    <h2 ui:field="moduleNotSelectedMessage" class="no-result"><ui:text from="{lang.moduleNotSelectedMessage}"/></h2>
+                </g:HTMLPanel>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

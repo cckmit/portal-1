@@ -43,11 +43,19 @@ public class WorkerEntryShortView implements Serializable {
     @JdbcColumn(name="active")
     private int activeFlag;
 
+    @JdbcJoinedColumn(mappedColumn = "parent_dep", joinPath = {
+            @JdbcJoinPath(localColumn = "dep_id", table = "company_dep", remoteColumn = "id"),
+    })
+    private Long parentDepId;
+
     @JdbcColumn(name = "dep_id")
     private Long depId;
 
     @JdbcColumn(name = "positionId")
     private Long positionId;
+
+    @JdbcColumn(name = "worker_extId")
+    private String workerExtId;
 
     @JdbcColumn(name = "is_contract_agreement")
     private boolean isContractAgreement;
@@ -108,6 +116,14 @@ public class WorkerEntryShortView implements Serializable {
         return activeFlag > 0;
     }
 
+    public Long getParentDepId() {
+        return parentDepId;
+    }
+
+    public void setParentDepId(Long parentDepId) {
+        this.parentDepId = parentDepId;
+    }
+
     public Long getDepId() {
         return depId;
     }
@@ -152,6 +168,14 @@ public class WorkerEntryShortView implements Serializable {
         this.positionName = positionName;
     }
 
+    public String getWorkerExtId() {
+        return workerExtId;
+    }
+
+    public void setWorkerExtId(String workerExtId) {
+        this.workerExtId = workerExtId;
+    }
+
     public boolean getContractAgreement() {
         return isContractAgreement;
     }
@@ -173,8 +197,10 @@ public class WorkerEntryShortView implements Serializable {
                 ", departmentName='" + departmentName + '\'' +
                 ", positionName='" + positionName + '\'' +
                 ", activeFlag=" + activeFlag +
+                ", parentDepId=" + parentDepId +
                 ", depId=" + depId +
                 ", positionId=" + positionId +
+                ", workerExtId='" + workerExtId + '\'' +
                 ", isContractAgreement=" + isContractAgreement +
                 '}';
     }

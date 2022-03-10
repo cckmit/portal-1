@@ -32,6 +32,7 @@ public class En_ResultStatusLang {
             case INTERNAL_ERROR : return lang.errInternalError();
             case INVALID_SESSION_ID :  return lang.errInvalidSessionID();
             case INVALID_LOGIN_OR_PWD :  return lang.errLoginOrPwd();
+            case ACCOUNT_IS_LOCKED:  return lang.errAccountIsLocked();
             case GET_DATA_ERROR: return lang.errGetDataError();
             case NOT_FOUND :  return lang.errNotFound();
             case NOT_CREATED :  return lang.errNotCreated();
@@ -97,6 +98,7 @@ public class En_ResultStatusLang {
             case MYSQL_DATA_TRUNCATION: return lang.errMySqlDataTruncation();
             case INVALID_FILE_FORMAT: return lang.errInvalidFileFormat();
             case NOT_AVAILABLE_DELIVERY_KIT_SERIAL_NUMBER: return lang.errDeliverySerialNumberNotAvailable();
+            case NOT_AVAILABLE_MODULE_SERIAL_NUMBER: return lang.errModuleSerialNumberNotAvailable();
             case KIT_SERIAL_NUMBER_NOT_MATCH_DELIVERY_NUMBER: return lang.errKitSerialNumberNotMatchDeliveryNumber();
             case DELIVERY_FORBIDDEN_CHANGE_STATUS: return lang.errDeliveryForbiddenChangeStatus();
             case DELIVERY_FORBIDDEN_CHANGE_PROJECT: return lang.errDeliveryForbiddenChangeProject();
@@ -104,6 +106,7 @@ public class En_ResultStatusLang {
             case SCHEDULE_INCORRECT_TIME_RANGE: return lang.errorAbsenceIncorrectTimeRange();
             case SCHEDULE_NEED_FEEL_DAYS: return lang.errorAbsenceNeedFeelDays();
             case SCHEDULE_NEED_FEEL_TIME_RANGES: return lang.errorAbsenceNeedFeelTimeRanges();
+            case CARD_BATCH_HAS_CARD: return lang.errCardBatchForbiddenRemove();
             default: return lang.errUnknownResult();
         }
     }

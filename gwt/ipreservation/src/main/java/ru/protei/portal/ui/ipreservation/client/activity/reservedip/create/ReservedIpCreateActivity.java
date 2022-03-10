@@ -121,16 +121,8 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
             return;
         }
 
-        Date dateFrom = view.useRange().getValue().getIntervalType() != En_DateIntervalType.FIXED ?
-                null : view.useRange().getValue().getInterval().from;
-
-        Date dateTo = view.useRange().getValue().getIntervalType() != En_DateIntervalType.FIXED ?
-                null : view.useRange().getValue().getInterval().to;
-
         ipReservationService.isReservedIpAddressExists(
                 view.ipAddress().getValue().trim(),
-                dateFrom, dateTo,
-                view.useRange().getValue().getIntervalType(),
                 new RequestCallback<Boolean>() {
                     @Override
                     public void onError(Throwable throwable) { }
@@ -275,12 +267,17 @@ public abstract class ReservedIpCreateActivity implements AbstractReservedIpCrea
             return false;
         }
 
-        if(view.useRange().getValue() == null
-           || ( view.useRange().getValue().getIntervalType().equals(En_DateIntervalType.FIXED)
-                && !view.useRange().getValue().getInterval().isValid() ))
-        {
+        if (view.useRange().getValue() == null) {
             showError(lang.errSaveReservedIpUseInterval());
             return false;
+        } else if (view.useRange().getValue().getIntervalType().equals(En_DateIntervalType.FIXED)) {
+            if (view.useRange().getValue().getInterval().to == null) {
+                showError(lang.errSaveReservedIpUseOpenInterval());
+                return false;
+            } else if (!view.useRange().getValue().getInterval().isValid()) {
+                showError(lang.errSaveReservedIpUseInterval());
+                return false;
+            }
         }
 
         return true;

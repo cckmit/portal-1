@@ -23,6 +23,10 @@ public interface AbstractContractPreviewView extends IsWidget {
 
     void setDateValid(String value);
 
+    void setDateExecution(String value);
+
+    void setDateEndWarranty(String value);
+
     void setDescription(String value);
 
     void setDirections(String value);

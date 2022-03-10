@@ -87,12 +87,30 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="form-group form-group-default">
                                 <label class="fade" ui:field="costWithCurrencyLabel">
                                     <ui:text from="{lang.contractCost}"/>
                                 </label>
                                 <money:MoneyCurrencyVatWidget ui:field="costWithCurrency" defaultCurrency="RUB"/>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group form-group-default date-picker">
+                                <label class="fade">
+                                    <ui:text from="{lang.contractDateExecution}"/>
+                                </label>
+                                <single:SinglePicker ui:field="dateExecution" type="DATE" formatValue="dd.MM.yyyy"
+                                                     styleName="" mandatory="false"/>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group form-group-default date-picker">
+                                <label class="fade">
+                                    <ui:text from="{lang.contractDateEndWarranty}"/>
+                                </label>
+                                <single:SinglePicker ui:field="dateEndWarranty" type="DATE" formatValue="dd.MM.yyyy"
+                                                     styleName="" mandatory="false"/>
                             </div>
                         </div>
                     </div>
@@ -120,7 +138,7 @@
                                                    addStyleNames="form-group form-group-default"/>
                             <div class="form-group form-group-default">
                                 <label class="fade"><ui:text from="{lang.contractDirection}"/></label>
-                                <span ui:field="directions"/>
+                                <div ui:field="directions" class="form-block"/>
                             </div>
 
                             <div class="form-group form-group-default">

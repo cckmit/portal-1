@@ -70,12 +70,17 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     }
 
     @Override
-    public void setSubMenuVisible(boolean isVisible) {
+    public void setSubSectionVisible(boolean isVisible) {
         if (isVisible != subSection.isVisible()) {
             subSection.setVisible(isVisible);
             arrow.removeClassName("hide");
             closeSubSection();
         }
+    }
+
+    @Override
+    public boolean isSubSectionVisible() {
+        return isSubSectionVisible;
     }
 
     @Override
@@ -114,6 +119,15 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     @Override
     public void addClickHandler() {
         root.addDomHandler(event -> onSectionClicked(), ClickEvent.getType());
+    }
+
+    @Override
+    public void setEnabled(boolean isEnabled) {
+        if (isEnabled) {
+            root.removeStyleName("disabled");
+        } else {
+            root.addStyleName("disabled");
+        }
     }
 
     @UiHandler("anchor")

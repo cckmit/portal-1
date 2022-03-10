@@ -365,6 +365,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public EventEmployeeRegistrationAssemblerService getEventEmployeeRegistrationAssemblerService() {
+        return new EventEmployeeRegistrationAssemblerServiceImpl();
+    }
+
+    @Bean
     public AssemblerDeliveryService getAssemblerDeliveryService() {
         return new AssemblerDeliveryServiceImpl();
     }
@@ -386,6 +391,21 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public CardService getCardService() {
+        return new CardServiceImpl();
+    }
+
+    @Bean
+    public CardBatchService getCardBatchService() {
+        return new CardBatchServiceImpl();
+    }
+
+    @Bean
+    public PcbOrderService getPcbOrderService() {
+        return new PcbOrderServiceImpl();
+    }
+
+    @Bean
     public AssemblerService getAssemblerService() {
         return new AssemblerServiceImpl();
     }
@@ -396,13 +416,28 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public AssemblerEmployeeRegistrationService getAssemblerEmployeeRegistrationService() {
+        return new AssemblerEmployeeRegistrationServiceImpl();
+    }
+
+    @Bean
     public ProjectDAO getProjectDAO() {
         return new ProjectDAO_Impl();
     }
 
     @Bean
+    public EmployeeRegistrationDAO getEmployeeRegistrationDAO() {
+        return new EmployeeRegistrationDAO_Impl();
+    }
+
+    @Bean
     public YoutrackService getYoutrackService() {
         return new YoutrackServiceImpl();
+    }
+
+    @Bean
+    public YoutrackWorkDictionaryService getYoutrackWorkDictionaryService() {
+        return new YoutrackWorkDictionaryServiceImpl();
     }
 
     @Bean
@@ -419,7 +454,17 @@ public class JiraTestConfiguration {
     public YoutrackApi getYoutrackApi() {
         return new YoutrackApiImpl();
     }
+    
+    @Bean
+    public YoutrackProjectDAO getYoutrackProjectDAO() {
+        return new YoutrackProjectDAO_Impl();
+    }
 
+    @Bean
+    public YoutrackWorkDictionaryDAO getYoutrackWorkDictionaryDAO() {
+        return new YoutrackWorkDictionaryDAO_Impl();
+    }
+    
     @Bean
     public YtDtoFieldsMapper getYtDtoFieldsMapper() {
         return new YtDtoFieldsMapperImpl();
@@ -611,6 +656,56 @@ public class JiraTestConfiguration {
         return new ProjectTechnicalSupportValidityReportInfoDAO_Impl();
     }
 
+    @Bean
+    public CardSqlBuilder cardSqlBuilder() {
+        return new CardSqlBuilder();
+    }
+
+    @Bean
+    public CardTypeDAO getCardTypeDAO() {
+        return new CardTypeDAO_Impl();
+    }
+
+    @Bean
+    public CardDAO getCardDAO() {
+        return new CardDAO_Impl();
+    }
+
+    @Bean
+    public CardBatchDAO getCardBatchDAO() {
+        return new CardBatchDAO_Impl();
+    }
+
+    @Bean
+    public CardBatchSqlBuilder cardBatchSqlBuilder() {
+        return new CardBatchSqlBuilder();
+    }
+
+    @Bean
+    public PcbOrderSqlBuilder pcbOrderSqlBuilder() {
+        return new PcbOrderSqlBuilder();
+    }
+
+    @Bean
+    public PcbOrderDAO getPcbOrderDAO() {
+        return new PcbOrderDAO_Impl();
+    }
+
+    @Bean
+    public RFIDLabelDAO getRFIDLabelDAO() {
+        return new RFIDLabelDAO_Impl();
+    }
+
+    @Bean
+    public RFIDDeviceDAO getRFIDDeviceDAO() {
+        return new RFIDDeviceDAO_Impl();
+    }
+
+    @Bean
+    public CaseElapsedTimeApiDAO getCaseElapsedTimeApiDAO() {
+        return new CaseElapsedTimeApiDAO_Impl();
+    }
+    
     /* DAO converters */
 
     @Bean

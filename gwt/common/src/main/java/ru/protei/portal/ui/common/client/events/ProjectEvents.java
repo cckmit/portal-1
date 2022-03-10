@@ -4,9 +4,12 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.dto.CaseFilterDto;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+
+import java.security.PublicKey;
 
 /**
  * События для вкладки с проектами
@@ -17,9 +20,14 @@ public class ProjectEvents {
     public static class Show {
         @Omit
         public Boolean preScroll = false;
+        @Omit
+        public CaseFilterDto<ProjectQuery> caseFilterDto;
         public Show () {}
         public Show (Boolean preScroll) {
             this.preScroll = preScroll;
+        }
+        public Show(CaseFilterDto<ProjectQuery> caseFilterDto) {
+            this.caseFilterDto = caseFilterDto;
         }
     }
 
@@ -113,6 +121,7 @@ public class ProjectEvents {
     public static class Search {
         public boolean showProducts;
         public boolean showManagers;
+        public boolean separateFormView = false;
 
         public Search(HasWidgets parent, boolean showProducts, boolean showManagers) {
             this.parent = parent;
@@ -120,6 +129,11 @@ public class ProjectEvents {
             this.showManagers = showManagers;
         }
         public HasWidgets parent;
+
+        public Search withSeparateFormView() {
+            this.separateFormView = true;
+            return this;
+        }
     }
 
     /**

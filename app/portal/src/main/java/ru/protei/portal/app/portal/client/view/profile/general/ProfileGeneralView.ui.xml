@@ -3,37 +3,25 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel>
-        <g:Button ui:field="changePasswordButton" styleName="btn btn-success"
-                  text="{lang.buttonChangePassword}"/>
-
-        <g:HTMLPanel ui:field="passwordContainer" visible="false" styleName="row">
-            <div class="col-md-12">
-                <h4 ui:field="changePasswordLabel" class="title">
-                    <ui:text from="{lang.accountPasswordChange}"/>
-                </h4>
+    <g:HTMLPanel styleName="form-horizontal">
+        <div class="form-group row">
+            <div class="col-md-3">
+                <label><ui:text from="{lang.account}"/></label>
             </div>
-            <div class="form-group col-md-12">
-                <label ui:field="currentPasswordLabel">
-                    <ui:text from="{lang.accountCurrentPassword}"/>
-                </label>
-                <g:PasswordTextBox ui:field="currentPassword" styleName="form-control"/>
+            <div class="col-md-9">
+                <span ui:field="login" class="p-r-10 bold"/>
+                <g:Button ui:field="changePasswordButton" styleName="btn btn-info btn-xs"
+                                                                  text="{lang.buttonChangePassword}"/>
             </div>
-            <div class="form-group col-md-12">
-                <label ui:field="newPasswordLabel">
-                    <ui:text from="{lang.accountNewPassword}"/>
-                </label>
-                <g:PasswordTextBox ui:field="newPassword" styleName="form-control"/>
+        </div>
+        <g:HTMLPanel ui:field="newEmployeeBookContainer" styleName="form-group row">
+            <div class="col-md-3">
+                <label><ui:text from="{lang.newEmployeeBook}"/></label>
             </div>
-            <div class="form-group col-md-12">
-                <label ui:field="confirmPasswordLabel">
-                    <ui:text from="{lang.accountConfirmPassword}"/>
-                </label>
-                <g:PasswordTextBox ui:field="confirmPassword" styleName="form-control"/>
-            </div>
-            <div class="col-md-12">
-                <g:Button ui:field="savePasswordButton" styleName="btn btn-success"
-                          text="{lang.buttonSave}"/>
+            <div class="col-md-9">
+                <a href="./doc/employee-handbook.pdf" target="_blank" class="d-flex">
+                    <img src="./images/employee-handbook.png" style="height: auto; width: 100px" class="icon-thumbnail"/>
+                </a>
             </div>
         </g:HTMLPanel>
     </g:HTMLPanel>

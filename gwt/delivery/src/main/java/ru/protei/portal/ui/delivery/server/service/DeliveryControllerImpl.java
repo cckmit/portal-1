@@ -22,11 +22,9 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.List;
 
 import static ru.protei.portal.ui.common.server.ServiceUtils.*;
-import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
 
 @Service("DeliveryController")
 public class DeliveryControllerImpl implements DeliveryController {
@@ -82,6 +80,12 @@ public class DeliveryControllerImpl implements DeliveryController {
     }
 
     @Override
+    public void updateKitListStates(List<Long> kitsIds, Long caseStateId) throws RequestFailedException {
+        AuthToken token = getAuthToken(sessionService, httpRequest);
+        checkResult(deliveryService.updateKitListStates(token, kitsIds, caseStateId));
+    }
+
+    @Override
     public CaseObjectMetaNotifiers updateMetaNotifiers(CaseObjectMetaNotifiers caseMetaNotifiers) throws RequestFailedException {
         AuthToken token = getAuthToken(sessionService, httpRequest);
         return checkResultAndGetData(caseService.updateCaseObjectMetaNotifiers(token, En_CaseType.DELIVERY, caseMetaNotifiers));
@@ -93,8 +97,27 @@ public class DeliveryControllerImpl implements DeliveryController {
         return checkResultAndGetData(deliveryService.addKits(token, kits, deliveryId));
     }
 
+    @Override
+    public Kit getKit(long kitId) throws RequestFailedException {
+        Result<Kit> result = deliveryService.getKit(getAuthToken(sessionService, httpRequest), kitId);
+        return checkResultAndGetData(result);
+    }
+
+    @Override
+    public Kit updateKit(Kit kit) throws RequestFailedException {
+        Result<Kit> result = deliveryService.updateKit(getAuthToken(sessionService, httpRequest), kit);
+        return checkResultAndGetData(result);
+    }
+
+    @Override
+    public Long getDeliveryStateId(long id) throws RequestFailedException {
+        Result<Long> result = deliveryService.getDeliveryStateId(getAuthToken(sessionService, httpRequest), id);
+        return checkResultAndGetData(result);
+    }
+
     @Autowired
     DeliveryService deliveryService;
+
     @Autowired
     CaseService caseService;
 

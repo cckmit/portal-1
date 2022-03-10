@@ -32,12 +32,12 @@ public class EmployeeRegistrationDAO_Impl extends PortalBaseJdbcDAO<EmployeeRegi
 
     @Override
     public List<EmployeeRegistration> getProbationExpireList( int daysToProbationEndDate ) {
-        return getListByCondition( "DATE_ADD(CURDATE(), INTERVAL ? DAY) = DATE_ADD(employment_date, INTERVAL probation_period MONTH)", daysToProbationEndDate );
+        return getListByCondition( "DATE_ADD(CURDATE(), INTERVAL ? DAY) = probation_period_end_date", daysToProbationEndDate );
     }
 
     @Override
     public List<EmployeeRegistration> getAfterProbationList( int daysAfterProbationEndDate ) {
-        return getListByCondition( "CURDATE() = DATE_ADD(DATE_ADD(employment_date, INTERVAL probation_period MONTH), INTERVAL ? DAY)", daysAfterProbationEndDate );
+        return getListByCondition( "CURDATE() = DATE_ADD(probation_period_end_date, INTERVAL ? DAY)", daysAfterProbationEndDate );
     }
 
     private JdbcQueryParameters buildJdbcQueryParameters(EmployeeRegistrationQuery query) {
@@ -63,7 +63,7 @@ public class EmployeeRegistrationDAO_Impl extends PortalBaseJdbcDAO<EmployeeRegi
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(EmployeeRegistrationQuery query) {
         return new SqlCondition().build(((condition, args) -> {
-            condition.append("1=1");
+            condition.append("CO.deleted = 0");
 
             if (StringUtils.isNotEmpty(query.getSearchString())) {
                 condition.append(" and (CO.CASE_NAME like ? or employee_registration.position like ?)");

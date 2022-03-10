@@ -79,9 +79,9 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
             YOUTRACK_PROJECTS.add(equipmentProjectName);
         }
 
-        String adminProjectName = config.data().youtrack().getAdminProject();
-        if (StringUtils.isNotBlank(adminProjectName)) {
-            YOUTRACK_PROJECTS.add(adminProjectName);
+        String supportProjectName = config.data().youtrack().getSupportProject();
+        if (StringUtils.isNotBlank(supportProjectName)) {
+            YOUTRACK_PROJECTS.add(supportProjectName);
         }
 
         String phoneProjectName = config.data().youtrack().getPhoneProject();
@@ -91,7 +91,7 @@ public class EmployeeRegistrationYoutrackSynchronizerImpl implements EmployeeReg
 
         log.debug("init(): employee registration youtrack synchronizer initialized: " +
                         "project for equipment={}, project for admin={}, project for phone={}, youtrack user id={}",
-                equipmentProjectName, adminProjectName, phoneProjectName, YOUTRACK_USER_ID);
+                equipmentProjectName, supportProjectName, phoneProjectName, YOUTRACK_USER_ID);
 
 
         if (YOUTRACK_PROJECTS.isEmpty()) {

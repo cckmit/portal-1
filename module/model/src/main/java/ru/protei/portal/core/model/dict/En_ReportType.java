@@ -34,6 +34,11 @@ public enum En_ReportType {
      * Отчет по ночным работам
      */
     NIGHT_WORK,
+
+    /**
+     * Отчет по трудозатратам
+     */
+    YT_WORK,
     ;
 
     public static boolean isTimeLimitMandatory(En_ReportType type) {
@@ -43,6 +48,7 @@ public enum En_ReportType {
             case CASE_TIME_ELAPSED:
             case CASE_RESOLUTION_TIME:
             case NIGHT_WORK:
+            case YT_WORK:
                 return true;
             default:
                 return false;

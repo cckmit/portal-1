@@ -11,19 +11,18 @@ import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.api.struct.Workers;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.*;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.service.EmployeeService;
+import ru.protei.portal.core.service.WorkerEntryService;
 import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
@@ -32,7 +31,6 @@ import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.util.AuthUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -48,6 +46,7 @@ import java.util.function.Supplier;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.ent.WorkerEntry.Columns.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
 
@@ -111,6 +110,9 @@ public class WorkerController {
     @Autowired
     YoutrackService youtrackService;
 
+    @Autowired
+    WorkerEntryService workerEntryService;
+
     /**
      * Получить данные о физическом лице
      * @param id идентификатор физического лица на портале
@@ -165,11 +167,11 @@ public class WorkerController {
                     });
 
         } catch (NullPointerException e){
-            logger.error("error while get worker", En_ErrorCode.UNKNOWN_WOR.getMessage());
+            logger.error("error while get worker = {}", En_ErrorCode.UNKNOWN_WOR.getMessage());
             return error(En_ResultStatus.INCORRECT_PARAMS,  En_ErrorCode.UNKNOWN_WOR.getMessage());
         }
         catch (Throwable e) {
-            logger.error("error while get worker", e.toString());
+            logger.error("error while get worker", e);
             return error(En_ResultStatus.INTERNAL_ERROR,  e.toString());
         }
     }
@@ -361,9 +363,9 @@ public class WorkerController {
                     persistWorker(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
-                        Workers workers = new Workers(person.getId());
-                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : workers.requireWorkers().getActiveDepartment(operationData.department().getName());
-                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : workers.requireWorkers().getActivePosition(position.getName());
+                        Workers workers = new Workers(workerEntryDAO.getWorkers(new WorkerEntryQuery(person.getId())));
+                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : workers.getActiveDepartment(operationData.department().getName());
+                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : workers.getActivePosition(position.getName());
                         migrationManager.saveExternalEmployee(person, departmentName, positionName);
                     }
 
@@ -873,6 +875,104 @@ public class WorkerController {
         return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_DELETE.getMessage());
     }
 
+    /**
+     * Обновить позицию сотрудника
+     * @param workerRecord данные о сотруднике
+     * @return Result<Long>
+     */
+    @RequestMapping(method = RequestMethod.PUT,
+            consumes = MediaType.APPLICATION_XML_VALUE,
+            produces = MediaType.APPLICATION_XML_VALUE,
+            value = "/update.worker.position")
+    Result<Long> updateWorkerPosition(@RequestBody WorkerRecord workerRecord,
+                                      HttpServletRequest request,
+                                      HttpServletResponse response) {
+
+        logger.debug("updateWorkerPosition(): rec={}", workerRecord);
+
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+
+        Result<Long> isValid = isValidNewEmployeePosition(workerRecord);
+        if (isValid.isError()) {
+            logger.debug("error result: " + isValid.getMessage());
+            return isValid;
+        }
+
+        OperationData operationData = new OperationData(workerRecord)
+                .requireNewDepartment(null)
+                .requireWorker(null);
+
+        if (!operationData.isValid()) {
+            return operationData.failResult();
+        }
+
+        try {
+            Long newWorkerPositionId = getValidPosition(workerRecord.getNewPositionName(),
+                                                        operationData.homeItem().getCompanyId()).getId();
+
+            return updateWorkerPosition(operationData.worker, workerRecord,
+                                        newWorkerPositionId, operationData.newDepartment.getId());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return ok(null);
+    }
+
+    private Result<Long> isValidNewEmployeePosition(WorkerRecord position) {
+        En_ErrorCode errCode = null;
+
+        if (HelperFunc.isEmpty(position.getWorkerId())) {
+            errCode = En_ErrorCode.EMPTY_WORKER_ID;
+        } else if (HelperFunc.isEmpty(position.getCompanyCode())) {
+            errCode = En_ErrorCode.EMPTY_COMP_CODE;
+        } else if (HelperFunc.isEmpty(position.getNewPositionName())) {
+            errCode = En_ErrorCode.EMPTY_NEW_WORKER_POSITION_NAME;
+        } else if (position.getNewPositionDepartmentId() == null) {
+            errCode = En_ErrorCode.EMPTY_NEW_WORKER_POSITION_DEPARTMENT_ID;
+        } else if (position.getNewPositionTransferDate() == null) {
+            errCode = En_ErrorCode.EMPTY_NEW_WORKER_TRANSFER_DATE;
+        }
+
+        return errCode == null ? ok(null)
+                               : error(En_ResultStatus.INCORRECT_PARAMS, errCode.getMessage());
+    }
+
+    private Result<Long> updateWorkerPosition(WorkerEntry workerToUpdate, WorkerRecord workerRecord,
+                                              Long newWorkerPositionId, Long newPositionDepartmentId){
+        try {
+            boolean updatePositionNow = workerRecord.getNewPositionTransferDate().getTime() <= new Date().getTime();
+            if (updatePositionNow) {
+                workerToUpdate.setPositionId(newWorkerPositionId);
+                workerToUpdate.setDepartmentId(newPositionDepartmentId);
+            } else {
+                workerToUpdate.setNewPositionName(workerRecord.getNewPositionName());
+                workerToUpdate.setNewPositionDepartmentId(newPositionDepartmentId);
+                workerToUpdate.setNewPositionTransferDate(workerRecord.getNewPositionTransferDate());
+            }
+
+            boolean updated;
+            if (updatePositionNow) {
+                updated = workerEntryDAO.partialMerge(workerToUpdate, POSITION_ID, POSITION_DEPARTMENT_ID);
+            } else {
+                updated = workerEntryDAO.partialMerge(workerToUpdate, NEW_POSITION_NAME, NEW_POSITION_DEPARTMENT_ID,
+                                                                      NEW_POSITION_TRANSFER_DATE);
+            }
+
+            Long updatedWorkerId = workerToUpdate.getId();
+            WorkerEntry updatedWorker = workerEntryDAO.get(updatedWorkerId);
+
+            if (updated) {
+                logger.debug("success result, updatedWorker={}", updatedWorker);
+                return ok(updatedWorkerId);
+            }
+        } catch (Exception e) {
+            logger.error("Error while update worker's position", e);
+        }
+
+        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
+    }
+
     private <R> R withHomeCompany(String companyCode, Function<CompanyHomeGroupItem, R> func) throws Exception {
         CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyCode.trim());
         return item == null ? null : func.apply(item);
@@ -950,6 +1050,7 @@ public class WorkerController {
         person.setBirthday(HelperFunc.isEmpty(rec.getBirthday()) ? null : HelperService.DATE.parse(rec.getBirthday()));
         person.setIpAddress(HelperFunc.isEmpty(rec.getIpAddress()) ? null : rec.getIpAddress().trim());
         person.setInfo(HelperFunc.isEmpty(rec.getInfo()) ? null : rec.getInfo().trim());
+        person.setInn(HelperFunc.isEmpty(rec.getInn()) ? null : rec.getInn().trim());
 
         PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(person.getContactInfo());
         contactInfoFacade.setWorkPhone(HelperFunc.isEmpty(rec.getPhoneWork()) ? null : normalizePhoneNumber(rec.getPhoneWork().trim()));
@@ -1105,6 +1206,7 @@ public class WorkerController {
 
         CompanyHomeGroupItem homeGroupItem;
         CompanyDepartment department;
+        CompanyDepartment newDepartment;
         CompanyDepartment parentDepartment;
         WorkerEntry headDepartment;
         WorkerEntry worker;
@@ -1148,6 +1250,14 @@ public class WorkerController {
             requireHomeItem();
             if (isValid())
                 this.department = handle(companyDepartmentDAO.getByExternalId(record.getDepartmentId().trim(), homeGroupItem.getCompanyId()), optional, En_ErrorCode.UNKNOWN_DEP);
+
+            return this;
+        }
+
+        public OperationData requireNewDepartment(Supplier<CompanyDepartment> optional) {
+            requireHomeItem();
+            if (isValid())
+                this.newDepartment = handle(companyDepartmentDAO.getByExternalId(record.getNewDepartmentId().trim(), homeGroupItem.getCompanyId()), optional, En_ErrorCode.UNKNOWN_DEP);
 
             return this;
         }
@@ -1271,6 +1381,10 @@ public class WorkerController {
             return this;
         }
 
+        private String newPositionName;
+        private Long newPositionDepartmentId;
+        private Date newPositionTransferDate;
+
         private <T> T handle(T value, Supplier<T> optional, En_ErrorCode failCode) {
             return handle(value, optional, failCode, false);
         }
@@ -1337,6 +1451,7 @@ public class WorkerController {
         public class Record {
             String companyCode;
             String departmentId;
+            String newDepartmentId;
             String parentDepartmentId;
             String headDepartmentId;
             String workerId;
@@ -1348,6 +1463,7 @@ public class WorkerController {
             public Record(WorkerRecord workerRecord) {
                 this.companyCode = workerRecord.getCompanyCode();
                 this.departmentId = workerRecord.getDepartmentId();
+                this.newDepartmentId = workerRecord.getNewPositionDepartmentId();
                 this.workerId = workerRecord.getWorkerId();
                 this.personId = workerRecord.getId();
                 this.registrationId = workerRecord.getRegistrationId();
@@ -1377,6 +1493,10 @@ public class WorkerController {
                 return departmentId;
             }
 
+            public String getNewDepartmentId() {
+                return newDepartmentId;
+            }
+
             public String getParentDepartmentId() {
                 return parentDepartmentId;
             }
@@ -1404,55 +1524,6 @@ public class WorkerController {
             public Long getRegistrationId() {
                 return registrationId;
             }
-        }
-    }
-
-    public class Workers {
-
-        List<WorkerEntry> workers;
-        Long personId;
-
-        public Workers(Long personId) {
-            this.personId = personId;
-        }
-
-        public Workers requireWorkers() {
-            if (workers == null)
-                workers = workerEntryDAO.getWorkers(new WorkerEntryQuery(personId));
-
-            return this;
-        }
-
-        public String getActiveDepartment(String def) {
-            WorkerEntry activeEntry = getActiveEntry();
-            return activeEntry == null ? def : activeEntry.getDepartmentName();
-        }
-
-        public String getActivePosition(String def) {
-            WorkerEntry activeEntry = getActiveEntry();
-            return activeEntry == null ? def : activeEntry.getPositionName();
-        }
-
-        public String getAnyDepartment(String def) {
-            WorkerEntry anyEntry = getAnyEntry();
-            return anyEntry == null ? def : anyEntry.getDepartmentName();
-        }
-
-        public String getAnyPosition(String def) {
-            WorkerEntry anyEntry = getAnyEntry();
-            return anyEntry == null ? def : anyEntry.getPositionName();
-        }
-
-        private WorkerEntry getActiveEntry() {
-            return workers == null ? null : workers.stream().filter(WorkerEntry::isMain).findFirst().orElse(null);
-        }
-
-        private WorkerEntry getAnyEntry() {
-            return workers == null ? null : workers.stream().filter(WorkerEntry::isMain).findFirst().orElse(getFirstEntry());
-        }
-
-        private WorkerEntry getFirstEntry() {
-            return workers == null ? null : workers.stream().findFirst().orElse(null);
         }
     }
 
@@ -1528,35 +1599,32 @@ public class WorkerController {
                     }
 
                     if (rec.isFired() || rec.isDeleted()) {
+                        boolean immediately = false;
+                        if (HelperFunc.isNotEmpty(rec.getFireDate())) {
+                            Date firedDate = HelperService.DATE.parse(rec.getFireDate());
+                            Date now = new Date();
+                            if (firedDate.after(now)) {
+                                worker.setFiredDate(firedDate);
+                                worker.setDeleted(rec.isDeleted());
+                                workerEntryDAO.merge(worker);
 
-                        workerEntryDAO.remove(worker);
-
-                        if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
-                            person.setFired(rec.isFired(), HelperFunc.isNotEmpty(rec.getFireDate()) ? HelperService.DATE.parse(rec.getFireDate()) : null);
-                            person.setDeleted(rec.isDeleted());
-                            person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
-
-                            if(isNotEmpty(userLogins)) {
-                                if (person.isDeleted()) {
-                                    for (UserLogin userLogin : userLogins) {
-                                        removeAccount(userLogin);
-                                    }
-                                } else {
-                                    for (UserLogin userLogin : userLogins) {
-                                        userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
-                                        saveAccount(userLogin);
-                                    }
-                                }
+                                logger.debug("success result, workerRowId={}", worker.getId());
+                            } else {
+                                immediately = true;
                             }
+                        } else {
+                            immediately = true;
                         }
 
-                        mergePerson(person);
-
-                        if (WSConfig.getInstance().isEnableMigration()) {
-                            Workers workers = new Workers(person.getId());
-                            String departmentName = workers.requireWorkers().getAnyDepartment("");
-                            String positionName = workers.requireWorkers().getAnyPosition("");
-                            migrationManager.saveExternalEmployee(person, departmentName, positionName);
+                        if (immediately) {
+                            workerEntryDAO.remove(worker);
+                            if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
+                                return workerEntryService.firePerson(person, rec.isFired(), null, rec.isDeleted(), userLogins, WSConfig.getInstance().isEnableMigration())
+                                        .map(ignore -> {
+                                            logger.debug("success result, workerRowId={}", worker.getId());
+                                            return person.getId();
+                                        });
+                            }
                         }
 
                         logger.debug("success result, workerRowId={}", worker.getId());
@@ -1606,9 +1674,9 @@ public class WorkerController {
                     mergeWorker(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
-                        Workers workers = new Workers(person.getId());
-                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : workers.requireWorkers().getActiveDepartment(operationData.department().getName());
-                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : workers.requireWorkers().getActivePosition(position.getName());
+                        Workers workers = new Workers(workerEntryDAO.getWorkers(new WorkerEntryQuery(person.getId())));
+                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : workers.getActiveDepartment(operationData.department().getName());
+                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : workers.getActivePosition(position.getName());
                         migrationManager.saveExternalEmployee(person, departmentName, positionName);
                     }
 
@@ -1712,7 +1780,7 @@ public class WorkerController {
         if (Objects.equals(lastName, oldLastName)) {
             return;
         }
-        final String ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
+        final String USER_SUPPORT_PROJECT_NAME = portalConfig.data().youtrack().getSupportProject();
         final String PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
 
         String employeeOldFullName = oldLastName + " " + firstName + " " + (secondName != null ? secondName : "");
@@ -1726,7 +1794,7 @@ public class WorkerController {
                              "\n" +
                              "Необходимо изменение учетной записи, почты.";
 
-        youtrackService.createIssue( ADMIN_PROJECT_NAME, summary, description );
+        youtrackService.createIssue( USER_SUPPORT_PROJECT_NAME, summary, description );
     }
 
     private boolean isEmailExists(Long personId, String email) {
@@ -1737,6 +1805,8 @@ public class WorkerController {
 
         PersonQuery personQuery = new PersonQuery();
         personQuery.setEmail(email);
+        personQuery.setDeleted(false);
+        personQuery.setFired(false);
         List<Person> employeeByEmail = personDAO.getPersons(personQuery);
 
         if (CollectionUtils.isNotEmpty(employeeByEmail)){
@@ -1744,10 +1814,8 @@ public class WorkerController {
                 return true;
             }
 
-            if (employeeByEmail.stream()
-                    .noneMatch(personFromDB -> personFromDB.getId().equals(personId))){
-                return true;
-            }
+            return (employeeByEmail.stream()
+                    .anyMatch(personFromDB -> !personFromDB.getId().equals(personId)));
         }
 
         return false;

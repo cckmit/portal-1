@@ -30,7 +30,7 @@ public class MarkdownAreaWithPreview
     public MarkdownAreaWithPreview() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
 
-        text.getElement().setAttribute("placeholder", lang.commentAddMessagePlaceholder());
+        text.getElement().setAttribute("placeholder", lang.markupPlaceholder());
         text.setOverlayText(lang.dropFilesHere());
     }
 

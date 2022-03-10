@@ -23,22 +23,20 @@ import java.util.List;
  */
 public interface EmployeeService {
 
-    @Privileged(En_Privilege.EMPLOYEE_VIEW)
-    Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query);
-
     Result<List<PersonShortView>> shortViewList(EmployeeQuery query);
 
     @Privileged(En_Privilege.EMPLOYEE_VIEW)
-    Result<SearchResult<EmployeeShortView>> employeeListWithChangedHiddenCompanyNames(AuthToken token, EmployeeQuery query);
-
-    @Privileged(En_Privilege.EMPLOYEE_VIEW)
-    Result<EmployeeShortView> getEmployee(AuthToken token, Long employeeId);
+    Result<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query);
 
     Result<PersonShortView> getDepartmentHead(AuthToken token, Long departmentId);
 
     Result<List<WorkerEntryShortView>> getWorkerEntryList(AuthToken token, int offset, int limit);
 
-    Result<EmployeeShortView> getEmployeeWithChangedHiddenCompanyNames(AuthToken token, Long employee);
+    @Privileged(En_Privilege.EMPLOYEE_VIEW)
+    Result<EmployeeShortView> getEmployee(AuthToken token, Long employee);
+
+    @Privileged(En_Privilege.EMPLOYEE_EDIT)
+    Result<EmployeeShortView> getEmployeeWithPrivacyInfo(AuthToken token, Long employeeId);
 
     @Auditable(En_AuditType.EMPLOYEE_CREATE)
     @Privileged(En_Privilege.EMPLOYEE_CREATE)
@@ -67,4 +65,7 @@ public interface EmployeeService {
     Result<EmployeesBirthdays> getEmployeesBirthdays(AuthToken token, Date dateFrom, Date dateUntil);
 
     Result<Void> notifyAboutBirthdays();
+
+    @Privileged(En_Privilege.EMPLOYEE_VIEW)
+    Result<String> getEmployeeRestVacationDays(AuthToken token, Long employeeId);
 }

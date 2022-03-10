@@ -3,7 +3,10 @@ package ru.protei.portal.core.model.helper;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.struct.Interval;
 
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 public class DateRangeUtils {
@@ -39,7 +42,7 @@ public class DateRangeUtils {
 
     public static Interval makeThisWeek() {
         Interval interval = new Interval();
-        LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfWeek().getValue());
+        LocalDate local = LocalDate.now().plusDays(1).minusDays(LocalDate.now().getDayOfWeek().getValue());
         interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
         interval.to = Date.from(local.plusWeeks(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         return interval;
@@ -47,7 +50,7 @@ public class DateRangeUtils {
 
     public static Interval makeThisWeekAndBeyond() {
         Interval interval = new Interval();
-        LocalDate local = LocalDate.now().minusDays(LocalDate.now().getDayOfWeek().getValue());
+        LocalDate local = LocalDate.now().plusDays(1).minusDays(LocalDate.now().getDayOfWeek().getValue());
         interval.from = Date.from(local.atStartOfDay(ZoneId.systemDefault()).toInstant());
         interval.to = null;
         return interval;

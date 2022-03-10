@@ -62,6 +62,16 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
 
     @Override
+    public void setDateExecution(String value) {
+        this.dateExecution.setInnerHTML(value);
+    }
+
+    @Override
+    public void setDateEndWarranty(String value) {
+        this.dateEndWarranty.setInnerHTML(value);
+    }
+
+    @Override
     public void setDescription(String value) {
         this.description.setInnerHTML(value);
     }
@@ -177,6 +187,8 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
         curator.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.CURATOR_LABEL);
         projectManager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.PROJECT_MANAGER_LABEL);
         contractSignManager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.SIGN_MANAGER_LABEL);
+        dateEndWarranty.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.DATE_END_WARRANTY_LABEL);
+        dateExecution.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.DATE_EXECUTION_LABEL);
         tabs.setTabNameDebugId(lang.contractDeliveryAndPaymentsPeriodHeader(), DebugIds.CONTRACT.DELIVERY_AND_PAYMENTS_PERIOD_TAB);
         tabs.setTabNameDebugId(lang.contractSpecificationHeader(), DebugIds.CONTRACT.SPECIFICATION_TAB);
     }
@@ -227,6 +239,10 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     SpanElement deliveryNumber;
     @UiField
     TabWidget tabs;
+    @UiField
+    SpanElement dateExecution;
+    @UiField
+    SpanElement dateEndWarranty;
 
     private AbstractContractPreviewActivity activity;
 

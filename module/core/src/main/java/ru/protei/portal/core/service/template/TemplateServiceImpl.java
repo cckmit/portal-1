@@ -78,7 +78,7 @@ public class TemplateServiceImpl implements TemplateService {
             DiffCollectionResult<LinkData> mergeLinks, boolean isProteiRecipients, String urlTemplate, Collection<String> recipients,
             EnumLangUtil enumLangUtil, String issueCommentHelpUrl) {
         CaseObject newState = event.getCaseObject();
-        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(newState);
+        En_TextMarkup textMarkup = MarkupUtils.recognizeTextMarkup(newState);
 
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.putAll(makeTemplateModelUtils(enumLangUtil));
@@ -273,15 +273,23 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getEmployeeRegistrationEmailNotificationBody(AssembledEmployeeRegistrationEvent event, String urlTemplate, Collection<String> recipients) {
-        Map<String, Object> templateModel = new HashMap<>();
+    public PreparedTemplate getEmployeeRegistrationEmailNotificationBody(
+            AssembledEmployeeRegistrationEvent event,
+            String urlTemplate,
+            List<CaseComment> comments,
+            Collection<String> recipients) {
+
         EmployeeRegistration newState = event.getNewState();
         EmployeeRegistration oldState = event.getOldState();
 
+        Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("TransliterationUtils", new TransliterationUtils());
+        templateModel.put("TextUtils", new TextUtils());
 
         templateModel.put("linkToEmployeeRegistration", String.format(urlTemplate, newState.getId()));
         templateModel.put("employeeFullName", HtmlUtils.htmlEscape(newState.getEmployeeFullName()));
+        templateModel.put("company", newState.getCompanyName());
+        templateModel.put("department", newState.getDepartment());
         templateModel.put("headOfDepartmentShortName", newState.getHeadOfDepartmentShortName());
         templateModel.put("employmentType", newState.getEmploymentType().name());
         templateModel.put("withRegistration", newState.isWithRegistration());
@@ -291,6 +299,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldEmploymentDate", oldState == null ? null : oldState.getEmploymentDate());
         templateModel.put("newEmploymentDate", newState.getEmploymentDate());
         templateModel.put("created", newState.getCreated());
+        templateModel.put("creator", newState.getCreatorShortName());
         templateModel.put("workplace", HtmlUtils.htmlEscape(newState.getWorkplace()));
         templateModel.put("equipmentList", newState.getEquipmentList());
         templateModel.put("operatingSystem", HtmlUtils.htmlEscape(newState.getOperatingSystem()));
@@ -301,6 +310,17 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("comment", HtmlUtils.htmlEscape(newState.getComment()));
         templateModel.put("recipients", recipients);
         templateModel.put("curatorsDiff", event.getCuratorsDiff());
+
+        templateModel.put( "caseComments",
+                getCommentsAttachesModelKeys(
+                        comments,
+                        event.getAddedCaseComments(),
+                        event.getChangedCaseComments(),
+                        event.getRemovedCaseComments(),
+                        event.getCommentToAttachmentDiffs(),
+                        event.getExistingAttachments(),
+                        En_TextMarkup.MARKDOWN)
+        );
 
         PreparedTemplate template = new PreparedTemplate("notification/email/employee.registration.body.%s.ftl");
         template.setModel(templateModel);
@@ -658,14 +678,6 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldContactPerson", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getInitiator(), PersonShortView::getDisplayName)));
         templateModel.put("newContactPerson", getNullOrElse(newDeliveryState.getInitiator(), PersonShortView::getDisplayName));
 
-        templateModel.put("hwManagerChanged", event.isHwManagerChanged());
-        templateModel.put("oldHwManager", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getHwManager(), PersonShortView::getDisplayName)));
-        templateModel.put("newHwManager", getNullOrElse(newDeliveryState.getHwManager(), PersonShortView::getDisplayName));
-
-        templateModel.put("qcManagerChanged", event.isQcManagerChanged());
-        templateModel.put("oldQcManager", getNullOrElse(oldDeliveryState, delivery -> getNullOrElse(delivery.getQcManager(), PersonShortView::getDisplayName)));
-        templateModel.put("newQcManager", getNullOrElse(newDeliveryState.getQcManager(), PersonShortView::getDisplayName));
-
         templateModel.put( "caseComment",
                 getCommentsAttachesModelKeys(
                         comments,
@@ -750,12 +762,14 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action, Collection<String> recipients) {
+    public PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action,
+                                                       Collection<String> recipients, EnumLangUtil enumLangUtil) {
         PersonAbsence oldState = event.getOldState();
         PersonAbsence newState = event.getNewState();
         List<PersonAbsence> multiAddAbsenceList = event.getMultiAddAbsenceList();
 
         Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("EnumLangUtil", enumLangUtil);
         templateModel.put("is_created", action == EventAction.CREATED);
         templateModel.put("is_updated", action == EventAction.UPDATED);
         templateModel.put("is_removed", action == EventAction.REMOVED);
@@ -772,7 +786,7 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("multiAddAbsenceList", multiAddAbsenceList);
 
-        templateModel.put("reason", newState.getReason().getId());
+        templateModel.put("reason", newState.getReason());
 
         templateModel.put("commentChanged", event.isUserCommentChanged());
         templateModel.put("oldComment", getNullOrElse(oldState, PersonAbsence::getUserComment));

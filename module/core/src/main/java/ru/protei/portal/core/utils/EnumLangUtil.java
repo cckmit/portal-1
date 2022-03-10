@@ -15,7 +15,7 @@ public class EnumLangUtil {
         this.lang = lang;
     }
 
-    public String getPersonRoleType(En_DevUnitPersonRoleType type, String langCode) {
+    public String getPersonRoleType(En_PersonRoleType type, String langCode) {
         if (localizedLang == null) {
             localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         }
@@ -25,24 +25,6 @@ public class EnumLangUtil {
                 return localizedLang.get("personHeadManager");
             case DEPLOY_MANAGER:
                 return localizedLang.get("personDeployManager");
-            case DECISION_CENTER:
-                return localizedLang.get("personDecisionCenter");
-            case CHIEF_DECISION_MAKER:
-                return localizedLang.get("personChiefDecisionMaker");
-            case KEEPER:
-                return localizedLang.get("personDecisionKeeper");
-            case TECH_SPECIALIST:
-                return localizedLang.get("personTechSpecialist");
-            case INFLUENCE_MAKER:
-                return localizedLang.get("personInfluenceMaker");
-            case CHIEF_INFLUENCE_MAKER:
-                return localizedLang.get("personChiefInfluenceMaker");
-            case ECONOMIST:
-                return localizedLang.get("personEconomist");
-            case WELL_WISHER:
-                return localizedLang.get("personWellWisher");
-            case RECEPTIVITY_CENTER:
-                return localizedLang.get("personReceptivityCenter");
             case HARDWARE_CURATOR:
                 return localizedLang.get("personHardwareCurator");
             case SOFTWARE_CURATOR:
@@ -56,7 +38,7 @@ public class EnumLangUtil {
             case PRODUCT_ASSEMBLER:
                 return localizedLang.get("personProductAssembler");
             case SUPPLY_PREPARATION:
-                return localizedLang.get("personSupplyPreparation");
+                return localizedLang.get("personDeliveryPreparation");
             case ENGINEER_DOC_DEV:
                 return localizedLang.get("personEngineerDocDev");
             case TECH_DOC_DEV:
@@ -85,6 +67,26 @@ public class EnumLangUtil {
                 return localizedLang.get("personPresaleHeadManager");
             case DEPLOY_HEAD_MANAGER:
                 return localizedLang.get("personDeployHeadManager");
+            case DELIVERY_PACKING:
+                return localizedLang.get("personDeliveryPacking");
+            case ENTRANCE_CONTROL:
+                return localizedLang.get("personEntranceControl");
+            case EQUIPMENT_SETUP:
+                return localizedLang.get("personEquipmentSetup");
+            case OPERATIONAL_DOCUMENTATION:
+                return localizedLang.get("personOperationalDocumentation");
+            case QAD_DOCUMENTATION:
+                return localizedLang.get("personQadDocumentation");
+            case SPECIAL_CHECK_SPECIAL_RESEARCH:
+                return localizedLang.get("personSpecialCheckSpecialResearch");
+            case AUTOMATIC_MOUNTING:
+                return localizedLang.get("personAutomaticMounting");
+            case MANUAL_MOUNTING:
+                return localizedLang.get("personManualMounting");
+            case OUTPUT_CONTROL:
+                return localizedLang.get("personOutputControl");
+            case EQUIPMENT_ASSEMBLY:
+                return localizedLang.get("personEquipmentAssembly");
         }
 
         return localizedLang.get("personRoleUnknown");
@@ -179,22 +181,20 @@ public class EnumLangUtil {
         return "";
     }
 
-    public String contractStateLang(En_ContractState contractState, String langCode) {
-        if (contractState == null) {
-            return "";
-        }
+    public String contractStateLang(String state, String langCode) {
         if (localizedLang == null) {
             localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         }
-        switch (contractState) {
-            case AGREEMENT: return localizedLang.get("contractStateAgreement");
-            case COPIES_SEND_TO_CUSTOMER: return localizedLang.get("contractStateCopiesSendToCustomer");
-            case HAVE_ORIGINAL: return localizedLang.get("contractStateHaveOriginal");
-            case WAIT_ORIGINAL: return localizedLang.get("contractStateWaitOriginal");
-            case WAITING_COPIES_FROM_CUSTOMER: return localizedLang.get("contractWaitingCopiesFromCustomer");
-            case CANCELLED: return localizedLang.get("contractCancelled");
-            case EDS_SIGNED: return localizedLang.get("contractEdsSigned");
-            case SIGNED_ON_SITE: return localizedLang.get("contractSignedOnSite");
+
+        switch (state.toLowerCase()) {
+            case "agreement": return localizedLang.get("contractStateAgreement");
+            case "copies send to customer": return localizedLang.get("contractStateCopiesSendToCustomer");
+            case "have an original": return localizedLang.get("contractStateHaveOriginal");
+            case "waiting for original": return localizedLang.get("contractStateWaitOriginal");
+            case "waiting for copies from customer": return localizedLang.get("contractWaitingCopiesFromCustomer");
+            case "canceled": return localizedLang.get("contractCancelled");
+            case "eds signed": return localizedLang.get("contractEdsSigned");
+            case "signed on site": return localizedLang.get("contractSignedOnSite");
         }
         return "";
     }
@@ -240,7 +240,7 @@ public class EnumLangUtil {
         return "";
     }
 
-    public String dutyLogTypeLang(En_AbsenceReason absenceReason, String langCode) {
+    public String absenceReasonLang(En_AbsenceReason absenceReason, String langCode) {
         if (absenceReason == null) {
             return "";
         }
@@ -302,6 +302,8 @@ public class EnumLangUtil {
                 return localizedLang.get("dutyTypeSORM");
             case COV:
                 return localizedLang.get("dutyTypeCOV");
+            case IMS:
+                return localizedLang.get("dutyTypeIMS");
         }
         return "";
     }
@@ -372,29 +374,29 @@ public class EnumLangUtil {
     }
 
     public String deliveryStateLang(CaseState caseState, String langCode) {
-        if (caseState == null) {
+        if (caseState == null || caseState.getState() == null) {
             return "";
         }
         if (localizedLang == null) {
             localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         }
-        switch (caseState.getId().intValue()) {
-            case 39:
+        switch (caseState.getState().toLowerCase()) {
+            case "preliminary":
                 return localizedLang.get("deliveryStatePreliminary");
-            case 40:
-                return localizedLang.get("deliveryStatePreReserve");
-            case 41:
-                return localizedLang.get("deliveryStateReserve");
-            case 42:
+            case "reservation":
+                return localizedLang.get("deliveryStateReservation");
+            case "reserved":
+                return localizedLang.get("deliveryStateReserved");
+            case "assembly":
                 return localizedLang.get("deliveryStateAssembly");
-            case 43:
-                return localizedLang.get("deliveryStateTest");
-            case 44:
+            case "testing":
+                return localizedLang.get("deliveryStateTesting");
+            case "ready":
                 return localizedLang.get("deliveryStateReady");
-            case 45:
+            case "sent":
                 return localizedLang.get("deliveryStateSent");
-            case 46:
-                return localizedLang.get("deliveryStateWork");
+            case "works":
+                return localizedLang.get("deliveryStateWorks");
         }
         return caseState.getState();
     }

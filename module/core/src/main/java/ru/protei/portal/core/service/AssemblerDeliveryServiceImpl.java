@@ -24,7 +24,7 @@ import java.util.List;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
 import static ru.protei.portal.core.model.ent.CaseObject.Columns.*;
-import static ru.protei.portal.core.model.ent.Delivery.Columns.KITS;
+import static ru.protei.portal.core.model.ent.Delivery.Fields.KITS;
 
 public class AssemblerDeliveryServiceImpl implements AssemblerDeliveryService {
     private static final Logger log = LoggerFactory.getLogger(AssemblerDeliveryServiceImpl.class);

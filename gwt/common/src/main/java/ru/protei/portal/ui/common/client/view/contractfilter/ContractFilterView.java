@@ -14,12 +14,14 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterActivity;
+import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyMultiSelector;
@@ -35,11 +37,8 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
-import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterActivity;
-import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterView;
 
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ContractFilterView extends Composite implements AbstractContractFilterView {
@@ -47,7 +46,6 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @Inject
     public void onInit() {
         initWidget(outUiBinder.createAndBindUi(this));
-        initCuratorsSelector();
         sortField.setType(ModuleType.CONTRACT);
         dateSigningRange.fillSelector(En_DateIntervalType.defaultTypes());
         dateValidRange.fillSelector(En_DateIntervalType.defaultTypes());
@@ -68,13 +66,19 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         organizations.setValue(null);
         managers.setValue(null);
         direction.setValue(null);
-        states.setValue(null);
+        resetStates();
         types.setValue(null);
         tags.setValue(null);
         kind.setValue(true);
         dateSigningRange.setValue(null);
         dateValidRange.setValue(null);
         deliveryNumber.setValue(null);
+    }
+
+    private void resetStates() {
+        if (activity != null) {
+            activity.resetContractStates();
+        }
     }
 
     @Override
@@ -124,7 +128,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     }
 
     @Override
-    public HasValue<Set<En_ContractState>> states() {
+    public HasValue<Set<CaseState>> states() {
         return states;
     }
 
@@ -168,6 +172,13 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @Override
     public HasValue<String> deliveryNumber() {
         return deliveryNumber;
+    }
+
+    @Override
+    public void initCuratorsSelector(List<String> contractCuratorsDepartmentsIds) {
+        EmployeeQuery query = new EmployeeQuery(null, false, true, En_SortField.person_full_name, En_SortDir.ASC);
+        query.setDepartmentIds(contractCuratorsDepartmentsIds);
+        curators.setEmployeeQuery(query);
     }
 
     @UiHandler("resetBtn")
@@ -214,7 +225,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     }
 
     @UiHandler("states")
-    public void onStateChanged(ValueChangeEvent<Set<En_ContractState>> event) {
+    public void onStateChanged(ValueChangeEvent<Set<CaseState>> event) {
         restartChangeTimer();
     }
 
@@ -246,12 +257,6 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @UiHandler("dateValidRange")
     public void onDateValidRangeChanged(ValueChangeEvent<DateIntervalWithType> event) {
         restartChangeTimer();
-    }
-
-    private void initCuratorsSelector() {
-        EmployeeQuery query = new EmployeeQuery(null, false, true, En_SortField.person_full_name, En_SortDir.ASC);
-        query.setDepartmentIds(new HashSet<>(Collections.singletonList(CrmConstants.Department.CONTRACT)));
-        curators.setEmployeeQuery(query);
     }
 
     private void restartChangeTimer() {

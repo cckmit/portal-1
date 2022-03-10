@@ -52,6 +52,8 @@ import static ru.protei.portal.core.access.ProjectAccessUtil.getProjectAccessTyp
 import static ru.protei.portal.core.model.dict.En_ExpiringProjectTSVPeriod.*;
 import static ru.protei.portal.core.model.dict.En_SortField.project_head_manager;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.dto.Project.Fields.*;
+import static ru.protei.portal.core.model.util.CrmConstants.State.CANCELED;
 
 
 /**
@@ -144,7 +146,7 @@ public class ProjectServiceImpl implements ProjectService {
             return;
         }
 
-        jdbcManyRelationsHelper.fill( project, "members" );
+        jdbcManyRelationsHelper.fill( project, PROJECT_MEMBERS );
 
         Collection<Long> subscribersIds = toSet( project.getMembers(), caseMember -> caseMember.getMemberId() );
         if (project.getCreatorId() != null) {
@@ -213,7 +215,7 @@ public class ProjectServiceImpl implements ProjectService {
         project.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
         project.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
         project.getProducts().forEach(product -> product.setProductDirections(new HashSet<>(devUnitDAO.getProductDirections(product.getId()))));
-        project.setContracts(CollectionUtils.toList(contractDAO.getByProjectId(id), Contract::toEntityOption));
+        project.setContracts(CollectionUtils.toList(removeCancelledContracts(contractDAO.getByProjectId(id)), Contract::toEntityOption));
         project.setPlatforms(CollectionUtils.toList(platformDAO.getByProjectId(id), Platform::toEntityOption));
 
         if (!canAccessProject(policyService, token, En_Privilege.PROJECT_VIEW, project.getTeam())) {
@@ -231,8 +233,8 @@ public class ProjectServiceImpl implements ProjectService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        jdbcManyRelationsHelper.fill(projectFromDb, "locations");
-        jdbcManyRelationsHelper.fill(projectFromDb, "members");
+        jdbcManyRelationsHelper.fill(projectFromDb, PROJECT_LOCATIONS);
+        jdbcManyRelationsHelper.fill(projectFromDb, PROJECT_MEMBERS);
         projectFromDb.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(projectFromDb.getId())));
         projectFromDb.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(projectFromDb.getId())));
 
@@ -282,12 +284,12 @@ public class ProjectServiceImpl implements ProjectService {
             projectFormDB.setCustomerType(project.getCustomerType());
 
         projectFormDB.setProjectSlas(project.getProjectSlas());
-        jdbcManyRelationsHelper.persist(projectFormDB, "projectSlas");
+        jdbcManyRelationsHelper.persist(projectFormDB, PROJECT_SLAS);
 
         projectFormDB.setSubcontractors(project.getSubcontractors());
-        jdbcManyRelationsHelper.persist(projectFormDB, Project.Fields.PROJECT_SUBCONTRACTORS);
+        jdbcManyRelationsHelper.persist(projectFormDB, PROJECT_SUBCONTRACTORS);
 
-        jdbcManyRelationsHelper.persist(project, Project.Fields.PROJECT_PLANS);
+        jdbcManyRelationsHelper.persist(project, PROJECT_PLANS);
 
         try {
             updateDevUnits( projectFormDB, emptyIfNull(projectFormDB.getProducts()),  emptyIfNull(project.getProducts()) );
@@ -348,9 +350,9 @@ public class ProjectServiceImpl implements ProjectService {
             throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
-        jdbcManyRelationsHelper.persist(project, "projectSlas");
-        jdbcManyRelationsHelper.persist(project, Project.Fields.PROJECT_PLANS);
-        jdbcManyRelationsHelper.persist(project, Project.Fields.PROJECT_SUBCONTRACTORS);
+        jdbcManyRelationsHelper.persist(project, PROJECT_SLAS);
+        jdbcManyRelationsHelper.persist(project, PROJECT_PLANS);
+        jdbcManyRelationsHelper.persist(project, PROJECT_SUBCONTRACTORS);
 
         try {
             updateTeam(caseObject, project.getTeam());
@@ -393,7 +395,7 @@ public class ProjectServiceImpl implements ProjectService {
             return error(En_ResultStatus.NOT_FOUND);
         }
 
-        jdbcManyRelationsHelper.fill(project, "members");
+        jdbcManyRelationsHelper.fill(project, PROJECT_MEMBERS);
         if (!canAccessProject(policyService, token, En_Privilege.PROJECT_REMOVE, project.getTeam())) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
@@ -403,7 +405,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         if (result) {
             caseLinkService.getLinks(token, caseObject.getId())
-                .ifOk(links -> caseLinkService.deleteLinks(token, links));
+                .ifOk(links -> caseLinkService.deleteLinks(token, links, En_CaseType.PROJECT));
         }
         return ok(projectId);
     }
@@ -418,8 +420,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         SearchResult<Project> projects = projectDAO.getSearchResult(query);
 
-        jdbcManyRelationsHelper.fill(projects.getResults(), "members");
-        jdbcManyRelationsHelper.fill(projects.getResults(), "locations");
+        jdbcManyRelationsHelper.fill(projects.getResults(), PROJECT_MEMBERS);
+        jdbcManyRelationsHelper.fill(projects.getResults(), PROJECT_LOCATIONS);
         projects.forEach(project -> {
                     project.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
                     project.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
@@ -445,6 +447,7 @@ public class ProjectServiceImpl implements ProjectService {
         projects.forEach(project -> {
             project.setProducts(new HashSet<>(devUnitDAO.getProjectProducts(project.getId())));
             project.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(project.getId())));
+            jdbcManyRelationsHelper.fill(project,PROJECT_MEMBERS);
         });
 
         List<ProjectInfo> result = projects.stream()
@@ -499,6 +502,10 @@ public class ProjectServiceImpl implements ProjectService {
         List<Long> companyIds = new ArrayList<>();
         companyIds.addAll(emptyIfNull(projectQuery.getInitiatorCompanyIds()));
         return companyIds;
+    }
+
+    private List<Contract> removeCancelledContracts(List<Contract> contracts) {
+        return stream(contracts).filter(contract -> !Objects.equals(CANCELED, contract.getStateId())).collect(toList());
     }
 
     private boolean updateCaseObjectPart(AuthToken token, Project project) {
@@ -654,7 +661,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<PersonProjectMemberView> toAdd = listOf(team);
         List<Long> toRemove = new ArrayList<>();
-        List<En_DevUnitPersonRoleType> projectRoles = En_DevUnitPersonRoleType.getProjectRoles();
+        List<En_PersonRoleType> projectRoles = En_PersonRoleType.getProjectRoles();
 
         if (caseObject.getMembers() != null) {
             for (CaseMember member : caseObject.getMembers()) {

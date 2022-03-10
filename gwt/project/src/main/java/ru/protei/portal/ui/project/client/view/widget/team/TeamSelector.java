@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.project.client.view.widget.team.item.AbstractTeamSelectorItem;
 import ru.protei.portal.ui.project.client.view.widget.team.item.TeamSelectorItemModel;
@@ -69,7 +69,7 @@ public class TeamSelector extends Composite implements AbstractTeamSelector, Has
             root.addStyleName("disabled");
         }
         modelToView.values().forEach(itemView -> {
-            itemView.roleEnabled().setEnabled(enabled && !En_DevUnitPersonRoleType.HEAD_MANAGER.equals(itemView.role().getValue()));
+            itemView.roleEnabled().setEnabled(enabled && !En_PersonRoleType.HEAD_MANAGER.equals(itemView.role().getValue()));
             itemView.membersEnabled().setEnabled(enabled);
         });
     }
@@ -79,7 +79,7 @@ public class TeamSelector extends Composite implements AbstractTeamSelector, Has
         if (itemModel == null) {
             return;
         }
-        if (!itemModel.allowEmptyMembers && itemModel.members.size() == 0 && !En_DevUnitPersonRoleType.HEAD_MANAGER.equals(itemModel.role)) {
+        if (!itemModel.allowEmptyMembers && itemModel.members.size() == 0 && !En_PersonRoleType.HEAD_MANAGER.equals(itemModel.role)) {
             removeItem(itemModel);
             onRoleChanged(itemModel, itemModel.role, null);
         }
@@ -94,14 +94,14 @@ public class TeamSelector extends Composite implements AbstractTeamSelector, Has
     }
 
     @Override
-    public void onRoleChanged(TeamSelectorItemModel target, En_DevUnitPersonRoleType previous, En_DevUnitPersonRoleType actual) {
+    public void onRoleChanged(TeamSelectorItemModel target, En_PersonRoleType previous, En_PersonRoleType actual) {
         for (Map.Entry<TeamSelectorItemModel, AbstractTeamSelectorItem> entry : modelToView.entrySet()) {
             TeamSelectorItemModel itemModel = entry.getKey();
             AbstractTeamSelectorItem itemView = entry.getValue();
             if (itemModel.equals(target)) {
                 continue;
             }
-            List<En_DevUnitPersonRoleType> availableRoles = itemView.getAvailableRoles();
+            List<En_PersonRoleType> availableRoles = itemView.getAvailableRoles();
             if (actual != null) {
                 availableRoles.remove(actual);
             }
@@ -117,7 +117,7 @@ public class TeamSelector extends Composite implements AbstractTeamSelector, Has
     }
 
     private void addNewItem(TeamSelectorItemModel itemModel) {
-        List<En_DevUnitPersonRoleType> availableRoles = getAvailableRoles();
+        List<En_PersonRoleType> availableRoles = getAvailableRoles();
         if (availableRoles.size() == 0) {
             return;
         }
@@ -131,8 +131,8 @@ public class TeamSelector extends Composite implements AbstractTeamSelector, Has
         itemView.setAvailableRoles(availableRoles);
         itemView.setModel(itemModel);
         itemView.membersEnabled().setEnabled(isEnabled);
-        itemView.roleEnabled().setEnabled(isEnabled && !En_DevUnitPersonRoleType.HEAD_MANAGER.equals(itemModel.role));
-        itemView.setRoleMandatory(En_DevUnitPersonRoleType.HEAD_MANAGER.equals(itemModel.role));
+        itemView.roleEnabled().setEnabled(isEnabled && !En_PersonRoleType.HEAD_MANAGER.equals(itemModel.role));
+        itemView.setRoleMandatory(En_PersonRoleType.HEAD_MANAGER.equals(itemModel.role));
         model.add(itemModel);
         modelToView.put(itemModel, itemView);
         root.add(itemView.asWidget());
@@ -151,8 +151,8 @@ public class TeamSelector extends Composite implements AbstractTeamSelector, Has
         modelToView.remove(itemModel);
     }
 
-    private List<En_DevUnitPersonRoleType> getAvailableRoles() {
-        List<En_DevUnitPersonRoleType> roles = listOf(En_DevUnitPersonRoleType.getProjectRoles());
+    private List<En_PersonRoleType> getAvailableRoles() {
+        List<En_PersonRoleType> roles = listOf(En_PersonRoleType.getProjectRoles());
         model.forEach(itemModel -> roles.remove(itemModel.role));
         return roles;
     }

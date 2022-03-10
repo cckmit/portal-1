@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
+import ru.protei.portal.core.model.query.YoutrackWorkQuery;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.ui.common.client.columns.StaticColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -29,7 +30,7 @@ public class FilterColumn extends StaticColumn<ReportDto> {
     public FilterColumn(Lang lang, En_SortFieldLang sortFieldLang, En_SortDirLang sortDirLang,
                         ProjectStateLang projectStateLang, En_DateIntervalLang intervalTypeLang,
                         En_ContractKindLang contractKindLang, En_ContractTypeLang contractTypeLang,
-                        En_ContractStateLang contractStateLang) {
+                        ContractStateLang contractStateLang) {
         this.lang = lang;
         this.sortFieldLang = sortFieldLang;
         this.sortDirLang = sortDirLang;
@@ -72,6 +73,8 @@ public class FilterColumn extends StaticColumn<ReportDto> {
                 case PROJECT:
                     appendProjectQueryInfo(divElement, (ProjectQuery) value.getQuery());
                     break;
+                case YT_WORK:
+                    appendYoutrackWorkQueryInfo(divElement, (YoutrackWorkQuery) value.getQuery());
             }
         }
 
@@ -277,12 +280,8 @@ public class FilterColumn extends StaticColumn<ReportDto> {
         }
 
         // states
-        if (isNotEmpty(contractQuery.getStates())) {
-            Element managerElement = DOM.createElement("p");
-            managerElement.setInnerText(lang.contractState() + ": " + stream(contractQuery.getStates())
-                    .map(state -> contractStateLang.getName(state))
-                    .collect(Collectors.joining(", ")));
-            element.appendChild(managerElement);
+        if (isNotEmpty(contractQuery.getStateIds())) {
+            element.appendChild(makeArraySelectedElement(lang.contractState(), contractQuery.getStateIds()));
         }
 
         // organization
@@ -299,6 +298,10 @@ public class FilterColumn extends StaticColumn<ReportDto> {
         if (isNotEmpty(contractQuery.getManagerIds())) {
             element.appendChild(makeArraySelectedElement(lang.contractProjectManager(), contractQuery.getManagerIds()));
         }
+    }
+
+    private void appendYoutrackWorkQueryInfo(Element element, YoutrackWorkQuery query){
+        element.appendChild(makeDateRangeElement(lang.period(), query.getDateRange()));
     }
 
     private Element makeDateRangeElement(String name, Date from, Date to) {
@@ -352,5 +355,5 @@ public class FilterColumn extends StaticColumn<ReportDto> {
     private En_DateIntervalLang intervalTypeLang;
     private En_ContractKindLang contractKindLang;
     private En_ContractTypeLang contractTypeLang;
-    private En_ContractStateLang contractStateLang;
+    private ContractStateLang contractStateLang;
 }

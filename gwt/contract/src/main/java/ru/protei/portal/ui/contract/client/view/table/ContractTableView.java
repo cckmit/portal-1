@@ -18,10 +18,11 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
+import ru.protei.portal.ui.common.client.columns.CopyClickColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.MoneyRenderer;
 import ru.protei.portal.ui.common.client.lang.En_ContractKindLang;
-import ru.protei.portal.ui.common.client.lang.En_ContractStateLang;
+import ru.protei.portal.ui.common.client.lang.ContractStateLang;
 import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contract.client.activity.table.AbstractContractTableActivity;
@@ -124,6 +125,13 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         columnCost.setHandler(activity);
         columnCost.setColumnProvider(columnProvider);
 
+        copyClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTRACT_EDIT));
+        table.addColumn(copyClickColumn.header, copyClickColumn.values);
+        copyClickColumn.setActionHandler(activity);
+        copyClickColumn.setCopyHandler(activity);
+        copyClickColumn.setHandler(activity);
+        copyClickColumn.setColumnProvider(columnProvider);
+
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTRACT_EDIT));
         table.addColumn(editClickColumn.header, editClickColumn.values);
         editClickColumn.setActionHandler(activity);
@@ -132,6 +140,7 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         editClickColumn.setColumnProvider(columnProvider);
 
         table.setLoadHandler(activity);
+        table.setPagerListener(activity);
     }
 
     private final ClickColumn<Contract> columnState = new ClickColumn<Contract>() {
@@ -143,8 +152,8 @@ public class ContractTableView extends Composite implements AbstractContractTabl
             image.addClassName("height-40");
             // https://www.flaticon.com/authors/flat_circular/flat
             // https://www.flaticon.com/packs/business-strategy-2
-            image.setSrc( "./images/contract_" + contract.getState().name().toLowerCase() + ".png" );
-            image.setTitle( contractStateLang.getName(contract.getState()) );
+            image.setSrc( "./images/contract_" + contract.getStateName().toLowerCase() + ".png" );
+            image.setTitle( contractStateLang.getName(contract.getStateName()) );
             root.appendChild(image);
             cell.appendChild(root);
         }
@@ -210,17 +219,21 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         public void fillColumnValue(Element cell, Contract contract) {
             Element root = DOM.createDiv();
             StringBuilder sb = new StringBuilder();
+            sb.append("<b>")
+                    .append(lang.contractProject())
+                    .append(":</b> ");
             if (isNotEmpty(contract.getProductDirections())) {
-                sb.append("<b>")
+                sb.append("<i>")
                         .append(joining(contract.getProductDirections(), ", ", direction -> sanitizeHtml(direction.getName())))
-                        .append("</b>")
+                        .append("</i>")
                         .append(" ");
             }
-            if (contract.getProjectId() != null) {
-                sb.append(sanitizeHtml(contract.getProjectName()));
-            }
+            sb.append(sanitizeHtml(contract.getProjectName()));
             sb.append("<br/>");
-            sb.append(sanitizeHtml(contract.getDescription()));
+            sb.append("<b>")
+                    .append(lang.contractDescription())
+                    .append(":</b> ")
+                    .append(sanitizeHtml(contract.getDescription()));
             root.setInnerHTML(sb.toString());
             cell.appendChild(root);
         }
@@ -293,7 +306,9 @@ public class ContractTableView extends Composite implements AbstractContractTabl
     @Inject
     private EditClickColumn<Contract> editClickColumn;
     @Inject
-    private En_ContractStateLang contractStateLang;
+    private CopyClickColumn<Contract> copyClickColumn;
+    @Inject
+    private ContractStateLang contractStateLang;
     @Inject
     private En_ContractTypeLang contractTypeLang;
     @Inject

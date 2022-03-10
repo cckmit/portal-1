@@ -11,7 +11,9 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.ContractService;
 import ru.protei.portal.core.service.ProjectService;
+import ru.protei.portal.core.service.WorkerEntryService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -55,10 +57,8 @@ public class BaseServiceTest {
         product.setType( En_DevUnitType.PRODUCT );
         product.setStateId( En_DevUnitState.ACTIVE.getId() );
         product.setInfo( "info" );
-        product.setHistoryVersion( "historyVersion" );
-        product.setCdrDescription( "cdrDescription" );
-        product.setConfiguration( "configuration" );
-        product.setWikiLink( "https://newportal.protei.ru/" );
+        product.setInternalDocLink( "https://portal.protei.ru/" );
+        product.setExternalDocLink( "https://portal.protei.ru/" );
         return product;
     }
 
@@ -97,6 +97,7 @@ public class BaseServiceTest {
         person.setCompanyId( company.getId() );
         person.setCompany( company );
         person.setDisplayName( "Test_Person" );
+        person.setDisplayShortName("Test_P");
         person.setGender( En_Gender.MALE );
         return person;
     }
@@ -257,6 +258,15 @@ public class BaseServiceTest {
 
     protected CaseComment makeCaseComment(Person person, Long caseObjectId, String text) {
         CaseComment caseComment = createNewComment(person, caseObjectId, text);
+        caseComment.setId(caseCommentDAO.persist(caseComment));
+        caseComment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
+        return caseComment;
+    }
+
+    protected CaseComment makeTimeElapsedCaseComment(Person person, Long caseObjectId, En_TimeElapsedType type, Long time) {
+        CaseComment caseComment = createNewComment(person, caseObjectId, "TimeElapsed");
+        caseComment.setTimeElapsedType(type);
+        caseComment.setTimeElapsed(time);
         caseComment.setId(caseCommentDAO.persist(caseComment));
         caseComment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         return caseComment;
@@ -445,4 +455,8 @@ public class BaseServiceTest {
     protected DocumentDAO documentDAO;
     @Autowired
     protected PlanDAO planDAO;
+    @Autowired
+    protected ContractService contractService;
+    @Autowired
+    protected WorkerEntryService workerEntryService;
 }

@@ -1,0 +1,16 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="drop-FK_CO_CASE" author="porubov">
+        <dropForeignKeyConstraint baseTableName="case_member" constraintName="FK_CO_CASE"/>
+    </changeSet>
+
+    <changeSet id="add-new-FK_CO_CASE" author="porubov">
+        <addForeignKeyConstraint constraintName="FK_CO_CASE" onDelete="CASCADE" onUpdate="NO ACTION"
+                                 baseTableName="case_member" baseColumnNames="CASE_ID"
+                                 referencedTableName="case_object" referencedColumnNames="ID" />
+    </changeSet>
+</databaseChangeLog>

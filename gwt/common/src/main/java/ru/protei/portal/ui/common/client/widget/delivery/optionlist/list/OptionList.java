@@ -1,22 +1,21 @@
 package ru.protei.portal.ui.common.client.widget.delivery.optionlist.list;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.marker.HasLongId;
 import ru.protei.portal.ui.common.client.events.EditEvent;
 import ru.protei.portal.ui.common.client.events.EditHandler;
 import ru.protei.portal.ui.common.client.events.HasEditHandlers;
-import ru.protei.portal.ui.common.client.events.clone.CloneEvent;
-import ru.protei.portal.ui.common.client.events.clone.CloneHandler;
-import ru.protei.portal.ui.common.client.events.clone.HasCloneHandlers;
 import ru.protei.portal.ui.common.client.widget.delivery.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
@@ -24,18 +23,17 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 
 import java.util.*;
 
-import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
- * Список чекбоксов с информацией и кнопкой
+ * Список комплектов поставки
  */
 public class OptionList<T extends HasLongId>
         extends Composite
         implements HasValue<Set<T>>,
         ValueChangeHandler<Boolean>,
         HasEnabled, SelectorWithModel<T>,
-        HasEditHandlers,
-        HasCloneHandlers
+        HasEditHandlers
 {
     public OptionList() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -70,29 +68,23 @@ public class OptionList<T extends HasLongId>
         this.selectorModel = selectorModel;
     }
 
-    public void setHeader( String header ) {
-        this.header.setInnerText( header == null ? "" : header );
-        this.header.removeClassName(HIDE);
-    }
-
-    public void addOption( String number, String status, String statusColor, String name, T value ) {
+    public void addOption( String number, String status, String statusColor, Integer amount, String name, T value ) {
         if ( filter != null && !filter.isDisplayed( value ) ) {
             return;
         }
 
         OptionItem itemView = itemFactory.get();
         itemView.setNumber( number );
-        itemView.setStatus( status );
+        itemView.setStatusTitle( status );
         itemView.setStatusColor( statusColor );
-        itemView.setName( name );
+        itemView.setName( name, name );
+        itemView.setAmount(amount);
 
         itemView.addValueChangeHandler( this );
         itemView.setValue( selected.contains( value ) );
         itemView.setEnabled( isEnabled );
 
-        itemView.addEditHandler(event -> EditEvent.fire(OptionList.this, value.getId(), name));
-
-        itemView.addCloneHandler(event -> CloneEvent.fire(OptionList.this, value.getId()));
+        itemView.addEditHandler( event -> onSelectItem(itemView, value, name) );
 
         if (isMandatoryOption(value)) {
             makeOptionMandatory(itemView);
@@ -105,7 +97,16 @@ public class OptionList<T extends HasLongId>
     }
 
     public void addOption( String name, T value ) {
-        addOption( null, null, null, name, value );
+        addOption( null, null, null, null, name, value );
+    }
+
+    public void updateOption(String status, String statusColor, String name, T value) {
+        OptionItem optionItem = itemToViewModel.get(value);
+        if (optionItem != null) {
+            optionItem.setStatusTitle(status);
+            optionItem.setStatusColor(statusColor);
+            optionItem.setName(name, name);
+        }
     }
 
     @Override
@@ -137,6 +138,7 @@ public class OptionList<T extends HasLongId>
 
     public void clearOptions() {
         container.clear();
+        selected.clear();
         itemViewToModel.clear();
         itemToViewModel.clear();
         itemToNameModel.clear();
@@ -168,11 +170,6 @@ public class OptionList<T extends HasLongId>
     }
 
     @Override
-    public HandlerRegistration addCloneHandler(CloneHandler handler) {
-        return addHandler(handler, CloneEvent.getType());
-    }
-
-    @Override
     public HandlerRegistration addEditHandler(EditHandler handler) {
         return addHandler(handler, EditEvent.getType());
     }
@@ -192,18 +189,6 @@ public class OptionList<T extends HasLongId>
         this.filter = filter;
     }
 
-    public void refreshValueByFilter(Selector.SelectorFilter<T> filter) {
-        this.setFilter(filter);
-        container.clear();
-        for (Map.Entry<OptionItem, T> entry : itemViewToModel.entrySet()) {
-            T t = entry.getValue();
-            OptionItem optionItem = entry.getKey();
-            if (filter == null || filter.isDisplayed(t)) {
-                container.add(optionItem);
-            }
-        }
-    }
-
     public void setEnsureDebugId(T value, String debugId) {
         if (itemToViewModel.containsKey(value)) {
             itemToViewModel.get(value).setEnsureDebugId(debugId);
@@ -219,6 +204,19 @@ public class OptionList<T extends HasLongId>
         selected.addAll(mandatoryOptions);
     }
 
+    private void onSelectItem(OptionItem itemView, T value, String name) {
+        unselectItems();
+        itemView.setActive(true);
+        EditEvent.fire(OptionList.this, value.getId(), name);
+    }
+
+    private void unselectItems() {
+        if (isEmpty(itemViewToModel)){
+            return;
+        }
+        itemViewToModel.keySet().forEach(o -> o.setActive(false));
+    }
+
     private void makeOptionMandatory(OptionItem item) {
         item.setEnabled(false);
         item.setValue(true);
@@ -228,10 +226,14 @@ public class OptionList<T extends HasLongId>
         return mandatoryOptions != null && mandatoryOptions.contains(option);
     }
 
+    protected void makeItemSelected(Long kitId) {
+        itemToViewModel.entrySet().stream()
+                .filter(entry -> Objects.equals(entry.getKey().getId(), kitId))
+                .findAny().ifPresent(entry -> entry.getValue().setActive(true));
+    }
+
     @UiField
     FlowPanel container;
-    @UiField
-    LabelElement header;
 
     @Inject
     Provider<OptionItem> itemFactory;
@@ -246,7 +248,6 @@ public class OptionList<T extends HasLongId>
     private List<T> mandatoryOptions;
     private SelectorModel<T> selectorModel;
 
-    interface OptionListUiBinder extends UiBinder< HTMLPanel, OptionList > {}
+    interface OptionListUiBinder extends UiBinder< FlowPanel, OptionList > {}
     private static OptionListUiBinder ourUiBinder = GWT.create( OptionListUiBinder.class );
-
 }

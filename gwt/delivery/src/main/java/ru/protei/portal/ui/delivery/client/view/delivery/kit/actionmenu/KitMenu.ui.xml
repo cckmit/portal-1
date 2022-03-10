@@ -1,0 +1,16 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="kit-menu-header">
+        <g:Anchor ui:field="backBtn" href="#" styleName="menu-controls p-r-0" title="{lang.buttonBack}">
+            <i class="fa fa-arrow-left"/>
+        </g:Anchor>
+        <div class="menu-title"><ui:text from="{lang.deliveryKits}"/></div>
+        <g:Anchor ui:field="actionsBtn" href="#" styleName="menu-controls p-l-0">
+            <i class="fas fa-ellipsis-h"/>
+        </g:Anchor>
+    </g:HTMLPanel>
+</ui:UiBinder>

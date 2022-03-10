@@ -34,6 +34,7 @@ import ru.protei.portal.core.report.contract.ReportContract;
 import ru.protei.portal.core.report.dutylog.ReportDutyLog;
 import ru.protei.portal.core.report.nightwork.ReportNightWork;
 import ru.protei.portal.core.report.projects.ReportProject;
+import ru.protei.portal.core.report.ytwork.ReportYoutrackWork;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.TimeFormatter;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -82,6 +83,8 @@ public class ReportControlServiceImpl implements ReportControlService {
     ReportCaseTimeElapsed reportCaseTimeElapsed;
     @Autowired
     ReportNightWork reportNightWork;
+    @Autowired
+    ReportYoutrackWork reportYoutrackWork;
     @Autowired
     EventPublisherService publisherService;
     @Autowired
@@ -181,7 +184,7 @@ public class ReportControlServiceImpl implements ReportControlService {
 
             mergeReportStatus(report, En_ReportStatus.READY);
         } catch (Throwable th) {
-            log.error("processReport(): reportId={}, throwable={}", report.getId(), th.getMessage());
+            log.error("processReport(): reportId={}, throwable={}", report.getId(), th);
             th.printStackTrace();
             if (storageResult != null) {
                 reportStorageService.removeContent(report.getId());
@@ -259,6 +262,13 @@ public class ReportControlServiceImpl implements ReportControlService {
                         buffer,
                         report,
                         getQuery(report, CaseQuery.class),
+                        this::isCancel
+                );
+            case YT_WORK:
+                return reportYoutrackWork.writeReport(
+                        buffer,
+                        report,
+                        getQuery(report, YoutrackWorkQuery.class),
                         this::isCancel
                 );
         }

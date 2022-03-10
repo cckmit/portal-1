@@ -55,6 +55,9 @@ public class UiConstants {
         String STORE_AND_DELIVERY = "fas fa-warehouse";
         String CARD_SEARCH = "fas fa-search";
         String DELIVERY = "fas fa-truck";
+        String CARD = "fas fa-microchip";
+        String PCB_ORDER = "fas fa-server";
+        String CARD_BATCH = "fas fa-layer-group";
         String STORE = "fas fa-memory";
         String FLOOR_PLAN = "fas fa-search-location";
         String NOTIFICATION_SYSTEM = "fas fa-envelope";
@@ -95,7 +98,8 @@ public class UiConstants {
         String COMPANY_TYPE_VIEW = "companyTypeView";
         String PRODUCT = "product";
         String PRODUCT_TYPE_VIEW = "productTypeView";
-        String DASHBOARD_CREATE_TABLE = "dashboard_create_table";
+        String DASHBOARD_CREATE_ISSUE_TABLE = "dashboard_create_issue_table";
+        String DASHBOARD_CREATE_PROJECT_TABLE = "dashboard_create_project_table";
         String DASHBOARD_CREATE_ISSUE = "dashboard_create_issue";
         String ISSUE_ASSIGNMENT_CREATE_ISSUE = "issue_assignment_create_issue";
         String EQUIPMENT = "equipment";
@@ -112,6 +116,7 @@ public class UiConstants {
         String EMPLOYEE_REGISTRATION = "employee_registration";
         String CONTRACT = "contract";
         String DELIVERY = "delivery";
+        String KIT = "kit";
         String EMPLOYEE_TYPE_VIEW = "employeeTypeView";
         String TOP_BRASS = "top_brass";
         String EMPLOYEE_VIEW = "employee_view";
@@ -130,6 +135,10 @@ public class UiConstants {
         String ROOM_RESERVATION_CREATE = "room_reservation_create";
         String DUTY_LOG = "duty_log";
         String DUTY_LOG_CREATE_REPORT = "duty_log_create_report";
+        String CARD_CREATE = "card_create";
+        String CARD_GROUP_MODIFY = "card_group_modify";
+        String CARD_BATCH_CREATE = "card_batch_create";
+        String PCB_ORDER_CREATE = "pcb_order";
     }
 
     public interface Styles {
@@ -158,6 +167,7 @@ public class UiConstants {
         String DOWNLOAD = "download";
         String REFRESH = "refresh";
         String CANCEL = "cancel";
+        String CREATE_CARD = "create-card";
     }
 
     public interface Accordion {

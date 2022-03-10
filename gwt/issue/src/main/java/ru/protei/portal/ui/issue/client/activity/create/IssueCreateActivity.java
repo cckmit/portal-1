@@ -2,7 +2,6 @@ package ru.protei.portal.ui.issue.client.activity.create;
 
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
@@ -23,9 +22,10 @@ import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTa
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.En_IssueValidationResultLang;
+import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
-import ru.protei.portal.ui.common.client.util.AttachmentUtils;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
@@ -33,6 +33,8 @@ import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductWithChildrenModel;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -172,7 +174,18 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         lockSave();
         issueController.createIssue(createRequest, new FluentCallback<UiResult<Long>>()
-                .withError(throwable -> unlockSave())
+                .withError(throwable -> {
+                    if (throwable instanceof RequestFailedException && 
+                            ((RequestFailedException)throwable).status == En_ResultStatus.VALIDATION_ERROR) {
+                        RequestFailedException rf = (RequestFailedException)throwable;
+                        fireEvent(new NotifyEvents.Show( resultStatusLang.getMessage(rf.status) + ": " +
+                                validationResultLang.getMessage(rf.issueValidationResult), 
+                                NotifyEvents.NotifyType.ERROR));
+                    } else {
+                        defaultErrorHandler.accept(throwable);
+                    }
+                    unlockSave();
+                })
                 .withSuccess(createIssueResult -> {
                     unlockSave();
                     if (SOME_LINKS_NOT_SAVED.equals(createIssueResult.getMessage())) {
@@ -202,7 +215,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void removeAttachment(Attachment attachment) {
-        attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Long>()
+        attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, null, attachment.getId(), new FluentCallback<Long>()
                 .withError(getRemoveErrorHandler(this, lang))
                 .withSuccess(result -> {
                     view.attachmentsListContainer().remove(attachment);
@@ -213,7 +226,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     @Override
-    public void onCompanyChanged() {
+    public void onInitiatorCompanyChanged() {
         Company companyOption = issueMetaView.getCompany();
 
         fillImportanceSelector(companyOption.getId());
@@ -1023,6 +1036,13 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Inject
     ImportanceLevelControllerAsync importanceService;
+
+    @Inject
+    En_ResultStatusLang resultStatusLang;
+    @Inject
+    En_IssueValidationResultLang validationResultLang;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     @ContextAware
     CaseObjectCreateRequest createRequest;

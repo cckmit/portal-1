@@ -63,7 +63,6 @@ public class DeliveryKitList extends Composite implements TakesValue<List<Kit>>,
     public void setActivity(AbstractDeliveryKitListActivity activity) {
         this.activity = activity;
         activity.getCaseState(CrmConstants.State.PRELIMINARY, caseState -> preliminaryCaseState = caseState);
-        activity.getLastSerialNumber(lastSerialNumberCallback);
     }
 
     public void clear() {
@@ -72,6 +71,7 @@ public class DeliveryKitList extends Composite implements TakesValue<List<Kit>>,
         value = new ArrayList<>();
         resetLastSerialNumber();
         invisibleButtons();
+        activity.getLastSerialNumber(lastSerialNumberCallback);
     }
 
     public void updateSerialNumbering(boolean isMilitaryNumbering) {
@@ -80,12 +80,13 @@ public class DeliveryKitList extends Composite implements TakesValue<List<Kit>>,
         refresh();
     }
 
-    public void setAddMode(boolean isAddMode) {
-        this.isAddMode = isAddMode;
+    public void updateAllowChangingState(final boolean isAllowChangingState) {
+        this.isAllowChangingState = isAllowChangingState;
+        modelToView.keySet().forEach(deliveryKitItem -> deliveryKitItem.stateEnabled().setEnabled(isAllowChangingState));
     }
 
-    public void setAllowChangingState(boolean isAllow) {
-        this.isAllowChangingState = isAllow;
+    public void setAddMode(boolean isAddMode) {
+        this.isAddMode = isAddMode;
     }
 
     public void setError(boolean isError, String error) {
@@ -101,14 +102,6 @@ public class DeliveryKitList extends Composite implements TakesValue<List<Kit>>,
         msg.setInnerText(null);
     }
 
-    private void markBoxAsError(boolean isError) {
-        if (isError) {
-            root.addStyleName(HAS_ERROR);
-            return;
-        }
-        root.removeStyleName(HAS_ERROR);
-    }
-
     @UiHandler("addButton")
     public void onAddClicked(ClickEvent event) {
         event.preventDefault();
@@ -118,6 +111,14 @@ public class DeliveryKitList extends Composite implements TakesValue<List<Kit>>,
     @UiHandler("refreshSerialNumberButton")
     public void onRefreshSerialNumberClicked(ClickEvent event) {
         activity.getLastSerialNumber(lastSerialNumberCallback);
+    }
+
+    private void markBoxAsError(boolean isError) {
+        if (isError) {
+            root.addStyleName(HAS_ERROR);
+            return;
+        }
+        root.removeStyleName(HAS_ERROR);
     }
 
     private void addEmptyItem() {
@@ -227,6 +228,7 @@ public class DeliveryKitList extends Composite implements TakesValue<List<Kit>>,
             return;
         }
 
+        root.ensureDebugId(DebugIds.DELIVERY.KITS);
         addButton.ensureDebugId(DebugIds.DELIVERY.KIT.ADD_BUTTON);
         refreshSerialNumberButton.ensureDebugId(DebugIds.DELIVERY.KIT.REFRESH_BUTTON);
     }

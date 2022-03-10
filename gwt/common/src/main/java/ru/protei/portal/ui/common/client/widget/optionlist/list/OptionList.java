@@ -220,6 +220,12 @@ public class OptionList<T>
         selected.addAll(mandatoryOptions);
     }
 
+    public void setOptionEnabled(T option, boolean isEnabled) {
+        if (itemToViewModel.containsKey(option)) {
+            itemToViewModel.get(option).setEnabled(isEnabled);
+        }
+    }
+
     private void makeOptionMandatory(OptionItem item) {
         item.setEnabled(false);
         item.setValue(true);

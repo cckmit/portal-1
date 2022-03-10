@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.plan.client.activity.edit.tables;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
@@ -17,7 +18,6 @@ import ru.protei.portal.ui.common.client.events.PlanEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
 import ru.protei.portal.ui.common.client.widget.popupselector.RemovablePopupSingleSelector;
-import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
@@ -39,6 +39,7 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
         planId = event.planId;
         plans = event.planList;
         view.moveColumnVisibility(!isNew());
+        scrollTo = event.scrollTo;
 
         if (isNew()){
             issues = new ArrayList<>();
@@ -51,24 +52,19 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
     @Event
     public void onAddIssue(PlanEvents.AddIssueToPlan event) {
         if (isNew()){
-            if (issues.contains(event.issue)){
-                fireEvent(new NotifyEvents.Show(lang.errIssueAlreadyExistInPlan(), NotifyEvents.NotifyType.ERROR));
-            } else {
-                issues.add(event.issue);
-                loadTable(issues);
-                fireEvent(new PlanEvents.UpdateIssues(issues));
-            }
+            issues.add(event.issue);
+            loadTable(issues);
+            fireEvent(new PlanEvents.UpdateIssues(issues));
+            fireEvent(new PlanEvents.RemoveIssueFromUnplannedTable(event.issue));
+
         } else {
             planService.addIssueToPlan(planId, event.issue.getId(), new FluentCallback<Plan>()
                     .withError(throwable -> {
-                        if (throwable instanceof RequestFailedException && En_ResultStatus.ALREADY_EXIST.equals(((RequestFailedException) throwable).status)) {
-                            fireEvent(new NotifyEvents.Show(lang.errIssueAlreadyExistInPlan(), NotifyEvents.NotifyType.ERROR));
-                        } else {
-                            defaultErrorHandler.accept(throwable);
-                        }
+                        defaultErrorHandler.accept(throwable);
                     })
                     .withSuccess(plan -> {
                         fireEvent(new NotifyEvents.Show(lang.planIssueAdded(), NotifyEvents.NotifyType.SUCCESS));
+                        fireEvent(new PlanEvents.RemoveIssueFromUnplannedTable(event.issue));
                         issues = plan.getIssueList();
                         loadTable(plan.getIssueList());
                     }));
@@ -81,6 +77,7 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
             issues.remove(value);
             loadTable(issues);
             fireEvent(new PlanEvents.UpdateIssues(issues));
+            fireEvent(new PlanEvents.AddIssueToUnplannedTable(value));
         }
         else {
             fireEvent(new ConfirmDialogEvents.Show(lang.planIssueConfirmRemove(), removeAction(value)));
@@ -117,6 +114,7 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
     @Override
     public void onItemClicked(CaseShortView value) {
         if (planId != null) {
+            fireEvent(new PlanEvents.PersistScroll());
             fireEvent(new IssueEvents.Edit(value.getCaseNumber()));
         }
     }
@@ -159,6 +157,7 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
                 .withSuccess(plan -> {
                     view.putRecords(plan.getIssueList());
                     this.issues = plan.getIssueList();
+                    restoreScroll();
                 }));
     }
 
@@ -171,6 +170,7 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
                 .withSuccess(issueId -> {
                     loadTable(planId);
                     fireEvent(new NotifyEvents.Show(lang.planIssueRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new PlanEvents.AddIssueToUnplannedTable(value));
                 }));
     }
 
@@ -200,6 +200,10 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
         return planId == null;
     }
 
+    private void restoreScroll() {
+        Window.scrollTo(0, scrollTo);
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -208,6 +212,8 @@ public abstract class PlannedIssuesTableActivity implements AbstractPlannedIssue
     PlanControllerAsync planService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+
+    private Integer scrollTo = 0;
 
     private List<Plan> plans = new ArrayList<>();
     private Long planId;

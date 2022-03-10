@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentList;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
 import ru.protei.portal.ui.common.client.activity.attachment.fullview.AbstractAttachmentFullView;
+import ru.protei.portal.ui.common.client.events.CommentAndHistoryEvents;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
@@ -35,6 +36,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
+import static ru.protei.portal.ui.common.client.util.LocaleUtils.isLocaleEn;
 
 public class FullViewAttachmentList extends Composite implements HasAttachments, HasAttachmentListHandlers, AbstractAttachmentList {
     public FullViewAttachmentList() {
@@ -118,7 +121,9 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
             return;
         }
 
-        activity.fireEvent(new ConfirmDialogEvents.Show(lang.attachmentRemoveConfirmMessage(), () -> RemoveEvent.fire(this, viewToAttachment.get(attachment))));
+        activity.fireEvent(new ConfirmDialogEvents.Show(lang.attachmentRemoveConfirmMessage(), () -> {
+            RemoveEvent.fire(this, viewToAttachment.get(attachment));
+        }));
     }
 
     @Override
@@ -170,7 +175,8 @@ public class FullViewAttachmentList extends Composite implements HasAttachments,
     }
 
     private void fillPersonDependentFields(AbstractAttachmentView view, Attachment attachment, Person person) {
-        view.setCreationInfo(person.getDisplayShortName(), attachment.getCreated());
+        String name = person.getDisplayShortName();
+        view.setCreationInfo(isLocaleEn() ? transliterate(name) : name , attachment.getCreated());
         ((AbstractAttachmentFullView) view).setAuthorAvatarUrl(AvatarUtils.getAvatarUrl(person));
     }
 

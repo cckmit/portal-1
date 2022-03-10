@@ -1,0 +1,12 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+    <g:HTMLPanel styleName="no-margin p-t-10">
+        <g:Label text="{lang.cardNote}" styleName="semi-bold large-text"/>
+        <div ui:field="noteRO" class="form-group markdown p-t-5"/>
+        <g:Label text="{lang.cardComment}" styleName="semi-bold large-text"/>
+        <div ui:field="commentRO" class="form-group markdown p-t-5"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

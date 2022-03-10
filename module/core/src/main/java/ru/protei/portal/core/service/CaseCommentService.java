@@ -11,9 +11,7 @@ import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CommentsAndHistories;
-import ru.protei.portal.core.model.ent.History;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
-import ru.protei.portal.core.model.query.HistoryQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
 import ru.protei.portal.core.model.struct.receivedmail.ReceivedMail;
@@ -34,7 +32,9 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAny = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAny = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAny = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAny = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAny = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.MODULE, requireAny = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.CARD_BATCH, requireAny = {En_Privilege.CARD_BATCH_VIEW, En_Privilege.CARD_BATCH_EDIT})
     })
     Result<List<CaseComment>> getCaseCommentList( AuthToken token, En_CaseType caseType, long caseObjectId);
 
@@ -44,7 +44,9 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAny = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAny = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAny = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAny = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAny = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.MODULE, requireAny = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.CARD_BATCH, requireAny = {En_Privilege.CARD_BATCH_VIEW, En_Privilege.CARD_BATCH_EDIT})
     })
     Result<SearchResult<CaseCommentShortView>> getCaseCommentShortViewList(AuthToken token, En_CaseType caseType, CaseCommentQuery query);
 
@@ -54,9 +56,11 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.MODULE, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.CARD_BATCH, requireAll = {En_Privilege.CARD_BATCH_VIEW, En_Privilege.CARD_BATCH_EDIT})
     })
-    @Auditable(value = En_AuditType.ISSUE_COMMENT_CREATE, forCases = En_CaseType.CRM_SUPPORT)
+    @Auditable(value = En_AuditType.ISSUE_COMMENT_CREATE, forCases = {En_CaseType.CRM_SUPPORT, En_CaseType.DELIVERY, En_CaseType.MODULE, En_CaseType.CARD_BATCH})
     Result<CaseComment> addCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment );
 
     @Privileged(forCases = {
@@ -65,9 +69,11 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.MODULE, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.CARD_BATCH, requireAll = {En_Privilege.CARD_BATCH_VIEW, En_Privilege.CARD_BATCH_EDIT})
     })
-    @Auditable(value = En_AuditType.ISSUE_COMMENT_CREATE, forCases = En_CaseType.CRM_SUPPORT)
+    @Auditable(value = En_AuditType.ISSUE_COMMENT_CREATE, forCases = {En_CaseType.CRM_SUPPORT, En_CaseType.DELIVERY, En_CaseType.MODULE, En_CaseType.CARD_BATCH})
     Result<CaseCommentSaveOrUpdateResult> addCaseCommentWithoutEvent( AuthToken token, En_CaseType caseType, CaseComment comment);
 
 
@@ -77,9 +83,11 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.MODULE, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.CARD_BATCH, requireAll = {En_Privilege.CARD_BATCH_VIEW, En_Privilege.CARD_BATCH_EDIT})
     })
-    @Auditable(value = En_AuditType.ISSUE_COMMENT_MODIFY, forCases = En_CaseType.CRM_SUPPORT)
+    @Auditable(value = En_AuditType.ISSUE_COMMENT_MODIFY, forCases = {En_CaseType.CRM_SUPPORT, En_CaseType.DELIVERY, En_CaseType.MODULE, En_CaseType.CARD_BATCH})
     Result<CaseComment> updateCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment );
 
     @Privileged(forCases = {
@@ -88,9 +96,11 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.MODULE, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.CARD_BATCH, requireAll = {En_Privilege.CARD_BATCH_VIEW, En_Privilege.CARD_BATCH_EDIT})
     })
-    @Auditable(value = En_AuditType.ISSUE_COMMENT_MODIFY, forCases = En_CaseType.CRM_SUPPORT)
+    @Auditable(value = En_AuditType.ISSUE_COMMENT_MODIFY, forCases = {En_CaseType.CRM_SUPPORT, En_CaseType.DELIVERY, En_CaseType.MODULE, En_CaseType.CARD_BATCH})
     Result<CaseCommentSaveOrUpdateResult> updateCaseCommentWithoutEvent( AuthToken token, En_CaseType caseType, CaseComment comment );
 
 
@@ -100,9 +110,11 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.MODULE, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.CARD_BATCH, requireAll = {En_Privilege.CARD_BATCH_VIEW, En_Privilege.CARD_BATCH_EDIT})
     })
-    @Auditable(value = En_AuditType.ISSUE_COMMENT_REMOVE, forCases = En_CaseType.CRM_SUPPORT)
+    @Auditable(value = En_AuditType.ISSUE_COMMENT_REMOVE, forCases = {En_CaseType.CRM_SUPPORT, En_CaseType.DELIVERY, En_CaseType.MODULE, En_CaseType.CARD_BATCH})
     Result<Long> removeCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment );
 
     @Privileged(forCases = {
@@ -111,9 +123,24 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
-            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT})
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.MODULE, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.CARD_BATCH, requireAll = {En_Privilege.CARD_BATCH_VIEW, En_Privilege.CARD_BATCH_EDIT})
     })
-    @Auditable(value = En_AuditType.ISSUE_COMMENT_MODIFY, forCases = En_CaseType.CRM_SUPPORT)
+    @Auditable(value = En_AuditType.ISSUE_COMMENT_REMOVE, forCases = {En_CaseType.CRM_SUPPORT, En_CaseType.DELIVERY, En_CaseType.MODULE, En_CaseType.CARD_BATCH})
+    Result<Long> removeCaseCommentWithOutTimeCheck( AuthToken token, En_CaseType caseType, CaseComment comment );
+
+    @Privileged(forCases = {
+            @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAll = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.OFFICIAL, requireAll = {En_Privilege.OFFICIAL_VIEW, En_Privilege.OFFICIAL_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
+            @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.DELIVERY, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.MODULE, requireAll = {En_Privilege.DELIVERY_VIEW, En_Privilege.DELIVERY_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.CARD_BATCH, requireAll = {En_Privilege.CARD_BATCH_VIEW, En_Privilege.CARD_BATCH_EDIT})
+    })
+    @Auditable(value = En_AuditType.ISSUE_COMMENT_MODIFY, forCases = {En_CaseType.CRM_SUPPORT, En_CaseType.DELIVERY, En_CaseType.MODULE, En_CaseType.CARD_BATCH})
     Result<Boolean> updateCaseTimeElapsedType(AuthToken token, Long caseCommentId, En_TimeElapsedType type);
 
     Result<Long> getTimeElapsed( Long caseId);

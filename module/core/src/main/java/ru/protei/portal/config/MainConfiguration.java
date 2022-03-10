@@ -18,8 +18,12 @@ import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
 import ru.protei.portal.core.client.enterprise1c.api.Api1C;
 import ru.protei.portal.core.client.enterprise1c.api.Api1CImpl;
+import ru.protei.portal.core.client.enterprise1c.api.Api1CWork;
+import ru.protei.portal.core.client.enterprise1c.api.Api1CWorkImpl;
 import ru.protei.portal.core.client.enterprise1c.http.HttpClient1C;
 import ru.protei.portal.core.client.enterprise1c.http.HttpClient1CImpl;
+import ru.protei.portal.core.client.enterprise1c.http.HttpClient1CWork;
+import ru.protei.portal.core.client.enterprise1c.http.HttpClient1CWorkImpl;
 import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1C;
 import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1CImpl;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
@@ -55,6 +59,8 @@ import ru.protei.portal.core.report.nightwork.ReportNightWork;
 import ru.protei.portal.core.report.nightwork.ReportNightWorkImpl;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.report.projects.ReportProjectImpl;
+import ru.protei.portal.core.report.ytwork.ReportYoutrackWork;
+import ru.protei.portal.core.report.ytwork.ReportYoutrackWorkImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
@@ -648,6 +654,46 @@ public class MainConfiguration {
     }
 
     @Bean
+    public ModuleDAO getModuleDAO() {
+        return new ModuleDAO_Impl();
+    }
+
+    @Bean
+    public CardDAO getCardDAO() {
+        return new CardDAO_Impl();
+    }
+
+    @Bean
+    public PcbOrderSqlBuilder pcbOrderSqlBuilder() {
+        return new PcbOrderSqlBuilder();
+    }
+
+    @Bean
+    public PcbOrderDAO getPcbOrderDAO() {
+        return new PcbOrderDAO_Impl();
+    }
+
+    @Bean
+    public CardBatchDAO getCardBatchDAO() {
+        return new CardBatchDAO_Impl();
+    }
+
+    @Bean
+    public CaseElapsedTimeApiDAO getCaseElapsedTimeApiDAO() {
+        return new CaseElapsedTimeApiDAO_Impl();
+    }
+    
+    @Bean
+    public CardSqlBuilder cardSqlBuilder() {
+        return new CardSqlBuilder();
+    }
+
+    @Bean
+    public CardBatchSqlBuilder cardBatchSqlBuilder() {
+        return new CardBatchSqlBuilder();
+    }
+
+    @Bean
     public YoutrackHttpClient getYoutrackHttpClient() {
         return new YoutrackHttpClientImpl();
     }
@@ -673,8 +719,18 @@ public class MainConfiguration {
     }
 
     @Bean
+    public HttpClient1CWork getHttpClient1CWork() {
+        return new HttpClient1CWorkImpl();
+    }
+
+    @Bean
     public Api1C getApi1C() {
         return new Api1CImpl();
+    }
+
+    @Bean
+    public Api1CWork getApi1CWork() {
+        return new Api1CWorkImpl();
     }
 
     @Bean
@@ -757,6 +813,31 @@ public class MainConfiguration {
         return new DutyLogDAO_Impl();
     }
 
+    @Bean
+    public YoutrackProjectDAO getYoutrackProjectDAO() {
+        return new YoutrackProjectDAO_Impl();
+    }
+
+    @Bean
+    public YoutrackWorkDictionaryDAO getYoutrackWorkDictionaryDAO() {
+        return new YoutrackWorkDictionaryDAO_Impl();
+    }
+
+    @Bean
+    public CardTypeDAO getCardTypeDAO() {
+        return new CardTypeDAO_Impl();
+    }
+
+    @Bean
+    public RFIDLabelDAO getRFIDLabelDAO() {
+        return new RFIDLabelDAO_Impl();
+    }
+
+    @Bean
+    public RFIDDeviceDAO getRFIDDeviceDAO() {
+        return new RFIDDeviceDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean
@@ -787,6 +868,11 @@ public class MainConfiguration {
     @Bean
     public WorkerPositionService getWorkerPositionService() {
         return new WorkerPositionServiceImpl();
+    }
+
+    @Bean
+    public WorkerEntryService getWorkerEntryService() {
+        return new WorkerEntryServiceImpl();
     }
 
     @Bean
@@ -885,8 +971,18 @@ public class MainConfiguration {
     }
 
     @Bean
-    public EventDeliveryAssemblerService getEventDeliveryAssemblerService() {
-        return new EventDeliveryAssemblerServiceImpl();
+    public EventEmployeeRegistrationAssemblerService getEventEmployeeRegistrationAssemblerService() {
+        return new EventEmployeeRegistrationAssemblerServiceImpl();
+    }
+
+    @Bean
+    public EventDeliveryAssemblerService getEventDeliveryAssemblerService(@Autowired PortalConfig config) {
+        if (config.data().getMailNotificationConfig().isDeliveryNotificationEnabled()) {
+            return new EventDeliveryAssemblerServiceImpl();
+        } else {
+            log.info("delivery notification disabled in configuration");
+            return new EventDeliveryAssemblerServiceMock();
+        }
     }
 
     @Bean
@@ -902,6 +998,11 @@ public class MainConfiguration {
     @Bean
     public AssemblerDeliveryService getAssemblerDeliveryService() {
         return new AssemblerDeliveryServiceImpl();
+    }
+
+    @Bean
+    public AssemblerEmployeeRegistrationService getAssemblerEmployeeRegistrationService() {
+        return new AssemblerEmployeeRegistrationServiceImpl();
     }
 
     @Bean
@@ -977,6 +1078,11 @@ public class MainConfiguration {
     @Bean
     public YoutrackService getYoutrackService() {
         return new YoutrackServiceImpl();
+    }
+
+    @Bean
+    public YoutrackWorkDictionaryService getYoutrackWorkDictionaryService() {
+        return new YoutrackWorkDictionaryServiceImpl();
     }
 
     @Bean
@@ -1136,6 +1242,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public ReportYoutrackWork getReportYoutrackWork() {
+        return new ReportYoutrackWorkImpl();
+    }
+
+    @Bean
     public HTMLRenderer getHTMLRenderer() {
         return new HTMLRendererImpl();
     }
@@ -1172,6 +1283,36 @@ public class MainConfiguration {
     @Bean
     public DeliveryService getDeliveryService() {
         return new DeliveryServiceImpl();
+    }
+
+    @Bean
+    public CardBatchService getCardBatchService() {
+        return new CardBatchServiceImpl();
+    }
+
+    @Bean
+    public PcbOrderService getPcbOrderService() {
+        return new PcbOrderServiceImpl();
+    }
+
+    @Bean
+    public ModuleService getModuleService() {
+        return new ModuleServiceImpl();
+    }
+
+    @Bean
+    public CardService getCardService() {
+        return new CardServiceImpl();
+    }
+
+    @Bean
+    public RFIDLabelService getRFIDLabelService() {
+        return new RFIDLabelServiceImpl();
+    }
+
+    @Bean
+    public CaseElapsedTimeApiService getCaseElapsedTimeApiService() {
+        return new CaseElapsedTimeApiServiceImpl();
     }
 
     /* ASPECT/INTERCEPTORS */

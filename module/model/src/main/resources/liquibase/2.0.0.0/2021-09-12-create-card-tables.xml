@@ -1,0 +1,268 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create-card_type-table" author="turik">
+        <createTable tableName="card_type">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="VARCHAR(8)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_container" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="is_display" type="BOOLEAN" defaultValueBoolean="true"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-card_batch-table" author="turik">
+        <createTable tableName="card_batch">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="type_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="number" type="VARCHAR(8)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="article" type="VARCHAR(16)"/>
+            <column name="amount" type="INT(11)" defaultValue="0"/>
+            <column name="priority" type="INT(11)" defaultValue="1"/>
+            <column name="is_control" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="order_date" type="DATETIME"/>
+            <column name="executor_id" type="INT(11)"/>
+            <column name="comment" type="TEXT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-card-batch-type_id-number-unique-constraint" author="turik">
+        <addUniqueConstraint tableName="card_batch" columnNames="type_id,number" constraintName="type_id_number_unique"/>
+    </changeSet>
+
+    <changeSet id="add-card-batch-id-foreign-key" author="turik">
+        <addForeignKeyConstraint baseTableName="card_batch"
+                                 baseColumnNames="id"
+                                 constraintName="card_batch_id_to_case_object_fk"
+                                 referencedTableName="case_object"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="add-card_batch-type_id-foreign-key" author="turik">
+        <addForeignKeyConstraint baseTableName="card_batch"
+                                 baseColumnNames="type_id"
+                                 constraintName="card_batch_type_id_to_card_type_fk"
+                                 referencedTableName="card_type"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="NO ACTION"/>
+    </changeSet>
+
+    <changeSet id="create-card-table" author="turik">
+        <createTable tableName="card">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="type_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="serial_number" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="card_batch_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="article" type="VARCHAR(16)"/>
+            <column name="test_date" type="DATETIME"/>
+            <column name="comment" type="TEXT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-card-serial-number-unique-constraint" author="turik">
+        <addUniqueConstraint tableName="card" columnNames="serial_number" constraintName="serial_number_unique"/>
+    </changeSet>
+
+    <changeSet id="add-card-id-foreign-key" author="turik">
+        <addForeignKeyConstraint baseTableName="card"
+                                 baseColumnNames="id"
+                                 constraintName="card_id_to_case_object_fk"
+                                 referencedTableName="case_object"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="add-card-type-id-foreign-key" author="turik">
+        <addForeignKeyConstraint baseTableName="card"
+                                 baseColumnNames="type_id"
+                                 constraintName="card_type_id_to_card_type_fk"
+                                 referencedTableName="card_type"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="NO ACTION"/>
+    </changeSet>
+
+    <changeSet id="add-card-card-batch-id-foreign-key" author="turik">
+        <addForeignKeyConstraint baseTableName="card"
+                                 baseColumnNames="card_batch_id"
+                                 constraintName="card_card_batch_id_to_card_batch_fk"
+                                 referencedTableName="card_batch"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="add-card-batch-case-type" author="turik">
+        <insert tableName="case_type">
+            <column name="id" value="17"/>
+            <column name="CT_CODE" value="card-batch"/>
+            <column name="CT_INFO" value="Партия плат"/>
+            <column name="NEXT_ID" value="1"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="add-card-case-type" author="turik">
+        <insert tableName="case_type">
+            <column name="id" value="18"/>
+            <column name="CT_CODE" value="card"/>
+            <column name="CT_INFO" value="Плата"/>
+            <column name="NEXT_ID" value="1"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="add-card-batch-states" author="turik">
+        <insert tableName="case_state">
+            <column name="id" value="52"/>
+            <column name="STATE" value="actual"/>
+            <column name="color" value="#daab2d"/>
+            <column name="INFO" value="actual"/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="53"/>
+            <column name="STATE" value="ordered"/>
+            <column name="color" value="#42a5f5"/>
+            <column name="INFO" value="ordered"/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="54"/>
+            <column name="STATE" value="mounting"/>
+            <column name="color" value="#906094"/>
+            <column name="INFO" value="mounting"/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="55"/>
+            <column name="STATE" value="mounted"/>
+            <column name="color" value="#4caf50"/>
+            <column name="INFO" value="mounted"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="add-card-batch-case-state-matrix" author="turik">
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="17"/>
+            <column name="CASE_STATE" value="39"/>
+            <column name="view_order" value="1"/>
+            <column name="info" value="Предварительный"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="17"/>
+            <column name="CASE_STATE" value="52"/>
+            <column name="view_order" value="2"/>
+            <column name="info" value="Задача актуальна"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="17"/>
+            <column name="CASE_STATE" value="53"/>
+            <column name="view_order" value="3"/>
+            <column name="info" value="Комплектация заказана"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="17"/>
+            <column name="CASE_STATE" value="41"/>
+            <column name="view_order" value="4"/>
+            <column name="info" value="Комплектация зарезервирована"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="17"/>
+            <column name="CASE_STATE" value="54"/>
+            <column name="view_order" value="5"/>
+            <column name="info" value="Монтаж начался"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="17"/>
+            <column name="CASE_STATE" value="55"/>
+            <column name="view_order" value="6"/>
+            <column name="info" value="Монтаж завершён"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="add-card-states" author="turik">
+        <insert tableName="case_state">
+            <column name="id" value="56"/>
+            <column name="STATE" value="in-stock"/>
+            <column name="color" value="#4caf50"/>
+            <column name="INFO" value="in-stock"/>
+        </insert>
+        <insert tableName="case_state">
+            <column name="id" value="57"/>
+            <column name="STATE" value="internal-use"/>
+            <column name="color" value="#868686"/>
+            <column name="INFO" value="internal-use"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="add-card-case-state-matrix" author="turik">
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="18"/>
+            <column name="CASE_STATE" value="28"/>
+            <column name="view_order" value="1"/>
+            <column name="info" value="Тестирование"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="18"/>
+            <column name="CASE_STATE" value="56"/>
+            <column name="view_order" value="2"/>
+            <column name="info" value="На складе"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="18"/>
+            <column name="CASE_STATE" value="57"/>
+            <column name="view_order" value="3"/>
+            <column name="info" value="Внутреннее использование"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="18"/>
+            <column name="CASE_STATE" value="40"/>
+            <column name="view_order" value="4"/>
+            <column name="info" value="Резервирование"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="18"/>
+            <column name="CASE_STATE" value="45"/>
+            <column name="view_order" value="5"/>
+            <column name="info" value="Отправлено"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="18"/>
+            <column name="CASE_STATE" value="49"/>
+            <column name="view_order" value="7"/>
+            <column name="info" value="Ремонт"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="18"/>
+            <column name="CASE_STATE" value="50"/>
+            <column name="view_order" value="8"/>
+            <column name="info" value="Списание"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="drop-card-batch-columns" author="butusov">
+        <dropColumn tableName="card_batch" columnName="priority"/>
+        <dropColumn tableName="card_batch" columnName="is_control"/>
+        <dropColumn tableName="card_batch" columnName="order_date"/>
+        <dropColumn tableName="card_batch" columnName="executor_id"/>
+        <dropColumn tableName="card_batch" columnName="comment"/>
+    </changeSet>
+</databaseChangeLog>

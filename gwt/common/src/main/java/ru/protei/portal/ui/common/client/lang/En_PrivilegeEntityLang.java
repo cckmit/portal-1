@@ -64,6 +64,14 @@ public class En_PrivilegeEntityLang {
                 return lang.dutyLog();
             case DELIVERY:
                 return lang.delivery();
+            case YT:
+                return lang.reportYtWork();
+            case CARD:
+                return lang.cards();
+            case CARD_BATCH:
+                return lang.cardBatches();
+            case PCB_ORDER:
+                return lang.pcbOrder();
             default:
                 return lang.unknownField();
         }

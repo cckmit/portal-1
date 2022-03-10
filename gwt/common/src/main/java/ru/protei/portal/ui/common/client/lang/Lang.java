@@ -116,7 +116,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonNotDefined();
 
-    String buttonSettings();
+    String buttonProfile();
 
     String buttonSearch();
 
@@ -135,6 +135,8 @@ public interface Lang extends Messages, ContactItemLang {
     String buttonBack();
 
     String buttonForward();
+
+    String buttonState();
 
     String timeDayLiteral();
 
@@ -241,6 +243,8 @@ public interface Lang extends Messages, ContactItemLang {
     String companyLegalAddress();
 
     String companyWebSite();
+
+    String companyEmployeeRegistrationAddresses();
 
     String companyProbationPeriodAddresses();
 
@@ -428,6 +432,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String promptFieldLengthExceed(String fieldName, int fieldLength);
 
+    String promptFieldLengthNotEqual(String fieldName, int fieldLength);
+
     String promptFieldNeedContainAtSign();
 
     String contactGeneratePassword();
@@ -468,13 +474,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String productSubscription();
 
-    String productWikiLink();
+    String productInternalDocLink();
 
-    String productCDRDescription();
-
-    String productHistoryVersion();
-
-    String productConfiguration();
+    String productExternalDocLink();
 
     String productChangeStateConfirmMessage();
 
@@ -798,6 +800,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String msgObjectSaved();
 
+    String msgObjectsSaved();
+
     String reservedIpPartiallyCreated(int p0, int p1 );
 
     String msgStatusChanged();
@@ -826,7 +830,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dashboard();
 
-    String dashboardAddTable();
+    String dashboardAddIssueTable();
+
+    String dashboardAddProjectTable();
 
     String dashboardEmpty();
 
@@ -835,6 +841,10 @@ public interface Lang extends Messages, ContactItemLang {
     String dashboardTableName();
 
     String dashboardTableFilter();
+
+    String dashboardTableIssueFilter();
+
+    String dashboardTableProjectFilter();
 
     String dashboardTableCreate();
 
@@ -864,7 +874,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String commentSendMessage();
 
-    String commentAddMessagePlaceholder();
+    String markupPlaceholder();
 
     String issueCommentChangeStatusTo();
 
@@ -989,6 +999,8 @@ public interface Lang extends Messages, ContactItemLang {
     String projectTeamRole();
 
     String projectCommentCreationDate();
+
+    String projectFilterIsNotDefined();
 
     String inputProjectName();
 
@@ -1133,6 +1145,10 @@ public interface Lang extends Messages, ContactItemLang {
     String accountLocal();
 
     String accountLogin();
+
+    String restVacationDays();
+
+    String noData();
 
     String accountPerson();
 
@@ -1296,24 +1312,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectOfficialProduct();
 
-    String personDecisionCenter();
-
-    String personChiefDecisionMaker();
-
-    String personDecisionKeeper();
-
-    String personTechSpecialist();
-
-    String personInfluenceMaker();
-
-    String personChielInfluenceMaker();
-
-    String personEconomist();
-
-    String personWellWisher();
-
-    String personReceptivityCenter();
-
     String personCreateNew();
 
     String personHardwareCurator();
@@ -1328,7 +1326,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String personProductAssembler();
 
-    String personSupplyPreparation();
+    String personDeliveryPreparation();
 
     String personEngineerDocDev();
 
@@ -1868,6 +1866,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeIPAddress();
 
+    String employeeInn();
+
     String employeeCompany();
 
     String employeeMainPosition();
@@ -1972,6 +1972,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationValidationEmployeeFullName();
 
+    String employeeRegistrationValidationCompany();
+
     String employeeRegistrationValidationPosition();
 
     String employeeRegistrationValidationEmploymentDate();
@@ -2013,6 +2015,10 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeRegistrationCuratorsHint();
 
     String goToEmployeeRegistration();
+
+    String completeProbation();
+
+    String probationCompletedSuccessfully();
 
     String employmentTypeFullTime();
 
@@ -2063,6 +2069,8 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeRegistrationAdditionalSoftPlaceholder();
 
     String employeeRegistrationInternalResourceOtherCommentPlaceholder();
+
+    String employeeRegistrationIDE();
 
     String goToIssues();
 
@@ -2260,6 +2268,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractProjectHint();
 
+    String contractCopySuccess();
+
     String period();
 
     String reportMissingProduct();
@@ -2289,6 +2299,10 @@ public interface Lang extends Messages, ContactItemLang {
     String reportTypeContract();
 
     String reportNightWork();
+
+    String reportYtWork();
+
+    String reportYtWorkDates();
 
     String reportScheduledType();
 
@@ -2673,6 +2687,8 @@ public interface Lang extends Messages, ContactItemLang {
     String unlimitedInterval();
 
     String errSaveReservedIpUseInterval();
+
+    String errSaveReservedIpUseOpenInterval();
 
     String errSaveReservedIpNeedSelectOwner();
 
@@ -3230,8 +3246,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errEmployeeNotFound();
 
-    String reservedIpExistedIpInRange();
-
     String issueReportHumanReadable();
 
     String issueReportHumanReadableTitle();
@@ -3239,6 +3253,8 @@ public interface Lang extends Messages, ContactItemLang {
     String errReportingServiceNotConfigured();
 
     String dutyTypeCOV();
+
+    String dutyTypeIMS();
 
     String reservedIpReservationStart();
 
@@ -3371,6 +3387,8 @@ public interface Lang extends Messages, ContactItemLang {
     String commentEdit();
 
     String commentRemove();
+
+    String commentRemoveConfirmMessage();
 
     String issueReportDeadlineWorkTrigger();
 
@@ -3508,6 +3526,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errDeliverySerialNumberNotAvailable();
 
+    String errModuleSerialNumberNotAvailable();
+
     String errDeliveryForbiddenChangeStatus();
 
     String errDeliveryForbiddenChangeProject();
@@ -3598,6 +3618,36 @@ public interface Lang extends Messages, ContactItemLang {
 
     String moduleStatePaused();
 
+    String selectModulesToRemove();
+
+    String moduleRemoveConfirmMessage();
+
+    String modulesRemoved();
+
+    String moduleName();
+
+    String moduleDescription();
+
+    String moduleState();
+
+    String moduleBuildDate();
+
+    String moduleDepartureDate();
+
+    String moduleSerialNumber();
+
+    String moduleValidationEmptyName();
+
+    String moduleValidationEmptyState();
+
+    String moduleValidationInvalidDepartureDate();
+
+    String moduleValidationInvalidBuildDate();
+
+    String moduleCreatedSuccessfully();
+
+    String backToModules();
+
     String errKitSerialNumberNotMatchDeliveryNumber();
 
     String documentation();
@@ -3611,4 +3661,479 @@ public interface Lang extends Messages, ContactItemLang {
     String errorAbsenceNeedFeelTimeRanges();
 
     String errorAbsenceNeedFeelSchedule();
+
+    String deliveryKit();
+
+    String warnOneKitAllowedForTheOperation();
+
+    String addKits();
+
+    String kitNotSelectedMessage();
+
+    String moduleNotSelectedMessage();
+
+    String buttonAddModule();
+
+    String buttonCopyModule();
+
+    String buttonStateModule();
+
+    String buttonRemoveModule();
+
+    String buttonReloadModule();
+
+    String personDeployManagerShort();
+
+    String personHardwareCuratorShort();
+
+    String personSoftwareCuratorShort();
+
+    String personIntroNewTechSolutionsShort();
+
+    String personLiableForAutoTestingShort();
+
+    String personTechSupportCuratorShort();
+
+    String personProductAssemblerShort();
+
+    String personDeliveryPreparationShort();
+
+    String personEngineerDocDevShort();
+
+    String personTechDocDevShort();
+
+    String personSoftwareDocDevShort();
+
+    String personLiableForCertificationShort();
+
+    String personOkrEscortShort();
+
+    String personQualityControlSmkShort();
+
+    String personCustomerIntegrationShort();
+
+    String personPresaleManagerShort();
+
+    String personBusinessAnalyticsArchitectureShort();
+
+    String personProjectDocumentationShort();
+
+    String personProductManagerShort();
+
+    String personDevelopmentShort();
+
+    String personPresaleHeadManagerShort();
+
+    String personDeployHeadManagerShort();
+
+    String personDeliveryPacking();
+
+    String personEntranceControl();
+
+    String personEquipmentSetup();
+
+    String personOperationalDocumentation();
+
+    String personQadDocumentation();
+
+    String personSpecialCheckSpecialResearch();
+
+    String personDeliveryPackingShort();
+
+    String personEntranceControlShort();
+
+    String personEquipmentSetupShort();
+
+    String personOperationalDocumentationShort();
+
+    String personQadDocumentationShort();
+
+    String personSpecialCheckSpecialResearchShort();
+
+    String errAccountIsLocked();
+
+    String reportYoutrackWorkTypeNiokr();
+
+    String reportYoutrackWorkTypeNma();
+
+    String reportYoutrackWorkDictionaryAdd();
+
+    String reportYoutrackWorkDictionaryCreate();
+
+    String reportYoutrackWorkDictionaryEdit();
+
+    String reportYoutrackWorkDictionaryConfirmRemove(String name);
+
+    String reportYoutrackWorkDictionaryName();
+
+    String reportYoutrackWorkDictionaryType();
+
+    String reportYoutrackWorkDictionaryProjects();
+
+    String newStoreAndDelivery();
+
+    String cards();
+
+    String cardBatches();
+
+    String cardTestDate();
+
+    String cardState();
+
+    String cardStateTesting();
+
+    String cardStateInStock();
+
+    String cardStateInternalUse();
+
+    String cardStateReservation();
+
+    String cardStateSent();
+
+    String cardStateRepair();
+
+    String cardStateWriteOff();
+
+    String cardColumnNumber();
+
+    String cardColumnNote();
+
+    String cardColumnTestDate();
+
+    String cardColumnManager();
+
+    String cardColumnCardType();
+
+    String cardSerialNumber();
+
+    String cardType();
+
+    String cardArticle();
+
+    String cardNote();
+
+    String cardComment();
+
+    String cardManager();
+
+    String cardSelectType();
+
+    String cardSelectBatch();
+
+    String cardSelectManager();
+
+    String cardSerialNumberPlaceholder();
+
+    String cardEditNoteAndComment();
+
+    String cardValidationErrorSerialNumber();
+
+    String cardValidationErrorState();
+
+    String cardValidationErrorType();
+
+    String cardValidationErrorCardBatch();
+
+    String cardValidationErrorArticle();
+
+    String cardValidationErrorManager();
+
+    String cardValidationErrorTestDate();
+
+    String cardRemoveConfirmMessage(String serialNumber);
+
+    String cardRemoveSucceeded();
+
+    String cardGroupModify();
+
+    String cardSomeNotUpdated();
+
+    String cardBatchNumber();
+
+    String cardBatchType();
+
+    String cardBatchArticle();
+
+    String cardBatchSearchPlaceholder();
+
+    String cardBatchAmount();
+
+    String cardBatchAmountOrdered();
+
+    String cardBatchAmountManufactured();
+
+    String cardBatchAmountFree();
+
+    String cardBatchParams();
+
+    String cardBatchArticlePlaceholder();
+
+    String cardBatchNumberPlaceholder();
+
+    String cardBatchPreviousInfo(String number, int amount, String state);
+
+    String cardBatchState();
+
+    String cardBatchPriority();
+
+    String cardBatchDeadline();
+
+    String cardBatchContractors();
+
+    String cardBatchRemoved();
+
+    String cardBatchSaved();
+
+    String cardBatchCreated();
+
+    String cardBatchStatePreliminary();
+
+    String cardBatchStateActual();
+
+    String cardBatchStateOrdered();
+
+    String cardBatchStateReserved();
+
+    String cardBatchStateMounting();
+
+    String cardBatchStateMounted();
+
+    String cardBatchRemoveConfirmMessage(String type, String number);
+
+    String errCardBatchForbiddenRemove();
+
+    String personAutomaticMounting();
+
+    String personManualMounting();
+
+    String personOutputControl();
+
+    String personAutomaticMountingShort();
+
+    String personManualMountingShort();
+
+    String personOutputControlShort();
+
+    String cardBatchTypeValidationError();
+
+    String cardBatchNumberValidationError();
+
+    String cardBatchArticleValidationError();
+
+    String cardBatchAmountValidationError();
+
+    String cardBatchDeadlineValidationError();
+
+    String cardBatchContractorsValidationError();
+
+    String cardBatchGetLastNumberError();
+
+    String cardBatchNumberExceedLimitError();
+
+    String cardBatchStateBuildEquipmentInQueue();
+
+    String cardBatchStateBuildEquipment();
+
+    String cardBatchStateAutomaticMountingInQueue();
+
+    String cardBatchStateAutomaticMounting();
+
+    String cardBatchStateManualMountingInQueue();
+
+    String cardBatchStateManualMounting();
+
+    String cardBatchStateStickerLabelingInQueue();
+
+    String cardBatchStateStickerLabeling();
+
+    String cardBatchStateTransferredForTesting();
+
+    String newEmployeeBook();
+
+    String backToCardBatches();
+
+    String cardBatchEditCommonInfo();
+
+    String cardsCreating();
+
+    String cardsCreated();
+
+    String backToCards();
+
+    String notSelected();
+
+    String cardWarningChangeNotEqualsFields();
+
+    String pcbOrder();
+
+    String pcbOrderName();
+
+    String pcbOrderDate();
+
+    String pcbOrderStateSent();
+
+    String pcbOrderStateAccepted();
+
+    String pcbOrderStateReceived();
+
+    String pcbOrderGroupActive();
+
+    String pcbOrderGroupCompleted();
+
+    String pcbOrderTypeCard();
+
+    String pcbOrderTypeStencil();
+
+    String pcbOrderTypeFrontPanel();
+
+    String pcbOrderPromptnessRegular();
+
+    String pcbOrderPromptnessUrgent();
+
+    String pcbOrderPromptnessVeryUrgent();
+
+    String pcbOrderStencilTypeTop();
+
+    String pcbOrderStencilTypeBot();
+
+    String pcbOrderStencilTypeTopBot();
+
+    String pcbOrderModification();
+
+    String pcbOrderState();
+
+    String pcbOrderPromptness();
+
+    String pcbOrderOrderType();
+
+    String pcbOrderAmount();
+
+    String pcbOrderOrderDate();
+
+    String pcbOrderReceiptDate();
+
+    String pcbOrderReadyDate();
+
+    String pcbOrderContractor();
+
+    String pcbOrderRemoved();
+
+    String pcbOrderRemoveConfirmMessage();
+
+    String pcbOrderGroupNotDefined();
+
+    String pcbOrderCreated();
+
+    String pcbOrderCardType();
+
+    String pcbOrderCardTypePlaceholder();
+
+    String pcbOrderComment();
+
+    String pcbOrderAmountValidationError();
+
+    String pcbOrderCardTypeValidationError();
+
+    String pcbOrderSelectState();
+
+    String pcbOrderSelectPromptness();
+
+    String pcbOrderSelectOrderType();
+
+    String pcbOrderSelectorStencilType();
+
+    String pcbOrderSelectCompany();
+
+    String pcbOrderStateValidationError();
+
+    String pcbOrderPromptnessValidationError();
+
+    String pcbOrderOrderTypeValidationError();
+
+    String pcbOrderStencilTypeValidationError();
+
+    String pcbOrderContractorValidationError();
+
+    String pcbOrderEditCommonInfo();
+
+    String pcbOrderBackToPcbOrders();
+
+    String pcbOrderSaved();
+
+    String pcbOrderModalAmountReceived();
+
+    String jiraWorkflowWarning();
+
+    String cardAmount();
+
+    String cardAmountValidationError();
+
+    String cardCardBatch();
+
+    String cardBatch();
+
+    String card();
+
+    String RFIDLabels();
+
+    String RFIDLabelsEpc();
+
+    String RFIDLabelsName();
+
+    String RFIDLabelsLastScanDate();
+
+    String RFIDLabelsDevice();
+
+    String kitsStatesUpdated();
+
+    String modulesStatesUpdated();
+
+    String contractDatesWarningCostFlow();
+
+    String inputProjectNumber();
+
+    String contractDateExecution();
+
+    String contractDateEndWarranty();
+
+    String errorSetCorrectProjectId();
+
+    String issueValidationResultOk();
+
+    String issueValidationResultNull();
+
+    String issueValidationResultNameEmpty();
+
+    String issueValidationResultTypeEmpty();
+
+    String issueValidationResultCreatorEmpty();
+
+    String issueValidationResultImportanceEmpty();
+
+    String issueValidationResultManagerEmpty();
+
+    String issueValidationResultManagerOtherCompany();
+
+    String issueValidationResultManagerWithoutProduct();
+
+    String issueValidationResultInitiatorEmpty();
+
+    String issueValidationResultStatusInvalid();
+
+    String issueValidationResultImportanceOtherCompany();
+
+    String issueValidationResultInitiatorOtherCompany();
+
+    String issueValidationResultPlatformOtherCompany();
+
+    String issueValidationResultProductInvalid();
+
+    String issueValidationResultDeadlinePassed();
+
+    String issueInitiatorCompany();
+
+    String personEquipmentAssembly();
+
+    String personEquipmentAssemblyShort();
 }
+

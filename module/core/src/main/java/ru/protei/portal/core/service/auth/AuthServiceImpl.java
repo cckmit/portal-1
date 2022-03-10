@@ -8,6 +8,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
+import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -50,6 +51,11 @@ public class AuthServiceImpl implements AuthService {
         if (login == null) {
             log.debug("login [" + ulogin + "] not found, auth-failed");
             return En_ResultStatus.INVALID_LOGIN_OR_PWD;
+        }
+
+        if (login.getAdminStateId() == En_AdminState.LOCKED.getId()) {
+            log.debug("account [" + login + "] is locked");
+            return En_ResultStatus.ACCOUNT_IS_LOCKED;
         }
 
         if (login.isLDAP_Auth()) {

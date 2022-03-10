@@ -6,6 +6,7 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
+import ru.protei.portal.core.model.dict.En_ContactEmailSubscriptionType;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.ui.common.client.events.ContactItemEvents;
@@ -22,7 +23,8 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
 
     @Event
     public void onShow( ContactItemEvents.ShowList event ) {
-        if(event.parent == null || event.data == null || event.types == null || event.types.isEmpty() || event.accessType == null)
+        if(event.parent == null || event.data == null || event.types == null || event.types.isEmpty() ||
+                event.accessType == null || event.subscriptionType == null)
             return;
 
         this.contactItemViews = event.contactItemViews;
@@ -31,7 +33,7 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
         event.parent.clear();
         event.parent.add(listView.asWidget());
 
-        addNewItems(listView.getItemsContainer(), event.types, event.data, event.accessType, event.regexp);
+        addNewItems(listView.getItemsContainer(), event.types, event.data, event.accessType, event.subscriptionType, event.regexp);
     }
 
     @Override
@@ -51,20 +53,20 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
     }
 
     private void addNewItems(HasWidgets parent, List<En_ContactItemType> allowedTypes,
-                             List<ContactItem> dataList, En_ContactDataAccess accessType, String regexp){
+                             List<ContactItem> dataList, En_ContactDataAccess accessType, En_ContactEmailSubscriptionType subscriptionType, String regexp){
         for(ContactItem ci: dataList) {
-            if (!allowedTypes.contains(ci.type()) || !accessType.equals(ci.accessType()))
+            if (!allowedTypes.contains(ci.type()) || !subscriptionType.equals(ci.subscriptionType()))
                 continue;
 
             addNewItem(ci, parent, allowedTypes, dataList, regexp);
         }
 
-        addNewEmptyItem(parent, allowedTypes, dataList, accessType, regexp);
+        addNewEmptyItem(parent, allowedTypes, dataList, accessType, subscriptionType, regexp);
     }
 
     private void addNewEmptyItem(HasWidgets parent, List<En_ContactItemType> allowedTypes, List<ContactItem> dataList,
-                                 En_ContactDataAccess accessType, String regexp){
-        addNewItem(new ContactItem("", allowedTypes.get(0), accessType), parent, allowedTypes, dataList, regexp);
+                                 En_ContactDataAccess accessType, En_ContactEmailSubscriptionType subscriptionType, String regexp){
+        addNewItem(new ContactItem("", allowedTypes.get(0), accessType, subscriptionType), parent, allowedTypes, dataList, regexp);
     }
 
     private void removeItem(AbstractContactItemView item){
@@ -88,7 +90,7 @@ public abstract class ContactItemActivity implements Activity, AbstractContactIt
 
         if (prevValue.isEmpty()) {
             model.data.add(model.contactItem);
-            addNewEmptyItem(model.parent, model.allowedTypes, model.data, model.contactItem.accessType(), model.regexp);
+            addNewEmptyItem(model.parent, model.allowedTypes, model.data, model.contactItem.accessType(), model.contactItem.subscriptionType(), model.regexp);
         }
         else if (newValue.isEmpty()) {
             AbstractContactItemView emptyItem = findEmptyItem(model.parent);

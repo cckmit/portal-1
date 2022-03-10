@@ -20,4 +20,6 @@ public interface EmployeeRegistrationController extends RemoteService {
     Long createEmployeeRegistration(EmployeeRegistration employeeRegistration) throws RequestFailedException;
 
     Long updateEmployeeRegistration(EmployeeRegistrationShortView employeeRegistration) throws RequestFailedException;
+
+    EmployeeRegistration completeProbationPeriod(Long id) throws RequestFailedException;
 }

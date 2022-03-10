@@ -226,4 +226,83 @@ public class DebugIdsHelper {
             return DebugIds.PROJECT_STATE.DEFAULT + id;
         }
     }
+
+    public static final class CARD_BATCH_STATE {
+        public static String byId(long id) {
+            if (id == 52) {
+                return DebugIds.CARD_BATCH_STATE.IN_QUEUE_BUILD_EQUIPMENT;
+            }
+            if (id == 53) {
+                return DebugIds.CARD_BATCH_STATE.BUILD_EQUIPMENT;
+            }
+            if (id == 54) {
+                return DebugIds.CARD_BATCH_STATE.IN_QUEUE_AUTOMATIC_MOUNTING;
+            }
+            if (id == 55) {
+                return DebugIds.CARD_BATCH_STATE.AUTOMATIC_MOUNTING;
+            }
+            if (id == 58) {
+                return DebugIds.CARD_BATCH_STATE.IN_QUEUE_MANUAL_MOUNTING;
+            }
+            if (id == 59) {
+                return DebugIds.CARD_BATCH_STATE.MANUAL_MOUNTING;
+            }
+            if (id == 60) {
+                return DebugIds.CARD_BATCH_STATE.IN_QUEUE_STICKER_LABELING;
+            }
+            if (id == 61) {
+                return DebugIds.CARD_BATCH_STATE.STICKER_LABELING;
+            }
+            if (id == 62) {
+                return DebugIds.CARD_BATCH_STATE.TRANSFERRED_FOR_TESTING;
+            }
+
+            return DebugIds.CARD_BATCH_STATE.DEFAULT + id;
+        }
+    }
+
+    public static final class PCB_ORDER_STATE {
+        public static String byId(long id) {
+            if (id == 1) {
+                return DebugIds.PCB_ORDER_STATE.RECEIVED;
+            }
+            if (id == 2) {
+                return DebugIds.PCB_ORDER_STATE.ACCEPTED;
+            }
+            if (id == 3) {
+                return DebugIds.PCB_ORDER_STATE.SENT;
+            }
+            return DebugIds.ISSUE_STATE.DEFAULT + id;
+        }
+    }
+
+    public static final class PCB_ORDER_PROMPTNESS {
+        public static String byId(long id) {
+            if (id == 1) {
+                return DebugIds.PCB_ORDER_PROMPTNESS.REGULAR;
+            }
+            if (id == 2) {
+                return DebugIds.PCB_ORDER_PROMPTNESS.URGENT;
+            }
+            if (id == 3) {
+                return DebugIds.PCB_ORDER_PROMPTNESS.VERY_URGENT;
+            }
+            return DebugIds.ISSUE_STATE.DEFAULT + id;
+        }
+    }
+
+    public static final class PCB_ORDER_TYPE {
+        public static String byId(long id) {
+            if (id == 1) {
+                return DebugIds.PCB_ORDER_TYPE.CARD;
+            }
+            if (id == 2) {
+                return DebugIds.PCB_ORDER_TYPE.STENCIL;
+            }
+            if (id == 3) {
+                return DebugIds.PCB_ORDER_TYPE.FRONT_PANEL;
+            }
+            return DebugIds.ISSUE_STATE.DEFAULT + id;
+        }
+    }
 }

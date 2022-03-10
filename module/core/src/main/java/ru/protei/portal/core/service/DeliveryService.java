@@ -1,5 +1,6 @@
 package ru.protei.portal.core.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
@@ -29,7 +30,11 @@ public interface DeliveryService {
 
     @Privileged({ En_Privilege.DELIVERY_REMOVE })
     @Auditable( En_AuditType.DELIVERY_REMOVE )
-    Result<Long> removeDelivery(AuthToken token, Long projectId);
+    Result<Long> removeDelivery(AuthToken token, Long id);
+
+    @Privileged({ En_Privilege.DELIVERY_EDIT })
+    @Auditable( En_AuditType.KIT_MODIFY )
+    Result<Void> updateKitListStates(AuthToken token, List<Long> kitsIds, Long caseStateId);
 
     @Privileged({ En_Privilege.DELIVERY_EDIT })
     @Auditable( En_AuditType.DELIVERY_MODIFY )
@@ -38,7 +43,17 @@ public interface DeliveryService {
     Result<String> getLastSerialNumber(AuthToken token, boolean isMilitaryNumbering);
     Result<String> getLastSerialNumber(AuthToken token, Long deliveryId);
 
-    @Privileged({ En_Privilege.DELIVERY_EDIT })
+    @Privileged({ En_Privilege.DELIVERY_CREATE })
     @Auditable( En_AuditType.KIT_CREATE )
     Result<List<Kit>> addKits(AuthToken token, List<Kit> kits, Long deliveryId);
+
+    @Privileged({ En_Privilege.DELIVERY_VIEW })
+    Result<Kit> getKit(AuthToken token, Long kitId);
+
+    @Privileged({ En_Privilege.DELIVERY_EDIT })
+    @Auditable( En_AuditType.KIT_MODIFY )
+    Result<Kit> updateKit(AuthToken token, Kit kit);
+
+    @Privileged({ En_Privilege.DELIVERY_VIEW })
+    Result<Long> getDeliveryStateId(AuthToken token, Long deliveryId);
 }

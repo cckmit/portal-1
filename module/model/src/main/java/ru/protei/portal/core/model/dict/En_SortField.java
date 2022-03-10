@@ -16,6 +16,11 @@ public enum En_SortField {
     comp_name("cname"),
 
     /**
+     * category id
+     */
+    category("category_id"),
+
+    /**
      * product name (field from common table DEV_UNIT)
      */
     prod_name("unit_name"),
@@ -214,7 +219,13 @@ public enum En_SortField {
     /**
      * Журнал дежурств date from
      */
-    duty_log_date_from("duty_log.date_from"),
+    duty_log_date_from("duty_log.date_from"), /**
+
+
+     * Журнал дежурств date to
+     */
+    duty_log_date_to("duty_log.date_to"),
+
 
     /**
      * Журнал дежурств employee
@@ -261,6 +272,45 @@ public enum En_SortField {
      */
     delivery_creation_date("CO.created"),
 
+    /**
+     * Серийный номер платы
+     */
+    card_serial_number("serial_number"),
+
+    /**
+     * Дата тестирования платы
+     */
+    card_test_date("test_date"),
+
+    /**
+     * Название типа платы
+     */
+    card_type_name("name"),
+
+    /**
+     * Тип платы партии плат
+     */
+    card_batch_type("CT.name"),
+
+    /**
+     * Номер партии плат
+     */
+    card_batch_number("number"),
+
+    /**
+     * Дедлайн партии плат
+     */
+    card_batch_deadline("deadline"),
+
+    /**
+     * Тип платы
+     */
+    pcb_order_card_type("CT.name"),
+
+    /**
+     * Дата получения
+     */
+    pcb_order_receipt_date("pcb_order.receipt_date"),
     ;
 
     private String fieldName;

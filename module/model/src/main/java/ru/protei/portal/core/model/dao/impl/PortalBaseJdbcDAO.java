@@ -1,17 +1,18 @@
 package ru.protei.portal.core.model.dao.impl;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.PortalBaseDAO;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
-import ru.protei.portal.core.utils.SimpleProfiler;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.enums.HasId;
-import ru.protei.winter.jdbc.*;
+import ru.protei.winter.jdbc.JdbcBaseDAO;
+import ru.protei.winter.jdbc.JdbcHelper;
+import ru.protei.winter.jdbc.JdbcQueryParameters;
+import ru.protei.winter.jdbc.JdbcSort;
 import ru.protei.winter.jdbc.column.JdbcObjectColumn;
 
 import java.lang.reflect.Field;
@@ -19,7 +20,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.slf4j.LoggerFactory.*;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by michael on 25.05.16.
@@ -315,18 +316,6 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
     }
 
 
-    @Override
-    public List<Long> existingKeys(Collection<Long> testKeys) {
-        List<Object> args = new ArrayList<Object>();
-        StringBuilder query = new StringBuilder("select ")
-                .append(getIdColumnName())
-                .append(" from ").append(getTableName())
-                .append(" where ")
-                .append(getIdColumnName()).append(" in ")
-                .append(JdbcHelper.makeSqlStringCollection(testKeys, args, null));
-
-        return jdbcTemplate.queryForList(query.toString(), Long.class, args.toArray());
-    }
 
     protected Integer booleanAsNumber( Boolean isExpression ) {
         if (isExpression == null) return null;

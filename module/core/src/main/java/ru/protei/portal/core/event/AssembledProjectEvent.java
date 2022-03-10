@@ -3,7 +3,7 @@ package ru.protei.portal.core.event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.DiffCollectionResult;
@@ -194,8 +194,8 @@ public class AssembledProjectEvent extends ApplicationEvent implements HasCaseCo
         return false;
     }
 
-    public Map<En_DevUnitPersonRoleType, DiffCollectionResult<PersonShortView>> getTeamDiffs() {
-        Map<En_DevUnitPersonRoleType, DiffCollectionResult<PersonShortView>> teamDiffs = new TreeMap<>(Comparator.comparingInt(En_DevUnitPersonRoleType::getId));
+    public Map<En_PersonRoleType, DiffCollectionResult<PersonShortView>> getTeamDiffs() {
+        Map<En_PersonRoleType, DiffCollectionResult<PersonShortView>> teamDiffs = new TreeMap<>(Comparator.comparingInt(En_PersonRoleType::getId));
 
         if (!isEditEvent()) {
             DiffCollectionResult<PersonProjectMemberView> diffResult = diffCollection(null, newProjectState.getTeam());

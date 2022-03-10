@@ -3,6 +3,8 @@
 </#macro>
 
 <@set name="_employee_full_name" value="${employee_full_name}"/>
+<@set name="_company" value="${company}"/>
+<@set name="_department " value="${department}"/>
 <@set name="_head_of_department" value="${head_of_department}"/>
 <@set name="_employment_type" value="${employment_type}"/>
 <@set name="_employment_type_full_time" value="${employment_type_full_time}"/>
@@ -18,6 +20,7 @@
 <@set name="_employment_date" value="${employment_date}"/>
 <@set name="_curators" value="${curators}"/>
 <@set name="_created" value="${created}"/>
+<@set name="_creator" value="${creator}"/>
 <@set name="_workplace" value="${workplace}"/>
 <@set name="_equipment_list" value="${equipment_list}"/>
 <@set name="_resources_list" value="${resources_list}"/>
@@ -50,11 +53,18 @@
 <@set name="_operating_system" value="${operating_system}"/>
 <@set name="_additional_soft" value="${additional_soft}"/>
 
+<@set name="_updated" value="${updated_just_now}"/>
+<@set name="_attachments" value="${attachments}"/>
+
 <#noparse>
 <#macro changeTo old, new>
     <span style="color:#bd1313;text-decoration:line-through;">${old}</span>
     <span style="margin:0 5px;">&rarr;</span>
     <span style="color:#11731d;background:#dff7e2;padding:2px 4px">${new}</span>
+</#macro>
+
+<#macro diffHTML old, new>
+    ${TextUtils.diffHTML(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}
 </#macro>
 
 <html>
@@ -75,6 +85,22 @@
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                 ${(employeeFullName)!''}
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                ${_company}
+            </td>
+            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                ${(company)!''}
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                ${_department}
+            </td>
+            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                ${(department)!''}
             </td>
         </tr>
         <tr>
@@ -187,6 +213,14 @@
         </tr>
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                ${_creator}
+            </td>
+            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                ${(creator)!}
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                 ${_workplace}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;">${(workplace)!}</td>
@@ -278,6 +312,53 @@
         </tr>
         </tbody>
     </table>
+
+    <#--COMMENTS-->
+    <div id="test-case-comments" style="font-size:14px;margin-top:15px">
+        <#list caseComments?reverse as caseComment>
+        <div style="border-radius:5px;padding:12px;margin-bottom:5px;background:<#if caseComment.removed>#f7dede<#else><#if caseComment.added>#dff7e2<#else>#f0f0f0</#if></#if>;">
+            <span style="color:#666666;line-height: 17px;margin-right:5px">${caseComment.created?datetime}</span>
+            <span style="font-size:14px;margin-bottom:5px;color:#0062ff;line-height: 17px;">
+                        <#if caseComment.author??>
+                            ${TransliterationUtils.transliterate(caseComment.author.displayName, lang)!''}
+                        </#if>
+            </span>
+            <#if caseComment.isUpdated>
+            <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
+            </#if>
+            <#if caseComment.oldText??>
+                <div class="markdown"
+                     style="margin-top:4px;line-height:1.5em;"><@diffHTML old="${caseComment.oldText}"
+                    new="${caseComment.text}"/>
+                </div>
+            <#else>
+                <div class="markdown" style="margin-top:4px;line-height:1.5em;">${caseComment.text}</div>
+            </#if>
+            <#if caseComment.hasAttachments>
+                <div class="markdown" style="margin-top:12px;line-height:1.5em;">
+                    <hr/>
+                    <i>${_attachments}: </i>
+                    <#if caseComment.sameAttachments??>
+                        <#list caseComment.sameAttachments as attach>
+                            <span style="display:inline-block;padding:1px 4px 1px 0px;white-space:nowrap;text-decoration:none;color:#0062ff">${attach.fileName}</span>
+                        </#list>
+                    </#if>
+                    <#if caseComment.removedAttachments??>
+                        <#list caseComment.removedAttachments as attach>
+                            <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:line-through;color:#bd1313;">${attach.fileName}</span>
+                        </#list>
+                    </#if>
+                    <#if caseComment.addedAttachments??>
+                        <#list caseComment.addedAttachments as attach>
+                            <span style="display:inline-block;padding:1px 5px;white-space:nowrap;text-decoration:none;color:#11731d;background:#dff7e2;">${attach.fileName}</span>
+                        </#list>
+                    </#if>
+                </div>
+            </#if>
+        </div>
+        </#list>
+    </div>
+
 </div>
 <div style="padding: 4px 0 8px;">
     <div style="color: #777777; font-size: 11px; font-family:sans-serif; margin: 20px 0; padding: 8px 0; border-top: 1px solid #D4D5D6;">
