@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employee.client.activity.preview;
 
+import com.google.gwt.i18n.client.TimeZone;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -35,6 +36,7 @@ import java.util.*;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
+import static ru.protei.portal.ui.common.client.common.UiConstants.DateTime.MSK_TIME_ZONE_OFFSET_IN_MINUTES;
 
 /**
  * Активность превью сотрудника
@@ -122,7 +124,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
             view.setBirthday("");
             view.birthdayContainerVisibility().setVisible(false);
         } else {
-            view.setBirthday(DateFormatter.formatDateMonth(employee.getBirthday()));
+            view.setBirthday(DateFormatter.formatDateMonth(employee.getBirthday(), TimeZone.createTimeZone(MSK_TIME_ZONE_OFFSET_IN_MINUTES)));
             view.birthdayContainerVisibility().setVisible(true);
         }
 

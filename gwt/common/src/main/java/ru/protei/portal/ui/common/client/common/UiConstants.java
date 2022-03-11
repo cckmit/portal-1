@@ -175,6 +175,10 @@ public class UiConstants {
         int LINKS_MAX_HEIGHT = 120;
     }
 
+    public interface DateTime {
+        int MSK_TIME_ZONE_OFFSET_IN_MINUTES = -240;
+    }
+
     public interface MULTI_TAB_TABS {
         List<En_CommentOrHistoryType> SELECTED_BY_DEFAULT = Arrays.asList(COMMENT, HISTORY);
     }
