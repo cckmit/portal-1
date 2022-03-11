@@ -28,6 +28,7 @@ import java.util.Objects;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
 import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
+import static ru.protei.portal.ui.common.client.common.UiConstants.DateTime.MSK_TIME_ZONE_OFFSET_IN_MINUTES;
 
 /**
  * Активность создания и редактирования контактного лица
@@ -353,7 +354,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.displayName().setText(person.getDisplayName());
         view.shortName().setText(person.getDisplayShortName());
         if (person.getBirthday() != null ) {
-            view.setBirthDayTimeZone(TimeZone.createTimeZone(person.getBirthday().getTimezoneOffset()));
+            view.setBirthDayTimeZone(TimeZone.createTimeZone(MSK_TIME_ZONE_OFFSET_IN_MINUTES));
         }
         view.birthDay().setValue(person.getBirthday());
         view.locale().setValue(person.getLocale());
