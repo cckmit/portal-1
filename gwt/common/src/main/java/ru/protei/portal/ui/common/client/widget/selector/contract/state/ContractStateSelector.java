@@ -10,7 +10,7 @@ public class ContractStateSelector extends FormPopupSingleSelector<CaseState> {
     @Inject
     public void init(ContractStateModel model) {
         setAsyncModel(model);
-        setItemRenderer(value -> value == null ? defaultValue : lang.getName(value.getState()));
+        setItemRenderer(value -> value == null ? defaultValue : lang.getStateName(value));
     }
 
     @Inject

@@ -714,8 +714,7 @@ public abstract class ReportEditActivity implements Activity,
         query.setManagerIds(collectIds(contractFilterView.managers().getValue()));
         query.setTypes(nullIfEmpty(listOfOrNull(contractFilterView.types().getValue())));
         query.setCaseTagsIds(nullIfEmpty(toList(contractFilterView.tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
-        query.setStateIds(listOfOrNull(contractFilterView.states().getValue().stream().map(CaseState::getId)
-                                                                             .collect(Collectors.toList())));
+        query.setStateIds(nullIfEmpty(toList(contractFilterView.states().getValue(), CaseState::getId)));
         ProductDirectionInfo value = contractFilterView.direction().getValue();
         query.setDirectionId(value == null ? null : value.id);
         query.setKind(contractFilterView.kind().getValue());

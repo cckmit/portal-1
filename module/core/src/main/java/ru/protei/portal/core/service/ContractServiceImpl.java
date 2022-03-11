@@ -493,8 +493,7 @@ public class ContractServiceImpl implements ContractService {
         ContractQuery query = new ContractQuery();
         query.setOpenStateDate(apiQuery.getOpenStateDate());
         query.setOrganizationIds(apiQuery.getOrganizationIds());
-        query.setStateIds(apiQuery.getStates().stream().map(CaseState::getId)
-                                              .collect(Collectors.toList()));
+        query.setStateIds(apiQuery.getStateIds());
         SearchResult<Contract> result = contractDAO.getSearchResult(query);
         List<Contract> contracts = result.getResults();
 

@@ -1,14 +1,14 @@
 package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.ent.CaseState;
 
 public class ContractStateLang {
-    public String getName(String state) {
-        if (state == null) {
-            return "";
-        }
+    public String getStateName(CaseState state) {
+        if (state == null || state.getState() == null)
+            return lang.errUnknownResult();
 
-        switch (state.toLowerCase()) {
+        switch (state.getState().toLowerCase()) {
             case "agreement":
                 return lang.contractStateAgreement();
             case "have an original":
@@ -26,7 +26,7 @@ public class ContractStateLang {
             case "eds signed":
                 return lang.contractEDSSigned();
         }
-        return lang.unknownField();
+        return state.getState();
     }
 
     @Inject

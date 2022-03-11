@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
@@ -153,7 +154,7 @@ public class ContractTableView extends Composite implements AbstractContractTabl
             // https://www.flaticon.com/authors/flat_circular/flat
             // https://www.flaticon.com/packs/business-strategy-2
             image.setSrc( "./images/contract_" + contract.getStateName().toLowerCase() + ".png" );
-            image.setTitle( contractStateLang.getName(contract.getStateName()) );
+            image.setTitle( contractStateLang.getStateName(new CaseState(contract.getStateName())) );
             root.appendChild(image);
             cell.appendChild(root);
         }
