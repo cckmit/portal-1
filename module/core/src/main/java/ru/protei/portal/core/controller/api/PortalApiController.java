@@ -810,6 +810,7 @@ public class PortalApiController {
 
     private EmployeeQuery makeEmployeeQuery(EmployeeApiQuery apiQuery) {
         EmployeeQuery query = new EmployeeQuery();
+        query.setIds(apiQuery.getIds());
         query.setSearchString(apiQuery.getDisplayName());
         query.setEmailByLike(apiQuery.getEmail());
         query.setWorkPhone(apiQuery.getWorkPhone());
