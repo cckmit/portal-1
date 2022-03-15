@@ -2,11 +2,13 @@ package ru.protei.portal.ui.report.client.activity.edit;
 
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.*;
 import ru.protei.portal.core.model.ent.*;
@@ -25,6 +27,7 @@ import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYoutrackWorkFil
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseFilterControllerAsync;
+import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidget;
@@ -40,6 +43,8 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -275,13 +280,12 @@ public abstract class ReportEditActivity implements Activity,
 
         if (query.getCaseTagsIds() == null) {
             contractFilterView.tags().setValue(null);
-        } else {
-            contractFilterView.tags().setValue(
-                stream(query.getCaseTagsIds()).map(id -> id.equals(CrmConstants.CaseTag.NOT_SPECIFIED) ? null : new CaseTag(id)).collect(Collectors.toSet())
-            );
         }
-        contractFilterView.states().setValue(stream(query.getStateIds()).map(CaseState::new)
-                                                         .collect(Collectors.toSet()));
+
+        if (query.getStateIds() == null) {
+            contractFilterView.states().setValue(null);
+        }
+
         contractFilterView.direction().setValue(query.getDirectionId() == null ? null : new ProductDirectionInfo(query.getDirectionId(), ""));
         contractFilterView.kind().setValue(query.getKind());
         contractFilterView.dateSigningRange().setValue(fromDateRange(query.getDateSigningRange()));
@@ -305,6 +309,16 @@ public abstract class ReportEditActivity implements Activity,
                 contractFilterView.managers().setValue(managers);
                 if (query.getDirectionId() != null) {
                     contractFilterView.direction().setValue(selectorsParams.getProductDirectionInfos().get(0));
+                }
+
+                List<CaseTag> caseTags = selectorsParams.getCaseTags();
+                if (caseTags != null) {
+                    contractFilterView.tags().setValue(new HashSet<>(caseTags));
+                }
+
+                List<CaseState> caseStates = selectorsParams.getCaseStates();
+                if (caseStates != null) {
+                    contractFilterView.states().setValue(new HashSet<>(caseStates));
                 }
             }
         });

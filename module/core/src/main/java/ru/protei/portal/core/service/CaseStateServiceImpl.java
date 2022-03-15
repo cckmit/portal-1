@@ -8,12 +8,15 @@ import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dao.CaseStateMatrixDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies.SELECTED;
 import static ru.protei.portal.api.struct.Result.error;
@@ -132,5 +135,15 @@ public class CaseStateServiceImpl implements CaseStateService {
             return error(En_ResultStatus.NOT_FOUND);
 
         return ok(caseState);
+    }
+
+    @Override
+    public Result<List<CaseState>> getCaseStatesByIds(List<Long> caseStatesIds) {
+        List<CaseState> caseStates = caseStateDAO.getListByKeys(caseStatesIds);
+
+        if (caseStates == null)
+            return error(En_ResultStatus.NOT_FOUND);
+
+        return ok(caseStates);
     }
 }

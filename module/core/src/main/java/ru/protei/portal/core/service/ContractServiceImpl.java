@@ -82,6 +82,10 @@ public class ContractServiceImpl implements ContractService {
     PersonService personService;
     @Autowired
     ProductService productService;
+    @Autowired
+    CaseStateService caseStateService;
+    @Autowired
+    CaseTagDAO caseTagDAO;
 
     @Override
     public Result<SearchResult<Contract>> getContracts( AuthToken token, ContractQuery query) {
@@ -543,6 +547,26 @@ public class ContractServiceImpl implements ContractService {
                 selectorsParams.setPersonShortViews(result.getData());
             } else {
                 return error(result.getStatus(), "Error at getPersonIds" );
+            }
+        }
+
+        List<Long> caseTagsId = new ArrayList<>(emptyIfNull(query.getCaseTagsIds()));
+        if (!CollectionUtils.isEmpty(caseTagsId)) {
+            List<CaseTag> caseTags = caseTagDAO.getListByKeys(caseTagsId);
+            if (caseTags != null) {
+                selectorsParams.setCaseTags(caseTags);
+            } else {
+                return error(En_ResultStatus.INTERNAL_ERROR, "Error at caseTagDAO getListByKeys");
+            }
+        }
+
+        List<Long> caseStateIds = new ArrayList<>(emptyIfNull(query.getStateIds()));
+        if (!CollectionUtils.isEmpty(caseStateIds)) {
+            Result<List<CaseState>> result = caseStateService.getCaseStatesByIds(caseStateIds);
+            if (result.isOk()) {
+                selectorsParams.setCaseStates(result.getData());
+            } else {
+                return error(result.getStatus(), "Error at getCaseStatesByIds");
             }
         }
 
