@@ -121,4 +121,5 @@
   <include file="2022-01-25-add-new-worker-position-data-to-worker-entry-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-02-21-modify-new_position_department_id-data-type-in-worker_entry-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-03-02-add-member-role.xml" relativeToChangelogFile="true"/>
+  <include file="2022-03-09-add-auto_close-to-case_object-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
