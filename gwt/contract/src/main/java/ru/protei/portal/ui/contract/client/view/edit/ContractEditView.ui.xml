@@ -134,6 +134,10 @@
                                                                   hasNullValue="false"
                                                                   header="{lang.contractState}"/>
 
+                            <contract:calculationtype.ContractCalculationTypeSelector ui:field="calculationType" validation="true"
+                                                                                      hasNullValue="true"
+                                                                                      header="{lang.contractCalculationType}"/>
+
                             <project:ProjectWidget ui:field="projectWidget" validation="true"
                                                    addStyleNames="form-group form-group-default"/>
                             <div class="form-group form-group-default">

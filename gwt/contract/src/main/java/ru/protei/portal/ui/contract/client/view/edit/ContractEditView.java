@@ -32,6 +32,7 @@ import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyFormSelec
 import ru.protei.portal.ui.common.client.widget.money.MoneyCurrencyVatWidget;
 import ru.protei.portal.ui.common.client.widget.project.ProjectWidget;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.ContractCalculationTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStateSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeCustomFormSelector;
@@ -95,6 +96,11 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Override
     public HasValue<CaseState> state() {
         return state;
+    }
+
+    @Override
+    public HasValue<En_ContractCalculationType> calculationType() {
+        return calculationType;
     }
 
     @Override
@@ -327,6 +333,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         number.ensureDebugId(DebugIds.CONTRACT.NUMBER_INPUT);
         type.ensureDebugId(DebugIds.CONTRACT.TYPE_SELECTOR);
         state.setEnsureDebugId(DebugIds.CONTRACT.STATE_SELECTOR);
+        calculationType.setEnsureDebugId(DebugIds.CONTRACT.STATE_SELECTOR);
         contractParent.setEnsureDebugId(DebugIds.CONTRACT.PARENT_SELECTOR);
         deliveryNumber.ensureDebugId(DebugIds.CONTRACT.DELIVERY_NUMBER_INPUT);
         descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DESCRIPTION);
@@ -373,6 +380,9 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     ContractStateSelector state;
+    @Inject
+    @UiField(provided = true)
+    ContractCalculationTypeSelector calculationType;
     @Inject
     @UiField(provided = true)
     ContractTypeSelector type;

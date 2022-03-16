@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.activity.contractfilter;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.dict.En_ContractCalculationType;
 import ru.protei.portal.core.model.dict.En_ContractKind;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -44,6 +45,8 @@ public interface AbstractContractFilterView extends IsWidget {
     HasValue<Set<CaseTag>> tags();
 
     HasValue<Set<CaseState>> states();
+
+    HasValue<Set<En_ContractCalculationType>> calculationTypes();
 
     HasValue<ProductDirectionInfo> direction();
 

@@ -9,7 +9,6 @@
              xmlns:homecompany="urn:import:ru.protei.portal.ui.common.client.widget.homecompany"
              xmlns:threestate="urn:import:ru.protei.portal.ui.common.client.widget.threestate"
              xmlns:range="urn:import:ru.protei.portal.ui.common.client.widget.typedrangepicker"
-             xmlns:contrac="urn:import:ru.protei.portal.ui.common.client.widget.selector.contract"
              xmlns:casetag="urn:import:ru.protei.portal.ui.common.client.widget.selector.casetag">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -42,11 +41,15 @@
                                                 header="{lang.contractDateValid}"
                                                 addStyleNames="form-group col-md-4 resize-md-12"/>
 
-                <contrac:type.ContractTypesMultiSelector ui:field="types"
+                <contract:type.ContractTypesMultiSelector ui:field="types"
                                              header="{lang.contractType}" addStyleNames="form-group col-md-4 resize-md-12"/>
 
                 <contract:state.ContractStatesMultiSelector ui:field="states"
                                               header="{lang.contractState}" addStyleNames="form-group col-md-4 resize-md-12"/>
+
+                <contract:calculationtype.ContractCalculationTypesMultiSelector ui:field="calculationTypes"
+                                                                                header="{lang.contractCalculationType}"
+                                                                                addStyleNames="form-group col-md-4 resize-md-12"/>
 
                 <casetag:CaseTagMultiSelector ui:field="tags"
                                               caseType="CONTRACT"

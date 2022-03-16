@@ -999,6 +999,7 @@ public class DebugIds {
         String NUMBER_INPUT = "contract-number-input";
         String TYPE_SELECTOR = "contract-type-selector";
         String STATE_SELECTOR = "contract-state-selector";
+        String CALCULATION_TYPE_SELECTOR = "contract-calculation-type-selector";
         String PARENT_SELECTOR = "contract-parent-selector";
         String DELIVERY_NUMBER_INPUT = "contract-delivery-number-input";
         String DESCRIPTION_INPUT = "contract-description-input";

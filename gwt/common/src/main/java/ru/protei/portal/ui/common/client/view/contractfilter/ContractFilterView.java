@@ -26,6 +26,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.ContractCalculationTypesMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStatesMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypesMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contractor.multicontractor.MultiContractorSelector;
@@ -133,6 +134,11 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     }
 
     @Override
+    public HasValue<Set<En_ContractCalculationType>> calculationTypes() {
+        return calculationTypes;
+    }
+
+    @Override
     public HasValue<ProductDirectionInfo> direction() {
         return direction;
     }
@@ -229,6 +235,11 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         restartChangeTimer();
     }
 
+    @UiHandler("calculationTypes")
+    public void onCalculationTypeChanged(ValueChangeEvent<Set<En_ContractCalculationType>> event) {
+        restartChangeTimer();
+    }
+
     @UiHandler("types")
     public void onTypeChanged(ValueChangeEvent<Set<En_ContractType>> event) {
         restartChangeTimer();
@@ -297,6 +308,9 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @Inject
     @UiField(provided = true)
     ContractStatesMultiSelector states;
+    @Inject
+    @UiField(provided = true)
+    ContractCalculationTypesMultiSelector calculationTypes;
     @Inject
     @UiField(provided = true)
     CaseTagMultiSelector tags;
