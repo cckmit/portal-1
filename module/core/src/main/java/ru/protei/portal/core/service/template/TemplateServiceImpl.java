@@ -401,12 +401,13 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getContractCreateNotificationSubject(Contract contract, EnumLangUtil enumLangUtil) {
+    public PreparedTemplate getContractCreateNotificationSubject(Contract contract, EnumLangUtil enumLangUtil, Person author) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("EnumLangUtil", enumLangUtil);
 
         templateModel.put("contractType", contract.getContractType());
         templateModel.put("contractNumber", contract.getNumber());
+        templateModel.put("author", author.getDisplayName() );
 
         PreparedTemplate template = new PreparedTemplate("notification/email/contract.create.subject.%s.ftl");
         template.setModel(templateModel);

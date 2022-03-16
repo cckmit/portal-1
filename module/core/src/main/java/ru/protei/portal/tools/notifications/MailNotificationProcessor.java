@@ -667,7 +667,7 @@ public class MailNotificationProcessor {
         Contract contract = event.getContract();
         Set<NotificationEntry> notifiers = event.getNotificationEntryList();
         if (contract == null || notifiers == null) {
-            log.error("Failed to send contract reate notification: incomplete data provided: " +
+            log.error("Failed to send contract create notification: incomplete data provided: " +
                     "contract={}, notifiers={}", contract, notifiers);
             return;
         }
@@ -684,23 +684,27 @@ public class MailNotificationProcessor {
                 config.data().getMailNotificationConfig().getCrmUrlInternal() +
                         config.data().getMailNotificationConfig().getContractUrl(),
                 recipients,
+                event.getAuthor(),
                 new HashSet<>(notifiers)
         );
     }
 
-    private void performContractCreateNotification(Contract contract, String urlTemplate, List<String> recipients, Set<NotificationEntry> notifiers) {
+    private void performContractCreateNotification(Contract contract, String urlTemplate, List<String> recipients,
+                                                   Person author, Set<NotificationEntry> notifiers) {
         if (CollectionUtils.isEmpty(notifiers)) {
             log.error("Failed to send contract create notification: notifiers is empty: " +
                     "contract={}", contract);
         }
 
-        PreparedTemplate bodyTemplate = templateService.getContractCreateNotificationBody(contract, urlTemplate, recipients, new EnumLangUtil(lang));
+        PreparedTemplate bodyTemplate = templateService.getContractCreateNotificationBody(
+                contract, urlTemplate, recipients, new EnumLangUtil(lang));
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for contractId={}", contract.getId());
             return;
         }
 
-        PreparedTemplate subjectTemplate = templateService.getContractCreateNotificationSubject(contract, new EnumLangUtil(lang));
+        PreparedTemplate subjectTemplate = templateService.getContractCreateNotificationSubject(
+                contract, new EnumLangUtil(lang), author);
         if (subjectTemplate == null) {
             log.error("Failed to prepare subject template for contractId={}", contract.getId());
             return;

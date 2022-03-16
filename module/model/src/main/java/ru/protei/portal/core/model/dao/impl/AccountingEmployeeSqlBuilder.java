@@ -8,7 +8,6 @@ import java.util.List;
 import static ru.protei.portal.core.model.dao.impl.EmployeeSqlBuilder.WORKER_ENTRY_JOIN;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
-import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.query;
 
 public class AccountingEmployeeSqlBuilder extends BaseSqlBuilder {
 
@@ -26,10 +25,7 @@ public class AccountingEmployeeSqlBuilder extends BaseSqlBuilder {
             cnd.or("person.id").in(ids);
         }
         if (isNotEmpty(departmentIds)) {
-            cnd.or("person.id").in(
-                    query().select("personId").from("worker_entry")
-                            .where("worker_entry.dep_id").in(departmentIds)
-                            .asQuery());
+            cnd.or("WE.dep_id").in(departmentIds);
         }
         return cnd;
     }

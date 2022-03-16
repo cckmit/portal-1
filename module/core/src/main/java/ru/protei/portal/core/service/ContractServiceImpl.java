@@ -225,16 +225,17 @@ public class ContractServiceImpl implements ContractService {
         }
 
         log.info("createContract(): notification for contract={}", contract.getId());
-        Set<Long> personIdList = makePersonIdListForNotification(contract);
-        if (CollectionUtils.isEmpty(personIdList) && CollectionUtils.isEmpty(contract.getNotifiers()) ) {
+        Set<Long> personIdList = makePersonIdListForNotification(contract, contract.getNotifiers());
+        if (CollectionUtils.isEmpty(personIdList)) {
             log.info("createContract(): notification for contract={}: no persons to be notified", contract.getId());
         } else {
-            Set<NotificationEntry> notificationEntries = getNotificationEntries(personIdList, contract.getNotifiers());
+            Set<NotificationEntry> notificationEntries = getNotificationEntries(personIdList);
             if (CollectionUtils.isEmpty(notificationEntries)) {
                 log.info("createContract(): notification for contract={}: no entries to be notified", contract.getId());
             } else {
                 log.info("createContract(): notification for contract={}: entries to be notified: {}", contract.getId(), notificationEntries);
-                publisherService.publishEvent(new ContractCreateEvent(this, contract, notificationEntries));
+                Person author = personDAO.get(contract.getCreatorId());
+                publisherService.publishEvent(new ContractCreateEvent(this, contract, author, notificationEntries));
             }
         }
         return ok(contractId);
@@ -773,7 +774,7 @@ public class ContractServiceImpl implements ContractService {
         return query;
     }
 
-    private Set<Long> makePersonIdListForNotification(Contract contract) {
+    private Set<Long> makePersonIdListForNotification(Contract contract, Set<Person> notifiers) {
         Set<Long> personIdList = new HashSet<>();
         if (contract.getCreatorId() != null) {
             personIdList.add(contract.getCreatorId());
@@ -787,12 +788,12 @@ public class ContractServiceImpl implements ContractService {
         if (contract.getContractSignManagerId() != null) {
             personIdList.add(contract.getContractSignManagerId());
         }
+        personIdList.addAll(notifiers.stream().map(Person::getId).collect(Collectors.toList()));
         return personIdList;
     }
 
-    private Set<NotificationEntry> getNotificationEntries(Set<Long> personIdList, Set<Person> notifiers) {
+    private Set<NotificationEntry> getNotificationEntries(Set<Long> personIdList) {
         Set<NotificationEntry> notificationEntries = new HashSet<>();
-        personIdList.addAll(notifiers.stream().map(Person::getId).collect(Collectors.toList()));
         List<Person> personList = personDAO.partialGetListByKeys(personIdList, "id", "locale");
         jdbcManyRelationsHelper.fill(personList, Person.Fields.CONTACT_ITEMS);
         for (Person person : personList) {

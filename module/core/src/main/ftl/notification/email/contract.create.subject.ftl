@@ -1,1 +1,1 @@
-${contractNotifyCreate} [<#noparse>${EnumLangUtil.contractTypeLang(contractType, lang)} ${contractNumber}</#noparse>]
+<#noparse>${EnumLangUtil.contractTypeLang(contractType, lang)} ${contractNumber} [${TranslitUtils.transliterate(author, lang)!'?'}]</#noparse>
