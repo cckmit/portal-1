@@ -404,7 +404,8 @@ public class TemplateServiceImpl implements TemplateService {
     public PreparedTemplate getContractCreateNotificationSubject(Contract contract, EnumLangUtil enumLangUtil, Person author) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("EnumLangUtil", enumLangUtil);
-
+        templateModel.put( "TranslitUtils", new TransliterationUtils() );
+        
         templateModel.put("contractType", contract.getContractType());
         templateModel.put("contractNumber", contract.getNumber());
         templateModel.put("author", author.getDisplayName() );
