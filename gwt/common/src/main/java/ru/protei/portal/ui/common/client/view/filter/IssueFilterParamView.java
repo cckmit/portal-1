@@ -230,6 +230,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         plan.setValue(null);
         workTriggers.setValue(null);
         overdueDeadlines.setValue(null);
+        autoClose.setValue(null);
 
         if (isAttached()) {
             onFilterChanged();
@@ -304,6 +305,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         plan.setValue(filter.getPlanOption());
         workTriggers.setValue(toSet(caseQuery.getWorkTriggersIds(), id -> En_WorkTrigger.findById(id)));
         overdueDeadlines.setValue(caseQuery.getOverdueDeadlines());
+        autoClose.setValue(caseQuery.getAutoCLose());
 
         Set<PersonShortView> personShortViews = new LinkedHashSet<>();
         if (emptyIfNull(caseQuery.getManagerIds()).contains(CrmConstants.Employee.UNDEFINED)) {
@@ -359,6 +361,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setWorkTriggersIds(nullIfEmpty(toList(workTriggers.getValue(),
                         workTrigger -> workTrigger == null ? En_WorkTrigger.NONE.getId() : workTrigger.getId())));
                 query.setOverdueDeadlines(overdueDeadlines.getValue());
+                query.setAutoCLose(autoClose.getValue());
 
                 query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
                 query.setModifiedRange(toDateRange(dateModifiedRange.getValue()));
@@ -530,6 +533,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
+    @UiHandler("autoClose")
+    public void onAutoCloseChanged(ValueChangeEvent<Boolean> event) {
+        onFilterChanged();
+    }
+
     public void applyVisibility(En_CaseFilterType filterType) {
         if (filterType == null) {
             return;
@@ -563,6 +571,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         plan.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         workTriggers.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         overdueDeadlinesContainer.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        autoClose.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         if (filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED) || filterType.equals(En_CaseFilterType.NIGHT_WORK)) {
             importanceContainer.addClassName(HIDE);
             stateContainer.addClassName(HIDE);
@@ -729,6 +738,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         overdueDeadlines.setYesEnsureDebugId(DebugIds.FILTER.OVERDUE_DEADLINES_YES_BUTTON);
         overdueDeadlines.setNotDefinedEnsureDebugId(DebugIds.FILTER.OVERDUE_DEADLINES_NOT_DEFINED_BUTTON);
         overdueDeadlines.setNoEnsureDebugId(DebugIds.FILTER.OVERDUE_DEADLINES_NO_BUTTON);
+        autoClose.setYesEnsureDebugId(DebugIds.FILTER.AUTO_CLOSE_YES_BUTTON);
+        autoClose.setNotDefinedEnsureDebugId(DebugIds.FILTER.AUTO_CLOSE_NOT_DEFINED_BUTTON);
+        autoClose.setNoEnsureDebugId(DebugIds.FILTER.AUTO_CLOSE_NO_BUTTON);
     }
 
     private void onFilterChanged() {
@@ -956,6 +968,10 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     HTMLPanel overdueDeadlinesContainer;
     @UiField
     ThreeStateButton overdueDeadlines;
+    @UiField
+    HTMLPanel autoCloseContainer;
+    @UiField
+    ThreeStateButton autoClose;
 
     @UiField
     DivElement sortByContainer;
@@ -974,7 +990,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     PersonModel managersModel;
     @Inject
     AsyncPersonModel creatorsModel;
-
 
     private Timer timer = null;
     private AbstractIssueFilterModel model;

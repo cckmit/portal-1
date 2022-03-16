@@ -224,6 +224,10 @@ public class DebugIds {
         String OVERDUE_DEADLINES_NO_BUTTON = "filter-overdue-deadlines-no-button";
         String OVERDUE_DEADLINES_NOT_DEFINED_BUTTON = "filter-overdue-deadlines-not-defined-button";
 
+        String AUTO_CLOSE_YES_BUTTON = "filter-auto-close-yes-button";
+        String AUTO_CLOSE_NO_BUTTON = "filter-auto-close-no-button";
+        String AUTO_CLOSE_NOT_DEFINED_BUTTON = "filter-auto-close-not-defined-button";
+
         String COMMENT_INPUT = "filter-comment-input";
 
         String CARD_BATCH_SEARCH_BY_NUMBER_AND_ARTICLE_INPUT = "filter-card-batch-search-by-number-and-article-input";

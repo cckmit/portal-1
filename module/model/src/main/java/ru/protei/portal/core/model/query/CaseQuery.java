@@ -104,6 +104,8 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
 
     private Boolean overdueDeadlines;
 
+    private Boolean autoCLose;
+
     public CaseQuery() {}
 
     public CaseQuery(Long id) {
@@ -156,6 +158,7 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
         setTimeElapsedTypeIds(query.getTimeElapsedTypeIds());
         setWorkTriggersIds(query.getWorkTriggersIds());
         setOverdueDeadlines(query.getOverdueDeadlines());
+        setAutoCLose(query.getAutoCLose());
         setPlatformIds(query.getPlatformIds());
     }
 
@@ -458,6 +461,14 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
         this.overdueDeadlines = overdueDeadlines;
     }
 
+    public Boolean getAutoCLose() {
+        return autoCLose;
+    }
+
+    public void setAutoCLose(Boolean autoCLose) {
+        this.autoCLose = autoCLose;
+    }
+
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
                 id != null ||
@@ -558,6 +569,7 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
                 ", timeElapsedTypeIds=" + timeElapsedTypeIds +
                 ", workTriggersIds=" + workTriggersIds +
                 ", overdueDeadlines=" + overdueDeadlines +
+                ", autoClose=" + autoCLose +
                 '}';
     }
 
@@ -596,7 +608,9 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
                 Objects.equals(personIdToIsFavorite, caseQuery.personIdToIsFavorite) &&
                 Objects.equals(timeElapsedTypeIds, caseQuery.timeElapsedTypeIds) &&
                 Objects.equals(workTriggersIds, caseQuery.workTriggersIds) &&
-                Objects.equals(overdueDeadlines, caseQuery.overdueDeadlines);
+                Objects.equals(overdueDeadlines, caseQuery.overdueDeadlines) &&
+                Objects.equals(autoCLose, caseQuery.autoCLose);
+
     }
 
     @Override
@@ -605,6 +619,6 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
                 type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdRange, modifiedRange,
                 searchStringAtComments, searchCasenoString, commentAuthorIds, caseTagsIds, caseTagsNames,
                 customerSearch, local, creatorIds, planId, personIdToIsFavorite,
-                timeElapsedTypeIds, workTriggersIds, overdueDeadlines);
+                timeElapsedTypeIds, workTriggersIds, overdueDeadlines, autoCLose);
     }
 }
