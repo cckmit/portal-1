@@ -3114,6 +3114,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueSyncedWith();
 
+    String issueAutoClose();
+
+    String issueAutoCloseEnabled();
+
+    String issueAutoCloseDisabled();
+
     String issueDeadline();
 
     String issueWorkTrigger();

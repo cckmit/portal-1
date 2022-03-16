@@ -82,6 +82,9 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaNotifiers = event.metaNotifiers;
         slaList = new ArrayList<>();
 
+        metaView.setAutoCLoseVisible(!isCustomer());
+        metaView.autoCloseEnabled().setEnabled(CrmConstants.State.TEST_CUST == meta.getStateId());
+
         fillView( event.meta );
         fillNotifiersView( event.metaNotifiers );
         fillJiraView( event.metaJira );
@@ -137,6 +140,11 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
 
         meta.setStateId(caseState.getId());
+        if (CrmConstants.State.TEST_CUST != meta.getStateId()) {
+            meta.setAutoClose(false);
+            meta.setDeadline(null);
+        }
+
         meta.setStateName(caseState.getState());
         meta.setStateColor(caseState.getColor());
         meta.setPauseDate((CrmConstants.State.PAUSED != meta.getStateId() || metaView.pauseDate().getValue() == null) ? null : metaView.pauseDate().getValue().getTime());
@@ -150,6 +158,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
 
         metaView.setPauseDateValid(true);
+
+
 
         onCaseMetaChanged(meta, () -> {
             fireEvent(new IssueEvents.IssueStateChanged(meta.getId(), meta.getStateId()));
@@ -389,6 +399,27 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     @Override
+    public void onAutoCloseChanged() {
+        meta.setAutoClose(metaView.autoClose().getValue());
+
+        onCaseMetaChanged(meta, () -> {
+            fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CommentAndHistoryEvents.Reload());
+        });
+    }
+
+//    private CaseComment createAutoCloseComment() {
+//        CaseComment autoCloseComment = new CaseComment();
+//        autoCloseComment.setCreated( new Date() );
+//        autoCloseComment.setAuthorId( CrmConstants.Person.SYSTEM_USER_ID );
+//        autoCloseComment.setOriginalAuthorName("bla bla bla");
+//        autoCloseComment.setCaseId(meta.getId());
+//        autoCloseComment.setText("@testov");
+//        autoCloseComment.setPrivacyType( En_CaseCommentPrivacyType.PUBLIC );
+//        return autoCloseComment;
+//    }
+
+    @Override
     public void onDeadlineChanged() {
         if (isDeadlineEquals(metaView.deadline().getValue(), meta.getDeadline())) {
             metaView.setDeadlineValid(isDeadlineFieldValid(metaView.isDeadlineEmpty(), metaView.deadline().getValue()));
@@ -400,7 +431,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return;
         }
 
-        meta.setDeadline(metaView.deadline().getValue() != null ? metaView.deadline().getValue().getTime() : null );
+        meta.setDeadline(metaView.deadline().getValue() != null ? metaView.deadline().getValue().getTime() : null);
         metaView.setDeadlineValid(true);
 
         onCaseMetaChanged(meta, () -> {
@@ -618,6 +649,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.setJiraInfoLink(LinkUtils.makeJiraInfoLink());
 
         metaView.slaContainerVisibility().setVisible(!isJiraIssue() && isSystemScope());
+
+        metaView.autoClose().setValue(meta.getAutoClose());
 
         metaView.deadline().setValue(meta.getDeadline() == null ? null : new Date(meta.getDeadline()));
         metaView.setDeadlineValid(isDeadlineValid(meta.getDeadline()));
@@ -961,6 +994,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
     private boolean isSubcontractorCompany(Company userCompany) {
         return userCompany.getCategory() == En_CompanyCategory.SUBCONTRACTOR;
+    }
+
+    private boolean isCustomer() {
+        return !policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
     }
 
     private void onParentIssueChanged(Long caseId) {

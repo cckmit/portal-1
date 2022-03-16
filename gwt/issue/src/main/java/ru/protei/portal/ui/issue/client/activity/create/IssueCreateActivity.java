@@ -360,6 +360,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     @Override
+    public void onAutoCloseChanged() {
+        // TODO: РЕАЛИЗАЦИЯ АВТОЗАКРЫТИЯ
+    }
+
+    @Override
     public void onDeadlineChanged() {
         issueMetaView.setDeadlineValid(
                 isDeadlineFieldValid(issueMetaView.isDeadlineEmpty(), issueMetaView.deadline().getValue()));
@@ -697,6 +702,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         } else {
             caseObject.setInitiatorCompany(policyService.getUserCompany());
         }
+        caseObject.setAutoClose(false);
         caseObject.setWorkTrigger(En_WorkTrigger.NONE);
 
         return caseObject;
