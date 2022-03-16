@@ -2,13 +2,11 @@ package ru.protei.portal.ui.report.client.activity.edit;
 
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.*;
 import ru.protei.portal.core.model.ent.*;
@@ -18,6 +16,7 @@ import ru.protei.portal.core.model.util.CaseStateUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterActivity;
 import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContractFilterView;
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
@@ -43,8 +42,6 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -55,7 +52,7 @@ import static ru.protei.portal.ui.report.client.util.AccessUtil.availableReportT
 import static ru.protei.portal.ui.report.client.util.AccessUtil.canEdit;
 
 public abstract class ReportEditActivity implements Activity,
-        AbstractReportCreateEditActivity, AbstractIssueFilterModel {
+        AbstractReportCreateEditActivity, AbstractIssueFilterModel, AbstractContractFilterActivity {
 
     @PostConstruct
     public void onInit() {
@@ -66,6 +63,7 @@ public abstract class ReportEditActivity implements Activity,
         projectFilterWidget.onInit(projectFilterModel);
         projectFilterWidget.clearFooterStyles();
 
+        contractFilterView.setActivity(this);
         contractFilterView.clearFooterStyle();
 
         youtrackWorkFilterView.setActivity(youtrackWorkFilterActivity);
@@ -117,6 +115,22 @@ public abstract class ReportEditActivity implements Activity,
                     .withError(defaultErrorHandler)
                     .withSuccess(this::fillEditView));
         }
+    }
+
+    @Override
+    public void onFilterChanged() {}
+
+    @Override
+    public void resetContractStates() {
+        caseStateController.getCaseStatesOmitPrivileges(En_CaseType.CONTRACT, new FluentCallback<List<CaseState>>()
+                .withError(errorHandler -> {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                })
+                .withSuccess(caseStates -> {
+                    contractFilterView.states().setValue(stream(caseStates)
+                            .filter(state -> !Objects.equals(CrmConstants.State.CANCELED, state.getId()))
+                            .collect(Collectors.toSet()));
+                }));
     }
 
     private void fillEditView(ReportDto reportDto) {
@@ -792,6 +806,8 @@ public abstract class ReportEditActivity implements Activity,
     CaseFilterControllerAsync filterController;
     @Inject
     ContractControllerAsync contractController;
+    @Inject
+    CaseStateControllerAsync caseStateController;
 
     private boolean isSaving;
     private AppEvents.InitDetails initDetails;

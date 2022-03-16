@@ -110,18 +110,6 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         loadTable();
     }
 
-    private void fillContractStates() {
-        caseStateService.getCaseStatesOmitPrivileges(En_CaseType.CONTRACT, new FluentCallback<List<CaseState>>()
-                .withError(errorHandler -> {
-                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                })
-                .withSuccess(caseStates -> {
-                    filterView.states().setValue(stream(caseStates)
-                              .filter(state -> !Objects.equals(CrmConstants.State.CANCELED, state.getId()))
-                              .collect(Collectors.toSet()));
-                }));
-    }
-
     @Override
     public void resetContractStates() {
         fillContractStates();
@@ -169,6 +157,18 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         animation.closeDetails();
         view.clearRecords();
         view.triggerTableLoad();
+    }
+
+    private void fillContractStates() {
+        caseStateService.getCaseStatesOmitPrivileges(En_CaseType.CONTRACT, new FluentCallback<List<CaseState>>()
+                .withError(errorHandler -> {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                })
+                .withSuccess(caseStates -> {
+                    filterView.states().setValue(stream(caseStates)
+                            .filter(state -> !Objects.equals(CrmConstants.State.CANCELED, state.getId()))
+                            .collect(Collectors.toSet()));
+                }));
     }
 
     private ContractQuery makeQuery() {

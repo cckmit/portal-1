@@ -142,7 +142,7 @@ public class CaseStateServiceImpl implements CaseStateService {
         List<CaseState> caseStates = caseStateDAO.getListByKeys(caseStatesIds);
 
         if (caseStates == null)
-            return error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.GET_DATA_ERROR);
 
         return ok(caseStates);
     }

@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.ContractApiQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.struct.ContractorQuery;
@@ -85,7 +86,7 @@ public class ContractServiceImpl implements ContractService {
     @Autowired
     CaseStateService caseStateService;
     @Autowired
-    CaseTagDAO caseTagDAO;
+    CaseTagService caseTagService;
 
     @Override
     public Result<SearchResult<Contract>> getContracts( AuthToken token, ContractQuery query) {
@@ -552,11 +553,13 @@ public class ContractServiceImpl implements ContractService {
 
         List<Long> caseTagsId = new ArrayList<>(emptyIfNull(query.getCaseTagsIds()));
         if (!CollectionUtils.isEmpty(caseTagsId)) {
-            List<CaseTag> caseTags = caseTagDAO.getListByKeys(caseTagsId);
-            if (caseTags != null) {
-                selectorsParams.setCaseTags(caseTags);
+            CaseTagQuery caseTagQuery = new CaseTagQuery();
+            caseTagQuery.setIds(caseTagsId);
+            Result<List<CaseTag>> result = caseTagService.getTags(token, caseTagQuery);
+            if (result.isOk()) {
+                selectorsParams.setCaseTags(result.getData());
             } else {
-                return error(En_ResultStatus.INTERNAL_ERROR, "Error at caseTagDAO getListByKeys");
+                return error(result.getStatus(), "Error at getTags");
             }
         }
 
