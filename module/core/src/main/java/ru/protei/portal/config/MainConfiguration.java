@@ -65,6 +65,8 @@ import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
+import ru.protei.portal.core.service.autoclosecase.AutoCloseCaseService;
+import ru.protei.portal.core.service.autoclosecase.AutoCloseCaseServiceImpl;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceTaskHandlerImpl;
@@ -1158,6 +1160,11 @@ public class MainConfiguration {
     @Bean
     public AutoOpenCaseTaskHandler getAutoOpenCaseHandler() {
         return new AutoOpenCaseServiceTaskHandlerImpl();
+    }
+
+    @Bean
+    public AutoCloseCaseService getAutoCloseCaseService() {
+        return new AutoCloseCaseServiceImpl();
     }
 
     @Bean
