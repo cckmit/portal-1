@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DutyLog;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.DutyLogQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
@@ -134,8 +135,12 @@ public abstract class DutyLogEditActivity implements AbstractDutyLogEditActivity
                     loadDutyLogWithType(En_DutyType.BG);
                 })
                 .withSuccess(sr -> {
-                    En_DutyType dutyType = sr.getResults().get(0).getType();
-                    loadDutyLogWithType(dutyType);
+                    if (CollectionUtils.isNotEmpty(sr.getResults())) {
+                        En_DutyType dutyType = sr.getResults().get(0).getType();
+                        loadDutyLogWithType(dutyType);
+                    } else {
+                        loadDutyLogWithType(En_DutyType.BG);
+                    }
                 })
         );
     }
