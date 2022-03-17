@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.delivery.client.activity.card.edit;
 
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
@@ -14,7 +13,6 @@ import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.Card;
 import ru.protei.portal.core.model.ent.CommentsAndHistories;
 import ru.protei.portal.core.model.ent.History;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
@@ -31,13 +29,12 @@ import ru.protei.portal.ui.delivery.client.view.card.infoComment.CardNoteComment
 import ru.protei.portal.ui.delivery.client.view.card.infoComment.CardNoteCommentEditView;
 import ru.protei.portal.ui.delivery.client.view.card.infoComment.CardNoteCommentView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 import static ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils.getSortedCommentOrHistoryList;
 
 public abstract class CardEditActivity implements Activity, AbstractCardEditActivity,
@@ -184,10 +181,6 @@ public abstract class CardEditActivity implements Activity, AbstractCardEditActi
         } else {
             noteCommentContainer.add(noteCommentView);
         }
-    }
-
-    private String transliteration(String input) {
-        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     private void fillHistory(){

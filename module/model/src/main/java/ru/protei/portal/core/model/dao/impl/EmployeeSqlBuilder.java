@@ -22,7 +22,7 @@ import static ru.protei.portal.core.utils.DateUtils.resetSeconds;
 
 public class EmployeeSqlBuilder {
 
-    private final static String WORKER_ENTRY_JOIN = "LEFT JOIN worker_entry WE ON WE.personId = person.id";
+    public final static String WORKER_ENTRY_JOIN = "LEFT JOIN worker_entry WE ON WE.personId = person.id";
 
     public JdbcQueryParameters makeParameters( EmployeeQuery query ) {
         SqlCondition where = createSqlCondition(query);

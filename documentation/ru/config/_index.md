@@ -493,7 +493,15 @@ enterprise1c.api.work.rest_vacation_days.protei_url=http://srv-1cw/ziup/hs/ostat
 enterprise1c.api.work.protei_st_url=http://srv-1cw/ziup_st/hs/otrabotano
 enterprise1c.api.work.rest_vacation_days.protei_st_url=http://srv-1cw/ziup_st/hs/ostatok
 
+# Идентификаторы отделов договоров с кураторами
+contract.curators_departments_ids=
 
+# Договора. Идентификаторы отделов бухгалтерии (список через запятую)
+## default: ""
+contract.accounting_department_ids=
+# Договора. Идентификаторы бухгалтеров, которые не выделены в отделы (список через запятую)
+## default: ""
+contract.accounting_employee_ids=
 ```
 
 

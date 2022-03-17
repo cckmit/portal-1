@@ -121,6 +121,7 @@
   <include file="2022-01-25-add-new-worker-position-data-to-worker-entry-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-02-21-modify-new_position_department_id-data-type-in-worker_entry-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-02-26-add-contract-states-to-case_state-table.xml" relativeToChangelogFile="true"/>
+  <include file="2022-02-28-add-file_location-to-contract-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-03-01-add-contract-states-to-case_state_matrix-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-03-01-update-contract-states-in-case_object-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-03-02-add-member-role.xml" relativeToChangelogFile="true"/>

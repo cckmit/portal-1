@@ -43,6 +43,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public AccountingEmployeeSqlBuilder getAccountingEmployeeSqlBuilder() {
+        return new AccountingEmployeeSqlBuilder();
+    }
+
+    @Bean
     public DeliverySqlBuilder deliverySqlBuilder() {
         return new DeliverySqlBuilder();
     }

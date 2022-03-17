@@ -134,6 +134,16 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
 
     @Override
+    public void setFileLocation(String value) {
+        this.fileLocation.setInnerText(value);
+    }
+    
+    @Override
+    public void setNotifies(String value) {
+        this.notifies.setInnerText(value);
+    }
+
+    @Override
     public void setProject(String value, String link) {
         project.setText(value);
         project.setHref(link);
@@ -183,12 +193,14 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
         contractChild.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.EXPENDITURE_AGREEMENT_LABEL);
         tagsContainer.ensureDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.TAGS_LABEL);
         organization.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.ORGANIZATION_LABEL);
+        fileLocation.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.FILE_LOCATION);
         project.ensureDebugId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.PROJECT_LABEL);
         curator.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.CURATOR_LABEL);
         projectManager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.PROJECT_MANAGER_LABEL);
         contractSignManager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.SIGN_MANAGER_LABEL);
         dateEndWarranty.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.DATE_END_WARRANTY_LABEL);
         dateExecution.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.DATE_EXECUTION_LABEL);
+        notifies.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT_PREVIEW.NOTIFIERS);
         tabs.setTabNameDebugId(lang.contractDeliveryAndPaymentsPeriodHeader(), DebugIds.CONTRACT.DELIVERY_AND_PAYMENTS_PERIOD_TAB);
         tabs.setTabNameDebugId(lang.contractSpecificationHeader(), DebugIds.CONTRACT.SPECIFICATION_TAB);
     }
@@ -226,6 +238,8 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     @UiField
     SpanElement contractChild;
     @UiField
+    SpanElement fileLocation;
+    @UiField
     Anchor project;
     @UiField
     HTMLPanel footerContainer;
@@ -235,6 +249,8 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     HTMLPanel tagsContainer;
     @UiField
     SpanElement contractSignManager;
+    @UiField
+    SpanElement notifies;
     @UiField
     SpanElement deliveryNumber;
     @UiField

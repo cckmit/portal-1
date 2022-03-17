@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -130,6 +131,8 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                 .filter(contract -> !Objects.equals(CANCELED, contract.getStateId()))
                 .map(contract -> sanitizeHtml(typeLang.getName(contract.getContractType()) + " " + contract.getNumber()))
                 .collect(Collectors.joining(", ")));
+        view.setFileLocation(value.getFileLocation());
+        view.setNotifies(stream(value.getNotifiers()).map(Person::getDisplayShortName).collect(Collectors.joining(", ")));
         view.setProject(StringUtils.emptyIfNull(value.getProjectName()) + " (#" + value.getProjectId() + ")", LinkUtils.makePreviewLink(Project.class, value.getProjectId()));
         view.setDeliveryNumber(StringUtils.emptyIfNull(value.getDeliveryNumber()));
         view.setDateEndWarranty(formatDate(value.getDateEndWarranty()));

@@ -87,6 +87,14 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group form-group-default">
+                                <label class="fade"><ui:text from="{lang.contractFileLocation}"/></label>
+                                <g:TextBox ui:field="fileLocation" styleName="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-6">
                             <div class="form-group form-group-default">
                                 <label class="fade" ui:field="costWithCurrencyLabel">
@@ -166,12 +174,21 @@
                                                          defaultValue="{lang.selectAccountPerson}"
                                                          header="{lang.contractContractSignManager}"/>
                         </div>
+                        <div class="row form-group m-t-10 m-b-10">
+                            <g:HTMLPanel ui:field="notifiersContainer" styleName="col-md-12">
+                                <label ui:field="notifiersLabel">
+                                    <ui:text from="{lang.contractNotifiers}"/>
+                                </label>
+                                <person:AccountEmployeeMultiSelector ui:field="notifiers" styleName="case-subscribers"
+                                                              buttonStyle="btn-info btn-xs" fixedStrategy="false"/>
+                            </g:HTMLPanel>
+                        </div>
                         <div class="form-group m-t-10 m-b-10">
                             <label>
                                 <ui:text from="{lang.contractDateValid}"/>
                             </label>
                         </div>
-                        <div class="form-group form-group-attached">
+                        <div class="form-group m-t-10 m-b-10 form-group-attached">
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group form-group-default">

@@ -33,7 +33,7 @@ import java.util.Objects;
 
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.ERROR;
 import static ru.protei.portal.ui.common.client.events.NotifyEvents.NotifyType.SUCCESS;
-import static ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils.transliteration;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 
 public abstract class PcbOrderEditActivity implements Activity, AbstractPcbOrderEditActivity,
         AbstractPcbOrderCommonInfoEditActivity, AbstractPcbOrderMetaActivity,

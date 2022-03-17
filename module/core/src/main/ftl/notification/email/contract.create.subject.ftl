@@ -1,0 +1,1 @@
+<#noparse>${EnumLangUtil.contractTypeLang(contractType, lang)} ${contractNumber} [${TranslitUtils.transliterate(author, lang)!'?'}]</#noparse>

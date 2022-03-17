@@ -5,7 +5,6 @@ import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -21,7 +20,6 @@ import ru.protei.portal.core.model.ent.ImportanceLevel;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -57,6 +55,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliterateNotifiers;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 
 public class IssueMetaView extends Composite implements AbstractIssueMetaView {
 
@@ -544,22 +544,6 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         plans.ensureDebugId(DebugIds.ISSUE.PLANS_SELECTOR);
         deadline.setEnsureDebugId(DebugIds.ISSUE.DEADLINE_CONTAINER);
         workTrigger.setEnsureDebugId(DebugIds.ISSUE.WORK_TRIGGER_SELECTOR);
-    }
-
-    private String transliteration(String input) {
-        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
-    }
-
-    private Set<PersonShortView> transliterateNotifiers(Collection<Person> notifiers) {
-        return notifiers == null ? new HashSet<>() :
-                notifiers
-                        .stream()
-                        .map(notifier -> {
-                            PersonShortView personShortView = new PersonShortView(notifier);
-                            personShortView.setName(transliteration(personShortView.getDisplayShortName()));
-                            return personShortView;
-                        })
-                        .collect(Collectors.toSet());
     }
 
     @UiHandler("state")

@@ -37,6 +37,10 @@ public interface TemplateService {
 
     PreparedTemplate getContractRemainingOneDayNotificationSubject(Contract contract, ContractDate contractDate, EnumLangUtil enumLangUtil);
 
+    PreparedTemplate getContractCreateNotificationSubject(Contract contract, EnumLangUtil enumLangUtil, Person author);
+
+    PreparedTemplate getContractCreateNotificationBody(Contract contract, String urlTemplate, Collection<String> recipients, EnumLangUtil enumLangUtil);
+
     PreparedTemplate getDocumentMemberAddedBody(String documentName, String url);
 
     PreparedTemplate getDocumentMemberAddedSubject(String documentName);

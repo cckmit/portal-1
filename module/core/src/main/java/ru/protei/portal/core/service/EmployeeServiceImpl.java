@@ -39,8 +39,10 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
-import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
-import static ru.protei.portal.core.model.view.EmployeeShortView.Fields.*;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.RUS_PHONE_NUMBER_PATTERN;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.WORK_PHONE_NUMBER_PATTERN;
+import static ru.protei.portal.core.model.view.EmployeeShortView.Fields.CONTACT_ITEMS;
+import static ru.protei.portal.core.model.view.EmployeeShortView.Fields.WORKER_ENTRIES;
 
 
 /**
@@ -539,6 +541,21 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         return api1CWorkService.getEmployeeRestVacationDays(
                 mainEntry.getWorkerExtId(), mainEntry.getCompanyName());
+    }
+
+    @Override
+    public Result<List<PersonShortView>> getAccountingEmployee(AuthToken token) {
+        String contractNotifierDepartmentIds = portalConfig.data().getCommonConfig().getContractAccountingDepartmentIds();
+        String contractNotifierIds = portalConfig.data().getCommonConfig().getContractAccountingEmployeeIds();
+
+        List<PersonShortView> accountingEmployees = personShortViewDAO.getAccountingEmployees(
+                StringUtils.isNotEmpty(contractNotifierIds) ?
+                        Arrays.asList(contractNotifierIds.split(",")) : Collections.emptyList(),
+                StringUtils.isNotEmpty(contractNotifierDepartmentIds) ?
+                        Arrays.asList(contractNotifierDepartmentIds.split(",")) : Collections.emptyList()
+        );
+
+        return ok(accountingEmployees);
     }
 
     private List<NotificationEntry> makeNotificationListFromConfiguration() {
