@@ -1540,6 +1540,58 @@ Cache-Control: no-cache
 `curl -X POST -u user:password 'host:9007/Portal/springApi/api/doc/remove/103'`
 ```
 
+## Договоры
+### Получение информации по договорам
+
+- **url** - host:port/{app_name}/api/contracts/1c/get
+- **ContractApiQuery** - json представления ContractQuery для поиска договора. Передается в теле запроса.
+
+
+``` json
+{
+  "refKeys": null,
+  "openStateDate": "1646092800",
+  "stateIds": [63, 64, 65, 66, 67, 68, 69],
+  "organizationIds": [3083, 3084]
+}
+```
+
+- **запрос** - post
+- **ответ** :  содержит статус выполнения и в поле data список договоров
+
+
+``` json
+{
+   "status":"OK",
+   "data":[
+    {
+      "ref_key": null,
+      "date_signing": null,
+      "cost": 123456.77,
+      "cost_currency": "EUR",
+      "cost_vat": null,
+      "subject": "!!!!! TEST !!!!",
+      "directions": "MOBILE",
+      "is_ministry_of_defence": false,
+      "dates":[
+        {
+          "date": 1613422800000,
+          "cost": null,
+          "cost_percent": null,
+          "cost_currency": "RUB",
+          "comment": "",
+          "type": "SUPPLY"
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Пример:**
+``` sh
+`curl -X POST -u user:password "host:9007/Portal/springApi/api/contracts/1c/get" -H "Content-Type:application/json" -d "{\"stateIds\": [63, 64, 65, 66, 67, 68, 69],\"organizationIds\": [3083, 3084]}"`
+```
 
 # WS API
 ## Сущности
