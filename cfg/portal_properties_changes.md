@@ -1,14 +1,13 @@
 # Изменения настроек
 
-## "PORTAL-1959 Добавить отображение оплачиваемых дней отпуска"
+## "PORTAL-2117 Доработка portal.protei раздел "Договоры""
 
 Изменить на внутреннем и внешнем Портале в portal.properties:
-
-1. #### Поправить название раздела: 1C API для отработанного времени -> 1C API для отработанного времени и остатка дней отпуска
-
-2. Добавить в данный раздел параметры:
-
 ```
-enterprise1c.api.work.rest_vacation_days.protei_url=http://srv-1cw/ziup/hs/ostatok
-enterprise1c.api.work.rest_vacation_days.protei_st_url=http://srv-1cw/ziup_st/hs/ostatok
+# Договора. Идентификаторы отделов бухгалтерии (список через запятую)
+## default: ""
+contract.accounting_department_ids=482,506
+# Договора. Идентификаторы бухгалтеров, которые не выделены в отделы (список через запятую)
+## default: ""
+contract.accounting_employee_ids=699,8744,9360,8584,9073,8652,9513
 ```
