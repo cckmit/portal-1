@@ -31,4 +31,6 @@ public interface CaseStateService {
     Result<List<CaseState>> getCaseStatesForCompanyOmitPrivileges(Long companyId);
 
     Result<CaseState> getCaseStateByCaseIdOmitPrivileges(long caseId);
+
+    Result<List<CaseState>> getCaseStatesByIds(List<Long> caseStatesIds);
 }

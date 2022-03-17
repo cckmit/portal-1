@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.ContractApiQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.struct.ContactInfo;
@@ -94,6 +95,10 @@ public class ContractServiceImpl implements ContractService {
     CaseNotifierDAO caseNotifierDAO;
     @Autowired
     EventPublisherService publisherService;
+    @Autowired
+    CaseStateService caseStateService;
+    @Autowired
+    CaseTagService caseTagService;
 
     @Override
     public Result<SearchResult<Contract>> getContracts( AuthToken token, ContractQuery query) {
@@ -579,6 +584,28 @@ public class ContractServiceImpl implements ContractService {
                 selectorsParams.setPersonShortViews(result.getData());
             } else {
                 return error(result.getStatus(), "Error at getPersonIds" );
+            }
+        }
+
+        List<Long> caseTagsId = new ArrayList<>(emptyIfNull(query.getCaseTagsIds()));
+        if (!CollectionUtils.isEmpty(caseTagsId)) {
+            CaseTagQuery caseTagQuery = new CaseTagQuery();
+            caseTagQuery.setIds(caseTagsId);
+            Result<List<CaseTag>> result = caseTagService.getTags(token, caseTagQuery);
+            if (result.isOk()) {
+                selectorsParams.setCaseTags(result.getData());
+            } else {
+                return error(result.getStatus(), "Error at getTags");
+            }
+        }
+
+        List<Long> caseStateIds = new ArrayList<>(emptyIfNull(query.getStateIds()));
+        if (!CollectionUtils.isEmpty(caseStateIds)) {
+            Result<List<CaseState>> result = caseStateService.getCaseStatesByIds(caseStateIds);
+            if (result.isOk()) {
+                selectorsParams.setCaseStates(result.getData());
+            } else {
+                return error(result.getStatus(), "Error at getCaseStatesByIds");
             }
         }
 
