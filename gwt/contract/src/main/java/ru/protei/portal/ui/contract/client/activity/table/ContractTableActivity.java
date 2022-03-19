@@ -36,6 +36,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
 
 public abstract class ContractTableActivity implements AbstractContractTableActivity,
@@ -183,6 +184,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         query.setTypes(nullIfEmpty(listOfOrNull(filterView.types().getValue())));
         query.setCaseTagsIds(nullIfEmpty(toList(filterView.tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
         query.setStateIds(nullIfEmpty(toList(filterView.states().getValue(), CaseState::getId)));
+        query.setCalculationTypes(nullIfEmpty(toList(filterView.calculationTypes().getValue(), calcType -> calcType == null ? null : calcType.getRefKey())));
         ProductDirectionInfo value = filterView.direction().getValue();
         query.setDirectionId(value == null ? null : value.id);
         query.setKind(filterView.kind().getValue());

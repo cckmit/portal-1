@@ -1,11 +1,11 @@
 package ru.protei.portal.ui.contract.client.activity.edit;
 
 import com.google.gwt.user.client.ui.*;
-import ru.protei.portal.core.model.dict.En_ContractCalculationType;
 import ru.protei.portal.core.model.dict.En_ContractKind;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.ContractCalculationType;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.struct.ContractInfo;
@@ -33,7 +33,7 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<CaseState> state();
 
-    HasValue<En_ContractCalculationType> calculationType();
+    HasValue<ContractCalculationType> calculationType();
 
     HasValue<String> description();
 

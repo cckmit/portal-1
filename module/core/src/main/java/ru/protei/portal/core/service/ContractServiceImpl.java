@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
+import ru.protei.portal.core.model.enterprise1c.dto.ContractCalculationType1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -32,7 +33,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -374,6 +374,22 @@ public class ContractServiceImpl implements ContractService {
             }
         }
 
+        boolean isCalculationTypeChanged = !Objects.equals(prevContract.getCalculationType(),
+                                                           contract.getCalculationType());
+        if (isCalculationTypeChanged) {
+            Result<Contract1C> result = saveContract1C(contract);
+            if (result.isError()) {
+                log.error("updateContract(): id = {} | failed to save calculation type to 1c with result = {}", contractId, result);
+                throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+            }
+
+            boolean contractUpdated = contractDAO.mergeCalculationType(contract.getId(), contract.getCalculationType());
+            if (!contractUpdated) {
+                log.error("updateContract(): id = {} | calculation type modification | NO-ROLLBACK | failed to save contract's calculation type to db", contractId);
+                return error(En_ResultStatus.NOT_UPDATED);
+            }
+        }
+
         return ok(contract.getId());
     }
 
@@ -500,6 +516,18 @@ public class ContractServiceImpl implements ContractService {
         jdbcManyRelationsHelper.fill(contracts, "contractDates");
         contracts.forEach(contract -> contract.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(contract.getProjectId()))));
         return ok(contracts);
+    }
+
+    @Override
+    public Result<List<ContractCalculationType>> getCalculationTypeList(AuthToken token, String homeCompanyName) {
+        if (homeCompanyName == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        return api1CService.getAllCalculationTypes(homeCompanyName)
+                           .map(list -> list.stream()
+                                    .map(ContractServiceImpl::from1C)
+                                    .collect(toList()));
     }
 
     @Override
@@ -773,6 +801,7 @@ public class ContractServiceImpl implements ContractService {
         contract1C.setContractorKey(contract.getContractor().getRefKey());
         contract1C.setDateSigning(saveDateFormat.format(contract.getDateSigning()));
         contract1C.setName(contract.getNumber().trim()+ " от " + showDateFormat.format(contract.getDateSigning()));
+        contract1C.setCalculationType(contract.getCalculationType());
 
         // PORTAL-1566 p.7 (freezed)
 //        List<ContractAdditionalProperty1C> additional1СProperties = new ArrayList<>();
@@ -781,6 +810,13 @@ public class ContractServiceImpl implements ContractService {
 //        contract1C.setAdditionalProperties(additionalProperty1CS);
 
         return contract1C;
+    }
+
+    public static ContractCalculationType from1C(ContractCalculationType1C calcType1C) {
+        ContractCalculationType calcType = new ContractCalculationType();
+        calcType.setRefKey(calcType1C.getRefKey());
+        calcType.setName(calcType1C.getName());
+        return calcType;
     }
 
     public static boolean isSame(Contract1C c1, Contract1C c2) {

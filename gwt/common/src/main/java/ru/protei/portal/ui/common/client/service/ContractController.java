@@ -2,10 +2,7 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.Contractor;
-import ru.protei.portal.core.model.ent.ContractorCountry;
-import ru.protei.portal.core.model.ent.SelectorsParams;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.struct.ContractorQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -33,4 +30,6 @@ public interface ContractController extends RemoteService {
     Long removeContractor(String organization, String refKey) throws RequestFailedException;
 
     SelectorsParams getSelectorsParams(ContractQuery query) throws RequestFailedException;
+
+    List<ContractCalculationType> getCalculationTypeList(String organization) throws RequestFailedException;
 }

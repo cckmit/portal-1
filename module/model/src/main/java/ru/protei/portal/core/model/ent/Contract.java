@@ -193,6 +193,9 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcColumn(name = "delivery_number")
     private String deliveryNumber;
 
+    @JdbcColumn(name = "calculation_type")
+    private String calculationType;
+
     public Contract() {}
 
     public Contract(Long id, String number) {
@@ -206,6 +209,14 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public void setDeliveryNumber(String deliveryNumber) {
         this.deliveryNumber = deliveryNumber;
+    }
+
+    public String getCalculationType() {
+        return calculationType;
+    }
+
+    public void setCalculationType(String calculationType) {
+        this.calculationType = calculationType;
     }
 
     @Override
@@ -522,6 +533,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", curatorShortName='" + curatorShortName + '\'' +
                 ", productDirections=" + productDirections +
                 ", stateId=" + stateId +
+                ", stateName='" + stateName + '\'' +
                 ", description='" + description + '\'' +
                 ", number='" + number + '\'' +
                 ", cost=" + cost +
@@ -545,6 +557,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", deliveryNumber=" + deliveryNumber +
                 ", dateEndWarranty=" + dateEndWarranty +
                 ", dateExecution=" + dateExecution +
+                ", calculationType='" + calculationType + '\'' +
                 '}';
     }
 

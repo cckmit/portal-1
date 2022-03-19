@@ -37,6 +37,9 @@ public class Contract1C {
     @JsonProperty("ДополнительныеРеквизиты")
     private List<ContractAdditionalProperty1C> additionalProperties;
 
+    @JsonProperty("ВидВзаиморасчетов")
+    private String calculationType;
+
     public String getRefKey() { return refKey; }
 
     public void setRefKey(String refKey) { this.refKey = refKey; }
@@ -69,6 +72,14 @@ public class Contract1C {
         this.additionalProperties = additionalProperties;
     }
 
+    public String getCalculationType() {
+        return calculationType;
+    }
+
+    public void setCalculationType(String calculationType) {
+        this.calculationType = calculationType;
+    }
+
     @Override
     public String toString() {
         return "Contract1C{" +
@@ -79,6 +90,7 @@ public class Contract1C {
                 ", dateSigning='" + dateSigning + '\'' +
                 ", deletionMark=" + deletionMark +
                 ", additionalProperties=" + additionalProperties +
+                ", calculationType='" + calculationType + '\'' +
                 '}';
     }
 }

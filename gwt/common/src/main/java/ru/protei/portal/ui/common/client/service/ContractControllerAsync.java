@@ -1,10 +1,7 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.Contractor;
-import ru.protei.portal.core.model.ent.ContractorCountry;
-import ru.protei.portal.core.model.ent.SelectorsParams;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.struct.ContractorQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -30,4 +27,6 @@ public interface ContractControllerAsync {
     void removeContractor(String organization, String refKey, AsyncCallback<Long> async);
 
     void getSelectorsParams(ContractQuery query, AsyncCallback<SelectorsParams> async);
+
+    void getCalculationTypeList(String organization, AsyncCallback<List<ContractCalculationType>> async);
 }

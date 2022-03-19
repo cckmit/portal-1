@@ -1,25 +1,26 @@
 package ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_ContractCalculationType;
-import ru.protei.portal.ui.common.client.lang.En_ContractCalculationTypeLang;
+import ru.protei.portal.core.model.ent.ContractCalculationType;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
 
-public class ContractCalculationTypesMultiSelector extends InputPopupMultiSelector<En_ContractCalculationType> {
+public class ContractCalculationTypesMultiSelector extends InputPopupMultiSelector<ContractCalculationType> {
 
     @Inject
-    public void init(Lang lang, En_ContractCalculationTypeLang typeLang) {
-        setModel(elementIndex -> {
-            try {
-                return En_ContractCalculationType.values()[elementIndex];
-            } catch (IndexOutOfBoundsException e) {
-                return null;
-            }
-        });
+    public void init(Lang lang, ContractCalculationTypeModel model) {
+        this.model = model;
+        setAsyncModel(model);
+        setItemRenderer(option -> option == null ? "" : option.getName());
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
-        setItemRenderer(typeLang::getName);
-        setSearchEnabled(false);
+        setSearchEnabled(true);
     }
+
+    public void setOrganization(String organization) {
+        model.setOrganization(organization);
+        model.clean();
+    }
+
+    private ContractCalculationTypeModel model;
 }

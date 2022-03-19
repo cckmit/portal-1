@@ -303,6 +303,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setContractor(view.contractor().getValue());
         contract.setContractSignManagerId(getPersonIdOrNull(view.contractSignManager().getValue()));
         contract.setDeliveryNumber(view.deliveryNumber().getValue());
+        contract.setCalculationType(view.calculationType() == null ? null : view.calculationType().getValue().getRefKey());
         contract.setDateEndWarranty(view.dateEndWarranty().getValue());
         contract.setDateExecution(view.dateExecution().getValue());
 

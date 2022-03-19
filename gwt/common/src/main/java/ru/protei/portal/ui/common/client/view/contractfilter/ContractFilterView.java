@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.ent.ContractCalculationType;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -42,6 +43,8 @@ import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRa
 import java.util.List;
 import java.util.Set;
 
+import static ru.protei.portal.core.model.util.CrmConstants.Company.MAIN_HOME_COMPANY_NAME;
+
 public class ContractFilterView extends Composite implements AbstractContractFilterView {
 
     @Inject
@@ -50,6 +53,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         sortField.setType(ModuleType.CONTRACT);
         dateSigningRange.fillSelector(En_DateIntervalType.defaultTypes());
         dateValidRange.fillSelector(En_DateIntervalType.defaultTypes());
+        calculationTypes.setOrganization(MAIN_HOME_COMPANY_NAME);
     }
 
     @Override
@@ -68,6 +72,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         managers.setValue(null);
         direction.setValue(null);
         resetStates();
+        calculationTypes.setValue(null);
         types.setValue(null);
         tags.setValue(null);
         kind.setValue(true);
@@ -134,7 +139,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     }
 
     @Override
-    public HasValue<Set<En_ContractCalculationType>> calculationTypes() {
+    public HasValue<Set<ContractCalculationType>> calculationTypes() {
         return calculationTypes;
     }
 
@@ -236,7 +241,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     }
 
     @UiHandler("calculationTypes")
-    public void onCalculationTypeChanged(ValueChangeEvent<Set<En_ContractCalculationType>> event) {
+    public void onCalculationTypeChanged(ValueChangeEvent<Set<ContractCalculationType>> event) {
         restartChangeTimer();
     }
 

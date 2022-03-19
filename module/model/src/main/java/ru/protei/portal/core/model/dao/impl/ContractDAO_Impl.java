@@ -62,6 +62,14 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
     }
 
     @Override
+    public boolean mergeCalculationType(Long contractId, String calculationType) {
+        Contract contract = new Contract();
+        contract.setId(contractId);
+        contract.setCalculationType(calculationType);
+        return partialMerge(contract, "calculation_type");
+    }
+
+    @Override
     public List<Contract> getByCustomerAndProject(String customerName) {
         JdbcQueryParameters parameters = new JdbcQueryParameters();
         parameters.withJoins("inner join case_object co_contract on contract.id = co_contract.id " +
@@ -242,6 +250,11 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
             if (query.getProjectId() != null) {
                 condition.append(" and contract.project_id = ?");
                 args.add(query.getProjectId());
+            }
+
+            if (query.getCalculationTypes() != null) {
+                String inArg = makeInArg(query.getCalculationTypes(), s -> "'" + s + "'");
+                condition.append(" AND contract.calculation_type IN ").append(inArg);
             }
         }));
     }
