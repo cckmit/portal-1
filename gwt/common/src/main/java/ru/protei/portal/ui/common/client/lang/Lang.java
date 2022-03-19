@@ -4066,12 +4066,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractDateEndWarranty();
 
-    String contractCalculationTypeOsOs();
-
-    String contractCalculationTypeOsPc();
-
-    String contractCalculationTypePcPc();
-
     String errorSetCorrectProjectId();
     
     String issueValidationResultOk();
