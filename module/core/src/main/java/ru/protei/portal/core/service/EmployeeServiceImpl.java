@@ -154,6 +154,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 employee.setCurrentAbsence(personAbsences.stream()
                         .filter(absence -> absence.getPersonId().equals(employee.getId()))
                         .findFirst().orElse(null));
+                employee.setTimezoneOffset(employee.getBirthday() == null ? null : employee.getBirthday().getTimezoneOffset());
             });
         }
         return ok(sr);
@@ -584,6 +585,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         jdbcManyRelationsHelper.fill(employeeShortView, WORKER_ENTRIES);
         employeeShortView.setWorkerEntries(changeCompanyNameIfHidden(employeeShortView.getWorkerEntries()));
         employeeShortView.setCurrentAbsence(personAbsenceDAO.currentAbsence(employeeId));
+        employeeShortView.setTimezoneOffset(employeeShortView.getBirthday() == null ? null : employeeShortView.getBirthday().getTimezoneOffset());
 
         return ok(employeeShortView);
     }

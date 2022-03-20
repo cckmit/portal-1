@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employee.client.activity.list;
 
+import com.google.gwt.i18n.client.TimeZone;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -151,7 +152,11 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
             itemView.setEditIcon(LinkUtils.makeEditLink(EmployeeShortView.class, employee.getId()));
         }
 
-        itemView.setBirthday( DateFormatter.formatDateMonth( employee.getBirthday() ) );
+        TimeZone timeZone = null;
+        if (employee.getTimezoneOffset() != null){
+            timeZone = TimeZone.createTimeZone(employee.getTimezoneOffset());
+        }
+        itemView.setBirthday( DateFormatter.formatDateMonth( employee.getBirthday(), timeZone ) );
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade( employee.getContactInfo() );
         itemView.setPhone( infoFacade.publicPhonesAsFormattedString(true) );

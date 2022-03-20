@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employee.client.view.table.columns;
 
+import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
@@ -40,8 +41,14 @@ public class EmployeeInfoColumn extends ClickColumn<EmployeeShortView> {
                     .addIconValuePair(null, value.getDisplayName(), "contacts bold")
                     .toElement());
         }
+
+        TimeZone timeZone = null;
+        if (value.getTimezoneOffset() != null){
+            timeZone = TimeZone.createTimeZone(value.getTimezoneOffset());
+        }
+
         employeeInfo.appendChild(LabelValuePairBuilder.make()
-                .addIconValuePair("fa fa-birthday-cake", DateFormatter.formatDateMonth(value.getBirthday()), "contacts")
+                .addIconValuePair("fa fa-birthday-cake", DateFormatter.formatDateMonth(value.getBirthday(), timeZone), "contacts")
                 .toElement());
 
         cell.appendChild(employeeInfo);

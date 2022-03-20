@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.contact.client.activity.edit;
 
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
@@ -352,9 +353,13 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.secondName().setText(person.getSecondName());
         view.displayName().setText(person.getDisplayName());
         view.shortName().setText(person.getDisplayShortName());
-        if (person.getBirthday() != null ) {
-            view.setBirthDayTimeZone(TimeZone.createTimeZone(person.getBirthday().getTimezoneOffset()));
+
+        TimeZone timeZone = null;
+        if (person.getTimezoneOffset() != null){
+            timeZone = TimeZone.createTimeZone(person.getTimezoneOffset());
         }
+
+        view.setBirthDayTimeZone(timeZone);
         view.birthDay().setValue(person.getBirthday());
         view.locale().setValue(person.getLocale());
 

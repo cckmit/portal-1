@@ -460,9 +460,12 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         personLastName = employee.getLastName();
         view.secondName().setText(employee.getSecondName());
         view.inn().setText(employee.getInn());
-        if (employee.getBirthday() != null ) {
-            view.setBirthDayTimeZone(TimeZone.createTimeZone(employee.getBirthday().getTimezoneOffset()));
+
+        TimeZone timeZone = null;
+        if (employee.getTimezoneOffset() != null){
+            timeZone = TimeZone.createTimeZone(employee.getTimezoneOffset());
         }
+        view.setBirthDayTimeZone(timeZone);
         view.birthDay().setValue(employee.getBirthday());
         view.ipAddress().setValue(employee.getIpAddress());
 
