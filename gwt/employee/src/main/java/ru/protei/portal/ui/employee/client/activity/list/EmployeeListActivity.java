@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
-import static ru.protei.portal.ui.common.client.common.UiConstants.DateTime.MSK_TIME_ZONE_OFFSET_IN_MINUTES;
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.PAGE_SIZE;
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.getTotalPages;
 
@@ -153,7 +152,11 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
             itemView.setEditIcon(LinkUtils.makeEditLink(EmployeeShortView.class, employee.getId()));
         }
 
-        itemView.setBirthday( DateFormatter.formatDateMonth( employee.getBirthday(), TimeZone.createTimeZone(MSK_TIME_ZONE_OFFSET_IN_MINUTES) ) );
+        TimeZone timeZone = null;
+        if (employee.getTimezoneOffset() != null){
+            timeZone = TimeZone.createTimeZone(employee.getTimezoneOffset());
+        }
+        itemView.setBirthday( DateFormatter.formatDateMonth( employee.getBirthday(), timeZone ) );
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade( employee.getContactInfo() );
         itemView.setPhone( infoFacade.publicPhonesAsFormattedString(true) );

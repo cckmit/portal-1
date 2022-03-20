@@ -42,6 +42,7 @@ public class EmployeeControllerImpl implements EmployeeController {
         return ServiceUtils.checkResultAndGetData(employeeService.employeeList(token, query));
     }
 
+    @Override
     public List< PersonShortView > getEmployeeViewList( EmployeeQuery query ) throws RequestFailedException {
 
         log.info( "getEmployeeViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",

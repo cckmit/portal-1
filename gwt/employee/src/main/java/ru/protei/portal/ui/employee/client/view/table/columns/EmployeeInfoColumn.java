@@ -11,8 +11,6 @@ import ru.protei.portal.ui.common.client.common.LabelValuePairBuilder;
 import ru.protei.portal.ui.common.client.lang.En_AbsenceReasonLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
-import static ru.protei.portal.ui.common.client.common.UiConstants.DateTime.MSK_TIME_ZONE_OFFSET_IN_MINUTES;
-
 public class EmployeeInfoColumn extends ClickColumn<EmployeeShortView> {
 
     @Inject
@@ -43,8 +41,14 @@ public class EmployeeInfoColumn extends ClickColumn<EmployeeShortView> {
                     .addIconValuePair(null, value.getDisplayName(), "contacts bold")
                     .toElement());
         }
+
+        TimeZone timeZone = null;
+        if (value.getTimezoneOffset() != null){
+            timeZone = TimeZone.createTimeZone(value.getTimezoneOffset());
+        }
+
         employeeInfo.appendChild(LabelValuePairBuilder.make()
-                .addIconValuePair("fa fa-birthday-cake", DateFormatter.formatDateMonth(value.getBirthday(), TimeZone.createTimeZone(MSK_TIME_ZONE_OFFSET_IN_MINUTES)), "contacts")
+                .addIconValuePair("fa fa-birthday-cake", DateFormatter.formatDateMonth(value.getBirthday(), timeZone), "contacts")
                 .toElement());
 
         cell.appendChild(employeeInfo);

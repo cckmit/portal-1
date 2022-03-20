@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.contact.client.activity.edit;
 
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
@@ -14,6 +15,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.GenerationPasswordUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -22,13 +24,13 @@ import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
 import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
-import static ru.protei.portal.ui.common.client.common.UiConstants.DateTime.MSK_TIME_ZONE_OFFSET_IN_MINUTES;
 
 /**
  * Активность создания и редактирования контактного лица
@@ -353,9 +355,13 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.secondName().setText(person.getSecondName());
         view.displayName().setText(person.getDisplayName());
         view.shortName().setText(person.getDisplayShortName());
-        if (person.getBirthday() != null ) {
-            view.setBirthDayTimeZone(TimeZone.createTimeZone(MSK_TIME_ZONE_OFFSET_IN_MINUTES));
+
+        TimeZone timeZone = null;
+        if (person.getTimezoneOffset() != null){
+            timeZone = TimeZone.createTimeZone(person.getTimezoneOffset());
         }
+
+        view.setBirthDayTimeZone(timeZone);
         view.birthDay().setValue(person.getBirthday());
         view.locale().setValue(person.getLocale());
 

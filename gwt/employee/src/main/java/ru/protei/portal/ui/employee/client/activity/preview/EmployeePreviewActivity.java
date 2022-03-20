@@ -34,9 +34,7 @@ import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemVie
 
 import java.util.*;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
-import static ru.protei.portal.ui.common.client.common.UiConstants.DateTime.MSK_TIME_ZONE_OFFSET_IN_MINUTES;
 
 /**
  * Активность превью сотрудника
@@ -124,7 +122,11 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
             view.setBirthday("");
             view.birthdayContainerVisibility().setVisible(false);
         } else {
-            view.setBirthday(DateFormatter.formatDateMonth(employee.getBirthday(), TimeZone.createTimeZone(MSK_TIME_ZONE_OFFSET_IN_MINUTES)));
+            TimeZone timeZone = null;
+            if (employee.getTimezoneOffset() != null){
+                timeZone = TimeZone.createTimeZone(employee.getTimezoneOffset());
+            }
+            view.setBirthday(DateFormatter.formatDateMonth(employee.getBirthday(), timeZone));
             view.birthdayContainerVisibility().setVisible(true);
         }
 

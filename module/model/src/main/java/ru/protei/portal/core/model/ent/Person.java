@@ -91,6 +91,9 @@ public class Person extends AuditableObject {
     @JdbcColumn(name = "locale")
     private String locale;
 
+    @JdbcEmbed
+    private Integer timezoneOffset;
+
     private List<String> logins;
 
     public static Person fromPersonShortView( PersonShortView personShortView ){
@@ -226,6 +229,14 @@ public class Person extends AuditableObject {
 
     public void setBirthday(Date birthday) {
         this.birthday = birthday;
+    }
+
+    public Integer getTimezoneOffset() {
+        return timezoneOffset;
+    }
+
+    public void setTimezoneOffset(Integer timezoneOffset) {
+        this.timezoneOffset = timezoneOffset;
     }
 
     public String getIpAddress() {

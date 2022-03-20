@@ -42,7 +42,6 @@ import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionEditIte
 import java.util.*;
 
 import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
-import static ru.protei.portal.ui.common.client.common.UiConstants.DateTime.MSK_TIME_ZONE_OFFSET_IN_MINUTES;
 
 /**
  * Активность создания и редактирования сотрудников
@@ -461,9 +460,12 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         personLastName = employee.getLastName();
         view.secondName().setText(employee.getSecondName());
         view.inn().setText(employee.getInn());
-        if (employee.getBirthday() != null ) {
-            view.setBirthDayTimeZone(TimeZone.createTimeZone(MSK_TIME_ZONE_OFFSET_IN_MINUTES));
+
+        TimeZone timeZone = null;
+        if (employee.getTimezoneOffset() != null){
+            timeZone = TimeZone.createTimeZone(employee.getTimezoneOffset());
         }
+        view.setBirthDayTimeZone(timeZone);
         view.birthDay().setValue(employee.getBirthday());
         view.ipAddress().setValue(employee.getIpAddress());
 
