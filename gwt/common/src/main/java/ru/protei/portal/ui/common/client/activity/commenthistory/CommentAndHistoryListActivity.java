@@ -561,7 +561,7 @@ public abstract class CommentAndHistoryListActivity
 
                         AttachmentLinkProvider.setLinkMap(Collections.emptyMap());
                         CaseLinkProvider.setCaseLinkMap(Collections.emptyMap());
-                        attachmentService.getAttachmentsByCaseId(En_CaseType.CRM_SUPPORT, caseId, new FluentCallback<List<Attachment>>()
+                        attachmentService.getAttachmentsByCaseId(caseType, caseId, new FluentCallback<List<Attachment>>()
                                 .withSuccess(attachments -> {
                                     caseLinkController.getCaseLinks( caseId, new FluentCallback<List<CaseLink>>()
                                             .withSuccess( caseLinks -> {
