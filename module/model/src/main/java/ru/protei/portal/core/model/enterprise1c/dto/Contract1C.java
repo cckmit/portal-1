@@ -37,7 +37,7 @@ public class Contract1C {
     @JsonProperty("ДополнительныеРеквизиты")
     private List<ContractAdditionalProperty1C> additionalProperties;
 
-    @JsonProperty("ВидВзаиморасчетов")
+    @JsonProperty("ВидыВзаиморасчетов")
     private String calculationType;
 
     public String getRefKey() { return refKey; }

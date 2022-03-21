@@ -11,7 +11,6 @@ public class ContractCalculationTypeSelector extends FormPopupSingleSelector<Con
         this.model = model;
         setAsyncModel(model);
         setItemRenderer(option -> option == null ? defaultValue : option.getName());
-        setValidation(false);
         setSearchEnabled(true);
     }
 

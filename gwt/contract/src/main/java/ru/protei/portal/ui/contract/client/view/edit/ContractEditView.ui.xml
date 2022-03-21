@@ -134,7 +134,7 @@
                                                                   hasNullValue="false"
                                                                   header="{lang.contractState}"/>
 
-                            <contract:calculationtype.ContractCalculationTypeSelector ui:field="calculationType" validation="true"
+                            <contract:calculationtype.ContractCalculationTypeSelector ui:field="calculationType"
                                                                                       hasNullValue="true"
                                                                                       header="{lang.contractCalculationType}"/>
 

@@ -2258,6 +2258,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractValidationContractSpecificationClauseDuplication();
 
+    String contractCalculationTypeNotDefined();
+
     String contractOrganization();
 
     String contractParent();

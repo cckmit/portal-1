@@ -21,6 +21,7 @@ public abstract class ContractCalculationTypeModel extends BaseSelectorModel<Con
         controller.getCalculationTypeList(organization, new FluentCallback<List<ContractCalculationType>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(list -> {
+                    list.add(0, new ContractCalculationType(null, lang.contractCalculationTypeNotDefined()));
                     updateElements(list, selector);
                 })
         );

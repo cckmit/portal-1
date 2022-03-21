@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.client.enterprise1c.api.Api1C;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
@@ -829,7 +830,8 @@ public class ContractServiceImpl implements ContractService {
         } catch (ParseException e) { return false; }
 
         return Objects.equals(c1.getNumber(), c2.getNumber())
-               && Objects.equals(c1.getContractorKey(), c2.getContractorKey());
+               && Objects.equals(c1.getContractorKey(), c2.getContractorKey())
+               && Objects.equals(c1.getCalculationType(), c2.getCalculationType());
     }
 
     private final Pattern innPattern = Pattern.compile(CONTRACTOR_INN);
