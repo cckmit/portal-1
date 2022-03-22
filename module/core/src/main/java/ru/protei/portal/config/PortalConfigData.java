@@ -1084,6 +1084,7 @@ public class PortalConfigData {
 
         List<Long> result = new ArrayList<>();
         for (String s : str.split( delimiter )){
+            if (s.isEmpty()) continue;
             try {
                 result.add( Long.parseLong(s.trim()) );
             } catch (Exception e) {
