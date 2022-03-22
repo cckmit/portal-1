@@ -1600,26 +1600,20 @@ public class WorkerController {
 
                     if (rec.isFired() || rec.isDeleted()) {
                         boolean immediately = false;
-                        if (HelperFunc.isNotEmpty(rec.getFireDate())) {
-                            Date firedDate = HelperService.DATE.parse(rec.getFireDate());
-                            Date now = new Date();
-                            if (firedDate.after(now)) {
-                                worker.setFiredDate(firedDate);
-                                worker.setDeleted(rec.isDeleted());
-                                workerEntryDAO.merge(worker);
-
-                                logger.debug("success result, workerRowId={}", worker.getId());
-                            } else {
-                                immediately = true;
-                            }
-                        } else {
+                        Date firedDate = HelperFunc.isEmpty(rec.getFireDate()) ? null : HelperService.DATE.parse(rec.getFireDate());
+                        if (firedDate == null || !firedDate.after(new Date())) {
                             immediately = true;
+                        } else {
+                            worker.setFiredDate(firedDate);
+                            worker.setDeleted(rec.isDeleted());
+                            workerEntryDAO.merge(worker);
+                            logger.debug("success result, workerRowId={}", worker.getId());
                         }
 
                         if (immediately) {
                             workerEntryDAO.remove(worker);
                             if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
-                                return workerEntryService.firePerson(person, rec.isFired(), null, rec.isDeleted(), userLogins, WSConfig.getInstance().isEnableMigration())
+                                return workerEntryService.firePerson(person, rec.isFired(), firedDate, rec.isDeleted(), userLogins, WSConfig.getInstance().isEnableMigration())
                                         .map(ignore -> {
                                             logger.debug("success result, workerRowId={}", worker.getId());
                                             return person.getId();
