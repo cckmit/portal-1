@@ -937,13 +937,19 @@ public class PortalConfigData {
     public static class EmployeeConfig {
 
         private final String avatarPath;
+        private final List<Long> employeeBirthdayHideIds;
 
-        public EmployeeConfig(PropertiesWrapper propertiesWrapper) {
+        public EmployeeConfig(PropertiesWrapper propertiesWrapper) throws ConfigException {
             avatarPath = propertiesWrapper.getProperty( "employee.avatar.path", "/usr/protei/shared/avatars/" );
+            employeeBirthdayHideIds = splitString(propertiesWrapper.getProperty("employee.birthday_hide_ids", String.class, ""), ",");
         }
 
         public String getAvatarPath() {
             return avatarPath;
+        }
+
+        public List<Long> getEmployeeBirthdayHideIds() {
+            return employeeBirthdayHideIds;
         }
     }
 
@@ -1072,6 +1078,20 @@ public class PortalConfigData {
         public Boolean getEnableDelay() {
             return enableDelay;
         }
+    }
+
+    private static List<Long> splitString(String str, String delimiter) throws ConfigException {
+
+        List<Long> result = new ArrayList<>();
+        for (String s : str.split( delimiter )){
+            try {
+                result.add( Long.parseLong(s.trim()) );
+            } catch (Exception e) {
+                logger.error("Unable to parse string as long: " + s, e);
+                throw new ConfigException(e);
+            }
+        }
+        return result;
     }
 
     private final static Long DEFAULT_FILE_SIZE_MEGABYTES = 10L;

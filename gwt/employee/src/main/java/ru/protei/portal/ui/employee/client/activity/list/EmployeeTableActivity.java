@@ -4,13 +4,14 @@ import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
@@ -28,8 +29,10 @@ import static ru.protei.portal.ui.common.client.util.PaginationUtils.PAGE_SIZE;
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.getTotalPages;
 
 public abstract class EmployeeTableActivity implements AbstractEmployeeTableActivity, AbstractPagerActivity, Activity {
-    @PostConstruct
-    public void init() {
+
+    @Event
+    public void onAuthSuccess (AuthEvents.Success event) {
+        view.initTable(configStorage.getConfigData().employeeBirthdayHideIds);
         view.setActivity(this);
         view.setAnimation(animation);
         pagerView.setActivity(this);
@@ -182,6 +185,8 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
     AbstractPagerView pagerView;
     @Inject
     EmployeeControllerAsync employeeService;
+    @Inject
+    ConfigStorage configStorage;
 
     private AppEvents.InitDetails init;
     private EmployeeQuery query;

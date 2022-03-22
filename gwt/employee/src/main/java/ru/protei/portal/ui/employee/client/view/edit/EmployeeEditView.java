@@ -109,6 +109,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
+    public HasVisibility birthDayVisibility() {
+        return birthDayContainer;
+    }
+
+    @Override
     public HasEnabled genderEnabled() {
         return gender;
     }
@@ -504,6 +509,9 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @com.google.inject.Inject
     @UiField(provided = true)
     SinglePicker birthDay;
+
+    @UiField
+    HTMLPanel birthDayContainer;
 
     @UiField
     ContactItemGroupWithValidation workPhones;

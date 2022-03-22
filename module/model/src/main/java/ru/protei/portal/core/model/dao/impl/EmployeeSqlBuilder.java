@@ -55,6 +55,10 @@ public class EmployeeSqlBuilder {
                 condition.append(" and person.id in " + HelperFunc.makeInArg(query.getIds()));
             }
 
+            if (CollectionUtils.isNotEmpty(query.getExceptIds())) {
+                condition.append(" and person.id not in " + HelperFunc.makeInArg(query.getExceptIds()));
+            }
+
             if (query.getFired() != null) {
                 condition.append(" and person.isfired=?");
                 args.add(query.getFired() ? 1 : 0);

@@ -463,6 +463,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         query.setFired(false);
         query.setDeleted(false);
         query.setBirthdayInterval(new Interval(dateFrom, dateUntil));
+        query.setExceptIds(portalConfig.data().getEmployee().getEmployeeBirthdayHideIds());
         List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
         EmployeesBirthdays birthdays = new EmployeesBirthdays();
         birthdays.setDateFrom(dateFrom);
@@ -498,6 +499,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         query.setFired(false);
         query.setDeleted(false);
         query.setBirthdayInterval(new Interval(from, to));
+        query.setExceptIds(portalConfig.data().getEmployee().getEmployeeBirthdayHideIds());
         List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
 
         if (CollectionUtils.isEmpty(employees)) {
