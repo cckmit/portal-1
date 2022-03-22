@@ -12,8 +12,6 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
 
-import static ru.protei.portal.core.model.util.CrmConstants.Company.MAIN_HOME_COMPANY_NAME;
-
 public abstract class ContractCalculationTypeModel extends BaseSelectorModel<ContractCalculationType> implements Activity {
 
     @Override
@@ -21,7 +19,6 @@ public abstract class ContractCalculationTypeModel extends BaseSelectorModel<Con
         controller.getCalculationTypeList(organization, new FluentCallback<List<ContractCalculationType>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
                 .withSuccess(list -> {
-                    list.add(0, new ContractCalculationType(null, lang.contractCalculationTypeNotDefined()));
                     updateElements(list, selector);
                 })
         );

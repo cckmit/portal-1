@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.ent.ContractCalculationType;
 import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
@@ -25,6 +26,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.ContractCalculationTypeModel;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
@@ -35,8 +37,10 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.struct.Vat.NoVat;
+import static ru.protei.portal.core.model.util.CrmConstants.Company.MAIN_HOME_COMPANY_NAME;
 import static ru.protei.portal.core.model.util.CrmConstants.State.AGREEMENT;
 import static ru.protei.portal.ui.common.client.util.DateUtils.*;
 
@@ -251,6 +255,9 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.deliveryNumber().setValue(contract.getDeliveryNumber());
         view.dateExecution().setValue(contract.getDateExecution());
         view.dateEndWarranty().setValue(contract.getDateEndWarranty());
+        view.calculationType().setValue(new ContractCalculationType(contract.getCalculationType(), "name")); //todo rewrite
+        contractCalculationTypeModel.setOrganization(defaultString(contract.getOrganizationName(), MAIN_HOME_COMPANY_NAME));
+        view.setContractCalculationTypeSelectorModel(contractCalculationTypeModel);
 
         if (contract.getProjectId() == null) {
             view.project().setValue(null);
@@ -303,7 +310,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setContractor(view.contractor().getValue());
         contract.setContractSignManagerId(getPersonIdOrNull(view.contractSignManager().getValue()));
         contract.setDeliveryNumber(view.deliveryNumber().getValue());
-        contract.setCalculationType(view.calculationType() == null ? null : view.calculationType().getValue().getRefKey());
+        contract.setCalculationType(view.calculationType().getValue() == null ? null : view.calculationType().getValue().getRefKey());
         contract.setDateEndWarranty(view.dateEndWarranty().getValue());
         contract.setDateExecution(view.dateExecution().getValue());
 
@@ -322,6 +329,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             view.contractor().setValue(null);
             fireEvent(new NotifyEvents.Show(lang.contractContractorDropped(), NotifyEvents.NotifyType.INFO));
         }
+
+        contractCalculationTypeModel.setOrganization(organizationDisplayText);
     }
 
     private void showValidationError() {
@@ -449,6 +458,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     DefaultErrorHandler defaultErrorHandler;
     @Inject
     ConfigStorage configStorage;
+    @Inject
+    ContractCalculationTypeModel contractCalculationTypeModel;
 
     private Contract contract;
     private AbstractCaseTagListActivity tagListActivity;

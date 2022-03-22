@@ -135,7 +135,6 @@
                                                                   header="{lang.contractState}"/>
 
                             <contract:calculationtype.ContractCalculationTypeSelector ui:field="calculationType"
-                                                                                      hasNullValue="true"
                                                                                       header="{lang.contractCalculationType}"/>
 
                             <project:ProjectWidget ui:field="projectWidget" validation="true"

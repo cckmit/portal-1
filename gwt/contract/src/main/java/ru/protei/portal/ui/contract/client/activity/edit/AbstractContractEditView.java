@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.ContractCalculationTypeModel;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Date;
@@ -88,4 +89,6 @@ public interface AbstractContractEditView extends IsWidget {
     HasWidgets expenditureContractsContainer();
 
     HasVisibility expenditureContractsVisibility();
+
+    void setContractCalculationTypeSelectorModel(ContractCalculationTypeModel model);
 }

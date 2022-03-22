@@ -14,13 +14,15 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_ContractKind;
+import ru.protei.portal.core.model.dict.En_ContractType;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.ContractCalculationType;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
@@ -34,6 +36,7 @@ import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyFormSelec
 import ru.protei.portal.ui.common.client.widget.money.MoneyCurrencyVatWidget;
 import ru.protei.portal.ui.common.client.widget.project.ProjectWidget;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.ContractCalculationTypeModel;
 import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.ContractCalculationTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStateSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypeSelector;
@@ -52,9 +55,7 @@ import java.util.Date;
 import java.util.List;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
-import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.core.model.struct.Vat.*;
-import static ru.protei.portal.core.model.util.CrmConstants.Company.MAIN_HOME_COMPANY_NAME;
 
 public class ContractEditView extends Composite implements AbstractContractEditView {
 
@@ -64,7 +65,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         dateValidDays.getElement().setAttribute("placeholder", lang.days());
         dateValidDays.setValidationFunction(value -> value == null || value >= 0);
         costWithCurrency.setVatOptions(listOf(Vat20, Vat0, NoVat));
-        calculationType.setOrganization(MAIN_HOME_COMPANY_NAME);
+        calculationType.setHasNullValue(true);
+        calculationType.setDefaultValue(lang.contractCalculationTypeNotDefined());
         ensureDebugIds();
     }
 
@@ -211,9 +213,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Override
     public void setOrganization(String organization) {
         contractorWidget.setOrganization(organization);
-        if (isNotEmpty(organization)) {
-            calculationType.setOrganization(organization);
-        }
     }
 
     @Override
@@ -239,6 +238,11 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Override
     public HasVisibility expenditureContractsVisibility() {
         return tabs.tabVisibility(lang.contractListOfExpenditureHeader());
+    }
+
+    @Override
+    public void setContractCalculationTypeSelectorModel(ContractCalculationTypeModel model) {
+        calculationType.setAsyncModel(model);
     }
 
     @UiHandler("saveButton")
