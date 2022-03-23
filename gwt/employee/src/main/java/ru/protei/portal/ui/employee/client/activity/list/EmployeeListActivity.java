@@ -186,7 +186,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     }
 
     private void showBirthday(EmployeeShortView employee, AbstractEmployeeItemView itemView) {
-        boolean canDisplayBirthday = stream(configStorage.getConfigData().employeeBirthdayHideIds).noneMatch(l -> Objects.equals(l, employee.getId()));
+        boolean canDisplayBirthday = stream(configStorage.getConfigData().employeeBirthdayHideIds)
+                .noneMatch(l -> Objects.equals(l, employee.getId()));
         String value = null;
         if (canDisplayBirthday){
             TimeZone timeZone = null;

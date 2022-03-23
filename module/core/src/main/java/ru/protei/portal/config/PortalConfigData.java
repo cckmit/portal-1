@@ -142,7 +142,7 @@ public class PortalConfigData {
         return jiraConfig;
     }
 
-    public EmployeeConfig getEmployee() {
+    public EmployeeConfig getEmployeeConfig() {
         return employeeConfig;
     }
 

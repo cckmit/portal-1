@@ -116,7 +116,8 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
     private void showBirthday(EmployeeShortView employee) {
 
-        boolean canDisplayBirthday = stream(configStorage.getConfigData().employeeBirthdayHideIds).noneMatch(l -> Objects.equals(l, employee.getId()));
+        boolean canDisplayBirthday = stream(configStorage.getConfigData().employeeBirthdayHideIds)
+                .noneMatch(l -> Objects.equals(l, employee.getId()));
         view.birthdayContainerVisibility().setVisible(canDisplayBirthday && employee.getBirthday() != null);
         String value = "";
         if (canDisplayBirthday){

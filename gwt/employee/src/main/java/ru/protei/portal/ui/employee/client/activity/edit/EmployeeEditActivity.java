@@ -454,7 +454,8 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
 
     private void showBirthday(EmployeeShortView employee) {
 
-        boolean canDisplayBirthday = stream(configStorage.getConfigData().employeeBirthdayHideIds).noneMatch(l -> Objects.equals(l, employee.getId()));
+        boolean canDisplayBirthday = stream(configStorage.getConfigData().employeeBirthdayHideIds)
+                .noneMatch(l -> Objects.equals(l, employee.getId()));
         TimeZone timeZone = null;
         if (employee.getTimezoneOffset() != null){
             timeZone = TimeZone.createTimeZone(employee.getTimezoneOffset());
