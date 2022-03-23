@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 public interface AbstractEmployeeTableView extends IsWidget {
 
@@ -30,4 +29,6 @@ public interface AbstractEmployeeTableView extends IsWidget {
     void setAnimation(TableAnimation animation);
 
     void clearSelection();
+
+    void initTable(List<Long> employeeBirthdayHideIds);
 }

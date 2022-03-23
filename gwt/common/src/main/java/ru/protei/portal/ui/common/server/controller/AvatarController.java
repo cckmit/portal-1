@@ -19,7 +19,6 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.struct.UploadResult;
-import ru.protei.portal.core.service.CompanyService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
 
@@ -81,7 +80,7 @@ public class AvatarController {
 
         En_Gender g = En_Gender.parse(gender);
 
-        if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + fileName , response ) ) return;
+        if ( loadFile( portalConfig.data().getEmployeeConfig().getAvatarPath() + fileName , response ) ) return;
 
         loadFile( context.getRealPath( g.equals(En_Gender.MALE) ? AvatarUtils.MALE_AVATAR_URL : g.equals(En_Gender.FEMALE) ? AvatarUtils.FEMALE_AVATAR_URL : AvatarUtils.NOGENDER_AVATAR_URL ), response );
     }
@@ -91,7 +90,7 @@ public class AvatarController {
             @PathVariable String fileName,
             HttpServletResponse response) throws IOException {
 
-        if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + fileName , response ) ) return;
+        if ( loadFile( portalConfig.data().getEmployeeConfig().getAvatarPath() + fileName , response ) ) return;
 
         showNoPhotoImage(response);
     }
@@ -115,7 +114,7 @@ public class AvatarController {
             return;
         }
 
-        if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + person.getId() + ".jpg" , response ) ) return;
+        if ( loadFile( portalConfig.data().getEmployeeConfig().getAvatarPath() + person.getId() + ".jpg" , response ) ) return;
 
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
     }
@@ -137,7 +136,7 @@ public class AvatarController {
 
         String newFileName = person.getId() + ".jpg";
 
-        if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + newFileName , response ) ) return;
+        if ( loadFile( portalConfig.data().getEmployeeConfig().getAvatarPath() + newFileName , response ) ) return;
 
         showNoPhotoImage(response);
     }
@@ -161,7 +160,7 @@ public class AvatarController {
 
         UploadResult result = null;
 
-        String fileName = portalConfig.data().getEmployee().getAvatarPath() + personId + ".jpg";
+        String fileName = portalConfig.data().getEmployeeConfig().getAvatarPath() + personId + ".jpg";
 
         try {
             for (FileItem item : upload.parseRequest(request)) {

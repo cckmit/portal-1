@@ -15,6 +15,8 @@ public class EmployeeQuery extends BaseQuery {
 
     private List<Long> ids;
 
+    private List<Long> exceptIds;
+
     private Boolean fired;
 
     private Boolean deleted;
@@ -83,6 +85,14 @@ public class EmployeeQuery extends BaseQuery {
 
     public void setFired(Boolean fired) {
         this.fired = fired;
+    }
+
+    public List<Long> getExceptIds() {
+        return exceptIds;
+    }
+
+    public void setExceptIds(List<Long> exceptIds) {
+        this.exceptIds = exceptIds;
     }
 
     public Boolean getDeleted() {
