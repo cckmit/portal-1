@@ -18,7 +18,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
 
-import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 
 public abstract class CustomerCompanyModel implements Activity, AsyncSelectorModel<EntityOption>, SelectorItemRenderer<EntityOption> {
 
@@ -64,13 +64,13 @@ public abstract class CustomerCompanyModel implements Activity, AsyncSelectorMod
                             handler.onFailure(throwable);
                         })
                         .withSuccess(options -> {
-                            transliteration(options);
+                            transliterate(options);
                             handler.onSuccess(options);
                         }));
     }
 
-    private void transliteration(List<EntityOption> options) {
-        options.forEach(option -> option.setDisplayText(transliterate(option.getDisplayText())));
+    private void transliterate(List<EntityOption> options) {
+        options.forEach(option -> option.setDisplayText(transliteration(option.getDisplayText())));
     }
 
     @Inject

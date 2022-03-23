@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.toList;
-import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 
 /**
  * Модель селектора компаний
@@ -79,7 +79,7 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
 
                 @Override
                 public void onSuccess( List<EntityOption> options ) {
-                    transliteration(options);
+                    transliterate(options);
                     handler.onSuccess(options);
                 }
             } );
@@ -101,8 +101,8 @@ public abstract class CompanyModel implements Activity, AsyncSelectorModel<Entit
         return query;
     }
 
-    private void transliteration(List<EntityOption> options) {
-        options.forEach(option -> option.setDisplayText(transliterate(option.getDisplayText())));
+    private void transliterate(List<EntityOption> options) {
+        options.forEach(option -> option.setDisplayText(transliteration(option.getDisplayText())));
     }
 
     @Inject

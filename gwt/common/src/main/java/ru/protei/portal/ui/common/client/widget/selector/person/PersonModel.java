@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
-import static ru.protei.portal.core.model.util.TransliterationUtils.transliterate;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 
 /**
  * Синхронная модель Person
@@ -61,7 +61,7 @@ public abstract class PersonModel extends BaseSelectorModel<PersonShortView> imp
                 if (value > 0) {
                     options.add(0, options.remove(value));
                 }
-                options = transliteration(options);
+                options = transliterate(options);
                 updateElements(options, selector);
                 if(refreshable!=null){
                     refreshable.refresh();
@@ -80,8 +80,8 @@ public abstract class PersonModel extends BaseSelectorModel<PersonShortView> imp
         return elements;
     }
 
-    private List<PersonShortView> transliteration( List<PersonShortView> options) {
-        options.forEach(option -> option.setName(transliterate(option.getName())));
+    private List<PersonShortView> transliterate( List<PersonShortView> options) {
+        options.forEach(option -> option.setName(transliteration(option.getName())));
         return options;
     }
 
