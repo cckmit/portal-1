@@ -20,7 +20,7 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="fk-calculation_type-id-to-contract" author="novikov_a">
+    <changeSet id="add-fk-calculation_type-id-to-contract" author="novikov_a">
         <addForeignKeyConstraint constraintName="fk-calculation_type-id-to-contract"
                                  baseTableName="contract" baseColumnNames="calculation_type_id"
                                  referencedTableName="calculation_type" referencedColumnNames="id"

@@ -461,6 +461,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public CalculationTypeDAO getCalculationTypeDAO() {
+        return new CalculationTypeDAO_Impl();
+    }
+
+    @Bean
     public PersonNotifierDAO getPersonNotifierDAO() {
         return new PersonNotifierDAO_Impl();
     }

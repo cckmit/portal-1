@@ -789,6 +789,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CalculationTypeDAO getCalculationTypeDAO() {
+        return new CalculationTypeDAO_Impl();
+    }
+
+    @Bean
     public PersonNotifierDAO getPersonNotifierDAO() {
         return new PersonNotifierDAO_Impl();
     }

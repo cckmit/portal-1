@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.client.enterprise1c.api.Api1C;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
@@ -59,6 +58,8 @@ public class ContractServiceImpl implements ContractService {
     CaseTypeDAO caseTypeDAO;
     @Autowired
     ContractorDAO contractorDAO;
+    @Autowired
+    CalculationTypeDAO calculationTypeDAO;
     @Autowired
     DevUnitDAO devUnitDAO;
     @Autowired
@@ -170,6 +171,18 @@ public class ContractServiceImpl implements ContractService {
             contract.setContractorId(null);
         }
 
+        CalculationType calculationType = contract.getCalculationType();
+        if (calculationType != null) {
+            Result<Long> result = saveCalculationType(calculationType);
+            if (result.isError()) {
+                log.error("createContract(): id = {} | failed to save calculation type to db with result = {}", contractId, result);
+                throw new RollbackTransactionException(result.getStatus());
+            }
+            contract.setCalculationTypeId(result.getData());
+        } else {
+            contract.setCalculationTypeId(null);
+        }
+
         boolean contractPersisted = contractDAO.persist(contract) != null;
         if (!contractPersisted) {
             log.error("createContract(): id = {} | failed to persist contract to db", contractId);
@@ -264,6 +277,18 @@ public class ContractServiceImpl implements ContractService {
             contract.setContractorId(result.getData());
         } else {
             contract.setContractorId(null);
+        }
+
+        CalculationType calculationType = contract.getCalculationType();
+        if (calculationType != null) {
+            Result<Long> result = saveCalculationType(calculationType);
+            if (result.isError()) {
+                log.error("createContract(): id = {} | failed to save calculation type to db with result = {}", contractId, result);
+                throw new RollbackTransactionException(result.getStatus());
+            }
+            contract.setCalculationTypeId(result.getData());
+        } else {
+            contract.setCalculationTypeId(null);
         }
 
         fillDateExecution(contract);
@@ -385,7 +410,8 @@ public class ContractServiceImpl implements ContractService {
                 throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
             }
 
-            boolean contractUpdated = contractDAO.mergeCalculationType(contract.getId(), contract.getCalculationType());
+            contract.setRefKey(result.getData().getRefKey());
+            boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
             if (!contractUpdated) {
                 log.error("updateContract(): id = {} | calculation type modification | NO-ROLLBACK | failed to save contract's calculation type to db", contractId);
                 return error(En_ResultStatus.NOT_UPDATED);
@@ -662,6 +688,24 @@ public class ContractServiceImpl implements ContractService {
         return ok(contractor.getId());
     }
 
+    private Result<Long> saveCalculationType(CalculationType calculationType) {
+        if (calculationType.getRefKey() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CalculationType calcType = calculationTypeDAO.getCalculationTypeBy(calculationType.getRefKey());
+        if (calcType == null) {
+            calculationTypeDAO.persist(calculationType);
+        } else {
+            calculationType.setId(calcType.getId());
+            if (!calculationTypeDAO.merge(calculationType)) {
+                return error(En_ResultStatus.NOT_UPDATED, "Calculation type was not merged");
+            }
+        }
+
+        return ok(calculationType.getId());
+    }
+
     private Result<Contract1C> saveContract1C(Contract contract) {
         if (contract == null || contract.getId() == null
             || contract.getOrganizationId() == null || StringUtils.isBlank(contract.getOrganizationName())) {
@@ -803,7 +847,8 @@ public class ContractServiceImpl implements ContractService {
         contract1C.setContractorKey(contract.getContractor().getRefKey());
         contract1C.setDateSigning(saveDateFormat.format(contract.getDateSigning()));
         contract1C.setName(contract.getNumber().trim()+ " от " + showDateFormat.format(contract.getDateSigning()));
-        contract1C.setCalculationType(contract.getCalculationType().getRefKey());
+        contract1C.setCalculationType(contract.getCalculationType() == null ? null :
+                                      contract.getCalculationType().getRefKey().trim());
 
         // PORTAL-1566 p.7 (freezed)
 //        List<ContractAdditionalProperty1C> additional1СProperties = new ArrayList<>();

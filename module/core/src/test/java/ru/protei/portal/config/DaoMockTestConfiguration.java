@@ -416,6 +416,11 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public CalculationTypeDAO getCalculationTypeDAO() {
+        return mock(CalculationTypeDAO.class);
+    }
+
+    @Bean
     public PersonNotifierDAO getPersonNotifierDAO() {
         return mock(PersonNotifierDAO.class);
     }
