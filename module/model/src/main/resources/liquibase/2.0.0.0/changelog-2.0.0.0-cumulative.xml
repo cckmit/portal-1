@@ -125,4 +125,5 @@
   <include file="2022-03-01-add-contract-states-to-case_state_matrix-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-03-01-update-contract-states-in-case_object-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-03-02-add-member-role.xml" relativeToChangelogFile="true"/>
+  <include file="2022-03-24-create-company_common_manager-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
