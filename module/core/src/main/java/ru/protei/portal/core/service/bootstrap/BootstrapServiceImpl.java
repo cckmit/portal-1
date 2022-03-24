@@ -146,7 +146,26 @@ public class BootstrapServiceImpl implements BootstrapService {
         /**
          *  end Спринт */
 
+        /**
+         * begin Спринт 91 */
+        if (!bootstrapAppDAO.isActionExists("migrateCommonManagers")) {
+            this.migrateCommonManagers();
+            bootstrapAppDAO.createAction("migrateCommonManagers");
+        }
+        /**
+         *  end Спринт */
+
         log.info( "bootstrapApplication(): BootstrapService complete."  );
+    }
+
+    private void migrateCommonManagers() {
+        devUnitDAO.getListByCondition("common_manager_id is not null")
+                .forEach(product -> {
+                    CompanyCommonManager companyCommonManager = new CompanyCommonManager();
+                    companyCommonManager.setProductId(product.getId());
+                    companyCommonManager.setManagerId(product.getCommonManagerId());
+                    companyCommonManagerDAO.persist(companyCommonManager);
+                });
     }
 
     private void setMissingProjectManagerId() {
@@ -607,6 +626,10 @@ public class BootstrapServiceImpl implements BootstrapService {
     UserRoleDAO userRoleDAO;
     @Autowired
     CaseMemberDAO caseMemberDAO;
+    @Autowired
+    DevUnitDAO devUnitDAO;
+    @Autowired
+    CompanyCommonManagerDAO companyCommonManagerDAO;
     @Autowired
     Lang lang;
     @Autowired
