@@ -1,14 +1,14 @@
 package ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.ContractCalculationType;
+import ru.protei.portal.core.model.ent.CalculationType;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
 
-public class ContractCalculationTypesMultiSelector extends InputPopupMultiSelector<ContractCalculationType> {
+public class CalculationTypesMultiSelector extends InputPopupMultiSelector<CalculationType> {
 
     @Inject
-    public void init(Lang lang, ContractCalculationTypeModel model) {
+    public void init(Lang lang, CalculationTypeModel model) {
         this.model = model;
         setAsyncModel(model);
         setItemRenderer(option -> option == null ? "" : option.getName());
@@ -22,5 +22,5 @@ public class ContractCalculationTypesMultiSelector extends InputPopupMultiSelect
         model.clean();
     }
 
-    private ContractCalculationTypeModel model;
+    private CalculationTypeModel model;
 }

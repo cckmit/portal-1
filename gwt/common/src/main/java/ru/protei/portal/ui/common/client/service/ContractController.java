@@ -31,5 +31,5 @@ public interface ContractController extends RemoteService {
 
     SelectorsParams getSelectorsParams(ContractQuery query) throws RequestFailedException;
 
-    List<ContractCalculationType> getCalculationTypeList(String organization) throws RequestFailedException;
+    List<CalculationType> getCalculationTypeList(String organization) throws RequestFailedException;
 }

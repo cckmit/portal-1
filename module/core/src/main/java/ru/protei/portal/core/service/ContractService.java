@@ -48,7 +48,7 @@ public interface ContractService {
     Result<List<Contract>> getContractsByApiQuery(AuthToken token, ContractApiQuery apiQuery);
 
     @Privileged(requireAny = {En_Privilege.CONTRACT_CREATE, En_Privilege.CONTRACT_EDIT})
-    Result<List<ContractCalculationType>> getCalculationTypeList(AuthToken token, String organization);
+    Result<List<CalculationType>> getCalculationTypeList(AuthToken token, String organization);
 
     Result<SelectorsParams> getSelectorsParams(AuthToken token, ContractQuery query);
 }

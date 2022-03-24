@@ -12,7 +12,6 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.ent.ContractCalculationType;
 import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.struct.Money;
 import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
@@ -26,7 +25,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.ContractCalculationTypeModel;
+import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.CalculationTypeModel;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
@@ -255,7 +254,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.deliveryNumber().setValue(contract.getDeliveryNumber());
         view.dateExecution().setValue(contract.getDateExecution());
         view.dateEndWarranty().setValue(contract.getDateEndWarranty());
-        view.calculationType().setValue(new ContractCalculationType(contract.getCalculationType(), "name")); //todo rewrite
+        view.calculationType().setValue(contract.getCalculationType());
         contractCalculationTypeModel.setOrganization(defaultString(contract.getOrganizationName(), MAIN_HOME_COMPANY_NAME));
         view.setContractCalculationTypeSelectorModel(contractCalculationTypeModel);
 
@@ -310,7 +309,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setContractor(view.contractor().getValue());
         contract.setContractSignManagerId(getPersonIdOrNull(view.contractSignManager().getValue()));
         contract.setDeliveryNumber(view.deliveryNumber().getValue());
-        contract.setCalculationType(view.calculationType().getValue() == null ? null : view.calculationType().getValue().getRefKey());
+        contract.setCalculationType(view.calculationType().getValue());
         contract.setDateEndWarranty(view.dateEndWarranty().getValue());
         contract.setDateExecution(view.dateExecution().getValue());
 
@@ -459,7 +458,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     @Inject
     ConfigStorage configStorage;
     @Inject
-    ContractCalculationTypeModel contractCalculationTypeModel;
+    CalculationTypeModel contractCalculationTypeModel;
 
     private Contract contract;
     private AbstractCaseTagListActivity tagListActivity;

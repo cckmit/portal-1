@@ -2,7 +2,7 @@ package ru.protei.portal.ui.contract.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
-import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.ContractCalculationTypeModel;
+import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.CalculationTypeModel;
 import ru.protei.portal.ui.contract.client.activity.date.edit.AbstractContractDateEditView;
 import ru.protei.portal.ui.contract.client.activity.date.edit.ContractDateEditActivity;
 import ru.protei.portal.ui.contract.client.activity.date.table.AbstractContractDateTableView;
@@ -33,7 +33,7 @@ public class ContractClientModule extends AbstractGinModule {
     @Override
     protected void configure()    {
         bind(ContractPage.class).asEagerSingleton();
-        bind(ContractCalculationTypeModel.class);
+        bind(CalculationTypeModel.class);
 
         bind(ContractTableActivity.class).asEagerSingleton();
         bind(AbstractContractTableView.class).to(ContractTableView.class).in(Singleton.class);

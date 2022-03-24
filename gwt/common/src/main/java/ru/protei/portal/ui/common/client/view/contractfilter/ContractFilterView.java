@@ -16,7 +16,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.ent.ContractCalculationType;
+import ru.protei.portal.core.model.ent.CalculationType;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -27,7 +27,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.ContractCalculationTypesMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.CalculationTypesMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStatesMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypesMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contractor.multicontractor.MultiContractorSelector;
@@ -139,7 +139,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     }
 
     @Override
-    public HasValue<Set<ContractCalculationType>> calculationTypes() {
+    public HasValue<Set<CalculationType>> calculationTypes() {
         return calculationTypes;
     }
 
@@ -241,7 +241,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     }
 
     @UiHandler("calculationTypes")
-    public void onCalculationTypeChanged(ValueChangeEvent<Set<ContractCalculationType>> event) {
+    public void onCalculationTypeChanged(ValueChangeEvent<Set<CalculationType>> event) {
         restartChangeTimer();
     }
 
@@ -315,7 +315,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     ContractStatesMultiSelector states;
     @Inject
     @UiField(provided = true)
-    ContractCalculationTypesMultiSelector calculationTypes;
+    CalculationTypesMultiSelector calculationTypes;
     @Inject
     @UiField(provided = true)
     CaseTagMultiSelector tags;

@@ -28,5 +28,5 @@ public interface ContractControllerAsync {
 
     void getSelectorsParams(ContractQuery query, AsyncCallback<SelectorsParams> async);
 
-    void getCalculationTypeList(String organization, AsyncCallback<List<ContractCalculationType>> async);
+    void getCalculationTypeList(String organization, AsyncCallback<List<CalculationType>> async);
 }

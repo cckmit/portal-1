@@ -20,7 +20,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.ent.ContractCalculationType;
+import ru.protei.portal.core.model.ent.CalculationType;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.query.EmployeeQuery;
@@ -36,8 +36,8 @@ import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyFormSelec
 import ru.protei.portal.ui.common.client.widget.money.MoneyCurrencyVatWidget;
 import ru.protei.portal.ui.common.client.widget.project.ProjectWidget;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractFormSelector;
-import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.ContractCalculationTypeModel;
-import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.ContractCalculationTypeSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.CalculationTypeModel;
+import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.CalculationTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStateSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeCustomFormSelector;
@@ -106,7 +106,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<ContractCalculationType> calculationType() {
+    public HasValue<CalculationType> calculationType() {
         return calculationType;
     }
 
@@ -241,7 +241,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public void setContractCalculationTypeSelectorModel(ContractCalculationTypeModel model) {
+    public void setContractCalculationTypeSelectorModel(CalculationTypeModel model) {
         calculationType.setAsyncModel(model);
     }
 
@@ -394,7 +394,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     ContractStateSelector state;
     @Inject
     @UiField(provided = true)
-    ContractCalculationTypeSelector calculationType;
+    CalculationTypeSelector calculationType;
     @Inject
     @UiField(provided = true)
     ContractTypeSelector type;

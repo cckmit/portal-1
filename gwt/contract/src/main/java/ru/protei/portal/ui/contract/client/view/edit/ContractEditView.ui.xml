@@ -134,8 +134,8 @@
                                                                   hasNullValue="false"
                                                                   header="{lang.contractState}"/>
 
-                            <contract:calculationtype.ContractCalculationTypeSelector ui:field="calculationType"
-                                                                                      header="{lang.contractCalculationType}"/>
+                            <contract:calculationtype.CalculationTypeSelector ui:field="calculationType"
+                                                                              header="{lang.contractCalculationType}"/>
 
                             <project:ProjectWidget ui:field="projectWidget" validation="true"
                                                    addStyleNames="form-group form-group-default"/>

@@ -111,7 +111,7 @@ public class ContractControllerImpl implements ContractController {
     }
 
     @Override
-    public List<ContractCalculationType> getCalculationTypeList(String organization) throws RequestFailedException {
+    public List<CalculationType> getCalculationTypeList(String organization) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
         return ServiceUtils.checkResultAndGetData(contractService.getCalculationTypeList(token, organization));
     }

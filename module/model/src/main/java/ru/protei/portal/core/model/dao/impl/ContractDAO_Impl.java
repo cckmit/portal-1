@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.ContractDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.ent.CalculationType;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContractQuery;
@@ -62,11 +63,11 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
     }
 
     @Override
-    public boolean mergeCalculationType(Long contractId, String calculationType) {
+    public boolean mergeCalculationType(Long contractId, CalculationType calculationType) {
         Contract contract = new Contract();
         contract.setId(contractId);
         contract.setCalculationType(calculationType);
-        return partialMerge(contract, "calculation_type");
+        return partialMerge(contract, "calculation_type_id");
     }
 
     @Override

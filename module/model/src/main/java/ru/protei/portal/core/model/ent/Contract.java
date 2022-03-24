@@ -193,8 +193,11 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcColumn(name = "delivery_number")
     private String deliveryNumber;
 
-    @JdbcColumn(name = "calculation_type")
-    private String calculationType;
+    @JdbcColumn(name = "calculation_type_id")
+    private Long calculationTypeId;
+
+    @JdbcJoinedObject(localColumn = "calculation_type_id", remoteColumn = "id", table = "calculation_type")
+    private CalculationType calculationType;
 
     public Contract() {}
 
@@ -211,11 +214,19 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.deliveryNumber = deliveryNumber;
     }
 
-    public String getCalculationType() {
+    public Long getCalculationTypeId() {
+        return calculationTypeId;
+    }
+
+    public void setCalculationTypeId(Long calculationTypeId) {
+        this.calculationTypeId = calculationTypeId;
+    }
+
+    public CalculationType getCalculationType() {
         return calculationType;
     }
 
-    public void setCalculationType(String calculationType) {
+    public void setCalculationType(CalculationType calculationType) {
         this.calculationType = calculationType;
     }
 

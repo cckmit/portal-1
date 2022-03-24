@@ -9,7 +9,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.ent.ContractCalculationType;
+import ru.protei.portal.core.model.ent.CalculationType;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -46,7 +46,7 @@ public interface AbstractContractFilterView extends IsWidget {
 
     HasValue<Set<CaseState>> states();
 
-    HasValue<Set<ContractCalculationType>> calculationTypes();
+    HasValue<Set<CalculationType>> calculationTypes();
 
     HasValue<ProductDirectionInfo> direction();
 
