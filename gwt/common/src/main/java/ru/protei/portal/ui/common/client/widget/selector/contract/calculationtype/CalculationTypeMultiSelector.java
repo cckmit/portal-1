@@ -5,7 +5,7 @@ import ru.protei.portal.core.model.ent.CalculationType;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSelector;
 
-public class CalculationTypesMultiSelector extends InputPopupMultiSelector<CalculationType> {
+public class CalculationTypeMultiSelector extends InputPopupMultiSelector<CalculationType> {
 
     @Inject
     public void init(Lang lang) {

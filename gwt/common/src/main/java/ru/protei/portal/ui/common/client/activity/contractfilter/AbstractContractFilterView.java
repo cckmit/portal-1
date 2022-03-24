@@ -29,7 +29,7 @@ public interface AbstractContractFilterView extends IsWidget {
 
     void initCuratorsSelector(List<String> contractCuratorsDepartmentsIds);
 
-    void setCalculationTypesMultiSelectorModel(CalculationTypeModel model);
+    void setCalculationTypeMultiSelectorModel(CalculationTypeModel model);
 
     HasValue<String> searchString();
 

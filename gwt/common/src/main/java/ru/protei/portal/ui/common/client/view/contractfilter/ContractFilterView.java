@@ -28,7 +28,7 @@ import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSear
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.CalculationTypeModel;
-import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.CalculationTypesMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.CalculationTypeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStatesMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypesMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contractor.multicontractor.MultiContractorSelector;
@@ -191,7 +191,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     }
 
     @Override
-    public void setCalculationTypesMultiSelectorModel(CalculationTypeModel model) {
+    public void setCalculationTypeMultiSelectorModel(CalculationTypeModel model) {
         calculationTypes.setAsyncModel(model);
     }
 
@@ -318,7 +318,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     ContractStatesMultiSelector states;
     @Inject
     @UiField(provided = true)
-    CalculationTypesMultiSelector calculationTypes;
+    CalculationTypeMultiSelector calculationTypes;
     @Inject
     @UiField(provided = true)
     CaseTagMultiSelector tags;

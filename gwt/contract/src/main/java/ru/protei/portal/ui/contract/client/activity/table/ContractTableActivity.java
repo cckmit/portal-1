@@ -76,7 +76,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         view.getPagerContainer().add(pagerView.asWidget());
 
         calculationTypeModel.setOrganization(MAIN_HOME_COMPANY_NAME);
-        filterView.setCalculationTypesMultiSelectorModel(calculationTypeModel);
+        filterView.setCalculationTypeMultiSelectorModel(calculationTypeModel);
 
         fireEvent(policyService.hasPrivilegeFor(En_Privilege.CONTRACT_CREATE) ?
                 new ActionBarEvents.Add(lang.buttonCreate(), null, UiConstants.ActionBarIdentity.CONTRACT) :
