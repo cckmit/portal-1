@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
@@ -15,6 +16,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.ContactItem;
+import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
@@ -159,12 +161,13 @@ public class BootstrapServiceImpl implements BootstrapService {
     }
 
     private void migrateCommonManagers() {
-        devUnitDAO.getListByCondition("common_manager_id is not null")
-                .forEach(product -> {
-                    CompanyCommonManager companyCommonManager = new CompanyCommonManager();
-                    companyCommonManager.setProductId(product.getId());
-                    companyCommonManager.setManagerId(product.getCommonManagerId());
-                    companyCommonManagerDAO.persist(companyCommonManager);
+        jdbcTemplate.query("select id, common_manager_id from dev_unit where common_manager_id is not null",
+                        (rs, i) -> new Pair<>(rs.getLong("id"), rs.getLong("common_manager_id")))
+                .forEach(pair -> {
+                    CommonManager commonManager = new CommonManager();
+                    commonManager.setProductId(pair.getA());
+                    commonManager.setManagerId(pair.getB());
+                    commonManagerDAO.persist(commonManager);
                 });
     }
 
@@ -629,9 +632,11 @@ public class BootstrapServiceImpl implements BootstrapService {
     @Autowired
     DevUnitDAO devUnitDAO;
     @Autowired
-    CompanyCommonManagerDAO companyCommonManagerDAO;
+    CommonManagerDAO commonManagerDAO;
     @Autowired
     Lang lang;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 }

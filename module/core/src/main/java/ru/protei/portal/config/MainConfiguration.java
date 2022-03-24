@@ -689,8 +689,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public CompanyCommonManagerDAO getCompanyCommonManagerDAO() {
-        return new CompanyCommonManagerDAO_Impl();
+    public CommonManagerDAO getCommonManagerDAO() {
+        return new CommonManagerDAO_Impl();
     }
 
     @Bean

@@ -4,8 +4,8 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="create-company_common_manager-table" author="porubov">
-        <createTable tableName="company_common_manager">
+    <changeSet id="create-common_manager-table" author="porubov">
+        <createTable tableName="common_manager">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
@@ -19,22 +19,22 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="add-company_common_manager-foreign-key" author="porubov">
-        <addForeignKeyConstraint baseTableName="company_common_manager"
+    <changeSet id="add-common_manager-foreign-key" author="porubov">
+        <addForeignKeyConstraint baseTableName="common_manager"
                                  baseColumnNames="product_id"
-                                 constraintName="company_common_manager_product_id_to_product_fk"
+                                 constraintName="common_manager_product_id_to_product_fk"
                                  referencedTableName="dev_unit"
                                  referencedColumnNames="id"
                                  onUpdate="NO ACTION" onDelete="NO ACTION"/>
-        <addForeignKeyConstraint baseTableName="company_common_manager"
+        <addForeignKeyConstraint baseTableName="common_manager"
                                  baseColumnNames="company_id"
-                                 constraintName="company_common_manager_company_id_to_company_fk"
+                                 constraintName="common_manager_company_id_to_company_fk"
                                  referencedTableName="company"
                                  referencedColumnNames="id"
                                  onUpdate="NO ACTION" onDelete="NO ACTION"/>
-        <addForeignKeyConstraint baseTableName="company_common_manager"
+        <addForeignKeyConstraint baseTableName="common_manager"
                                  baseColumnNames="manager_id"
-                                 constraintName="company_common_manager_manager_id_to_person_fk"
+                                 constraintName="common_manager_manager_id_to_person_fk"
                                  referencedTableName="person"
                                  referencedColumnNames="id"
                                  onUpdate="NO ACTION" onDelete="NO ACTION"/>

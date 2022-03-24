@@ -7,8 +7,8 @@ import ru.protei.winter.jdbc.annotations.JdbcId;
 
 import java.util.Objects;
 
-@JdbcEntity(table = "company_common_manager")
-public class CompanyCommonManager {
+@JdbcEntity(table = "common_manager")
+public class CommonManager {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -58,8 +58,8 @@ public class CompanyCommonManager {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CompanyCommonManager devUnit = (CompanyCommonManager) o;
-        return Objects.equals(id, devUnit.id);
+        CommonManager commonManager = (CommonManager) o;
+        return Objects.equals(id, commonManager.id);
     }
 
     @Override
