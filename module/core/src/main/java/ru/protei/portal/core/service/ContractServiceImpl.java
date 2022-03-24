@@ -553,12 +553,17 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        List<CalculationType> calculationTypes = calculationTypeDAO.getAll();
+        if (CollectionUtils.isNotEmpty(calculationTypes)) {
+            return ok(calculationTypes);
+        }
+
         Result<Set<String>> calculationTypesRefKeys =
                 api1CService.getAllCalculationTypes(homeCompanyName)
                             .map(list -> list.stream().map(CalculationType1C::getRefKey)
                                                       .collect(Collectors.toSet()));
 
-        return Result.ok(calculationTypeDAO.getCalculationTypesListBy(calculationTypesRefKeys.getData()));
+        return ok(calculationTypeDAO.getCalculationTypesListBy(calculationTypesRefKeys.getData()));
     }
 
     @Override
