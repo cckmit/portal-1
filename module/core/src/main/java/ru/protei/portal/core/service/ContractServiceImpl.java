@@ -13,7 +13,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
-import ru.protei.portal.core.model.enterprise1c.dto.ContractCalculationType1C;
+import ru.protei.portal.core.model.enterprise1c.dto.CalculationType1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -33,6 +33,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -552,10 +553,12 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        return api1CService.getAllCalculationTypes(homeCompanyName)
-                           .map(list -> list.stream()
-                                    .map(ContractServiceImpl::from1C)
-                                    .collect(toList()));
+        Result<Set<String>> calculationTypesRefKeys =
+                api1CService.getAllCalculationTypes(homeCompanyName)
+                            .map(list -> list.stream().map(CalculationType1C::getRefKey)
+                                                      .collect(Collectors.toSet()));
+
+        return Result.ok(calculationTypeDAO.getCalculationTypesListBy(calculationTypesRefKeys.getData()));
     }
 
     @Override
@@ -859,7 +862,7 @@ public class ContractServiceImpl implements ContractService {
         return contract1C;
     }
 
-    public static CalculationType from1C(ContractCalculationType1C calcType1C) {
+    public static CalculationType from1C(CalculationType1C calcType1C) {
         CalculationType calcType = new CalculationType();
         calcType.setRefKey(calcType1C.getRefKey());
         calcType.setName(calcType1C.getName());

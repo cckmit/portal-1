@@ -2,7 +2,7 @@ package ru.protei.portal.core.client.enterprise1c.api;
 
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
-import ru.protei.portal.core.model.enterprise1c.dto.ContractCalculationType1C;
+import ru.protei.portal.core.model.enterprise1c.dto.CalculationType1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Country1C;
 
@@ -18,7 +18,7 @@ public interface Api1C {
 
     Result<List<Country1C>> getAllCountries(String homeCompanyName);
 
-    Result<List<ContractCalculationType1C>> getAllCalculationTypes(String homeCompanyName);
+    Result<List<CalculationType1C>> getAllCalculationTypes(String homeCompanyName);
 
     Result<Boolean> isResident(Contractor1C contractor, String homeCompanyName);
 

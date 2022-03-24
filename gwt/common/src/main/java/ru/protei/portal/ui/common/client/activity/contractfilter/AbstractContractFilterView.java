@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.CalculationType;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.CalculationTypeModel;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 
 import java.util.List;
@@ -27,6 +28,8 @@ public interface AbstractContractFilterView extends IsWidget {
     void clearFooterStyle();
 
     void initCuratorsSelector(List<String> contractCuratorsDepartmentsIds);
+
+    void setCalculationTypesMultiSelectorModel(CalculationTypeModel model);
 
     HasValue<String> searchString();
 

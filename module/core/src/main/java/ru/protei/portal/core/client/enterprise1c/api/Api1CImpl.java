@@ -123,14 +123,14 @@ public class Api1CImpl implements Api1C{
     }
 
     @Override
-    public Result<List<ContractCalculationType1C>> getAllCalculationTypes(String homeCompanyName) {
+    public Result<List<CalculationType1C>> getAllCalculationTypes(String homeCompanyName) {
         log.debug("getAllCalculationTypesVocabulary()");
 
         if (homeCompanyName == null){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        ContractCalculationType1C calcType1C = new ContractCalculationType1C();
+        CalculationType1C calcType1C = new CalculationType1C();
         calcType1C.setDeletionMark(false);
         return getCalculationTypes(calcType1C, homeCompanyName);
     }
@@ -328,7 +328,7 @@ public class Api1CImpl implements Api1C{
         return url;
     }
 
-    public Result<List<ContractCalculationType1C>> getCalculationTypes(ContractCalculationType1C calculationType1C, String homeCompanyName) {
+    public Result<List<CalculationType1C>> getCalculationTypes(CalculationType1C calculationType1C, String homeCompanyName) {
         log.debug("getCalculationTypes(): calculationType1C={}, homeCompanyName={}", calculationType1C, homeCompanyName);
 
         if (calculationType1C == null || homeCompanyName == null){
@@ -338,12 +338,12 @@ public class Api1CImpl implements Api1C{
         return client.read(buildGetCalculationTypeUrl(calculationType1C, homeCompanyName), Response1C.class)
                 .ifOk(value -> log.info("getCalculationTypes(): OK "))
                 .ifError(result -> log.warn("getCalculationTypes(): Can`t get calculationTypes={}", result))
-                .map(response -> jsonMapper.convertValue(response.getValue(), new TypeReference<List<ContractCalculationType1C>>() {
+                .map(response -> jsonMapper.convertValue(response.getValue(), new TypeReference<List<CalculationType1C>>() {
                 }));
     }
 
-    private String buildGetCalculationTypeUrl(ContractCalculationType1C calculationType1C, String homeCompanyName) {
-        Class<?> clazz = ContractCalculationType1C.class;
+    private String buildGetCalculationTypeUrl(CalculationType1C calculationType1C, String homeCompanyName) {
+        Class<?> clazz = CalculationType1C.class;
         String url = buildCommonUrl(clazz, homeCompanyName);
 
         List<String> fields = fieldsMapper.getFields(clazz);

@@ -65,8 +65,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         dateValidDays.getElement().setAttribute("placeholder", lang.days());
         dateValidDays.setValidationFunction(value -> value == null || value >= 0);
         costWithCurrency.setVatOptions(listOf(Vat20, Vat0, NoVat));
-        calculationType.setHasNullValue(true);
-        calculationType.setDefaultValue(lang.contractCalculationTypeNotDefined());
         ensureDebugIds();
     }
 

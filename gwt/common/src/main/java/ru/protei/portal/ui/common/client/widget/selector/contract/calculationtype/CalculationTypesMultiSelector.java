@@ -8,19 +8,10 @@ import ru.protei.portal.ui.common.client.widget.selector.input.InputPopupMultiSe
 public class CalculationTypesMultiSelector extends InputPopupMultiSelector<CalculationType> {
 
     @Inject
-    public void init(Lang lang, CalculationTypeModel model) {
-        this.model = model;
-        setAsyncModel(model);
+    public void init(Lang lang) {
         setItemRenderer(option -> option == null ? "" : option.getName());
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
         setSearchEnabled(true);
     }
-
-    public void setOrganization(String organization) {
-        model.setOrganization(organization);
-        model.clean();
-    }
-
-    private CalculationTypeModel model;
 }

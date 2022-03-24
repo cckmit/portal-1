@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.dao;
 
-import ru.protei.portal.core.model.ent.CalculationType;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -18,8 +17,6 @@ public interface ContractDAO extends PortalBaseDAO<Contract> {
     List<Contract> getByProjectId(Long projectId);
 
     boolean mergeRefKey(Long contractId, String refKey);
-
-    boolean mergeCalculationType(Long contractId, CalculationType calculationType);
 
     List<Contract> getByCustomerAndProject(String customerName);
 

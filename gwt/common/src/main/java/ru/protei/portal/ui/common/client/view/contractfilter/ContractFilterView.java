@@ -27,6 +27,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.CalculationTypeModel;
 import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.CalculationTypesMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStatesMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypesMultiSelector;
@@ -43,8 +44,6 @@ import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRa
 import java.util.List;
 import java.util.Set;
 
-import static ru.protei.portal.core.model.util.CrmConstants.Company.MAIN_HOME_COMPANY_NAME;
-
 public class ContractFilterView extends Composite implements AbstractContractFilterView {
 
     @Inject
@@ -53,7 +52,6 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         sortField.setType(ModuleType.CONTRACT);
         dateSigningRange.fillSelector(En_DateIntervalType.defaultTypes());
         dateValidRange.fillSelector(En_DateIntervalType.defaultTypes());
-        calculationTypes.setOrganization(MAIN_HOME_COMPANY_NAME);
     }
 
     @Override
@@ -190,6 +188,11 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         EmployeeQuery query = new EmployeeQuery(null, false, true, En_SortField.person_full_name, En_SortDir.ASC);
         query.setDepartmentIds(contractCuratorsDepartmentsIds);
         curators.setEmployeeQuery(query);
+    }
+
+    @Override
+    public void setCalculationTypesMultiSelectorModel(CalculationTypeModel model) {
+        calculationTypes.setAsyncModel(model);
     }
 
     @UiHandler("resetBtn")

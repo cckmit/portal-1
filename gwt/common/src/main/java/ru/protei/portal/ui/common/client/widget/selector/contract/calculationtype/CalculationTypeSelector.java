@@ -6,7 +6,9 @@ import ru.protei.portal.ui.common.client.widget.form.FormPopupSingleSelector;
 public class CalculationTypeSelector extends FormPopupSingleSelector<CalculationType> {
 
     public CalculationTypeSelector() {
-        setItemRenderer(option -> option == null ? defaultValue : option.getName());
         setSearchEnabled(true);
+        setHasNullValue(true);
+        setDefaultValue(lang.contractCalculationTypeNotDefined());
+        setItemRenderer(option -> option == null ? defaultValue : option.getName());
     }
 }

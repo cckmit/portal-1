@@ -18,9 +18,7 @@ public abstract class CalculationTypeModel extends BaseSelectorModel<Calculation
     protected void requestData(LoadingHandler selector, String searchText) {
         controller.getCalculationTypeList(organization, new FluentCallback<List<CalculationType>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
-                .withSuccess(list -> {
-                    updateElements(list, selector);
-                })
+                .withSuccess(list -> updateElements(list, selector))
         );
     }
 

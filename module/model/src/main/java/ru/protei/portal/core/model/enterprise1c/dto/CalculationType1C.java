@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.enterprise1c.annotation.UrlName1C;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @UrlName1C("Catalog_ВидыВзаиморасчетов")
-public class ContractCalculationType1C {
+public class CalculationType1C {
 
     @SpecialParam1C(En_1CParamType.ID)
     @JsonProperty("Ref_Key")
