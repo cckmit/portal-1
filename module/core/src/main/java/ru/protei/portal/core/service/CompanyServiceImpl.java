@@ -50,6 +50,9 @@ public class CompanyServiceImpl implements CompanyService {
     CompanySubscriptionDAO companySubscriptionDAO;
 
     @Autowired
+    CommonManagerDAO commonManagerDAO;
+
+    @Autowired
     ContactItemDAO contactItemDAO;
 
     @Autowired
@@ -315,9 +318,11 @@ public class CompanyServiceImpl implements CompanyService {
 
         contactItemDAO.saveOrUpdateBatch(company.getContactItems());
         jdbcManyRelationsHelper.persist(company, Company.Fields.CONTACT_ITEMS);
+        jdbcManyRelationsHelper.persist(company, "commonManagerList");
 
         updateCompanySubscription(company.getId(), company.getSubscriptions());
         addCommonImportanceLevels(companyId);
+        updateCommonManager(company.getId(), company.getCommonManagerList());
 
         final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackCompanySyncEnabled();
 
@@ -360,6 +365,7 @@ public class CompanyServiceImpl implements CompanyService {
         jdbcManyRelationsHelper.persist(company, Company.Fields.CONTACT_ITEMS);
 
         updateCompanySubscription(company.getId(), company.getSubscriptions());
+        updateCommonManager(company.getId(), company.getCommonManagerList());
 
         if (YOUTRACK_INTEGRATION_ENABLED && StringUtils.isNotEmpty(company.getCname()) && !company.getCname().equals(oldName)) {
             youtrackService.getCompanyByName(oldName)
@@ -477,6 +483,51 @@ public class CompanyServiceImpl implements CompanyService {
 
         return true;
     }
+
+    private boolean updateCommonManager(Long companyId, List<CommonManager> commonManagers ) {
+        log.info( "binding update to linked company common managers for companyId = {}", companyId );
+
+        List<Long> toRemoveNumberIds = commonManagerDAO.getIdsByCompany( companyId );
+        if ( CollectionUtils.isEmpty(commonManagers) && CollectionUtils.isEmpty(toRemoveNumberIds) ) {
+            return true;
+        }
+
+        List<CommonManager> newSubscriptions = new ArrayList<>();
+        List<CommonManager> oldSubscriptions = new ArrayList<>();
+        commonManagers.forEach( commonManager -> {
+            if ( commonManager.getId() == null ) {
+                commonManager.setCompanyId( companyId );
+                newSubscriptions.add( commonManager );
+            } else {
+                oldSubscriptions.add( commonManager );
+            }
+        } );
+
+        toRemoveNumberIds.removeAll( oldSubscriptions.stream().map(CommonManager::getId).collect( Collectors.toList() ) );
+        if ( !CollectionUtils.isEmpty( toRemoveNumberIds ) ) {
+            log.info( "remove company common managers = {} for companyId = {}", toRemoveNumberIds, companyId );
+            int countRemoved = commonManagerDAO.removeByKeys( toRemoveNumberIds );
+            if ( countRemoved != toRemoveNumberIds.size() ) {
+                return false;
+            }
+        }
+
+        if ( !CollectionUtils.isEmpty( newSubscriptions ) ) {
+            log.info( "persist company common managers = {} for companyId = {}", newSubscriptions, companyId );
+            commonManagerDAO.persistBatch( newSubscriptions );
+        }
+
+        if ( !CollectionUtils.isEmpty( oldSubscriptions ) ) {
+            log.info( "merge company common managers = {} for companyId = {}", oldSubscriptions, companyId );
+            int countMerged = commonManagerDAO.mergeBatch( oldSubscriptions );
+            if ( countMerged != oldSubscriptions.size() ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 
     private boolean isValidCompany(Company company) {
         return company != null

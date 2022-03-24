@@ -5,7 +5,9 @@
              xmlns:companycategory='urn:import:ru.protei.portal.ui.company.client.widget.category.buttonselector'
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
              xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
-             xmlns:list="urn:import:ru.protei.portal.ui.company.client.widget.companysubscription.list">
+             xmlns:companyList="urn:import:ru.protei.portal.ui.company.client.widget.companysubscription.list"
+             xmlns:commonManagerList="urn:import:ru.protei.portal.ui.common.client.widget.commonmanager.list"
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -96,7 +98,7 @@
                         </g:HTMLPanel>
                         <div class="row">
                             <div class="form-group col-md-12">
-                                <list:CompanySubscriptionList ui:field="subscriptions"/>
+                                <companyList:CompanySubscriptionList ui:field="subscriptions"/>
                             </div>
                         </div>
                     </div>
@@ -160,6 +162,10 @@
 
                     <tab:pane.TabWidgetPane tabName="{lang.siteFolder}">
                         <g:HTMLPanel ui:field="siteFolderContainer"/>
+                    </tab:pane.TabWidgetPane>
+
+                    <tab:pane.TabWidgetPane tabName="{lang.productCommonManager}">
+                        <commonManagerList:CommonManagerList ui:field="commonManagerList" styleName="form-group col-md-12"/>
                     </tab:pane.TabWidgetPane>
                 </tab:TabWidget>
             </g:HTMLPanel>

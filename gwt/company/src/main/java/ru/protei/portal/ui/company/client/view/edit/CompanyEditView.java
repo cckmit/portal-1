@@ -13,12 +13,14 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.ent.CommonManager;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.commonmanager.list.CommonManagerList;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
@@ -178,6 +180,11 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         return autoOpenIssues;
     }
 
+    @Override
+    public HasValue<List<CommonManager>> commonManagerList() {
+        return commonManagerList;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -301,6 +308,9 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @UiField
     HTMLPanel siteFolderContainer;
+
+    @UiField
+    CommonManagerList commonManagerList;
 
     @Inject
     @UiField
