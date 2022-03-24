@@ -687,7 +687,12 @@ public class MainConfiguration {
     public CaseElapsedTimeApiDAO getCaseElapsedTimeApiDAO() {
         return new CaseElapsedTimeApiDAO_Impl();
     }
-    
+
+    @Bean
+    public CompanyCommonManagerDAO getCompanyCommonManagerDAO() {
+        return new CompanyCommonManagerDAO_Impl();
+    }
+
     @Bean
     public CardSqlBuilder cardSqlBuilder() {
         return new CardSqlBuilder();
