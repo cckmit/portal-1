@@ -37,6 +37,8 @@ public interface AbstractCompanyPreviewView extends IsWidget {
     HasWidgets getContactsContainer();
 
     HasWidgets getSiteFolderContainer();
+    
+    void setCommonManager(String value);
 
     HasVisibility getContactsContainerVisibility();
 

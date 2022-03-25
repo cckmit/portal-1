@@ -80,6 +80,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         SearchResult<Company> sr = companyDAO.getSearchResultByQuery(query);
         jdbcManyRelationsHelper.fill(sr.getResults(), Company.Fields.CONTACT_ITEMS);
+        jdbcManyRelationsHelper.fill(sr.getResults(), Company.Fields.COMMON_MANAGER_LIST);
 
         return ok(sr);
     }
@@ -492,18 +493,18 @@ public class CompanyServiceImpl implements CompanyService {
             return true;
         }
 
-        List<CommonManager> newSubscriptions = new ArrayList<>();
-        List<CommonManager> oldSubscriptions = new ArrayList<>();
+        List<CommonManager> newManagers = new ArrayList<>();
+        List<CommonManager> oldManagers = new ArrayList<>();
         commonManagers.forEach( commonManager -> {
             if ( commonManager.getId() == null ) {
                 commonManager.setCompanyId( companyId );
-                newSubscriptions.add( commonManager );
+                newManagers.add( commonManager );
             } else {
-                oldSubscriptions.add( commonManager );
+                oldManagers.add( commonManager );
             }
         } );
 
-        toRemoveNumberIds.removeAll( oldSubscriptions.stream().map(CommonManager::getId).collect( Collectors.toList() ) );
+        toRemoveNumberIds.removeAll( oldManagers.stream().map(CommonManager::getId).collect( Collectors.toList() ) );
         if ( !CollectionUtils.isEmpty( toRemoveNumberIds ) ) {
             log.info( "remove company common managers = {} for companyId = {}", toRemoveNumberIds, companyId );
             int countRemoved = commonManagerDAO.removeByKeys( toRemoveNumberIds );
@@ -512,15 +513,15 @@ public class CompanyServiceImpl implements CompanyService {
             }
         }
 
-        if ( !CollectionUtils.isEmpty( newSubscriptions ) ) {
-            log.info( "persist company common managers = {} for companyId = {}", newSubscriptions, companyId );
-            commonManagerDAO.persistBatch( newSubscriptions );
+        if ( !CollectionUtils.isEmpty( newManagers ) ) {
+            log.info( "persist company common managers = {} for companyId = {}", newManagers, companyId );
+            commonManagerDAO.persistBatch( newManagers );
         }
 
-        if ( !CollectionUtils.isEmpty( oldSubscriptions ) ) {
-            log.info( "merge company common managers = {} for companyId = {}", oldSubscriptions, companyId );
-            int countMerged = commonManagerDAO.mergeBatch( oldSubscriptions );
-            if ( countMerged != oldSubscriptions.size() ) {
+        if ( !CollectionUtils.isEmpty( oldManagers ) ) {
+            log.info( "merge company common managers = {} for companyId = {}", oldManagers, companyId );
+            int countMerged = commonManagerDAO.mergeBatch( oldManagers );
+            if ( countMerged != oldManagers.size() ) {
                 return false;
             }
         }

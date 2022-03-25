@@ -237,6 +237,10 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         tabWidget.ensureDebugId(DebugIds.COMPANY.TABS);
         tabWidget.setTabNameDebugId(lang.contacts(), DebugIds.COMPANY.TAB_CONTACTS);
         tabWidget.setTabNameDebugId(lang.siteFolder(), DebugIds.COMPANY.TAB_SITE_FOLDERS);
+        tabWidget.setTabNameDebugId(lang.productCommonManager(), DebugIds.COMPANY.TAB_COMMON_MANAGER);
+
+        commonManagerList.ensureDebugId(DebugIds.COMPANY.COMMON_MANAGER);
+
         contactsContainer.ensureDebugId(DebugIds.COMPANY.CONTACTS);
         siteFolderContainer.ensureDebugId(DebugIds.COMPANY.SITE_FOLDERS);
 
@@ -309,7 +313,8 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @UiField
     HTMLPanel siteFolderContainer;
 
-    @UiField
+    @Inject
+    @UiField ( provided = true )
     CommonManagerList commonManagerList;
 
     @Inject

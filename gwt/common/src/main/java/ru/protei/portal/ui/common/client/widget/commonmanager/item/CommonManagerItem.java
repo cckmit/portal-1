@@ -15,15 +15,20 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CommonManager;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
 
 import java.util.Objects;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 
 public class CommonManagerItem
         extends Composite
@@ -34,6 +39,12 @@ public class CommonManagerItem
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+
+        commonManagerModel.setIsPeople(false);
+        commonManagerModel.updateCompanies( commonManager, setOf(CrmConstants.Company.HOME_COMPANY_ID) );
+        commonManager.setAsyncPersonModel( commonManagerModel );
+
+        ensureDebugIds();
     }
 
     @Override
@@ -46,13 +57,18 @@ public class CommonManagerItem
 
     @Override
     public void setValue( CommonManager value ) {
-         if ( value == null ) {
-            value = new CommonManager();
+        if (value.getId() == null) {
+            product.setValue(null);
+            commonManager.setValue(null);
+        } else {
+            if (value.getProductId() != null) {
+                product.setValue(new ProductShortView(value.getProductId(), value.getProductName(), value.getProductState()));
+            } else {
+                product.setValue(null);
+            }
+            commonManager.setValue(new PersonShortView(value.getManagerName(), value.getManagerId()));
         }
         this.value = value;
-
-        product.setValue( new ProductShortView(value.getProductId(), value.getProductName(), value.getProductState() ));
-        commonManager.setValue( new PersonShortView(value.getManagerName(), value.getManagerId()) );
     }
 
     @Override
@@ -103,6 +119,11 @@ public class CommonManagerItem
         return !Objects.equals(value.getProductId(), product.getValue().getId());
     }
 
+    private void ensureDebugIds() {
+        product.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, DebugIds.COMMON_MANAGER.ITEM.PRODUCT);
+        commonManager.getElement().setAttribute(DebugIds.DEBUG_ID_ATTRIBUTE, DebugIds.COMMON_MANAGER.ITEM.MANAGER);
+    }
+
     @Inject
     @UiField(provided = true)
     DevUnitButtonSelector product;
@@ -110,6 +131,9 @@ public class CommonManagerItem
     @Inject
     @UiField(provided = true)
     PersonButtonSelector commonManager;
+
+    @Inject
+    PersonModel commonManagerModel;
 
     private CommonManager value;
 

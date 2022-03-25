@@ -306,5 +306,6 @@ public class Company extends AuditableObject implements EntityOptionSupport {
 
     public interface Fields {
         String CONTACT_ITEMS = "contactItems";
+        String COMMON_MANAGER_LIST = "commonManagerList";
     }
 }

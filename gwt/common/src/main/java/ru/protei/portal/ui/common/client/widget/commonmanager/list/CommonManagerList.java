@@ -8,31 +8,37 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.ent.CommonManager;
 import ru.protei.portal.ui.common.client.widget.commonmanager.item.CommonManagerItem;
-import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class CommonManagerList
         extends Composite
-        implements HasValue<List<CommonManager>>, HasValidable, HasEnabled
+        implements HasValue<List<CommonManager>>
 {
-    public CommonManagerList() {
+    @Inject
+    public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-//        ensureDebugId(DebugIds.PRODUCT.SUBSCRIPTIONS); todo
     }
 
     @Override
     public List<CommonManager> getValue() {
-        return value;
+        return prepareValue();
+    }
+
+    private List<CommonManager> prepareValue() {
+        return stream(modelToView.values()).filter(commonManager -> commonManager.getManagerId() != null)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -43,42 +49,19 @@ public class CommonManagerList
     @Override
     public void setValue( List<CommonManager > values, boolean fireEvents ) {
         clear();
-        this.value = values == null ? new ArrayList<>() : values;
-        value.forEach( this :: makeItemAndFillValue );
+        if (values != null) {
+            values.forEach(this::addItemAndFillValue);
+        }
         addEmptyItem();
 
         if(fireEvents) {
-            ValueChangeEvent.fire( this, this.value );
+            ValueChangeEvent.fire(this, new ArrayList<>(this.modelToView.values()));
         }
-    }
-
-    @Override
-    public void setValid(boolean isValid) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isValid() {
-        return modelToView.keySet().stream().allMatch(CommonManagerItem::isValid);
     }
 
     public void clear() {
         container.clear();
-        value.clear();
         modelToView.clear();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return container.getStyleName().contains("disabled");
-    }
-
-    @Override
-    public void setEnabled(boolean isEnabled) {
-        container.addStyleName(isEnabled ? "" : "disabled");
-        for (CommonManagerItem item : modelToView.keySet()) {
-            item.setEnabled(isEnabled);
-        }
     }
 
     @Override
@@ -86,7 +69,7 @@ public class CommonManagerList
         return addHandler( handler, ValueChangeEvent.getType() );
     }
 
-    private void makeItemAndFillValue( CommonManager commonManager ) {
+    private void addItemAndFillValue(CommonManager commonManager ) {
         CommonManagerItem itemWidget = itemProvider.get();
         itemWidget.setValue( commonManager );
         itemWidget.addCloseHandler( event -> {
@@ -94,22 +77,17 @@ public class CommonManagerList
                 return;
             }
             container.remove( event.getTarget() );
-            CommonManager remove = modelToView.remove( event.getTarget() );
-            value.remove( remove );
         } );
 
-        itemWidget.addAddHandler( event -> {
-            addEmptyItem();
-            value.add( itemWidget.getValue() );
-        } );
+        itemWidget.addAddHandler( event -> addEmptyItem());
 
         modelToView.put( itemWidget, commonManager );
         container.add( itemWidget );
     }
 
     private void addEmptyItem() {
-        CommonManager subscription = new CommonManager();
-        makeItemAndFillValue( subscription );
+        CommonManager manager = new CommonManager();
+        addItemAndFillValue( manager );
     }
 
     @UiField
@@ -117,10 +95,9 @@ public class CommonManagerList
     @Inject
     Provider<CommonManagerItem> itemProvider;
 
-    List<CommonManager> value = new ArrayList<>();
     Map<CommonManagerItem, CommonManager> modelToView = new HashMap<>();
 
-    interface SubscriptionListUiBinder extends UiBinder< HTMLPanel, CommonManagerList> {}
-    private static SubscriptionListUiBinder ourUiBinder = GWT.create( SubscriptionListUiBinder.class );
+    interface CommonManagerListUiBinder extends UiBinder< HTMLPanel, CommonManagerList> {}
+    private static CommonManagerListUiBinder ourUiBinder = GWT.create( CommonManagerListUiBinder.class );
 
 }
