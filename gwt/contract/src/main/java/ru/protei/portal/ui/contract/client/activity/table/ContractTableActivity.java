@@ -27,7 +27,6 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.CalculationTypeModel;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -37,8 +36,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
-import static ru.protei.portal.core.model.util.CrmConstants.Company.MAIN_HOME_COMPANY_NAME;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
 
 public abstract class ContractTableActivity implements AbstractContractTableActivity,
@@ -74,9 +71,6 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         init.parent.clear();
         init.parent.add(view.asWidget());
         view.getPagerContainer().add(pagerView.asWidget());
-
-        calculationTypeModel.setOrganization(MAIN_HOME_COMPANY_NAME);
-        filterView.setCalculationTypeMultiSelectorModel(calculationTypeModel);
 
         fireEvent(policyService.hasPrivilegeFor(En_Privilege.CONTRACT_CREATE) ?
                 new ActionBarEvents.Add(lang.buttonCreate(), null, UiConstants.ActionBarIdentity.CONTRACT) :
@@ -189,7 +183,6 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         query.setTypes(nullIfEmpty(listOfOrNull(filterView.types().getValue())));
         query.setCaseTagsIds(nullIfEmpty(toList(filterView.tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
         query.setStateIds(nullIfEmpty(toList(filterView.states().getValue(), CaseState::getId)));
-        query.setCalculationTypesIds(collectIds((filterView.calculationTypes().getValue())));
         ProductDirectionInfo value = filterView.direction().getValue();
         query.setDirectionId(value == null ? null : value.id);
         query.setKind(filterView.kind().getValue());
@@ -243,8 +236,6 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     private AbstractPagerView pagerView;
     @Inject
     ConfigStorage configStorage;
-    @Inject
-    CalculationTypeModel calculationTypeModel;
 
     private Integer scrollTo = 0;
     private Boolean preScroll = false;

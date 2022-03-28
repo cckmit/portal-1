@@ -550,20 +550,24 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public Result<List<CalculationType>> getCalculationTypeList(AuthToken token, String homeCompanyName) {
         if (homeCompanyName == null) {
-            return error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.ORGANIZATION_REQUIRED);
         }
 
-        List<CalculationType> calculationTypes = calculationTypeDAO.getAll();
-        if (CollectionUtils.isNotEmpty(calculationTypes)) {
-            return ok(calculationTypes);
+        Result<List<CalculationType1C>> result = api1CService.getAllCalculationTypes(homeCompanyName);
+        if (result.isError()) {
+            log.warn("getCalculationTypeList(): failed to get calculation types from 1c with " +
+                     "homeCompanyName = {} | result = {}", homeCompanyName, result);
+
+            List<CalculationType> calculationTypes = calculationTypeDAO.getAll();
+            return CollectionUtils.isNotEmpty(calculationTypes) ? ok(calculationTypes)
+                                                                : error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        Result<Set<String>> calculationTypesRefKeys =
-                api1CService.getAllCalculationTypes(homeCompanyName)
-                            .map(list -> list.stream().map(CalculationType1C::getRefKey)
-                                                      .collect(Collectors.toSet()));
+        Result<Set<String>> calculationTypeRefKeys =
+                result.map(list -> list.stream().map(CalculationType1C::getRefKey)
+                                                .collect(Collectors.toSet()));
 
-        return ok(calculationTypeDAO.getCalculationTypesListBy(calculationTypesRefKeys.getData()));
+        return ok(calculationTypeDAO.getCalculationTypeListByRefKeys(calculationTypeRefKeys.getData()));
     }
 
     @Override
@@ -701,7 +705,7 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        CalculationType calcType = calculationTypeDAO.getCalculationTypeBy(calculationType.getRefKey());
+        CalculationType calcType = calculationTypeDAO.getCalculationTypeByRefKey(calculationType.getRefKey());
         if (calcType == null) {
             calculationTypeDAO.persist(calculationType);
         } else {

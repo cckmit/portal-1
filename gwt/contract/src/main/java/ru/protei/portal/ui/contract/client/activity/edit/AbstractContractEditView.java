@@ -86,6 +86,4 @@ public interface AbstractContractEditView extends IsWidget {
     HasWidgets expenditureContractsContainer();
 
     HasVisibility expenditureContractsVisibility();
-
-    void setContractCalculationTypeSelectorModel(CalculationTypeModel model);
 }

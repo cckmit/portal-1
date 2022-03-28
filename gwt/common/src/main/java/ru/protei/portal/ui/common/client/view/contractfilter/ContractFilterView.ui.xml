@@ -47,10 +47,6 @@
                 <contract:state.ContractStatesMultiSelector ui:field="states"
                                               header="{lang.contractState}" addStyleNames="form-group col-md-4 resize-md-12"/>
 
-                <contract:calculationtype.CalculationTypeMultiSelector ui:field="calculationTypes"
-                                                                       header="{lang.contractCalculationType}"
-                                                                       addStyleNames="form-group col-md-4 resize-md-12"/>
-
                 <casetag:CaseTagMultiSelector ui:field="tags"
                                               caseType="CONTRACT"
                                               header="{lang.tags}"

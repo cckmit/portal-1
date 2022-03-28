@@ -13,7 +13,7 @@ import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.quer
 public class CalculationTypeDAO_Impl extends PortalBaseJdbcDAO<CalculationType> implements CalculationTypeDAO {
 
     @Override
-    public CalculationType getCalculationTypeBy(String refKey) {
+    public CalculationType getCalculationTypeByRefKey(String refKey) {
         Query query = query().asCondition()
                              .and("ref_key").equal(refKey)
                              .asQuery();
@@ -22,7 +22,7 @@ public class CalculationTypeDAO_Impl extends PortalBaseJdbcDAO<CalculationType> 
     }
 
     @Override
-    public List<CalculationType> getCalculationTypesListBy(Set<String> refKeys) {
+    public List<CalculationType> getCalculationTypeListByRefKeys(Set<String> refKeys) {
         return getListByCondition("calculation_type.ref_key in " + makeInArg(refKeys));
     }
 }

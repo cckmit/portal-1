@@ -243,11 +243,6 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                 condition.append(" and contract.project_id = ?");
                 args.add(query.getProjectId());
             }
-
-            if (isNotEmpty(query.getCalculationTypesIds())) {
-                String inArg = makeInArg(query.getCalculationTypesIds(), s -> "'" + s + "'");
-                condition.append(" AND contract.calculation_type_id IN ").append(inArg);
-            }
         }));
     }
 }

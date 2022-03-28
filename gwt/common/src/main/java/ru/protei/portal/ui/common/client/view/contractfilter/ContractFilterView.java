@@ -27,8 +27,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.CalculationTypeModel;
-import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.CalculationTypeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStatesMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypesMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contractor.multicontractor.MultiContractorSelector;
@@ -70,7 +68,6 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         managers.setValue(null);
         direction.setValue(null);
         resetStates();
-        calculationTypes.setValue(null);
         types.setValue(null);
         tags.setValue(null);
         kind.setValue(true);
@@ -137,11 +134,6 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     }
 
     @Override
-    public HasValue<Set<CalculationType>> calculationTypes() {
-        return calculationTypes;
-    }
-
-    @Override
     public HasValue<ProductDirectionInfo> direction() {
         return direction;
     }
@@ -190,11 +182,6 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         curators.setEmployeeQuery(query);
     }
 
-    @Override
-    public void setCalculationTypeMultiSelectorModel(CalculationTypeModel model) {
-        calculationTypes.setAsyncModel(model);
-    }
-
     @UiHandler("resetBtn")
     public void onResetClicked(ClickEvent event) {
         if (activity != null) {
@@ -240,11 +227,6 @@ public class ContractFilterView extends Composite implements AbstractContractFil
 
     @UiHandler("states")
     public void onStateChanged(ValueChangeEvent<Set<CaseState>> event) {
-        restartChangeTimer();
-    }
-
-    @UiHandler("calculationTypes")
-    public void onCalculationTypeChanged(ValueChangeEvent<Set<CalculationType>> event) {
         restartChangeTimer();
     }
 
@@ -316,9 +298,6 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @Inject
     @UiField(provided = true)
     ContractStatesMultiSelector states;
-    @Inject
-    @UiField(provided = true)
-    CalculationTypeMultiSelector calculationTypes;
     @Inject
     @UiField(provided = true)
     CaseTagMultiSelector tags;

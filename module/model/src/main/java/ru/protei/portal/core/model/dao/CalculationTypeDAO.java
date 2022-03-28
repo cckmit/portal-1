@@ -7,7 +7,7 @@ import java.util.Set;
 
 public interface CalculationTypeDAO extends PortalBaseDAO<CalculationType> {
 
-    CalculationType getCalculationTypeBy(String refKey);
+    CalculationType getCalculationTypeByRefKey(String refKey);
 
-    List<CalculationType> getCalculationTypesListBy(Set<String> refKeys);
+    List<CalculationType> getCalculationTypeListByRefKeys(Set<String> refKeys);
 }

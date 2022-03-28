@@ -26,8 +26,6 @@ public class ContractQuery extends BaseQuery {
 
     private List<Long> stateIds;
 
-    private List<Long> calculationTypesIds;
-
     private List<Long> managerIds;
 
     private List<Long> contractorIds;
@@ -118,14 +116,6 @@ public class ContractQuery extends BaseQuery {
         this.stateIds = stateIds;
     }
 
-    public List<Long> getCalculationTypesIds() {
-        return calculationTypesIds;
-    }
-
-    public void setCalculationTypesIds(List<Long> calculationTypesIds) {
-        this.calculationTypesIds = calculationTypesIds;
-    }
-
     public List<Long> getOrganizationIds() {
         return organizationIds;
     }
@@ -200,8 +190,7 @@ public class ContractQuery extends BaseQuery {
                 isNotEmpty(curatorIds) ||
                 isNotEmpty(organizationIds) ||
                 isNotEmpty(parentContractIds) ||
-                isNotEmpty(refKeys) ||
-                isNotEmpty(calculationTypesIds);
+                isNotEmpty(refKeys);
     }
 
     @Override
@@ -223,7 +212,6 @@ public class ContractQuery extends BaseQuery {
                 ", openStateDate=" + openStateDate +
                 ", deliveryNumber=" + deliveryNumber +
                 ", projectId=" + projectId +
-                ", calculationTypes=" + calculationTypesIds +
                 '}';
     }
 }

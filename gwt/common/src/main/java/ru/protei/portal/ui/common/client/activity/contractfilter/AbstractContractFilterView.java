@@ -29,8 +29,6 @@ public interface AbstractContractFilterView extends IsWidget {
 
     void initCuratorsSelector(List<String> contractCuratorsDepartmentsIds);
 
-    void setCalculationTypeMultiSelectorModel(CalculationTypeModel model);
-
     HasValue<String> searchString();
 
     HasValue<En_SortField> sortField();
@@ -48,8 +46,6 @@ public interface AbstractContractFilterView extends IsWidget {
     HasValue<Set<CaseTag>> tags();
 
     HasValue<Set<CaseState>> states();
-
-    HasValue<Set<CalculationType>> calculationTypes();
 
     HasValue<ProductDirectionInfo> direction();
 

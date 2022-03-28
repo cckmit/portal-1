@@ -255,8 +255,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.dateExecution().setValue(contract.getDateExecution());
         view.dateEndWarranty().setValue(contract.getDateEndWarranty());
         view.calculationType().setValue(contract.getCalculationType());
-        calculationTypeModel.setOrganization(defaultString(contract.getOrganizationName(), MAIN_HOME_COMPANY_NAME));
-        view.setContractCalculationTypeSelectorModel(calculationTypeModel);
 
         if (contract.getProjectId() == null) {
             view.project().setValue(null);
@@ -328,8 +326,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
             view.contractor().setValue(null);
             fireEvent(new NotifyEvents.Show(lang.contractContractorDropped(), NotifyEvents.NotifyType.INFO));
         }
-
-        calculationTypeModel.setOrganization(organizationDisplayText);
     }
 
     private void showValidationError() {
@@ -457,8 +453,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     DefaultErrorHandler defaultErrorHandler;
     @Inject
     ConfigStorage configStorage;
-    @Inject
-    CalculationTypeModel calculationTypeModel;
 
     private Contract contract;
     private AbstractCaseTagListActivity tagListActivity;

@@ -211,6 +211,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Override
     public void setOrganization(String organization) {
         contractorWidget.setOrganization(organization);
+        calculationType.setOrganization(organization);
     }
 
     @Override
@@ -236,11 +237,6 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Override
     public HasVisibility expenditureContractsVisibility() {
         return tabs.tabVisibility(lang.contractListOfExpenditureHeader());
-    }
-
-    @Override
-    public void setContractCalculationTypeSelectorModel(CalculationTypeModel model) {
-        calculationType.setAsyncModel(model);
     }
 
     @UiHandler("saveButton")

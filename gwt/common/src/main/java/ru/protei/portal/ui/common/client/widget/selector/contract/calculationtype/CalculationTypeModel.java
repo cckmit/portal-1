@@ -12,12 +12,18 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
 
+import static ru.protei.portal.core.model.dict.En_ResultStatus.ORGANIZATION_REQUIRED;
+
 public abstract class CalculationTypeModel extends BaseSelectorModel<CalculationType> implements Activity {
 
     @Override
     protected void requestData(LoadingHandler selector, String searchText) {
         controller.getCalculationTypeList(organization, new FluentCallback<List<CalculationType>>()
-                .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR)))
+                .withError((throwable, defaultErrorHandler, status) -> {
+                    String errorMessage = status.equals(ORGANIZATION_REQUIRED) ? lang.errOrganizationRequired()
+                                                                               : lang.errGetList();
+                    fireEvent(new NotifyEvents.Show(errorMessage, NotifyEvents.NotifyType.ERROR));
+                })
                 .withSuccess(list -> updateElements(list, selector))
         );
     }
