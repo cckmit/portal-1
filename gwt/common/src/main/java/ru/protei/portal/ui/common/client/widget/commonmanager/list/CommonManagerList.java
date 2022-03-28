@@ -14,10 +14,7 @@ import com.google.inject.Provider;
 import ru.protei.portal.core.model.ent.CommonManager;
 import ru.protei.portal.ui.common.client.widget.commonmanager.item.CommonManagerItem;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
@@ -77,17 +74,39 @@ public class CommonManagerList
                 return;
             }
             container.remove( event.getTarget() );
+            modelToView.remove( event.getTarget() );
+            setProductFilter();
         } );
 
-        itemWidget.addAddHandler( event -> addEmptyItem());
+        itemWidget.addAddHandler( event -> {
+            if (!hasEmptyValue()) {
+                addEmptyItem();
+            }
+        });
 
         modelToView.put( itemWidget, commonManager );
         container.add( itemWidget );
+
+        setProductFilter();
     }
 
     private void addEmptyItem() {
         CommonManager manager = new CommonManager();
         addItemAndFillValue( manager );
+    }
+
+    private void setProductFilter() {
+        Set<Long> productIds = makeProductId();
+        modelToView.keySet().forEach(item -> item.setProductFilter(productIds));
+    }
+
+    private Set<Long> makeProductId() {
+        return stream(modelToView.values()).map(CommonManager::getProductId).collect(Collectors.toSet());
+    }
+
+    private boolean hasEmptyValue() {
+        return stream(modelToView.values())
+                .anyMatch(commonManager -> commonManager.getManagerId() == null && commonManager.getProductId() == null);
     }
 
     @UiField

@@ -27,6 +27,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.PersonModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
 
 import java.util.Objects;
+import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 
@@ -92,6 +93,10 @@ public class CommonManagerItem
         return addHandler( handler, AddEvent.getType() );
     }
 
+    public void setProductFilter(Set<Long> productIds) {
+        product.setFilter(product -> !productIds.contains(product.getId()));
+    }
+
     @UiHandler( "product" )
     public void onProductChanged(ValueChangeEvent<ProductShortView> event) {
         if ( product.getValue() == null ) {
@@ -100,15 +105,15 @@ public class CommonManagerItem
         }
 
         if ( isChangedProduct() ) {
-            AddEvent.fire( this );
-
             value.setProductId( product.getValue().getId() );
+            
+            AddEvent.fire( this );
         }
     }
 
     @UiHandler( "commonManager" )
     public void onCommonManagerChanged(ValueChangeEvent<PersonShortView> event) {
-        value.setManagerId( commonManager.getValue().getId() );
+        value.setManagerId( commonManager.getValue() != null ? commonManager.getValue().getId() : null );
     }
 
     public boolean isValid(){
@@ -116,7 +121,7 @@ public class CommonManagerItem
     }
 
     private boolean isChangedProduct() {
-        return !Objects.equals(value.getProductId(), product.getValue().getId());
+        return !Objects.equals(value.getProductId(), product.getValue() != null ? product.getValue().getId() : null);
     }
 
     private void ensureDebugIds() {

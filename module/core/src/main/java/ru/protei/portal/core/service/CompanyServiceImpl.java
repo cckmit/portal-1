@@ -319,8 +319,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         contactItemDAO.saveOrUpdateBatch(company.getContactItems());
         jdbcManyRelationsHelper.persist(company, Company.Fields.CONTACT_ITEMS);
-        jdbcManyRelationsHelper.persist(company, "commonManagerList");
-
+        jdbcManyRelationsHelper.persist(company, Company.Fields.COMMON_MANAGER_LIST);
         updateCompanySubscription(company.getId(), company.getSubscriptions());
         addCommonImportanceLevels(companyId);
         updateCommonManager(company.getId(), company.getCommonManagerList());

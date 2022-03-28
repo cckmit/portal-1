@@ -6,34 +6,34 @@ import ru.protei.portal.core.model.util.sqlcondition.Condition;
 
 import java.util.List;
 
+import static ru.protei.portal.core.model.ent.CommonManager.Columns.*;
 import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
 
 
 public class CommonManagerDAO_Impl extends PortalBaseJdbcDAO<CommonManager> implements CommonManagerDAO {
     @Override
     public void removeByProduct(Long productId) {
-        Condition condition = condition().and("product_id").equal(productId)
-                .and("company_id").isNull(true);
+        Condition condition = condition().and(PRODUCT_ID).equal(productId)
+                .and(getTableName() + "." + COMPANY_ID).isNull(true);
         removeByCondition(condition.getSqlCondition(), condition.getSqlParameters());
     }
 
     @Override
     public CommonManager getByProduct(Long productId) {
-        Condition condition = condition().and("product_id").equal(productId)
-                .and("company_id").isNull(true);
+        Condition condition = condition().and(PRODUCT_ID).equal(productId)
+                .and(getTableName() + "." + COMPANY_ID).isNull(true);
         return getByCondition(condition.getSqlCondition(), condition.getSqlParameters());
     }
 
     @Override
     public void removeByCompany(Long companyId) {
         Condition condition = condition()
-                .and("company_id").equal(companyId);
+                .and(getTableName() + "." + COMPANY_ID).equal(companyId);
         removeByCondition(condition.getSqlCondition(), condition.getSqlParameters());
     }
 
     @Override
     public List<Long> getIdsByCompany(Long companyId) {
-        StringBuilder sql = new StringBuilder("select id from ").append(getTableName()).append( " where company_id=?" );
-        return jdbcTemplate.queryForList(sql.toString(), Long.class, companyId);
+        return jdbcTemplate.queryForList("select id from " + getTableName() + " where " + COMPANY_ID + "=?", Long.class, companyId);
     }
 }

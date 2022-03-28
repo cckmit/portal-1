@@ -11,24 +11,24 @@ public class CommonManager implements Serializable {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name="product_id")
+    @JdbcColumn(name= Columns.PRODUCT_ID)
     private Long productId;
 
-    @JdbcJoinedColumn(localColumn = "product_id", remoteColumn = "id",
+    @JdbcJoinedColumn(localColumn = Columns.PRODUCT_ID, remoteColumn = "id",
             mappedColumn = "UNIT_NAME", table = "dev_unit", sqlTableAlias = "du")
     private String productName;
 
-    @JdbcJoinedColumn(localColumn = "product_id", remoteColumn = "id",
+    @JdbcJoinedColumn(localColumn = Columns.PRODUCT_ID, remoteColumn = "id",
             mappedColumn = "UNIT_STATE", table = "dev_unit", sqlTableAlias = "du")
     private int productState;
 
-    @JdbcColumn(name="company_id")
+    @JdbcColumn(name= Columns.COMPANY_ID)
     private Long companyId;
     
-    @JdbcColumn(name="manager_id")
+    @JdbcColumn(name= Columns.MANAGER_ID)
     private Long managerId;
 
-    @JdbcJoinedColumn(localColumn = "manager_id", remoteColumn = "id",
+    @JdbcJoinedColumn(localColumn = Columns.MANAGER_ID, remoteColumn = "id",
             mappedColumn = "displayname", table = "person", sqlTableAlias = "p")
     private String managerName;
 
@@ -101,5 +101,11 @@ public class CommonManager implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+    
+    public interface Columns {
+        String PRODUCT_ID = "product_id";
+        String COMPANY_ID = "company_id";
+        String MANAGER_ID = "manager_id";
     }
 }

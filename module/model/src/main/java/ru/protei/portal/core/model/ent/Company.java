@@ -68,7 +68,7 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     @JdbcColumn(name = "auto_open_issue")
     private Boolean autoOpenIssue;
 
-    @JdbcOneToMany(table = "common_manager", localColumn = "id", remoteColumn = "company_id" )
+    @JdbcOneToMany(table = "common_manager", localColumn = "id", remoteColumn = CommonManager.Columns.COMPANY_ID)
     private List<CommonManager> commonManagerList;
 
     public static Company fromEntityOption(EntityOption entityOption){
