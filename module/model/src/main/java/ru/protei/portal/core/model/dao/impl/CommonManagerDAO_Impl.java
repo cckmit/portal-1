@@ -19,9 +19,14 @@ public class CommonManagerDAO_Impl extends PortalBaseJdbcDAO<CommonManager> impl
     }
 
     @Override
-    public CommonManager getByProduct(Long productId) {
-        Condition condition = condition().and(PRODUCT_ID).equal(productId)
-                .and(getTableName() + "." + COMPANY_ID).isNull(true);
+    public CommonManager getByProductAndCompany(Long productId, Long companyId) {
+        Condition condition = condition();
+        condition = (productId != null) ?
+            condition.and(PRODUCT_ID).equal(productId) :
+            condition.and(PRODUCT_ID).isNull(true);
+        condition = (companyId != null) ?
+                condition.and(getTableName() + "." + COMPANY_ID).equal(companyId) :
+                condition.and(getTableName() + "." + COMPANY_ID).isNull(true);
         return getByCondition(condition.getSqlCondition(), condition.getSqlParameters());
     }
 

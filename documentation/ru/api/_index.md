@@ -440,8 +440,8 @@ Content-Type: application/json
 Cache-Control: no-cache
     
 {
-  "from": "2022-02-23",
-  "to": "2021-03-08",
+  "from": "2021-03-08",
+  "to": "2022-02-23",
   "productIds": [ 1, 2, 3 ],
   "companyIds": [ 11, 22, 33 ],
   "authorIds": [ 7777 ],

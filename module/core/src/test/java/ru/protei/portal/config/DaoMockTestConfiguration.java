@@ -2,9 +2,11 @@ package ru.protei.portal.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dao.impl.*;
+import ru.protei.portal.core.model.dao.impl.CardBatchSqlBuilder;
+import ru.protei.portal.core.model.dao.impl.CardSqlBuilder;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static org.mockito.Mockito.mock;
@@ -14,6 +16,11 @@ public class DaoMockTestConfiguration {
     @Bean
     public JdbcManyRelationsHelper getJdbcManyRelationsHelper(){
         return mock( JdbcManyRelationsHelper.class);
+    }
+
+    @Bean
+    public JdbcTemplate getJdbcTemplate(){
+        return mock( JdbcTemplate.class);
     }
 
     @Bean
@@ -518,5 +525,10 @@ public class DaoMockTestConfiguration {
     @Bean
     public CaseElapsedTimeApiDAO getCaseElapsedTimeApiDAO() {
         return mock(CaseElapsedTimeApiDAO.class);
+    }
+
+    @Bean
+    public CommonManagerDAO getCommonManagerDAO() {
+        return mock(CommonManagerDAO.class);
     }
 }

@@ -93,7 +93,7 @@ public class CommonManagerItem
         return addHandler( handler, AddEvent.getType() );
     }
 
-    public void setProductFilter(Set<Long> productIds) {
+    public void setSelectedProductFilter(Set<Long> productIds) {
         product.setFilter(product -> !productIds.contains(product.getId()));
     }
 

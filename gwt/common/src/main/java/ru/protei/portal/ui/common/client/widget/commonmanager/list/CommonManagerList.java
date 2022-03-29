@@ -97,7 +97,7 @@ public class CommonManagerList
 
     private void setProductFilter() {
         Set<Long> productIds = makeProductId();
-        modelToView.keySet().forEach(item -> item.setProductFilter(productIds));
+        modelToView.keySet().forEach(item -> item.setSelectedProductFilter(productIds));
     }
 
     private Set<Long> makeProductId() {

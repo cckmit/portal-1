@@ -6,14 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.model.dao.CaseObjectMetaDAO;
+import ru.protei.portal.core.model.dao.CommonManagerDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dao.PersonShortViewDAO;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseObjectMeta;
+import ru.protei.portal.core.model.ent.CommonManager;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.CaseService;
 
 import java.net.Inet4Address;
@@ -59,13 +59,23 @@ public class AutoOpenCaseServiceTaskHandlerImpl implements AutoOpenCaseTaskHandl
             return;
         }
 
-        PersonShortView commonManager = personShortViewDAO.getCommonManagerByProductId(caseMeta.getProductId());
+        CommonManager commonManager = commonManagerDAO.getByProductAndCompany(caseMeta.getProductId(), caseMeta.getInitiatorCompany().getId());
+        if (commonManager == null) {
+            log.error("No set common manager for company id = {}, product id = {}, case id = {}", caseMeta.getProduct(), caseMeta.getInitiatorCompanyId(), caseId);
+            commonManager = commonManagerDAO.getByProductAndCompany(null, caseMeta.getInitiatorCompany().getId());
+        }
+        
+        if (commonManager == null) {
+            log.error("No set common manager for company id = {}, case id = {}", caseMeta.getInitiatorCompanyId(), caseId);
+            commonManager = commonManagerDAO.getByProductAndCompany(caseMeta.getProductId(), null);
+        }
+
         if (commonManager == null) {
             log.error("No set common manager, case id = {}", caseId);
             return;
         }
 
-        caseMeta.setManager(commonManager);
+        caseMeta.setManagerId(commonManager.getManagerId());
         caseMeta.setStateId(CrmConstants.State.OPENED);
         caseMeta.setStateName(null);
 
@@ -74,7 +84,7 @@ public class AutoOpenCaseServiceTaskHandlerImpl implements AutoOpenCaseTaskHandl
         log.info("End process case id = {}, manager id = {}", caseId, commonManager.getId());
     }
 
-    private AuthToken createFakeToken( PersonShortView commonManager) {
+    private AuthToken createFakeToken( CommonManager commonManager) {
         AuthToken token = new AuthToken("0");
         try {
             token.setIp( Inet4Address.getLocalHost().getHostAddress());
@@ -83,7 +93,7 @@ public class AutoOpenCaseServiceTaskHandlerImpl implements AutoOpenCaseTaskHandl
         }
         token.setUserLoginId(0L);
         token.setPersonId(commonManager.getId());
-        token.setPersonDisplayShortName(commonManager.getDisplayShortName());
+        token.setPersonDisplayShortName(commonManager.getManagerName());
         token.setCompanyId(commonManager.getCompanyId());
         token.setCompanyAndChildIds(null);
         Set<UserRole> defaultRoles = userRoleDAO.getDefaultManagerRoles();
@@ -97,7 +107,7 @@ public class AutoOpenCaseServiceTaskHandlerImpl implements AutoOpenCaseTaskHandl
     @Autowired
     PersonDAO personDAO;
     @Autowired
-    PersonShortViewDAO personShortViewDAO;
+    CommonManagerDAO commonManagerDAO;
     @Autowired
     CaseService caseService;
 

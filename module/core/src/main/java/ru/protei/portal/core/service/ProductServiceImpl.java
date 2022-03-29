@@ -391,7 +391,7 @@ public class ProductServiceImpl implements ProductService {
             commonManagerDAO.removeByProduct(product.getId());
             return;
         }
-        CommonManager commonManager = commonManagerDAO.getByProduct(product.getId());
+        CommonManager commonManager = commonManagerDAO.getByProductAndCompany(product.getId(), null);
         if (commonManager == null) {
             commonManager = new CommonManager();
             commonManager.setProductId(product.getId());

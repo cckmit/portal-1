@@ -710,7 +710,12 @@ public class JiraTestConfiguration {
     public CaseElapsedTimeApiDAO getCaseElapsedTimeApiDAO() {
         return new CaseElapsedTimeApiDAO_Impl();
     }
-    
+
+    @Bean
+    public CommonManagerDAO getCommonManagerDAO() {
+        return new CommonManagerDAO_Impl();
+    }
+
     /* DAO converters */
 
     @Bean
