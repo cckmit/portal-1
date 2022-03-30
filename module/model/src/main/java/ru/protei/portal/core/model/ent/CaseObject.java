@@ -664,6 +664,8 @@ public class CaseObject extends AuditableObject {
                 ", info='" + info + '\'' +
                 ", stateId=" + stateId +
                 ", stateName='" + stateName + '\'' +
+                ", stateColor='" + stateColor + '\'' +
+                ", stateInfo='" + stateInfo + '\'' +
                 ", impLevel=" + impLevel +
                 ", importanceCode='" + importanceCode + '\'' +
                 ", creatorId=" + creatorId +
@@ -695,6 +697,7 @@ public class CaseObject extends AuditableObject {
                 ", managerCompanyId=" + managerCompanyId +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", plans=" + plans +
+                ", autoClose=" + autoClose +
                 ", deadline=" + deadline +
                 ", workTrigger=" + workTrigger +
                 ", timeElapsedType=" + timeElapsedType +

@@ -1,0 +1,1 @@
+${case_object_closed}<#noparse> [CRM-${caseNumber?c}]</#noparse>

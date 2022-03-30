@@ -209,6 +209,39 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
+    @Override
+    public String getCaseObjectClosedNotificationSubject(Long caseNumber) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put("caseNumber", caseNumber);
+
+        return getText(model, "case.object.closed.subject.%s.ftl");
+    }
+
+    @Override
+    public String getCaseObjectClosedNotificationBody(Long caseObjectId, Long caseNumber, String urlTemplate, String recipientName) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put("caseNumber", caseNumber);
+        model.put("linkToCaseObject", String.format(urlTemplate, caseObjectId));
+
+        return getText(model, "case.object.closed.body.%s.ftl");
+    }
+
+    @Override
+    public String getCaseObjectDeadlineExpireNotificationSubject(Long caseNumber) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put("caseNumber", caseNumber);
+
+        return getText(model, "case.object.deadline.expire.subject.%s.ftl");
+    }
+
+    @Override
+    public String getCaseObjectDeadlineExpireNotificationBody(Long caseObjectId, Long caseNumber, String urlTemplate, String recipientName) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put("caseNumber", caseNumber);
+        model.put("linkToCaseObject", String.format(urlTemplate, caseObjectId));
+
+        return getText(model, "case.object.deadline.expire.body.%s.ftl");
+    }
 
     @Override
     public String getEmployeeRegistrationEmployeeFeedbackEmailNotificationBody( String employeeName ) throws IOException, TemplateException {

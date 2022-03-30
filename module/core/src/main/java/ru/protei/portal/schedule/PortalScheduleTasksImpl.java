@@ -14,6 +14,7 @@ import ru.protei.portal.core.event.SchedulePauseTimeOnStartupEvent;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.*;
+import ru.protei.portal.core.service.autoclosecase.AutoCloseCaseService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.service.events.EventPublisherService;
@@ -71,6 +72,10 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         scheduler.schedule(this::remindAboutEmployeeProbationPeriod, new CronTrigger( "0 10 11 * * ?"));
         // Ежедневно в 11:14
         scheduler.schedule(this::notifyAboutContractDates, new CronTrigger("0 14 11 * * ?"));
+        // Ежедневно в 14:00
+        scheduler.schedule(this::processAutoCloseByDeadLine, new CronTrigger("0 00 14 * * ?"));
+        // Ежедневно в 14:00
+        scheduler.schedule(this::notifyAboutDeadlineExpire, new CronTrigger("0 00 14 * * ?"));
         // at 10:00:00 am every day
         scheduler.schedule(this::processPersonCaseFilterMailNotification, new CronTrigger( "0 0 10 * * ?"));
         // at 08:00:00 am every day
@@ -191,6 +196,18 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
         workerEntryService.updatePositionByDate(new Date());
     }
 
+    @Override
+    public void processAutoCloseByDeadLine() {
+        log.info("processAutoCloseByDeadLine");
+        autoCloseCaseService.processAutoCloseByDeadLine();
+    }
+
+    @Override
+    public void notifyAboutDeadlineExpire() {
+        log.info("notifyAboutDeadlineExpire");
+        autoCloseCaseService.notifyAboutDeadlineExpire();
+    }
+
     private boolean isNotConfiguredSystemId() {
         if (HelperFunc.isEmpty(config.data().getCommonConfig().getSystemId())) {
             log.warn("reports is not started because system.id not set in configuration");
@@ -233,6 +250,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     EmployeeRegistrationYoutrackSynchronizer employeeRegistrationYoutrackSynchronizer;
     @Autowired
     WorkerEntryService workerEntryService;
+    @Autowired
+    AutoCloseCaseService autoCloseCaseService;
 
     private static AtomicBoolean isPortalStarted = new AtomicBoolean(false);
     private static AtomicInteger contextRefreshedEventCounter = new AtomicInteger(0);
