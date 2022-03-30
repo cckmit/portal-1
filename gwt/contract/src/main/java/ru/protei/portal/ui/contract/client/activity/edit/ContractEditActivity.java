@@ -116,7 +116,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     public void onOrganizationChanged() {
         EntityOption organization = view.organization().getValue();
         setOrganization(organization);
-        view.calculationTypeEnabled().setEnabled(true);
     }
 
     @Override
@@ -320,6 +319,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
                 : null;
         view.organization().setValue(organization);
         view.setOrganization(organizationDisplayText);
+        view.calculationTypeEnabled().setEnabled(hasOrganization);
         view.contractorEnabled().setEnabled(hasOrganization);
         if (view.contractor().getValue() != null) {
             view.contractor().setValue(null);
