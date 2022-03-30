@@ -82,13 +82,13 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaNotifiers = event.metaNotifiers;
         slaList = new ArrayList<>();
 
-        metaView.setAutoCLoseVisible(!isCustomer());
-        metaView.autoCloseEnabled().setEnabled(CrmConstants.State.TEST_CUST == meta.getStateId());
-
         fillView( event.meta );
         fillNotifiersView( event.metaNotifiers );
         fillJiraView( event.metaJira );
         fillPlansView(meta.getPlans());
+
+        metaView.setAutoCLoseVisible(!isCustomer());
+        metaView.autoCloseEnabled().setEnabled(CrmConstants.State.TEST_CUST == meta.getStateId());
 
         if (!validateCaseMeta(meta)){
             fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.INFO));
@@ -140,9 +140,13 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
 
         meta.setStateId(caseState.getId());
+
         if (CrmConstants.State.TEST_CUST != meta.getStateId()) {
             meta.setAutoClose(false);
             meta.setDeadline(null);
+            metaView.autoCloseEnabled().setEnabled(false);
+        } else {
+            metaView.autoCloseEnabled().setEnabled(true);
         }
 
         meta.setStateName(caseState.getState());
@@ -403,21 +407,11 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         meta.setAutoClose(metaView.autoClose().getValue());
 
         onCaseMetaChanged(meta, () -> {
+            fireEvent(new IssueEvents.IssueStateChanged(meta.getId(), meta.getStateId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
             fireEvent(new CommentAndHistoryEvents.Reload());
         });
     }
-
-//    private CaseComment createAutoCloseComment() {
-//        CaseComment autoCloseComment = new CaseComment();
-//        autoCloseComment.setCreated( new Date() );
-//        autoCloseComment.setAuthorId( CrmConstants.Person.SYSTEM_USER_ID );
-//        autoCloseComment.setOriginalAuthorName("bla bla bla");
-//        autoCloseComment.setCaseId(meta.getId());
-//        autoCloseComment.setText("@testov");
-//        autoCloseComment.setPrivacyType( En_CaseCommentPrivacyType.PUBLIC );
-//        return autoCloseComment;
-//    }
 
     @Override
     public void onDeadlineChanged() {

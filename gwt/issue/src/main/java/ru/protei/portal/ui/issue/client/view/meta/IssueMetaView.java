@@ -534,10 +534,6 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         manager.setDefaultValue(lang.selectIssueManager());
         initiator.setDefaultValue(lang.selectIssueInitiator());
         initiator.setAddButtonText(lang.personCreateNew());
-
-//        autoCloseContainer.getElement().getParentElement().addClassName("d-none");//
-//        deadlineContainer.getElement().getParentElement().removeClassName("col-md-6");
-//        deadlineContainer.getElement().getParentElement().setClassName("col-md-12");
     }
 
     private void ensureDebugIds() {

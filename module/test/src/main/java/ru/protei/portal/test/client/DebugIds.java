@@ -973,6 +973,7 @@ public class DebugIds {
             String CREATION_DATE = "table-issue-creation-date";
             String NAME = "table-issue-name";
             String DESCRIPTION = "table-issue-description";
+            String AUTO_CLOSE = "table-issue-auto-close";
         }
 
         interface DELIVERY {
