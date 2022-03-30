@@ -641,7 +641,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (!oldCaseMeta.getAutoClose() && caseMeta.getAutoClose()) {
-            createAndPersistAutoCLoseMessage(caseMeta.getId(), caseMeta.getInitiatorId(), caseMeta.getInitiator().getDisplayShortName());
+            createAndPersistAutoCLoseMessage(caseMeta.getId(), caseMeta.getInitiatorId(), caseMeta.getInitiator().getDisplayName());
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -1105,7 +1105,7 @@ public class CaseServiceImpl implements CaseService {
         autoCloseComment.setAuthorId( CrmConstants.Person.SYSTEM_USER_ID );
         autoCloseComment.setOriginalAuthorName(langRu.getString("reminder_system_name"));
         autoCloseComment.setCaseId(caseId);
-        autoCloseComment.setText("@testov");
+        autoCloseComment.setText("@" + customerName + " " + CrmConstants.Comment.AUTO_CLOSE_DEFAULT_COMMENT);
         autoCloseComment.setPrivacyType( En_CaseCommentPrivacyType.PUBLIC );
         return caseCommentDAO.persist(autoCloseComment);
     }
