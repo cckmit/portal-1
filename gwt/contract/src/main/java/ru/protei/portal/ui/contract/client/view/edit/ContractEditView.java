@@ -109,6 +109,11 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
+    public HasEnabled calculationTypeEnabled() {
+        return calculationType;
+    }
+
+    @Override
     public HasValue<String> description() {
         return description;
     }

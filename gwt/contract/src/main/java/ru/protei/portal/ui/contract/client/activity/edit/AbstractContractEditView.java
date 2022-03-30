@@ -33,6 +33,8 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<CalculationType> calculationType();
 
+    HasEnabled calculationTypeEnabled();
+
     HasValue<String> description();
 
     HasValue<PersonShortView> curator();

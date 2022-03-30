@@ -25,7 +25,6 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.CalculationTypeModel;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
@@ -36,10 +35,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.struct.Vat.NoVat;
-import static ru.protei.portal.core.model.util.CrmConstants.Company.MAIN_HOME_COMPANY_NAME;
 import static ru.protei.portal.core.model.util.CrmConstants.State.AGREEMENT;
 import static ru.protei.portal.ui.common.client.util.DateUtils.*;
 
@@ -119,6 +116,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     public void onOrganizationChanged() {
         EntityOption organization = view.organization().getValue();
         setOrganization(organization);
+        view.calculationTypeEnabled().setEnabled(true);
     }
 
     @Override
@@ -255,6 +253,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.dateExecution().setValue(contract.getDateExecution());
         view.dateEndWarranty().setValue(contract.getDateEndWarranty());
         view.calculationType().setValue(contract.getCalculationType());
+        view.calculationTypeEnabled().setEnabled(view.organization().getValue() != null);
 
         if (contract.getProjectId() == null) {
             view.project().setValue(null);

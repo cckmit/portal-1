@@ -4070,8 +4070,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errorSetCorrectProjectId();
 
-    String errOrganizationRequired();
-    
     String issueValidationResultOk();
     
     String issueValidationResultNull();

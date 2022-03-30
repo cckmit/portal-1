@@ -103,7 +103,6 @@ public class En_ResultStatusLang {
             case DELIVERY_FORBIDDEN_CHANGE_STATUS: return lang.errDeliveryForbiddenChangeStatus();
             case DELIVERY_FORBIDDEN_CHANGE_PROJECT: return lang.errDeliveryForbiddenChangeProject();
             case CARD_BATCH_HAS_CARD: return lang.errCardBatchForbiddenRemove();
-            case ORGANIZATION_REQUIRED: return lang.errOrganizationRequired();
             default: return lang.errUnknownResult();
         }
     }

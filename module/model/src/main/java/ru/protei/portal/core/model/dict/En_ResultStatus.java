@@ -401,10 +401,5 @@ public enum En_ResultStatus {
      *  Сотрудник не синхронизируется с 1С (worker_extId == null)
      */
     EMPLOYEE_NOT_SYNCHRONIZING_WITH_1C,
-
-    /**
-     *  Необходимо выбрать организацию
-     */
-    ORGANIZATION_REQUIRED,
     ;
 }

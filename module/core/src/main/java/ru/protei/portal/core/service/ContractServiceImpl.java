@@ -33,7 +33,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -550,24 +549,16 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public Result<List<CalculationType>> getCalculationTypeList(AuthToken token, String homeCompanyName) {
         if (homeCompanyName == null) {
-            return error(En_ResultStatus.ORGANIZATION_REQUIRED);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Result<List<CalculationType1C>> result = api1CService.getAllCalculationTypes(homeCompanyName);
-        if (result.isError()) {
-            log.warn("getCalculationTypeList(): failed to get calculation types from 1c with " +
-                     "homeCompanyName = {} | result = {}", homeCompanyName, result);
-
-            List<CalculationType> calculationTypes = calculationTypeDAO.getAll();
-            return CollectionUtils.isNotEmpty(calculationTypes) ? ok(calculationTypes)
-                                                                : error(En_ResultStatus.GET_DATA_ERROR);
+        Result<List<CalculationType1C>> calculationTypes = api1CService.getAllCalculationTypes(homeCompanyName);
+        if (calculationTypes.isError()) {
+            return error(calculationTypes.getStatus());
         }
 
-        Result<Set<String>> calculationTypeRefKeys =
-                result.map(list -> list.stream().map(CalculationType1C::getRefKey)
-                                                .collect(Collectors.toSet()));
-
-        return ok(calculationTypeDAO.getCalculationTypeListByRefKeys(calculationTypeRefKeys.getData()));
+        return ok(calculationTypes.getData().stream().map(ContractServiceImpl::from1C)
+                                                     .collect(toList()));
     }
 
     @Override
@@ -872,10 +863,10 @@ public class ContractServiceImpl implements ContractService {
     }
 
     public static CalculationType from1C(CalculationType1C calcType1C) {
-        CalculationType calcType = new CalculationType();
-        calcType.setRefKey(calcType1C.getRefKey());
-        calcType.setName(calcType1C.getName());
-        return calcType;
+        CalculationType calculationType = new CalculationType();
+        calculationType.setName(calcType1C.getName());
+        calculationType.setRefKey(calcType1C.getRefKey());
+        return calculationType;
     }
 
     public static boolean isSame(Contract1C c1, Contract1C c2) {
