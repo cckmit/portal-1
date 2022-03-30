@@ -69,7 +69,11 @@
                                                                  reverseOrder="true" synchronizeWith1C="true"
                                                                  header="{lang.contractOrganization}"/>
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-3">
+                            <contract:calculationtype.CalculationTypeSelector ui:field="calculationType"
+                                                                              header="{lang.contractCalculationType}"/>
+                        </div>
+                        <div class="col-md-5">
                             <contractor:ContractorWidget ui:field="contractorWidget"
                                                          addStyleNames="form-group form-group-default"/>
                         </div>

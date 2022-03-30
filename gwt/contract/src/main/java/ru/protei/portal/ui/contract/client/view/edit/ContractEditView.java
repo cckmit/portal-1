@@ -14,9 +14,13 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_ContractKind;
+import ru.protei.portal.core.model.dict.En_ContractType;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.CalculationType;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.ent.Person;
@@ -33,6 +37,7 @@ import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyFormSelec
 import ru.protei.portal.ui.common.client.widget.money.MoneyCurrencyVatWidget;
 import ru.protei.portal.ui.common.client.widget.project.ProjectWidget;
 import ru.protei.portal.ui.common.client.widget.selector.contract.ContractFormSelector;
+import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.CalculationTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.state.ContractStateSelector;
 import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.AccountEmployeeMultiSelector;
@@ -97,6 +102,16 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Override
     public HasValue<CaseState> state() {
         return state;
+    }
+
+    @Override
+    public HasValue<CalculationType> calculationType() {
+        return calculationType;
+    }
+
+    @Override
+    public HasEnabled calculationTypeEnabled() {
+        return calculationType;
     }
 
     @Override
@@ -202,6 +217,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Override
     public void setOrganization(String organization) {
         contractorWidget.setOrganization(organization);
+        calculationType.setOrganization(organization);
     }
 
     @Override
@@ -344,6 +360,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
         number.ensureDebugId(DebugIds.CONTRACT.NUMBER_INPUT);
         type.ensureDebugId(DebugIds.CONTRACT.TYPE_SELECTOR);
         state.setEnsureDebugId(DebugIds.CONTRACT.STATE_SELECTOR);
+        calculationType.setEnsureDebugId(DebugIds.CONTRACT.STATE_SELECTOR);
         contractParent.setEnsureDebugId(DebugIds.CONTRACT.PARENT_SELECTOR);
         deliveryNumber.ensureDebugId(DebugIds.CONTRACT.DELIVERY_NUMBER_INPUT);
         descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.CONTRACT.LABEL.DESCRIPTION);
@@ -397,6 +414,9 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     ContractStateSelector state;
+    @Inject
+    @UiField(provided = true)
+    CalculationTypeSelector calculationType;
     @Inject
     @UiField(provided = true)
     ContractTypeSelector type;

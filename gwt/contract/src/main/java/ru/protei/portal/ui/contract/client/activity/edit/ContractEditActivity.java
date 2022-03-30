@@ -253,6 +253,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.deliveryNumber().setValue(contract.getDeliveryNumber());
         view.dateExecution().setValue(contract.getDateExecution());
         view.dateEndWarranty().setValue(contract.getDateEndWarranty());
+        view.calculationType().setValue(contract.getCalculationType());
+        view.calculationTypeEnabled().setEnabled(view.organization().getValue() != null);
 
         if (contract.getProjectId() == null) {
             view.project().setValue(null);
@@ -307,6 +309,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setContractor(view.contractor().getValue());
         contract.setContractSignManagerId(getPersonIdOrNull(view.contractSignManager().getValue()));
         contract.setDeliveryNumber(view.deliveryNumber().getValue());
+        contract.setCalculationType(view.calculationType().getValue());
         contract.setDateEndWarranty(view.dateEndWarranty().getValue());
         contract.setDateExecution(view.dateExecution().getValue());
 
@@ -320,6 +323,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
                 : null;
         view.organization().setValue(organization);
         view.setOrganization(organizationDisplayText);
+        view.calculationTypeEnabled().setEnabled(hasOrganization);
         view.contractorEnabled().setEnabled(hasOrganization);
         if (view.contractor().getValue() != null) {
             view.contractor().setValue(null);

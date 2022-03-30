@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
+import ru.protei.portal.core.model.enterprise1c.dto.CalculationType1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -65,6 +66,8 @@ public class ContractServiceImpl implements ContractService {
     CaseTypeDAO caseTypeDAO;
     @Autowired
     ContractorDAO contractorDAO;
+    @Autowired
+    CalculationTypeDAO calculationTypeDAO;
     @Autowired
     DevUnitDAO devUnitDAO;
     @Autowired
@@ -187,6 +190,18 @@ public class ContractServiceImpl implements ContractService {
             contract.setContractorId(null);
         }
 
+        CalculationType calculationType = contract.getCalculationType();
+        if (calculationType != null) {
+            Result<Long> result = saveCalculationType(calculationType);
+            if (result.isError()) {
+                log.error("createContract(): id = {} | failed to save calculation type to db with result = {}", contractId, result);
+                throw new RollbackTransactionException(result.getStatus());
+            }
+            contract.setCalculationTypeId(result.getData());
+        } else {
+            contract.setCalculationTypeId(null);
+        }
+
         boolean contractPersisted = contractDAO.persist(contract) != null;
         if (!contractPersisted) {
             log.error("createContract(): id = {} | failed to persist contract to db", contractId);
@@ -305,6 +320,18 @@ public class ContractServiceImpl implements ContractService {
             contract.setContractorId(null);
         }
 
+        CalculationType calculationType = contract.getCalculationType();
+        if (calculationType != null) {
+            Result<Long> result = saveCalculationType(calculationType);
+            if (result.isError()) {
+                log.error("createContract(): id = {} | failed to save calculation type to db with result = {}", contractId, result);
+                throw new RollbackTransactionException(result.getStatus());
+            }
+            contract.setCalculationTypeId(result.getData());
+        } else {
+            contract.setCalculationTypeId(null);
+        }
+
         fillDateExecution(contract);
         fillCaseObjectFromContract(prevContractCaseObject, contract);
 
@@ -341,77 +368,95 @@ public class ContractServiceImpl implements ContractService {
         }
 
         boolean is1cSync = is1cSyncEnabled(contract);
-        if (is1cSync) {
+        if (!is1cSync) {
+            return ok(contract.getId());
+        }
 
-            boolean isRefKeySet = isNotEmpty(contract.getRefKey());
+        boolean isRefKeySet = isNotEmpty(contract.getRefKey());
 
-            boolean isContractorDefined = contract.getContractor() != null;
+        boolean isContractorDefined = contract.getContractor() != null;
 
-            boolean isOrganizationRemoved =
-                    prevContract.getOrganizationId() != null &&
-                    contract.getOrganizationId() == null;
+        boolean isOrganizationRemoved =
+                prevContract.getOrganizationId() != null &&
+                contract.getOrganizationId() == null;
 
-            boolean isOrganizationChanged =
-                    prevContract.getOrganizationId() != null &&
-                    contract.getOrganizationId() != null &&
-                    !Objects.equals(prevContract.getOrganizationId(), contract.getOrganizationId());
+        boolean isOrganizationChanged =
+                prevContract.getOrganizationId() != null &&
+                contract.getOrganizationId() != null &&
+                !Objects.equals(prevContract.getOrganizationId(), contract.getOrganizationId());
 
-            if (isRefKeySet && isOrganizationRemoved) {
-                String organizationPrev = prevContract.getOrganizationName();
-                Contract1C contract1C = to1C(contract);
-                contract1C.setDeletionMark(true);
-                Result<Contract1C> removeResult = api1CService.saveContract(contract1C, organizationPrev);
-                if (removeResult.isError()) {
-                    log.error("updateContract(): id = {} | organization removal | failed to remove contract from 1c with result = {}", contractId, removeResult);
-                    throw new RollbackTransactionException(removeResult.getStatus());
-                }
-                contract.setRefKey(null);
-                boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
-                if (!contractUpdated) {
-                    // Not rollback-able error
-                    log.error("updateContract(): id = {} | organization removal | NO-ROLLBACK | failed to save contract's refKey to db", contractId);
-                    return error(En_ResultStatus.NOT_UPDATED);
-                }
+        if (isRefKeySet && isOrganizationRemoved) {
+            String organizationPrev = prevContract.getOrganizationName();
+            Contract1C contract1C = to1C(contract);
+            contract1C.setDeletionMark(true);
+            Result<Contract1C> removeResult = api1CService.saveContract(contract1C, organizationPrev);
+            if (removeResult.isError()) {
+                log.error("updateContract(): id = {} | organization removal | failed to remove contract from 1c with result = {}", contractId, removeResult);
+                throw new RollbackTransactionException(removeResult.getStatus());
             }
-            else if (isRefKeySet && isOrganizationChanged) {
-                String organizationPrev = prevContract.getOrganizationName();
-                String organizationNew = contract.getOrganizationName();
-                Contract1C contract1C = to1C(contract);
-                contract1C.setDeletionMark(true);
-                Result<Contract1C> removeResult = api1CService.saveContract(contract1C, organizationPrev);
-                if (removeResult.isError()) {
-                    log.error("updateContract(): id = {} | organization modification | failed to remove contract from 1c with result = {}", contractId, removeResult);
-                    throw new RollbackTransactionException(removeResult.getStatus());
-                }
-                contract1C.setRefKey(null);
-                contract1C.setDeletionMark(false);
-                Result<Contract1C> createResult = api1CService.saveContract(contract1C, organizationNew);
-                if (createResult.isError()) {
-                    // Not rollback-able error
-                    log.error("updateContract(): id = {} | organization modification | NO-ROLLBACK | failed to create contract at 1c with result = {}", contractId, createResult);
-                    return error(createResult.getStatus());
-                }
-                contract.setRefKey(createResult.getData().getRefKey());
-                boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
-                if (!contractUpdated) {
-                    // Not rollback-able error
-                    log.error("updateContract(): id = {} | organization modification | NO-ROLLBACK | failed to save contract's refKey to db", contractId);
-                    return error(En_ResultStatus.NOT_UPDATED);
-                }
+            contract.setRefKey(null);
+            boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
+            if (!contractUpdated) {
+                // Not rollback-able error
+                log.error("updateContract(): id = {} | organization removal | NO-ROLLBACK | failed to save contract's refKey to db", contractId);
+                return error(En_ResultStatus.NOT_UPDATED);
             }
-            else if (isContractorDefined) {
-                Result<Contract1C> result = saveContract1C(contract);
-                if (result.isError()) {
-                    log.error("updateContract(): id = {} | failed to save contractor to 1c with result = {}", contractId, result);
-                    throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
-                }
-                contract.setRefKey(result.getData().getRefKey());
-                boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
-                if (!contractUpdated) {
-                    // Not rollback-able error
-                    log.error("updateContract(): id = {} | NO-ROLLBACK | failed to save contract's refKey to db", contractId);
-                    return error(En_ResultStatus.NOT_UPDATED);
-                }
+        }
+        else if (isRefKeySet && isOrganizationChanged) {
+            String organizationPrev = prevContract.getOrganizationName();
+            String organizationNew = contract.getOrganizationName();
+            Contract1C contract1C = to1C(contract);
+            contract1C.setDeletionMark(true);
+            Result<Contract1C> removeResult = api1CService.saveContract(contract1C, organizationPrev);
+            if (removeResult.isError()) {
+                log.error("updateContract(): id = {} | organization modification | failed to remove contract from 1c with result = {}", contractId, removeResult);
+                throw new RollbackTransactionException(removeResult.getStatus());
+            }
+            contract1C.setRefKey(null);
+            contract1C.setDeletionMark(false);
+            Result<Contract1C> createResult = api1CService.saveContract(contract1C, organizationNew);
+            if (createResult.isError()) {
+                // Not rollback-able error
+                log.error("updateContract(): id = {} | organization modification | NO-ROLLBACK | failed to create contract at 1c with result = {}", contractId, createResult);
+                return error(createResult.getStatus());
+            }
+            contract.setRefKey(createResult.getData().getRefKey());
+            boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
+            if (!contractUpdated) {
+                // Not rollback-able error
+                log.error("updateContract(): id = {} | organization modification | NO-ROLLBACK | failed to save contract's refKey to db", contractId);
+                return error(En_ResultStatus.NOT_UPDATED);
+            }
+        }
+        else if (isContractorDefined) {
+            Result<Contract1C> result = saveContract1C(contract);
+            if (result.isError()) {
+                log.error("updateContract(): id = {} | failed to save contractor to 1c with result = {}", contractId, result);
+                throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+            }
+            contract.setRefKey(result.getData().getRefKey());
+            boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
+            if (!contractUpdated) {
+                // Not rollback-able error
+                log.error("updateContract(): id = {} | NO-ROLLBACK | failed to save contract's refKey to db", contractId);
+                return error(En_ResultStatus.NOT_UPDATED);
+            }
+        }
+
+        boolean isCalculationTypeChanged = !Objects.equals(prevContract.getCalculationType(),
+                                                           contract.getCalculationType());
+        if (isCalculationTypeChanged) {
+            Result<Contract1C> result = saveContract1C(contract);
+            if (result.isError()) {
+                log.error("updateContract(): id = {} | failed to save calculation type to 1c with result = {}", contractId, result);
+                throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+            }
+
+            contract.setRefKey(result.getData().getRefKey());
+            boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
+            if (!contractUpdated) {
+                log.error("updateContract(): id = {} | calculation type modification | NO-ROLLBACK | failed to save contract's calculation type to db", contractId);
+                return error(En_ResultStatus.NOT_UPDATED);
             }
         }
 
@@ -541,6 +586,21 @@ public class ContractServiceImpl implements ContractService {
         jdbcManyRelationsHelper.fill(contracts, "contractDates");
         contracts.forEach(contract -> contract.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(contract.getProjectId()))));
         return ok(contracts);
+    }
+
+    @Override
+    public Result<List<CalculationType>> getCalculationTypeList(AuthToken token, String homeCompanyName) {
+        if (homeCompanyName == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Result<List<CalculationType1C>> calculationTypes = api1CService.getAllCalculationTypes(homeCompanyName);
+        if (calculationTypes.isError()) {
+            return error(calculationTypes.getStatus());
+        }
+
+        return ok(calculationTypes.getData().stream().map(ContractServiceImpl::from1C)
+                                                     .collect(toList()));
     }
 
     @Override
@@ -693,6 +753,24 @@ public class ContractServiceImpl implements ContractService {
         }
 
         return ok(contractor.getId());
+    }
+
+    private Result<Long> saveCalculationType(CalculationType calculationType) {
+        if (calculationType.getRefKey() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CalculationType calcType = calculationTypeDAO.getCalculationTypeByRefKey(calculationType.getRefKey());
+        if (calcType == null) {
+            calculationTypeDAO.persist(calculationType);
+        } else {
+            calculationType.setId(calcType.getId());
+            if (!calculationTypeDAO.merge(calculationType)) {
+                return error(En_ResultStatus.NOT_UPDATED, "Calculation type was not merged");
+            }
+        }
+
+        return ok(calculationType.getId());
     }
 
     private Result<Contract1C> saveContract1C(Contract contract) {
@@ -875,6 +953,8 @@ public class ContractServiceImpl implements ContractService {
         contract1C.setContractorKey(contract.getContractor().getRefKey());
         contract1C.setDateSigning(saveDateFormat.format(contract.getDateSigning()));
         contract1C.setName(contract.getNumber().trim()+ " от " + showDateFormat.format(contract.getDateSigning()));
+        contract1C.setCalculationType(contract.getCalculationType() == null ? null :
+                                      contract.getCalculationType().getRefKey().trim());
 
         // PORTAL-1566 p.7 (freezed)
 //        List<ContractAdditionalProperty1C> additional1СProperties = new ArrayList<>();
@@ -883,6 +963,13 @@ public class ContractServiceImpl implements ContractService {
 //        contract1C.setAdditionalProperties(additionalProperty1CS);
 
         return contract1C;
+    }
+
+    public static CalculationType from1C(CalculationType1C calcType1C) {
+        CalculationType calculationType = new CalculationType();
+        calculationType.setName(calcType1C.getName());
+        calculationType.setRefKey(calcType1C.getRefKey());
+        return calculationType;
     }
 
     public static boolean isSame(Contract1C c1, Contract1C c2) {
@@ -895,7 +982,8 @@ public class ContractServiceImpl implements ContractService {
         } catch (ParseException e) { return false; }
 
         return Objects.equals(c1.getNumber(), c2.getNumber())
-               && Objects.equals(c1.getContractorKey(), c2.getContractorKey());
+               && Objects.equals(c1.getContractorKey(), c2.getContractorKey())
+               && Objects.equals(c1.getCalculationType(), c2.getCalculationType());
     }
 
     private final Pattern innPattern = Pattern.compile(CONTRACTOR_INN);

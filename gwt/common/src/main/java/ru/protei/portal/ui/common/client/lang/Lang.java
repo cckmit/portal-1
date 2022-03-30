@@ -2186,6 +2186,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractState();
 
+    String contractCalculationType();
+
     String contractType();
 
     String contractKind();
@@ -2259,6 +2261,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contractValidationContractSpecification();
 
     String contractValidationContractSpecificationClauseDuplication();
+
+    String contractCalculationTypeNotDefined();
 
     String contractOrganization();
 
@@ -4069,7 +4073,7 @@ public interface Lang extends Messages, ContactItemLang {
     String contractDateEndWarranty();
 
     String errorSetCorrectProjectId();
-    
+
     String issueValidationResultOk();
     
     String issueValidationResultNull();
