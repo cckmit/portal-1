@@ -2049,10 +2049,4 @@ public class CaseServiceImpl implements CaseService {
         }
         return caseObject.getPlatformName();
     }
-
-//    private Long makeDefaultDeadline() {
-//        Calendar defaultDeadLine = Calendar.getInstance();
-//        defaultDeadLine.add(Calendar.DATE, portalConfig.data().getDeadlineConfig().getDefaultDeadline());
-//        return defaultDeadLine.getTime().getTime();
-//    }
 }

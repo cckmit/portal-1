@@ -163,8 +163,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaView.setPauseDateValid(true);
 
-
-
         onCaseMetaChanged(meta, () -> {
             fireEvent(new IssueEvents.IssueStateChanged(meta.getId(), meta.getStateId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
