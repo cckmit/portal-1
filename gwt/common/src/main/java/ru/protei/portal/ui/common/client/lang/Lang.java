@@ -4107,5 +4107,15 @@ public interface Lang extends Messages, ContactItemLang {
     String personEquipmentAssembly();
 
     String personEquipmentAssemblyShort();
+
+    String caseDescriptionHistoryPreview();
+
+    String historyResultOfAdding();
+
+    String historyDeletionResult();
+
+    String historyModificationResult();
+
+    String linkRemoved();
 }
 
