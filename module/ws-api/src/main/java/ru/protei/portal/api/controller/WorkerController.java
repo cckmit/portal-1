@@ -1601,7 +1601,7 @@ public class WorkerController {
                     if (rec.isFired() || rec.isDeleted()) {
                         boolean immediately = false;
                         Date firedDate = HelperFunc.isEmpty(rec.getFireDate()) ? null : HelperService.DATE.parse(rec.getFireDate());
-                        if (firedDate == null || !firedDate.after(new Date())) {
+                        if (firedDate == null || firedDate.before(new Date())) {
                             immediately = true;
                         } else {
                             worker.setFiredDate(firedDate);
