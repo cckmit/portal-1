@@ -564,4 +564,9 @@ public class DaoTestsConfiguration {
     public CaseElapsedTimeApiDAO getCaseElapsedTimeApiDAO() {
         return new CaseElapsedTimeApiDAO_Impl();
     }
+
+    @Bean
+    public CommonManagerDAO getCommonManagerDAO() {
+        return new CommonManagerDAO_Impl();
+    }
 }

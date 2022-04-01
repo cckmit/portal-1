@@ -693,8 +693,10 @@ public class DebugIds {
         String TABS = "company-tabs";
         String TAB_CONTACTS = "company-tab-contacts";
         String TAB_SITE_FOLDERS = "company-tab-site-folders";
+        String TAB_COMMON_MANAGER = "company-tab-common-manager";
         String CONTACTS = "company-contacts";
         String SITE_FOLDERS = "company-site-folders";
+        String COMMON_MANAGER = "company-common-manager";
         String SAVE_BUTTON = "company-save-button";
         String CANCEL_BUTTON = "company-cancel-button";
     }
@@ -1487,5 +1489,12 @@ public class DebugIds {
         String EPC = "rfid-label-epc";
         String DEVICE = "rfid-label-device";
         String LAST_SCAN_DATE = "rfid-label-last-scan-date";
+    }
+
+    public interface COMMON_MANAGER {
+        interface ITEM {
+            String PRODUCT = "common-manager-item-product";
+            String MANAGER = "common-manager-item-manager";
+        }
     }
 }

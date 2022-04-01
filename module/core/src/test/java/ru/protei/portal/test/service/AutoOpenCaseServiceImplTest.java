@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
+import ru.protei.portal.core.model.dao.CommonManagerDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Gender;
@@ -38,12 +39,12 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
 
     @Test
     @Transactional
-    public void createTaskNoDelay() {
+    public void createTaskNoDelayTest() {
         createTask(NO_DELAY);
     }
 
     @Test
-    public void createTaskWithDelay() {
+    public void createTaskWithDelayTest() {
         createTask(TimeUnit.SECONDS.toMillis(3));
     }
 
@@ -61,15 +62,21 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         personDAO.persist(customerPerson);
 
         Company homeCompany = companyDAO.get(1L);
-        Person commonManager = createNewPerson(homeCompany);
-        commonManager.setGender(En_Gender.UNDEFINED);
+        Person manager = createNewPerson(homeCompany);
+        manager.setGender(En_Gender.UNDEFINED);
 
-        personDAO.persist(commonManager);
+        personDAO.persist(manager);
 
         DevUnit product = createProduct("AutoOpenCaseServiceProduct");
-        product.setCommonManagerId(commonManager.getId());
         product.setType(En_DevUnitType.PRODUCT);
         devUnitDAO.persist(product);
+
+        // CommonManager
+        CommonManager commonManager = new CommonManager();
+        commonManager.setProductId(product.getId());
+        commonManager.setManagerId(manager.getId());
+        commonManager.setCompanyId(customerCompany.getId());
+        commonManagerDAO.persist(commonManager);
 
         CaseObject caseObject = createNewCaseObject(customerPerson);
         caseObject.setName("AutoOpenCaseServiceProject");
@@ -122,7 +129,7 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
 
         CaseObject caseObjectFromDb = caseObjectDAO.get(newCaseObject.getId());
         Assert.assertEquals(caseObjectFromDb.getStateId(), CrmConstants.State.OPENED);
-        Assert.assertEquals(caseObjectFromDb.getManagerId(), commonManager.getId());
+        Assert.assertEquals(caseObjectFromDb.getManagerId(), manager.getId());
 
         // non transaction, remove manually
         removeHistoryCaseObject(caseObject.getId());
@@ -133,8 +140,311 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         caseObjectDAO.remove(newCaseObject);
         caseObjectDAO.remove(caseObject);
         personDAO.remove(customerPerson);
-        personDAO.remove(commonManager);
+        commonManagerDAO.remove(commonManager);
+        personDAO.remove(manager);
         companyDAO.remove(customerCompany);
+    }
+
+    @Test
+    @Transactional
+    public void productAndCompanyTest() {
+        Company customerCompany = createNewCustomerCompany();
+        customerCompany.setAutoOpenIssue(true);
+        companyDAO.persist(customerCompany);
+
+        companyImportanceItemDAO.persistBatch(
+                toList(CrmConstants.ImportanceLevel.commonImportanceLevelIds, importanceLevelId ->
+                        new CompanyImportanceItem(customerCompany.getId(), importanceLevelId, 0))
+        );
+
+        Person customerPerson = createNewPerson(customerCompany);
+        personDAO.persist(customerPerson);
+
+        Company homeCompany = companyDAO.get(1L);
+        Person manager = createNewPerson(homeCompany);
+        manager.setGender(En_Gender.UNDEFINED);
+
+        personDAO.persist(manager);
+
+        DevUnit product = createProduct("AutoOpenCaseServiceProduct");
+        product.setType(En_DevUnitType.PRODUCT);
+        devUnitDAO.persist(product);
+
+        CommonManager commonManager = new CommonManager();
+        commonManager.setProductId(null);
+        commonManager.setManagerId(manager.getId());
+        commonManager.setCompanyId(customerCompany.getId());
+        commonManagerDAO.persist(commonManager);
+
+        CaseObject caseObject = createNewCaseObject(customerPerson);
+        caseObject.setName("AutoOpenCaseServiceProject");
+        caseObject.setStateId(CrmConstants.State.OPENED);
+        caseObject.setInitiatorCompanyId(customerCompany.getId());
+        caseObject.setType(En_CaseType.PROJECT);
+        caseObject.setProductId(product.getId());
+
+        Long projectId = caseObjectDAO.persist(caseObject);
+
+        Project project = new Project();
+        project.setId(projectId);
+
+        projectDAO.persist(project);
+
+        Platform platform = new Platform();
+        platform.setName("AutoOpenCaseServicePlatform");
+        platform.setCompanyId(customerCompany.getId());
+        platform.setProjectId(projectId);
+
+        ProjectToProduct projectToProduct = new ProjectToProduct(projectId, product.getId());
+        projectToProductDAO.persist(projectToProduct);
+
+        platformDAO.persist(platform);
+
+        CaseObject newCaseObject = createNewCaseObject(customerPerson);
+        newCaseObject.setInitiatorCompanyId(customerCompany.getId());
+        newCaseObject.setInitiatorId(customerPerson.getId());
+        newCaseObject.setManagerCompanyId(homeCompany.getId());
+        newCaseObject.setProductId(product.getId());
+        newCaseObject.setPlatformId(platform.getId());
+        newCaseObject.setType(En_CaseType.CRM_SUPPORT);
+        newCaseObject.setStateId(CrmConstants.State.CREATED);
+
+        CaseObjectCreateRequest request = new CaseObjectCreateRequest();
+        request.setCaseObject(newCaseObject);
+
+        caseObjectDAO.persist(newCaseObject);
+
+        service.performCaseOpen(newCaseObject.getId());
+
+        CaseObject caseObjectFromDb = caseObjectDAO.get(newCaseObject.getId());
+        Assert.assertEquals(caseObjectFromDb.getStateId(), CrmConstants.State.OPENED);
+        Assert.assertEquals(caseObjectFromDb.getManagerId(), manager.getId());
+    }
+
+    @Test
+    @Transactional
+    public void productAndCompanyIsNullTest() {
+        Company customerCompany = createNewCustomerCompany();
+        customerCompany.setAutoOpenIssue(true);
+        companyDAO.persist(customerCompany);
+
+        companyImportanceItemDAO.persistBatch(
+                toList(CrmConstants.ImportanceLevel.commonImportanceLevelIds, importanceLevelId ->
+                        new CompanyImportanceItem(customerCompany.getId(), importanceLevelId, 0))
+        );
+
+        Person customerPerson = createNewPerson(customerCompany);
+        personDAO.persist(customerPerson);
+
+        Company homeCompany = companyDAO.get(1L);
+        Person manager = createNewPerson(homeCompany);
+        manager.setGender(En_Gender.UNDEFINED);
+
+        personDAO.persist(manager);
+
+        DevUnit product = createProduct("AutoOpenCaseServiceProduct");
+        product.setType(En_DevUnitType.PRODUCT);
+        devUnitDAO.persist(product);
+
+        // CommonManager
+        CommonManager commonManager = new CommonManager();
+        commonManager.setProductId(product.getId());
+        commonManager.setManagerId(manager.getId());
+        commonManager.setCompanyId(null);
+        commonManagerDAO.persist(commonManager);
+
+        CaseObject caseObject = createNewCaseObject(customerPerson);
+        caseObject.setName("AutoOpenCaseServiceProject");
+        caseObject.setStateId(CrmConstants.State.OPENED);
+        caseObject.setInitiatorCompanyId(customerCompany.getId());
+        caseObject.setType(En_CaseType.PROJECT);
+        caseObject.setProductId(product.getId());
+
+        Long projectId = caseObjectDAO.persist(caseObject);
+
+        Project project = new Project();
+        project.setId(projectId);
+
+        projectDAO.persist(project);
+
+        Platform platform = new Platform();
+        platform.setName("AutoOpenCaseServicePlatform");
+        platform.setCompanyId(customerCompany.getId());
+        platform.setProjectId(projectId);
+
+        ProjectToProduct projectToProduct = new ProjectToProduct(projectId, product.getId());
+        projectToProductDAO.persist(projectToProduct);
+
+        platformDAO.persist(platform);
+
+        CaseObject newCaseObject = createNewCaseObject(customerPerson);
+        newCaseObject.setInitiatorCompanyId(customerCompany.getId());
+        newCaseObject.setInitiatorId(customerPerson.getId());
+        newCaseObject.setManagerCompanyId(homeCompany.getId());
+        newCaseObject.setProductId(product.getId());
+        newCaseObject.setPlatformId(platform.getId());
+        newCaseObject.setType(En_CaseType.CRM_SUPPORT);
+        newCaseObject.setStateId(CrmConstants.State.CREATED);
+
+        CaseObjectCreateRequest request = new CaseObjectCreateRequest();
+        request.setCaseObject(newCaseObject);
+
+        caseObjectDAO.persist(newCaseObject);
+
+        service.performCaseOpen(newCaseObject.getId());
+
+        CaseObject caseObjectFromDb = caseObjectDAO.get(newCaseObject.getId());
+        Assert.assertEquals(caseObjectFromDb.getStateId(), CrmConstants.State.OPENED);
+        Assert.assertEquals(caseObjectFromDb.getManagerId(), manager.getId());
+    }
+
+    @Test
+    @Transactional
+    public void productIsNullAndCompanyTest() {
+        Company customerCompany = createNewCustomerCompany();
+        customerCompany.setAutoOpenIssue(true);
+        companyDAO.persist(customerCompany);
+
+        companyImportanceItemDAO.persistBatch(
+                toList(CrmConstants.ImportanceLevel.commonImportanceLevelIds, importanceLevelId ->
+                        new CompanyImportanceItem(customerCompany.getId(), importanceLevelId, 0))
+        );
+
+        Person customerPerson = createNewPerson(customerCompany);
+        personDAO.persist(customerPerson);
+
+        Company homeCompany = companyDAO.get(1L);
+        Person manager = createNewPerson(homeCompany);
+        manager.setGender(En_Gender.UNDEFINED);
+
+        personDAO.persist(manager);
+
+        DevUnit product = createProduct("AutoOpenCaseServiceProduct");
+        product.setType(En_DevUnitType.PRODUCT);
+        devUnitDAO.persist(product);
+
+
+        // CommonManager
+        CommonManager commonManager = new CommonManager();
+        commonManager.setProductId(null);
+        commonManager.setCompanyId(customerCompany.getId());
+        commonManager.setManagerId(manager.getId());
+        commonManagerDAO.persist(commonManager);
+
+        CaseObject caseObject = createNewCaseObject(customerPerson);
+        caseObject.setName("AutoOpenCaseServiceProject");
+        caseObject.setStateId(CrmConstants.State.OPENED);
+        caseObject.setInitiatorCompanyId(customerCompany.getId());
+        caseObject.setType(En_CaseType.PROJECT);
+        caseObject.setProductId(product.getId());
+
+        Long projectId = caseObjectDAO.persist(caseObject);
+
+        Project project = new Project();
+        project.setId(projectId);
+
+        projectDAO.persist(project);
+
+        Platform platform = new Platform();
+        platform.setName("AutoOpenCaseServicePlatform");
+        platform.setCompanyId(customerCompany.getId());
+        platform.setProjectId(projectId);
+
+        ProjectToProduct projectToProduct = new ProjectToProduct(projectId, product.getId());
+        projectToProductDAO.persist(projectToProduct);
+
+        platformDAO.persist(platform);
+
+        CaseObject newCaseObject = createNewCaseObject(customerPerson);
+        newCaseObject.setInitiatorCompanyId(customerCompany.getId());
+        newCaseObject.setInitiatorId(customerPerson.getId());
+        newCaseObject.setManagerCompanyId(homeCompany.getId());
+        newCaseObject.setProductId(product.getId());
+        newCaseObject.setPlatformId(platform.getId());
+        newCaseObject.setType(En_CaseType.CRM_SUPPORT);
+        newCaseObject.setStateId(CrmConstants.State.CREATED);
+
+        CaseObjectCreateRequest request = new CaseObjectCreateRequest();
+        request.setCaseObject(newCaseObject);
+
+        caseObjectDAO.persist(newCaseObject);
+
+        service.performCaseOpen(newCaseObject.getId());
+
+        CaseObject caseObjectFromDb = caseObjectDAO.get(newCaseObject.getId());
+        Assert.assertEquals(caseObjectFromDb.getStateId(), CrmConstants.State.OPENED);
+        Assert.assertEquals(caseObjectFromDb.getManagerId(), manager.getId());
+    }
+
+    @Test
+    @Transactional
+    public void NoCommonManagerTest() {
+        Company customerCompany = createNewCustomerCompany();
+        customerCompany.setAutoOpenIssue(true);
+        companyDAO.persist(customerCompany);
+
+        companyImportanceItemDAO.persistBatch(
+                toList(CrmConstants.ImportanceLevel.commonImportanceLevelIds, importanceLevelId ->
+                        new CompanyImportanceItem(customerCompany.getId(), importanceLevelId, 0))
+        );
+
+        Person customerPerson = createNewPerson(customerCompany);
+        personDAO.persist(customerPerson);
+
+        Company homeCompany = companyDAO.get(1L);
+        Person manager = createNewPerson(homeCompany);
+        manager.setGender(En_Gender.UNDEFINED);
+
+        personDAO.persist(manager);
+
+        DevUnit product = createProduct("AutoOpenCaseServiceProduct");
+        product.setType(En_DevUnitType.PRODUCT);
+        devUnitDAO.persist(product);
+
+        // CommonManager
+
+        CaseObject caseObject = createNewCaseObject(customerPerson);
+        caseObject.setName("AutoOpenCaseServiceProject");
+        caseObject.setStateId(CrmConstants.State.OPENED);
+        caseObject.setInitiatorCompanyId(customerCompany.getId());
+        caseObject.setType(En_CaseType.PROJECT);
+        caseObject.setProductId(product.getId());
+
+        Long projectId = caseObjectDAO.persist(caseObject);
+
+        Project project = new Project();
+        project.setId(projectId);
+
+        projectDAO.persist(project);
+
+        Platform platform = new Platform();
+        platform.setName("AutoOpenCaseServicePlatform");
+        platform.setCompanyId(customerCompany.getId());
+        platform.setProjectId(projectId);
+
+        ProjectToProduct projectToProduct = new ProjectToProduct(projectId, product.getId());
+        projectToProductDAO.persist(projectToProduct);
+
+        platformDAO.persist(platform);
+
+        CaseObject newCaseObject = createNewCaseObject(customerPerson);
+        newCaseObject.setInitiatorCompanyId(customerCompany.getId());
+        newCaseObject.setInitiatorId(customerPerson.getId());
+        newCaseObject.setManagerCompanyId(homeCompany.getId());
+        newCaseObject.setProductId(product.getId());
+        newCaseObject.setPlatformId(platform.getId());
+        newCaseObject.setType(En_CaseType.CRM_SUPPORT);
+        newCaseObject.setStateId(CrmConstants.State.CREATED);
+
+        CaseObjectCreateRequest request = new CaseObjectCreateRequest();
+        request.setCaseObject(newCaseObject);
+
+        caseObjectDAO.persist(newCaseObject);
+
+        service.performCaseOpen(newCaseObject.getId());
+
+        CaseObject caseObjectFromDb = caseObjectDAO.get(newCaseObject.getId());
+        Assert.assertEquals(caseObjectFromDb.getStateId(), CrmConstants.State.CREATED);
     }
 
     @Test
@@ -156,13 +466,12 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         personDAO.persist(customerPerson);
 
         Company homeCompany = companyDAO.get(1L);
-        Person commonManager = createNewPerson(homeCompany);
-        commonManager.setGender(En_Gender.UNDEFINED);
+        Person manager = createNewPerson(homeCompany);
+        manager.setGender(En_Gender.UNDEFINED);
 
-        personDAO.persist(commonManager);
+        personDAO.persist(manager);
 
         DevUnit product = createProduct("AutoOpenCaseServiceProduct");
-        product.setCommonManagerId(commonManager.getId());
 
         devUnitDAO.persist(product);
 
@@ -170,7 +479,7 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         openNoCommonManagerCase.setInitiatorCompanyId(customerCompanyAutoOpen.getId());
         openNoCommonManagerCase.setInitiatorId(customerPerson.getId());
         openNoCommonManagerCase.setManagerCompanyId(homeCompany.getId());
-        openNoCommonManagerCase.setManagerId(commonManager.getId());
+        openNoCommonManagerCase.setManagerId(manager.getId());
         openNoCommonManagerCase.setProductId(product.getId());
         openNoCommonManagerCase.setStateId(CrmConstants.State.OPENED);
         openNoCommonManagerCase.setType(En_CaseType.CRM_SUPPORT);
@@ -218,12 +527,11 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
         personDAO.persist(customerPerson);
 
         Company homeCompany = companyDAO.get(1L);
-        Person commonManager = createNewPerson(homeCompany);
-        commonManager.setGender(En_Gender.UNDEFINED);
-        personDAO.persist(commonManager);
+        Person manager = createNewPerson(homeCompany);
+        manager.setGender(En_Gender.UNDEFINED);
+        personDAO.persist(manager);
 
         DevUnit product = createProduct("AutoOpenCaseServiceProduct");
-        product.setCommonManagerId(commonManager.getId());
         devUnitDAO.persist(product);
 
         CaseObject noAutoOpenCase = createNewCaseObject(customerPerson);
@@ -252,4 +560,6 @@ public class AutoOpenCaseServiceImplTest extends BaseServiceTest {
 
     @Autowired
     AutoOpenCaseService service;
+    @Autowired
+    CommonManagerDAO commonManagerDAO;
 }

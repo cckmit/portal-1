@@ -68,6 +68,9 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     @JdbcColumn(name = "auto_open_issue")
     private Boolean autoOpenIssue;
 
+    @JdbcOneToMany(table = "common_manager", localColumn = "id", remoteColumn = CommonManager.Columns.COMPANY_ID)
+    private List<CommonManager> commonManagerList;
+
     public static Company fromEntityOption(EntityOption entityOption){
         if(entityOption == null)
             return null;
@@ -261,6 +264,14 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         this.autoOpenIssue = autoOpenIssue;
     }
 
+    public List<CommonManager> getCommonManagerList() {
+        return commonManagerList;
+    }
+
+    public void setCommonManagerList(List<CommonManager> commonManagerList) {
+        this.commonManagerList = commonManagerList;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (id != null) {
@@ -289,10 +300,12 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", caseStates=" + caseStates +
                 ", isArchived=" + isArchived +
                 ", autoOpenIssue=" + autoOpenIssue +
+                ", commonManagerList=" + commonManagerList +
                 '}';
     }
 
     public interface Fields {
         String CONTACT_ITEMS = "contactItems";
+        String COMMON_MANAGER_LIST = "commonManagerList";
     }
 }
