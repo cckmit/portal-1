@@ -165,7 +165,7 @@
                     </tab:pane.TabWidgetPane>
 
                     <tab:pane.TabWidgetPane tabName="{lang.productCommonManager}">
-                        <commonManagerList:CommonManagerList ui:field="commonManagerList" styleName="form-group col-md-12"/>
+                        <commonManagerList:CommonManagerList ui:field="commonManagerList" styleName="form-group col-md-12 common-manager-list"/>
                     </tab:pane.TabWidgetPane>
                 </tab:TabWidget>
             </g:HTMLPanel>

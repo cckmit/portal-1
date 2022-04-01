@@ -59,14 +59,8 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     @JdbcColumn(name = "external_doc_link")
     private String externalDocLink;
 
-    @JdbcJoinedColumn(localColumn = Columns.ID, remoteColumn = CommonManager.Columns.PRODUCT_ID,
-            mappedColumn = "manager_id", table = "common_manager", sqlTableAlias = "cm")
     private Long commonManagerId;
 
-    @JdbcJoinedColumn(joinPath = {
-            @JdbcJoinPath(localColumn = Columns.ID, remoteColumn = CommonManager.Columns.PRODUCT_ID, table = "common_manager", sqlTableAlias = "cm"),
-            @JdbcJoinPath(localColumn = CommonManager.Columns.MANAGER_ID, remoteColumn = "id", table = "person")},
-    mappedColumn = "displayname")
     private String commonManagerName;
 
     private List<DevUnit> parents;

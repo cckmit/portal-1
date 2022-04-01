@@ -197,6 +197,12 @@ public class ProductServiceImpl implements ProductService {
         product.setChildren(devUnitDAO.getChildren(Collections.singleton(id)));
         product.setProductDirections(new HashSet<>(emptyIfNull(devUnitDAO.getProductDirections(id))));
 
+        CommonManager commonManager = commonManagerDAO.getByProductAndCompany(product.getId(), null);
+        if (commonManager != null) {
+            product.setCommonManagerId(commonManager.getManagerId());
+            product.setCommonManagerName(commonManager.getManagerName());
+        }
+
         return ok(product);
     }
 
@@ -276,8 +282,6 @@ public class ProductServiceImpl implements ProductService {
         saveProductDirection(product);
         saveParents(product);
         saveChildren(product);
-
-        updateCommonManager(product);
 
         return ok(product);
     }
@@ -384,25 +388,6 @@ public class ProductServiceImpl implements ProductService {
 
         List<DevUnitChildRef> children = product.getChildren().stream().map(child -> new DevUnitChildRef(product.getId(), child.getId())).collect(Collectors.toList());
         devUnitChildRefDAO.persistBatch(children);
-    }
-
-    private void updateCommonManager(DevUnit product) {
-        if (product.getCommonManagerId() == null) {
-            commonManagerDAO.removeByProduct(product.getId());
-            return;
-        }
-        CommonManager commonManager = commonManagerDAO.getByProductAndCompany(product.getId(), null);
-        if (commonManager == null) {
-            commonManager = new CommonManager();
-            commonManager.setProductId(product.getId());
-            commonManager.setManagerId(product.getCommonManagerId());
-            commonManagerDAO.persist(commonManager);
-        } else {
-            if (!Objects.equals(commonManager.getManagerId(), product.getCommonManagerId())) {
-                commonManager.setManagerId(product.getCommonManagerId());
-                commonManagerDAO.merge(commonManager);
-            }
-        }
     }
 
     private boolean checkUniqueProduct (String name, En_DevUnitType type, Long excludeId) {
