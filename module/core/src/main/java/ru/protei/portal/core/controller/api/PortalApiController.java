@@ -242,7 +242,7 @@ public class PortalApiController {
 
         return authenticate( request, response, authService, sidGen, log ).flatMap( authToken ->
                         productService.shortViewList( authToken, query ) )
-                .ifOk( id -> log.info( "getProductInfo(): OK " ) )
+                .ifOk( id -> log.info( "getProductShortViews(): OK " ) )
                 .ifError( result -> log.warn( "getProductShortViews(): Can`t get info for query id={}. {}",
                         query, result ) );
     }
