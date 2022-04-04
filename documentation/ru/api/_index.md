@@ -531,6 +531,66 @@ Cache-Control: no-cache
 `curl -X POST -u user:password  'host:9007/Portal/springApi/api/products/17765'`
 ```
 
+### Общий запрос для получения Комплекс, Продукт, Компонент, Направление
+
+- **путь**: /case/getProductShortViews
+- **метод**: POST
+- **авторизация**: Basic
+- **тело запроса**: json
+
+*возможные параметры:*
+
+- **ids** - список идентификаторов
+- **state** - статус
+- **types** -список типов
+- **directionIds** - список идентификаторов направлений
+- **offset** - пропуск первых нескольких элементов; отступ
+- **limit** - количество элементов в запросе
+
+**Пример запроса:**
+
+```json
+POST /Portal/springApi/api/getProductShortViews
+Authorization: Basic porubov password
+Content-Type: application/json
+Cache-Control: no-cache
+
+{
+"ids" : [6683],
+"state": "ACTIVE",
+"types" : ["PRODUCT"],
+"directionIds": [6779],
+"limit" : 50,
+"offset" : 0
+}
+```
+
+**Ответ:**
+
+```json
+{
+  "status": "OK",
+  "data": [{
+      "id": 6683,
+      "name": "CAPL (Protei_CAPL)",
+      "stateId": 1,
+      "aliases": "",
+      "type": "PRODUCT",
+      "productDirection": [{
+          "id": 6779,
+          "name": "MOBILE"
+        }]}
+  ]}
+```
+
+где:
+
+- **id** - идентификатор
+- **name** - название
+- **stateId** - статус продукта
+- **aliases** - псевдонимы
+- **type** - тип продукта
+- **productDirection** - идентификатор и наименование направления
 
 
 ### Создание продукта
@@ -1740,6 +1800,13 @@ id | Код | Описание
 |3|subcontractor|Субподрядчик|
 |4|official|Должностное лицо|
 |5|home|Домашняя компания|
+
+
+**product.state** - айди статуса продукта:
+id | Код | Описание
+--- | --- | --- 
+|1|ACTIVE|Активный|
+|2|DEPRECATED|Устаревший|
 
 
 **typeId** - айди типа продукта:

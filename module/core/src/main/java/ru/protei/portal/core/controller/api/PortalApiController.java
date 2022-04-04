@@ -12,9 +12,9 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.model.api.ApiAbsence;
 import ru.protei.portal.core.model.api.ApiContract;
+import ru.protei.portal.core.model.api.ApiDocument;
 import ru.protei.portal.core.model.api.ApiProject;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.api.ApiDocument;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.dto.PersonInfo;
@@ -22,10 +22,14 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
-import ru.protei.portal.core.model.struct.*;
+import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
+import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
+import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseCommentShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.model.youtrack.dto.issue.YtIssueComment;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
@@ -229,6 +233,18 @@ public class PortalApiController {
                 .ifOk( id -> log.info( "getProductInfo(): OK " ) )
                 .ifError( result -> log.warn( "getProductInfo(): Can`t get info for product id={}. {}",
                         productId, result ) );
+    }
+
+    @PostMapping(value = "/getProductShortViews")
+    public Result<List<ProductShortView>> getProductShortViews(HttpServletRequest request, HttpServletResponse response,
+                                                               @RequestBody ProductQuery query ) {
+        log.info( "getProductShortViews() query={}", query);
+
+        return authenticate( request, response, authService, sidGen, log ).flatMap( authToken ->
+                        productService.shortViewList( authToken, query ) )
+                .ifOk( id -> log.info( "getProductShortViews(): OK " ) )
+                .ifError( result -> log.warn( "getProductShortViews(): Can`t get info for query id={}. {}",
+                        query, result ) );
     }
 
     @PostMapping(value = "/products/create")
