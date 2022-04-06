@@ -305,7 +305,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         plan.setValue(filter.getPlanOption());
         workTriggers.setValue(toSet(caseQuery.getWorkTriggersIds(), id -> En_WorkTrigger.findById(id)));
         overdueDeadlines.setValue(caseQuery.getOverdueDeadlines());
-        autoClose.setValue(caseQuery.getAutoCLose());
+        autoClose.setValue(caseQuery.getAutoClose());
 
         Set<PersonShortView> personShortViews = new LinkedHashSet<>();
         if (emptyIfNull(caseQuery.getManagerIds()).contains(CrmConstants.Employee.UNDEFINED)) {
@@ -361,7 +361,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
                 query.setWorkTriggersIds(nullIfEmpty(toList(workTriggers.getValue(),
                         workTrigger -> workTrigger == null ? En_WorkTrigger.NONE.getId() : workTrigger.getId())));
                 query.setOverdueDeadlines(overdueDeadlines.getValue());
-                query.setAutoCLose(autoClose.getValue());
+                query.setAutoClose(autoClose.getValue());
 
                 query.setCreatedRange(toDateRange(dateCreatedRange.getValue()));
                 query.setModifiedRange(toDateRange(dateModifiedRange.getValue()));

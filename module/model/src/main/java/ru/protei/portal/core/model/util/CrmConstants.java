@@ -124,7 +124,6 @@ public class CrmConstants {
 
     public interface Comment {
         String TIME_ELAPSED_DEFAULT_COMMENT = "затраченное время";
-        String AUTO_CLOSE_DEFAULT_COMMENT = "При наступлении дедлайна обращение будет закрыто";
     }
 
     public interface ClassifierCode {

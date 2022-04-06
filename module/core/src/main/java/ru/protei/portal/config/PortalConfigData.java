@@ -1073,7 +1073,7 @@ public class PortalConfigData {
         final int defaultDeadline;
 
         public AutoCloseDeadlineConfig(PropertiesWrapper properties ) {
-            this.defaultDeadline = properties.getProperty("issue.auto_close.default_deadline", Integer.class, 19);
+            this.defaultDeadline = properties.getProperty("issue.auto_close.default_deadline", Integer.class, 14);
         }
 
         public int getDefaultDeadline() {

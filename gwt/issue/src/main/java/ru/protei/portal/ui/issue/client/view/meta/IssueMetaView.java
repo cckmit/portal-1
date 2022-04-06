@@ -466,27 +466,16 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
-    public void setAutoCLoseVisible(boolean isVisible) {
+    public void setAutoCloseVisible(boolean isVisible) {
         if (isVisible) {
             autoCloseContainer.getElement().getParentElement().removeClassName(UiConstants.Styles.HIDE);
             deadlineContainer.getElement().getParentElement().removeClassName(UiConstants.Styles.FULL_VIEW);
             deadlineContainer.getElement().getParentElement().setClassName(UiConstants.Styles.SHORT_VIEW);
+        } else {
+            autoCloseContainer.getElement().getParentElement().addClassName(UiConstants.Styles.HIDE);
+            deadlineContainer.getElement().getParentElement().addClassName(UiConstants.Styles.FULL_VIEW);
+            deadlineContainer.getElement().getParentElement().removeClassName(UiConstants.Styles.SHORT_VIEW);
         }
-    }
-
-    @Override
-    public HasVisibility autoCloseContainerVisibility() {
-        return autoCloseContainer;
-    }
-
-    @Override
-    public HasVisibility autCloseVisibility() {
-        return autoClose;
-    }
-
-    @Override
-    public HasEnabled autoCloseEnabled() {
-        return autoClose;
     }
 
     @Override

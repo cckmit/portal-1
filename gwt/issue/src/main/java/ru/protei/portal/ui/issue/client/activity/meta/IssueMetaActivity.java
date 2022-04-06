@@ -87,9 +87,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         fillJiraView( event.metaJira );
         fillPlansView(meta.getPlans());
 
-        metaView.setAutoCLoseVisible(!isCustomer());
-        metaView.autoCloseEnabled().setEnabled(CrmConstants.State.TEST_CUST == meta.getStateId());
-
         if (!validateCaseMeta(meta)){
             fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.INFO));
         }
@@ -141,12 +138,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         meta.setStateId(caseState.getId());
 
-        if (CrmConstants.State.TEST_CUST != meta.getStateId()) {
+        metaView.setAutoCloseVisible(!isCustomer() && meta.getStateId() == CrmConstants.State.TEST_CUST && meta.getExtAppType() == null);
+
+        if (CrmConstants.State.TEST_CUST != caseState.getId()) {
             meta.setAutoClose(false);
-            meta.setDeadline(null);
-            metaView.autoCloseEnabled().setEnabled(false);
-        } else {
-            metaView.autoCloseEnabled().setEnabled(true);
         }
 
         meta.setStateName(caseState.getState());
@@ -405,7 +400,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         meta.setAutoClose(metaView.autoClose().getValue());
 
         onCaseMetaChanged(meta, () -> {
-            fireEvent(new IssueEvents.IssueStateChanged(meta.getId(), meta.getStateId()));
+            fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
             fireEvent(new CommentAndHistoryEvents.Reload());
         });
@@ -577,6 +572,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.companyEnabled().setEnabled(!readOnly && isCompanyChangeAllowed(meta.isPrivateCase()));
         metaView.initiatorEnabled().setEnabled(!readOnly && isInitiatorChangeAllowed(meta.getInitiatorCompanyId()));
         metaView.platformEnabled().setEnabled(!readOnly);
+
+        metaView.setAutoCloseVisible(!isCustomer() && meta.getStateId() == CrmConstants.State.TEST_CUST && meta.getExtAppType() == null);
 
         metaView.timeElapsedHeaderVisibility().setVisible(true);
 

@@ -104,7 +104,9 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
 
     private Boolean overdueDeadlines;
 
-    private Boolean autoCLose;
+    private Boolean autoClose;
+
+    private String extAppType;
 
     public CaseQuery() {}
 
@@ -158,8 +160,9 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
         setTimeElapsedTypeIds(query.getTimeElapsedTypeIds());
         setWorkTriggersIds(query.getWorkTriggersIds());
         setOverdueDeadlines(query.getOverdueDeadlines());
-        setAutoCLose(query.getAutoCLose());
+        setAutoClose(query.getAutoClose());
         setPlatformIds(query.getPlatformIds());
+
     }
 
     public Long getId() {
@@ -461,12 +464,20 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
         this.overdueDeadlines = overdueDeadlines;
     }
 
-    public Boolean getAutoCLose() {
-        return autoCLose;
+    public Boolean getAutoClose() {
+        return autoClose;
     }
 
-    public void setAutoCLose(Boolean autoCLose) {
-        this.autoCLose = autoCLose;
+    public void setAutoClose(Boolean autoClose) {
+        this.autoClose = autoClose;
+    }
+
+    public String getExtAppType() {
+        return extAppType;
+    }
+
+    public void setExtAppType(String extAppType) {
+        this.extAppType = extAppType;
     }
 
     public boolean isParamsPresent() {
@@ -569,7 +580,8 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
                 ", timeElapsedTypeIds=" + timeElapsedTypeIds +
                 ", workTriggersIds=" + workTriggersIds +
                 ", overdueDeadlines=" + overdueDeadlines +
-                ", autoClose=" + autoCLose +
+                ", autoClose=" + autoClose +
+                ", extAppType=" + extAppType +
                 '}';
     }
 
@@ -609,8 +621,8 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
                 Objects.equals(timeElapsedTypeIds, caseQuery.timeElapsedTypeIds) &&
                 Objects.equals(workTriggersIds, caseQuery.workTriggersIds) &&
                 Objects.equals(overdueDeadlines, caseQuery.overdueDeadlines) &&
-                Objects.equals(autoCLose, caseQuery.autoCLose);
-
+                Objects.equals(autoClose, caseQuery.autoClose) &&
+                Objects.equals(extAppType, caseQuery.extAppType);
     }
 
     @Override
@@ -619,6 +631,6 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
                 type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdRange, modifiedRange,
                 searchStringAtComments, searchCasenoString, commentAuthorIds, caseTagsIds, caseTagsNames,
                 customerSearch, local, creatorIds, planId, personIdToIsFavorite,
-                timeElapsedTypeIds, workTriggersIds, overdueDeadlines, autoCLose);
+                timeElapsedTypeIds, workTriggersIds, overdueDeadlines, autoClose, extAppType);
     }
 }

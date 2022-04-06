@@ -641,7 +641,13 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (!oldCaseMeta.getAutoClose() && caseMeta.getAutoClose()) {
-            createAndPersistAutoCLoseMessage(caseMeta.getId(), caseMeta.getInitiatorId(), caseMeta.getInitiator().getDisplayName());
+            String langString = "case_object_deadline_expire";
+            createAndPersistAutoCloseMessage(caseMeta.getId(), langString);
+        }
+
+        if (caseMeta.getAutoClose() && caseMeta.getStateId() == CrmConstants.State.VERIFIED) {
+            String langString = "case_object_was_closed";
+            createAndPersistAutoCloseMessage(caseMeta.getId(), langString);
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -1098,14 +1104,14 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
-    private Long createAndPersistAutoCLoseMessage(Long caseId, Long customerId, String customerName) {
+    private Long createAndPersistAutoCloseMessage(Long caseId, String message) {
         ResourceBundle langRu = ResourceBundle.getBundle("Lang", new Locale( "ru", "RU"));
-        CaseComment autoCloseComment = new CaseComment();
+        CaseComment autoCloseComment = new CaseComment(message);
         autoCloseComment.setCreated( new Date() );
         autoCloseComment.setAuthorId( CrmConstants.Person.SYSTEM_USER_ID );
         autoCloseComment.setOriginalAuthorName(langRu.getString("reminder_system_name"));
         autoCloseComment.setCaseId(caseId);
-        autoCloseComment.setText("@" + customerName + " " + CrmConstants.Comment.AUTO_CLOSE_DEFAULT_COMMENT);
+        autoCloseComment.setText(langRu.getString(message));
         autoCloseComment.setPrivacyType( En_CaseCommentPrivacyType.PUBLIC );
         return caseCommentDAO.persist(autoCloseComment);
     }

@@ -4,6 +4,7 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
@@ -312,8 +313,14 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         boolean stateValid = isPauseDateValid(issueMetaView.state().getValue().getId(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
         issueMetaView.setPauseDateValid(stateValid);
 
+        issueMetaView.setAutoCloseVisible(!isCustomer() && issueMetaView.state().getValue().getId() == CrmConstants.State.TEST_CUST);
+
         updateProductMandatory(issueMetaView, isCompanyWithAutoOpenIssues(issueMetaView.getCompany()));
         updateManagerMandatory(issueMetaView);
+
+        if (issueMetaView.state().getValue().getId() != CrmConstants.State.TEST_CUST) {
+            resetAutoCloseAndDeadline(issueMetaView);
+        }
     }
 
     @Override
@@ -361,7 +368,14 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void onAutoCloseChanged() {
-        // TODO: РЕАЛИЗАЦИЯ АВТОЗАКРЫТИЯ
+        if (issueMetaView.autoClose().getValue()) {
+            Date now = new Date();
+            CalendarUtil.addDaysToDate(now, AUTO_CLOSE_DEFAULT_DEADLINE_DAYS);
+            issueMetaView.deadline().setValue(now);
+        } else {
+            issueMetaView.deadline().setValue(null);
+            issueMetaView.setDeadlineValid(true);
+        }
     }
 
     @Override
@@ -996,6 +1010,17 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 importanceLevel.getTemporarySolutionTime(), importanceLevel.getFullSolutionTime());
     }
 
+    private boolean isCustomer() {
+        return !policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
+    }
+
+    public void resetAutoCloseAndDeadline(AbstractIssueMetaView metaView) {
+        metaView.autoClose().setValue(false);
+        metaView.deadline().setValue(null);
+        metaView.setDeadlineValid(true);
+
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -1061,4 +1086,5 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private AbstractCaseTagListActivity tagListActivity;
     private Company currentCompany;
     private static final En_CaseType ISSUE_CASE_TYPE = En_CaseType.CRM_SUPPORT;
+    private final int AUTO_CLOSE_DEFAULT_DEADLINE_DAYS = 14;
 }

@@ -182,29 +182,6 @@ public class MailNotificationProcessor {
     }
 
     @EventListener
-    public void onCaseObjectClosedNotificationEvent(CaseObjectClosedNotificationEvent event) {
-        log.info("onCaseObjectClosedNotificationEvent(): {}", event);
-
-        Long caseObjectId = event.getCaseObjectId();
-        Long caseNumber = event.getCaseNumber();
-        Person customer = event.getCustomer();
-
-        try {
-            String subject = templateService.getCaseObjectClosedNotificationSubject(
-                    caseNumber);
-
-            String body = templateService.getCaseObjectClosedNotificationBody(
-                    caseObjectId,
-                    caseNumber,
-                    getCrmCaseUrl(true), customer.getDisplayName());
-
-            sendMail(new PlainContactInfoFacade(customer.getContactInfo()).getEmail(), subject, body, getFromPortalAddress());
-        } catch (Exception e) {
-            log.warn("Failed to sent case object closed notification: caseNumber={}", caseNumber, e);
-        }
-    }
-
-    @EventListener
     public void onCaseObjectDeadlineExpireEvent(CaseObjectDeadlineExpireEvent event) {
         log.info("onCaseObjectDeadlineExpireEvent(): {}", event);
 

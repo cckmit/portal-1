@@ -290,9 +290,9 @@ public class CaseObjectSqlBuilder {
                 args.add(new Date().getTime());
             }
 
-            if (query.getAutoCLose() != null) {
+            if (query.getAutoClose() != null) {
                 condition.append(" and case_object.auto_close = ?");
-                args.add(query.getAutoCLose());
+                args.add(query.getAutoClose());
             }
         });
     }
