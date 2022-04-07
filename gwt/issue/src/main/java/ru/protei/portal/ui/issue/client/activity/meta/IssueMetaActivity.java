@@ -142,6 +142,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         if (CrmConstants.State.TEST_CUST != caseState.getId()) {
             meta.setAutoClose(false);
+            meta.setDeadline(null);
         }
 
         meta.setStateName(caseState.getState());

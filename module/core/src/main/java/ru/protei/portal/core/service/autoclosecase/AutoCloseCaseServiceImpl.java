@@ -51,12 +51,12 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
             LocalDate deadline = new Date(caseObject.getDeadline()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             LocalDate today = LocalDate.now();
             if (deadline.isEqual(today)) {
-                caseObject.setStateId(CrmConstants.State.VERIFIED);
+                caseObject.setStateId(CrmConstants.State.DONE);
                 caseObject.setDeadline(null);
                 CaseObjectMeta caseObjectMeta = new CaseObjectMeta(caseObject);
                 caseService.updateCaseObjectMeta(createFakeToken(), caseObjectMeta);
 
-                log.info("Case object: {} successfully close", caseObject);
+                log.info("Issue: {} successfully closed", caseObject);
             }
         }
     }
@@ -64,20 +64,20 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
     @Override
     @Transactional
     public void notifyAboutDeadlineExpire() {
-        List<CaseObject> caseObjects = caseObjectDAO.getCases(getCaseQuery());
+        CaseQuery query = getCaseQuery();
+        query.setViewPrivate(false);
+        List<CaseObject> caseObjects = caseObjectDAO.getCases(query);
         for (CaseObject caseObject : CollectionUtils.emptyIfNull(caseObjects)) {
-            if (!caseObject.isPrivateCase()) {
-                LocalDate deadline = new Date(caseObject.getDeadline()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                LocalDate today = LocalDate.now();
-                if (deadline.isEqual(today.plusDays(1)) || deadline.isEqual(today.plusDays(5)) || deadline.isEqual(today.plusDays(10))) {
-                    Person customer = caseObject.getInitiator();
-                    Long caseObjectId = caseObject.getId();
-                    Long caseNumber = caseObject.getCaseNumber();
-                    jdbcManyRelationsHelper.fill(customer, Person.Fields.CONTACT_ITEMS);
+            LocalDate deadline = new Date(caseObject.getDeadline()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate today = LocalDate.now();
+            if (deadline.isEqual(today.plusDays(1)) || deadline.isEqual(today.plusDays(5)) || deadline.isEqual(today.plusDays(10))) {
+                Person customer = caseObject.getInitiator();
+                Long caseObjectId = caseObject.getId();
+                Long caseNumber = caseObject.getCaseNumber();
+                jdbcManyRelationsHelper.fill(customer, Person.Fields.CONTACT_ITEMS);
 
-                    notifyCustomerAboutDeadlineExpire(customer, caseObjectId, caseNumber);
-                    addCaseComment(caseObjectId, getLangFor("send_reminder_about_deadline_expire"));
-                }
+                notifyCustomerAboutDeadlineExpire(customer, caseObjectId, caseNumber);
+                addCaseComment(caseObjectId, getLangFor("send_reminder_about_deadline_expire"));
             }
         }
     }
@@ -104,7 +104,7 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
         List<Long> stateIds = new ArrayList<>();
         stateIds.add(CrmConstants.State.TEST_CUST);
         caseQuery.setStateIds(stateIds);
-        caseQuery.setExtAppType(null);
+        caseQuery.setOnlyNotExternal(true);
         return caseQuery;
     }
 

@@ -117,10 +117,8 @@
                         <argument>notification/email/education.request.decline.body.ftl</argument>
                         <argument>notification/email/delivery.subject.ftl</argument>
                         <argument>notification/email/delivery.body.ftl</argument>
-                        <argument>notification/email/case.object.closed.subject.ftl</argument>
-                        <argument>notification/email/case.object.closed.body.ftl</argument>
-                        <argument>notification/email/case.object.deadline.expire.subject.ftl</argument>
-                        <argument>notification/email/case.object.deadline.expire.body.ftl</argument>
+                        <argument>notification/email/issue.deadline.expire.subject.ftl</argument>
+                        <argument>notification/email/issue.deadline.expire.body.ftl</argument>
                     </arguments>
                 </configuration>
             </plugin>

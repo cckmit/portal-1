@@ -318,7 +318,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         updateProductMandatory(issueMetaView, isCompanyWithAutoOpenIssues(issueMetaView.getCompany()));
         updateManagerMandatory(issueMetaView);
 
-        if (issueMetaView.state().getValue().getId() != CrmConstants.State.TEST_CUST) {
+        if (issueMetaView.autoClose().getValue() && issueMetaView.state().getValue().getId() != CrmConstants.State.TEST_CUST) {
             resetAutoCloseAndDeadline(issueMetaView);
         }
     }

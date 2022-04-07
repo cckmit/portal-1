@@ -641,12 +641,12 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (!oldCaseMeta.getAutoClose() && caseMeta.getAutoClose()) {
-            String langString = "case_object_deadline_expire";
+            String langString = "issue_will_be_closed";
             createAndPersistAutoCloseMessage(caseMeta.getId(), langString);
         }
 
-        if (caseMeta.getAutoClose() && caseMeta.getStateId() == CrmConstants.State.VERIFIED) {
-            String langString = "case_object_was_closed";
+        if (caseMeta.getAutoClose() && oldCaseMeta.getDeadline() != null && caseMeta.getStateId() == CrmConstants.State.DONE) {
+            String langString = "issue_was_closed";
             createAndPersistAutoCloseMessage(caseMeta.getId(), langString);
         }
 

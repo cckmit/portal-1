@@ -106,7 +106,7 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
 
     private Boolean autoClose;
 
-    private String extAppType;
+    private Boolean isOnlyNotExternal;
 
     public CaseQuery() {}
 
@@ -472,12 +472,12 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
         this.autoClose = autoClose;
     }
 
-    public String getExtAppType() {
-        return extAppType;
+    public Boolean IsOnlyNotExternal() {
+        return isOnlyNotExternal;
     }
 
-    public void setExtAppType(String extAppType) {
-        this.extAppType = extAppType;
+    public void setOnlyNotExternal(Boolean isOnlyNotExternal) {
+        this.isOnlyNotExternal = isOnlyNotExternal;
     }
 
     public boolean isParamsPresent() {
@@ -581,7 +581,7 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
                 ", workTriggersIds=" + workTriggersIds +
                 ", overdueDeadlines=" + overdueDeadlines +
                 ", autoClose=" + autoClose +
-                ", extAppType=" + extAppType +
+                ", isOnlyNotExternal=" + isOnlyNotExternal +
                 '}';
     }
 
@@ -622,7 +622,7 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
                 Objects.equals(workTriggersIds, caseQuery.workTriggersIds) &&
                 Objects.equals(overdueDeadlines, caseQuery.overdueDeadlines) &&
                 Objects.equals(autoClose, caseQuery.autoClose) &&
-                Objects.equals(extAppType, caseQuery.extAppType);
+                Objects.equals(isOnlyNotExternal, caseQuery.isOnlyNotExternal);
     }
 
     @Override
@@ -631,6 +631,6 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
                 type, stateIds, importanceIds, allowViewPrivate, viewPrivate, createdRange, modifiedRange,
                 searchStringAtComments, searchCasenoString, commentAuthorIds, caseTagsIds, caseTagsNames,
                 customerSearch, local, creatorIds, planId, personIdToIsFavorite,
-                timeElapsedTypeIds, workTriggersIds, overdueDeadlines, autoClose, extAppType);
+                timeElapsedTypeIds, workTriggersIds, overdueDeadlines, autoClose, isOnlyNotExternal);
     }
 }

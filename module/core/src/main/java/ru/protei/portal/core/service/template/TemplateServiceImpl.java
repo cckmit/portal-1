@@ -231,7 +231,7 @@ public class TemplateServiceImpl implements TemplateService {
         Map<String, Object> model = new HashMap<>();
         model.put("caseNumber", caseNumber);
 
-        return getText(model, "case.object.deadline.expire.subject.%s.ftl");
+        return getText(model, "issue.deadline.expire.subject.%s.ftl");
     }
 
     @Override
@@ -239,8 +239,9 @@ public class TemplateServiceImpl implements TemplateService {
         Map<String, Object> model = new HashMap<>();
         model.put("caseNumber", caseNumber);
         model.put("linkToCaseObject", String.format(urlTemplate, caseObjectId));
+        model.put("userName", recipientName);
 
-        return getText(model, "case.object.deadline.expire.body.%s.ftl");
+        return getText(model, "issue.deadline.expire.body.%s.ftl");
     }
 
     @Override

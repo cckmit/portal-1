@@ -1,1 +1,0 @@
-${case_object_deadline_expire}<#noparse> [CRM-${caseNumber?c}]</#noparse>
