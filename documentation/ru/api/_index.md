@@ -533,7 +533,7 @@ Cache-Control: no-cache
 
 ### Общий запрос для получения Комплекс, Продукт, Компонент, Направление
 
-- **путь**: /case/getProductShortViews
+- **путь**: /getProductShortViews
 - **метод**: POST
 - **авторизация**: Basic
 - **тело запроса**: json
