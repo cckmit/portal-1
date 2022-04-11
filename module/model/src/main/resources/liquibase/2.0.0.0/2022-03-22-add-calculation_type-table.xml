@@ -1,0 +1,35 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-calculation_type-table" author="novikov_a">
+        <createTable tableName="calculation_type">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(128)"/>
+            <column name="ref_key" type="VARCHAR(128)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-calculation_type-id-to-contract-table" author="novikov_a">
+        <addColumn tableName="contract">
+            <column name="calculation_type_id" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-fk-calculation_type-id-to-contract" author="novikov_a">
+        <addForeignKeyConstraint constraintName="fk-calculation_type-id-to-contract"
+                                 baseTableName="contract" baseColumnNames="calculation_type_id"
+                                 referencedTableName="calculation_type" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="SET NULL"/>
+    </changeSet>
+
+    <changeSet id="add-unique_constraint-on-calculation_type-table" author="novikov_a">
+        <addUniqueConstraint constraintName="ref_key_unique"
+                             tableName="calculation_type" columnNames="ref_key"/>
+    </changeSet>
+
+</databaseChangeLog>

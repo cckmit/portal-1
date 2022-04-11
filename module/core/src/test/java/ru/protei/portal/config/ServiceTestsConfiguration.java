@@ -579,4 +579,9 @@ public class ServiceTestsConfiguration {
     public RFIDLabelService getRFIDLabelService() {
         return new RFIDLabelServiceImpl();
     }
+
+    @Bean
+    public CaseElapsedTimeApiService getCaseElapsedTimeApiService() {
+        return new CaseElapsedTimeApiServiceImpl();
+    }
 }

@@ -7,10 +7,11 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_ContractState;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -24,13 +25,15 @@ import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
@@ -107,13 +110,9 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         loadTable();
     }
 
-    private List<En_ContractState> getStates(List<En_ContractState> states) {
-        if (isEmpty(states)){
-            states = En_ContractState.contractStatesByDefault();
-            filterView.states().setValue(new HashSet<>(states));
-        }
-
-        return states;
+    @Override
+    public void resetContractStates() {
+        fillContractStates();
     }
 
     @Override
@@ -160,6 +159,18 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         view.triggerTableLoad();
     }
 
+    private void fillContractStates() {
+        caseStateService.getCaseStatesOmitPrivileges(En_CaseType.CONTRACT, new FluentCallback<List<CaseState>>()
+                .withError(errorHandler -> {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                })
+                .withSuccess(caseStates -> {
+                    filterView.states().setValue(stream(caseStates)
+                            .filter(state -> !Objects.equals(CrmConstants.State.CANCELED, state.getId()))
+                            .collect(Collectors.toSet()));
+                }));
+    }
+
     private ContractQuery makeQuery() {
         ContractQuery query = new ContractQuery();
         query.searchString = filterView.searchString().getValue();
@@ -171,7 +182,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         query.setManagerIds(collectIds(filterView.managers().getValue()));
         query.setTypes(nullIfEmpty(listOfOrNull(filterView.types().getValue())));
         query.setCaseTagsIds(nullIfEmpty(toList(filterView.tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
-        query.setStates(getStates(listOfOrNull(filterView.states().getValue())));
+        query.setStateIds(nullIfEmpty(toList(filterView.states().getValue(), CaseState::getId)));
         ProductDirectionInfo value = filterView.direction().getValue();
         query.setDirectionId(value == null ? null : value.id);
         query.setKind(filterView.kind().getValue());
@@ -217,6 +228,8 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     private AbstractContractFilterView filterView;
     @Inject
     private ContractControllerAsync contractService;
+    @Inject
+    private CaseStateControllerAsync caseStateService;
     @Inject
     private DefaultErrorHandler errorHandler;
     @Inject

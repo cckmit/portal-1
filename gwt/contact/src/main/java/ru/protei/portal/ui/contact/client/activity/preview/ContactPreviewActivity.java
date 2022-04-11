@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.contact.client.activity.preview;
 
+import com.google.gwt.i18n.client.TimeZone;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -89,7 +90,12 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         view.setEmail(EmailRender.renderToHtml(infoFacade.emailsStream()));
         view.setAddress( infoFacade.getFactAddress() );
         view.setHomeAddress( infoFacade.getHomeAddress() );
-        view.setBirthday( value.getBirthday() != null ? DateFormatter.formatDateMonth(value.getBirthday()) : "" );
+
+        TimeZone timeZone = null;
+        if (value.getTimezoneOffset() != null){
+            timeZone = TimeZone.createTimeZone(value.getTimezoneOffset());
+        }
+        view.setBirthday( value.getBirthday() != null ? DateFormatter.formatDateMonth(value.getBirthday(), timeZone) : "" );
         view.setLogins( String.join(", ", value.getLogins()) );
         view.setGenderImage( AvatarUtils.getAvatarUrlByGender(value.getGender()));
         view.setInfo( value.getInfo() );

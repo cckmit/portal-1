@@ -263,6 +263,15 @@ public class BaseServiceTest {
         return caseComment;
     }
 
+    protected CaseComment makeTimeElapsedCaseComment(Person person, Long caseObjectId, En_TimeElapsedType type, Long time) {
+        CaseComment caseComment = createNewComment(person, caseObjectId, "TimeElapsed");
+        caseComment.setTimeElapsedType(type);
+        caseComment.setTimeElapsed(time);
+        caseComment.setId(caseCommentDAO.persist(caseComment));
+        caseComment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
+        return caseComment;
+    }
+
     protected Person makePerson( Company company ) {
         return makePerson(company, null);
     }

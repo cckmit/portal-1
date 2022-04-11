@@ -142,7 +142,7 @@ public class PortalConfigData {
         return jiraConfig;
     }
 
-    public EmployeeConfig getEmployee() {
+    public EmployeeConfig getEmployeeConfig() {
         return employeeConfig;
     }
 
@@ -183,6 +183,8 @@ public class PortalConfigData {
             systemUserId = properties.getProperty("system.user.id", Long.class, null);
             cardbatchCompanyPartnerId = properties.getProperty("cardbatch.company.partner.id", Long.class, null);
             contractCuratorsDepartmentsIds = properties.getProperty("contract.curators_departments_ids", String.class, "").split(",");
+            contractAccountingDepartmentIds = properties.getProperty("contract.accounting_department_ids", String.class, "");
+            contractAccountingEmployeeIds = properties.getProperty("contract.accounting_employee_ids", String.class, "");
         }
         public String getCrmUrlInternal() {
             return crmUrlInternal;
@@ -220,6 +222,14 @@ public class PortalConfigData {
             return contractCuratorsDepartmentsIds;
         }
 
+        public String getContractAccountingDepartmentIds() {
+            return contractAccountingDepartmentIds;
+        }
+
+        public String getContractAccountingEmployeeIds() {
+            return contractAccountingEmployeeIds;
+        }
+
         private final String crmUrlInternal;
         private final String crmUrlExternal;
         private final String crmUrlCurrent;
@@ -229,6 +239,8 @@ public class PortalConfigData {
         private final Long systemUserId;
         private final Long cardbatchCompanyPartnerId;
         private final String[] contractCuratorsDepartmentsIds;
+        private final String contractAccountingDepartmentIds;
+        private final String contractAccountingEmployeeIds;
     }
 
     public static class MailNotificationConfig extends CommonConfig {
@@ -925,13 +937,19 @@ public class PortalConfigData {
     public static class EmployeeConfig {
 
         private final String avatarPath;
+        private final List<Long> employeeBirthdayHideIds;
 
-        public EmployeeConfig(PropertiesWrapper propertiesWrapper) {
+        public EmployeeConfig(PropertiesWrapper propertiesWrapper) throws ConfigException {
             avatarPath = propertiesWrapper.getProperty( "employee.avatar.path", "/usr/protei/shared/avatars/" );
+            employeeBirthdayHideIds = splitString(propertiesWrapper.getProperty("employee.birthday_hide_ids", String.class, ""), ",");
         }
 
         public String getAvatarPath() {
             return avatarPath;
+        }
+
+        public List<Long> getEmployeeBirthdayHideIds() {
+            return employeeBirthdayHideIds;
         }
     }
 
@@ -1060,6 +1078,21 @@ public class PortalConfigData {
         public Boolean getEnableDelay() {
             return enableDelay;
         }
+    }
+
+    private static List<Long> splitString(String str, String delimiter) throws ConfigException {
+
+        List<Long> result = new ArrayList<>();
+        for (String s : str.split( delimiter )){
+            if (s.isEmpty()) continue;
+            try {
+                result.add( Long.parseLong(s.trim()) );
+            } catch (Exception e) {
+                logger.error("Unable to parse string as long: " + s, e);
+                throw new ConfigException(e);
+            }
+        }
+        return result;
     }
 
     private final static Long DEFAULT_FILE_SIZE_MEGABYTES = 10L;

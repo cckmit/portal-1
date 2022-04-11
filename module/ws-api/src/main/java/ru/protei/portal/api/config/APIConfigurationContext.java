@@ -67,6 +67,11 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
     }
 
     @Bean
+    public AccountingEmployeeSqlBuilder getAccountingEmployeeSqlBuilder() {
+        return new AccountingEmployeeSqlBuilder();
+    }
+
+    @Bean
     public PersonSqlBuilder getPersonSqlBuilder() {
         return new PersonSqlBuilder();
     }

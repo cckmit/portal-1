@@ -61,7 +61,7 @@ public class WorkerEntry extends AuditableObject {
     @JdbcColumn(name = "is_contract_agreement")
     private boolean isContractAgreement;
 
-    @JdbcColumn(name = Columns.FIRED_FATE)
+    @JdbcColumn(name = Columns.FIRED_DATE)
     private Date firedDate;
 
     @JdbcColumn(name = "is_deleted")
@@ -259,7 +259,7 @@ public class WorkerEntry extends AuditableObject {
     }
 
     public interface Columns {
-        String FIRED_FATE = "fired_date";
+        String FIRED_DATE = "fired_date";
         String POSITION_ID = "positionId";
         String POSITION_DEPARTMENT_ID = "dep_id";
         String NEW_POSITION_NAME = "new_position_name";

@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employee.client.activity.preview;
 
+import com.google.gwt.i18n.client.TimeZone;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -17,6 +18,7 @@ import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.events.*;
@@ -28,13 +30,14 @@ import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
 
 import java.util.*;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 /**
  * Активность превью сотрудника
@@ -111,6 +114,23 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         );
     }
 
+    private void showBirthday(EmployeeShortView employee) {
+
+        boolean canDisplayBirthday = stream(configStorage.getConfigData().employeeBirthdayHideIds)
+                .noneMatch(l -> Objects.equals(l, employee.getId()));
+        view.birthdayContainerVisibility().setVisible(canDisplayBirthday && employee.getBirthday() != null);
+        String value = "";
+        if (canDisplayBirthday){
+            TimeZone timeZone = null;
+            if (employee.getTimezoneOffset() != null){
+                timeZone = TimeZone.createTimeZone(employee.getTimezoneOffset());
+            }
+            value = DateFormatter.formatDateMonth(employee.getBirthday(), timeZone);
+        }
+
+        view.setBirthday(value);
+    }
+
     private void fillView(final EmployeeShortView employee) {
 
         this.employee = employee;
@@ -118,13 +138,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         view.setPhotoUrl(AvatarUtils.getPhotoUrl(employee.getId()));
         view.setName(employee.getDisplayName());
 
-        if (employee.getBirthday() == null) {
-            view.setBirthday("");
-            view.birthdayContainerVisibility().setVisible(false);
-        } else {
-            view.setBirthday(DateFormatter.formatDateMonth(employee.getBirthday()));
-            view.birthdayContainerVisibility().setVisible(true);
-        }
+        showBirthday(employee);
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
 
@@ -291,6 +305,9 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+
+    @Inject
+    ConfigStorage configStorage;
 
     private EmployeeShortView employee;
 

@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.issue.client.activity.create;
 
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -15,7 +14,6 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
@@ -52,6 +50,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_PREVIEW_DISPLAYED;
 import static ru.protei.portal.ui.common.client.util.AttachmentUtils.getRemoveErrorHandler;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 
 
 /**
@@ -854,10 +853,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 .filter(companySubscription -> (companySubscription.getProductId() == null || Objects.equals(issueMetaView.product().getValue() == null ? null : issueMetaView.product().getValue().getId(), companySubscription.getProductId()))
                         && (companySubscription.getPlatformId() == null || Objects.equals(issueMetaView.platform().getValue() == null ? null : issueMetaView.platform().getValue().getId(), companySubscription.getPlatformId())))
                 .collect( Collectors.toList());
-    }
-
-    private String transliteration(String input) {
-        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     private void initiatorSelectorAllowAddNew(Long companyId) {

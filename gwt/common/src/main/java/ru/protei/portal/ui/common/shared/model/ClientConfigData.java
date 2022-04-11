@@ -11,6 +11,7 @@ public class ClientConfigData implements Serializable {
     public String appVersion;
     public Long cardbatchCompanyPartnerId;
     public List<String> contractCuratorsDepartmentsIds;
+    public List<Long> employeeBirthdayHideIds;
 
     @Override
     public String toString() {
@@ -18,6 +19,7 @@ public class ClientConfigData implements Serializable {
                 "appVersion='" + appVersion + '\'' +
                 "cardbatchCompanyPartnerId='" + cardbatchCompanyPartnerId + '\'' +
                 "contractCuratorsDepartmentsIds='" + contractCuratorsDepartmentsIds + '\'' +
+                "employeeBirthdayHideIds='" + employeeBirthdayHideIds + '\'' +
                 '}';
     }
 }

@@ -10,6 +10,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.struct.Money;
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.struct.Vat.NoVat;
+import static ru.protei.portal.core.model.util.CrmConstants.State.AGREEMENT;
 import static ru.protei.portal.ui.common.client.util.DateUtils.*;
 
 public abstract class ContractEditActivity implements Activity, AbstractContractEditActivity {
@@ -212,16 +214,18 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         boolean isNew = isCopy || isNew(contract) ;
 
         view.type().setValue(contract.getContractType());
-        if ( contract.getState() == null ) {
-            contract.setState(En_ContractState.AGREEMENT);
+        if ( contract.getStateId() == null ) {
+            contract.setStateId(AGREEMENT);
         }
-        view.state().setValue(contract.getState());
+        view.state().setValue(new CaseState(contract.getStateId(), contract.getStateName()));
         view.number().setValue(contract.getNumber());
         if ( contract.getCost() == null ) {
             contract.setCost(new Money(0L));
         }
         view.cost().setValue(new MoneyWithCurrencyWithVat(contract.getCost(), contract.getCurrency(), contract.getVat()));
         view.description().setValue(contract.getDescription());
+        view.fileLocation().setValue(contract.getFileLocation());
+        view.setNotifiers(contract.getNotifiers());
         view.curator().setValue(createPersonOrNull(contract.getCuratorId(), contract.getCuratorShortName()));
         view.dateSigning().setValue(contract.getDateSigning());
         view.dateValidDate().setValue(contract.getDateValid());
@@ -249,6 +253,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.deliveryNumber().setValue(contract.getDeliveryNumber());
         view.dateExecution().setValue(contract.getDateExecution());
         view.dateEndWarranty().setValue(contract.getDateEndWarranty());
+        view.calculationType().setValue(contract.getCalculationType());
+        view.calculationTypeEnabled().setEnabled(view.organization().getValue() != null);
 
         if (contract.getProjectId() == null) {
             view.project().setValue(null);
@@ -284,12 +290,14 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     private Contract fillDto() {
         contract.setContractType(view.type().getValue());
-        contract.setState(view.state().getValue());
+        contract.setStateId(view.state().getValue().getId());
         contract.setNumber(view.number().getValue());
         contract.setCost(view.cost().getValue().getMoney());
         contract.setCurrency(view.cost().getValue().getCurrency());
         contract.setVat(view.cost().getValue().getVatPercent());
         contract.setDescription(view.description().getValue());
+        contract.setFileLocation(view.fileLocation().getValue());
+        contract.setNotifiers(view.getNotifiers());
         contract.setCuratorId(getPersonIdOrNull(view.curator().getValue()));
         contract.setDateSigning(view.dateSigning().getValue());
         contract.setDateValid(view.dateValidDate().getValue());
@@ -301,6 +309,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setContractor(view.contractor().getValue());
         contract.setContractSignManagerId(getPersonIdOrNull(view.contractSignManager().getValue()));
         contract.setDeliveryNumber(view.deliveryNumber().getValue());
+        contract.setCalculationType(view.calculationType().getValue());
         contract.setDateEndWarranty(view.dateEndWarranty().getValue());
         contract.setDateExecution(view.dateExecution().getValue());
 
@@ -314,6 +323,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
                 : null;
         view.organization().setValue(organization);
         view.setOrganization(organizationDisplayText);
+        view.calculationTypeEnabled().setEnabled(hasOrganization);
         view.contractorEnabled().setEnabled(hasOrganization);
         if (view.contractor().getValue() != null) {
             view.contractor().setValue(null);
@@ -338,7 +348,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         if (contract.getStateId() == null)
             return lang.contractValidationEmptyState();
 
-        if (contract.getDateSigning() == null && !(contract.getState().equals(En_ContractState.AGREEMENT)))
+        if (contract.getDateSigning() == null && !(contract.getStateId().equals(AGREEMENT)))
             return lang.contractValidationEmptyDateSigning();
 
         if (contract.getDateSigning() != null && contract.getDateValid() != null &&

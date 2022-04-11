@@ -42,6 +42,9 @@ public class ApiContract implements Serializable {
     @JsonProperty("dates")
     private List<ApiContractDate> dates;
 
+    @JsonProperty("calculation_type")
+    private String calculationType;
+
     public ApiContract() {
     }
 
@@ -117,6 +120,14 @@ public class ApiContract implements Serializable {
         this.dates = dates;
     }
 
+    public String getCalculationType() {
+        return calculationType;
+    }
+
+    public void setCalculationType(String calculationType) {
+        this.calculationType = calculationType;
+    }
+
     @Override
     public String toString() {
         return "ApiContract{" +
@@ -129,6 +140,7 @@ public class ApiContract implements Serializable {
                 ", directions='" + directions + '\'' +
                 ", isMinistryOfDefence=" + isMinistryOfDefence +
                 ", dates=" + dates +
+                ", calculationType='" + calculationType + '\'' +
                 '}';
     }
 }

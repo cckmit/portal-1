@@ -226,14 +226,7 @@ public class CrmConstants {
         long PRELIMINARY = 39;
         long COMMERCIAL_NEGOTIATIONS = 51;
         long BUILD_EQUIPMENT_IN_QUEUE = 52;
-        long BUILD_EQUIPMENT = 53;
-        long AUTOMATIC_MOUNTING_IN_QUEUE = 54;
-        long AUTOMATIC_MOUNTING = 55;
-        long MANUAL_MOUNTING_IN_QUEUE = 58;
-        long MANUAL_MOUNTING = 59;
-        long STICKER_LABELING_IN_QUEUE = 60;
-        long STICKER_LABELING = 61;
-        long TRANSFERRED_FOR_TESTING = 62;
+        long AGREEMENT = 63;
     }
 
     public interface Style {

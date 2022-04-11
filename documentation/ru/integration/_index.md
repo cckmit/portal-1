@@ -124,6 +124,43 @@ https://jira.nexign.com/browse/CGTMR-20513
   - PRT-646 - id в пограничном проекте на стороне Jira
 - EXT_APP_DATA - специфичная для интеграции информация
 
+**Определение/добавление endpoint**
+1) В url вебхука "/jira/{companyId}/wh" указывает компания companyId=72133 "NexignJira" - общая компания
+   Далее надо проверить, относится ли обращение к компании, которая являет подструктурой общей компании (COMPANY_GROUP), иначе используется головная компания
+   Это проверяется по кастом полю в json
+```json
+{
+  "issue": {
+    "fields": {
+      "customfield_12375": {
+        "name": "kcell_Group",
+        "self": "https://jira.nexign.com/rest/api/2/group?groupname=kcell_Group"
+      }
+    }
+  }
+}
+``` 
+Константы на различные имена полей хранятся в **CustomJiraIssueParser.class**
+
+Необходимо прописать в базе новую группу "portal.jira_company_group", где
+- "kcell_Group" - "name" поля "customfield_12375"
+- 72389 - id компании от имени которой будет создаваться/обновляться обращения
+
+```sql
+INSERT INTO portal.jira_company_group (jira_company_name, company_id) VALUES ('kcell_Group', 72389);
+```
+
+2) Далее надо прописать jira_endpoint для этой компании.
+   Для компании добавить пользователей для интеграции (protei_tech_user)
+
+```sql
+INSERT INTO portal.person (created, creator, company_id, firstname, lastname, secondname, displayname, displayPosition, sex, birthday, info, ipaddress, isdeleted, department_id, department, displayShortName, isfired, relations, old_id, locale, firedate, inn) VALUES (now(), 'jira-integration-service', 72389, null, null, null, 'protei_tech_user', null, '-', null, null, null, 0, null, null, 'protei_tech_user', 0, null, null, 'ru', null, null);
+```
+
+прописать jira_endpoint (**тут надо подставить ID пользователя protei_tech_user из прошлого шага**)
+```sql
+INSERT INTO portal.jira_endpoint (server_addr, project_id, COMPANY_ID, STATUS_MAP_ID, PRIORITY_MAP_ID, person_id, server_login, server_pwd, SLA_MAP_ID) VALUES ('https://jira.nexign.com/', '23415', 72389, 1, 1, !!!!, 'protei_tech_user', 'FAut>WxJ9q', 1);
+```
 
 **Дублирование обращений на стороне jira**
 

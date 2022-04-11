@@ -123,6 +123,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public AccountingEmployeeSqlBuilder getAccountingEmployeeSqlBuilder() {
+        return new AccountingEmployeeSqlBuilder();
+    }
+
+    @Bean
     public CompanyDAO getCompanyDAO() {
         return new CompanyDAO_Impl();
     }
@@ -700,7 +705,17 @@ public class JiraTestConfiguration {
     public RFIDDeviceDAO getRFIDDeviceDAO() {
         return new RFIDDeviceDAO_Impl();
     }
-    
+
+    @Bean
+    public CaseElapsedTimeApiDAO getCaseElapsedTimeApiDAO() {
+        return new CaseElapsedTimeApiDAO_Impl();
+    }
+
+    @Bean
+    public CommonManagerDAO getCommonManagerDAO() {
+        return new CommonManagerDAO_Impl();
+    }
+
     /* DAO converters */
 
     @Bean
