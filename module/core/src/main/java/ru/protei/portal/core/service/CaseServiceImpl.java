@@ -639,8 +639,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (!oldCaseMeta.getAutoClose() && caseMeta.getAutoClose()) {
-            String langString = "issue_will_be_closed";
-            createAndPersistAutoCloseMessage(caseMeta.getId(), langString);
+            createAndPersistAutoCloseMessage(caseMeta.getId());
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -1097,13 +1096,13 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
-    private Long createAndPersistAutoCloseMessage(Long caseId, String message) {
+    private Long createAndPersistAutoCloseMessage(Long caseId) {
         ResourceBundle langRu = ResourceBundle.getBundle("Lang", new Locale( "ru", "RU"));
-        CaseComment autoCloseComment = new CaseComment(message);
+        CaseComment autoCloseComment = new CaseComment();
         autoCloseComment.setCreated( new Date() );
         autoCloseComment.setAuthorId(portalConfig.data().getCommonConfig().getSystemUserId());
         autoCloseComment.setCaseId(caseId);
-        autoCloseComment.setText(langRu.getString(message));
+        autoCloseComment.setText(langRu.getString("issue_will_be_closed"));
         autoCloseComment.setPrivacyType( En_CaseCommentPrivacyType.PUBLIC );
         return caseCommentDAO.persist(autoCloseComment);
     }

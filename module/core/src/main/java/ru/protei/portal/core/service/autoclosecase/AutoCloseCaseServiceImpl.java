@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseService;
