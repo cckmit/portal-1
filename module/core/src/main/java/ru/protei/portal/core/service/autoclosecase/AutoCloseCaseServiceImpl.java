@@ -5,10 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.CaseObjectDeadlineExpireEvent;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
 import ru.protei.portal.core.model.dict.En_CaseCommentPrivacyType;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -38,6 +40,8 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
     CaseService caseService;
     @Autowired
     UserRoleDAO userRoleDAO;
+    @Autowired
+    PortalConfig config;
 
     private static final Logger log = LoggerFactory.getLogger(AutoCloseCaseServiceImpl.class);
 
@@ -58,7 +62,11 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
                 caseService.updateCaseObjectMeta(createFakeToken(), caseObjectMeta);
 
                 Long caseObjectId = caseObject.getId();
-                addCaseComment(caseObjectId, getLangFor("issue_was_closed"));
+                CaseComment comment = createCaseComment(caseObjectId, getLangFor("issue_was_closed"));
+                Result<CaseComment> result = caseCommentService.addCaseComment(createFakeToken(), En_CaseType.CRM_SUPPORT, comment);
+                if (result.isError()) {
+                    log.warn("addCaseComment(): Can't add case comment about {} for caseId={}",  comment.getText(), caseObjectId);
+                }
 
                 log.info("Issue: {} was successfully closed", caseObject);
             }
@@ -81,21 +89,22 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
                 jdbcManyRelationsHelper.fill(customer, Person.Fields.CONTACT_ITEMS);
 
                 notifyCustomerAboutDeadlineExpire(customer, caseObjectId, caseNumber);
-                addCaseComment(caseObjectId, getLangFor("send_reminder_about_deadline_expire"));
+
+                CaseComment comment = createCaseComment(caseObjectId, getLangFor("send_reminder_about_deadline_expire"));
+                Result<Long> result = caseCommentService.addCommentOnSentReminder(comment);
+                if (result.isError()) {
+                    log.warn("addCommentOnSentReminder(): Can't add case comment about {} for caseId={}",  comment.getText(), caseObjectId);
+                }
             }
         }
     }
 
-    private void addCaseComment(Long caseId, String message) {
+    private CaseComment createCaseComment(Long caseId, String message) {
         CaseComment comment = new CaseComment(message);
         comment.setCaseId(caseId);
-        comment.setOriginalAuthorName(getLangFor("reminder_system_name"));
+        comment.setAuthorId(config.data().getCommonConfig().getSystemUserId());
         comment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
-        Result<Long> commentId = caseCommentService.addCommentOnSentReminder(comment);
-
-        if (commentId.isError()) {
-            log.warn("addCaseComment(): Can't add case comment about {} for caseId={}",  message, caseId);
-        }
+        return comment;
     }
 
     private void notifyCustomerAboutDeadlineExpire(Person customer, Long caseObjectId, Long caseNumber) {
@@ -119,10 +128,8 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
         } catch (UnknownHostException e) {
             token.setIp("0.0.0.0");
         }
-        token.setUserLoginId(0L);
-        token.setPersonId(1L);
-        token.setPersonDisplayShortName("коллектив");
-        token.setCompanyId(1L);
+        Long systemUserId = config.data().getCommonConfig().getSystemUserId();
+        token.setPersonId(systemUserId);
         Set<UserRole> defaultRoles = userRoleDAO.getDefaultManagerRoles();
         token.setRoles(defaultRoles);
         return token;

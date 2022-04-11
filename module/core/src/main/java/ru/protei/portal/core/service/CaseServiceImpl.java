@@ -1101,8 +1101,7 @@ public class CaseServiceImpl implements CaseService {
         ResourceBundle langRu = ResourceBundle.getBundle("Lang", new Locale( "ru", "RU"));
         CaseComment autoCloseComment = new CaseComment(message);
         autoCloseComment.setCreated( new Date() );
-        autoCloseComment.setAuthorId( CrmConstants.Person.SYSTEM_USER_ID );
-        autoCloseComment.setOriginalAuthorName(langRu.getString("reminder_system_name"));
+        autoCloseComment.setAuthorId(portalConfig.data().getCommonConfig().getSystemUserId());
         autoCloseComment.setCaseId(caseId);
         autoCloseComment.setText(langRu.getString(message));
         autoCloseComment.setPrivacyType( En_CaseCommentPrivacyType.PUBLIC );
