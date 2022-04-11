@@ -531,8 +531,6 @@ public class CaseServiceImpl implements CaseService {
 
         applyStateBasedOnManager(caseMeta);
 
-        applyDeadlineBasedOnAutoClose(caseMeta,oldCaseMeta);
-
         En_IssueValidationResult validationResult = validateMetaFields(token, oldCaseMeta, caseMeta);
         if (En_IssueValidationResult.OK != validationResult) {
             return error(En_ResultStatus.VALIDATION_ERROR, validationResult.name());
@@ -642,11 +640,6 @@ public class CaseServiceImpl implements CaseService {
 
         if (!oldCaseMeta.getAutoClose() && caseMeta.getAutoClose()) {
             String langString = "issue_will_be_closed";
-            createAndPersistAutoCloseMessage(caseMeta.getId(), langString);
-        }
-
-        if (caseMeta.getAutoClose() && oldCaseMeta.getDeadline() != null && caseMeta.getStateId() == CrmConstants.State.DONE) {
-            String langString = "issue_was_closed";
             createAndPersistAutoCloseMessage(caseMeta.getId(), langString);
         }
 
@@ -1253,20 +1246,6 @@ public class CaseServiceImpl implements CaseService {
         }
     }
 
-    private void applyDeadlineBasedOnAutoClose(CaseObjectMeta caseMeta, CaseObjectMeta oldCaseMeta) {
-        if (caseMeta.getAutoClose() && !oldCaseMeta.getAutoClose()) {
-            Calendar now = new GregorianCalendar();
-            now.add(Calendar.DATE, portalConfig.data().getDeadlineConfig().getDefaultDeadline());
-            Date defaultDeadline = now.getTime();
-            caseMeta.setDeadline(defaultDeadline.getTime());
-            return;
-        }
-
-        if (oldCaseMeta.getAutoClose() && !caseMeta.getAutoClose()) {
-            caseMeta.setDeadline(null);
-        }
-    }
-
     private boolean isStateTransitionValid(En_CaseStateWorkflow workflow, long caseStateFromId, long caseStateToId) {
         if (caseStateFromId == caseStateToId) {
             return true;
@@ -1374,6 +1353,12 @@ public class CaseServiceImpl implements CaseService {
             log.warn("Deadline has passed. caseId={}", caseMeta.getId());
             return En_IssueValidationResult.DEADLINE_PASSED;
         }
+
+        if (caseMeta.getAutoClose() && !isDeadLineValidOnAutoClose(caseMeta.getDeadline())) {
+            log.warn("A valid deadline must be specified on auto close. caseId={}", caseMeta.getId());
+            return En_IssueValidationResult.AUTO_CLOSE_DEADLINE_INVALID;
+        }
+
         return En_IssueValidationResult.OK;
     }
 
@@ -1500,6 +1485,10 @@ public class CaseServiceImpl implements CaseService {
 
     private boolean isDeadlineValid(Long date) {
         return date == null || date > System.currentTimeMillis();
+    }
+
+    private boolean isDeadLineValidOnAutoClose(Long date) {
+        return date != null && date > System.currentTimeMillis();
     }
 
     private List<CaseLink> fillLinkedEntryInfo(List<CaseLink> caseLinks ) {

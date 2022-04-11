@@ -53,10 +53,14 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
             if (deadline.isEqual(today)) {
                 caseObject.setStateId(CrmConstants.State.DONE);
                 caseObject.setDeadline(null);
+                caseObject.setAutoClose(false);
                 CaseObjectMeta caseObjectMeta = new CaseObjectMeta(caseObject);
                 caseService.updateCaseObjectMeta(createFakeToken(), caseObjectMeta);
 
-                log.info("Issue: {} successfully closed", caseObject);
+                Long caseObjectId = caseObject.getId();
+                addCaseComment(caseObjectId, getLangFor("issue_was_closed"));
+
+                log.info("Issue: {} was successfully closed", caseObject);
             }
         }
     }

@@ -21,6 +21,7 @@ import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_IssueValidationResultLang;
@@ -370,11 +371,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     public void onAutoCloseChanged() {
         if (issueMetaView.autoClose().getValue()) {
             Date now = new Date();
-            CalendarUtil.addDaysToDate(now, AUTO_CLOSE_DEFAULT_DEADLINE_DAYS);
+            CalendarUtil.addDaysToDate(now, configStorage.getConfigData().autoCloseDefaultDeadline);
             issueMetaView.deadline().setValue(now);
         } else {
             issueMetaView.deadline().setValue(null);
-            issueMetaView.setDeadlineValid(true);
         }
     }
 
@@ -531,6 +531,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         updateCompanyCaseStates(initiatorCompany.getId());
 
         setCustomerVisibility(issueMetaView, policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE));
+
+        issueMetaView.setAutoCloseVisible(!isCustomer() && caseObjectMeta.getStateId() == CrmConstants.State.TEST_CUST);
+        issueMetaView.autoClose().setValue(null);
+
         issueMetaView.deadline().setValue(caseObjectMeta.getDeadline() != null ? new Date(caseObjectMeta.getDeadline()) : null);
         issueMetaView.setDeadlineValid(isDeadlineValid(caseObjectMeta.getDeadline()));
         issueMetaView.workTrigger().setValue(caseObjectMeta.getWorkTrigger());
@@ -779,6 +783,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         createRequest.setTimeElapsed(issueMetaView.getTimeElapsed());
         createRequest.setTimeElapsedType(issueMetaView.timeElapsedType().getValue());
 
+        caseObject.setAutoClose(issueMetaView.autoClose().getValue());
+
         return caseObject;
     }
 
@@ -803,6 +809,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private boolean validateView() {
         if (isCompanyWithAutoOpenIssues(currentCompany) && issueMetaView.product().getValue() == null) {
             fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        if (issueMetaView.autoClose().getValue() && issueMetaView.deadline().getValue() == null) {
+            fireEvent(new NotifyEvents.Show(lang.errDeadlineNotSelectedOnAutoClose(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
@@ -920,6 +931,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private boolean isDeadlineFieldValid(boolean isEmptyDeadlineField, Date date) {
+        if (issueMetaView.autoClose().getValue() && date == null) {
+            return false;
+        }
+
         if (date == null) {
             return isEmptyDeadlineField;
         }
@@ -1074,6 +1089,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     En_IssueValidationResultLang validationResultLang;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    ConfigStorage configStorage;
 
     @ContextAware
     CaseObjectCreateRequest createRequest;
@@ -1086,5 +1103,4 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private AbstractCaseTagListActivity tagListActivity;
     private Company currentCompany;
     private static final En_CaseType ISSUE_CASE_TYPE = En_CaseType.CRM_SUPPORT;
-    private final int AUTO_CLOSE_DEFAULT_DEADLINE_DAYS = 14;
 }

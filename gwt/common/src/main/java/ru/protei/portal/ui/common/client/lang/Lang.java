@@ -766,6 +766,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errProductNotSelected();
 
+    String errDeadlineNotSelectedOnAutoClose();
+
     String errFilterNameRequired();
 
     String errTooMuchCompanies();
@@ -4109,5 +4111,7 @@ public interface Lang extends Messages, ContactItemLang {
     String personEquipmentAssembly();
 
     String personEquipmentAssemblyShort();
+
+    String issueValidationResultAutoCloseDeadline();
 }
 

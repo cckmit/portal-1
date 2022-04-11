@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.meta;
 
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -15,6 +16,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_IssueValidationResultLang;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
@@ -140,7 +142,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaView.setAutoCloseVisible(!isCustomer() && meta.getStateId() == CrmConstants.State.TEST_CUST && meta.getExtAppType() == null);
 
-        if (CrmConstants.State.TEST_CUST != caseState.getId()) {
+        if (meta.getAutoClose() && CrmConstants.State.TEST_CUST != caseState.getId()) {
             meta.setAutoClose(false);
             meta.setDeadline(null);
         }
@@ -399,6 +401,13 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     @Override
     public void onAutoCloseChanged() {
         meta.setAutoClose(metaView.autoClose().getValue());
+        if (metaView.autoClose().getValue()) {
+            Date now = new Date();
+            CalendarUtil.addDaysToDate(now, configStorage.getConfigData().autoCloseDefaultDeadline);
+            meta.setDeadline(now.getTime());
+        } else {
+            meta.setDeadline(null);
+        }
 
         onCaseMetaChanged(meta, () -> {
             fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
@@ -860,6 +869,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     private boolean isDeadlineFieldValid(boolean isEmptyDeadlineField, Date date) {
+        if (meta.getAutoClose() && date == null) {
+            return false;
+        }
+
         if (date == null) {
             return isEmptyDeadlineField;
         }
@@ -1051,6 +1064,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     En_IssueValidationResultLang validationResultLang;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    ConfigStorage configStorage;
 
     @ContextAware
     CaseObjectMeta meta;
