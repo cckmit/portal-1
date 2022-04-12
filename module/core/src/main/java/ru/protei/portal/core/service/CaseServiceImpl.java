@@ -22,13 +22,14 @@ import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.struct.JiraExtAppData;
-import ru.protei.portal.core.model.util.*;
+import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
+import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.model.view.*;
-import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.portal.core.service.template.htmldiff.HtmlDiff;
 import ru.protei.portal.core.utils.JiraUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.services.lock.LockService;
@@ -173,9 +174,6 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     private ImportanceLevelDAO importanceLevelDAO;
-
-    @Autowired
-    HTMLRenderer htmlRenderer;
 
     @Override
     public Result<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query) {
@@ -461,7 +459,7 @@ public class CaseServiceImpl implements CaseService {
             }
 
             if (!Objects.equals(oldCaseObject.getInfo(), changeRequest.getInfo())) {
-                updateInfoHistory(token, changeRequest.getId(), oldCaseObject.getInfo(), MarkupUtils.recognizeTextMarkup(oldCaseObject), changeRequest.getInfo());
+                updateInfoHistory(token, changeRequest.getId(), oldCaseObject.getInfo(), changeRequest.getInfo());
             }
 
             if(isNotEmpty(changeRequest.getAttachments())){
@@ -1587,29 +1585,19 @@ public class CaseServiceImpl implements CaseService {
         }
     }
 
-    private void updateInfoHistory(AuthToken token, Long caseId, String oldCaseInfo, En_TextMarkup textMarkup, String newCaseInfo) {
+    private void updateInfoHistory(AuthToken token, Long caseId, String oldCaseInfo, String newCaseInfo) {
         Result<Long> resultName = ok();
         if (StringUtils.isEmpty(oldCaseInfo) && StringUtils.isNotEmpty(newCaseInfo)) {
-            String newCaseInfoRender = htmlRenderer.plain2html(newCaseInfo, textMarkup);
-            resultName = addInfoHistory(token, caseId, newCaseInfoRender);
+            resultName = addInfoHistory(token, caseId, newCaseInfo);
         } else if (StringUtils.isNotEmpty(oldCaseInfo) && StringUtils.isNotEmpty(newCaseInfo)) {
-            String caseInfoDiff = createCaseInfoDiff(oldCaseInfo, newCaseInfo, textMarkup);
-            resultName = changeInfoHistory(token, caseId, caseInfoDiff);
+            resultName = changeInfoHistory(token, caseId, oldCaseInfo, newCaseInfo);
         } else if (StringUtils.isNotEmpty(oldCaseInfo) && StringUtils.isEmpty(newCaseInfo)) {
-            String caseInfoDiff = createCaseInfoDiff(oldCaseInfo, newCaseInfo, textMarkup);
-            resultName = removeInfoHistory(token, caseId, caseInfoDiff);
+            resultName = removeInfoHistory(token, caseId, oldCaseInfo);
         }
 
         if (resultName.isError()) {
             log.error("Case info history for the issue {} isn't saved!", caseId);
         }
-    }
-
-    private String createCaseInfoDiff(String oldCaseName, String newCaseName, En_TextMarkup textMarkup) {
-        String oldPlain = htmlRenderer.plain2html(oldCaseName, textMarkup);
-        String newPlain = htmlRenderer.plain2html(newCaseName, textMarkup);
-        HtmlDiff htmlDiff = new HtmlDiff(oldPlain, newPlain);
-        return htmlDiff.build(DIFF_INSERT_STYLE, DIFF_DELETE_STYLE);
     }
 
     private void updateManagerHistory(AuthToken token, CaseObjectMeta caseMeta, CaseObjectMeta oldCaseMeta) {
@@ -1898,8 +1886,8 @@ public class CaseServiceImpl implements CaseService {
         return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_INFO,null, null, null, caseInfo);
     }
 
-    private Result<Long> changeInfoHistory(AuthToken authToken, Long caseId, String newCaseInfo) {
-        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_INFO, null, null, null, newCaseInfo);
+    private Result<Long> changeInfoHistory(AuthToken authToken, Long caseId, String oldCaseInfo, String newCaseInfo) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_INFO, null, oldCaseInfo, null, newCaseInfo);
     }
 
     private Result<Long> removeInfoHistory(AuthToken authToken, Long caseId, String oldCaseInfo) {
@@ -1995,7 +1983,4 @@ public class CaseServiceImpl implements CaseService {
         }
         return caseObject.getPlatformName();
     }
-
-    private static String DIFF_INSERT_STYLE = "color:#11731d;background:#dff7e2;text-decoration:none";
-    private static String DIFF_DELETE_STYLE = "color:#bd1313;text-decoration:line-through";
 }

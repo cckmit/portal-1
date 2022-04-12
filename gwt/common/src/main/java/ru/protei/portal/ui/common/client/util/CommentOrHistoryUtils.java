@@ -157,6 +157,7 @@ public class CommentOrHistoryUtils {
 
         if (En_HistoryAction.ADD.equals(history.getAction())) {
             historyItem.addedValueContainer().add(makeItem(
+                    history.getId(),
                     history.getAction(),
                     history.getType(),
                     history.getNewValue(),
@@ -167,6 +168,7 @@ public class CommentOrHistoryUtils {
 
         if (En_HistoryAction.CHANGE.equals(history.getAction())) {
             historyItem.oldValueContainer().add(makeItem(
+                    history.getId(),
                     history.getAction(),
                     history.getType(),
                     history.getOldValue(),
@@ -175,6 +177,7 @@ public class CommentOrHistoryUtils {
             ));
 
             historyItem.newValueContainer().add(makeItem(
+                    history.getId(),
                     history.getAction(),
                     history.getType(),
                     history.getNewValue(),
@@ -185,6 +188,7 @@ public class CommentOrHistoryUtils {
 
         if (En_HistoryAction.REMOVE.equals(history.getAction())) {
             historyItem.removedValueContainer().add(makeItem(
+                    history.getId(),
                     history.getAction(),
                     history.getType(),
                     history.getOldValue(),
@@ -216,7 +220,12 @@ public class CommentOrHistoryUtils {
         return LinkUtils.isLinkNeeded(clazz) ? LinkUtils.makePreviewLink(clazz, id) : null;
     }
 
-    private static Widget makeItem(En_HistoryAction historyAction, En_HistoryType historyType, String value, String color, String link) {
+    private static Widget makeItem(Long historyId,
+                                   En_HistoryAction historyAction,
+                                   En_HistoryType historyType,
+                                   String value,
+                                   String color,
+                                   String link) {
         if (En_HistoryType.CASE_STATE.equals(historyType)) {
             CaseHistoryStateItemView caseHistoryStateItemView = caseHistoryStateItemViewProvider.get();
             caseHistoryStateItemView.setName(value);
@@ -255,7 +264,7 @@ public class CommentOrHistoryUtils {
                 public void onClick(ClickEvent event) {
                     event.preventDefault();
                     if (activity != null){
-                        activity.fireEvent(new CommentAndHistoryEvents.ShowCaseInfoChanges(value));
+                        activity.fireEvent(new CommentAndHistoryEvents.ShowCaseInfoChanges(historyId));
                     }
                 }
             });

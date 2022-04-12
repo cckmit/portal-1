@@ -7,7 +7,10 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.events.CommentAndHistoryEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 public abstract class CaseInfoHistoryItemActivity implements Activity, AbstractCaseInfoHistoryItemActivity, AbstractDialogDetailsActivity {
 
@@ -22,9 +25,23 @@ public abstract class CaseInfoHistoryItemActivity implements Activity, AbstractC
 
     @Event
     public void onShowCaseInfoChanges(CommentAndHistoryEvents.ShowCaseInfoChanges event) {
-        view.setDescription(event.caseInfoChanges);
+
+        view.loadingViewVisibility().setVisible(true);
+        view.setDescription("");
         dialogView.getBodyContainer().add(view.asWidget());
         dialogView.showPopup();
+
+        caseCommentService.getHistoryValueDiffByHistoryId(event.historyId, new FluentCallback<String>()
+                .withError(throwable -> {
+                    view.loadingViewVisibility().setVisible(false);
+                    dialogView.hidePopup();
+                    fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR));
+                })
+                .withSuccess(caseInfoDiff -> {
+                    view.loadingViewVisibility().setVisible(false);
+                    view.setDescription(caseInfoDiff);
+                })
+        );
     }
 
     @Override
@@ -39,4 +56,6 @@ public abstract class CaseInfoHistoryItemActivity implements Activity, AbstractC
     AbstractCaseInfoHistoryItemView view;
     @Inject
     AbstractDialogDetailsView dialogView;
+    @Inject
+    CaseCommentControllerAsync caseCommentService;
 }

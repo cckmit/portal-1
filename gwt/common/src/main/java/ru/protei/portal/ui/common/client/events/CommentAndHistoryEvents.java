@@ -74,9 +74,9 @@ public class CommentAndHistoryEvents {
     }
 
     public static class ShowCaseInfoChanges {
-        public ShowCaseInfoChanges(String caseInfoChanges) {
-            this.caseInfoChanges = caseInfoChanges;
+        public ShowCaseInfoChanges(Long historyId) {
+            this.historyId = historyId;
         }
-        public String caseInfoChanges;
+        public Long historyId;
     }
 }
