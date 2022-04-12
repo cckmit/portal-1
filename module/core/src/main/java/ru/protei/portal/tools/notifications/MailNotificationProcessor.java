@@ -16,6 +16,7 @@ import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dict.EducationEntryType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.*;
@@ -181,6 +182,29 @@ public class MailNotificationProcessor {
         }
     }
 
+    @EventListener
+    public void onCaseObjectDeadlineExpireEvent(CaseObjectDeadlineExpireEvent event) {
+        log.info("onCaseObjectDeadlineExpireEvent(): {}", event);
+
+        Long caseObjectId = event.getCaseObjectId();
+        Long caseNumber = event.getCaseNumber();
+        Person customer = event.getCustomer();
+        String email = new PlainContactInfoFacade(customer.getContactInfo()).getEmail();
+
+        try {
+            String subject = templateService.getCaseObjectDeadlineExpireNotificationSubject(
+                    caseNumber);
+
+            String body = templateService.getCaseObjectDeadlineExpireNotificationBody(
+                    caseObjectId,
+                    caseNumber,
+                    getCrmCaseUrl(CompanySubscription.isProteiRecipient(email)), customer.getDisplayName());
+
+            sendMail(email, subject, body, getFromPortalAddress());
+        } catch (Exception e) {
+            log.warn("Failed to sent case object deadline expire notification: caseNumber={}", caseNumber, e);
+        }
+    }
 
     private DiffCollectionResult<CaseLink> selectPublicLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
         DiffCollectionResult result = new DiffCollectionResult();

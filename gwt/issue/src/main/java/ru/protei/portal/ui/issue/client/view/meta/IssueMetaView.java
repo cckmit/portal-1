@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -465,6 +466,24 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     }
 
     @Override
+    public void setAutoCloseVisible(boolean isVisible) {
+        if (isVisible) {
+            autoCloseContainer.getElement().getParentElement().removeClassName(UiConstants.Styles.HIDE);
+            deadlineContainer.getElement().getParentElement().removeClassName(UiConstants.Styles.FULL_VIEW);
+            deadlineContainer.getElement().getParentElement().setClassName(UiConstants.Styles.SHORT_VIEW);
+        } else {
+            autoCloseContainer.getElement().getParentElement().addClassName(UiConstants.Styles.HIDE);
+            deadlineContainer.getElement().getParentElement().addClassName(UiConstants.Styles.FULL_VIEW);
+            deadlineContainer.getElement().getParentElement().removeClassName(UiConstants.Styles.SHORT_VIEW);
+        }
+    }
+
+    @Override
+    public HasValue<Boolean> autoClose() {
+        return autoClose;
+    }
+
+    @Override
     public HasVisibility deadlineContainerVisibility() {
         return deadlineContainer;
     }
@@ -542,6 +561,7 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
         plans.setItemContainerEnsureDebugId(DebugIds.ISSUE.PLANS_SELECTOR_ITEM_CONTAINER);
         plans.setLabelEnsureDebugId(DebugIds.ISSUE.PLANS_SELECTOR_LABEL);
         plans.ensureDebugId(DebugIds.ISSUE.PLANS_SELECTOR);
+        // TODO уточнить нужен ли DebugId на чекбокс.
         deadline.setEnsureDebugId(DebugIds.ISSUE.DEADLINE_CONTAINER);
         workTrigger.setEnsureDebugId(DebugIds.ISSUE.WORK_TRIGGER_SELECTOR);
     }
@@ -615,6 +635,13 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @UiHandler("plans")
     public void onPlanChanged(ValueChangeEvent<Set<PlanOption>> event) {
         activity.onPlansChanged();
+    }
+
+    @UiHandler("autoClose")
+    public void onAutoCloseChanged(ClickEvent event) {
+        if (activity != null) {
+            activity.onAutoCloseChanged();
+        }
     }
 
     @UiHandler("deadline")
@@ -721,6 +748,10 @@ public class IssueMetaView extends Composite implements AbstractIssueMetaView {
     @UiField(provided = true)
     EmployeeMultiSelector notifiers;
 
+    @UiField
+    HTMLPanel autoCloseContainer;
+    @UiField
+    CheckBox autoClose;
     @UiField
     HTMLPanel deadlineContainer;
     @Inject

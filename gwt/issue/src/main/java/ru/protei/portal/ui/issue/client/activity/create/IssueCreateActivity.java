@@ -3,6 +3,7 @@ package ru.protei.portal.ui.issue.client.activity.create;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
@@ -18,6 +19,7 @@ import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_IssueValidationResultLang;
@@ -311,8 +313,14 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         boolean stateValid = isPauseDateValid(issueMetaView.state().getValue().getId(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
         issueMetaView.setPauseDateValid(stateValid);
 
+        issueMetaView.setAutoCloseVisible(!isCustomer() && issueMetaView.state().getValue().getId() == CrmConstants.State.TEST_CUST);
+
         updateProductMandatory(issueMetaView, isCompanyWithAutoOpenIssues(issueMetaView.getCompany()));
         updateManagerMandatory(issueMetaView);
+
+        if (issueMetaView.autoClose().getValue() && issueMetaView.state().getValue().getId() != CrmConstants.State.TEST_CUST) {
+            resetAutoCloseAndDeadline(issueMetaView);
+        }
     }
 
     @Override
@@ -356,6 +364,17 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Override
     public void onFavoriteStateChanged() {
         view.setFavoriteButtonActive(!view.isFavoriteButtonActive());
+    }
+
+    @Override
+    public void onAutoCloseChanged() {
+        if (issueMetaView.autoClose().getValue()) {
+            Date now = new Date();
+            CalendarUtil.addDaysToDate(now, configStorage.getConfigData().autoCloseDefaultDeadline);
+            issueMetaView.deadline().setValue(now);
+        } else {
+            issueMetaView.deadline().setValue(null);
+        }
     }
 
     @Override
@@ -511,6 +530,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         updateCompanyCaseStates(initiatorCompany.getId());
 
         setCustomerVisibility(issueMetaView, policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE));
+
+        issueMetaView.setAutoCloseVisible(!isCustomer() && caseObjectMeta.getStateId() == CrmConstants.State.TEST_CUST);
+        issueMetaView.autoClose().setValue(null);
+
         issueMetaView.deadline().setValue(caseObjectMeta.getDeadline() != null ? new Date(caseObjectMeta.getDeadline()) : null);
         issueMetaView.setDeadlineValid(isDeadlineValid(caseObjectMeta.getDeadline()));
         issueMetaView.workTrigger().setValue(caseObjectMeta.getWorkTrigger());
@@ -696,6 +719,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         } else {
             caseObject.setInitiatorCompany(policyService.getUserCompany());
         }
+        caseObject.setAutoClose(false);
         caseObject.setWorkTrigger(En_WorkTrigger.NONE);
 
         return caseObject;
@@ -758,6 +782,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         createRequest.setTimeElapsed(issueMetaView.getTimeElapsed());
         createRequest.setTimeElapsedType(issueMetaView.timeElapsedType().getValue());
 
+        caseObject.setAutoClose(issueMetaView.autoClose().getValue());
+
         return caseObject;
     }
 
@@ -782,6 +808,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private boolean validateView() {
         if (isCompanyWithAutoOpenIssues(currentCompany) && issueMetaView.product().getValue() == null) {
             fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        if (issueMetaView.autoClose().getValue() && issueMetaView.deadline().getValue() == null) {
+            fireEvent(new NotifyEvents.Show(lang.errDeadlineNotSelectedOnAutoClose(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
@@ -895,6 +926,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private boolean isDeadlineFieldValid(boolean isEmptyDeadlineField, Date date) {
+        if (issueMetaView.autoClose().getValue() && date == null) {
+            return false;
+        }
+
         if (date == null) {
             return isEmptyDeadlineField;
         }
@@ -985,6 +1020,17 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 importanceLevel.getTemporarySolutionTime(), importanceLevel.getFullSolutionTime());
     }
 
+    private boolean isCustomer() {
+        return !policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
+    }
+
+    public void resetAutoCloseAndDeadline(AbstractIssueMetaView metaView) {
+        metaView.autoClose().setValue(false);
+        metaView.deadline().setValue(null);
+        metaView.setDeadlineValid(true);
+
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -1038,6 +1084,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     En_IssueValidationResultLang validationResultLang;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    ConfigStorage configStorage;
 
     @ContextAware
     CaseObjectCreateRequest createRequest;

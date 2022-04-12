@@ -12,6 +12,7 @@ public class ClientConfigData implements Serializable {
     public Long cardbatchCompanyPartnerId;
     public List<String> contractCuratorsDepartmentsIds;
     public List<Long> employeeBirthdayHideIds;
+    public int autoCloseDefaultDeadline;
 
     @Override
     public String toString() {

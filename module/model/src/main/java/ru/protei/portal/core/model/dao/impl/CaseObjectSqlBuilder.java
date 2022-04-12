@@ -289,6 +289,15 @@ public class CaseObjectSqlBuilder {
                 condition.append(" and case_object.deadline " + (query.getOverdueDeadlines()? "<=" : ">") +" ?");
                 args.add(new Date().getTime());
             }
+
+            if (query.getAutoClose() != null) {
+                condition.append(" and case_object.auto_close = ?");
+                args.add(query.getAutoClose());
+            }
+
+            if (Boolean.TRUE.equals(query.IsOnlyNotExternal())) {
+                condition.append(" and case_object.EXT_APP is null");
+            }
         });
     }
 }
