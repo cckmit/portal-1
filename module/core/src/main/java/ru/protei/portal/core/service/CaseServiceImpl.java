@@ -1352,7 +1352,7 @@ public class CaseServiceImpl implements CaseService {
             return En_IssueValidationResult.DEADLINE_PASSED;
         }
 
-        if (caseMeta.getAutoClose() && !isDeadLineValidOnAutoClose(caseMeta.getDeadline())) {
+        if (Objects.equals(caseMeta.getAutoClose(), Boolean.TRUE) && !isDeadLineValidOnAutoClose(caseMeta.getDeadline())) {
             log.warn("A valid deadline must be specified on auto close. caseId={}", caseMeta.getId());
             return En_IssueValidationResult.AUTO_CLOSE_DEADLINE_INVALID;
         }
