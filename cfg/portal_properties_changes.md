@@ -8,3 +8,10 @@ id = 7931 - Пирогов, который просил убрать его др
 # Сотрудники. Идентификаторы сотрудников, чьи дни рождения скрывать в карточке, в рассылке на почту и в таблице "Дни рождения" (список через запятую)
 ## default: ""
 employee.birthday_hide_ids=7931
+
+## PORTAL-2069
+```
+Добавить в portal.properties
+# issue default deadline
+issue.auto_close.default_deadline=14
+```

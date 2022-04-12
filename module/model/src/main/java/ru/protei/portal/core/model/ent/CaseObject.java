@@ -152,6 +152,9 @@ public class CaseObject extends AuditableObject {
     @JdbcManyToMany(localLinkColumn = "case_object_id", remoteLinkColumn = "plan_id", linkTable = "plan_to_case_object")
     private List<Plan> plans;
 
+    @JdbcColumn(name = AUTO_CLOSE)
+    private Boolean autoClose;
+
     @JdbcColumn(name = DEADLINE)
     private Long deadline;
 
@@ -591,6 +594,14 @@ public class CaseObject extends AuditableObject {
         isFavorite = favorite;
     }
 
+    public Boolean getAutoClose() {
+        return autoClose;
+    }
+
+    public void setAutoClose(Boolean autoClose) {
+        this.autoClose = autoClose;
+    }
+
     public Long getDeadline() {
         return deadline;
     }
@@ -632,6 +643,7 @@ public class CaseObject extends AuditableObject {
         String MANAGER = "MANAGER";
         String MANAGER_COMPANY_ID = "manager_company_id";
         String PLATFORM_ID = "platform_id";
+        String AUTO_CLOSE = "auto_close";
         String DEADLINE = "deadline";
         String WORK_TRIGGER = "work_trigger";
         String INITIATOR_COMPANY = "initiator_company";
@@ -655,6 +667,8 @@ public class CaseObject extends AuditableObject {
                 ", info='" + info + '\'' +
                 ", stateId=" + stateId +
                 ", stateName='" + stateName + '\'' +
+                ", stateColor='" + stateColor + '\'' +
+                ", stateInfo='" + stateInfo + '\'' +
                 ", impLevel=" + impLevel +
                 ", importanceCode='" + importanceCode + '\'' +
                 ", creatorId=" + creatorId +
@@ -686,6 +700,7 @@ public class CaseObject extends AuditableObject {
                 ", managerCompanyId=" + managerCompanyId +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", plans=" + plans +
+                ", autoClose=" + autoClose +
                 ", deadline=" + deadline +
                 ", workTrigger=" + workTrigger +
                 ", timeElapsedType=" + timeElapsedType +

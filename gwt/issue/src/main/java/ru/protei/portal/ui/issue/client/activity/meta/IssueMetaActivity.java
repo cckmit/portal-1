@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.meta;
 
+import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -13,6 +15,7 @@ import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_IssueValidationResultLang;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
@@ -136,6 +139,14 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
 
         meta.setStateId(caseState.getId());
+
+        metaView.setAutoCloseVisible(!isCustomer() && meta.getStateId() == CrmConstants.State.TEST_CUST && meta.getExtAppType() == null);
+
+        if (meta.getAutoClose() && CrmConstants.State.TEST_CUST != caseState.getId()) {
+            meta.setAutoClose(false);
+            meta.setDeadline(null);
+        }
+
         meta.setStateName(caseState.getState());
         meta.setStateColor(caseState.getColor());
         meta.setPauseDate((CrmConstants.State.PAUSED != meta.getStateId() || metaView.pauseDate().getValue() == null) ? null : metaView.pauseDate().getValue().getTime());
@@ -388,6 +399,24 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     @Override
+    public void onAutoCloseChanged() {
+        meta.setAutoClose(metaView.autoClose().getValue());
+        if (metaView.autoClose().getValue()) {
+            Date now = new Date();
+            CalendarUtil.addDaysToDate(now, configStorage.getConfigData().autoCloseDefaultDeadline);
+            meta.setDeadline(now.getTime());
+        } else {
+            meta.setDeadline(null);
+        }
+
+        onCaseMetaChanged(meta, () -> {
+            fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
+            fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CommentAndHistoryEvents.Reload());
+        });
+    }
+
+    @Override
     public void onDeadlineChanged() {
         if (isDeadlineEquals(metaView.deadline().getValue(), meta.getDeadline())) {
             metaView.setDeadlineValid(isDeadlineFieldValid(metaView.isDeadlineEmpty(), metaView.deadline().getValue()));
@@ -399,7 +428,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return;
         }
 
-        meta.setDeadline(metaView.deadline().getValue() != null ? metaView.deadline().getValue().getTime() : null );
+        meta.setDeadline(metaView.deadline().getValue() != null ? metaView.deadline().getValue().getTime() : null);
         metaView.setDeadlineValid(true);
 
         onCaseMetaChanged(meta, () -> {
@@ -553,6 +582,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.initiatorEnabled().setEnabled(!readOnly && isInitiatorChangeAllowed(meta.getInitiatorCompanyId()));
         metaView.platformEnabled().setEnabled(!readOnly);
 
+        metaView.setAutoCloseVisible(!isCustomer() && meta.getStateId() == CrmConstants.State.TEST_CUST && meta.getExtAppType() == null);
+
         metaView.timeElapsedHeaderVisibility().setVisible(true);
 
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
@@ -616,6 +647,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.setJiraInfoLink(LinkUtils.makeJiraInfoLink());
 
         metaView.slaContainerVisibility().setVisible(!isJiraIssue() && isSystemScope());
+
+        metaView.autoClose().setValue(meta.getAutoClose());
 
         metaView.deadline().setValue(meta.getDeadline() == null ? null : new Date(meta.getDeadline()));
         metaView.setDeadlineValid(isDeadlineValid(meta.getDeadline()));
@@ -831,6 +864,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     private boolean isDeadlineFieldValid(boolean isEmptyDeadlineField, Date date) {
+        if (meta.getAutoClose() && date == null) {
+            return false;
+        }
+
         if (date == null) {
             return isEmptyDeadlineField;
         }
@@ -957,6 +994,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         return userCompany.getCategory() == En_CompanyCategory.SUBCONTRACTOR;
     }
 
+    private boolean isCustomer() {
+        return !policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
+    }
+
     private void onParentIssueChanged(Long caseId) {
         caseLinkController.getCaseLinks(caseId, new FluentCallback<List<CaseLink>>()
                 .withSuccess(links ->
@@ -1018,6 +1059,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     En_IssueValidationResultLang validationResultLang;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    ConfigStorage configStorage;
 
     @ContextAware
     CaseObjectMeta meta;

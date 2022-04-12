@@ -10,8 +10,7 @@ import ru.protei.winter.jdbc.annotations.*;
 import java.util.Date;
 import java.util.List;
 
-import static ru.protei.portal.core.model.ent.CaseObject.Columns.DEADLINE;
-import static ru.protei.portal.core.model.ent.CaseObject.Columns.WORK_TRIGGER;
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.*;
 
 @JdbcEntity(table = "case_object")
 public class CaseObjectMeta extends AuditableObject {
@@ -90,6 +89,9 @@ public class CaseObjectMeta extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "manager_company_id", remoteColumn = "id", table = "company", mappedColumn = "cname")
     private String managerCompanyName;
 
+    @JdbcColumn(name = AUTO_CLOSE)
+    private Boolean autoClose;
+
     @JdbcColumn(name = DEADLINE)
     private Long deadline;
 
@@ -127,6 +129,7 @@ public class CaseObjectMeta extends AuditableObject {
         if (co.getManagerCompanyId() != null) setManagerCompanyId(co.getManagerCompanyId());
         if (co.getManagerCompanyName() != null) setManagerCompanyName(co.getManagerCompanyName());
         if (co.getPlans() != null) setPlans(co.getPlans());
+        if (co.getAutoClose() != null) setAutoClose(co.getAutoClose());
         if (co.getDeadline() != null) setDeadline(co.getDeadline());
         if (co.getWorkTrigger() != null) setWorkTrigger(co.getWorkTrigger());
         if (co.getImportanceCode() != null) setImportanceCode(co.getImportanceCode());
@@ -355,6 +358,14 @@ public class CaseObjectMeta extends AuditableObject {
 
     public void setPlans(List<Plan> plans) {
         this.plans = plans;
+    }
+
+    public Boolean getAutoClose() {
+        return autoClose;
+    }
+
+    public void setAutoClose(Boolean autoClose) {
+        this.autoClose = autoClose;
     }
 
     public Long getDeadline() {

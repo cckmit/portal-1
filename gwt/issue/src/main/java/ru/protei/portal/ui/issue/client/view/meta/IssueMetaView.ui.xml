@@ -50,14 +50,28 @@
                                                  mandatory="false" fixedStrategy="false"/>
                 </div>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="deadlineContainer" styleName="row">
-                <div class="col-md-12">
-                    <div class="form-group form-group-default date-picker">
-                        <label class="fade"><ui:text from="{lang.issueDeadline}"/></label>
-                        <datepicker:SinglePicker ui:field="deadline" type="DATE" formatValue="dd-MM-yyyy" styleName="clearfix"/>
-                    </div>
+            <div class="row">
+                <div class="col-md-6 hide">
+                    <g:HTMLPanel ui:field="autoCloseContainer" styleName="row">
+                        <div class="col-md-12">
+                            <div class="form-group form-group-default">
+                                <label class="fade"><ui:text from="{lang.issueAutoClose}"/></label>
+                                <g:CheckBox ui:field="autoClose" styleName="checkbox"/>
+                            </div>
+                        </div>
+                    </g:HTMLPanel>
                 </div>
-            </g:HTMLPanel>
+                <div class="col-md-12">
+                    <g:HTMLPanel ui:field="deadlineContainer" styleName="row">
+                        <div class="col-md-12">
+                            <div class="form-group form-group-default date-picker">
+                                <label class="fade"><ui:text from="{lang.issueDeadline}"/></label>
+                                <datepicker:SinglePicker ui:field="deadline" type="DATE" formatValue="dd-MM-yyyy" styleName="clearfix"/>
+                            </div>
+                        </div>
+                    </g:HTMLPanel>
+                </div>
+            </div>
             <g:HTMLPanel ui:field="workTriggerContainer" styleName="row">
                 <div class="col-md-12">
                     <worktrigger:WorkTriggerFormSelector ui:field="workTrigger"

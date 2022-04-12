@@ -64,4 +64,14 @@ public class PortalTestApiController {
     public void updatePositionByDate () {
         portalScheduleTasks.updatePositionByDate();
     }
+
+    @GetMapping(value = "/issue/auto-close-by-deadline")
+    public void processAutoClose() {
+        portalScheduleTasks.processAutoCloseByDeadLine();
+    }
+
+    @GetMapping(value = "/issue/deadline-expire/notification")
+    public void notifyAboutDeadline() {
+        portalScheduleTasks.notifyAboutDeadlineExpire();
+    }
 }

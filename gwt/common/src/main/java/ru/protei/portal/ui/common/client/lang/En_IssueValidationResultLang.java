@@ -33,6 +33,7 @@ public class En_IssueValidationResultLang {
             case PLATFORM_OTHER_COMPANY: return lang.issueValidationResultPlatformOtherCompany();
             case PRODUCT_INVALID: return lang.issueValidationResultProductInvalid();
             case DEADLINE_PASSED: return lang.issueValidationResultDeadlinePassed();
+            case AUTO_CLOSE_DEADLINE_INVALID: return lang.issueValidationResultAutoCloseDeadline();
             default: return lang.errUnknownResult();
         }
     }

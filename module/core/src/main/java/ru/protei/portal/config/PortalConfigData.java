@@ -44,6 +44,8 @@ public class PortalConfigData {
     private final MailCommentConfig mailCommentConfig;
     private final NRPEConfig nrpeConfig;
     private final AutoOpenConfig autoOpenConfig;
+    private final AutoCloseDeadlineConfig autoCloseDeadlineConfig;
+
 
     private final String loginSuffixConfig;
     private final boolean taskSchedulerEnabled;
@@ -72,6 +74,7 @@ public class PortalConfigData {
         mailCommentConfig = new MailCommentConfig(wrapper);
         nrpeConfig = new NRPEConfig(wrapper);
         autoOpenConfig = new AutoOpenConfig(wrapper);
+        autoCloseDeadlineConfig = new AutoCloseDeadlineConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
@@ -164,6 +167,10 @@ public class PortalConfigData {
 
     public AutoOpenConfig getAutoOpenConfig() {
         return autoOpenConfig;
+    }
+
+    public AutoCloseDeadlineConfig getDeadlineConfig() {
+        return autoCloseDeadlineConfig;
     }
 
     public boolean isTaskSchedulerEnabled() {
@@ -1077,6 +1084,18 @@ public class PortalConfigData {
 
         public Boolean getEnableDelay() {
             return enableDelay;
+        }
+    }
+
+    public static class AutoCloseDeadlineConfig {
+        final int defaultDeadline;
+
+        public AutoCloseDeadlineConfig(PropertiesWrapper properties ) {
+            this.defaultDeadline = properties.getProperty("issue.auto_close.default_deadline", Integer.class, 14);
+        }
+
+        public int getDefaultDeadline() {
+            return defaultDeadline;
         }
     }
 

@@ -185,7 +185,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public Result<CaseCommentSaveOrUpdateResult> addCaseCommentWithoutEvent( AuthToken token, En_CaseType caseType, CaseComment comment) {
+    public Result<CaseCommentSaveOrUpdateResult> addCaseCommentWithoutEvent(AuthToken token, En_CaseType caseType, CaseComment comment) {
 
         if (comment == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -575,7 +575,9 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     @Transactional
     public Result<Long> addCommentOnSentReminder( CaseComment comment ) {
         comment.setCreated( new Date() );
-        comment.setAuthorId( CrmConstants.Person.SYSTEM_USER_ID );
+        if (comment.getAuthorId() == null) {
+            comment.setAuthorId( CrmConstants.Person.SYSTEM_USER_ID );
+        }
         Long commentId = caseCommentDAO.persist(comment);
 
         if (commentId == null) {
