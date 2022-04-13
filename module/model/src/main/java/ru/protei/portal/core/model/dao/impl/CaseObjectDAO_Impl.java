@@ -202,13 +202,13 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
             parameters.withJoins(LEFT_JOIN_PLAN_ORDER);
         } else {
             String joins = "";
-            if (isNeedJoinComments(query)) {
+            if (isNeedJoinComments(query) || query.getModifiedRange() != null) {
                 joins += LEFT_JOIN_CASE_COMMENT;
             }
             if (isFilterByTagNames(query)) {
                 joins += LEFT_JOIN_CASE_TAG;
             }
-            if (TRUE.equals(query.isCheckImportanceHistory())) {
+            if (TRUE.equals(query.isCheckImportanceHistory()) || query.getModifiedRange() != null) {
                 joins += LEFT_JOIN_HISTORY;
             }
             if (!joins.equals("")) {

@@ -180,11 +180,19 @@ public class CaseObjectSqlBuilder {
 
             if ( modified != null ) {
                 if (modified.from != null) {
-                    condition.append( " and case_object.modified >= ?" );
+                    condition.append( " and (case_object.modified >= ?" );
+                    condition.append( " or case_comment.created >= ?" );
+                    condition.append( " or history.date >= ?)" );
+                    args.add( modified.from );
+                    args.add( modified.from );
                     args.add( modified.from );
                 }
                 if (modified.to != null) {
-                    condition.append( " and case_object.modified < ?" );
+                    condition.append( " and (case_object.modified < ?" );
+                    condition.append( " or case_comment.created < ?" );
+                    condition.append( " or history.date < ?)" );
+                    args.add( modified.to );
+                    args.add( modified.to );
                     args.add( modified.to );
                 }
             }
