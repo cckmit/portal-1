@@ -153,7 +153,7 @@ public class CaseObject extends AuditableObject {
     private List<Plan> plans;
 
     @JdbcColumn(name = AUTO_CLOSE)
-    private Boolean autoClose;
+    private boolean autoClose;
 
     @JdbcColumn(name = DEADLINE)
     private Long deadline;
