@@ -1337,6 +1337,11 @@ public class MainConfiguration {
         return new CaseElapsedTimeApiServiceImpl();
     }
 
+    @Bean
+    public DeliverySpecificationService getDeliverySpecificationService() {
+        return new DeliverySpecificationServiceImpl();
+    }    
+
     /* ASPECT/INTERCEPTORS */
 
     @Bean
