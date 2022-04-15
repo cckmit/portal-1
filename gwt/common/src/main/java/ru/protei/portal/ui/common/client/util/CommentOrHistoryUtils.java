@@ -120,7 +120,7 @@ public class CommentOrHistoryUtils {
             case CASE_INITIATOR_COMPANY: return makeHistoryItem(history, lang.issueInitiatorCompany(), Company.class);
             case CASE_INITIATOR: return makeHistoryItem(history, lang.issueInitiator(), EmployeeShortView.class);
             case CASE_PLATFORM: return makeHistoryItem(history, lang.siteFolderPlatform(), Platform.class);
-            case CASE_NAME: return makeHistoryItem(history, lang.issueName(), String.class);
+            case CASE_NAME: return makeHistoryItem(history, lang.name(), String.class);
             case CASE_INFO: return makeHistoryItem(history, lang.description(), String.class);
             case CASE_ATTACHMENT: return makeHistoryItem(history, lang.attachment(), CaseAttachment.class);
             case CASE_LINK: return makeHistoryItem(history, getLinkBundleName(history), CaseLink.class);
@@ -259,7 +259,7 @@ public class CommentOrHistoryUtils {
 
         if (En_HistoryType.CASE_INFO.equals(historyType)) {
             CaseHistoryLinkItemView caseHistorySimpleItemView = caseHistoryLinkItemViewProvider.get();
-            caseHistorySimpleItemView.setLink(getCaseInfoHistoryLabel(historyAction), "#", new ClickHandler() {
+            caseHistorySimpleItemView.setLink(lang.historyDetailsLink(), "#", new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
                     event.preventDefault();
@@ -365,21 +365,6 @@ public class CommentOrHistoryUtils {
         }
 
         return null;
-    }
-
-    private static String getCaseInfoHistoryLabel(En_HistoryAction historyAction) {
-        if (historyAction == null) return lang.valueNotSet();
-        switch (historyAction) {
-            case ADD:
-                return lang.historyResultOfAdding();
-            case CHANGE:
-                return lang.historyModificationResult();
-            case REMOVE:
-                return lang.historyDeletionResult();
-            default:
-                return lang.valueNotSet();
-        }
-
     }
 
     private static boolean isCaseInfoType(En_HistoryType historyType){

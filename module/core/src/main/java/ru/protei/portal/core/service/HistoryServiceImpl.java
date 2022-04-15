@@ -132,7 +132,7 @@ public class HistoryServiceImpl implements HistoryService {
             return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        return ok(createCaseInfoDiff(history.getOldValue(), history.getNewValue(), MarkupUtils.recognizeTextMarkup(caseObject)));
+        return ok(createHtmlDiff(history.getOldValue(), history.getNewValue(), MarkupUtils.recognizeTextMarkup(caseObject)));
     }
 
     @Override
@@ -268,17 +268,17 @@ public class HistoryServiceImpl implements HistoryService {
         return null;
     }
 
-    private String createCaseInfoDiff(String oldValue, String newValue, En_TextMarkup textMarkup) {
+    private String createHtmlDiff(String oldValue, String newValue, En_TextMarkup textMarkup) {
 
-        String oldPlain = "";
-        String newPlain = "";
+        String oldHtml = "";
+        String newHtml = "";
         if (StringUtils.isNotEmpty(oldValue)){
-            oldPlain = htmlRenderer.plain2html(oldValue, textMarkup);
+            oldHtml = htmlRenderer.plain2html(oldValue, textMarkup);
         }
         if (StringUtils.isNotEmpty(newValue)){
-            newPlain = htmlRenderer.plain2html(newValue, textMarkup);
+            newHtml = htmlRenderer.plain2html(newValue, textMarkup);
         }
-        HtmlDiff htmlDiff = new HtmlDiff(oldPlain, newPlain);
+        HtmlDiff htmlDiff = new HtmlDiff(oldHtml, newHtml);
         return htmlDiff.build(DIFF_INSERT_STYLE, DIFF_DELETE_STYLE);
     }
 }

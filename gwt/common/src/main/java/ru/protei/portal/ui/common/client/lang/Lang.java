@@ -4110,11 +4110,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String caseDescriptionHistoryPreview();
 
-    String historyResultOfAdding();
-
-    String historyDeletionResult();
-
-    String historyModificationResult();
+    String historyDetailsLink();
 
     String linkRemoved();
 }
