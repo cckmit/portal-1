@@ -25,6 +25,7 @@ import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.service.WorkerEntryService;
 import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
@@ -1585,7 +1586,6 @@ public class WorkerController {
                 try {
 
                     Person person = operationData.person();
-                    String personLastName = person.getLastName();
                     WorkerEntry worker = operationData.worker();
                     List<UserLogin> userLogins = operationData.account();
                     EmployeeRegistration employeeRegistration = operationData.registration();
@@ -1601,7 +1601,7 @@ public class WorkerController {
                     if (rec.isFired() || rec.isDeleted()) {
                         boolean immediately = false;
                         Date firedDate = HelperFunc.isEmpty(rec.getFireDate()) ? null : HelperService.DATE.parse(rec.getFireDate());
-                        if (firedDate == null || firedDate.before(new Date())) {
+                        if (firedDate == null || firedDate.before(DateUtils.resetTime(new Date()))) {
                             immediately = true;
                         } else {
                             worker.setFiredDate(firedDate);
