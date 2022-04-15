@@ -766,6 +766,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errProductNotSelected();
 
+    String errDeadlineNotSelectedOnAutoClose();
+
     String errFilterNameRequired();
 
     String errTooMuchCompanies();
@@ -3122,6 +3124,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueSyncedWith();
 
+    String issueAutoClose();
+
+    String issueAutoCloseEnabled();
+
+    String issueAutoCloseDisabled();
+
     String issueDeadline();
 
     String issueWorkTrigger();
@@ -4117,5 +4125,7 @@ public interface Lang extends Messages, ContactItemLang {
     String historyDetailsLink();
 
     String linkRemoved();
+
+    String issueValidationResultAutoCloseDeadline();
 }
 

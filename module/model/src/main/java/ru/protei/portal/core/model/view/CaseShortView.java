@@ -105,6 +105,9 @@ public class CaseShortView implements Serializable, Identifiable {
     @JdbcColumn(name = DEADLINE)
     private Long deadline;
 
+    @JdbcColumn(name = AUTO_CLOSE)
+    private Boolean autoClose;
+
     @JdbcColumn(name = WORK_TRIGGER)
     @JdbcEnumerated(EnumType.ID)
     private En_WorkTrigger workTrigger;
@@ -407,6 +410,14 @@ public class CaseShortView implements Serializable, Identifiable {
 
     public void setExtAppType(String extAppType) {
         this.extAppType = extAppType;
+    }
+
+    public Boolean getAutoClose() {
+        return autoClose;
+    }
+
+    public void setAutoClose(Boolean autoClose) {
+        this.autoClose = autoClose;
     }
 
     @Override

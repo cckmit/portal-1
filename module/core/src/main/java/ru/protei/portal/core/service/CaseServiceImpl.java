@@ -618,6 +618,10 @@ public class CaseServiceImpl implements CaseService {
             updatePlatformHistory(token, caseMeta, oldCaseMeta);
         }
 
+        if (!Objects.equals(oldCaseMeta.getAutoClose(), caseMeta.getAutoClose())) {
+            updateAutoCloseHistory(token, caseMeta, oldCaseMeta);
+        }
+
         if (!Objects.equals(oldCaseMeta.getDeadline(), caseMeta.getDeadline())) {
             updateDeadlineHistory(token, caseMeta, oldCaseMeta);
         }
@@ -633,6 +637,10 @@ public class CaseServiceImpl implements CaseService {
                 log.error("Failed to open parent issue | message = '{}'", openedParentsResult.getMessage());
                 throw new RollbackTransactionException(openedParentsResult.getStatus());
             }
+        }
+
+        if (!oldCaseMeta.getAutoClose() && caseMeta.getAutoClose()) {
+            createAndPersistAutoCloseMessage(caseMeta.getId());
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -1089,6 +1097,17 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
+    private Long createAndPersistAutoCloseMessage(Long caseId) {
+        ResourceBundle langRu = ResourceBundle.getBundle("Lang", new Locale( "ru", "RU"));
+        CaseComment autoCloseComment = new CaseComment();
+        autoCloseComment.setCreated( new Date() );
+        autoCloseComment.setAuthorId(portalConfig.data().getCommonConfig().getSystemUserId());
+        autoCloseComment.setCaseId(caseId);
+        autoCloseComment.setText(langRu.getString("issue_will_be_closed"));
+        autoCloseComment.setPrivacyType( En_CaseCommentPrivacyType.PUBLIC );
+        return caseCommentDAO.persist(autoCloseComment);
+    }
+
     private CaseQuery applyFilterByScope(AuthToken token, CaseQuery caseQuery) {
         Set<UserRole> roles = token.getRoles();
         if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
@@ -1130,6 +1149,7 @@ public class CaseServiceImpl implements CaseService {
                 || !Objects.equals(co1.getManagerCompanyId(), co2.getManagerCompanyId())
                 || !Objects.equals(co1.getManagerId(), co2.getManagerId())
                 || !Objects.equals(co1.getPlatformId(), co2.getPlatformId())
+                || !Objects.equals(co1.getAutoClose(), co2.getAutoClose())
                 || !Objects.equals(co1.getDeadline(), co2.getDeadline())
                 || !Objects.equals(co1.getWorkTrigger(), co2.getWorkTrigger());
     }
@@ -1332,6 +1352,12 @@ public class CaseServiceImpl implements CaseService {
             log.warn("Deadline has passed. caseId={}", caseMeta.getId());
             return En_IssueValidationResult.DEADLINE_PASSED;
         }
+
+        if (Objects.equals(caseMeta.getAutoClose(), Boolean.TRUE) && !isDeadLineValidOnAutoClose(caseMeta.getDeadline())) {
+            log.warn("A valid deadline must be specified on auto close. caseId={}", caseMeta.getId());
+            return En_IssueValidationResult.AUTO_CLOSE_DEADLINE_INVALID;
+        }
+
         return En_IssueValidationResult.OK;
     }
 
@@ -1458,6 +1484,10 @@ public class CaseServiceImpl implements CaseService {
 
     private boolean isDeadlineValid(Long date) {
         return date == null || date > System.currentTimeMillis();
+    }
+
+    private boolean isDeadLineValidOnAutoClose(Long date) {
+        return date != null && date > System.currentTimeMillis();
     }
 
     private List<CaseLink> fillLinkedEntryInfo(List<CaseLink> caseLinks ) {
@@ -1673,6 +1703,23 @@ public class CaseServiceImpl implements CaseService {
         }
     }
 
+    private void updateAutoCloseHistory(AuthToken token, CaseObjectMeta caseMeta, CaseObjectMeta oldCaseMeta) {
+        Result<Long> resultAutoClose = ok();
+        if (oldCaseMeta.getAutoClose() == null && caseMeta.getAutoClose() != null) {
+            resultAutoClose = addAutoCloseHistory(token, caseMeta.getId(), String.valueOf(caseMeta.getAutoClose()));
+        } else if (oldCaseMeta.getAutoClose() != null && caseMeta.getAutoClose() != null) {
+            resultAutoClose = changeAutoCloseHistory(token, caseMeta.getId(),
+                    String.valueOf(oldCaseMeta.getAutoClose()), String.valueOf(caseMeta.getAutoClose()));
+        } else if (oldCaseMeta.getAutoClose() != null && caseMeta.getAutoClose() == null) {
+            resultAutoClose = removeAutoCloseHistory(token, caseMeta.getId(),
+                    String.valueOf(oldCaseMeta.getAutoClose()));
+        }
+
+        if (resultAutoClose.isError()) {
+            log.error("Auto close history for the issue {} isn't saved!", caseMeta.getId());
+        }
+    }
+
     private void updateDeadlineHistory(AuthToken token, CaseObjectMeta caseMeta, CaseObjectMeta oldCaseMeta) {
         Result<Long> resultDeadline = ok();
         if (oldCaseMeta.getDeadline() == null && caseMeta.getDeadline() != null) {
@@ -1796,6 +1843,18 @@ public class CaseServiceImpl implements CaseService {
 
     private Result<Long> removeWorkTriggerHistory(AuthToken authToken, Long caseId, Long oldWorkTriggerId, String oldWorkTriggerName) {
         return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_WORK_TRIGGER, oldWorkTriggerId, oldWorkTriggerName, null, null);
+    }
+
+    private Result<Long> addAutoCloseHistory(AuthToken authToken, Long caseId, String autoClose) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_AUTO_CLOSE,null, null, null, autoClose);
+    }
+
+    private Result<Long> changeAutoCloseHistory(AuthToken authToken, Long caseId, String oldAutoClose, String newAutoClose) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_AUTO_CLOSE, null, oldAutoClose, null, newAutoClose);
+    }
+
+    private Result<Long> removeAutoCloseHistory(AuthToken authToken, Long caseId, String oldAutoClose) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_AUTO_CLOSE, null, oldAutoClose, null, null);
     }
 
     private Result<Long> addDeadlineHistory(AuthToken authToken, Long caseId, String deadline) {

@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.NumberUtils;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -114,6 +115,7 @@ public class CommentOrHistoryUtils {
             case CARD_BATCH_IMPORTANCE: return makeHistoryItem(history, lang.issueImportance(), ImportanceLevel.class);
             case CASE_PAUSE_DATE: return makeHistoryItem(history, lang.issuePauseDateValidity(), Long.class);
             case CASE_PRODUCT: return makeHistoryItem(history, lang.issueProduct(), DevUnit.class);
+            case CASE_AUTO_CLOSE: return makeHistoryItem(history, lang.issueAutoClose(), String.class);
             case CASE_DEADLINE: return makeHistoryItem(history, lang.issueDeadline(), Long.class);
             case CASE_WORK_TRIGGER: return makeHistoryItem(history, lang.issueWorkTrigger(), En_WorkTrigger.class);
             case CASE_MANAGER_COMPANY: return makeHistoryItem(history, lang.issueCompany(), Company.class);
@@ -272,6 +274,13 @@ public class CommentOrHistoryUtils {
             return caseHistorySimpleItemView;
         }
 
+        if (En_HistoryType.CASE_AUTO_CLOSE.equals(historyType)) {
+            CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
+            caseHistorySimpleItemView.setName(autoCloseLang.getName(value));
+
+            return caseHistorySimpleItemView;
+        }
+
         if (En_HistoryType.CASE_PAUSE_DATE.equals(historyType)
                 || En_HistoryType.CASE_DEADLINE.equals(historyType)) {
             CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
@@ -410,6 +419,8 @@ public class CommentOrHistoryUtils {
     private static Provider<CaseHistoryItemsContainer> caseHistoryItemsContainerProvider;
     @Inject
     private static En_WorkTriggerLang workTriggerLang;
+    @Inject
+    private static En_AutoCloseLang autoCloseLang;
 
     private static final Logger log = Logger.getLogger(CommentOrHistoryUtils.class.getName());
 }
