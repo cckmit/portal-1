@@ -1,99 +1,59 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
+import java.util.List;
 
+@JdbcEntity(table = "specification")
 public class DeliverySpecification {
 
-    private Long id;
-
     /**
-     * Дата создания
+     * Идентификатор
      */
-    private Date created;
+    @JdbcId(name = Columns.ID, idInsertMode = IdInsertMode.EXPLICIT)
+    private Long id;
 
     /**
      * Создатель
      */
+    @JdbcColumn(name = Columns.CREATOR_ID)
     private Long creatorId;
 
+    @JdbcJoinedObject(localColumn = Columns.CREATOR_ID)
     private PersonShortView creator;
+
+    /**
+     * Дата создания
+     */
+    @JdbcColumn(name = "created")
+    private Date created;
 
     /**
      * Дата изменения
      */
+    @JdbcColumn(name = "modified")
     private Date modified;
-
-    /**
-     * Вложенная спецификация
-     */
-    private Long nestedSpecificationId;
-
-    /**
-     * Артикул
-     */
-    private String partNumber;
 
     /**
      * Наименование
      */
+    @JdbcColumn(name = "name")
     private String name;
 
     /**
-     * Количество
-     *  Исп1
+     *  Используемые детали
      */
-    private String implementationAmount1;
+    @JdbcOneToMany(table = "detail_to_specification", localColumn = "id",
+            remoteColumn = "specification_id" )
+    private List<DeliveryDetailToSpecification> specifications;
 
     /**
-     * Признак
-     *  Исп1
+     * Вложенныая спецификацая
      */
-    private String implementationSign1;
-
-    // еще другие поля исполнения
-
-    /**
-     * Ответственный
-     */
-    private Long managerId;
-
-    private PersonShortView manager;
-
-    /**
-     * Поставщик
-     */
-    private Long vendorCompanyId;
-
-    private Company vendorCompany;
-
-    /**
-     * Метка для попадания в
-     *  упрощенную спецификацию
-     */
-    private Boolean isSimplified;
-
-    /**
-     * Раздел для работы
-     */
-    private Long sectionForWork;
-
-    /**
-     * Размеры, мм
-     */
-    private String dimensions;
-
-    /**
-     * Вес, г
-     */
-    private Integer weight;
-
-    public DeliverySpecification() {}
-
-    public DeliverySpecification(Long id) {
-        this.id = id;
-    }
+    @JdbcJoinedObject(localColumn = "id", remoteColumn = "specification_id")
+    private DeliveryNestedSpecification nestedSpecification;
 
     public Long getId() {
         return id;
@@ -101,14 +61,6 @@ public class DeliverySpecification {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
     }
 
     public Long getCreatorId() {
@@ -127,6 +79,14 @@ public class DeliverySpecification {
         this.creator = creator;
     }
 
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
     public Date getModified() {
         return modified;
     }
@@ -143,103 +103,20 @@ public class DeliverySpecification {
         this.name = name;
     }
 
-    public interface Fields {
+    public DeliveryNestedSpecification getNestedSpecification() {
+        return nestedSpecification;
     }
 
-    public Long getNestedSpecificationId() {
-        return nestedSpecificationId;
+    public void setNestedSpecification(DeliveryNestedSpecification nestedSpecification) {
+        this.nestedSpecification = nestedSpecification;
     }
 
-    public void setNestedSpecificationId(Long nestedSpecificationId) {
-        this.nestedSpecificationId = nestedSpecificationId;
+    public List<DeliveryDetailToSpecification> getSpecifications() {
+        return specifications;
     }
 
-    public String getPartNumber() {
-        return partNumber;
-    }
-
-    public void setPartNumber(String partNumber) {
-        this.partNumber = partNumber;
-    }
-
-    public String getImplementationAmount1() {
-        return implementationAmount1;
-    }
-
-    public void setImplementationAmount1(String implementationAmount1) {
-        this.implementationAmount1 = implementationAmount1;
-    }
-
-    public String getImplementationSign1() {
-        return implementationSign1;
-    }
-
-    public void setImplementationSign1(String implementationSign1) {
-        this.implementationSign1 = implementationSign1;
-    }
-
-    public Long getManagerId() {
-        return managerId;
-    }
-
-    public void setManagerId(Long managerId) {
-        this.managerId = managerId;
-    }
-
-    public PersonShortView getManager() {
-        return manager;
-    }
-
-    public void setManager(PersonShortView manager) {
-        this.manager = manager;
-    }
-
-    public Long getVendorCompanyId() {
-        return vendorCompanyId;
-    }
-
-    public void setVendorCompanyId(Long vendorCompanyId) {
-        this.vendorCompanyId = vendorCompanyId;
-    }
-
-    public Company getVendorCompany() {
-        return vendorCompany;
-    }
-
-    public void setVendorCompany(Company vendorCompany) {
-        this.vendorCompany = vendorCompany;
-    }
-
-    public Boolean getSimplified() {
-        return isSimplified;
-    }
-
-    public void setSimplified(Boolean simplified) {
-        isSimplified = simplified;
-    }
-
-    public Long getSectionForWork() {
-        return sectionForWork;
-    }
-
-    public void setSectionForWork(Long sectionForWork) {
-        this.sectionForWork = sectionForWork;
-    }
-
-    public String getDimensions() {
-        return dimensions;
-    }
-
-    public void setDimensions(String dimensions) {
-        this.dimensions = dimensions;
-    }
-
-    public Integer getWeight() {
-        return weight;
-    }
-
-    public void setWeight(Integer weight) {
-        this.weight = weight;
+    public void setSpecifications(List<DeliveryDetailToSpecification> specifications) {
+        this.specifications = specifications;
     }
 
     @Override
@@ -263,23 +140,18 @@ public class DeliverySpecification {
     public String toString() {
         return "DeliverySpecification{" +
                 "id=" + id +
-                ", created=" + created +
                 ", creatorId=" + creatorId +
                 ", creator=" + creator +
+                ", created=" + created +
                 ", modified=" + modified +
-                ", nestedSpecificationId=" + nestedSpecificationId +
-                ", partNumber='" + partNumber + '\'' +
                 ", name='" + name + '\'' +
-                ", implementationAmount1='" + implementationAmount1 + '\'' +
-                ", implementationSign1='" + implementationSign1 + '\'' +
-                ", managerId=" + managerId +
-                ", manager=" + manager +
-                ", vendorCompanyId=" + vendorCompanyId +
-                ", vendorCompany=" + vendorCompany +
-                ", isSimplified=" + isSimplified +
-                ", sectionForWork=" + sectionForWork +
-                ", dimensions='" + dimensions + '\'' +
-                ", weight=" + weight +
+                ", specifications=" + specifications +
+                ", nestedSpecification=" + nestedSpecification +
                 '}';
+    }
+
+    public interface Columns {
+        String ID = "id";
+        String CREATOR_ID = "creator_id";
     }
 }
