@@ -1,0 +1,10 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:loading='urn:import:ru.protei.portal.ui.common.client.widget.loading'
+>
+
+    <g:HTMLPanel styleName="p-l-15 p-r-15">
+        <loading:IndeterminateCircleLoading ui:field="loadingView" styleName="padding-30" visible="false"/>
+        <g:HTMLPanel ui:field="descriptionReadOnly" styleName="form-group markdown p-t-15"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

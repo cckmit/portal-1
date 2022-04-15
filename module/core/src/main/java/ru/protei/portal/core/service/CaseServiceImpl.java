@@ -22,7 +22,10 @@ import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.struct.JiraExtAppData;
-import ru.protei.portal.core.model.util.*;
+import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
+import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
@@ -269,13 +272,12 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
-        //описание обращения в истории будет сделано в отдельной YT задаче
-//        if (StringUtils.isNotEmpty(caseObject.getInfo())) {
-//            Result<Long> resultManager = addInfoHistory(token, caseObject.getId(), "Issue info changed");
-//            if (resultManager.isError()) {
-//                log.error("Case info history for the issue {} not saved!", caseObject.getId());
-//            }
-//        }
+        if (StringUtils.isNotEmpty(caseObject.getInfo())) {
+            Result<Long> resultManager = addInfoHistory(token, caseObject.getId(), caseObject.getInfo());
+            if (resultManager.isError()) {
+                log.error("Case info history for the issue {} not saved!", caseObject.getId());
+            }
+        }
 
         if (caseObject.getManager() != null && caseObject.getManager().getId() != null) {
             Result<Long> resultManager = addManagerHistory(token, caseObject.getId(), caseObject.getManager().getId(), makeManagerName(caseObject));
@@ -456,10 +458,9 @@ public class CaseServiceImpl implements CaseService {
                 updateNameHistory(token, changeRequest.getId(), oldCaseObject.getName(), changeRequest.getName());
             }
 
-            //описание обращения в истории будет сделано в отдельной YT задаче
-//            if (!Objects.equals(oldCaseObject.getInfo(), changeRequest.getInfo())) {
-//                updateInfoHistory(token, changeRequest.getId(), "Issue info changed", "Issue info changed");
-//            }
+            if (!Objects.equals(oldCaseObject.getInfo(), changeRequest.getInfo())) {
+                updateInfoHistory(token, changeRequest.getId(), oldCaseObject.getInfo(), changeRequest.getInfo());
+            }
 
             if(isNotEmpty(changeRequest.getAttachments())){
                 caseObject.setAttachmentExists(true);
@@ -1584,15 +1585,14 @@ public class CaseServiceImpl implements CaseService {
         }
     }
 
-    //описание обращения в истории будет сделано в отдельной YT задаче
-    private void updateInfoHistory(AuthToken token, Long caseId, String oldCaseName, String newCaseName) {
+    private void updateInfoHistory(AuthToken token, Long caseId, String oldCaseInfo, String newCaseInfo) {
         Result<Long> resultName = ok();
-        if (StringUtils.isEmpty(oldCaseName) && StringUtils.isNotEmpty(newCaseName)) {
-            resultName = addInfoHistory(token, caseId, newCaseName);
-        } else if (StringUtils.isNotEmpty(oldCaseName) && StringUtils.isNotEmpty(newCaseName)) {
-            resultName = changeInfoHistory(token, caseId, oldCaseName, newCaseName);
-        } else if (StringUtils.isNotEmpty(oldCaseName) && StringUtils.isEmpty(newCaseName)) {
-            resultName = removeInfoHistory(token, caseId, oldCaseName);
+        if (StringUtils.isEmpty(oldCaseInfo) && StringUtils.isNotEmpty(newCaseInfo)) {
+            resultName = addInfoHistory(token, caseId, newCaseInfo);
+        } else if (StringUtils.isNotEmpty(oldCaseInfo) && StringUtils.isNotEmpty(newCaseInfo)) {
+            resultName = changeInfoHistory(token, caseId, oldCaseInfo, newCaseInfo);
+        } else if (StringUtils.isNotEmpty(oldCaseInfo) && StringUtils.isEmpty(newCaseInfo)) {
+            resultName = removeInfoHistory(token, caseId, oldCaseInfo);
         }
 
         if (resultName.isError()) {

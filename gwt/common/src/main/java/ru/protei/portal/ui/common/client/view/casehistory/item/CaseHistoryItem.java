@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.view.casehistory.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -8,6 +9,7 @@ import com.google.gwt.user.client.ui.*;
 
 import static ru.protei.portal.test.client.DebugIds.CASE_HISTORY.ITEM.*;
 import static ru.protei.portal.test.client.DebugIds.DEBUG_ID_ATTRIBUTE;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 
 public class CaseHistoryItem extends Composite {
     public CaseHistoryItem() {
@@ -41,6 +43,18 @@ public class CaseHistoryItem extends Composite {
         return addedValueContainer;
     }
 
+    public HasVisibility oldValueContainerVisibility() {
+        return oldValueContainer;
+    }
+
+    public void setChangeValueIconVisible(boolean isVisible) {
+        if (isVisible){
+            changedValueIcon.removeClassName(HIDE);
+        } else {
+            changedValueIcon.addClassName(HIDE);
+        }
+    }
+
     public HasWidgets oldValueContainer() {
         return oldValueContainer;
     }
@@ -66,6 +80,9 @@ public class CaseHistoryItem extends Composite {
 
     @UiField
     HTMLPanel changedValueContainer;
+
+    @UiField
+    Element changedValueIcon;
 
     @UiField
     SpanElement historyType;

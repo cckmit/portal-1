@@ -11,7 +11,7 @@
                              styleName="case-history-item-added-value font-weight-bold"/>
                 <g:HTMLPanel ui:field="changedValueContainer" tag="span" styleName="case-history-item-changed-value">
                     <g:HTMLPanel ui:field="oldValueContainer" styleName="case-history-item-old-value" tag="span"/>
-                    <i class="fas fa-long-arrow-alt-right case-history-arrow-icon"/>
+                    <i ui:field="changedValueIcon" class="fas fa-long-arrow-alt-right case-history-arrow-icon"/>
                     <g:HTMLPanel ui:field="newValueContainer" styleName="case-history-item-new-value" tag="span"/>
                 </g:HTMLPanel>
                 <g:HTMLPanel ui:field="removedValueContainer" tag="span"

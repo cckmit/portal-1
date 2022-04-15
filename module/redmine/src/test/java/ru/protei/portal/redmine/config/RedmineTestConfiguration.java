@@ -18,6 +18,12 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
 import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.model.dao.DeliveryDAO;
 import ru.protei.portal.core.model.dao.impl.DeliveryDAO_Impl;
+import ru.protei.portal.core.renderer.HTMLRenderer;
+import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
+import ru.protei.portal.core.renderer.MarkdownRenderer;
+import ru.protei.portal.core.renderer.impl.HTMLRendererImpl;
+import ru.protei.portal.core.renderer.impl.JiraWikiMarkupRendererImpl;
+import ru.protei.portal.core.renderer.impl.MarkdownRendererImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
@@ -115,6 +121,21 @@ public class RedmineTestConfiguration {
     @Bean
     public CaseService getCaseService() {
         return new CaseServiceImpl();
+    }
+
+    @Bean
+    public HTMLRenderer getHTMLRenderer() {
+        return new HTMLRendererImpl();
+    }
+
+    @Bean
+    public MarkdownRenderer getMarkdownRenderer() {
+        return new MarkdownRendererImpl();
+    }
+
+    @Bean
+    public JiraWikiMarkupRenderer getJiraWikiMarkupRenderer(PortalConfig config) {
+        return new JiraWikiMarkupRendererImpl(config);
     }
 
     @Bean

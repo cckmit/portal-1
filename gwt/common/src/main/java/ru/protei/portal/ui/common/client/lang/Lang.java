@@ -4111,5 +4111,11 @@ public interface Lang extends Messages, ContactItemLang {
     String personEquipmentAssembly();
 
     String personEquipmentAssemblyShort();
+
+    String caseDescriptionHistoryPreview();
+
+    String historyDetailsLink();
+
+    String linkRemoved();
 }
 
