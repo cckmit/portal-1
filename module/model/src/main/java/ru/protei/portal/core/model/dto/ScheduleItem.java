@@ -1,18 +1,18 @@
 package ru.protei.portal.core.model.dto;
 
-import ru.protei.portal.core.model.struct.Interval;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 public class ScheduleItem implements Serializable {
 
-    private List<Interval> times;
+    private List<TimeInterval> times;
     private List<Integer> daysOfWeek;
 
     public ScheduleItem() {}
 
-    public ScheduleItem(List<Integer> daysOfWeek, List<Interval> times) {
+    public ScheduleItem(List<Integer> daysOfWeek, List<TimeInterval> times) {
         this.daysOfWeek = daysOfWeek;
         this.times = times;
     }
@@ -24,11 +24,24 @@ public class ScheduleItem implements Serializable {
         this.daysOfWeek = daysOfWeek;
     }
 
-    public List<Interval> getTimes() {
+    public List<TimeInterval> getTimes() {
         return times;
     }
 
-    public void setTimes(List<Interval> times) {
+    public void setTimes(List<TimeInterval> times) {
         this.times = times;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ScheduleItem)) return false;
+        ScheduleItem that = (ScheduleItem) o;
+        return Objects.equals(times, that.times) && Objects.equals(daysOfWeek, that.daysOfWeek);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(times, daysOfWeek);
     }
 }

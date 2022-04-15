@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.dto.ScheduleItem;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
@@ -174,6 +175,10 @@ public class PersonAbsence extends AuditableObject implements Serializable {
 
     public void setScheduleItems(List<ScheduleItem> scheduleItems) {
         this.scheduleItems = scheduleItems;
+    }
+
+    public boolean isScheduledAbsence() {
+        return CollectionUtils.isEmpty(scheduleItems);
     }
 
     @Override

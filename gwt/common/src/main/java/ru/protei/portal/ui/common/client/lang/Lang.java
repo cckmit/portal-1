@@ -4135,5 +4135,11 @@ public interface Lang extends Messages, ContactItemLang {
     String personEquipmentAssembly();
 
     String personEquipmentAssemblyShort();
+
+    String absenceRange();
+
+    String absenceOnSchedule();
+
+    String absenceScheduleItemDescription(String days, String times);
 }
 

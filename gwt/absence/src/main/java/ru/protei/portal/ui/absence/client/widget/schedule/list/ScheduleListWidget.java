@@ -9,11 +9,14 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dto.Time;
+import ru.protei.portal.core.model.dto.TimeInterval;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.dto.ScheduleItem;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.ScheduleValidator;
+import ru.protei.portal.ui.absence.client.util.ScheduleFormatter;
 import ru.protei.portal.ui.absence.client.widget.schedule.item.ScheduleItemWidget;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
@@ -70,16 +73,8 @@ public class ScheduleListWidget
 
     private void fillItem(ScheduleItem value) {
         ScheduleItemWidget itemWidget = new ScheduleItemWidget();
-        String daysStr = CollectionUtils.emptyIfNull(value.getDaysOfWeek())
-                .stream()
-                .map(day -> weekdays[day])
-                .collect(Collectors.joining(", "));
-        itemWidget.setDays(daysStr);
-        String timeRangeStr = CollectionUtils.emptyIfNull(value.getTimes())
-                .stream()
-                .map(this::formatTimePeriod)
-                .collect(Collectors.joining(", "));
-        itemWidget.setTimes(timeRangeStr);
+        itemWidget.setDays(ScheduleFormatter.getDays(value));
+        itemWidget.setTimes(ScheduleFormatter.getTimeRanges(value));
         itemWidget.addRemoveHandler(handler -> {
             scheduleContainer.remove(itemWidget);
             values.remove(value);
@@ -98,14 +93,6 @@ public class ScheduleListWidget
             return;
         }
         showError(statusLang.getMessage(status));
-    }
-
-    private String formatTimePeriod(Interval interval) {
-        if (interval == null || interval.isEmpty()) {
-            return "";
-        }
-
-        return lang.absenceTimeRange(DateFormatter.formatTimeOnly(interval.from), DateFormatter.formatTimeOnly(interval.to));
     }
 
     private void setVisibilitySchedulePlaceholder() {
@@ -134,7 +121,6 @@ public class ScheduleListWidget
     @Inject
     static En_ResultStatusLang statusLang;
 
-    private final String[] weekdays = LocaleInfo.getCurrentLocale().getDateTimeFormatInfo().weekdaysShortStandalone();
     private List<ScheduleItem> values = new ArrayList<>();
 
     interface ScheduleListWidgetBinder extends UiBinder<HTMLPanel, ScheduleListWidget> {}

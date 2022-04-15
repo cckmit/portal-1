@@ -94,11 +94,11 @@
 .btn {
   &.btn-circle-icon {
     border-radius: 50%;
-    padding: 7px 10px;
+    padding: 5px 8px;
   }
   &.btn-circle {
     border-radius: 50%;
-    padding: 8px 9px;
+    padding: 6px 9px;
   }
 }
 
@@ -5561,7 +5561,7 @@ input[type="time"] {
 
         &:checked:after {
           position: relative;
-          font-family: "Font Awesome 5 Free", serif;
+          font-family: "Font Awesome 6 Pro", serif;
           font-weight: 900;
           content: "\F00C";
           color: #fff;
@@ -5803,7 +5803,7 @@ input[type="time"] {
 
       &:checked:after {
         position: relative;
-        font-family: "Font Awesome 5 Free", serif;
+        font-family: "Font Awesome 6 Pro", serif;
         font-weight: 900;
         content: "\F00C";
         color: #fff;
@@ -5965,4 +5965,8 @@ input[type="time"] {
       display: none;
     }
   }
+}
+
+.bg-light-grey {
+  background-color: $bg_light_grey;
 }

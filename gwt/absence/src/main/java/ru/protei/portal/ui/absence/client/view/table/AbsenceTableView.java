@@ -8,10 +8,13 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
+import ru.protei.portal.core.model.dto.ScheduleItem;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.absence.client.activity.table.AbstractAbsenceTableActivity;
 import ru.protei.portal.ui.absence.client.activity.table.AbstractAbsenceTableView;
 import ru.protei.portal.ui.absence.client.util.AccessUtil;
+import ru.protei.portal.ui.absence.client.util.ScheduleFormatter;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -21,6 +24,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AbsenceTableView extends Composite implements AbstractAbsenceTableView {
 
@@ -80,12 +84,10 @@ public class AbsenceTableView extends Composite implements AbstractAbsenceTableV
         removeClickColumn.setEnabledPredicate(value -> !value.isCreatedFrom1C());
 
         columns.add(reason);
-        columns.add(fromTime);
-        columns.add(tillTime);
+        columns.add(absenceRange);
         columns.add(comment);
 
-        table.addColumn(fromTime.header, fromTime.values);
-        table.addColumn(tillTime.header, tillTime.values);
+        table.addColumn(absenceRange.header, absenceRange.values);
         table.addColumn(reason.header, reason.values);
         table.addColumn(comment.header, comment.values);
         table.addColumn(completeClickColumn.header, completeClickColumn.values);
@@ -106,27 +108,22 @@ public class AbsenceTableView extends Composite implements AbstractAbsenceTableV
         }
     };
 
-    ClickColumn<PersonAbsence> fromTime = new ClickColumn<PersonAbsence>() {
+    ClickColumn<PersonAbsence> absenceRange = new ClickColumn<PersonAbsence>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.absenceFromTime());
+            columnHeader.setInnerText(lang.absenceRange());
         }
 
         @Override
         public void fillColumnValue(Element cell, PersonAbsence value) {
-            cell.setInnerHTML(DateFormatter.formatDateTime(value.getFromTime()));
-        }
-    };
-
-    ClickColumn<PersonAbsence> tillTime = new ClickColumn<PersonAbsence>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.absenceTillTime());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, PersonAbsence value) {
-            cell.setInnerHTML(DateFormatter.formatDateTime(value.getTillTime()));
+            final StringBuilder valueBuilder = new StringBuilder(lang.absenceTimeRange(DateFormatter.formatDateTime(value.getFromTime()), DateFormatter.formatDateTime(value.getTillTime())));
+            if (CollectionUtils.isNotEmpty(value.getScheduleItems())) {
+                valueBuilder.append(" ")
+                        .append(lang.absenceOnSchedule())
+                        .append(": ")
+                        .append(ScheduleFormatter.getSchedule(value.getScheduleItems()));
+            }
+            cell.setInnerHTML(valueBuilder.toString());
         }
     };
 

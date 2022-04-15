@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.AbsenceUtils;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.AbsenceApiQuery;
@@ -258,12 +259,21 @@ public class AbsenceServiceImpl implements AbsenceService {
         }
 
         SearchResult<PersonAbsence> searchResult = personAbsenceDAO.getSearchResultByQuery(query);
-
         List<PersonAbsence> absences = searchResult.getResults();
         if (absences == null) return Result.ok();
 
+        List<PersonAbsence> collectedAbsences = new ArrayList<>();
+        for (PersonAbsence absence : absences) {
+            if (!absence.isScheduledAbsence()) {
+                collectedAbsences.add(absence);
+            }
+
+            List<PersonAbsence> scheduledAbsence = AbsenceUtils.convertToDateAbsence(absence, apiQuery.getFrom(), apiQuery.getTo());
+            collectedAbsences.addAll(scheduledAbsence);
+        }
+
         if (!searchBySeparateWorkers) {
-            List<Long> personIds = absences.stream()
+            List<Long> personIds = collectedAbsences.stream()
                     .map(PersonAbsence::getPersonId)
                     .collect(Collectors.toList());
 
@@ -277,7 +287,7 @@ public class AbsenceServiceImpl implements AbsenceService {
                             WorkerEntry::getPersonId, Collectors.mapping(WorkerEntry::getExternalId, Collectors.toSet())));
 
         List<ApiAbsence> apiAbsences = new ArrayList<>();
-        for (PersonAbsence absence : absences) {
+        for (PersonAbsence absence : collectedAbsences) {
             Set<String> personExtIds = personIdToExtIdMap.get(absence.getPersonId());
             if (CollectionUtils.isNotEmpty(personExtIds)) {
                 for (String extId : personExtIds) {

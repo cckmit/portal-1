@@ -6,6 +6,8 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dto.Time;
+import ru.protei.portal.core.model.dto.TimeInterval;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.ScheduleValidator;
 import ru.protei.portal.ui.absence.client.widget.timerange.TimeRange;
@@ -54,7 +56,7 @@ public class ScheduleCreateWidget
             }
             showError(statusLang.getMessage(status));
         });
-        timeRangeWidget.setValue(new Interval(DateUtils.setBeginOfDay(new Date()), DateUtils.setEndOfDay(new Date())));
+        timeRangeWidget.setValue(new TimeInterval(new Time(0, 0), new Time(23, 59)));
         timeRangeContainer.add(timeRangeWidget);
         timeRangeItems.add(timeRangeWidget);
     }
@@ -152,7 +154,7 @@ public class ScheduleCreateWidget
                 .collect(Collectors.toList());
     }
 
-    private List<Interval> getTimeRanges() {
+    private List<TimeInterval> getTimeRanges() {
         return timeRangeItems.stream()
                 .map(TimeRange::getValue)
                 .collect(Collectors.toList());
