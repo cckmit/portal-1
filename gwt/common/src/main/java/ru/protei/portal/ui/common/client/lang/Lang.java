@@ -4091,5 +4091,7 @@ public interface Lang extends Messages, ContactItemLang {
     String issueValidationResultDeadlinePassed();
 
     String issueInitiatorCompany();
+
+    String projectHasContract();
 }
 
