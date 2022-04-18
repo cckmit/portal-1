@@ -167,8 +167,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         query.setTypes(nullIfEmpty(listOfOrNull(filterView.types().getValue())));
         query.setCaseTagsIds(nullIfEmpty(toList(filterView.tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
         query.setStates(getStates(listOfOrNull(filterView.states().getValue())));
-        ProductDirectionInfo value = filterView.direction().getValue();
-        query.setDirectionId(value == null ? null : value.id);
+        query.setDirectionIds(collectIds(filterView.directions().getValue()));
         query.setKind(filterView.kind().getValue());
         query.setDateSigningRange(toDateRange(filterView.dateSigningRange().getValue()));
         query.setDateValidRange(toDateRange(filterView.dateValidRange().getValue()));

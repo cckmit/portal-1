@@ -30,7 +30,7 @@ import ru.protei.portal.ui.common.client.widget.selector.contract.type.ContractT
 import ru.protei.portal.ui.common.client.widget.selector.contractor.multicontractor.MultiContractorSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeCustomMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
@@ -65,7 +65,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         curators.setValue(null);
         organizations.setValue(null);
         managers.setValue(null);
-        direction.setValue(null);
+        directions.setValue(null);
         resetStates();
         types.setValue(null);
         tags.setValue(null);
@@ -131,8 +131,8 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     }
 
     @Override
-    public HasValue<ProductDirectionInfo> direction() {
-        return direction;
+    public HasValue<Set<ProductDirectionInfo>> directions() {
+        return directions;
     }
 
     @Override
@@ -237,8 +237,8 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         restartChangeTimer();
     }
 
-    @UiHandler("direction")
-    public void onDirectionChanged(ValueChangeEvent<ProductDirectionInfo> event) {
+    @UiHandler("directions")
+    public void onDirectionChanged(ValueChangeEvent<Set<ProductDirectionInfo>> event) {
         restartChangeTimer();
     }
 
@@ -300,7 +300,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     CaseTagMultiSelector tags;
     @Inject
     @UiField(provided = true)
-    ProductDirectionButtonSelector direction;
+    ProductDirectionMultiSelector directions;
     @Inject
     @UiField(provided = true)
     ContractTypesMultiSelector types;

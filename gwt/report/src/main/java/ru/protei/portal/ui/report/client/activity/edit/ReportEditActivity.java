@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.collectIds;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.fromDateRange;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
 import static ru.protei.portal.ui.report.client.util.AccessUtil.availableReportTypes;
@@ -281,7 +282,8 @@ public abstract class ReportEditActivity implements Activity,
             );
         }
         contractFilterView.states().setValue(query.getStates() == null ? null : new HashSet<>(query.getStates()));
-        contractFilterView.direction().setValue(query.getDirectionId() == null ? null : new ProductDirectionInfo(query.getDirectionId(), ""));
+        contractFilterView.directions().setValue(
+                stream(query.getDirectionIds()).map(ProductDirectionInfo::new).collect(Collectors.toSet()));
         contractFilterView.kind().setValue(query.getKind());
         contractFilterView.dateSigningRange().setValue(fromDateRange(query.getDateSigningRange()));
         contractFilterView.dateValidRange().setValue(fromDateRange(query.getDateValidRange()));
@@ -302,9 +304,8 @@ public abstract class ReportEditActivity implements Activity,
                 contractFilterView.organizations().setValue(organisations);
                 Set<PersonShortView> managers = collectPersons(selectorsParams.getPersonShortViews(), query.getManagerIds());
                 contractFilterView.managers().setValue(managers);
-                if (query.getDirectionId() != null) {
-                    contractFilterView.direction().setValue(selectorsParams.getProductDirectionInfos().get(0));
-                }
+                Set<ProductDirectionInfo> directions = collectDirections(selectorsParams.getProductDirectionInfos(), query.getDirectionIds());
+                contractFilterView.directions().setValue(directions);
             }
         });
     }
@@ -331,6 +332,13 @@ public abstract class ReportEditActivity implements Activity,
         return stream(contractors)
                 .filter(contractor ->
                         stream(ids).anyMatch(id -> id.equals(contractor.getId())))
+                .collect(Collectors.toSet());
+    }
+
+    private Set<ProductDirectionInfo> collectDirections(Collection<ProductDirectionInfo> directionInfos, Collection<Long> ids) {
+        return stream(directionInfos)
+                .filter(info ->
+                        stream(ids).anyMatch(id -> id.equals(info.getId())))
                 .collect(Collectors.toSet());
     }
 
@@ -679,8 +687,7 @@ public abstract class ReportEditActivity implements Activity,
         query.setTypes(nullIfEmpty(listOfOrNull(contractFilterView.types().getValue())));
         query.setCaseTagsIds(nullIfEmpty(toList(contractFilterView.tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
         query.setStates(nullIfEmpty(listOfOrNull(contractFilterView.states().getValue())));
-        ProductDirectionInfo value = contractFilterView.direction().getValue();
-        query.setDirectionId(value == null ? null : value.id);
+        query.setDirectionIds(collectIds(contractFilterView.directions().getValue()));
         query.setKind(contractFilterView.kind().getValue());
         query.setDateSigningRange(toDateRange(contractFilterView.dateSigningRange().getValue()));
         query.setDateValidRange(toDateRange(contractFilterView.dateValidRange().getValue()));

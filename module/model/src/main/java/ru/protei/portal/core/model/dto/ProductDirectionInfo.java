@@ -12,7 +12,11 @@ public class ProductDirectionInfo implements Serializable, HasLongId {
     public ProductDirectionInfo() {
     }
 
-    public ProductDirectionInfo( Long id, String name ) {
+    public ProductDirectionInfo(Long id) {
+        this.id = id;
+    }
+
+    public ProductDirectionInfo(Long id, String name ) {
         this.id = id;
         this.name = name;
     }

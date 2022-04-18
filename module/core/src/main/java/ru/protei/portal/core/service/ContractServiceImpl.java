@@ -522,8 +522,8 @@ public class ContractServiceImpl implements ContractService {
             }
         }
 
-        if (query.getDirectionId() != null) {
-            Result<List<ProductDirectionInfo>> result = productService.productDirectionList( token, Collections.singletonList(query.getDirectionId()));
+        if (!CollectionUtils.isEmpty(query.getDirectionIds())) {
+            Result<List<ProductDirectionInfo>> result = productService.productDirectionList(token, query.getDirectionIds());
             if (result.isOk()) {
                 selectorsParams.setProductDirectionInfos(result.getData());
             } else {
