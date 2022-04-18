@@ -1,9 +1,11 @@
 package ru.protei.portal.core.utils;
 
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFHyperlink;
 import ru.protei.portal.core.Lang;
 
 import java.io.IOException;
@@ -72,7 +74,7 @@ public final class JXLSHelper {
             for (T object : objects) {
                 Integer rowNumber = sheetRowIndexMap.get(sheetNumber);
                 Row row = sheetMap.get(sheetNumber).createRow(rowNumber++);
-                fillRow(row, writer.getColumnValues(object), this::getCellStyleForColumnIndex);
+                fillRow(workbook, row, writer.getColumnValues(object), this::getCellStyleForColumnIndex);
                 sheetRowIndexMap.put(sheetNumber, rowNumber);
             }
         }
@@ -174,7 +176,7 @@ public final class JXLSHelper {
             }
         }
 
-        private static void fillRow(Row row, Object[] values, Function<Integer, CellStyle> cellStyleProvider) {
+        private static void fillRow(SXSSFWorkbook workbook, Row row, Object[] values, Function<Integer, CellStyle> cellStyleProvider) {
             for (int columnIndex = 0; columnIndex < values.length; columnIndex++) {
                 Cell cell = row.createCell(columnIndex);
                 cell.setCellStyle(cellStyleProvider.apply(columnIndex));
@@ -185,7 +187,13 @@ public final class JXLSHelper {
                     cell.setCellValue((Date) value);
                 } else if (value instanceof Boolean) {
                     cell.setCellValue((Boolean) value);
+                } else if (value instanceof LinkData) {
+                    Hyperlink hyperlink = workbook.getCreationHelper().createHyperlink(HyperlinkType.URL);
+                    hyperlink.setAddress(((LinkData) value).getUrl());
+                    cell.setHyperlink(hyperlink);
+                    cell.setCellValue(((LinkData) value).getLinkName());
                 } else {
+                    if (value == null) value = "";
                     cell.setCellValue(value.toString());
                 }
             }
