@@ -14,7 +14,6 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseService;
@@ -52,20 +51,25 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
     @Transactional
     public void processAutoCloseByDeadLine() {
         List<CaseObject> caseObjects = caseObjectDAO.getCases(getCaseQuery());
+        LocalDate today = LocalDate.now();
+        AuthToken token = createSystemUserToken();
         for (CaseObject caseObject : CollectionUtils.emptyIfNull(caseObjects)) {
             LocalDate deadline = new Date(caseObject.getDeadline()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            LocalDate today = LocalDate.now();
             if (deadline.isEqual(today)) {
                 caseObject.setStateId(CrmConstants.State.DONE);
                 caseObject.setDeadline(null);
                 caseObject.setAutoClose(false);
                 CaseObjectMeta caseObjectMeta = new CaseObjectMeta(caseObject);
-                caseService.updateCaseObjectMeta(createFakeToken(), caseObjectMeta);
+                Result<CaseObjectMeta> caseObjectMetaResult = caseService.updateCaseObjectMeta(token, caseObjectMeta);
+                if (caseObjectMetaResult.isError()) {
+                    log.warn("updateCaseObjectMeta(): Can't update case object meta={}", caseObject);
+                    continue;
+                }
 
                 Long caseObjectId = caseObject.getId();
                 CaseComment comment = createCaseComment(caseObjectId, getLangFor("issue_was_closed"));
-                Result<CaseComment> result = caseCommentService.addCaseComment(createFakeToken(), En_CaseType.CRM_SUPPORT, comment);
-                if (result.isError()) {
+                Result<CaseComment> caseCommentResult = caseCommentService.addCaseComment(token, En_CaseType.CRM_SUPPORT, comment);
+                if (caseCommentResult.isError()) {
                     log.warn("addCaseComment(): Can't add case comment about {} for caseId={}",  comment.getText(), caseObjectId);
                 }
 
@@ -80,9 +84,9 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
         CaseQuery query = getCaseQuery();
         query.setViewPrivate(false);
         List<CaseObject> caseObjects = caseObjectDAO.getCases(query);
+        LocalDate today = LocalDate.now();
         for (CaseObject caseObject : CollectionUtils.emptyIfNull(caseObjects)) {
             LocalDate deadline = new Date(caseObject.getDeadline()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            LocalDate today = LocalDate.now();
             if (deadline.isEqual(today.plusDays(1)) || deadline.isEqual(today.plusDays(5)) || deadline.isEqual(today.plusDays(10))) {
                 Person customer = caseObject.getInitiator();
                 Long caseObjectId = caseObject.getId();
@@ -122,7 +126,7 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
         return caseQuery;
     }
 
-    private AuthToken createFakeToken() {
+    private AuthToken createSystemUserToken() {
         AuthToken token = new AuthToken("0");
         try {
             token.setIp( Inet4Address.getLocalHost().getHostAddress());

@@ -1116,7 +1116,7 @@ public class CaseServiceImpl implements CaseService {
         autoCloseComment.setCaseId(caseId);
         autoCloseComment.setText(langRu.getString("issue_will_be_closed"));
         autoCloseComment.setPrivacyType( En_CaseCommentPrivacyType.PUBLIC );
-        return caseCommentService.addCaseComment(createFakeToken(), CRM_SUPPORT, autoCloseComment);
+        return caseCommentService.addCaseComment(createSystemUserToken(), CRM_SUPPORT, autoCloseComment);
     }
 
     private CaseQuery applyFilterByScope(AuthToken token, CaseQuery caseQuery) {
@@ -2055,7 +2055,7 @@ public class CaseServiceImpl implements CaseService {
         return caseObject.getPlatformName();
     }
 
-    private AuthToken createFakeToken() {
+    private AuthToken createSystemUserToken() {
         AuthToken token = new AuthToken("0");
         try {
             token.setIp( Inet4Address.getLocalHost().getHostAddress());
