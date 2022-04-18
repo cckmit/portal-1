@@ -48,38 +48,34 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
     ResourceBundle langRu = ResourceBundle.getBundle("Lang", new Locale( "ru", "RU"));
 
     @Override
-    @Transactional
     public void processAutoCloseByDeadLine() {
+        CaseQuery query = getCaseQuery();
+        query.setOverdueDeadlines(true);
         List<CaseObject> caseObjects = caseObjectDAO.getCases(getCaseQuery());
-        LocalDate today = LocalDate.now();
         AuthToken token = createSystemUserToken();
         for (CaseObject caseObject : CollectionUtils.emptyIfNull(caseObjects)) {
-            LocalDate deadline = new Date(caseObject.getDeadline()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            if (deadline.isEqual(today)) {
-                caseObject.setStateId(CrmConstants.State.DONE);
-                caseObject.setDeadline(null);
-                caseObject.setAutoClose(false);
-                CaseObjectMeta caseObjectMeta = new CaseObjectMeta(caseObject);
-                Result<CaseObjectMeta> caseObjectMetaResult = caseService.updateCaseObjectMeta(token, caseObjectMeta);
-                if (caseObjectMetaResult.isError()) {
-                    log.warn("updateCaseObjectMeta(): Can't update case object meta={}", caseObject);
-                    continue;
-                }
-
-                Long caseObjectId = caseObject.getId();
-                CaseComment comment = createCaseComment(caseObjectId, getLangFor("issue_was_closed"));
-                Result<CaseComment> caseCommentResult = caseCommentService.addCaseComment(token, En_CaseType.CRM_SUPPORT, comment);
-                if (caseCommentResult.isError()) {
-                    log.warn("addCaseComment(): Can't add case comment about {} for caseId={}",  comment.getText(), caseObjectId);
-                }
-
-                log.info("Issue: {} was successfully closed", caseObject);
+            caseObject.setStateId(CrmConstants.State.DONE);
+            caseObject.setDeadline(null);
+            caseObject.setAutoClose(false);
+            CaseObjectMeta caseObjectMeta = new CaseObjectMeta(caseObject);
+            Result<CaseObjectMeta> caseObjectMetaResult = caseService.updateCaseObjectMeta(token, caseObjectMeta);
+            if (caseObjectMetaResult.isError()) {
+                log.warn("updateCaseObjectMeta(): Can't update case object meta={}", caseObject);
+                continue;
             }
+
+            Long caseObjectId = caseObject.getId();
+            CaseComment comment = createCaseComment(caseObjectId, getLangFor("issue_was_closed"));
+            Result<CaseComment> caseCommentResult = caseCommentService.addCaseComment(token, En_CaseType.CRM_SUPPORT, comment);
+            if (caseCommentResult.isError()) {
+                log.warn("addCaseComment(): Can't add case comment about {} for caseId={}",  comment.getText(), caseObjectId);
+            }
+
+            log.info("Issue: {} was successfully closed", caseObject);
         }
     }
 
     @Override
-    @Transactional
     public void notifyAboutDeadlineExpire() {
         CaseQuery query = getCaseQuery();
         query.setViewPrivate(false);
