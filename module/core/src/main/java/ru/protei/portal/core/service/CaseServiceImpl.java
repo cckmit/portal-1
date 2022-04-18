@@ -33,6 +33,8 @@ import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -171,6 +173,12 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     private ImportanceLevelDAO importanceLevelDAO;
+
+    @Autowired
+    UserRoleDAO userRoleDAO;
+
+    @Autowired
+    PortalConfig config;
 
     @Override
     public Result<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query) {
@@ -639,7 +647,11 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (!oldCaseMeta.getAutoClose() && caseMeta.getAutoClose()) {
-            createAndPersistAutoCloseMessage(caseMeta.getId());
+            Result<CaseComment> result = createAndPersistAutoCloseMessage(caseMeta.getId());
+
+            if (result.isError()) {
+                log.error("Auto close message for the issue {} not saved!", caseMeta.getId());
+            }
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -1096,7 +1108,7 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
-    private Long createAndPersistAutoCloseMessage(Long caseId) {
+    private Result<CaseComment> createAndPersistAutoCloseMessage(Long caseId) {
         ResourceBundle langRu = ResourceBundle.getBundle("Lang", new Locale( "ru", "RU"));
         CaseComment autoCloseComment = new CaseComment();
         autoCloseComment.setCreated( new Date() );
@@ -1104,7 +1116,7 @@ public class CaseServiceImpl implements CaseService {
         autoCloseComment.setCaseId(caseId);
         autoCloseComment.setText(langRu.getString("issue_will_be_closed"));
         autoCloseComment.setPrivacyType( En_CaseCommentPrivacyType.PUBLIC );
-        return caseCommentDAO.persist(autoCloseComment);
+        return caseCommentService.addCaseComment(createFakeToken(), CRM_SUPPORT, autoCloseComment);
     }
 
     private CaseQuery applyFilterByScope(AuthToken token, CaseQuery caseQuery) {
@@ -2041,5 +2053,19 @@ public class CaseServiceImpl implements CaseService {
             return platformDAO.get(caseObject.getPlatformId()).getName();
         }
         return caseObject.getPlatformName();
+    }
+
+    private AuthToken createFakeToken() {
+        AuthToken token = new AuthToken("0");
+        try {
+            token.setIp( Inet4Address.getLocalHost().getHostAddress());
+        } catch (UnknownHostException e) {
+            token.setIp("0.0.0.0");
+        }
+        Long systemUserId = config.data().getCommonConfig().getSystemUserId();
+        token.setPersonId(systemUserId);
+        Set<UserRole> defaultRoles = userRoleDAO.getDefaultManagerRoles();
+        token.setRoles(defaultRoles);
+        return token;
     }
 }
