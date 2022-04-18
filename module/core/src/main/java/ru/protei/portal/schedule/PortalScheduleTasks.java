@@ -32,4 +32,8 @@ public interface PortalScheduleTasks {
     void updateFiredByDate();
 
     void updatePositionByDate();
+
+    void processAutoCloseByDeadLine();
+
+    void notifyAboutDeadlineExpire();
 }

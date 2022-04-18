@@ -1,13 +1,12 @@
 package ru.protei.portal.ui.common.client.util;
 
-import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.core.model.dict.En_HistoryAction;
-import ru.protei.portal.core.model.dict.En_HistoryType;
-import ru.protei.portal.core.model.dict.En_WorkTrigger;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.NumberUtils;
@@ -15,6 +14,7 @@ import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.events.CommentAndHistoryEvents;
 import ru.protei.portal.ui.common.client.lang.*;
 import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItem;
 import ru.protei.portal.ui.common.client.view.casehistory.item.CaseHistoryItemsContainer;
@@ -23,14 +23,17 @@ import ru.protei.portal.ui.common.client.view.casehistory.item.importance.CaseHi
 import ru.protei.portal.ui.common.client.view.casehistory.item.link.CaseHistoryLinkItemView;
 import ru.protei.portal.ui.common.client.view.casehistory.item.simple.CaseHistorySimpleItemView;
 import ru.protei.portal.ui.common.client.view.casehistory.item.tag.CaseHistoryTagItemView;
-
+import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.ui.common.client.common.DateFormatter.formatDateTime;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 
 public class CommentOrHistoryUtils {
+
+    static Activity activity;
 
     public static List<CommentsAndHistories.CommentOrHistory> getSortedCommentOrHistoryList(List<CommentsAndHistories.CommentOrHistory> commentOrHistoryList) {
         return commentOrHistoryList
@@ -40,6 +43,11 @@ public class CommentOrHistoryUtils {
     }
 
     public static List<CaseHistoryItemsContainer> fillView(List<History> caseHistories, FlowPanel historyContainer) {
+        return fillView(null, caseHistories, historyContainer);
+    }
+
+    public static List<CaseHistoryItemsContainer> fillView(Activity activity, List<History> caseHistories, FlowPanel historyContainer) {
+        CommentOrHistoryUtils.activity = activity;
         if (CollectionUtils.isEmpty(caseHistories)) {
             return new ArrayList<>();
         }
@@ -90,10 +98,6 @@ public class CommentOrHistoryUtils {
         return currentHistoryItemsContainers;
     }
 
-    public static String transliteration(String name) {
-        return TransliterationUtils.transliterate(name, LocaleInfo.getCurrentLocale().getLocaleName());
-    }
-
     private static CaseHistoryItem makeHistoryItem(History history) {
         switch (history.getType()) {
             case PLAN: return makeHistoryItem(history, lang.plan(), Plan.class);
@@ -111,14 +115,32 @@ public class CommentOrHistoryUtils {
             case CARD_BATCH_IMPORTANCE: return makeHistoryItem(history, lang.issueImportance(), ImportanceLevel.class);
             case CASE_PAUSE_DATE: return makeHistoryItem(history, lang.issuePauseDateValidity(), Long.class);
             case CASE_PRODUCT: return makeHistoryItem(history, lang.issueProduct(), DevUnit.class);
+            case CASE_AUTO_CLOSE: return makeHistoryItem(history, lang.issueAutoClose(), String.class);
             case CASE_DEADLINE: return makeHistoryItem(history, lang.issueDeadline(), Long.class);
             case CASE_WORK_TRIGGER: return makeHistoryItem(history, lang.issueWorkTrigger(), En_WorkTrigger.class);
             case CASE_MANAGER_COMPANY: return makeHistoryItem(history, lang.issueCompany(), Company.class);
             case CASE_INITIATOR_COMPANY: return makeHistoryItem(history, lang.issueInitiatorCompany(), Company.class);
             case CASE_INITIATOR: return makeHistoryItem(history, lang.issueInitiator(), EmployeeShortView.class);
             case CASE_PLATFORM: return makeHistoryItem(history, lang.siteFolderPlatform(), Platform.class);
+            case CASE_NAME: return makeHistoryItem(history, lang.name(), String.class);
+            case CASE_INFO: return makeHistoryItem(history, lang.description(), String.class);
+            case CASE_ATTACHMENT: return makeHistoryItem(history, lang.attachment(), CaseAttachment.class);
+            case CASE_LINK: return makeHistoryItem(history, getLinkBundleName(history), CaseLink.class);
             default: return null;
         }
+    }
+
+    private static String getLinkBundleName(History history) {
+
+        if (En_HistoryAction.ADD.equals(history.getAction())
+                || En_HistoryAction.CHANGE.equals(history.getAction())){
+            En_BundleType bundleType = CaseLinkProvider.getBundleType(history.getNewId());
+            if (bundleType == null){
+                return lang.linkedWith();
+            }
+            return bundleTypeLang.getName(bundleType);
+        }
+        return lang.linkRemoved();
     }
 
     private static CaseHistoryItem makeHistoryItem(History history, String historyType, Class<?> clazz) {
@@ -127,6 +149,8 @@ public class CommentOrHistoryUtils {
         historyItem.addedValueContainerVisibility().setVisible(En_HistoryAction.ADD.equals(history.getAction()));
         historyItem.changeContainerVisibility().setVisible(En_HistoryAction.CHANGE.equals(history.getAction()));
         historyItem.removedValueContainerVisibility().setVisible(En_HistoryAction.REMOVE.equals(history.getAction()));
+        historyItem.oldValueContainerVisibility().setVisible(!isCaseInfoType(history.getType()));
+        historyItem.setChangeValueIconVisible(!isCaseInfoType(history.getType()));
         historyItem.setHistoryType(historyType);
 
         if (history.getLinkName() != null) {
@@ -135,6 +159,8 @@ public class CommentOrHistoryUtils {
 
         if (En_HistoryAction.ADD.equals(history.getAction())) {
             historyItem.addedValueContainer().add(makeItem(
+                    history.getId(),
+                    history.getAction(),
                     history.getType(),
                     history.getNewValue(),
                     history.getNewColor(),
@@ -144,6 +170,8 @@ public class CommentOrHistoryUtils {
 
         if (En_HistoryAction.CHANGE.equals(history.getAction())) {
             historyItem.oldValueContainer().add(makeItem(
+                    history.getId(),
+                    history.getAction(),
                     history.getType(),
                     history.getOldValue(),
                     history.getOldColor(),
@@ -151,6 +179,8 @@ public class CommentOrHistoryUtils {
             ));
 
             historyItem.newValueContainer().add(makeItem(
+                    history.getId(),
+                    history.getAction(),
                     history.getType(),
                     history.getNewValue(),
                     history.getNewColor(),
@@ -160,6 +190,8 @@ public class CommentOrHistoryUtils {
 
         if (En_HistoryAction.REMOVE.equals(history.getAction())) {
             historyItem.removedValueContainer().add(makeItem(
+                    history.getId(),
+                    history.getAction(),
                     history.getType(),
                     history.getOldValue(),
                     history.getOldColor(),
@@ -190,7 +222,12 @@ public class CommentOrHistoryUtils {
         return LinkUtils.isLinkNeeded(clazz) ? LinkUtils.makePreviewLink(clazz, id) : null;
     }
 
-    private static Widget makeItem(En_HistoryType historyType, String value, String color, String link) {
+    private static Widget makeItem(Long historyId,
+                                   En_HistoryAction historyAction,
+                                   En_HistoryType historyType,
+                                   String value,
+                                   String color,
+                                   String link) {
         if (En_HistoryType.CASE_STATE.equals(historyType)) {
             CaseHistoryStateItemView caseHistoryStateItemView = caseHistoryStateItemViewProvider.get();
             caseHistoryStateItemView.setName(value);
@@ -215,6 +252,35 @@ public class CommentOrHistoryUtils {
             return caseHistoryTagItemView;
         }
 
+        if (En_HistoryType.CASE_NAME.equals(historyType)) {
+            CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
+            caseHistorySimpleItemView.setName(value);
+
+            return caseHistorySimpleItemView;
+        }
+
+        if (En_HistoryType.CASE_INFO.equals(historyType)) {
+            CaseHistoryLinkItemView caseHistorySimpleItemView = caseHistoryLinkItemViewProvider.get();
+            caseHistorySimpleItemView.setLink(lang.historyDetailsLink(), "#", new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    event.preventDefault();
+                    if (activity != null){
+                        activity.fireEvent(new CommentAndHistoryEvents.ShowCaseInfoChanges(historyId));
+                    }
+                }
+            });
+
+            return caseHistorySimpleItemView;
+        }
+
+        if (En_HistoryType.CASE_AUTO_CLOSE.equals(historyType)) {
+            CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
+            caseHistorySimpleItemView.setName(autoCloseLang.getName(value));
+
+            return caseHistorySimpleItemView;
+        }
+
         if (En_HistoryType.CASE_PAUSE_DATE.equals(historyType)
                 || En_HistoryType.CASE_DEADLINE.equals(historyType)) {
             CaseHistorySimpleItemView caseHistorySimpleItemView = caseHistorySimpleItemViewProvider.get();
@@ -236,7 +302,10 @@ public class CommentOrHistoryUtils {
                 || En_HistoryType.CASE_PLATFORM.equals(historyType)
                 || En_HistoryType.CASE_INITIATOR.equals(historyType)
                 || En_HistoryType.CASE_MANAGER_COMPANY.equals(historyType)
-                || En_HistoryType.CASE_INITIATOR_COMPANY.equals(historyType)) {
+                || En_HistoryType.CASE_INITIATOR_COMPANY.equals(historyType)
+                || En_HistoryType.CASE_LINK.equals(historyType)
+                || En_HistoryType.CASE_ATTACHMENT.equals(historyType)
+        ) {
             CaseHistoryLinkItemView caseHistoryLinkItemView = caseHistoryLinkItemViewProvider.get();
             caseHistoryLinkItemView.setLink(transliteration(value), link);
 
@@ -307,6 +376,10 @@ public class CommentOrHistoryUtils {
         return null;
     }
 
+    private static boolean isCaseInfoType(En_HistoryType historyType){
+        return En_HistoryType.CASE_INFO.equals(historyType);
+    }
+
     private static String makeDateString(String value, En_HistoryType historyType) {
         Long millis = NumberUtils.parseLong(value);
         if (millis == null){
@@ -341,9 +414,13 @@ public class CommentOrHistoryUtils {
     @Inject
     private static CardBatchStateLang cardBatchStateLang;
     @Inject
+    private static En_BundleTypeLang bundleTypeLang;
+    @Inject
     private static Provider<CaseHistoryItemsContainer> caseHistoryItemsContainerProvider;
     @Inject
     private static En_WorkTriggerLang workTriggerLang;
+    @Inject
+    private static En_AutoCloseLang autoCloseLang;
 
     private static final Logger log = Logger.getLogger(CommentOrHistoryUtils.class.getName());
 }

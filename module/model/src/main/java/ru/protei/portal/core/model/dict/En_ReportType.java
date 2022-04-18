@@ -48,6 +48,7 @@ public enum En_ReportType {
             case CASE_TIME_ELAPSED:
             case CASE_RESOLUTION_TIME:
             case NIGHT_WORK:
+            case YT_WORK:
                 return true;
             default:
                 return false;

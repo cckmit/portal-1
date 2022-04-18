@@ -19,7 +19,7 @@ public abstract class CaseHistoryItemListActivity implements AbstractCaseHistory
 
     @Event
     public void onFill(CaseHistoryEvents.Fill event) {
-        historyItemsContainers.addAll(fillView(event.histories, historyContainer));
+        historyItemsContainers.addAll(fillView(this, event.histories, historyContainer));
     }
 
     @Event

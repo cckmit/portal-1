@@ -65,6 +65,8 @@ import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
+import ru.protei.portal.core.service.autoclosecase.AutoCloseCaseService;
+import ru.protei.portal.core.service.autoclosecase.AutoCloseCaseServiceImpl;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceTaskHandlerImpl;
@@ -227,6 +229,11 @@ public class MainConfiguration {
     @Bean
     public ContactSqlBuilder getContactSqlBuilder() {
         return new ContactSqlBuilder();
+    }
+
+    @Bean
+    public AccountingEmployeeSqlBuilder getAccountingEmployeeSqlBuilder() {
+        return new AccountingEmployeeSqlBuilder();
     }
 
     /* DAO converters */
@@ -679,6 +686,16 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CaseElapsedTimeApiDAO getCaseElapsedTimeApiDAO() {
+        return new CaseElapsedTimeApiDAO_Impl();
+    }
+
+    @Bean
+    public CommonManagerDAO getCommonManagerDAO() {
+        return new CommonManagerDAO_Impl();
+    }
+
+    @Bean
     public CardSqlBuilder cardSqlBuilder() {
         return new CardSqlBuilder();
     }
@@ -781,6 +798,11 @@ public class MainConfiguration {
     @Bean
     public ContractorDAO getContractorDAO() {
         return new ContractorDAO_Impl();
+    }
+
+    @Bean
+    public CalculationTypeDAO getCalculationTypeDAO() {
+        return new CalculationTypeDAO_Impl();
     }
 
     @Bean
@@ -1161,6 +1183,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public AutoCloseCaseService getAutoCloseCaseService() {
+        return new AutoCloseCaseServiceImpl();
+    }
+
+    @Bean
     public EmployeeRegistrationYoutrackSynchronizer getEmployeeRegistrationYoutrackSynchronizer() {
         return new EmployeeRegistrationYoutrackSynchronizerImpl();
     }
@@ -1303,6 +1330,11 @@ public class MainConfiguration {
     @Bean
     public RFIDLabelService getRFIDLabelService() {
         return new RFIDLabelServiceImpl();
+    }
+
+    @Bean
+    public CaseElapsedTimeApiService getCaseElapsedTimeApiService() {
+        return new CaseElapsedTimeApiServiceImpl();
     }
 
     /* ASPECT/INTERCEPTORS */

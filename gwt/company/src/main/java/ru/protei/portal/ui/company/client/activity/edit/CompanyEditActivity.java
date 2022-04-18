@@ -56,6 +56,12 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Event
     public void onShow(CompanyEvents.Edit event) {
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.COMPANY_VIEW)) {
+            fireEvent(new ErrorPageEvents.ShowForbidden());
+            return;
+        }
+
         initDetails.parent.clear();
         Window.scrollTo(0, 0);
         initDetails.parent.add(view.asWidget());
@@ -249,6 +255,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         }
 
         view.autoOpenIssues().setValue(company.getAutoOpenIssue());
+        view.commonManagerList().setValue(company.getCommonManagerList());
     }
 
     private EntityOption makeCompanyOption(Company company) {
@@ -264,6 +271,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         company.setSubscriptions(new ArrayList<>(view.companySubscriptions().getValue()));
         company.setAutoOpenIssue(view.autoOpenIssues().getValue());
         company.setContactInfo(makeFilteredContactInfo(company));
+        company.setCommonManagerList(view.commonManagerList().getValue());
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
 

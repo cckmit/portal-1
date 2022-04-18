@@ -766,6 +766,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errProductNotSelected();
 
+    String errDeadlineNotSelectedOnAutoClose();
+
     String errFilterNameRequired();
 
     String errTooMuchCompanies();
@@ -830,7 +832,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dashboard();
 
-    String dashboardAddTable();
+    String dashboardAddIssueTable();
+
+    String dashboardAddProjectTable();
 
     String dashboardEmpty();
 
@@ -839,6 +843,10 @@ public interface Lang extends Messages, ContactItemLang {
     String dashboardTableName();
 
     String dashboardTableFilter();
+
+    String dashboardTableIssueFilter();
+
+    String dashboardTableProjectFilter();
 
     String dashboardTableCreate();
 
@@ -993,6 +1001,8 @@ public interface Lang extends Messages, ContactItemLang {
     String projectTeamRole();
 
     String projectCommentCreationDate();
+
+    String projectFilterIsNotDefined();
 
     String inputProjectName();
 
@@ -2120,6 +2130,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractDescription();
 
+    String contractFileLocation();
+
+    String contractNotifiers();
+
     String contractContractor();
 
     String contractContractorDropped();
@@ -2173,6 +2187,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contractCurator();
 
     String contractState();
+
+    String contractCalculationType();
 
     String contractType();
 
@@ -2247,6 +2263,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contractValidationContractSpecification();
 
     String contractValidationContractSpecificationClauseDuplication();
+
+    String contractCalculationTypeNotDefined();
 
     String contractOrganization();
 
@@ -3105,6 +3123,12 @@ public interface Lang extends Messages, ContactItemLang {
     String issueFavorites();
 
     String issueSyncedWith();
+
+    String issueAutoClose();
+
+    String issueAutoCloseEnabled();
+
+    String issueAutoCloseDisabled();
 
     String issueDeadline();
 
@@ -4057,7 +4081,7 @@ public interface Lang extends Messages, ContactItemLang {
     String contractDateEndWarranty();
 
     String errorSetCorrectProjectId();
-    
+
     String issueValidationResultOk();
     
     String issueValidationResultNull();
@@ -4091,6 +4115,18 @@ public interface Lang extends Messages, ContactItemLang {
     String issueValidationResultDeadlinePassed();
 
     String issueInitiatorCompany();
+
+    String personEquipmentAssembly();
+
+    String personEquipmentAssemblyShort();
+
+    String caseDescriptionHistoryPreview();
+
+    String historyDetailsLink();
+
+    String linkRemoved();
+
+    String issueValidationResultAutoCloseDeadline();
 
     String projectHasContract();
 }

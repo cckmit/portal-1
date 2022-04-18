@@ -11,13 +11,14 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.En_ContractKindLang;
-import ru.protei.portal.ui.common.client.lang.En_ContractStateLang;
+import ru.protei.portal.ui.common.client.lang.ContractStateLang;
 import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.util.HtmlUtils;
@@ -25,7 +26,6 @@ import ru.protei.portal.ui.contract.client.activity.table.concise.AbstractContra
 import ru.protei.portal.ui.contract.client.activity.table.concise.AbstractContractConciseTableView;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.util.ContractSupportService.getContractKind;
@@ -84,8 +84,8 @@ public class ContractConciseTableView extends Composite implements AbstractContr
             Element root = DOM.createDiv();
             ImageElement image = DOM.createImg().cast();
             image.addClassName("height-30");
-            image.setSrc("./images/contract_" + contract.getState().name().toLowerCase() + ".png");
-            image.setTitle(stateLang.getName(contract.getState()));
+            image.setSrc("./images/contract_" + contract.getStateName().toLowerCase() + ".png");
+            image.setTitle(stateLang.getStateName(new CaseState(contract.getStateName())));
             root.appendChild(image);
             cell.appendChild(root);
         }
@@ -134,7 +134,7 @@ public class ContractConciseTableView extends Composite implements AbstractContr
     @Inject
     PolicyService policyService;
     @Inject
-    En_ContractStateLang stateLang;
+    ContractStateLang stateLang;
     @Inject
     En_ContractTypeLang typeLang;
     @Inject

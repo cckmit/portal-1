@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -16,9 +15,8 @@ import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
-import ru.protei.portal.core.model.util.MarkupUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.util.TransliterationUtils;
+import ru.protei.portal.core.model.util.MarkupUtils;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -42,13 +40,14 @@ import java.util.logging.Logger;
 import static ru.protei.portal.core.model.dict.En_ExtAppType.*;
 import static ru.protei.portal.core.model.helper.CaseCommentUtils.addImageInMessage;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.StringUtils.firstUppercaseChar;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.util.CaseStateUtil.isTerminalState;
 import static ru.protei.portal.core.model.util.CrmConstants.Jira.NO_EXTENDED_PRIVACY_PROJECT;
 import static ru.protei.portal.ui.common.client.util.AttachmentUtils.getRemoveErrorHandler;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.getCommentAndHistorySelectedTabs;
 import static ru.protei.portal.ui.common.client.util.MultiTabWidgetUtils.saveCommentAndHistorySelectedTabs;
-import static ru.protei.portal.core.model.helper.StringUtils.firstUppercaseChar;
 
 public abstract class IssueEditActivity implements
         AbstractIssueEditActivity,
@@ -72,6 +71,12 @@ public abstract class IssueEditActivity implements
 
                 issueInfoWidget.attachmentsVisibility().setVisible(!issueInfoWidget.attachmentsListContainer().isEmpty());
                 issueInfoWidget.setCountOfAttachments(size(issueInfoWidget.attachmentsListContainer().getAll()));
+
+                attachmentController.addCaseAttachmentHistory(issue.getId(), attachment.getId(), attachment.getFileName(), new FluentCallback<Long>()
+                        .withSuccess(r -> {
+                            fireEvent(new CommentAndHistoryEvents.Reload());
+                        })
+                );
 
                 fireIssueChanged(issue.getId());
             }
@@ -266,7 +271,7 @@ public abstract class IssueEditActivity implements
     @Override
     public void removeAttachment(Attachment attachment) {
         if (isReadOnly()) return;
-        attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Long>()
+        attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, issue.getId(), attachment.getId(), new FluentCallback<Long>()
                 .withError(getRemoveErrorHandler(this, lang))
                 .withSuccess(result -> {
                     issueInfoWidget.attachmentsListContainer().remove(attachment);
@@ -308,6 +313,7 @@ public abstract class IssueEditActivity implements
         issueInfoWidget.descriptionReadOnlyVisibility().setVisible(true);
         fillView(issue);
         fireEvent(new IssueEvents.ChangeIssue(issue.getId()));
+        fireEvent(new CommentAndHistoryEvents.Reload());
     }
 
     @Override
@@ -564,10 +570,6 @@ public abstract class IssueEditActivity implements
 
     private boolean isSelfIssue(CaseObject issue) {
         return issue.getCreator() != null && Objects.equals(issue.getCreator().getId(), authProfile.getId());
-    }
-
-    private String transliteration(String input) {
-        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     private boolean hasAccess() {

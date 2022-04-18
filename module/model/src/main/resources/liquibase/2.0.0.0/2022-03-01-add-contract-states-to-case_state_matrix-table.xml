@@ -1,0 +1,63 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-contract-states-to-case_state_matrix-table" author="novikov_a">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM case_state_matrix WHERE CASE_TYPE = '12'
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="12"/>
+            <column name="CASE_STATE" value="63"/>
+            <column name="view_order" value="1"/>
+            <column name="info" value="Согласование"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="12"/>
+            <column name="CASE_STATE" value="64"/>
+            <column name="view_order" value="2"/>
+            <column name="info" value="Есть оригинал"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="12"/>
+            <column name="CASE_STATE" value="65"/>
+            <column name="view_order" value="3"/>
+            <column name="info" value="Есть скан, 2 экз. направлены Заказчику"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="12"/>
+            <column name="CASE_STATE" value="66"/>
+            <column name="view_order" value="4"/>
+            <column name="info" value="Есть скан, ждем 2 экз. от Заказчика"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="12"/>
+            <column name="CASE_STATE" value="67"/>
+            <column name="view_order" value="5"/>
+            <column name="info" value="Ожидание оригинала от заказчика"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="12"/>
+            <column name="CASE_STATE" value="33"/>
+            <column name="view_order" value="6"/>
+            <column name="info" value="Отменен"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="12"/>
+            <column name="CASE_STATE" value="68"/>
+            <column name="view_order" value="7"/>
+            <column name="info" value="Подписан на площадке"/>
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="12"/>
+            <column name="CASE_STATE" value="69"/>
+            <column name="view_order" value="8"/>
+            <column name="info" value="Подписан ЭЦП"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

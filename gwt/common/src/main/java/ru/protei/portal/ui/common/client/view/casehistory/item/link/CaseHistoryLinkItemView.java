@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.view.casehistory.item.link;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
@@ -14,12 +15,20 @@ public class CaseHistoryLinkItemView extends Composite {
     }
 
     public void setLink(String name, String link) {
+        setLink(name, link, null);
+    }
+
+    public void setLink(String name, String link, ClickHandler clickHandler) {
         if (link == null) {
             root.add(new InlineLabel(name));
             return;
         }
 
-        root.add(new Anchor(name, link , "_blank"));
+        Anchor anchor = new Anchor(name, link, "_blank");
+        if (clickHandler != null){
+            anchor.addClickHandler(clickHandler);
+        }
+        root.add(anchor);
     }
 
     @UiField

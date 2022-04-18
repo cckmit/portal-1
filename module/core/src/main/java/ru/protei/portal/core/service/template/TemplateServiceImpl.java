@@ -209,6 +209,40 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
+    @Override
+    public String getCaseObjectClosedNotificationSubject(Long caseNumber) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put("caseNumber", caseNumber);
+
+        return getText(model, "case.object.closed.subject.%s.ftl");
+    }
+
+    @Override
+    public String getCaseObjectClosedNotificationBody(Long caseObjectId, Long caseNumber, String urlTemplate, String recipientName) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put("caseNumber", caseNumber);
+        model.put("linkToCaseObject", String.format(urlTemplate, caseObjectId));
+
+        return getText(model, "case.object.closed.body.%s.ftl");
+    }
+
+    @Override
+    public String getCaseObjectDeadlineExpireNotificationSubject(Long caseNumber) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put("caseNumber", caseNumber);
+
+        return getText(model, "issue.deadline.expire.subject.%s.ftl");
+    }
+
+    @Override
+    public String getCaseObjectDeadlineExpireNotificationBody(Long caseObjectId, Long caseNumber, String urlTemplate, String recipientName) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put("caseNumber", caseNumber);
+        model.put("linkToCaseObject", String.format(urlTemplate, caseObjectId));
+        model.put("userName", recipientName);
+
+        return getText(model, "issue.deadline.expire.body.%s.ftl");
+    }
 
     @Override
     public String getEmployeeRegistrationEmployeeFeedbackEmailNotificationBody( String employeeName ) throws IOException, TemplateException {
@@ -395,6 +429,44 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("contractNumber", contract.getNumber());
 
         PreparedTemplate template = new PreparedTemplate("notification/email/contract.remaining.one.day.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getContractCreateNotificationSubject(Contract contract, EnumLangUtil enumLangUtil, Person author) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("EnumLangUtil", enumLangUtil);
+        templateModel.put( "TranslitUtils", new TransliterationUtils() );
+        
+        templateModel.put("contractType", contract.getContractType());
+        templateModel.put("contractNumber", contract.getNumber());
+        templateModel.put("author", author.getDisplayName() );
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/contract.create.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getContractCreateNotificationBody(Contract contract, String urlTemplate, Collection<String> recipients, EnumLangUtil enumLangUtil) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("EnumLangUtil", enumLangUtil);
+
+        templateModel.put("contractType", contract.getContractType());
+        templateModel.put("contractNumber", contract.getNumber());
+        templateModel.put("contractDateSigning", contract.getDateSigning());
+        templateModel.put("contractOrganization", contract.getOrganizationName());
+        templateModel.put("contractContractor", contract.getContractor() != null? contract.getContractor().getName() : null);
+        templateModel.put("contractDescription", escapeTextAndReplaceLineBreaks(contract.getDescription()));
+        templateModel.put("contractDeliveryNumber", contract.getDeliveryNumber());
+        templateModel.put("contractFileLocation", contract.getFileLocation());
+        templateModel.put("linkToContract", String.format(urlTemplate, contract.getId()));
+        templateModel.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/contract.create.body.%s.ftl");
         template.setModel(templateModel);
         template.setTemplateConfiguration(templateConfiguration);
         return template;
@@ -762,12 +834,14 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action, Collection<String> recipients) {
+    public PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action,
+                                                       Collection<String> recipients, EnumLangUtil enumLangUtil) {
         PersonAbsence oldState = event.getOldState();
         PersonAbsence newState = event.getNewState();
         List<PersonAbsence> multiAddAbsenceList = event.getMultiAddAbsenceList();
 
         Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("EnumLangUtil", enumLangUtil);
         templateModel.put("is_created", action == EventAction.CREATED);
         templateModel.put("is_updated", action == EventAction.UPDATED);
         templateModel.put("is_removed", action == EventAction.REMOVED);
@@ -784,7 +858,7 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put("multiAddAbsenceList", multiAddAbsenceList);
 
-        templateModel.put("reason", newState.getReason().getId());
+        templateModel.put("reason", newState.getReason());
 
         templateModel.put("commentChanged", event.isUserCommentChanged());
         templateModel.put("oldComment", getNullOrElse(oldState, PersonAbsence::getUserComment));

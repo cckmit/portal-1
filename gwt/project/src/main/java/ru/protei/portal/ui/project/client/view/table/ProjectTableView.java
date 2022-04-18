@@ -133,21 +133,29 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
         DynamicColumn<Project> statusColumn = new DynamicColumn<>(null, "status",
                 value -> {
                     String iconState = projectStateLang.getStateIcon(new CaseState(value.getStateName()));
-                    String style = "'style='color: " + value.getStateColor() + "'";
-                    return "<i class='" + iconState + " fa-2x" + style + "'></i>";
+                    String style = "'style='color: " + value.getStateColor();
+                    String title = "'title='" + projectStateLang.getStateName(new CaseState(value.getStateName()));
+
+                    return "<i class='" + iconState + " fa-2x" + title + style + "'></i>";
                 });
+
         columns.add(statusColumn);
 
         DynamicColumn<Project> numberColumn = new DynamicColumn<>(lang.projectDirections(), "number",
                 value -> {
                     StringBuilder content = new StringBuilder();
-                    content.append("<b>").append(value.getId()).append("</b>");
-
+                    content.append("<div");
+                    if (CASE_STATE_FINISHED.equals(value.getStateName()) || CASE_STATE_CANCELED.equals(value.getStateName())) {
+                        content.append(" class='").append("line-through").append(" text-gray'");
+                    }
+                    content.append(">").append("<b>").append(value.getId()).append("</b>");
                     if (isNotEmpty(value.getProductDirectionEntityOptionList())) {
                         Label directions = new Label(joining(value.getProductDirectionEntityOptionList(), ", ", EntityOption::getDisplayText));
                         directions.setStyleName("directions-label");
                         content.append(directions.toString());
                     }
+                    content.append("</div>");
+
                     return content.toString();
                 });
         columns.add(numberColumn);
@@ -155,6 +163,11 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
         DynamicColumn<Project> customerColumn = new DynamicColumn<>(lang.projectCustomer(), "customers",
                 value -> {
                     StringBuilder content = new StringBuilder();
+                    content.append("<div");
+                    if (CASE_STATE_FINISHED.equals(value.getStateName()) || CASE_STATE_CANCELED.equals(value.getStateName())) {
+                        content.append(" class='").append(" text-gray'");
+                    }
+                    content.append(">");
                     if ( value.getCustomer() != null && value.getCustomer().toEntityOption() != null) {
                         content.append("<b>").append(value.getCustomer().toEntityOption().getDisplayText()).append("</b>").append("<br/>");
                     }
@@ -164,13 +177,26 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
                     if ( value.getRegion() != null && value.getRegion().getDisplayText() != null) {
                         content.append(value.getRegion().getDisplayText());
                     }
+                    content.append("</div>");
+
                     return content.toString();
                 });
         columns.add(customerColumn);
 
         DynamicColumn<Project> infoColumn = new DynamicColumn<>(lang.projectInfo(), "info",
-                value -> "<b>" + SimpleHtmlSanitizer.sanitizeHtml(value.getName()).asString() + "</b>" +
-                                    (value.getDescription() == null ? "" : "<br/><small>" + SimpleHtmlSanitizer.sanitizeHtml(value.getDescription()).asString() + "</small>"));
+                value -> {
+                    StringBuilder content = new StringBuilder();
+                    content.append("<div");
+                    if (CASE_STATE_FINISHED.equals(value.getStateName()) || CASE_STATE_CANCELED.equals(value.getStateName())) {
+                        content.append(" class='").append(" text-gray'");
+                    }
+                    content.append(">");
+                    content.append("<b>").append(SimpleHtmlSanitizer.sanitizeHtml(value.getName()).asString()).append("</b>");
+                    content.append(value.getDescription() == null ? "" : "<br/><small>" + SimpleHtmlSanitizer.sanitizeHtml(value.getDescription()).asString() + "</small>");
+                    content.append("</div>");
+
+                    return content.toString();
+                });
         columns.add(infoColumn);
 
         DynamicColumn<Project> managerColumn = new DynamicColumn<>(lang.projectTeam(), "managers",
@@ -184,12 +210,18 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
                     int teamSize = value.getTeam().size() - (leader.isPresent() ? 1 : 0);
 
                     StringBuilder content = new StringBuilder();
+                    content.append("<div");
+                    if (CASE_STATE_FINISHED.equals(value.getStateName()) || CASE_STATE_CANCELED.equals(value.getStateName())) {
+                        content.append(" class='").append(" text-gray'");
+                    }
+                    content.append(">");
                     leader.ifPresent(lead -> content.append(lead.getName()));
 
                     if (teamSize > 0) {
                         leader.ifPresent(lead -> content.append(" + "));
                         content.append(teamSize).append(" ").append(lang.membersCount());
                     }
+                    content.append("</div>");
 
                     return content.toString();
                 });
@@ -236,6 +268,9 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
 
     private List<ClickColumn> columns = new ArrayList<>();
     private ClickColumnProvider<Project> columnProvider = new ClickColumnProvider<>();
+
+    private final String CASE_STATE_CANCELED = "canceled";
+    private final String CASE_STATE_FINISHED= "finished";
 
     private static ProjectTableViewUiBinder ourUiBinder = GWT.create( ProjectTableViewUiBinder.class );
     interface ProjectTableViewUiBinder extends UiBinder< HTMLPanel, ProjectTableView> {}

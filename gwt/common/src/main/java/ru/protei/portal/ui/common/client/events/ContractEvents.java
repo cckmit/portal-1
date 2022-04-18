@@ -25,7 +25,15 @@ public class ContractEvents {
             this.id = id;
         }
 
+        public Edit(Long id, boolean isCopy) {
+            this.id = id;
+            this.isCopy = isCopy;
+        }
+
         public Long id;
+
+        @Omit
+        public boolean isCopy;
     }
 
     public static class ShowPreview {

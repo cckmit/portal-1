@@ -26,6 +26,8 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasEnabled birthDayEnabled();
 
+    HasVisibility birthDayVisibility();
+
     HasEnabled genderEnabled();
 
     HasEnabled workEmailEnabled();

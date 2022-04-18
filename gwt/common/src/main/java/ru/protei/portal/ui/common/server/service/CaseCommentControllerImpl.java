@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CommentsAndHistories;
 import ru.protei.portal.core.service.CaseCommentService;
+import ru.protei.portal.core.service.HistoryService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.portal.ui.common.client.service.CaseCommentController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
@@ -86,10 +87,23 @@ public class CaseCommentControllerImpl implements CaseCommentController {
 
     @Override
     public Boolean updateCaseTimeElapsedType(Long caseCommentId, En_TimeElapsedType type) throws RequestFailedException {
-        log.info("removeCaseComment(): caseCommentId={}, type={}", caseCommentId, type);
+        log.info("updateCaseTimeElapsedType(): caseCommentId={}, type={}", caseCommentId, type);
 
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
         Result<Boolean> response = caseCommentService.updateCaseTimeElapsedType(token, caseCommentId, type);
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+
+        return response.getData();
+    }
+
+    @Override
+    public String getHistoryValueDiffByHistoryId(Long historyId) throws RequestFailedException {
+        log.info("getHistoryValueDiffByHistoryId(): historyId={}", historyId);
+
+        AuthToken token = getAuthToken(sessionService, httpServletRequest);
+        Result<String> response = historyService.getHistoryValueDiffByHistoryId(token, historyId);
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
@@ -103,6 +117,8 @@ public class CaseCommentControllerImpl implements CaseCommentController {
     SessionService sessionService;
     @Autowired
     HttpServletRequest httpServletRequest;
+    @Autowired
+    HistoryService historyService;
 
     private static final Logger log = LoggerFactory.getLogger(CaseCommentControllerImpl.class);
 }

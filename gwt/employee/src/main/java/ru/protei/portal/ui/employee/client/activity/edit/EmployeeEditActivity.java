@@ -28,6 +28,8 @@ import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
@@ -36,11 +38,13 @@ import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionEditItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionEditItemView;
 
 import java.util.*;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.util.CrmConstants.ContactConstants.*;
 
 /**
@@ -435,7 +439,7 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     }
 
     private void fillView(Long employeeId) {
-        employeeService.getEmployeeWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>()
+        employeeService.getEmployeeWithPrivacyInfo(employeeId, new FluentCallback<EmployeeShortView>()
                 .withError(throwable -> {
                     if (En_ResultStatus.NOT_FOUND.equals(getStatus(throwable))) {
                         fireEvent(new ErrorPageEvents.ShowNotFound(initDetails.parent, lang.errEmployeeNotFound()));
@@ -446,6 +450,19 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
                 })
                 .withSuccess(this::fillView)
         );
+    }
+
+    private void showBirthday(EmployeeShortView employee) {
+
+        boolean canDisplayBirthday = stream(configStorage.getConfigData().employeeBirthdayHideIds)
+                .noneMatch(l -> Objects.equals(l, employee.getId()));
+        TimeZone timeZone = null;
+        if (employee.getTimezoneOffset() != null){
+            timeZone = TimeZone.createTimeZone(employee.getTimezoneOffset());
+        }
+        view.setBirthDayTimeZone(timeZone);
+        view.birthDayVisibility().setVisible(canDisplayBirthday);
+        view.birthDay().setValue(employee.getBirthday());
     }
 
     private void fillView(EmployeeShortView employee){
@@ -460,10 +477,8 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
         personLastName = employee.getLastName();
         view.secondName().setText(employee.getSecondName());
         view.inn().setText(employee.getInn());
-        if (employee.getBirthday() != null ) {
-            view.setBirthDayTimeZone(TimeZone.createTimeZone(employee.getBirthday().getTimezoneOffset()));
-        }
-        view.birthDay().setValue(employee.getBirthday());
+
+        showBirthday(employee);
         view.ipAddress().setValue(employee.getIpAddress());
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
@@ -680,6 +695,8 @@ public abstract class EmployeeEditActivity implements AbstractEmployeeEditActivi
     Provider<AbstractPositionEditItemView> positionEditProvider;
     @Inject
     DefaultErrorHandler errorHandler;
+    @Inject
+    ConfigStorage configStorage;
 
     private HandlerRegistration changeAvatarHandlerRegistration;
     private HandlerRegistration submitAvatarHandlerRegistration;

@@ -53,6 +53,8 @@ import ru.protei.portal.core.report.ytwork.ReportYoutrackWork;
 import ru.protei.portal.core.report.ytwork.ReportYoutrackWorkImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.autoclosecase.AutoCloseCaseService;
+import ru.protei.portal.core.service.autoclosecase.AutoCloseCaseServiceImpl;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceTaskHandlerImpl;
@@ -419,6 +421,11 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
+    public AutoCloseCaseService getAutoCloseCaseService() {
+        return new AutoCloseCaseServiceImpl();
+    }
+
+    @Bean
     public EmployeeRegistrationYoutrackSynchronizer getEmployeeRegistrationYoutrackSynchronizer() {
         return new EmployeeRegistrationYoutrackSynchronizerImpl();
     }
@@ -578,5 +585,10 @@ public class ServiceTestsConfiguration {
     @Bean
     public RFIDLabelService getRFIDLabelService() {
         return new RFIDLabelServiceImpl();
+    }
+
+    @Bean
+    public CaseElapsedTimeApiService getCaseElapsedTimeApiService() {
+        return new CaseElapsedTimeApiServiceImpl();
     }
 }

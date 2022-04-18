@@ -26,10 +26,12 @@ public interface AttachmentController extends RemoteService {
      * и из облака
      * @return Идентификатор удаленного вложения
      */
-    Long removeAttachmentEverywhere(En_CaseType caseType, Long attachmentId) throws RequestFailedException;
+    Long removeAttachmentEverywhere(En_CaseType caseType, Long caseId, Long attachmentId) throws RequestFailedException;
 
     /**
      * Очистка кэша загрузки
      */
     void clearUploadedAttachmentsCache();
+
+    Long addCaseAttachmentHistory(Long caseObjectId, Long attachmentId, String fileName) throws RequestFailedException;
 }

@@ -16,6 +16,7 @@ import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dict.EducationEntryType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.*;
@@ -181,6 +182,29 @@ public class MailNotificationProcessor {
         }
     }
 
+    @EventListener
+    public void onCaseObjectDeadlineExpireEvent(CaseObjectDeadlineExpireEvent event) {
+        log.info("onCaseObjectDeadlineExpireEvent(): {}", event);
+
+        Long caseObjectId = event.getCaseObjectId();
+        Long caseNumber = event.getCaseNumber();
+        Person customer = event.getCustomer();
+        String email = new PlainContactInfoFacade(customer.getContactInfo()).getEmail();
+
+        try {
+            String subject = templateService.getCaseObjectDeadlineExpireNotificationSubject(
+                    caseNumber);
+
+            String body = templateService.getCaseObjectDeadlineExpireNotificationBody(
+                    caseObjectId,
+                    caseNumber,
+                    getCrmCaseUrl(CompanySubscription.isProteiRecipient(email)), customer.getDisplayName());
+
+            sendMail(email, subject, body, getFromPortalAddress());
+        } catch (Exception e) {
+            log.warn("Failed to sent case object deadline expire notification: caseNumber={}", caseNumber, e);
+        }
+    }
 
     private DiffCollectionResult<CaseLink> selectPublicLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
         DiffCollectionResult result = new DiffCollectionResult();
@@ -662,6 +686,56 @@ public class MailNotificationProcessor {
         sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
     }
 
+    @EventListener
+    public void onContractCreateEvent(ContractCreateEvent event) {
+        Contract contract = event.getContract();
+        Set<NotificationEntry> notifiers = event.getNotificationEntryList();
+        if (contract == null || notifiers == null) {
+            log.error("Failed to send contract create notification: incomplete data provided: " +
+                    "contract={}, notifiers={}", contract, notifiers);
+            return;
+        }
+
+        if (CollectionUtils.isEmpty(notifiers)) {
+            log.info("Failed to send contract create notification: empty notifiers set: contract={}", contract);
+            return;
+        }
+
+        List<String> recipients = getNotifiersAddresses(notifiers);
+
+        performContractCreateNotification(
+                contract,
+                config.data().getMailNotificationConfig().getCrmUrlInternal() +
+                        config.data().getMailNotificationConfig().getContractUrl(),
+                recipients,
+                event.getAuthor(),
+                new HashSet<>(notifiers)
+        );
+    }
+
+    private void performContractCreateNotification(Contract contract, String urlTemplate, List<String> recipients,
+                                                   Person author, Set<NotificationEntry> notifiers) {
+        if (CollectionUtils.isEmpty(notifiers)) {
+            log.error("Failed to send contract create notification: notifiers is empty: " +
+                    "contract={}", contract);
+        }
+
+        PreparedTemplate bodyTemplate = templateService.getContractCreateNotificationBody(
+                contract, urlTemplate, recipients, new EnumLangUtil(lang));
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for contractId={}", contract.getId());
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getContractCreateNotificationSubject(
+                contract, new EnumLangUtil(lang), author);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for contractId={}", contract.getId());
+            return;
+        }
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, true, getFromPortalAddress());
+    }
+    
     // -----------------------
     // Document notifications
     // -----------------------
@@ -1040,7 +1114,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        PreparedTemplate bodyTemplate = templateService.getAbsenceNotificationBody(event, action, recipients);
+        PreparedTemplate bodyTemplate = templateService.getAbsenceNotificationBody(event, action, recipients, new EnumLangUtil(lang));
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for absence notification with id={} and action={}",
                     absence.getId(), action);

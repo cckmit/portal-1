@@ -16,16 +16,20 @@ import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.StringUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
+import static ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat.CURRENCY_COST;
 
 public class ExcelReportWriter implements
         ReportWriter<Contract>,
         JXLSHelper.ReportBook.Writer<Contract> {
+
+    static final private int COST_CELL_NUMBER = 3;
 
     private final JXLSHelper.ReportBook<Contract> book;
     private final Lang.LocalizedLang lang;
@@ -85,10 +89,14 @@ public class ExcelReportWriter implements
 
     @Override
     public CellStyle getCellStyle(Workbook workbook, int columnIndex) {
-        return book.makeCellStyle(0, cs -> {
+        return book.makeCellStyle(columnIndex, cs -> {
             cs.setFont(book.getDefaultFont());
             cs.setVerticalAlignment(VerticalAlignment.CENTER);
             cs.setWrapText(true);
+            if (columnIndex == COST_CELL_NUMBER) {
+                cs.setQuotePrefixed(false);
+                cs.setDataFormat(workbook.createDataFormat().getFormat(CURRENCY_COST));
+            }
         });
     }
 
@@ -115,7 +123,7 @@ public class ExcelReportWriter implements
         values.add(makeContractNumber(contract));
         values.add(makeContractorName(contract));
         values.add(emptyIfNull(contract.getDescription()));
-        values.add(makeCost(contract));
+        values.add(makeCost(contract));     // в getCellStyle выставляется отдельный стиль для ячейки COST_CELL_NUMBER
         values.add(makeCurrency(contract));
         values.add(makeContractDates(contract));
         values.add(joining(contract.getProductDirections(), ", ", DevUnit::getName));
@@ -155,11 +163,10 @@ public class ExcelReportWriter implements
         return emptyIfNull(contract.getContractor().getName());
     }
 
-    private String makeCost(Contract contract) {
-        if (contract.getCost() == null) {
-            return "";
-        }
-        return contract.getCost().toString();
+    private Double makeCost(Contract contract) {
+        return Optional.ofNullable(contract.getCost())
+                .map(money -> money.getFull() / 100.0)
+                .orElse(0.0);
     }
 
     private String makeCurrency(Contract contract) {
@@ -190,10 +197,10 @@ public class ExcelReportWriter implements
     }
 
     private String makeState(Contract contract) {
-        if (contract.getState() == null) {
+        if (contract.getStateId() == null) {
             return "";
         }
-        return enumLangUtil.contractStateLang(contract.getState(), lang.getLanguageTag());
+        return enumLangUtil.contractStateLang(contract.getStateName(), lang.getLanguageTag());
     }
 
     private String makeExpenditureContracts(Contract contract) {

@@ -61,12 +61,12 @@
                                         <g:CheckBox ui:field="changeAccount" styleName="checkbox" text="{lang.employeeChangeAccount}"/>
                                     </g:HTMLPanel>
 
-                                    <div class="form-group col-md-4">
+                                    <g:HTMLPanel styleName="form-group col-md-4" ui:field="birthDayContainer">
                                         <label class="">
                                             <ui:text from="{lang.birthday}"/>
                                         </label>
                                         <single:SinglePicker ui:field="birthDay" type="DATE" formatValue="dd.MM.yyyy" mandatory="false"/>
-                                    </div>
+                                    </g:HTMLPanel>
 
                                     <div class="form-group col-md-2">
                                         <label class="">

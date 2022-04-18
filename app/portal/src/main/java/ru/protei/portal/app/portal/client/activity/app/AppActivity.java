@@ -12,7 +12,6 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.ui.common.client.service.AppServiceAsync;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.PageService;
@@ -25,6 +24,8 @@ import ru.protei.portal.ui.common.client.util.LocaleUtils;
 import ru.protei.portal.ui.common.shared.model.ClientConfigData;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.web.common.client.events.MenuEvents;
+
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 
 
 /**
@@ -148,10 +149,6 @@ public abstract class AppActivity
 
     private void stopPingServerTimer() {
         pingTimer.cancel();
-    }
-
-    private String transliteration(String input) {
-        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     @Inject

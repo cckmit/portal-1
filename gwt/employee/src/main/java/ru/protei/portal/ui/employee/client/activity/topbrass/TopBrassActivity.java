@@ -36,7 +36,7 @@ public abstract class TopBrassActivity implements Activity, AbstractTopBrassActi
         init.parent.clear();
         init.parent.add(view.asWidget());
 
-        employeeService.getEmployeesWithChangedHiddenCompanyNames(employeeQuery, new FluentCallback<SearchResult<EmployeeShortView>>()
+        employeeService.getEmployees(employeeQuery, new FluentCallback<SearchResult<EmployeeShortView>>()
                 .withSuccess(this::fillView)
         );
     }

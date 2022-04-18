@@ -25,6 +25,7 @@ import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.service.WorkerEntryService;
 import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
@@ -899,7 +900,7 @@ public class WorkerController {
         }
 
         OperationData operationData = new OperationData(workerRecord)
-                .requireHomeItem()
+                .requireNewDepartment(null)
                 .requireWorker(null);
 
         if (!operationData.isValid()) {
@@ -910,7 +911,8 @@ public class WorkerController {
             Long newWorkerPositionId = getValidPosition(workerRecord.getNewPositionName(),
                                                         operationData.homeItem().getCompanyId()).getId();
 
-            return updateWorkerPosition(operationData.worker, workerRecord, newWorkerPositionId);
+            return updateWorkerPosition(operationData.worker, workerRecord,
+                                        newWorkerPositionId, operationData.newDepartment.getId());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -937,10 +939,9 @@ public class WorkerController {
                                : error(En_ResultStatus.INCORRECT_PARAMS, errCode.getMessage());
     }
 
-    private Result<Long> updateWorkerPosition(WorkerEntry workerToUpdate, WorkerRecord workerRecord, Long newWorkerPositionId){
+    private Result<Long> updateWorkerPosition(WorkerEntry workerToUpdate, WorkerRecord workerRecord,
+                                              Long newWorkerPositionId, Long newPositionDepartmentId){
         try {
-            Long newPositionDepartmentId = workerRecord.getNewPositionDepartmentId();
-
             boolean updatePositionNow = workerRecord.getNewPositionTransferDate().getTime() <= new Date().getTime();
             if (updatePositionNow) {
                 workerToUpdate.setPositionId(newWorkerPositionId);
@@ -960,9 +961,10 @@ public class WorkerController {
             }
 
             Long updatedWorkerId = workerToUpdate.getId();
+            WorkerEntry updatedWorker = workerEntryDAO.get(updatedWorkerId);
 
             if (updated) {
-                logger.debug("success result, updatedWorkerId={}", updatedWorkerId);
+                logger.debug("success result, updatedWorker={}", updatedWorker);
                 return ok(updatedWorkerId);
             }
         } catch (Exception e) {
@@ -1205,6 +1207,7 @@ public class WorkerController {
 
         CompanyHomeGroupItem homeGroupItem;
         CompanyDepartment department;
+        CompanyDepartment newDepartment;
         CompanyDepartment parentDepartment;
         WorkerEntry headDepartment;
         WorkerEntry worker;
@@ -1248,6 +1251,14 @@ public class WorkerController {
             requireHomeItem();
             if (isValid())
                 this.department = handle(companyDepartmentDAO.getByExternalId(record.getDepartmentId().trim(), homeGroupItem.getCompanyId()), optional, En_ErrorCode.UNKNOWN_DEP);
+
+            return this;
+        }
+
+        public OperationData requireNewDepartment(Supplier<CompanyDepartment> optional) {
+            requireHomeItem();
+            if (isValid())
+                this.newDepartment = handle(companyDepartmentDAO.getByExternalId(record.getNewDepartmentId().trim(), homeGroupItem.getCompanyId()), optional, En_ErrorCode.UNKNOWN_DEP);
 
             return this;
         }
@@ -1441,6 +1452,7 @@ public class WorkerController {
         public class Record {
             String companyCode;
             String departmentId;
+            String newDepartmentId;
             String parentDepartmentId;
             String headDepartmentId;
             String workerId;
@@ -1452,6 +1464,7 @@ public class WorkerController {
             public Record(WorkerRecord workerRecord) {
                 this.companyCode = workerRecord.getCompanyCode();
                 this.departmentId = workerRecord.getDepartmentId();
+                this.newDepartmentId = workerRecord.getNewPositionDepartmentId();
                 this.workerId = workerRecord.getWorkerId();
                 this.personId = workerRecord.getId();
                 this.registrationId = workerRecord.getRegistrationId();
@@ -1479,6 +1492,10 @@ public class WorkerController {
 
             public String getDepartmentId() {
                 return departmentId;
+            }
+
+            public String getNewDepartmentId() {
+                return newDepartmentId;
             }
 
             public String getParentDepartmentId() {
@@ -1569,7 +1586,6 @@ public class WorkerController {
                 try {
 
                     Person person = operationData.person();
-                    String personLastName = person.getLastName();
                     WorkerEntry worker = operationData.worker();
                     List<UserLogin> userLogins = operationData.account();
                     EmployeeRegistration employeeRegistration = operationData.registration();
@@ -1584,26 +1600,20 @@ public class WorkerController {
 
                     if (rec.isFired() || rec.isDeleted()) {
                         boolean immediately = false;
-                        if (HelperFunc.isNotEmpty(rec.getFireDate())) {
-                            Date firedDate = HelperService.DATE.parse(rec.getFireDate());
-                            Date now = new Date();
-                            if (firedDate.after(now)) {
-                                worker.setFiredDate(firedDate);
-                                worker.setDeleted(rec.isDeleted());
-                                workerEntryDAO.merge(worker);
-
-                                logger.debug("success result, workerRowId={}", worker.getId());
-                            } else {
-                                immediately = true;
-                            }
-                        } else {
+                        Date firedDate = HelperFunc.isEmpty(rec.getFireDate()) ? null : HelperService.DATE.parse(rec.getFireDate());
+                        if (firedDate == null || firedDate.before(DateUtils.resetTime(new Date()))) {
                             immediately = true;
+                        } else {
+                            worker.setFiredDate(firedDate);
+                            worker.setDeleted(rec.isDeleted());
+                            workerEntryDAO.merge(worker);
+                            logger.debug("success result, workerRowId={}", worker.getId());
                         }
 
                         if (immediately) {
                             workerEntryDAO.remove(worker);
                             if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
-                                return workerEntryService.firePerson(person, rec.isFired(), null, rec.isDeleted(), userLogins, WSConfig.getInstance().isEnableMigration())
+                                return workerEntryService.firePerson(person, rec.isFired(), firedDate, rec.isDeleted(), userLogins, WSConfig.getInstance().isEnableMigration())
                                         .map(ignore -> {
                                             logger.debug("success result, workerRowId={}", worker.getId());
                                             return person.getId();

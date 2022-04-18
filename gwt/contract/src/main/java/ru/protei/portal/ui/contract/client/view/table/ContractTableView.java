@@ -13,15 +13,17 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
+import ru.protei.portal.ui.common.client.columns.CopyClickColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.MoneyRenderer;
 import ru.protei.portal.ui.common.client.lang.En_ContractKindLang;
-import ru.protei.portal.ui.common.client.lang.En_ContractStateLang;
+import ru.protei.portal.ui.common.client.lang.ContractStateLang;
 import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contract.client.activity.table.AbstractContractTableActivity;
@@ -31,7 +33,6 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 import static ru.protei.portal.core.model.util.ContractSupportService.getContractKind;
 import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
-import static ru.protei.portal.core.model.helper.StringUtils.isNotBlank;
 
 public class ContractTableView extends Composite implements AbstractContractTableView {
 
@@ -125,6 +126,13 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         columnCost.setHandler(activity);
         columnCost.setColumnProvider(columnProvider);
 
+        copyClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTRACT_EDIT));
+        table.addColumn(copyClickColumn.header, copyClickColumn.values);
+        copyClickColumn.setActionHandler(activity);
+        copyClickColumn.setCopyHandler(activity);
+        copyClickColumn.setHandler(activity);
+        copyClickColumn.setColumnProvider(columnProvider);
+
         editClickColumn.setEnabledPredicate(v -> policyService.hasPrivilegeFor(En_Privilege.CONTRACT_EDIT));
         table.addColumn(editClickColumn.header, editClickColumn.values);
         editClickColumn.setActionHandler(activity);
@@ -145,8 +153,9 @@ public class ContractTableView extends Composite implements AbstractContractTabl
             image.addClassName("height-40");
             // https://www.flaticon.com/authors/flat_circular/flat
             // https://www.flaticon.com/packs/business-strategy-2
-            image.setSrc( "./images/contract_" + contract.getState().name().toLowerCase() + ".png" );
-            image.setTitle( contractStateLang.getName(contract.getState()) );
+            String stateName = contract.getStateName().toLowerCase().replaceAll("\\s", "_");
+            image.setSrc( "./images/contract_" + stateName + ".png" );
+            image.setTitle( contractStateLang.getStateName(new CaseState(contract.getStateName())) );
             root.appendChild(image);
             cell.appendChild(root);
         }
@@ -299,7 +308,9 @@ public class ContractTableView extends Composite implements AbstractContractTabl
     @Inject
     private EditClickColumn<Contract> editClickColumn;
     @Inject
-    private En_ContractStateLang contractStateLang;
+    private CopyClickColumn<Contract> copyClickColumn;
+    @Inject
+    private ContractStateLang contractStateLang;
     @Inject
     private En_ContractTypeLang contractTypeLang;
     @Inject

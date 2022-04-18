@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employee.client.activity.preview;
 
+import com.google.gwt.i18n.client.TimeZone;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -17,26 +18,26 @@ import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
-import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 /**
  * Активность превью сотрудника
@@ -76,6 +77,14 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         view.showFullScreen(false);
     }
 
+    @Event
+    public void onUpdate(EmployeeEvents.Update event) {
+        if(event.id == null || !Objects.equals(event.id, employee.getId()))
+            return;
+
+        showAbsences(event.id);
+    }
+
     @Override
     public void onFullScreenClicked() {
         fireEvent(new EmployeeEvents.ShowFullScreen(employee.getId()));
@@ -92,7 +101,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
     }
 
     private void fillView(Long employeeId) {
-        employeeService.getEmployeeWithChangedHiddenCompanyNames(employeeId, new FluentCallback<EmployeeShortView>()
+        employeeService.getEmployee(employeeId, new FluentCallback<EmployeeShortView>()
                 .withError(throwable -> {
                     if (En_ResultStatus.NOT_FOUND.equals(getStatus(throwable))) {
                         fireEvent(new ErrorPageEvents.ShowNotFound(initDetails.parent, lang.errEmployeeNotFound()));
@@ -105,6 +114,23 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         );
     }
 
+    private void showBirthday(EmployeeShortView employee) {
+
+        boolean canDisplayBirthday = stream(configStorage.getConfigData().employeeBirthdayHideIds)
+                .noneMatch(l -> Objects.equals(l, employee.getId()));
+        view.birthdayContainerVisibility().setVisible(canDisplayBirthday && employee.getBirthday() != null);
+        String value = "";
+        if (canDisplayBirthday){
+            TimeZone timeZone = null;
+            if (employee.getTimezoneOffset() != null){
+                timeZone = TimeZone.createTimeZone(employee.getTimezoneOffset());
+            }
+            value = DateFormatter.formatDateMonth(employee.getBirthday(), timeZone);
+        }
+
+        view.setBirthday(value);
+    }
+
     private void fillView(final EmployeeShortView employee) {
 
         this.employee = employee;
@@ -112,13 +138,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         view.setPhotoUrl(AvatarUtils.getPhotoUrl(employee.getId()));
         view.setName(employee.getDisplayName());
 
-        if (employee.getBirthday() == null) {
-            view.setBirthday("");
-            view.birthdayContainerVisibility().setVisible(false);
-        } else {
-            view.setBirthday(DateFormatter.formatDateMonth(employee.getBirthday()));
-            view.birthdayContainerVisibility().setVisible(true);
-        }
+        showBirthday(employee);
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
 
@@ -152,41 +172,51 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         ));
         view.setID(employee.getId().toString());
         view.setIP(employee.getIpAddress());
-        view.setInn(employee.getInn());
 
-        requestLogins(employee.getId());
+        showLogins(employee.getId());
 
-
-        List<String> workerExtIds = employee.getWorkerEntries().stream()
-                                            .map(entry -> entry.getWorkerExtId())
-                                            .collect(Collectors.toList());
-        if (workerExtIds.isEmpty()) {
-            view.setRestVacationDays(lang.noData());
-        } else {
-            view.setRestVacationDays("");
-            view.getRestVacationDaysLoading().removeClassName("hide");
-            requestRestVacationDays(employee.getId(), employee.getWorkerEntries());
-        }
+        showRestVacationDays(employee);
 
         showAbsences(employee.getId());
     }
 
-    @Event
-    public void onUpdate(EmployeeEvents.Update event) {
-        if(event.id == null || !Objects.equals(event.id, employee.getId()))
-            return;
+    private void showLogins(final Long employeeId) {
+        view.showLoginsPanel(false);
 
-        showAbsences(event.id);
+        if (!policyService.hasSystemScopeForPrivilege(En_Privilege.EMPLOYEE_VIEW)) {
+            return;
+        }
+
+        view.showLoginsPanel(true);
+        requestLogins(employeeId);
+    }
+
+    private void showRestVacationDays(final EmployeeShortView employee) {
+        view.showRestVacationDaysPanel(false);
+
+        if (!isSelfEmployee(employee.getId())) {
+            return;
+        }
+
+        view.showRestVacationDaysPanel(true);
+        view.setRestVacationDays("");
+        view.getRestVacationDaysLoading().removeClassName("hide");
+        requestRestVacationDays(employee.getId());
     }
 
     private void showAbsences(Long employeeId) {
         view.showAbsencesPanel(false);
 
-        if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW))
+        if (!policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW)) {
             return;
+        }
 
         view.showAbsencesPanel(true);
         fireEvent(new AbsenceEvents.Show(view.absencesContainer(), employeeId));
+    }
+
+    private boolean isSelfEmployee(Long employeeId) {
+        return Objects.equals(employeeId, policyService.getProfile().getId());
     }
 
     private void requestLogins(Long employeeId) {
@@ -198,25 +228,23 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
                                 joining(userLoginShortViews, ", ", UserLoginShortView::getUlogin))));
     }
 
-    private void requestRestVacationDays(final Long employeeId, List<WorkerEntryShortView> workerEntries) {
-        employeeService.getEmployeeRestVacationDays(workerEntries,
+    private void requestRestVacationDays(final Long employeeId) {
+        employeeService.getEmployeeRestVacationDays(employeeId,
                 new FluentCallback<String>()
-                        .withError(throwable -> {
+                        .withError((throwable, defaultErrorHandler, status) -> {
                             view.getRestVacationDaysLoading().addClassName("hide");
                             view.setRestVacationDays(lang.noData());
-                            fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                        })
-                        .withSuccess(new Consumer<String>() {
-                            @Override
-                            public void accept(String restVacationDaysResult) {
-                                if (employee == null || !employee.getId().equals(employeeId)) {
-                                    return;
-                                }
-
-                                view.getRestVacationDaysLoading().addClassName("hide");
-                                view.setRestVacationDays(restVacationDaysResult == null ? lang.noData()
-                                                                                        : restVacationDaysResult);
+                            if (!En_ResultStatus.EMPLOYEE_NOT_SYNCHRONIZING_WITH_1C.equals(status)) {
+                                defaultErrorHandler.accept(throwable);
                             }
+                        })
+                        .withSuccess(restVacationDays -> {
+                            if (!Objects.equals(employeeId, employee.getId())) {
+                                return;
+                            }
+
+                            view.getRestVacationDaysLoading().addClassName("hide");
+                            view.setRestVacationDays(restVacationDays);
                         }));
     }
 
@@ -277,6 +305,9 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
     @Inject
     DefaultErrorHandler defaultErrorHandler;
+
+    @Inject
+    ConfigStorage configStorage;
 
     private EmployeeShortView employee;
 

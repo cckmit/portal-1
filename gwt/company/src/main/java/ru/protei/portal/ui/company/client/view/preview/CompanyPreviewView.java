@@ -108,6 +108,11 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     }
 
     @Override
+    public void setCommonManager(String value) {
+        commonManager.getElement().setInnerHTML(value);
+    }
+
+    @Override
     public HasVisibility getContactsContainerVisibility() {
         return contactsContainer;
     }
@@ -140,8 +145,10 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
         tabWidget.ensureDebugId(DebugIds.COMPANY.TABS);
         tabWidget.setTabNameDebugId(lang.contacts(), DebugIds.COMPANY.TAB_CONTACTS);
         tabWidget.setTabNameDebugId(lang.siteFolder(), DebugIds.COMPANY.TAB_SITE_FOLDERS);
+        tabWidget.setTabNameDebugId(lang.productCommonManager(), DebugIds.COMPANY.TAB_COMMON_MANAGER);
         contactsContainer.ensureDebugId(DebugIds.COMPANY.CONTACTS);
         siteFolderContainer.ensureDebugId(DebugIds.COMPANY.SITE_FOLDERS);
+        commonManager.ensureDebugId(DebugIds.COMPANY.COMMON_MANAGER);
     }
 
     @UiField
@@ -172,6 +179,8 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     TabWidget tabWidget;
     @UiField
     HTMLPanel siteFolderContainer;
+    @UiField
+    HTMLPanel commonManager;
     @UiField
     SpanElement subscriptionLabel;
     @UiField

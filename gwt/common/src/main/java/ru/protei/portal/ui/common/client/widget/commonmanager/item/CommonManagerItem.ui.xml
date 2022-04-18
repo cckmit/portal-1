@@ -1,0 +1,24 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:product="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
+             xmlns:manager="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="row form-group">
+        <div class="col-md-6">
+            <product:DevUnitButtonSelector ui:field="product"
+                                           validation="false"
+                                           header="{lang.issueProduct}"
+                                           hasNullValue="true"
+                                           defaultValue="{lang.companySubscriptionGroupAnyValueProduct}"/>
+        </div>
+
+        <div class="col-md-6">
+            <label><ui:text from="{lang.productCommonManager}"/></label>
+            <manager:PersonButtonSelector ui:field="commonManager" defaultValue="{lang.productSelectCommonManager}"
+                                          hasNullValue="true"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

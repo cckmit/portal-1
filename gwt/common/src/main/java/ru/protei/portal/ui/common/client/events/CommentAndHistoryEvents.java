@@ -72,4 +72,11 @@ public class CommentAndHistoryEvents {
         }
         public boolean isJiraWorkflowWarningVisible;
     }
+
+    public static class ShowCaseInfoChanges {
+        public ShowCaseInfoChanges(Long historyId) {
+            this.historyId = historyId;
+        }
+        public Long historyId;
+    }
 }

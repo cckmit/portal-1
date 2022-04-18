@@ -9,16 +9,13 @@ import java.util.Locale;
 
 public class EnumLangUtil {
     private final Lang lang;
-    private Lang.LocalizedLang localizedLang;
 
     public EnumLangUtil(Lang lang) {
         this.lang = lang;
     }
 
     public String getPersonRoleType(En_PersonRoleType type, String langCode) {
-        if (localizedLang == null) {
-            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
-        }
+        Lang.LocalizedLang localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
 
         switch (type) {
             case HEAD_MANAGER:
@@ -79,16 +76,21 @@ public class EnumLangUtil {
                 return localizedLang.get("personQadDocumentation");
             case SPECIAL_CHECK_SPECIAL_RESEARCH:
                 return localizedLang.get("personSpecialCheckSpecialResearch");
-
+            case AUTOMATIC_MOUNTING:
+                return localizedLang.get("personAutomaticMounting");
+            case MANUAL_MOUNTING:
+                return localizedLang.get("personManualMounting");
+            case OUTPUT_CONTROL:
+                return localizedLang.get("personOutputControl");
+            case EQUIPMENT_ASSEMBLY:
+                return localizedLang.get("personEquipmentAssembly");
         }
 
         return localizedLang.get("personRoleUnknown");
     }
 
     public String getProjectState(String state, String langCode) {
-        if (localizedLang == null) {
-            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
-        }
+        Lang.LocalizedLang localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
 
         switch (state.toLowerCase()) {
             case "unknown":
@@ -119,9 +121,7 @@ public class EnumLangUtil {
     }
 
     public String getCustomerType(En_CustomerType type, String langCode) {
-        if (localizedLang == null) {
-            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
-        }
+        Lang.LocalizedLang localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
 
         switch (type) {
             case MINISTRY_OF_DEFENCE:
@@ -146,9 +146,7 @@ public class EnumLangUtil {
         if (contractType == null) {
             return "";
         }
-        if (localizedLang == null) {
-            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
-        }
+        Lang.LocalizedLang localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         switch (contractType) {
             case AFTER_SALES_SERVICE_CONTRACT: return localizedLang.get("contractTypeAfterSalesServiceContract");
             case EXPORT_OF_SERVICE_CONTRACT: return localizedLang.get("contractTypeExportOfServiceContract");
@@ -174,22 +172,18 @@ public class EnumLangUtil {
         return "";
     }
 
-    public String contractStateLang(En_ContractState contractState, String langCode) {
-        if (contractState == null) {
-            return "";
-        }
-        if (localizedLang == null) {
-            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
-        }
-        switch (contractState) {
-            case AGREEMENT: return localizedLang.get("contractStateAgreement");
-            case COPIES_SEND_TO_CUSTOMER: return localizedLang.get("contractStateCopiesSendToCustomer");
-            case HAVE_ORIGINAL: return localizedLang.get("contractStateHaveOriginal");
-            case WAIT_ORIGINAL: return localizedLang.get("contractStateWaitOriginal");
-            case WAITING_COPIES_FROM_CUSTOMER: return localizedLang.get("contractWaitingCopiesFromCustomer");
-            case CANCELLED: return localizedLang.get("contractCancelled");
-            case EDS_SIGNED: return localizedLang.get("contractEdsSigned");
-            case SIGNED_ON_SITE: return localizedLang.get("contractSignedOnSite");
+    public String contractStateLang(String state, String langCode) {
+        Lang.LocalizedLang localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
+
+        switch (state.toLowerCase()) {
+            case "agreement": return localizedLang.get("contractStateAgreement");
+            case "copies send to customer": return localizedLang.get("contractStateCopiesSendToCustomer");
+            case "have an original": return localizedLang.get("contractStateHaveOriginal");
+            case "waiting for original": return localizedLang.get("contractStateWaitOriginal");
+            case "waiting for copies from customer": return localizedLang.get("contractWaitingCopiesFromCustomer");
+            case "canceled": return localizedLang.get("contractCancelled");
+            case "eds signed": return localizedLang.get("contractEdsSigned");
+            case "signed on site": return localizedLang.get("contractSignedOnSite");
         }
         return "";
     }
@@ -198,9 +192,7 @@ public class EnumLangUtil {
         if (contractDatesType == null) {
             return "";
         }
-        if (localizedLang == null) {
-            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
-        }
+        Lang.LocalizedLang localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         switch (contractDatesType) {
             case PREPAYMENT: return localizedLang.get("contractPrePayment");
             case POSTPAYMENT: return localizedLang.get("contractPostPayment");
@@ -213,9 +205,7 @@ public class EnumLangUtil {
         if (value == null) {
             return "";
         }
-        if (localizedLang == null) {
-            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
-        }
+        Lang.LocalizedLang localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         switch (value) {
             case NONE:
                 return localizedLang.get("workTriggerNone");
@@ -235,13 +225,11 @@ public class EnumLangUtil {
         return "";
     }
 
-    public String dutyLogTypeLang(En_AbsenceReason absenceReason, String langCode) {
+    public String absenceReasonLang(En_AbsenceReason absenceReason, String langCode) {
         if (absenceReason == null) {
             return "";
         }
-        if (localizedLang == null) {
-            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
-        }
+        Lang.LocalizedLang localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         switch (absenceReason) {
             case PERSONAL_AFFAIR:
                 return localizedLang.get("absenceReasonPersonAffair");
@@ -275,9 +263,7 @@ public class EnumLangUtil {
         if (en_DutyType == null) {
             return "";
         }
-        if (localizedLang == null) {
-            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
-        }
+        Lang.LocalizedLang localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         switch (en_DutyType) {
             case BG:
                 return localizedLang.get("dutyTypeBG");
@@ -307,9 +293,7 @@ public class EnumLangUtil {
         if (type == null) {
             return "";
         }
-        if (localizedLang == null) {
-            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
-        }
+        Lang.LocalizedLang localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         switch (type) {
             case COURSE: return localizedLang.get("educationCourse");
             case CONFERENCE: return localizedLang.get("educationConference");
@@ -319,9 +303,7 @@ public class EnumLangUtil {
     }
 
     public String dayOfWeekLang(DayOfWeek dayOfWeek, String langCode) {
-        if (localizedLang == null) {
-            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
-        }
+        Lang.LocalizedLang localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         switch (dayOfWeek) {
             case SUNDAY: return localizedLang.get("sunday");
             case MONDAY: return localizedLang.get("monday");
@@ -338,9 +320,7 @@ public class EnumLangUtil {
         if (deliveryType == null) {
             return "";
         }
-        if (localizedLang == null) {
-            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
-        }
+        Lang.LocalizedLang localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         switch (deliveryType) {
             case UPGRADE:
                 return localizedLang.get("deliveryTypeUpgrade");
@@ -372,9 +352,7 @@ public class EnumLangUtil {
         if (caseState == null || caseState.getState() == null) {
             return "";
         }
-        if (localizedLang == null) {
-            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
-        }
+        Lang.LocalizedLang localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         switch (caseState.getState().toLowerCase()) {
             case "preliminary":
                 return localizedLang.get("deliveryStatePreliminary");
@@ -400,9 +378,7 @@ public class EnumLangUtil {
         if (deliveryAttribute == null) {
             return null;
         }
-        if (localizedLang == null) {
-            localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
-        }
+        Lang.LocalizedLang localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
         switch (deliveryAttribute) {
             case DELIVERY:
                 return localizedLang.get("deliveryAttributeDelivery");

@@ -39,7 +39,7 @@ public interface AttachmentService {
             @CasePrivileged(caseType = En_CaseType.CARD_BATCH, requireAll = {En_Privilege.CARD_BATCH_VIEW, En_Privilege.CARD_BATCH_EDIT})
     })
     @Auditable( En_AuditType.ATTACHMENT_REMOVE )
-    Result<Long> removeAttachmentEverywhere( AuthToken token, En_CaseType caseType, Long attachmentId);
+    Result<Long> removeAttachmentEverywhere( AuthToken token, En_CaseType caseType, Long caseId, Long attachmentId);
 
     @Privileged(forCases = {
             @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAll = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),
@@ -52,7 +52,7 @@ public interface AttachmentService {
             @CasePrivileged(caseType = En_CaseType.CARD_BATCH, requireAll = {En_Privilege.CARD_BATCH_VIEW, En_Privilege.CARD_BATCH_EDIT})
     })
     @Auditable( En_AuditType.ATTACHMENT_REMOVE )
-    Result<Long> removeAttachment( AuthToken token, En_CaseType caseType, Long id);
+    Result<Long> removeAttachment( AuthToken token, En_CaseType caseType, Long caseId, Long id);
 
     @Privileged(forCases = {
             @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAny = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),
@@ -99,4 +99,6 @@ public interface AttachmentService {
     Result<Long> saveAttachment(Attachment attachment);
 
     Result<Attachment> getAttachmentByExtLink( String extLink);
+
+    Result<Attachment> getAttachment(AuthToken token, Long attachmentId);
 }

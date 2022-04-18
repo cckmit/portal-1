@@ -98,7 +98,8 @@ public class UiConstants {
         String COMPANY_TYPE_VIEW = "companyTypeView";
         String PRODUCT = "product";
         String PRODUCT_TYPE_VIEW = "productTypeView";
-        String DASHBOARD_CREATE_TABLE = "dashboard_create_table";
+        String DASHBOARD_CREATE_ISSUE_TABLE = "dashboard_create_issue_table";
+        String DASHBOARD_CREATE_PROJECT_TABLE = "dashboard_create_project_table";
         String DASHBOARD_CREATE_ISSUE = "dashboard_create_issue";
         String ISSUE_ASSIGNMENT_CREATE_ISSUE = "issue_assignment_create_issue";
         String EQUIPMENT = "equipment";

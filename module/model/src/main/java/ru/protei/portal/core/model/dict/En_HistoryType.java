@@ -25,6 +25,11 @@ public enum En_HistoryType implements HasId {
     CASE_INITIATOR_COMPANY(19),
     CASE_INITIATOR(20),
     CASE_PLATFORM(21),
+    CASE_NAME(22),
+    CASE_INFO(23),
+    CASE_ATTACHMENT(24),
+    CASE_LINK(25),
+    CASE_AUTO_CLOSE(26),
     ;
 
     En_HistoryType(int id) {

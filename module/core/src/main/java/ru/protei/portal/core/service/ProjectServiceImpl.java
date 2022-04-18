@@ -53,6 +53,7 @@ import static ru.protei.portal.core.model.dict.En_ExpiringProjectTSVPeriod.*;
 import static ru.protei.portal.core.model.dict.En_SortField.project_head_manager;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.dto.Project.Fields.*;
+import static ru.protei.portal.core.model.util.CrmConstants.State.CANCELED;
 
 
 /**
@@ -404,7 +405,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         if (result) {
             caseLinkService.getLinks(token, caseObject.getId())
-                .ifOk(links -> caseLinkService.deleteLinks(token, links));
+                .ifOk(links -> caseLinkService.deleteLinks(token, links, En_CaseType.PROJECT));
         }
         return ok(projectId);
     }
@@ -504,7 +505,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private List<Contract> removeCancelledContracts(List<Contract> contracts) {
-        return stream(contracts).filter(contract -> !Objects.equals(En_ContractState.CANCELLED, contract.getState())).collect(toList());
+        return stream(contracts).filter(contract -> !Objects.equals(CANCELED, contract.getStateId())).collect(toList());
     }
 
     private boolean updateCaseObjectPart(AuthToken token, Project project) {
