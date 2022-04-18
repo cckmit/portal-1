@@ -440,8 +440,8 @@ Content-Type: application/json
 Cache-Control: no-cache
     
 {
-  "from": "2022-02-23",
-  "to": "2021-03-08",
+  "from": "2021-03-08",
+  "to": "2022-02-23",
   "productIds": [ 1, 2, 3 ],
   "companyIds": [ 11, 22, 33 ],
   "authorIds": [ 7777 ],
@@ -531,6 +531,66 @@ Cache-Control: no-cache
 `curl -X POST -u user:password  'host:9007/Portal/springApi/api/products/17765'`
 ```
 
+### Общий запрос для получения Комплекс, Продукт, Компонент, Направление
+
+- **путь**: /getProductShortViews
+- **метод**: POST
+- **авторизация**: Basic
+- **тело запроса**: json
+
+*возможные параметры:*
+
+- **ids** - список идентификаторов
+- **state** - статус
+- **types** -список типов
+- **directionIds** - список идентификаторов направлений
+- **offset** - пропуск первых нескольких элементов; отступ
+- **limit** - количество элементов в запросе
+
+**Пример запроса:**
+
+```json
+POST /Portal/springApi/api/getProductShortViews
+Authorization: Basic porubov password
+Content-Type: application/json
+Cache-Control: no-cache
+
+{
+"ids" : [6683],
+"state": "ACTIVE",
+"types" : ["PRODUCT"],
+"directionIds": [6779],
+"limit" : 50,
+"offset" : 0
+}
+```
+
+**Ответ:**
+
+```json
+{
+  "status": "OK",
+  "data": [{
+      "id": 6683,
+      "name": "CAPL (Protei_CAPL)",
+      "stateId": 1,
+      "aliases": "",
+      "type": "PRODUCT",
+      "productDirection": [{
+          "id": 6779,
+          "name": "MOBILE"
+        }]}
+  ]}
+```
+
+где:
+
+- **id** - идентификатор
+- **name** - название
+- **stateId** - статус продукта
+- **aliases** - псевдонимы
+- **type** - тип продукта
+- **productDirection** - идентификатор и наименование направления
 
 
 ### Создание продукта
@@ -863,6 +923,7 @@ Cache-Control: no-cache
 
 ``` json
 {
+"ids": [ 7920 ],
 "name":"Фомин",
 "workPhone":"5192",
 "mobilePhone":"+79319661820",
@@ -1539,6 +1600,58 @@ Cache-Control: no-cache
 `curl -X POST -u user:password 'host:9007/Portal/springApi/api/doc/remove/103'`
 ```
 
+## Договоры
+### Получение информации по договорам
+
+- **url** - host:port/{app_name}/api/contracts/1c/get
+- **ContractApiQuery** - json представления ContractQuery для поиска договора. Передается в теле запроса.
+
+
+``` json
+{
+  "refKeys": null,
+  "openStateDate": "1646092800",
+  "stateIds": [63, 64, 65, 66, 67, 68, 69],
+  "organizationIds": [3083, 3084]
+}
+```
+
+- **запрос** - post
+- **ответ** :  содержит статус выполнения и в поле data список договоров
+
+
+``` json
+{
+   "status":"OK",
+   "data":[
+    {
+      "ref_key": null,
+      "date_signing": null,
+      "cost": 123456.77,
+      "cost_currency": "EUR",
+      "cost_vat": null,
+      "subject": "!!!!! TEST !!!!",
+      "directions": "MOBILE",
+      "is_ministry_of_defence": false,
+      "dates":[
+        {
+          "date": 1613422800000,
+          "cost": null,
+          "cost_percent": null,
+          "cost_currency": "RUB",
+          "comment": "",
+          "type": "SUPPLY"
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Пример:**
+``` sh
+`curl -X POST -u user:password "host:9007/Portal/springApi/api/contracts/1c/get" -H "Content-Type:application/json" -d "{\"stateIds\": [63, 64, 65, 66, 67, 68, 69],\"organizationIds\": [3083, 3084]}"`
+```
 
 # WS API
 ## Сущности
@@ -1687,6 +1800,13 @@ id | Код | Описание
 |3|subcontractor|Субподрядчик|
 |4|official|Должностное лицо|
 |5|home|Домашняя компания|
+
+
+**product.state** - айди статуса продукта:
+id | Код | Описание
+--- | --- | --- 
+|1|ACTIVE|Активный|
+|2|DEPRECATED|Устаревший|
 
 
 **typeId** - айди типа продукта:

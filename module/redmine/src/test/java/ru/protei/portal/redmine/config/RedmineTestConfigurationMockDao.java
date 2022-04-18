@@ -472,4 +472,9 @@ public class RedmineTestConfigurationMockDao {
     public CaseElapsedTimeApiDAO getCaseTimeElapsedApiSumDAO() {
         return mock(CaseElapsedTimeApiDAO.class);
     }
+
+    @Bean
+    public CommonManagerDAO getCommonManagerDAO() {
+        return mock(CommonManagerDAO.class);
+    }
 }

@@ -19,6 +19,8 @@ public interface HistoryService {
     Result<Long> createHistory(AuthToken token, Long caseObjectId, En_HistoryAction action,
                                En_HistoryType type, Long oldId, String oldValue, Long newId, String newValue);
 
+    Result<String> getHistoryValueDiffByHistoryId(AuthToken token, Long historyId);
+
     Result<List<History>> getHistoryListWithEmployeeRegistrationHistory(AuthToken token, Long caseId);
     Result<List<History>> getCaseHistoryList(AuthToken token, En_CaseType caseType, HistoryQuery query);
 }

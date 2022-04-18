@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employee.client.activity.list;
 
+import com.google.gwt.i18n.client.TimeZone;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -14,6 +15,7 @@ import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -30,9 +32,11 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.PAGE_SIZE;
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.getTotalPages;
 
@@ -151,7 +155,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
             itemView.setEditIcon(LinkUtils.makeEditLink(EmployeeShortView.class, employee.getId()));
         }
 
-        itemView.setBirthday( DateFormatter.formatDateMonth( employee.getBirthday() ) );
+        showBirthday(employee, itemView);
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade( employee.getContactInfo() );
         itemView.setPhone( infoFacade.publicPhonesAsFormattedString(true) );
@@ -181,6 +185,21 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         return itemView;
     }
 
+    private void showBirthday(EmployeeShortView employee, AbstractEmployeeItemView itemView) {
+        boolean canDisplayBirthday = stream(configStorage.getConfigData().employeeBirthdayHideIds)
+                .noneMatch(l -> Objects.equals(l, employee.getId()));
+        String value = null;
+        if (canDisplayBirthday){
+            TimeZone timeZone = null;
+            if (employee.getTimezoneOffset() != null){
+                timeZone = TimeZone.createTimeZone(employee.getTimezoneOffset());
+            }
+            value = DateFormatter.formatDateMonth(employee.getBirthday(), timeZone);
+        }
+
+        itemView.setBirthday(value);
+    }
+
     Consumer< EmployeeShortView > fillViewer = new Consumer< EmployeeShortView >() {
         @Override
         public void accept( EmployeeShortView employee ) {
@@ -200,6 +219,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     AbstractPagerView pagerView;
     @Inject
     PolicyService policyService;
+    @Inject
+    ConfigStorage configStorage;
 
     private long marker;
     private AppEvents.InitDetails init;

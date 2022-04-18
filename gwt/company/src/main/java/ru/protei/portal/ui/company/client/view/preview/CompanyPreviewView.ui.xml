@@ -51,6 +51,10 @@
                 <tab:pane.TabWidgetPane tabName="{lang.siteFolder}">
                     <g:HTMLPanel ui:field="siteFolderContainer"/>
                 </tab:pane.TabWidgetPane>
+
+                <tab:pane.TabWidgetPane tabName="{lang.productCommonManager}">
+                    <g:HTMLPanel ui:field="commonManager"/>
+                </tab:pane.TabWidgetPane>
             </tab:TabWidget>
         </div>
     </g:HTMLPanel>

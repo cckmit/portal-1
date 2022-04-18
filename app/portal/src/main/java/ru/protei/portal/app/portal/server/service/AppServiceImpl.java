@@ -31,6 +31,8 @@ public class AppServiceImpl extends RemoteServiceServlet implements AppService {
         data.appVersion = properties.getProperty("version", "");
         data.cardbatchCompanyPartnerId = portalConfig.data().getCommonConfig().getCardbatchCompanyPartnerId();
         data.contractCuratorsDepartmentsIds = asList(portalConfig.data().getCommonConfig().getContractCuratorsDepartmentsIds());
+        data.employeeBirthdayHideIds = portalConfig.data().getEmployeeConfig().getEmployeeBirthdayHideIds();
+        data.autoCloseDefaultDeadline = portalConfig.data().getDeadlineConfig().getDefaultDeadline();
 
         log.info( "getClientConfig, data = {}", data );
         return data;

@@ -39,8 +39,10 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeDateWithOffset;
-import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
-import static ru.protei.portal.core.model.view.EmployeeShortView.Fields.*;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.RUS_PHONE_NUMBER_PATTERN;
+import static ru.protei.portal.core.model.util.CrmConstants.Masks.WORK_PHONE_NUMBER_PATTERN;
+import static ru.protei.portal.core.model.view.EmployeeShortView.Fields.CONTACT_ITEMS;
+import static ru.protei.portal.core.model.view.EmployeeShortView.Fields.WORKER_ENTRIES;
 
 
 /**
@@ -152,6 +154,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 employee.setCurrentAbsence(personAbsences.stream()
                         .filter(absence -> absence.getPersonId().equals(employee.getId()))
                         .findFirst().orElse(null));
+                employee.setTimezoneOffset(employee.getBirthday() == null ? null : employee.getBirthday().getTimezoneOffset());
             });
         }
         return ok(sr);
@@ -460,6 +463,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         query.setFired(false);
         query.setDeleted(false);
         query.setBirthdayInterval(new Interval(dateFrom, dateUntil));
+        query.setExceptIds(portalConfig.data().getEmployeeConfig().getEmployeeBirthdayHideIds());
         List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
         EmployeesBirthdays birthdays = new EmployeesBirthdays();
         birthdays.setDateFrom(dateFrom);
@@ -495,6 +499,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         query.setFired(false);
         query.setDeleted(false);
         query.setBirthdayInterval(new Interval(from, to));
+        query.setExceptIds(portalConfig.data().getEmployeeConfig().getEmployeeBirthdayHideIds());
         List<EmployeeShortView> employees = employeeShortViewDAO.getEmployees(query);
 
         if (CollectionUtils.isEmpty(employees)) {
@@ -541,6 +546,21 @@ public class EmployeeServiceImpl implements EmployeeService {
                 mainEntry.getWorkerExtId(), mainEntry.getCompanyName());
     }
 
+    @Override
+    public Result<List<PersonShortView>> getAccountingEmployee(AuthToken token) {
+        String contractNotifierDepartmentIds = portalConfig.data().getCommonConfig().getContractAccountingDepartmentIds();
+        String contractNotifierIds = portalConfig.data().getCommonConfig().getContractAccountingEmployeeIds();
+
+        List<PersonShortView> accountingEmployees = personShortViewDAO.getAccountingEmployees(
+                StringUtils.isNotEmpty(contractNotifierIds) ?
+                        Arrays.asList(contractNotifierIds.split(",")) : Collections.emptyList(),
+                StringUtils.isNotEmpty(contractNotifierDepartmentIds) ?
+                        Arrays.asList(contractNotifierDepartmentIds.split(",")) : Collections.emptyList()
+        );
+
+        return ok(accountingEmployees);
+    }
+
     private List<NotificationEntry> makeNotificationListFromConfiguration() {
         return Stream.of(
                 portalConfig.data().getMailNotificationConfig().getCrmBirthdaysNotificationsRecipients()
@@ -567,6 +587,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         jdbcManyRelationsHelper.fill(employeeShortView, WORKER_ENTRIES);
         employeeShortView.setWorkerEntries(changeCompanyNameIfHidden(employeeShortView.getWorkerEntries()));
         employeeShortView.setCurrentAbsence(personAbsenceDAO.currentAbsence(employeeId));
+        employeeShortView.setTimezoneOffset(employeeShortView.getBirthday() == null ? null : employeeShortView.getBirthday().getTimezoneOffset());
 
         return ok(employeeShortView);
     }

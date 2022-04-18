@@ -7,6 +7,8 @@ import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseC
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.CaseCommentItemListActivity;
 import ru.protei.portal.ui.common.client.activity.casehistory.CaseHistoryItemListActivity;
+import ru.protei.portal.ui.common.client.activity.casehistory.item.caseinfo.AbstractCaseInfoHistoryItemView;
+import ru.protei.portal.ui.common.client.activity.casehistory.item.caseinfo.CaseInfoHistoryItemActivity;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.caselink.item.AbstractCaseLinkItemView;
 import ru.protei.portal.ui.common.client.activity.caselink.list.AbstractCaseLinkListView;
@@ -63,6 +65,7 @@ import ru.protei.portal.ui.common.client.util.CommentOrHistoryUtils;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.view.casecomment.list.CommentAndHistoryListView;
+import ru.protei.portal.ui.common.client.view.casehistory.item.caseinfo.CaseInfoHistoryItemView;
 import ru.protei.portal.ui.common.client.view.caselink.item.CaseLinkItemView;
 import ru.protei.portal.ui.common.client.view.caselink.list.CaseLinkListView;
 import ru.protei.portal.ui.common.client.view.casetag.edit.CaseTagEditView;
@@ -112,6 +115,9 @@ public class CommonClientModule extends AbstractGinModule {
         requestStaticInjection(CommentOrHistoryUtils.class);
 
         bind( ExternalLinkActivity.class ).asEagerSingleton();
+
+        bind( CaseInfoHistoryItemActivity.class ).asEagerSingleton();
+        bind( AbstractCaseInfoHistoryItemView.class ).to(CaseInfoHistoryItemView.class).in( Singleton.class );
 
         //bind( ServerEventBridge.class ).asEagerSingleton();
 

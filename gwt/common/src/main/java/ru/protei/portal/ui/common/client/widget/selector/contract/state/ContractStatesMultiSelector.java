@@ -13,6 +13,6 @@ public class ContractStatesMultiSelector extends InputPopupMultiSelector<CaseSta
         setAsyncModel(model);
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
-        setItemRenderer(value -> stateLang.getName(value.getState()));
+        setItemRenderer(value -> stateLang.getStateName(value));
     }
 }

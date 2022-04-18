@@ -9,9 +9,11 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.ent.CalculationType;
 import ru.protei.portal.core.model.ent.Contractor;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.CalculationTypeModel;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 
 import java.util.List;

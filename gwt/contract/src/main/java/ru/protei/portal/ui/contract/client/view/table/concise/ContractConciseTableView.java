@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
@@ -84,7 +85,7 @@ public class ContractConciseTableView extends Composite implements AbstractContr
             ImageElement image = DOM.createImg().cast();
             image.addClassName("height-30");
             image.setSrc("./images/contract_" + contract.getStateName().toLowerCase() + ".png");
-            image.setTitle(stateLang.getName(contract.getStateName()));
+            image.setTitle(stateLang.getStateName(new CaseState(contract.getStateName())));
             root.appendChild(image);
             cell.appendChild(root);
         }

@@ -90,7 +90,7 @@ public class WorkerEntryDAO_Impl extends PortalBaseJdbcDAO<WorkerEntry> implemen
     @Override
     public List<WorkerEntry> getForFireByDate(Date now) {
         Query q = query()
-                .where(WorkerEntry.Columns.FIRED_FATE).le(now)
+                .where(WorkerEntry.Columns.FIRED_DATE).lt(now)
                 .asQuery();
         return getListByCondition( q.buildSql(), q.args());
     }

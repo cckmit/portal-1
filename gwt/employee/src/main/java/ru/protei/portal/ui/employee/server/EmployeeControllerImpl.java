@@ -42,9 +42,10 @@ public class EmployeeControllerImpl implements EmployeeController {
         return ServiceUtils.checkResultAndGetData(employeeService.employeeList(token, query));
     }
 
+    @Override
     public List< PersonShortView > getEmployeeViewList( EmployeeQuery query ) throws RequestFailedException {
 
-        log.info( "getEmployeeViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
+        log.info( "getEmployeeViewList(): searchPattern={} | isFired={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getFired(), query.getSortField(), query.getSortDir() );
 
         Result< List< PersonShortView > > result = employeeService.shortViewList( query );
@@ -128,6 +129,12 @@ public class EmployeeControllerImpl implements EmployeeController {
     public String getEmployeeRestVacationDays(Long employeeId) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeRestVacationDays(token, employeeId));
+    }
+
+    @Override
+    public List<PersonShortView> getAccountingEmployee() throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(employeeService.getAccountingEmployee(token));
     }
 
     @Autowired

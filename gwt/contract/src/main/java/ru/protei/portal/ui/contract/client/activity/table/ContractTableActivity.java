@@ -110,18 +110,6 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         loadTable();
     }
 
-    private void fillContractStates() {
-        caseStateService.getCaseStatesOmitPrivileges(En_CaseType.CONTRACT, new FluentCallback<List<CaseState>>()
-                .withError(errorHandler -> {
-                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                })
-                .withSuccess(caseStates -> {
-                    filterView.states().setValue(stream(caseStates)
-                              .filter(state -> !Objects.equals(CrmConstants.State.CANCELED, state.getId()))
-                              .collect(Collectors.toSet()));
-                }));
-    }
-
     @Override
     public void resetContractStates() {
         fillContractStates();
@@ -171,6 +159,18 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         view.triggerTableLoad();
     }
 
+    private void fillContractStates() {
+        caseStateService.getCaseStatesOmitPrivileges(En_CaseType.CONTRACT, new FluentCallback<List<CaseState>>()
+                .withError(errorHandler -> {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                })
+                .withSuccess(caseStates -> {
+                    filterView.states().setValue(stream(caseStates)
+                            .filter(state -> !Objects.equals(CrmConstants.State.CANCELED, state.getId()))
+                            .collect(Collectors.toSet()));
+                }));
+    }
+
     private ContractQuery makeQuery() {
         ContractQuery query = new ContractQuery();
         query.searchString = filterView.searchString().getValue();
@@ -182,8 +182,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         query.setManagerIds(collectIds(filterView.managers().getValue()));
         query.setTypes(nullIfEmpty(listOfOrNull(filterView.types().getValue())));
         query.setCaseTagsIds(nullIfEmpty(toList(filterView.tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
-        query.setStateIds(listOfOrNull(filterView.states().getValue().stream().map(CaseState::getId)
-                                                                     .collect(Collectors.toList())));
+        query.setStateIds(nullIfEmpty(toList(filterView.states().getValue(), CaseState::getId)));
         ProductDirectionInfo value = filterView.direction().getValue();
         query.setDirectionId(value == null ? null : value.id);
         query.setKind(filterView.kind().getValue());

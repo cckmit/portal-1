@@ -43,6 +43,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public AccountingEmployeeSqlBuilder getAccountingEmployeeSqlBuilder() {
+        return new AccountingEmployeeSqlBuilder();
+    }
+
+    @Bean
     public DeliverySqlBuilder deliverySqlBuilder() {
         return new DeliverySqlBuilder();
     }
@@ -461,6 +466,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public CalculationTypeDAO getCalculationTypeDAO() {
+        return new CalculationTypeDAO_Impl();
+    }
+
+    @Bean
     public PersonNotifierDAO getPersonNotifierDAO() {
         return new PersonNotifierDAO_Impl();
     }
@@ -553,5 +563,10 @@ public class DaoTestsConfiguration {
     @Bean
     public CaseElapsedTimeApiDAO getCaseElapsedTimeApiDAO() {
         return new CaseElapsedTimeApiDAO_Impl();
+    }
+
+    @Bean
+    public CommonManagerDAO getCommonManagerDAO() {
+        return new CommonManagerDAO_Impl();
     }
 }

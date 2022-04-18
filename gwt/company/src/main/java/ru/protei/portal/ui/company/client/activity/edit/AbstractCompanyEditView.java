@@ -2,6 +2,7 @@ package ru.protei.portal.ui.company.client.activity.edit;
 
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.ent.CommonManager;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
@@ -57,4 +58,6 @@ public interface AbstractCompanyEditView extends IsWidget {
     void setCompanyIdToSubscriptionsList(Long companyId);
 
     HasValue<Boolean> autoOpenIssues();
+
+    HasValue<List<CommonManager> > commonManagerList();
 }

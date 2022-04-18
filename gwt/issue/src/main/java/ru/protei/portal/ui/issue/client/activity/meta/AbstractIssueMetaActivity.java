@@ -16,6 +16,7 @@ public interface AbstractIssueMetaActivity {
     void onManagerChanged();
     default void onInitiatorChanged(){};
     default void onTimeElapsedChanged(){};
+    void onAutoCloseChanged();
     void onDeadlineChanged();
     default void onWorkTriggerChanged(){};
 }

@@ -63,6 +63,9 @@ public class EmployeeShortView implements Serializable {
     @JdbcOneToMany(table = "worker_entry", localColumn = "id", remoteColumn = "personId")
     private List<WorkerEntryShortView> workerEntries;
 
+    @JdbcEmbed
+    private Integer timezoneOffset;
+
     private List<String> logins;
 
     private PersonAbsence currentAbsence;
@@ -105,6 +108,14 @@ public class EmployeeShortView implements Serializable {
 
     public void setBirthday(Date birthday) {
         this.birthday = birthday;
+    }
+
+    public Integer getTimezoneOffset() {
+        return timezoneOffset;
+    }
+
+    public void setTimezoneOffset(Integer timezoneOffset) {
+        this.timezoneOffset = timezoneOffset;
     }
 
     public String getIpAddress() {

@@ -22,7 +22,7 @@ public class ContractApiQuery implements Serializable {
 
     private Date openStateDate;
 
-    private List<CaseState> states;
+    private List<Long> stateIds;
 
     private List<Long> organizationIds;
 
@@ -45,12 +45,12 @@ public class ContractApiQuery implements Serializable {
         this.openStateDate = openStateDate;
     }
 
-    public List<CaseState> getStates() {
-        return states;
+    public List<Long> getStateIds() {
+        return stateIds;
     }
 
-    public void setStates(List<CaseState> states) {
-        this.states = states;
+    public void setStateIds(List<Long> stateIds) {
+        this.stateIds = stateIds;
     }
 
     public List<Long> getOrganizationIds() {
@@ -66,7 +66,7 @@ public class ContractApiQuery implements Serializable {
         return "ContractApiQuery{" +
                 "refKeys=" + refKeys +
                 ", openStateDate=" + openStateDate +
-                ", states=" + states +
+                ", stateIds=" + stateIds +
                 ", organizationIds=" + organizationIds +
                 '}';
     }

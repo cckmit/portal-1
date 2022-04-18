@@ -9,7 +9,6 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
@@ -25,7 +24,6 @@ import ru.protei.portal.ui.employee.client.view.table.columns.EmployeeDepartment
 import ru.protei.portal.ui.employee.client.view.table.columns.EmployeeInfoColumn;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * Представление списка сотрудников
@@ -35,7 +33,6 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
     public void onInit(EditClickColumn<EmployeeShortView> editClickColumn) {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.editClickColumn = editClickColumn;
-        initTable();
     }
 
     @Override
@@ -103,8 +100,9 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         columnProvider.removeSelection();
     }
 
-    private void initTable() {
-        name = new EmployeeInfoColumn(lang, reasonLang);
+    @Override
+    public void initTable(List<Long> employeeBirthdayHideIds) {
+        name = new EmployeeInfoColumn(lang, reasonLang, employeeBirthdayHideIds);
         contacts = new EmployeeContactsColumn(lang, reasonLang);
         department = new EmployeeDepartmentColumn(lang, reasonLang);
         absence = new EmployeeAbsenceColumn(reasonLang, policyService);

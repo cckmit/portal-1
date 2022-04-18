@@ -193,6 +193,18 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcColumn(name = "delivery_number")
     private String deliveryNumber;
 
+    @JdbcColumn(name = "file_location")
+    private String fileLocation;
+
+    @JdbcManyToMany(linkTable = "case_notifier", localLinkColumn = "case_id", remoteLinkColumn = "person_id")
+    private Set<Person> notifiers; //may contain partially filled objects!
+
+    @JdbcColumn(name = "calculation_type_id")
+    private Long calculationTypeId;
+
+    @JdbcJoinedObject(localColumn = "calculation_type_id", remoteColumn = "id", table = "calculation_type")
+    private CalculationType calculationType;
+
     public Contract() {}
 
     public Contract(Long id, String number) {
@@ -206,6 +218,22 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public void setDeliveryNumber(String deliveryNumber) {
         this.deliveryNumber = deliveryNumber;
+    }
+
+    public Long getCalculationTypeId() {
+        return calculationTypeId;
+    }
+
+    public void setCalculationTypeId(Long calculationTypeId) {
+        this.calculationTypeId = calculationTypeId;
+    }
+
+    public CalculationType getCalculationType() {
+        return calculationType;
+    }
+
+    public void setCalculationType(CalculationType calculationType) {
+        this.calculationType = calculationType;
     }
 
     @Override
@@ -486,6 +514,22 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.dateEndWarranty = dateEndWarranty;
     }
 
+    public String getFileLocation() {
+        return fileLocation;
+    }
+
+    public void setFileLocation(String fileLocation) {
+        this.fileLocation = fileLocation;
+    }
+
+    public Set<Person> getNotifiers() {
+        return notifiers;
+    }
+
+    public void setNotifiers(Set<Person> notifiers) {
+        this.notifiers = notifiers;
+    }
+
     public static Contract fromContractInfo(ContractInfo info) {
         if (info == null) {
             return null;
@@ -522,6 +566,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", curatorShortName='" + curatorShortName + '\'' +
                 ", productDirections=" + productDirections +
                 ", stateId=" + stateId +
+                ", stateName='" + stateName + '\'' +
                 ", description='" + description + '\'' +
                 ", number='" + number + '\'' +
                 ", cost=" + cost +
@@ -545,6 +590,9 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", deliveryNumber=" + deliveryNumber +
                 ", dateEndWarranty=" + dateEndWarranty +
                 ", dateExecution=" + dateExecution +
+                ", fileLocation='" + fileLocation + '\'' +
+                ", notifiers=" + notifiers +
+                ", calculationType='" + calculationType + '\'' +
                 '}';
     }
 

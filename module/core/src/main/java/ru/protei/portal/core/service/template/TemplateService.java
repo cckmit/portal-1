@@ -37,6 +37,10 @@ public interface TemplateService {
 
     PreparedTemplate getContractRemainingOneDayNotificationSubject(Contract contract, ContractDate contractDate, EnumLangUtil enumLangUtil);
 
+    PreparedTemplate getContractCreateNotificationSubject(Contract contract, EnumLangUtil enumLangUtil, Person author);
+
+    PreparedTemplate getContractCreateNotificationBody(Contract contract, String urlTemplate, Collection<String> recipients, EnumLangUtil enumLangUtil);
+
     PreparedTemplate getDocumentMemberAddedBody(String documentName, String url);
 
     PreparedTemplate getDocumentMemberAddedSubject(String documentName);
@@ -59,7 +63,15 @@ public interface TemplateService {
 
     String getEmployeeRegistrationDevelopmentAgendaEmailNotificationBody( String employeeName ) throws IOException, TemplateException;
 
-    String getEmployeeRegistrationEmployeeFeedbackEmailNotificationBody( String employeeName ) throws IOException, TemplateException;
+    String getCaseObjectClosedNotificationSubject(Long caseNumber) throws IOException, TemplateException;
+
+    String getCaseObjectDeadlineExpireNotificationSubject(Long caseNumber) throws IOException, TemplateException;
+
+    String getCaseObjectClosedNotificationBody(Long caseObjectId, Long caseNumber, String urlTemplate, String recipientName) throws IOException, TemplateException;
+
+    String getCaseObjectDeadlineExpireNotificationBody(Long caseObjectId, Long caseNumber, String urlTemplate, String recipientName) throws IOException, TemplateException;
+
+    String getEmployeeRegistrationEmployeeFeedbackEmailNotificationBody(String employeeName ) throws IOException, TemplateException;
 
     String getEmployeeRegistrationEmployeeFeedbackEmailNotificationSubject() throws IOException, TemplateException;
 

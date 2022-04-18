@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -12,6 +13,7 @@ import java.util.Set;
  */
 public class ProductQuery extends BaseQuery {
 
+    private List<Long> ids;
     private En_DevUnitState state;
     private Set<En_DevUnitType> types;
     private Set<Long> directionIds;
@@ -20,6 +22,14 @@ public class ProductQuery extends BaseQuery {
     public ProductQuery() {
         sortField = En_SortField.prod_name;
         sortDir = En_SortDir.ASC;
+    }
+
+    public List<Long> getIds() {
+        return ids;
+    }
+
+    public void setIds(List<Long> ids) {
+        this.ids = ids;
     }
 
     public En_DevUnitState getState() {
@@ -57,6 +67,7 @@ public class ProductQuery extends BaseQuery {
     @Override
     public String toString() {
         return "ProductQuery{" +
+                "ids=" + ids +
                 "state=" + state +
                 ", types=" + types +
                 ", directionIds=" + directionIds +

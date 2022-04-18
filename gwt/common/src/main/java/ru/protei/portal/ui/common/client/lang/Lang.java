@@ -766,6 +766,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errProductNotSelected();
 
+    String errDeadlineNotSelectedOnAutoClose();
+
     String errFilterNameRequired();
 
     String errTooMuchCompanies();
@@ -2128,6 +2130,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractDescription();
 
+    String contractFileLocation();
+
+    String contractNotifiers();
+
     String contractContractor();
 
     String contractContractorDropped();
@@ -2181,6 +2187,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contractCurator();
 
     String contractState();
+
+    String contractCalculationType();
 
     String contractType();
 
@@ -2255,6 +2263,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contractValidationContractSpecification();
 
     String contractValidationContractSpecificationClauseDuplication();
+
+    String contractCalculationTypeNotDefined();
 
     String contractOrganization();
 
@@ -3115,6 +3125,12 @@ public interface Lang extends Messages, ContactItemLang {
     String issueFavorites();
 
     String issueSyncedWith();
+
+    String issueAutoClose();
+
+    String issueAutoCloseEnabled();
+
+    String issueAutoCloseDisabled();
 
     String issueDeadline();
 
@@ -4141,5 +4157,13 @@ public interface Lang extends Messages, ContactItemLang {
     String absenceOnSchedule();
 
     String absenceScheduleItemDescription(String days, String times);
+
+    String caseDescriptionHistoryPreview();
+
+    String historyDetailsLink();
+
+    String linkRemoved();
+
+    String issueValidationResultAutoCloseDeadline();
 }
 

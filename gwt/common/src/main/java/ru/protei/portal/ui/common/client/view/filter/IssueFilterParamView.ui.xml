@@ -123,6 +123,11 @@
                 <threestate:ThreeStateButton ui:field="overdueDeadlines"/>
             </g:HTMLPanel>
 
+            <g:HTMLPanel ui:field="autoCloseContainer" styleName="form-group col-md-4 resize-md-12">
+                <label><ui:text from="{lang.issueAutoClose}"/></label>
+                <threestate:ThreeStateButton ui:field="autoClose"/>
+            </g:HTMLPanel>
+
             <div ui:field="stateContainer" class="form-group col-md-8 resize-md-12">
                 <label ui:field="labelIssueState"><ui:text from="{lang.issueState}"/></label>
                 <issuestate:IssueStatesOptionList ui:field="state"/>

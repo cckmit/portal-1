@@ -21,6 +21,12 @@ import ru.protei.portal.core.mail.VirtualMailSendChannel;
 import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
+import ru.protei.portal.core.renderer.HTMLRenderer;
+import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
+import ru.protei.portal.core.renderer.MarkdownRenderer;
+import ru.protei.portal.core.renderer.impl.HTMLRendererImpl;
+import ru.protei.portal.core.renderer.impl.JiraWikiMarkupRendererImpl;
+import ru.protei.portal.core.renderer.impl.MarkdownRendererImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
@@ -120,6 +126,11 @@ public class JiraTestConfiguration {
     @Bean
     public ContactSqlBuilder getContactSqlBuilder() {
         return new ContactSqlBuilder();
+    }
+
+    @Bean
+    public AccountingEmployeeSqlBuilder getAccountingEmployeeSqlBuilder() {
+        return new AccountingEmployeeSqlBuilder();
     }
 
     @Bean
@@ -270,6 +281,21 @@ public class JiraTestConfiguration {
     @Bean
     public CaseService getCaseService() {
         return new CaseServiceImpl();
+    }
+
+    @Bean
+    public HTMLRenderer getHTMLRenderer() {
+        return new HTMLRendererImpl();
+    }
+
+    @Bean
+    public MarkdownRenderer getMarkdownRenderer() {
+        return new MarkdownRendererImpl();
+    }
+
+    @Bean
+    public JiraWikiMarkupRenderer getJiraWikiMarkupRenderer(PortalConfig config) {
+        return new JiraWikiMarkupRendererImpl(config);
     }
 
     @Bean
@@ -705,7 +731,12 @@ public class JiraTestConfiguration {
     public CaseElapsedTimeApiDAO getCaseElapsedTimeApiDAO() {
         return new CaseElapsedTimeApiDAO_Impl();
     }
-    
+
+    @Bean
+    public CommonManagerDAO getCommonManagerDAO() {
+        return new CommonManagerDAO_Impl();
+    }
+
     /* DAO converters */
 
     @Bean
