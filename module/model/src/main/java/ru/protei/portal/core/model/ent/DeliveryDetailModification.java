@@ -7,6 +7,7 @@ import ru.protei.winter.jdbc.annotations.JdbcId;
 
 @JdbcEntity(table = "detail_modification")
 public class DeliveryDetailModification {
+
     /**
      * Идентификатор
      */
