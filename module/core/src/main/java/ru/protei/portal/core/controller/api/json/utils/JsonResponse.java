@@ -1,4 +1,4 @@
-package ru.protei.portal.core.controller.api.json;
+package ru.protei.portal.core.controller.api.json.utils;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;

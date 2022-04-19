@@ -34,7 +34,7 @@ public enum En_DeliverySpecificationCategory implements HasId {
      * Электронная комплектация печатных плат
      * (применять будем для комплектации печатных плат)
      */
-    PCB(6),
+    PCB(9),
     ;
 
     private final int id;
