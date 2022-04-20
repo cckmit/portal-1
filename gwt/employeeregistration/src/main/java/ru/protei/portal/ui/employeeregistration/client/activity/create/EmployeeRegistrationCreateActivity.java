@@ -112,8 +112,9 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
 
     @Override
     public void onCompanySelected() {
-        if (isSelectProteiOrProteiST(view.company().getValue())) {
+        if (isProteOrProteiSTOrProteiLabSelected(view.company().getValue())) {
             setPhoneEquipmentEnabled(true);
+            view.setPhoneOptionEnabled(En_PhoneOfficeType.OFFICE, false);
             Set<En_PhoneOfficeType> value = view.phoneOfficeTypeList().getValue();
             value.add(En_PhoneOfficeType.OFFICE);
             view.phoneOfficeTypeList().setValue(value);
@@ -278,9 +279,11 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         return ADDITIONAL_SOFT_IDE + ", " + additionalSoft;
     }
 
-    private boolean isSelectProteiOrProteiST(EntityOption value) {
+    private boolean isProteOrProteiSTOrProteiLabSelected(EntityOption value) {
         if (value == null) return false;
-        return MAIN_HOME_COMPANY_NAME.equals(value.getDisplayText()) || PROTEI_ST_HOME_COMPANY_NAME.equals(value.getDisplayText());
+        return MAIN_HOME_COMPANY_NAME.equals(value.getDisplayText())
+                || PROTEI_ST_HOME_COMPANY_NAME.equals(value.getDisplayText())
+                || PROTEI_LAB_COMPANY_NAME.equals(value.getDisplayText());
     }
 
     @Inject
