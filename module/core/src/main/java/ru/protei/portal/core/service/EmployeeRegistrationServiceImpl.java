@@ -255,10 +255,11 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         }
 
         String needPhone = contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE) ?
-                "\n Требуется установить новый телефон." : "";
-        String needConfigure = "\n Необходима " + (contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE) ?
-                "настройка" : "перенастройка"
-        ) + " офисной телефонии";
+                "\n Необходимо обеспечить сотрудника телефонным аппаратом" : "";
+
+        String needConfigure =  contains(resourceList, En_PhoneOfficeType.OFFICE) ?
+                "\n Необходима настройка аккаунта офисной телефонии" : "";
+
         String needCommunication =
                 contains(resourceList, En_PhoneOfficeType.INTERNATIONAL) ||
                 contains(resourceList, En_PhoneOfficeType.LONG_DISTANCE) ?
@@ -453,5 +454,4 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         }
         return "";
     }
-
 }
