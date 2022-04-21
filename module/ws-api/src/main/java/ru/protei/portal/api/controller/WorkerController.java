@@ -1770,7 +1770,7 @@ public class WorkerController {
         return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
     }
 
-    private void createAdminYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String oldLastName) {
+    private void createUserSupportYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String oldLastName) {
         if (Objects.equals(lastName, oldLastName)) {
             return;
         }
