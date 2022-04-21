@@ -160,7 +160,7 @@ public class CrmConstants {
         long MAIN_HOME_COMPANY_ID = 3084L;
         String MAIN_HOME_COMPANY_NAME = "Протей";
         String PROTEI_ST_HOME_COMPANY_NAME = "Протей СТ";
-        String PROTEI_LAB_COMPANY_NAME = "ПРОТЕ-ЛАБ";
+        String PROTEI_LAB_COMPANY_NAME = "ПРОТЕЙ-ЛАБ";
         String HOME_COUNTRY_NAME = "Российская Федерация";
         String HOME_COUNTRY_SHORT_NAME = "Россия";
     }
