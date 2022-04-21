@@ -771,7 +771,7 @@ public class PortalConfigData {
         private final String equipmentProject;
         private final String supportProject;
         private final String phoneProject;
-        private final String adminProject;
+        private final String employeeFiredProject;
         private final Long youtrackUserId;
         private final String youtrackCustomFieldCompanyId;
 
@@ -783,7 +783,7 @@ public class PortalConfigData {
             equipmentProject = properties.getProperty("youtrack.employee_registration.equipment_project");
             supportProject = properties.getProperty("youtrack.employee_registration.support_project");
             phoneProject = properties.getProperty("youtrack.employee_registration.phone_project");
-            adminProject = properties.getProperty("youtrack.employee.admin_project");
+            employeeFiredProject = properties.getProperty("youtrack.employee_fired.project");
             youtrackUserId = properties.getProperty("youtrack.user_id_for_synchronization", Long.class);
             youtrackCustomFieldCompanyId = properties.getProperty("youtrack.custom_field_company_id");
         }
@@ -812,8 +812,8 @@ public class PortalConfigData {
             return supportProject;
         }
 
-        public String getAdminProject() {
-            return adminProject;
+        public String getEmployeeFiredProject() {
+            return employeeFiredProject;
         }
 
         public String getPhoneProject() {

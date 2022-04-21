@@ -424,8 +424,8 @@ youtrack.employee_registration.support_project=userSupport
 ## название YouTrack проекта для создания задач по открытию доступа к телефонной связи
 youtrack.employee_registration.phone_project=Office_Tel
 
-## название YouTrack проекта для создания задач по увольнению сотрудника или изменению его данных
-youtrack.employee.admin_project=ACRM
+## название YouTrack проекта для создания задач при увольнении сотрудника
+youtrack.employee_fired.project=ACRM
 
 ## required, id какой-либо записи из таблицы person в БД. Этот id будет указан в качестве создателя генерируемых комментариев, аттачментов и изменений статусов
 youtrack.user_id_for_synchronization=710

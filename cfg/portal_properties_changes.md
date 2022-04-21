@@ -4,5 +4,5 @@
 Добавить на внутреннем Портале в portal.properties
 ```
 ## название YouTrack проекта для создания задач при увольнении сотрудника
-youtrack.employee.admin_project=ACRM
+youtrack.employee_fired.project=ACRM
 ```
