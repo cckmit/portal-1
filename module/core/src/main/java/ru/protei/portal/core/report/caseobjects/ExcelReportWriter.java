@@ -8,9 +8,11 @@ import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.struct.ListBuilder;
+import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportRequest;
+import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportRow;
+import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportWork;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.EnumLangUtil;
@@ -30,10 +32,10 @@ import static ru.protei.portal.core.utils.ExcelFormatUtils.toDaysHoursMinutes;
 import static ru.protei.portal.core.utils.ExcelFormatUtils.toExcelTimeFormat;
 
 public class ExcelReportWriter implements
-        ReportWriter<CaseObjectReportRequest>,
-        JXLSHelper.ReportBook.Writer<CaseObjectReportRequest> {
+        ReportWriter<CaseObjectReportRow>,
+        JXLSHelper.ReportBook.Writer<CaseObjectReportRow> {
 
-    private final JXLSHelper.ReportBook<CaseObjectReportRequest> book;
+    private final JXLSHelper.ReportBook<CaseObjectReportRow> book;
     private final Lang.LocalizedLang lang;
     private final EnumLangUtil enumLangUtil;
     private final boolean isNotRestricted;
@@ -89,7 +91,7 @@ public class ExcelReportWriter implements
     }
 
     @Override
-    public void write(int sheetNumber, List<CaseObjectReportRequest> objects) {
+    public void write(int sheetNumber, List<CaseObjectReportRow> objects) {
         book.write(sheetNumber, objects);
     }
 
@@ -130,90 +132,114 @@ public class ExcelReportWriter implements
     }
 
     @Override
-    public Object[] getColumnValues(CaseObjectReportRequest object) {
-
-        CaseObject issue = object.getCaseObject();
-        List<History> histories = object.getHistories();
-
-        Date    created = null,
-                opened = null,
-                workaround = null,
-                customerTest = null,
-                done = null,
-                verified = null,
-                critical = null,
-                important = null;
-
-        for (History history : histories) {
-            if (history.getType() == En_HistoryType.CASE_IMPORTANCE) {
-                if (Objects.equals(CrmConstants.ImportanceLevel.IMPORTANT, history.getNewId().intValue() )) important = history.getDate();
-                if (Objects.equals(CrmConstants.ImportanceLevel.CRITICAL, history.getNewId().intValue() )) critical = history.getDate();
-            }
-
-            if (history.getType() == En_HistoryType.CASE_STATE) {
-                Long stateId = history.getNewId();
-
-                if (Objects.equals(stateId, CrmConstants.State.CREATED)) created = history.getDate();
-                if (Objects.equals(stateId, CrmConstants.State.OPENED)) opened = history.getDate();
-                if (Objects.equals(stateId, CrmConstants.State.WORKAROUND)) workaround = history.getDate();
-                if (Objects.equals(stateId, CrmConstants.State.TEST_CUST)) customerTest = history.getDate();
-                if (Objects.equals(stateId, CrmConstants.State.DONE)) done = history.getDate();
-                if (Objects.equals(stateId, CrmConstants.State.VERIFIED)) verified = history.getDate();
-            }
-        }
-
-        if (created == null) {
-            created = issue.getCreated();
-        }
-
-        long timeElapsedInSelectedDuration = 0;
-
-        if (isNotRestricted) {
-            timeElapsedInSelectedDuration = object.getCaseComments()
-                    .stream()
-                    .filter(comment -> comment.getTimeElapsed() != null)
-                    .filter(comment -> isDateInAnyRange(comment.getCreated(), makeInterval(object.getCreatedRange()), makeInterval(object.getModifiedRange())))
-                    .mapToLong(CaseComment::getTimeElapsed)
-                    .sum();
-        }
-
-        Long solutionDurationFirst = isNotRestricted ? getDurationBetween(created, customerTest, workaround, done) : null;
-        Long solutionDurationFull = isNotRestricted ? getDurationBetween(created, done, verified) : null;
-
+    public Object[] getColumnValues(CaseObjectReportRow row) {
         List<Object> values = new ArrayList<>();
-        values.add("CRM-" + issue.getCaseNumber());
-        if (isNotRestricted) values.add(lang.get(issue.isPrivateCase() ? "yes" : "no"));
-        values.add(HelperFunc.isNotEmpty(issue.getName()) ? issue.getName() : "");
-        if (withDescription) values.add(StringUtils.emptyIfNull(issue.getInfo()));
-        values.add(issue.getInitiatorCompany() != null && HelperFunc.isNotEmpty(issue.getInitiatorCompany().getCname()) ? transliterate(issue.getInitiatorCompany().getCname(), locale) : "");
-        values.add(issue.getInitiator() != null && HelperFunc.isNotEmpty(issue.getInitiator().getDisplayShortName()) ? transliterate(issue.getInitiator().getDisplayShortName(), locale) : "");
-        values.add(issue.getManager() != null && HelperFunc.isNotEmpty(issue.getManager().getDisplayShortName()) ? transliterate(issue.getManager().getDisplayShortName(), locale) : "");
-        values.add(issue.getManagerCompanyName() != null ? transliterate(issue.getManagerCompanyName(), locale) : "");
-        values.add(issue.getProduct() != null && HelperFunc.isNotEmpty(issue.getProduct().getName()) ? issue.getProduct().getName() : "");
-        values.add(issue.getImportanceCode() != null ? issue.getImportanceCode() : "");
-        values.add(HelperFunc.isNotEmpty(issue.getStateName()) ? issue.getStateName() : "");
-        if (withTags) values.add(String.join(",", toList(emptyIfNull(object.getCaseTags()), CaseTag::getName)));
-        if (withLinkedIssues) values.add(getCaseNumbersAsString(object.getCaseLinks(), lang));
-        if (isNotRestricted && withDeadlineAndWorkTrigger) values.add(issue.getDeadline() != null ? new Date(issue.getDeadline()) : "");
-        if (isNotRestricted && withDeadlineAndWorkTrigger) values.add(issue.getWorkTrigger() != null ? enumLangUtil.workTriggerLang(issue.getWorkTrigger(), lang.getLanguageTag()) : "");
-        values.add(created != null ? created : "");
-        values.add(opened != null ? opened : "");
-        values.add(workaround != null ? workaround : "");
-        values.add(customerTest != null ? customerTest : "");
-        values.add(done != null ? done : "");
-        values.add(verified != null ? verified : "");
 
-        if (withImportanceHistory) values.add(important != null ? important : "");
-        if (withImportanceHistory) values.add(critical != null ? critical : "");
+        if (row instanceof CaseObjectReportRequest) {
+            CaseObjectReportRequest object = (CaseObjectReportRequest)row;
 
-        if (isNotRestricted) values.add(solutionDurationFirst == null ? "" : toExcelTimeFormat(solutionDurationFirst));
-        if (isNotRestricted && isHumanReadable) values.add(solutionDurationFirst == null ? "" : toDaysHoursMinutes(solutionDurationFirst));
+            CaseObject issue = object.getCaseObject();
+            List<History> histories = object.getHistories();
 
-        if (isNotRestricted) values.add(solutionDurationFull == null ? "" : toExcelTimeFormat(solutionDurationFull));
-        if (isNotRestricted && isHumanReadable) values.add(solutionDurationFull == null ? "" : toDaysHoursMinutes(solutionDurationFull));
+            Date created = null,
+                    opened = null,
+                    workaround = null,
+                    customerTest = null,
+                    done = null,
+                    verified = null,
+                    critical = null,
+                    important = null;
 
-        if (isNotRestricted) values.add(issue.getTimeElapsed() != null && issue.getTimeElapsed() > 0 ? toExcelTimeFormat(issue.getTimeElapsed()) : "");
-        if (isNotRestricted) values.add(toExcelTimeFormat(timeElapsedInSelectedDuration));
+            for (History history : histories) {
+                if (history.getType() == En_HistoryType.CASE_IMPORTANCE) {
+                    if (Objects.equals(CrmConstants.ImportanceLevel.IMPORTANT, history.getNewId().intValue()))
+                        important = history.getDate();
+                    if (Objects.equals(CrmConstants.ImportanceLevel.CRITICAL, history.getNewId().intValue()))
+                        critical = history.getDate();
+                }
+
+                if (history.getType() == En_HistoryType.CASE_STATE) {
+                    Long stateId = history.getNewId();
+
+                    if (Objects.equals(stateId, CrmConstants.State.CREATED)) created = history.getDate();
+                    if (Objects.equals(stateId, CrmConstants.State.OPENED)) opened = history.getDate();
+                    if (Objects.equals(stateId, CrmConstants.State.WORKAROUND)) workaround = history.getDate();
+                    if (Objects.equals(stateId, CrmConstants.State.TEST_CUST)) customerTest = history.getDate();
+                    if (Objects.equals(stateId, CrmConstants.State.DONE)) done = history.getDate();
+                    if (Objects.equals(stateId, CrmConstants.State.VERIFIED)) verified = history.getDate();
+                }
+            }
+
+            if (created == null) {
+                created = issue.getCreated();
+            }
+
+            long timeElapsedInSelectedDuration = 0;
+
+            if (isNotRestricted) {
+                timeElapsedInSelectedDuration = object.getCaseComments()
+                        .stream()
+                        .filter(comment -> comment.getTimeElapsed() != null)
+                        .filter(comment -> isDateInAnyRange(comment.getCreated(), makeInterval(object.getCreatedRange()), makeInterval(object.getModifiedRange())))
+                        .mapToLong(CaseComment::getTimeElapsed)
+                        .sum();
+            }
+
+            Long solutionDurationFirst = isNotRestricted ? getDurationBetween(created, customerTest, workaround, done) : null;
+            Long solutionDurationFull = isNotRestricted ? getDurationBetween(created, done, verified) : null;
+
+            values.add("CRM-" + issue.getCaseNumber());
+            if (isNotRestricted) values.add(lang.get(issue.isPrivateCase() ? "yes" : "no"));
+            values.add(HelperFunc.isNotEmpty(issue.getName()) ? issue.getName() : "");
+            if (withDescription) values.add(StringUtils.emptyIfNull(issue.getInfo()));
+            values.add(issue.getInitiatorCompany() != null && HelperFunc.isNotEmpty(issue.getInitiatorCompany().getCname()) ? transliterate(issue.getInitiatorCompany().getCname(), locale) : "");
+            values.add(issue.getInitiator() != null && HelperFunc.isNotEmpty(issue.getInitiator().getDisplayShortName()) ? transliterate(issue.getInitiator().getDisplayShortName(), locale) : "");
+            values.add(issue.getManager() != null && HelperFunc.isNotEmpty(issue.getManager().getDisplayShortName()) ? transliterate(issue.getManager().getDisplayShortName(), locale) : "");
+            values.add(issue.getManagerCompanyName() != null ? transliterate(issue.getManagerCompanyName(), locale) : "");
+            values.add(issue.getProduct() != null && HelperFunc.isNotEmpty(issue.getProduct().getName()) ? issue.getProduct().getName() : "");
+            values.add(issue.getImportanceCode() != null ? issue.getImportanceCode() : "");
+            values.add(HelperFunc.isNotEmpty(issue.getStateName()) ? issue.getStateName() : "");
+            if (withTags) values.add(String.join(",", toList(emptyIfNull(object.getCaseTags()), CaseTag::getName)));
+            if (withLinkedIssues) values.add(getCaseNumbersAsString(object.getCaseLinks(), lang));
+            if (isNotRestricted && withDeadlineAndWorkTrigger) values.add(issue.getDeadline() != null ? new Date(issue.getDeadline()) : "");
+            if (isNotRestricted && withDeadlineAndWorkTrigger) values.add(issue.getWorkTrigger() != null ? enumLangUtil.workTriggerLang(issue.getWorkTrigger(), lang.getLanguageTag()) : "");
+            values.add(created != null ? created : "");
+            values.add(opened != null ? opened : "");
+            values.add(workaround != null ? workaround : "");
+            values.add(customerTest != null ? customerTest : "");
+            values.add(done != null ? done : "");
+            values.add(verified != null ? verified : "");
+
+            if (withImportanceHistory) values.add(important != null ? important : "");
+            if (withImportanceHistory) values.add(critical != null ? critical : "");
+
+            if (isNotRestricted) values.add(solutionDurationFirst == null ? "" : toExcelTimeFormat(solutionDurationFirst));
+            if (isNotRestricted && isHumanReadable) values.add(solutionDurationFirst == null ? "" : toDaysHoursMinutes(solutionDurationFirst));
+
+            if (isNotRestricted) values.add(solutionDurationFull == null ? "" : toExcelTimeFormat(solutionDurationFull));
+            if (isNotRestricted && isHumanReadable) values.add(solutionDurationFull == null ? "" : toDaysHoursMinutes(solutionDurationFull));
+
+            if (isNotRestricted) values.add(issue.getTimeElapsed() != null && issue.getTimeElapsed() > 0 ? toExcelTimeFormat(issue.getTimeElapsed()) : "");
+            if (isNotRestricted) values.add(toExcelTimeFormat(timeElapsedInSelectedDuration));
+        } else if (row instanceof CaseObjectReportWork) {
+            CaseObjectReportWork work = (CaseObjectReportWork)row;
+            int count = 17;
+            if (withTags) count++;
+            if (withLinkedIssues) count++;
+            if (isNotRestricted && withDeadlineAndWorkTrigger) count++;
+            if (isNotRestricted && withDeadlineAndWorkTrigger) count++;
+            if (withImportanceHistory) count++;
+            if (withImportanceHistory) count++;
+            if (isNotRestricted) count++;
+            if (isNotRestricted && isHumanReadable) count++;
+            if (isNotRestricted) count++;;
+            if (isNotRestricted && isHumanReadable) count++;;
+            for (int i = 0; i < count; i++) {
+                values.add("");
+            }
+            values.add(toDaysHoursMinutes(work.getTimeElapsed()));
+            values.add(work.getTimeElapsedType());
+        }
 
         return values.toArray();
     }
@@ -299,6 +325,7 @@ public class ExcelReportWriter implements
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.STANDARD, isNotRestricted && isHumanReadable)
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.STANDARD, isNotRestricted && isHumanReadable)
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted)
+                .add(ExcelFormat.INFINITE_HOURS_MINUTES)    // todo
                 .build();
 
         return formatList.toArray(new String[]{});

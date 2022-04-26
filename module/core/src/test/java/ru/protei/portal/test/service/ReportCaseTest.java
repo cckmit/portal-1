@@ -10,7 +10,7 @@ import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
+import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportRequest;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;

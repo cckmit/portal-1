@@ -8,9 +8,12 @@ import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.*;
-import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
+import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportRequest;
+import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportRow;
+import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportWork;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.TimeFormatter;
@@ -18,10 +21,7 @@ import ru.protei.portal.core.utils.TimeFormatter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -61,7 +61,7 @@ public class ReportCaseImpl implements ReportCase {
 
         final int limit = config.data().reportConfig().getChunkSize();
         int offset = 0;
-        try (ReportWriter<CaseObjectReportRequest> writer =
+        try (ReportWriter<CaseObjectReportRow> writer =
                     new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), report.isRestricted(), report.isWithDescription(),
                             report.isWithTags(), report.isWithLinkedIssues(), report.isHumanReadable(),
                             Boolean.TRUE.equals(query.isCheckImportanceHistory()), report.isWithDeadlineAndWorkTrigger())) {
@@ -75,7 +75,7 @@ public class ReportCaseImpl implements ReportCase {
                 }
                 query.setOffset( offset );
                 query.setLimit( limit );
-                List<CaseObjectReportRequest> comments = processChunk(query, report);
+                List<CaseObjectReportRow> comments = processChunk(query, report);
                 writer.write( sheetNumber, comments );
                 if (size( comments ) < limit) break;
                 offset += limit;
@@ -90,13 +90,14 @@ public class ReportCaseImpl implements ReportCase {
         }
     }
 
-    public List<CaseObjectReportRequest> processChunk(CaseQuery query, Report report) {
+    public List<CaseObjectReportRow> processChunk(CaseQuery query, Report report) {
         return stream(caseObjectDAO.getCases(query))
-                .map(caseObject -> makeRequest(caseObject, query, report))
+                .map(caseObject -> makeRows(caseObject, query, report))
+                .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
 
-    public CaseObjectReportRequest makeRequest(CaseObject caseObject, CaseQuery query, Report report) {
+    private List<CaseObjectReportRow> makeRows(CaseObject caseObject, CaseQuery query, Report report) {
         CaseCommentQuery commentQuery = new CaseCommentQuery();
         commentQuery.addCaseObjectId( caseObject.getId() );
         commentQuery.setTimeElapsed(true);
@@ -114,6 +115,24 @@ public class ReportCaseImpl implements ReportCase {
         List<CaseTag> caseTags = report.isWithTags() ? caseTagDAO.getListByQuery(new CaseTagQuery(caseObject.getId())) : Collections.emptyList();
         List<CaseLink> caseLinks = report.isWithLinkedIssues() ? caseLinkDAO.getListByQuery(new CaseLinkQuery(caseObject.getId(), report.isRestricted())) : Collections.emptyList();
 
-        return new CaseObjectReportRequest( caseObject, caseComments, histories, caseTags, caseLinks, query.getCreatedRange(), query.getModifiedRange() );
+        CaseObjectReportRequest caseObjectReportRequest = new CaseObjectReportRequest(caseObject, caseComments, histories, caseTags, caseLinks, query.getCreatedRange(), query.getModifiedRange());
+
+        List<CaseObjectReportRow> rows = new ArrayList<>();
+        rows.add(caseObjectReportRequest);
+        rows.addAll(makeCaseObjectReportWork(caseComments));
+        return rows;
     }
+
+    private List<CaseObjectReportRow> makeCaseObjectReportWork(List<CaseComment> comments) {
+        Map<En_TimeElapsedType, Long> collect = stream(comments)
+                .filter(comment -> comment.getTimeElapsedType() != null && comment.getTimeElapsed() != null)
+                .collect(Collectors.groupingBy(
+                        CaseComment::getTimeElapsedType,
+                        Collectors.reducing(0L, CaseComment::getTimeElapsed, Long::sum)
+                ));
+        List<CaseObjectReportRow> list = new ArrayList<>();
+        collect.forEach((key, value) -> list.add(new CaseObjectReportWork(key, value)));
+        return list;
+    }
+
 }
