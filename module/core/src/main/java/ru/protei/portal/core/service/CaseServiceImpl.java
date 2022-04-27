@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectCreateEvent;
@@ -31,6 +32,7 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.utils.JiraUtils;
+import ru.protei.portal.core.utils.LangUtil;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
@@ -648,7 +650,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (!oldCaseMeta.getAutoClose() && caseMeta.getAutoClose()) {
-            Result<CaseComment> result = createAndPersistAutoCloseMessage(caseMeta.getId());
+            Result<CaseComment> result = createAndPersistAutoCloseMessage(caseMeta);
 
             if (result.isError()) {
                 log.error("Auto close message for the issue {} not saved!", caseMeta.getId());
@@ -1109,13 +1111,13 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
-    private Result<CaseComment> createAndPersistAutoCloseMessage(Long caseId) {
-        ResourceBundle langRu = ResourceBundle.getBundle("Lang", new Locale( "ru", "RU"));
+    private Result<CaseComment> createAndPersistAutoCloseMessage(CaseObjectMeta caseMeta) {
         CaseComment autoCloseComment = new CaseComment();
-        autoCloseComment.setCreated( new Date() );
+        autoCloseComment.setCreated(new Date());
         autoCloseComment.setAuthorId(portalConfig.data().getCommonConfig().getSystemUserId());
-        autoCloseComment.setCaseId(caseId);
-        autoCloseComment.setText(langRu.getString("issue_will_be_closed"));
+        autoCloseComment.setCaseId(caseMeta.getId());
+        String locale = caseMeta.getInitiator().getLocale();
+        autoCloseComment.setText(getLangFor("issue_will_be_closed", locale));
         autoCloseComment.setPrivacyType( En_CaseCommentPrivacyType.PUBLIC );
         return caseCommentService.addCaseComment(createSystemUserToken(), CRM_SUPPORT, autoCloseComment);
     }
@@ -2067,5 +2069,13 @@ public class CaseServiceImpl implements CaseService {
         Set<UserRole> defaultRoles = userRoleDAO.getDefaultManagerRoles();
         token.setRoles(defaultRoles);
         return token;
+    }
+
+    private String getLangFor(String key, String locale) {
+        if (locale == null) {
+            locale = "ru";
+        }
+        ResourceBundle lang = ResourceBundle.getBundle("Lang", new Locale(locale));
+        return lang.getString( key );
     }
 }

@@ -2,6 +2,7 @@ package ru.protei.portal.core.service.template;
 
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.*;
+import net.sf.cglib.core.Local;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.HtmlUtils;
@@ -210,38 +211,26 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public String getCaseObjectClosedNotificationSubject(Long caseNumber) throws IOException, TemplateException {
+    public String getCaseObjectDeadlineExpireNotificationSubject(Long caseNumber, String locale) throws IOException, TemplateException {
         Map<String, Object> model = new HashMap<>();
         model.put("caseNumber", caseNumber);
 
-        return getText(model, "case.object.closed.subject.%s.ftl");
+
+        return getText(model,
+                "issue.deadline.expire.subject.%s.ftl",
+                locale == null ? null : new Locale(locale));
     }
 
     @Override
-    public String getCaseObjectClosedNotificationBody(Long caseObjectId, Long caseNumber, String urlTemplate, String recipientName) throws IOException, TemplateException {
-        Map<String, Object> model = new HashMap<>();
-        model.put("caseNumber", caseNumber);
-        model.put("linkToCaseObject", String.format(urlTemplate, caseObjectId));
-
-        return getText(model, "case.object.closed.body.%s.ftl");
-    }
-
-    @Override
-    public String getCaseObjectDeadlineExpireNotificationSubject(Long caseNumber) throws IOException, TemplateException {
-        Map<String, Object> model = new HashMap<>();
-        model.put("caseNumber", caseNumber);
-
-        return getText(model, "issue.deadline.expire.subject.%s.ftl");
-    }
-
-    @Override
-    public String getCaseObjectDeadlineExpireNotificationBody(Long caseObjectId, Long caseNumber, String urlTemplate, String recipientName) throws IOException, TemplateException {
+    public String getCaseObjectDeadlineExpireNotificationBody(Long caseObjectId, Long caseNumber, String urlTemplate, String recipientName, String locale) throws IOException, TemplateException {
         Map<String, Object> model = new HashMap<>();
         model.put("caseNumber", caseNumber);
         model.put("linkToCaseObject", String.format(urlTemplate, caseObjectId));
         model.put("userName", recipientName);
 
-        return getText(model, "issue.deadline.expire.body.%s.ftl");
+        return getText(model,
+                "issue.deadline.expire.body.%s.ftl",
+                locale == null ? null : new Locale(locale));
     }
 
     @Override

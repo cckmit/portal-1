@@ -45,13 +45,11 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
 
     private static final Logger log = LoggerFactory.getLogger(AutoCloseCaseServiceImpl.class);
 
-    ResourceBundle langRu = ResourceBundle.getBundle("Lang", new Locale( "ru", "RU"));
-
     @Override
     public void processAutoCloseByDeadLine() {
         CaseQuery query = getCaseQuery();
         query.setOverdueDeadlines(true);
-        List<CaseObject> caseObjects = caseObjectDAO.getCases(getCaseQuery());
+        List<CaseObject> caseObjects = caseObjectDAO.getCases(query);
         AuthToken token = createSystemUserToken();
         for (CaseObject caseObject : CollectionUtils.emptyIfNull(caseObjects)) {
             caseObject.setStateId(CrmConstants.State.DONE);
@@ -65,7 +63,8 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
             }
 
             Long caseObjectId = caseObject.getId();
-            CaseComment comment = createCaseComment(caseObjectId, getLangFor("issue_was_closed"));
+            String locale = caseObject.getInitiator().getLocale();
+            CaseComment comment = createCaseComment(caseObjectId, getLangFor("issue_was_closed", locale));
             Result<CaseComment> caseCommentResult = caseCommentService.addCaseComment(token, En_CaseType.CRM_SUPPORT, comment);
             if (caseCommentResult.isError()) {
                 log.warn("addCaseComment(): Can't add case comment about {} for caseId={}",  comment.getText(), caseObjectId);
@@ -91,7 +90,8 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
 
                 notifyCustomerAboutDeadlineExpire(customer, caseObjectId, caseNumber);
 
-                CaseComment comment = createCaseComment(caseObjectId, getLangFor("send_reminder_about_deadline_expire"));
+                String locale = caseObject.getInitiator().getLocale();
+                CaseComment comment = createCaseComment(caseObjectId, getLangFor("send_reminder_about_deadline_expire", locale));
                 Result<Long> result = caseCommentService.addCommentOnSentReminder(comment);
                 if (result.isError()) {
                     log.warn("addCommentOnSentReminder(): Can't add case comment about {} for caseId={}",  comment.getText(), caseObjectId);
@@ -136,7 +136,11 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
         return token;
     }
 
-    private String getLangFor(String key){
-        return langRu.getString( key );
+    private String getLangFor(String key, String locale) {
+        if (locale == null) {
+            locale = "ru";
+        }
+        ResourceBundle lang = ResourceBundle.getBundle("Lang", new Locale(locale));
+        return lang.getString( key );
     }
 }

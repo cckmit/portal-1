@@ -193,13 +193,14 @@ public class MailNotificationProcessor {
 
         try {
             String subject = templateService.getCaseObjectDeadlineExpireNotificationSubject(
-                    caseNumber);
+                    caseNumber, customer.getLocale());
 
             String body = templateService.getCaseObjectDeadlineExpireNotificationBody(
                     caseObjectId,
                     caseNumber,
-                    getCrmCaseUrl(CompanySubscription.isProteiRecipient(email)), customer.getDisplayName());
-
+                    getCrmCaseUrl(CompanySubscription.isProteiRecipient(email)),
+                    customer.getDisplayName(),
+                    customer.getLocale());
             sendMail(email, subject, body, getFromPortalAddress());
         } catch (Exception e) {
             log.warn("Failed to sent case object deadline expire notification: caseNumber={}", caseNumber, e);
