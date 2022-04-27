@@ -1,13 +1,17 @@
 package ru.protei.portal.test.event;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.config.*;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.config.DaoMockTestConfiguration;
+import ru.protei.portal.config.PortalConfigTestConfiguration;
+import ru.protei.portal.config.ServiceTestsConfiguration;
+import ru.protei.portal.config.TestEventConfiguration;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
 import ru.protei.portal.core.model.dao.ImportanceLevelDAO;
@@ -15,7 +19,6 @@ import ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.CaseCommentService;
-import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.test.service.BaseServiceTest;
 
@@ -110,11 +113,13 @@ public class TestCaseEvents extends BaseServiceTest {
         company.setId( COMPANY_ID );
         Person person = createNewPerson( company );
         person.setId( PERSON_ID );
+        CaseObject object = createNewCaseObject( person );
 
         CaseComment comment = createNewComment( person, CASE_ID, "A new comment, publishing test" );
 
         when( caseObjectDAO.checkExistsByKey( CASE_ID ) ).thenReturn( true );
         when( caseObjectDAO.partialMerge( any(), any() ) ).thenReturn( true );
+        when( caseObjectDAO.get( any() ) ).thenReturn( object );
         when( caseCommentDAO.get( COMMENT_ID ) ).thenReturn( comment );
         when( caseCommentDAO.persist( any() ) ).thenReturn( COMMENT_ID );
         when( personDAO.get( PERSON_ID ) ).thenReturn( person );
