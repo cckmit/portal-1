@@ -228,6 +228,23 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             }
         }
 
+        CaseObject caseObject = caseObjectDAO.get(comment.getCaseId());
+        Set<Long> allHomeCompanyIds = companyDAO.getAllHomeCompanies().stream()
+                .map(Company::getId).collect(Collectors.toSet());
+        Long authorCompanyId = (comment.getAuthor() != null && comment.getAuthor().getCompanyId() != null) ?
+                comment.getAuthor().getCompanyId() :
+                personDAO.get(comment.getAuthorId()).getCompanyId();
+        if (Objects.equals(caseObject.getAutoClose(), Boolean.TRUE) &&
+                !allHomeCompanyIds.contains(authorCompanyId)) {
+            caseObject.setDeadline(null);
+            caseObject.setAutoClose(false);
+            CaseObjectMeta caseObjectMeta = new CaseObjectMeta(caseObject);
+            Result<CaseObjectMeta> caseObjectMetaResult = caseService.updateCaseObjectMeta(token, caseObjectMeta);
+            if (caseObjectMetaResult.isError()) {
+                log.error("addCaseCommentWithoutEvent(): Can't reset autoclose, object meta={}", caseObjectMeta);
+            }
+        }
+
         boolean isCaseChanged = caseService.updateCaseModified(token, comment.getCaseId(), comment.getCreated()).getData();
         if (!isCaseChanged) {
             log.info("Failed to update case modifiedDate: {}", comment);
