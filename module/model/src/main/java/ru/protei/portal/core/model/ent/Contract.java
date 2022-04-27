@@ -1,7 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
-import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.dict.En_CustomerType;
@@ -23,6 +22,8 @@ import java.util.Set;
  */
 @JdbcEntity(table = "contract")
 public class Contract extends AuditableObject implements Serializable, EntityOptionSupport {
+
+    public static final String CASE_OBJECT_ALIAS = "CO";
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.EXPLICIT)
     private Long id;
@@ -91,7 +92,16 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
      * Текущее состояние договора
      */
     @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "STATE", sqlTableAlias = "CO")
-    private Integer stateId;
+    private Long stateId;
+
+    /**
+     * Текущее состояние договора в строковом виде
+     */
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object", sqlTableAlias = CASE_OBJECT_ALIAS),
+            @JdbcJoinPath(localColumn = Contract.Columns.STATE, remoteColumn = "id", table = "case_state", sqlTableAlias = CASE_OBJECT_ALIAS),
+    }, mappedColumn = "state")
+    private String stateName;
 
     /**
      * Предмет договора
@@ -133,6 +143,12 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     @JdbcColumn(name = "date_signing")
     private Date dateSigning;
+
+    @JdbcColumn(name = "date_execution")
+    private Date dateExecution;
+
+    @JdbcColumn(name = "date_end_warranty")
+    private Date dateEndWarranty;
 
     @JdbcColumn(name = "date_valid")
     private Date dateValid;
@@ -177,6 +193,18 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcColumn(name = "delivery_number")
     private String deliveryNumber;
 
+    @JdbcColumn(name = "file_location")
+    private String fileLocation;
+
+    @JdbcManyToMany(linkTable = "case_notifier", localLinkColumn = "case_id", remoteLinkColumn = "person_id")
+    private Set<Person> notifiers; //may contain partially filled objects!
+
+    @JdbcColumn(name = "calculation_type_id")
+    private Long calculationTypeId;
+
+    @JdbcJoinedObject(localColumn = "calculation_type_id", remoteColumn = "id", table = "calculation_type")
+    private CalculationType calculationType;
+
     public Contract() {}
 
     public Contract(Long id, String number) {
@@ -190,6 +218,22 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public void setDeliveryNumber(String deliveryNumber) {
         this.deliveryNumber = deliveryNumber;
+    }
+
+    public Long getCalculationTypeId() {
+        return calculationTypeId;
+    }
+
+    public void setCalculationTypeId(Long calculationTypeId) {
+        this.calculationTypeId = calculationTypeId;
+    }
+
+    public CalculationType getCalculationType() {
+        return calculationType;
+    }
+
+    public void setCalculationType(CalculationType calculationType) {
+        this.calculationType = calculationType;
     }
 
     @Override
@@ -212,14 +256,6 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public void setRefKey(String refKey) {
         this.refKey = refKey;
-    }
-
-    public En_ContractState getState () {
-        return En_ContractState.getById(this.stateId);
-    }
-
-    public void setState (En_ContractState state) {
-        this.stateId = state.getId();
     }
 
     public Long getCreatorId() {
@@ -262,12 +298,20 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.curatorId = curatorId;
     }
 
-    public Integer getStateId() {
+    public Long getStateId() {
         return stateId;
     }
 
-    public void setStateId(Integer stateId) {
+    public void setStateId(Long stateId) {
         this.stateId = stateId;
+    }
+
+    public String getStateName() {
+        return stateName;
+    }
+
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
     }
 
     public String getDescription() {
@@ -454,6 +498,38 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.contractor = contractor;
     }
 
+    public Date getDateExecution() {
+        return dateExecution;
+    }
+
+    public void setDateExecution(Date dateExecution) {
+        this.dateExecution = dateExecution;
+    }
+
+    public Date getDateEndWarranty() {
+        return dateEndWarranty;
+    }
+
+    public void setDateEndWarranty(Date dateEndWarranty) {
+        this.dateEndWarranty = dateEndWarranty;
+    }
+
+    public String getFileLocation() {
+        return fileLocation;
+    }
+
+    public void setFileLocation(String fileLocation) {
+        this.fileLocation = fileLocation;
+    }
+
+    public Set<Person> getNotifiers() {
+        return notifiers;
+    }
+
+    public void setNotifiers(Set<Person> notifiers) {
+        this.notifiers = notifiers;
+    }
+
     public static Contract fromContractInfo(ContractInfo info) {
         if (info == null) {
             return null;
@@ -490,6 +566,7 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", curatorShortName='" + curatorShortName + '\'' +
                 ", productDirections=" + productDirections +
                 ", stateId=" + stateId +
+                ", stateName='" + stateName + '\'' +
                 ", description='" + description + '\'' +
                 ", number='" + number + '\'' +
                 ", cost=" + cost +
@@ -511,6 +588,11 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
                 ", contractorId=" + contractorId +
                 ", contractor=" + contractor +
                 ", deliveryNumber=" + deliveryNumber +
+                ", dateEndWarranty=" + dateEndWarranty +
+                ", dateExecution=" + dateExecution +
+                ", fileLocation='" + fileLocation + '\'' +
+                ", notifiers=" + notifiers +
+                ", calculationType='" + calculationType + '\'' +
                 '}';
     }
 
@@ -521,5 +603,9 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
 
     public ContractInfo toContactInfo(){
         return new ContractInfo(id, number, organizationName);
+    }
+
+    public interface Columns {
+        String STATE = CaseObject.Columns.STATE;
     }
 }

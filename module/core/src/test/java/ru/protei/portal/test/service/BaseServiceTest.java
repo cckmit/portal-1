@@ -97,6 +97,7 @@ public class BaseServiceTest {
         person.setCompanyId( company.getId() );
         person.setCompany( company );
         person.setDisplayName( "Test_Person" );
+        person.setDisplayShortName("Test_P");
         person.setGender( En_Gender.MALE );
         return person;
     }
@@ -257,6 +258,15 @@ public class BaseServiceTest {
 
     protected CaseComment makeCaseComment(Person person, Long caseObjectId, String text) {
         CaseComment caseComment = createNewComment(person, caseObjectId, text);
+        caseComment.setId(caseCommentDAO.persist(caseComment));
+        caseComment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
+        return caseComment;
+    }
+
+    protected CaseComment makeTimeElapsedCaseComment(Person person, Long caseObjectId, En_TimeElapsedType type, Long time) {
+        CaseComment caseComment = createNewComment(person, caseObjectId, "TimeElapsed");
+        caseComment.setTimeElapsedType(type);
+        caseComment.setTimeElapsed(time);
         caseComment.setId(caseCommentDAO.persist(caseComment));
         caseComment.setPrivacyType(En_CaseCommentPrivacyType.PUBLIC);
         return caseComment;

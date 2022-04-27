@@ -139,6 +139,10 @@ public interface AbstractIssueMetaView extends IsWidget {
 
     void setPlansLabelVisible(boolean isVisible);
 
+    void setAutoCloseVisible(boolean isVisible);
+
+    HasValue<Boolean> autoClose();
+
     HasVisibility deadlineContainerVisibility();
     HasValue<Date> deadline();
     boolean isDeadlineEmpty();

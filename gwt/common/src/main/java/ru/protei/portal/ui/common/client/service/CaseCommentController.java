@@ -42,4 +42,6 @@ public interface CaseCommentController extends RemoteService {
      * Изменение типа работ
      */
     Boolean updateCaseTimeElapsedType(Long caseCommentId, En_TimeElapsedType type) throws RequestFailedException;
+
+    String getHistoryValueDiffByHistoryId(Long historyId) throws RequestFailedException;
 }

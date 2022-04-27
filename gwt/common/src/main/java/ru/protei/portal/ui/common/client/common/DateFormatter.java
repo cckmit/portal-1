@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.common;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.shared.TimeZone;
 
 import java.util.Date;
 
@@ -29,7 +30,15 @@ public class DateFormatter {
             return "";
         }
 
-        return dateMonthFormat.format( date );
+        return formatDateMonth( date, null );
+    }
+
+    public static String formatDateMonth( Date date, TimeZone timeZone ) {
+        if ( date == null ) {
+            return "";
+        }
+
+        return dateMonthFormat.format( date, timeZone );
     }
     public static String formatTimeOnly( Date date ) {
         if ( date == null ) {

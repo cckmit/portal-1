@@ -4,13 +4,19 @@ import java.util.Objects;
 
 public class ReportYtWorkClassificationError implements ReportYtWorkRow {
     final String issue;
+    final String customer;
 
-    public ReportYtWorkClassificationError(String issue) {
+    public ReportYtWorkClassificationError(String issue, String customer) {
         this.issue = issue;
+        this.customer = customer;
     }
 
     public String getIssue() {
         return issue;
+    }
+
+    public String getCustomer() {
+        return customer;
     }
 
     @Override
@@ -18,18 +24,19 @@ public class ReportYtWorkClassificationError implements ReportYtWorkRow {
         if (this == o) return true;
         if (!(o instanceof ReportYtWorkClassificationError)) return false;
         ReportYtWorkClassificationError that = (ReportYtWorkClassificationError) o;
-        return issue.equals(that.issue);
+        return Objects.equals(issue, that.issue) && Objects.equals(customer, that.customer);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(issue);
+        return Objects.hash(issue, customer);
     }
 
     @Override
     public String toString() {
         return "ReportYtWorkClassificationError{" +
                 "issue='" + issue + '\'' +
+                ", customer='" + customer + '\'' +
                 '}';
     }
 }

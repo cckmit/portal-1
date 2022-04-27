@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_ContactEmailSubscriptionType;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.CommonManager;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -29,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 /**
  * Активность превью компании
@@ -88,6 +91,14 @@ public abstract class CompanyPreviewActivity
         } else {
             view.getSiteFolderContainerVisibility().setVisible(false);
         }
+
+        view.setCommonManager(makeCommonManagerHtml(value.getCommonManagerList()));
+    }
+
+    private String makeCommonManagerHtml(List<CommonManager> list) {
+        return stream(list).map(commonManager ->
+                "<b>" + (commonManager.getProductId() != null ? commonManager.getProductName() : lang.companySubscriptionGroupAnyValueProduct()) + "</b>"
+                        + " : " + commonManager.getManagerName()).collect(Collectors.joining("<br>"));
     }
 
     private void requestAndFillParentAndChildCompanies(Long companyId ) {
@@ -101,7 +112,7 @@ public abstract class CompanyPreviewActivity
                     }
 
                     if ( CollectionUtils.isNotEmpty(company.getChildCompanies() )) {
-                        String companyNames = CollectionUtils.stream(company.getChildCompanies()).map(Company::getCname).collect(Collectors.joining(", "));
+                        String companyNames = stream(company.getChildCompanies()).map(Company::getCname).collect(Collectors.joining(", "));
                         view.setCompanyLinksMessage( lang.companyIsAHeadOfCompany( companyNames ));
                     }
                 } ) );

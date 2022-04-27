@@ -62,8 +62,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.State.CREATED;
 import static ru.protei.portal.core.model.util.CrmConstants.State.UNKNOWN;
 
@@ -171,7 +170,7 @@ public class TestPortalApiController extends BaseServiceTest {
         ResultActions actions = createPostResultAction("/api/cases/create", caseObject);
         actions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.VALIDATION_ERROR.toString())));
 
         company.setAutoOpenIssue(false);
         companyDAO.saveOrUpdate(company);
@@ -196,7 +195,7 @@ public class TestPortalApiController extends BaseServiceTest {
         ResultActions actions = createPostResultAction("/api/cases/create", caseObject);
         actions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.VALIDATION_ERROR.toString())));
 
         company.setAutoOpenIssue(false);
         companyDAO.saveOrUpdate(company);
@@ -1665,6 +1664,23 @@ public class TestPortalApiController extends BaseServiceTest {
         createPostResultAction("/api/projects/create", new ApiProject())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(En_ResultStatus.INCORRECT_PARAMS.toString())));
+    }
+
+    @Test
+    @Transactional
+    public void caseTimeElapsedReportError() throws Exception {
+        CaseObject caseObject = makeCaseObject( person );
+        makeTimeElapsedCaseComment( person, caseObject.getId(), En_TimeElapsedType.CONSULTATION, 42L);
+
+        CaseElapsedTimeApiQuery query = new CaseElapsedTimeApiQuery();
+        query.setAuthorIds(listOf(person.getId()));
+        createPostResultAction("/api/case/elapsedTimes", query)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data[0].elapsedTime", is(42)))
+                .andExpect(jsonPath("$.data[0].authorId", is(person.getId().intValue())))
+                .andExpect(jsonPath("$.data[0].caseId", is(caseObject.getId().intValue())))
+        ;
     }
 
     private String getPlatformId (String strResult) {

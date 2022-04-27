@@ -1,5 +1,7 @@
 package ru.protei.portal.core.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
@@ -8,10 +10,8 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuditType;
-import ru.protei.portal.core.model.ent.LongAuditableObject;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserLogin;
-import ru.protei.portal.core.model.ent.WorkerEntry;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
@@ -23,10 +23,14 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 
+import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.ent.WorkerEntry.Columns.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 
 public class WorkerEntryServiceImpl implements WorkerEntryService {
+
+    private static final Logger log = LoggerFactory.getLogger(WorkerEntryServiceImpl.class);
 
     @Autowired
     WorkerEntryDAO workerEntryDAO;
@@ -44,7 +48,11 @@ public class WorkerEntryServiceImpl implements WorkerEntryService {
     LegacySystemDAO migrationManager;
     @Autowired
     PortalConfig portalConfig;
-    
+    @Autowired
+    CompanyDepartmentDAO companyDepartmentDAO;
+    @Autowired
+    WorkerPositionDAO workerPositionDAO;
+
     @Override
     @Transactional
     public Result<Void> updateFiredByDate(Date now) {
@@ -60,6 +68,46 @@ public class WorkerEntryServiceImpl implements WorkerEntryService {
             }
         }
         return ok();
+    }
+
+    @Override
+    @Transactional
+    public Result<Void> updatePositionByDate(Date now) {
+        for (WorkerEntry worker: workerEntryDAO.getForUpdatePositionByDate(now)) {
+            log.debug("Update worker with id {} position from '{}' to '{}'",
+                       worker.getId(), worker.getPositionName(), worker.getNewPositionName());
+
+            String newPositionName = worker.getNewPositionName();
+            Long companyId = worker.getCompanyId();
+
+            WorkerPosition workerPosition = workerPositionDAO.getByName(newPositionName, companyId);
+            if (workerPosition == null) {
+                workerPosition = createWorkerPosition(newPositionName, companyId);
+                workerPositionDAO.persist(workerPosition);
+            }
+
+            worker.setPositionId(workerPosition.getId());
+            worker.setDepartmentId(worker.getNewPositionDepartmentId());
+            worker.setNewPositionName(null);
+            worker.setNewPositionDepartmentId(null);
+            worker.setNewPositionTransferDate(null);
+            boolean updated = workerEntryDAO.partialMerge(worker, POSITION_ID, POSITION_DEPARTMENT_ID, NEW_POSITION_NAME,
+                                                                  NEW_POSITION_DEPARTMENT_ID, NEW_POSITION_TRANSFER_DATE);
+
+            if (updated && workerEntryDAO.get(worker.getId()).getPositionName().equals(newPositionName)) {
+                log.debug("Worker with id {} position changed to '{}'", worker.getId(), newPositionName);
+            } else {
+                return error(En_ResultStatus.NOT_UPDATED, "Worker with id " + worker.getId() + " position not updated!");
+            }
+        }
+        return ok();
+    }
+
+    private WorkerPosition createWorkerPosition(String newWorkerPosition, Long companyId) {
+        WorkerPosition workerPosition = new WorkerPosition();
+        workerPosition.setName(newWorkerPosition);
+        workerPosition.setCompanyId(companyId);
+        return workerPosition;
     }
 
     @Override

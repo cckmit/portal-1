@@ -31,7 +31,14 @@
                         <b><ui:text from="{lang.contractDateValid}: "/></b>
                         <span ui:field="dateValid"/>
                     </div>
-
+                    <div class="small">
+                        <b><ui:text from="{lang.contractDateExecution}: "/></b>
+                        <span ui:field="dateExecution"/>
+                    </div>
+                    <div class="small">
+                        <b><ui:text from="{lang.contractDateEndWarranty}: "/></b>
+                        <span ui:field="dateEndWarranty"/>
+                    </div>
                     <div class="small">
                         <b><ui:text from="{lang.contractDirection}: "/></b>
                         <span ui:field="directions"/>
@@ -50,6 +57,11 @@
                     <div class="small">
                         <b><ui:text from="{lang.contractChild}: "/></b>
                         <span ui:field="contractChild"/>
+                    </div>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.contractFileLocation}: "/></b>
+                        <span ui:field="fileLocation"/>
                     </div>
 
                     <h5><ui:text from="{lang.tags}"/></h5>
@@ -82,6 +94,10 @@
                         <span ui:field="contractSignManager"/>
                     </div>
 
+                    <div class="small">
+                        <b><ui:text from="{lang.contractNotifiers}: "/></b>
+                        <span ui:field="notifies"/>
+                    </div>
 
                     <tab:TabWidget styleName="" ui:field="tabs">
                         <tab:pane.TabWidgetPane tabName="{lang.contractDeliveryAndPaymentsPeriodHeader}">

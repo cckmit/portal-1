@@ -25,6 +25,7 @@ import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.service.WorkerEntryService;
 import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.utils.DateUtils;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
@@ -46,6 +47,7 @@ import java.util.function.Supplier;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.ent.WorkerEntry.Columns.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
 
@@ -874,6 +876,104 @@ public class WorkerController {
         return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_DELETE.getMessage());
     }
 
+    /**
+     * Обновить позицию сотрудника
+     * @param workerRecord данные о сотруднике
+     * @return Result<Long>
+     */
+    @RequestMapping(method = RequestMethod.PUT,
+            consumes = MediaType.APPLICATION_XML_VALUE,
+            produces = MediaType.APPLICATION_XML_VALUE,
+            value = "/update.worker.position")
+    Result<Long> updateWorkerPosition(@RequestBody WorkerRecord workerRecord,
+                                      HttpServletRequest request,
+                                      HttpServletResponse response) {
+
+        logger.debug("updateWorkerPosition(): rec={}", workerRecord);
+
+        if (!checkAuth(request, response)) return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+
+        Result<Long> isValid = isValidNewEmployeePosition(workerRecord);
+        if (isValid.isError()) {
+            logger.debug("error result: " + isValid.getMessage());
+            return isValid;
+        }
+
+        OperationData operationData = new OperationData(workerRecord)
+                .requireNewDepartment(null)
+                .requireWorker(null);
+
+        if (!operationData.isValid()) {
+            return operationData.failResult();
+        }
+
+        try {
+            Long newWorkerPositionId = getValidPosition(workerRecord.getNewPositionName(),
+                                                        operationData.homeItem().getCompanyId()).getId();
+
+            return updateWorkerPosition(operationData.worker, workerRecord,
+                                        newWorkerPositionId, operationData.newDepartment.getId());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return ok(null);
+    }
+
+    private Result<Long> isValidNewEmployeePosition(WorkerRecord position) {
+        En_ErrorCode errCode = null;
+
+        if (HelperFunc.isEmpty(position.getWorkerId())) {
+            errCode = En_ErrorCode.EMPTY_WORKER_ID;
+        } else if (HelperFunc.isEmpty(position.getCompanyCode())) {
+            errCode = En_ErrorCode.EMPTY_COMP_CODE;
+        } else if (HelperFunc.isEmpty(position.getNewPositionName())) {
+            errCode = En_ErrorCode.EMPTY_NEW_WORKER_POSITION_NAME;
+        } else if (position.getNewPositionDepartmentId() == null) {
+            errCode = En_ErrorCode.EMPTY_NEW_WORKER_POSITION_DEPARTMENT_ID;
+        } else if (position.getNewPositionTransferDate() == null) {
+            errCode = En_ErrorCode.EMPTY_NEW_WORKER_TRANSFER_DATE;
+        }
+
+        return errCode == null ? ok(null)
+                               : error(En_ResultStatus.INCORRECT_PARAMS, errCode.getMessage());
+    }
+
+    private Result<Long> updateWorkerPosition(WorkerEntry workerToUpdate, WorkerRecord workerRecord,
+                                              Long newWorkerPositionId, Long newPositionDepartmentId){
+        try {
+            boolean updatePositionNow = workerRecord.getNewPositionTransferDate().getTime() <= new Date().getTime();
+            if (updatePositionNow) {
+                workerToUpdate.setPositionId(newWorkerPositionId);
+                workerToUpdate.setDepartmentId(newPositionDepartmentId);
+            } else {
+                workerToUpdate.setNewPositionName(workerRecord.getNewPositionName());
+                workerToUpdate.setNewPositionDepartmentId(newPositionDepartmentId);
+                workerToUpdate.setNewPositionTransferDate(workerRecord.getNewPositionTransferDate());
+            }
+
+            boolean updated;
+            if (updatePositionNow) {
+                updated = workerEntryDAO.partialMerge(workerToUpdate, POSITION_ID, POSITION_DEPARTMENT_ID);
+            } else {
+                updated = workerEntryDAO.partialMerge(workerToUpdate, NEW_POSITION_NAME, NEW_POSITION_DEPARTMENT_ID,
+                                                                      NEW_POSITION_TRANSFER_DATE);
+            }
+
+            Long updatedWorkerId = workerToUpdate.getId();
+            WorkerEntry updatedWorker = workerEntryDAO.get(updatedWorkerId);
+
+            if (updated) {
+                logger.debug("success result, updatedWorker={}", updatedWorker);
+                return ok(updatedWorkerId);
+            }
+        } catch (Exception e) {
+            logger.error("Error while update worker's position", e);
+        }
+
+        return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
+    }
+
     private <R> R withHomeCompany(String companyCode, Function<CompanyHomeGroupItem, R> func) throws Exception {
         CompanyHomeGroupItem item = companyGroupHomeDAO.getByExternalCode(companyCode.trim());
         return item == null ? null : func.apply(item);
@@ -951,6 +1051,7 @@ public class WorkerController {
         person.setBirthday(HelperFunc.isEmpty(rec.getBirthday()) ? null : HelperService.DATE.parse(rec.getBirthday()));
         person.setIpAddress(HelperFunc.isEmpty(rec.getIpAddress()) ? null : rec.getIpAddress().trim());
         person.setInfo(HelperFunc.isEmpty(rec.getInfo()) ? null : rec.getInfo().trim());
+        person.setInn(HelperFunc.isEmpty(rec.getInn()) ? null : rec.getInn().trim());
 
         PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(person.getContactInfo());
         contactInfoFacade.setWorkPhone(HelperFunc.isEmpty(rec.getPhoneWork()) ? null : normalizePhoneNumber(rec.getPhoneWork().trim()));
@@ -1106,6 +1207,7 @@ public class WorkerController {
 
         CompanyHomeGroupItem homeGroupItem;
         CompanyDepartment department;
+        CompanyDepartment newDepartment;
         CompanyDepartment parentDepartment;
         WorkerEntry headDepartment;
         WorkerEntry worker;
@@ -1149,6 +1251,14 @@ public class WorkerController {
             requireHomeItem();
             if (isValid())
                 this.department = handle(companyDepartmentDAO.getByExternalId(record.getDepartmentId().trim(), homeGroupItem.getCompanyId()), optional, En_ErrorCode.UNKNOWN_DEP);
+
+            return this;
+        }
+
+        public OperationData requireNewDepartment(Supplier<CompanyDepartment> optional) {
+            requireHomeItem();
+            if (isValid())
+                this.newDepartment = handle(companyDepartmentDAO.getByExternalId(record.getNewDepartmentId().trim(), homeGroupItem.getCompanyId()), optional, En_ErrorCode.UNKNOWN_DEP);
 
             return this;
         }
@@ -1272,6 +1382,10 @@ public class WorkerController {
             return this;
         }
 
+        private String newPositionName;
+        private Long newPositionDepartmentId;
+        private Date newPositionTransferDate;
+
         private <T> T handle(T value, Supplier<T> optional, En_ErrorCode failCode) {
             return handle(value, optional, failCode, false);
         }
@@ -1338,6 +1452,7 @@ public class WorkerController {
         public class Record {
             String companyCode;
             String departmentId;
+            String newDepartmentId;
             String parentDepartmentId;
             String headDepartmentId;
             String workerId;
@@ -1349,6 +1464,7 @@ public class WorkerController {
             public Record(WorkerRecord workerRecord) {
                 this.companyCode = workerRecord.getCompanyCode();
                 this.departmentId = workerRecord.getDepartmentId();
+                this.newDepartmentId = workerRecord.getNewPositionDepartmentId();
                 this.workerId = workerRecord.getWorkerId();
                 this.personId = workerRecord.getId();
                 this.registrationId = workerRecord.getRegistrationId();
@@ -1376,6 +1492,10 @@ public class WorkerController {
 
             public String getDepartmentId() {
                 return departmentId;
+            }
+
+            public String getNewDepartmentId() {
+                return newDepartmentId;
             }
 
             public String getParentDepartmentId() {
@@ -1466,7 +1586,6 @@ public class WorkerController {
                 try {
 
                     Person person = operationData.person();
-                    String personLastName = person.getLastName();
                     WorkerEntry worker = operationData.worker();
                     List<UserLogin> userLogins = operationData.account();
                     EmployeeRegistration employeeRegistration = operationData.registration();
@@ -1481,26 +1600,20 @@ public class WorkerController {
 
                     if (rec.isFired() || rec.isDeleted()) {
                         boolean immediately = false;
-                        if (HelperFunc.isNotEmpty(rec.getFireDate())) {
-                            Date firedDate = HelperService.DATE.parse(rec.getFireDate());
-                            Date now = new Date();
-                            if (firedDate.after(now)) {
-                                worker.setFiredDate(firedDate);
-                                worker.setDeleted(rec.isDeleted());
-                                workerEntryDAO.merge(worker);
-
-                                logger.debug("success result, workerRowId={}", worker.getId());
-                            } else {
-                                immediately = true;
-                            }
-                        } else {
+                        Date firedDate = HelperFunc.isEmpty(rec.getFireDate()) ? null : HelperService.DATE.parse(rec.getFireDate());
+                        if (firedDate == null || firedDate.before(DateUtils.resetTime(new Date()))) {
                             immediately = true;
+                        } else {
+                            worker.setFiredDate(firedDate);
+                            worker.setDeleted(rec.isDeleted());
+                            workerEntryDAO.merge(worker);
+                            logger.debug("success result, workerRowId={}", worker.getId());
                         }
 
                         if (immediately) {
                             workerEntryDAO.remove(worker);
                             if (!workerEntryDAO.checkExistsByPersonId(person.getId())) {
-                                return workerEntryService.firePerson(person, rec.isFired(), null, rec.isDeleted(), userLogins, WSConfig.getInstance().isEnableMigration())
+                                return workerEntryService.firePerson(person, rec.isFired(), firedDate, rec.isDeleted(), userLogins, WSConfig.getInstance().isEnableMigration())
                                         .map(ignore -> {
                                             logger.debug("success result, workerRowId={}", worker.getId());
                                             return person.getId();
@@ -1657,7 +1770,7 @@ public class WorkerController {
         return error(En_ResultStatus.INCORRECT_PARAMS, En_ErrorCode.NOT_UPDATE.getMessage());
     }
 
-    private void createAdminYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String oldLastName) {
+    private void createUserSupportYoutrackIssueIfNeeded(Long employeeId, String firstName, String lastName, String secondName, String oldLastName) {
         if (Objects.equals(lastName, oldLastName)) {
             return;
         }

@@ -7,7 +7,11 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DutyType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DutyLog;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.DutyLogQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
@@ -19,6 +23,7 @@ import ru.protei.portal.ui.common.client.service.DutyLogControllerAsync;
 import ru.protei.portal.ui.common.client.util.DateUtils;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
 import java.util.function.Consumer;
@@ -43,15 +48,7 @@ public abstract class DutyLogEditActivity implements AbstractDutyLogEditActivity
         dialogView.showPopup();
 
         if (event.id == null) {
-            DutyLog dutyLog = new DutyLog();
-            dutyLog.setPersonId(policyService.getProfileId());
-            dutyLog.setPersonDisplayName(policyService.getProfile().getFullName());
-            dutyLog.setType(En_DutyType.BG);
-            // дефолтный период дежурства – с пятницы по пятницу (PORTAL-1377)
-            dutyLog.setFrom(getCurrentWeekFriday());
-            dutyLog.setTo(DateUtils.addDays(dutyLog.getFrom(), 7L));
-
-            showView(dutyLog);
+            loadNewDutyLog();
         } else {
             loadDutyLog(event.id, this::showView);
         }
@@ -131,6 +128,23 @@ public abstract class DutyLogEditActivity implements AbstractDutyLogEditActivity
         return dutyLog;
     }
 
+    private void loadNewDutyLog() {
+        DutyLogQuery query = makeQuery();        
+        dutyLogController.getDutyLogs(query, new FluentCallback<SearchResult<DutyLog>>()
+                .withError(throwable -> {
+                    loadDutyLogWithType(En_DutyType.BG);
+                })
+                .withSuccess(sr -> {
+                    if (CollectionUtils.isNotEmpty(sr.getResults())) {
+                        En_DutyType dutyType = sr.getResults().get(0).getType();
+                        loadDutyLogWithType(dutyType);
+                    } else {
+                        loadDutyLogWithType(En_DutyType.BG);
+                    }
+                })
+        );
+    }
+
     private void loadDutyLog(Long dutyLogId, Consumer<DutyLog> onSuccess) {
         showLoading();
         dutyLogController.getDutyLog(dutyLogId, new FluentCallback<DutyLog>()
@@ -159,6 +173,17 @@ public abstract class DutyLogEditActivity implements AbstractDutyLogEditActivity
                 }));
     }
 
+    private void loadDutyLogWithType(En_DutyType dutyType) {
+        DutyLog dutyLog = new DutyLog();
+        dutyLog.setPersonId(policyService.getProfileId());
+        dutyLog.setPersonDisplayName(policyService.getProfile().getFullName());
+        dutyLog.setType(dutyType);
+        // дефолтный период дежурства – с пятницы по пятницу (PORTAL-1377)
+        dutyLog.setFrom(getCurrentWeekFriday());
+        dutyLog.setTo(DateUtils.addDays(dutyLog.getFrom(), 7L));
+        showView(dutyLog);
+    }
+
     private void enableButtons(boolean isEnable) {
         dialogView.saveButtonEnabled().setEnabled(isEnable);
     }
@@ -183,6 +208,10 @@ public abstract class DutyLogEditActivity implements AbstractDutyLogEditActivity
             dateFrom = DateUtils.subsctractDays(dateFrom,  dayOfWeek - 5L);
         }
         return dateFrom;
+    }
+
+    private DutyLogQuery makeQuery() {
+        return new DutyLogQuery(policyService.getProfileId(), En_SortField.duty_log_date_to, En_SortDir.DESC);
     }
 
     @Inject

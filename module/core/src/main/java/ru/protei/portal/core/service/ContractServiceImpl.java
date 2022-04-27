@@ -7,23 +7,30 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.enterprise1c.api.Api1C;
+import ru.protei.portal.core.event.ContractCreateEvent;
 import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ProductDirectionInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
-import ru.protei.portal.core.model.enterprise1c.dto.ContractAdditionalProperty1C;
+import ru.protei.portal.core.model.enterprise1c.dto.CalculationType1C;
 import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.ContractApiQuery;
 import ru.protei.portal.core.model.query.ContractQuery;
+import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.ContractorQuery;
+import ru.protei.portal.core.model.struct.NotificationEntry;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.util.ContractorUtils;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -33,6 +40,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -44,6 +52,7 @@ import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.Masks.*;
+import static ru.protei.portal.core.model.util.CrmConstants.State.AGREEMENT;
 
 public class ContractServiceImpl implements ContractService {
 
@@ -58,7 +67,11 @@ public class ContractServiceImpl implements ContractService {
     @Autowired
     ContractorDAO contractorDAO;
     @Autowired
+    CalculationTypeDAO calculationTypeDAO;
+    @Autowired
     DevUnitDAO devUnitDAO;
+    @Autowired
+    CaseStateDAO caseStateDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
@@ -79,6 +92,16 @@ public class ContractServiceImpl implements ContractService {
     PersonService personService;
     @Autowired
     ProductService productService;
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    CaseNotifierDAO caseNotifierDAO;
+    @Autowired
+    EventPublisherService publisherService;
+    @Autowired
+    CaseStateService caseStateService;
+    @Autowired
+    CaseTagService caseTagService;
 
     @Override
     public Result<SearchResult<Contract>> getContracts( AuthToken token, ContractQuery query) {
@@ -114,6 +137,7 @@ public class ContractServiceImpl implements ContractService {
         jdbcManyRelationsHelper.fill(contract, "childContracts");
         jdbcManyRelationsHelper.fill(contract, "contractDates");
         jdbcManyRelationsHelper.fill(contract, "contractSpecifications");
+        jdbcManyRelationsHelper.fill(contract, "notifiers");
         Collections.sort(contract.getContractSpecifications());
 
         contract.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(contract.getProjectId())));
@@ -136,7 +160,7 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.PROJECT_NOT_SELECTED);
         }
 
-        if (contract.getState() == null) {
+        if (contract.getStateId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -146,6 +170,7 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        fillDateExecution(contract);
         CaseObject caseObject = fillCaseObjectFromContract(null, contract);
         Long contractId = caseObjectDAO.persist(caseObject);
         if (contractId == null) {
@@ -165,13 +190,25 @@ public class ContractServiceImpl implements ContractService {
             contract.setContractorId(null);
         }
 
+        CalculationType calculationType = contract.getCalculationType();
+        if (calculationType != null) {
+            Result<Long> result = saveCalculationType(calculationType);
+            if (result.isError()) {
+                log.error("createContract(): id = {} | failed to save calculation type to db with result = {}", contractId, result);
+                throw new RollbackTransactionException(result.getStatus());
+            }
+            contract.setCalculationTypeId(result.getData());
+        } else {
+            contract.setCalculationTypeId(null);
+        }
+
         boolean contractPersisted = contractDAO.persist(contract) != null;
         if (!contractPersisted) {
             log.error("createContract(): id = {} | failed to persist contract to db", contractId);
             throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
         }
 
-        Result<Long> historyResult = createStateHistory(token, contractId, En_HistoryAction.ADD, null, contract.getState());
+        Result<Long> historyResult = createStateHistory(token, contractId, En_HistoryAction.ADD, null, caseStateDAO.get(contract.getStateId()));
         if (historyResult.isError()) {
             log.error("createContract(): id = {} | failed to create history for contract state : {}", contractId, historyResult.getStatus());
             throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
@@ -202,6 +239,28 @@ public class ContractServiceImpl implements ContractService {
             }
         }
 
+        if(CollectionUtils.isNotEmpty(contract.getNotifiers())){
+            caseNotifierDAO.persistBatch(
+                    contract.getNotifiers()
+                            .stream()
+                            .map(person -> new CaseNotifier(contract.getId(), person.getId()))
+                            .collect(Collectors.toList()));
+        }
+
+        log.info("createContract(): notification for contract={}", contract.getId());
+        Set<Long> personIdList = makePersonIdListForNotification(contract, contract.getNotifiers());
+        if (CollectionUtils.isEmpty(personIdList)) {
+            log.info("createContract(): notification for contract={}: no persons to be notified", contract.getId());
+        } else {
+            Set<NotificationEntry> notificationEntries = getNotificationEntries(personIdList);
+            if (CollectionUtils.isEmpty(notificationEntries)) {
+                log.info("createContract(): notification for contract={}: no entries to be notified", contract.getId());
+            } else {
+                log.info("createContract(): notification for contract={}: entries to be notified: {}", contract.getId(), notificationEntries);
+                Person author = personDAO.get(contract.getCreatorId());
+                publisherService.publishEvent(new ContractCreateEvent(this, contract, author, notificationEntries));
+            }
+        }
         return ok(contractId);
     }
 
@@ -225,7 +284,7 @@ public class ContractServiceImpl implements ContractService {
             return error(En_ResultStatus.PROJECT_NOT_SELECTED);
         }
 
-        if (contract.getState() == null) {
+        if (contract.getStateId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -261,6 +320,19 @@ public class ContractServiceImpl implements ContractService {
             contract.setContractorId(null);
         }
 
+        CalculationType calculationType = contract.getCalculationType();
+        if (calculationType != null) {
+            Result<Long> result = saveCalculationType(calculationType);
+            if (result.isError()) {
+                log.error("createContract(): id = {} | failed to save calculation type to db with result = {}", contractId, result);
+                throw new RollbackTransactionException(result.getStatus());
+            }
+            contract.setCalculationTypeId(result.getData());
+        } else {
+            contract.setCalculationTypeId(null);
+        }
+
+        fillDateExecution(contract);
         fillCaseObjectFromContract(prevContractCaseObject, contract);
 
         boolean contractCaseObjectSaved = caseObjectDAO.merge(prevContractCaseObject);
@@ -275,9 +347,11 @@ public class ContractServiceImpl implements ContractService {
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
         }
 
-        boolean contractStateChanged = prevContract.getState() != contract.getState();
+        boolean contractStateChanged = prevContract.getStateId() != contract.getStateId();
         if (contractStateChanged) {
-            Result<Long> historyResult = createStateHistory(token, contractId, En_HistoryAction.CHANGE, prevContract.getState(), contract.getState());
+            Result<Long> historyResult = createStateHistory(token, contractId, En_HistoryAction.CHANGE,
+                                                            caseStateDAO.get(prevContract.getStateId()),
+                                                            caseStateDAO.get(contract.getStateId()));
             if (historyResult.isError()) {
                 log.error("updateContract(): id = {} | failed to create history for changed contract state : {}", contractId, historyResult.getStatus());
                 throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
@@ -287,83 +361,102 @@ public class ContractServiceImpl implements ContractService {
         try {
             jdbcManyRelationsHelper.persist(contract, "contractDates");
             jdbcManyRelationsHelper.persist(contract, "contractSpecifications");
+            jdbcManyRelationsHelper.persist(contract, "notifiers");
         } catch (Exception e) {
             log.error("updateContract(): id = {} | failed to save contract's relations to db", contractId, e);
             throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED, e);
         }
 
         boolean is1cSync = is1cSyncEnabled(contract);
-        if (is1cSync) {
+        if (!is1cSync) {
+            return ok(contract.getId());
+        }
 
-            boolean isRefKeySet = isNotEmpty(contract.getRefKey());
+        boolean isRefKeySet = isNotEmpty(contract.getRefKey());
 
-            boolean isContractorDefined = contract.getContractor() != null;
+        boolean isContractorDefined = contract.getContractor() != null;
 
-            boolean isOrganizationRemoved =
-                    prevContract.getOrganizationId() != null &&
-                    contract.getOrganizationId() == null;
+        boolean isOrganizationRemoved =
+                prevContract.getOrganizationId() != null &&
+                contract.getOrganizationId() == null;
 
-            boolean isOrganizationChanged =
-                    prevContract.getOrganizationId() != null &&
-                    contract.getOrganizationId() != null &&
-                    !Objects.equals(prevContract.getOrganizationId(), contract.getOrganizationId());
+        boolean isOrganizationChanged =
+                prevContract.getOrganizationId() != null &&
+                contract.getOrganizationId() != null &&
+                !Objects.equals(prevContract.getOrganizationId(), contract.getOrganizationId());
 
-            if (isRefKeySet && isOrganizationRemoved) {
-                String organizationPrev = prevContract.getOrganizationName();
-                Contract1C contract1C = to1C(contract);
-                contract1C.setDeletionMark(true);
-                Result<Contract1C> removeResult = api1CService.saveContract(contract1C, organizationPrev);
-                if (removeResult.isError()) {
-                    log.error("updateContract(): id = {} | organization removal | failed to remove contract from 1c with result = {}", contractId, removeResult);
-                    throw new RollbackTransactionException(removeResult.getStatus());
-                }
-                contract.setRefKey(null);
-                boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
-                if (!contractUpdated) {
-                    // Not rollback-able error
-                    log.error("updateContract(): id = {} | organization removal | NO-ROLLBACK | failed to save contract's refKey to db", contractId);
-                    return error(En_ResultStatus.NOT_UPDATED);
-                }
+        if (isRefKeySet && isOrganizationRemoved) {
+            String organizationPrev = prevContract.getOrganizationName();
+            Contract1C contract1C = to1C(contract);
+            contract1C.setDeletionMark(true);
+            Result<Contract1C> removeResult = api1CService.saveContract(contract1C, organizationPrev);
+            if (removeResult.isError()) {
+                log.error("updateContract(): id = {} | organization removal | failed to remove contract from 1c with result = {}", contractId, removeResult);
+                throw new RollbackTransactionException(removeResult.getStatus());
             }
-            else if (isRefKeySet && isOrganizationChanged) {
-                String organizationPrev = prevContract.getOrganizationName();
-                String organizationNew = contract.getOrganizationName();
-                Contract1C contract1C = to1C(contract);
-                contract1C.setDeletionMark(true);
-                Result<Contract1C> removeResult = api1CService.saveContract(contract1C, organizationPrev);
-                if (removeResult.isError()) {
-                    log.error("updateContract(): id = {} | organization modification | failed to remove contract from 1c with result = {}", contractId, removeResult);
-                    throw new RollbackTransactionException(removeResult.getStatus());
-                }
-                contract1C.setRefKey(null);
-                contract1C.setDeletionMark(false);
-                Result<Contract1C> createResult = api1CService.saveContract(contract1C, organizationNew);
-                if (createResult.isError()) {
-                    // Not rollback-able error
-                    log.error("updateContract(): id = {} | organization modification | NO-ROLLBACK | failed to create contract at 1c with result = {}", contractId, createResult);
-                    return error(createResult.getStatus());
-                }
-                contract.setRefKey(createResult.getData().getRefKey());
-                boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
-                if (!contractUpdated) {
-                    // Not rollback-able error
-                    log.error("updateContract(): id = {} | organization modification | NO-ROLLBACK | failed to save contract's refKey to db", contractId);
-                    return error(En_ResultStatus.NOT_UPDATED);
-                }
+            contract.setRefKey(null);
+            boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
+            if (!contractUpdated) {
+                // Not rollback-able error
+                log.error("updateContract(): id = {} | organization removal | NO-ROLLBACK | failed to save contract's refKey to db", contractId);
+                return error(En_ResultStatus.NOT_UPDATED);
             }
-            else if (isContractorDefined) {
-                Result<Contract1C> result = saveContract1C(contract);
-                if (result.isError()) {
-                    log.error("updateContract(): id = {} | failed to save contractor to 1c with result = {}", contractId, result);
-                    throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
-                }
-                contract.setRefKey(result.getData().getRefKey());
-                boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
-                if (!contractUpdated) {
-                    // Not rollback-able error
-                    log.error("updateContract(): id = {} | NO-ROLLBACK | failed to save contract's refKey to db", contractId);
-                    return error(En_ResultStatus.NOT_UPDATED);
-                }
+        }
+        else if (isRefKeySet && isOrganizationChanged) {
+            String organizationPrev = prevContract.getOrganizationName();
+            String organizationNew = contract.getOrganizationName();
+            Contract1C contract1C = to1C(contract);
+            contract1C.setDeletionMark(true);
+            Result<Contract1C> removeResult = api1CService.saveContract(contract1C, organizationPrev);
+            if (removeResult.isError()) {
+                log.error("updateContract(): id = {} | organization modification | failed to remove contract from 1c with result = {}", contractId, removeResult);
+                throw new RollbackTransactionException(removeResult.getStatus());
+            }
+            contract1C.setRefKey(null);
+            contract1C.setDeletionMark(false);
+            Result<Contract1C> createResult = api1CService.saveContract(contract1C, organizationNew);
+            if (createResult.isError()) {
+                // Not rollback-able error
+                log.error("updateContract(): id = {} | organization modification | NO-ROLLBACK | failed to create contract at 1c with result = {}", contractId, createResult);
+                return error(createResult.getStatus());
+            }
+            contract.setRefKey(createResult.getData().getRefKey());
+            boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
+            if (!contractUpdated) {
+                // Not rollback-able error
+                log.error("updateContract(): id = {} | organization modification | NO-ROLLBACK | failed to save contract's refKey to db", contractId);
+                return error(En_ResultStatus.NOT_UPDATED);
+            }
+        }
+        else if (isContractorDefined) {
+            Result<Contract1C> result = saveContract1C(contract);
+            if (result.isError()) {
+                log.error("updateContract(): id = {} | failed to save contractor to 1c with result = {}", contractId, result);
+                throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+            }
+            contract.setRefKey(result.getData().getRefKey());
+            boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
+            if (!contractUpdated) {
+                // Not rollback-able error
+                log.error("updateContract(): id = {} | NO-ROLLBACK | failed to save contract's refKey to db", contractId);
+                return error(En_ResultStatus.NOT_UPDATED);
+            }
+        }
+
+        boolean isCalculationTypeChanged = !Objects.equals(prevContract.getCalculationType(),
+                                                           contract.getCalculationType());
+        if (isCalculationTypeChanged) {
+            Result<Contract1C> result = saveContract1C(contract);
+            if (result.isError()) {
+                log.error("updateContract(): id = {} | failed to save calculation type to 1c with result = {}", contractId, result);
+                throw new RollbackTransactionException(En_ResultStatus.NOT_UPDATED);
+            }
+
+            contract.setRefKey(result.getData().getRefKey());
+            boolean contractUpdated = contractDAO.mergeRefKey(contract.getId(), contract.getRefKey());
+            if (!contractUpdated) {
+                log.error("updateContract(): id = {} | calculation type modification | NO-ROLLBACK | failed to save contract's calculation type to db", contractId);
+                return error(En_ResultStatus.NOT_UPDATED);
             }
         }
 
@@ -486,13 +579,28 @@ public class ContractServiceImpl implements ContractService {
         ContractQuery query = new ContractQuery();
         query.setOpenStateDate(apiQuery.getOpenStateDate());
         query.setOrganizationIds(apiQuery.getOrganizationIds());
-        query.setStates(apiQuery.getStates());
+        query.setStateIds(apiQuery.getStateIds());
         SearchResult<Contract> result = contractDAO.getSearchResult(query);
         List<Contract> contracts = result.getResults();
 
         jdbcManyRelationsHelper.fill(contracts, "contractDates");
         contracts.forEach(contract -> contract.setProductDirections(new HashSet<>(devUnitDAO.getProjectDirections(contract.getProjectId()))));
         return ok(contracts);
+    }
+
+    @Override
+    public Result<List<CalculationType>> getCalculationTypeList(AuthToken token, String homeCompanyName) {
+        if (homeCompanyName == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Result<List<CalculationType1C>> calculationTypes = api1CService.getAllCalculationTypes(homeCompanyName);
+        if (calculationTypes.isError()) {
+            return error(calculationTypes.getStatus());
+        }
+
+        return ok(calculationTypes.getData().stream().map(ContractServiceImpl::from1C)
+                                                     .collect(toList()));
     }
 
     @Override
@@ -539,6 +647,28 @@ public class ContractServiceImpl implements ContractService {
             }
         }
 
+        List<Long> caseTagsId = new ArrayList<>(emptyIfNull(query.getCaseTagsIds()));
+        if (!CollectionUtils.isEmpty(caseTagsId)) {
+            CaseTagQuery caseTagQuery = new CaseTagQuery();
+            caseTagQuery.setIds(caseTagsId);
+            Result<List<CaseTag>> result = caseTagService.getTags(token, caseTagQuery);
+            if (result.isOk()) {
+                selectorsParams.setCaseTags(result.getData());
+            } else {
+                return error(result.getStatus(), "Error at getTags");
+            }
+        }
+
+        List<Long> caseStateIds = new ArrayList<>(emptyIfNull(query.getStateIds()));
+        if (!CollectionUtils.isEmpty(caseStateIds)) {
+            Result<List<CaseState>> result = caseStateService.getCaseStatesByIds(caseStateIds);
+            if (result.isOk()) {
+                selectorsParams.setCaseStates(result.getData());
+            } else {
+                return error(result.getStatus(), "Error at getCaseStatesByIds");
+            }
+        }
+
         return ok(selectorsParams);
     }
 
@@ -550,16 +680,16 @@ public class ContractServiceImpl implements ContractService {
     }
 
     private Result<Long> createStateHistory(AuthToken token, Long contractId, En_HistoryAction action,
-                                            En_ContractState oldState, En_ContractState newState) {
+                                            CaseState oldState, CaseState newState) {
         return historyService.createHistory(
             token,
             contractId,
             action,
             En_HistoryType.CONTRACT_STATE,
-            oldState == null ? null : (long) oldState.getId(),
-            oldState == null ? null : oldState.name(),
-            newState == null ? null : (long) newState.getId(),
-            newState == null ? null : newState.name()
+            oldState == null ? null : oldState.getId(),
+            oldState == null ? null : oldState.getState(),
+            newState == null ? null : newState.getId(),
+            newState == null ? null : newState.getState()
         );
     }
 
@@ -570,6 +700,21 @@ public class ContractServiceImpl implements ContractService {
             return null;
         }
         return getFirst(result.getData());
+    }
+
+    // PORTAL-2017 в договорах при сохранении/создании договора если дата исполнения не указана – устанавливаем
+    // минимальную дату из отгрузок, если уже указана – ее модификация производится только в ручном формате.
+    private void fillDateExecution(Contract contract) {
+        if (contract.getDateExecution() != null || CollectionUtils.isEmpty(contract.getContractDates())) {
+            return;
+        }
+
+        Date minSupplyDate = contract.getContractDates().stream()
+                .filter(contractDate -> Objects.equals(contractDate.getType(), En_ContractDatesType.SUPPLY))
+                .map(ContractDate::getDate)
+                .min(Date::compareTo)
+                .orElse(null);
+        contract.setDateExecution(minSupplyDate);
     }
 
     private CaseObject fillCaseObjectFromContract(CaseObject caseObject, Contract contract) {
@@ -584,7 +729,7 @@ public class ContractServiceImpl implements ContractService {
 
         caseObject.setInfo(contract.getDescription());
         caseObject.setName(contract.getNumber());
-        caseObject.setStateId(contract.getState().getId());
+        caseObject.setStateId(contract.getStateId());
         caseObject.setManagerId(contract.getContractSignManagerId());
         caseObject.setInitiatorId(contract.getCuratorId());
 
@@ -608,6 +753,24 @@ public class ContractServiceImpl implements ContractService {
         }
 
         return ok(contractor.getId());
+    }
+
+    private Result<Long> saveCalculationType(CalculationType calculationType) {
+        if (calculationType.getRefKey() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CalculationType calcType = calculationTypeDAO.getCalculationTypeByRefKey(calculationType.getRefKey());
+        if (calcType == null) {
+            calculationTypeDAO.persist(calculationType);
+        } else {
+            calculationType.setId(calcType.getId());
+            if (!calculationTypeDAO.merge(calculationType)) {
+                return error(En_ResultStatus.NOT_UPDATED, "Calculation type was not merged");
+            }
+        }
+
+        return ok(calculationType.getId());
     }
 
     private Result<Contract1C> saveContract1C(Contract contract) {
@@ -641,7 +804,7 @@ public class ContractServiceImpl implements ContractService {
 
     private boolean is1cSyncEnabled(Contract contract) {
         boolean sync1cEnabled = config.data().enterprise1C().isContractSyncEnabled();
-        boolean stateAgreement = contract.getState() == En_ContractState.AGREEMENT;
+        boolean stateAgreement = contract.getStateId() == AGREEMENT;
         return sync1cEnabled && !stateAgreement;
     }
 
@@ -721,6 +884,45 @@ public class ContractServiceImpl implements ContractService {
         return query;
     }
 
+    private Set<Long> makePersonIdListForNotification(Contract contract, Set<Person> notifiers) {
+        Set<Long> personIdList = new HashSet<>();
+        if (contract.getCreatorId() != null) {
+            personIdList.add(contract.getCreatorId());
+        }
+        if (contract.getProjectManagerId() != null) {
+            personIdList.add(contract.getProjectManagerId());
+        }
+        if (contract.getCuratorId() != null) {
+            personIdList.add(contract.getCuratorId());
+        }
+        if (contract.getContractSignManagerId() != null) {
+            personIdList.add(contract.getContractSignManagerId());
+        }
+        personIdList.addAll(notifiers.stream().map(Person::getId).collect(Collectors.toList()));
+        return personIdList;
+    }
+
+    private Set<NotificationEntry> getNotificationEntries(Set<Long> personIdList) {
+        Set<NotificationEntry> notificationEntries = new HashSet<>();
+        List<Person> personList = personDAO.partialGetListByKeys(personIdList, "id", "locale");
+        jdbcManyRelationsHelper.fill(personList, Person.Fields.CONTACT_ITEMS);
+        for (Person person : personList) {
+            ContactInfo contactInfo = person.getContactInfo();
+            if (contactInfo == null) {
+                continue;
+            }
+            String email = new PlainContactInfoFacade(contactInfo).getEmail();
+            String locale = person.getLocale() == null ? CrmConstants.DEFAULT_LOCALE : person.getLocale();
+            if (StringUtils.isBlank(email)) {
+                continue;
+            }
+            notificationEntries.add(NotificationEntry.email(email, locale));
+        }
+        return notificationEntries;
+    }
+
+
+
     public static Contractor from1C(Contractor1C contractor1C, String country) {
         Contractor contractor = new Contractor();
         contractor.setRefKey(contractor1C.getRefKey());
@@ -751,6 +953,8 @@ public class ContractServiceImpl implements ContractService {
         contract1C.setContractorKey(contract.getContractor().getRefKey());
         contract1C.setDateSigning(saveDateFormat.format(contract.getDateSigning()));
         contract1C.setName(contract.getNumber().trim()+ " от " + showDateFormat.format(contract.getDateSigning()));
+        contract1C.setCalculationType(contract.getCalculationType() == null ? null :
+                                      contract.getCalculationType().getRefKey().trim());
 
         // PORTAL-1566 p.7 (freezed)
 //        List<ContractAdditionalProperty1C> additional1СProperties = new ArrayList<>();
@@ -759,6 +963,13 @@ public class ContractServiceImpl implements ContractService {
 //        contract1C.setAdditionalProperties(additionalProperty1CS);
 
         return contract1C;
+    }
+
+    public static CalculationType from1C(CalculationType1C calcType1C) {
+        CalculationType calculationType = new CalculationType();
+        calculationType.setName(calcType1C.getName());
+        calculationType.setRefKey(calcType1C.getRefKey());
+        return calculationType;
     }
 
     public static boolean isSame(Contract1C c1, Contract1C c2) {
@@ -771,7 +982,8 @@ public class ContractServiceImpl implements ContractService {
         } catch (ParseException e) { return false; }
 
         return Objects.equals(c1.getNumber(), c2.getNumber())
-               && Objects.equals(c1.getContractorKey(), c2.getContractorKey());
+               && Objects.equals(c1.getContractorKey(), c2.getContractorKey())
+               && Objects.equals(c1.getCalculationType(), c2.getCalculationType());
     }
 
     private final Pattern innPattern = Pattern.compile(CONTRACTOR_INN);

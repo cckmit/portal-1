@@ -424,6 +424,9 @@ youtrack.employee_registration.support_project=userSupport
 ## название YouTrack проекта для создания задач по открытию доступа к телефонной связи
 youtrack.employee_registration.phone_project=Office_Tel
 
+## название YouTrack проекта для создания задач при увольнении сотрудника
+youtrack.employee_fired.project=ACRM
+
 ## required, id какой-либо записи из таблицы person в БД. Этот id будет указан в качестве создателя генерируемых комментариев, аттачментов и изменений статусов
 youtrack.user_id_for_synchronization=710
 
@@ -476,7 +479,7 @@ enterprise1c.api.parent_key_resident=adf31e18-691c-11dd-9f1f-001f2908fbfa
 enterprise1c.api.parent_key_not_resident=9bdc36f0-11b8-11e0-8438-001f2908fbfa
 enterprise1c.api.contract.sync.enabled=false
 
-#### 1C API для отработанного времени 
+#### 1C API для отработанного времени и остатка дней отпуска
 
 ## Логин
 ## string, default: ""
@@ -487,11 +490,21 @@ enterprise1c.api.work.password=QuarZ4$rE
 ## Урл запроса для Протей 
 ## string, default: ""
 enterprise1c.api.work.protei_url=http://srv-1cw/ziup/hs/otrabotano
+enterprise1c.api.work.rest_vacation_days.protei_url=http://srv-1cw/ziup/hs/ostatok
 ## Урл запроса для Протей СТ 
 ## string, default: ""
 enterprise1c.api.work.protei_st_url=http://srv-1cw/ziup_st/hs/otrabotano
+enterprise1c.api.work.rest_vacation_days.protei_st_url=http://srv-1cw/ziup_st/hs/ostatok
 
+# Идентификаторы отделов договоров с кураторами
+contract.curators_departments_ids=
 
+# Договора. Идентификаторы отделов бухгалтерии (список через запятую)
+## default: ""
+contract.accounting_department_ids=
+# Договора. Идентификаторы бухгалтеров, которые не выделены в отделы (список через запятую)
+## default: ""
+contract.accounting_employee_ids=
 ```
 
 

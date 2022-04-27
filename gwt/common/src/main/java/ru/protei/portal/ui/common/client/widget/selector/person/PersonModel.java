@@ -1,13 +1,11 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.PersonQuery;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -24,6 +22,8 @@ import java.util.logging.Logger;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.nullIfEmpty;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
+
 /**
  * Синхронная модель Person
  */
@@ -61,7 +61,7 @@ public abstract class PersonModel extends BaseSelectorModel<PersonShortView> imp
                 if (value > 0) {
                     options.add(0, options.remove(value));
                 }
-                options = transliteration(options);
+                options = transliterate(options);
                 updateElements(options, selector);
                 if(refreshable!=null){
                     refreshable.refresh();
@@ -80,8 +80,8 @@ public abstract class PersonModel extends BaseSelectorModel<PersonShortView> imp
         return elements;
     }
 
-    private List<PersonShortView> transliteration( List<PersonShortView> options) {
-        options.forEach(option -> option.setName(TransliterationUtils.transliterate(option.getName(), LocaleInfo.getCurrentLocale().getLocaleName())));
+    private List<PersonShortView> transliterate( List<PersonShortView> options) {
+        options.forEach(option -> option.setName(transliteration(option.getName())));
         return options;
     }
 

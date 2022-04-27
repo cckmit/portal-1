@@ -141,7 +141,7 @@ public class Result<T> {
                 "status=" + status +
                 ", message='" + message + '\'' +
                 ", data=" + data +
-                ", events=" + data +
+                ", events=" + events +
                 '}';
     }
 

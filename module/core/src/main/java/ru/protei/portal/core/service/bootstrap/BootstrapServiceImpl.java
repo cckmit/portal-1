@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
@@ -15,7 +16,9 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.WorkerEntryQuery;
 import ru.protei.portal.core.model.struct.ContactItem;
+import ru.protei.portal.core.model.struct.Pair;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -25,11 +28,15 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparingLong;
 import static java.util.Locale.forLanguageTag;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static ru.protei.portal.core.model.dict.En_PersonRoleType.HEAD_MANAGER;
 import static ru.protei.portal.core.model.dict.En_Privilege.*;
+import static ru.protei.portal.core.model.ent.CaseObject.Columns.MANAGER;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.util.CrmConstants.LocaleTags.EN;
 import static ru.protei.portal.core.model.util.CrmConstants.LocaleTags.RU;
 
@@ -132,7 +139,59 @@ public class BootstrapServiceImpl implements BootstrapService {
         /**
          *  end Спринт */
 
+        /**
+         * begin Спринт 88 */
+        if (!bootstrapAppDAO.isActionExists("setMissingProjectManagerId")) {
+            this.setMissingProjectManagerId();
+            bootstrapAppDAO.createAction("setMissingProjectManagerId");
+        }
+        /**
+         *  end Спринт */
+
+        /**
+         * begin Спринт 91 */
+        if (!bootstrapAppDAO.isActionExists("migrateCommonManagers")) {
+            this.migrateCommonManagers();
+            bootstrapAppDAO.createAction("migrateCommonManagers");
+        }
+        /**
+         *  end Спринт */
+
         log.info( "bootstrapApplication(): BootstrapService complete."  );
+    }
+
+    private void migrateCommonManagers() {
+        jdbcTemplate.query("select id, common_manager_id from dev_unit where common_manager_id is not null",
+                        (rs, i) -> new Pair<>(rs.getLong("id"), rs.getLong("common_manager_id")))
+                .forEach(pair -> {
+                    CommonManager commonManager = new CommonManager();
+                    commonManager.setProductId(pair.getA());
+                    commonManager.setManagerId(pair.getB());
+                    commonManagerDAO.persist(commonManager);
+                });
+    }
+
+    private void setMissingProjectManagerId() {
+        log.debug("setMissingProjectManagerId(): start");
+
+        List<CaseShortView> caseObjects = caseShortViewDAO.getListByCondition("manager is null and case_type = ?",
+                                                                               En_CaseType.PROJECT.getId());
+        for (CaseShortView caseObject: caseObjects) {
+            List<CaseMember> caseMembers = caseMemberDAO.getListByCondition("CASE_ID = ?", caseObject.getId());
+            if (isEmpty(caseMembers)) {
+                continue;
+            }
+
+            Optional<CaseMember> manager = caseMembers.stream().filter(member -> member.getRole().equals(HEAD_MANAGER))
+                                                      .min(comparingLong(CaseMember::getId));
+            if (manager.isPresent()) {
+                caseObject.setManagerId(manager.get().getMemberId());
+                caseShortViewDAO.partialMerge(caseObject, MANAGER);
+                log.info("setMissingProjectManagerId(): caseObject with id={} updated", caseObject.getId());
+            }
+        }
+
+        log.debug("setMissingProjectManagerId(): finish");
     }
 
     private void addIssueGroupManagerId() {
@@ -569,7 +628,15 @@ public class BootstrapServiceImpl implements BootstrapService {
     @Autowired
     UserRoleDAO userRoleDAO;
     @Autowired
+    CaseMemberDAO caseMemberDAO;
+    @Autowired
+    DevUnitDAO devUnitDAO;
+    @Autowired
+    CommonManagerDAO commonManagerDAO;
+    @Autowired
     Lang lang;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 }

@@ -16,13 +16,23 @@ public class DashboardEvents {
         public Show () {}
     }
 
-    public static class EditTable {
-        public EditTable() {}
-        public EditTable(UserDashboard dashboard) {
+    public static class EditIssueTable {
+        public EditIssueTable() {}
+        public EditIssueTable(UserDashboard dashboard) {
             this.dashboard = dashboard;
         }
         public UserDashboard dashboard;
     }
+
+    public static class EditProjectTable {
+        public EditProjectTable() {}
+        public EditProjectTable(UserDashboard dashboard) {
+            this.dashboard = dashboard;
+        }
+        public UserDashboard dashboard;
+    }
+
+
 
     public static class ChangeTableModel {
         public ChangeTableModel() {}

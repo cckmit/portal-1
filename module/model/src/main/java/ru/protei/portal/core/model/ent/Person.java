@@ -66,6 +66,9 @@ public class Person extends AuditableObject {
 
     @JdbcColumn(name="info")
     private String info;
+    
+    @JdbcColumn(name = "inn")
+    private String inn;
 
     @JdbcColumn(name="isdeleted")
     private boolean isDeleted;
@@ -87,6 +90,9 @@ public class Person extends AuditableObject {
 
     @JdbcColumn(name = "locale")
     private String locale;
+
+    @JdbcEmbed
+    private Integer timezoneOffset;
 
     private List<String> logins;
 
@@ -225,6 +231,14 @@ public class Person extends AuditableObject {
         this.birthday = birthday;
     }
 
+    public Integer getTimezoneOffset() {
+        return timezoneOffset;
+    }
+
+    public void setTimezoneOffset(Integer timezoneOffset) {
+        this.timezoneOffset = timezoneOffset;
+    }
+
     public String getIpAddress() {
         return ipAddress;
     }
@@ -258,6 +272,14 @@ public class Person extends AuditableObject {
 
     public void setInfo(String info) {
         this.info = info;
+    }
+
+    public String getInn() {
+        return inn;
+    }
+
+    public void setInn(String inn) {
+        this.inn = inn;
     }
 
     public boolean isDeleted() {
@@ -357,6 +379,7 @@ public class Person extends AuditableObject {
         position = null;
         info = null;
         ipAddress = null;
+        inn = null;
 
         if (contactItems != null) {
             contactItems.removeIf((info) -> !info.isItemOf(En_ContactItemType.EMAIL));
@@ -390,6 +413,7 @@ public class Person extends AuditableObject {
                 ", birthday=" + birthday +
                 ", ipAddress='" + ipAddress + '\'' +
                 ", info='" + info + '\'' +
+                ", inn='" + inn + '\'' +
                 ", isDeleted=" + isDeleted +
                 ", isFired=" + isFired +
                 ", fireDate=" + fireDate +

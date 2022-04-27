@@ -149,7 +149,7 @@ public class DeliveryMetaView extends Composite implements AbstractDeliveryMetaV
 
     @Override
     public void updateContractModel(Long projectId) {
-        contractModel.updateProject(null, projectId);
+        contractModel.setProject(projectId);
     }
 
     @Override

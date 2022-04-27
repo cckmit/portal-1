@@ -71,10 +71,13 @@ public class ContactServiceImpl implements ContactService {
         userLoginsQuery.setPersonIds(persons.stream().map(Person::getId).collect(toSet()));
         List<UserLoginShortView> userLoginShortViews = userLoginShortViewDAO.listByQuery(userLoginsQuery);
 
-        persons.forEach(person -> person.setLogins(userLoginShortViews.stream()
-               .filter(userLoginShortView -> userLoginShortView.getPersonId().equals(person.getId()))
-               .map(UserLoginShortView::getUlogin)
-               .collect(Collectors.toList())));
+        persons.forEach(person -> {
+            person.setLogins(userLoginShortViews.stream()
+                            .filter(userLoginShortView -> userLoginShortView.getPersonId().equals(person.getId()))
+                            .map(UserLoginShortView::getUlogin)
+                            .collect(Collectors.toList()));
+            person.setTimezoneOffset(person.getBirthday() == null ? null : person.getBirthday().getTimezoneOffset());
+        });
 
         jdbcManyRelationsHelper.fill(persons, Person.Fields.CONTACT_ITEMS);
         return ok(sr);
@@ -111,6 +114,8 @@ public class ContactServiceImpl implements ContactService {
         }
 
         jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
+
+        person.setTimezoneOffset(person.getBirthday() == null ? null : person.getBirthday().getTimezoneOffset());
 
         return  ok( person);
     }

@@ -12,12 +12,12 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.ent.ContractSpecification;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.commenthistory.AbstractCommentAndHistoryListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
+import static ru.protei.portal.core.model.util.CrmConstants.State.CANCELED;
 import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
 
 public abstract class ContractPreviewActivity implements AbstractContractPreviewActivity, Activity {
@@ -111,8 +112,8 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
 
     private void fillView( Contract value ) {
         view.setHeader(sanitizeHtml(typeLang.getName(value.getContractType()) + " № " + value.getNumber()));
-        view.setState(value.getState() != null
-                ? "./images/contract_" + value.getState().name().toLowerCase() + ".png"
+        view.setState(value.getStateId() != null
+                ? "./images/contract_" + value.getStateName().toLowerCase() + ".png"
                 : null);
         view.setDateSigning(formatDate(value.getDateSigning()));
         view.setDateValid(formatDate(value.getDateValid()));
@@ -127,11 +128,15 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setSpecifications(getAllSpecificationsAsWidgets(value.getContractSpecifications()));
         view.setParentContract(value.getParentContractNumber() == null ? "" : lang.contractNum(value.getParentContractNumber()));
         view.setChildContracts(stream(value.getChildContracts())
-                .filter(contract -> !Objects.equals(En_ContractState.CANCELLED, contract.getState()))
+                .filter(contract -> !Objects.equals(CANCELED, contract.getStateId()))
                 .map(contract -> sanitizeHtml(typeLang.getName(contract.getContractType()) + " " + contract.getNumber()))
                 .collect(Collectors.joining(", ")));
+        view.setFileLocation(value.getFileLocation());
+        view.setNotifies(stream(value.getNotifiers()).map(Person::getDisplayShortName).collect(Collectors.joining(", ")));
         view.setProject(StringUtils.emptyIfNull(value.getProjectName()) + " (#" + value.getProjectId() + ")", LinkUtils.makePreviewLink(Project.class, value.getProjectId()));
         view.setDeliveryNumber(StringUtils.emptyIfNull(value.getDeliveryNumber()));
+        view.setDateEndWarranty(formatDate(value.getDateEndWarranty()));
+        view.setDateExecution(formatDate(value.getDateExecution()));
 
         fireEvent(new CaseTagEvents.ShowList(view.getTagsContainer(), En_CaseType.CONTRACT, contractId, true, a -> {}));
         view.getCommentsContainer().clear();
@@ -149,7 +154,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                     root.getElement().appendChild(b);
                     root.add(new InlineLabel(" - " + formatDate(p.getDate())
                             + (isNotEmpty(p.getComment()) ? " (" + p.getComment() + ")" : "")
-                            + ((p.getCost() != null) ? (". " + lang.contractCost() + " - " + MoneyRenderer.getInstance().render(p.getCost())
+                            + ((p.getCost() != null) ? (". " + lang.contractCost() + " - " + MoneyRenderer.getInstance().render(p.getCost()) + " "
                             + (p.getCurrency() != null ? p.getCurrency().getCode() : "")) : "")));
                     return root;
                 })

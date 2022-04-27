@@ -2,6 +2,8 @@ package ru.protei.portal.ui.common.client.util;
 
 import com.google.gwt.user.client.Window;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.ui.common.client.activity.attachment.AttachmentLinkProvider;
+import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 
 public class LinkUtils {
 
@@ -23,9 +25,19 @@ public class LinkUtils {
                 return href.substring(0, href.indexOf("#") + 1) + "employee_preview:id=" + id;
             case ("Plan"):
                 return href.substring(0, href.indexOf("#") + 1) + "plan_preview:id=" + id;
+            case ("Company"):
+                return href.substring(0, href.indexOf("#") + 1) + "company:id=" + id;
+            case ("CaseLink"):
+                return makeCaseLinkUrl(id);
+            case ("CaseAttachment"):
+                return AttachmentLinkProvider.getLink(id);
             default:
                 return "";
         }
+    }
+
+    private static String makeCaseLinkUrl(Long caseLinkId) {
+        return CaseLinkProvider.getLink(caseLinkId);
     }
 
     public static String makeEditLink(Class<?> clazz, Long id){
@@ -54,6 +66,9 @@ public class LinkUtils {
             case ("Contract"):
             case ("Project"):
             case ("Platform"):
+            case ("Company"):
+            case ("CaseLink"):
+            case ("CaseAttachment"):
             case ("DevUnit"):
             case ("EmployeeShortView"):
             case ("Plan"):

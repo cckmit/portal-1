@@ -22,7 +22,7 @@ public interface IpReservationService {
 
     Result<Boolean> isSubnetAddressExists(String address, Long excludeId);
 
-    Result<Boolean> isReservedIpAddressExists(String address, Date reserveDate, Date releaseDate, En_DateIntervalType dateIntervalType, Long excludeId);
+    Result<Boolean> isReservedIpAddressExists(String address);
 
     Result<Long> getFreeIpsCountBySubnets(AuthToken token, List<Long> subnetIds);
 

@@ -1,19 +1,20 @@
 package ru.protei.portal.app.portal.client.activity.dashboardblocks.table;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.events.Draggable;
 
 import java.util.List;
 import java.util.function.Predicate;
 
-public interface AbstractDashboardTableView extends IsWidget, Draggable {
+public interface AbstractDashboardProjectTableView extends IsWidget, Draggable {
 
-    void setActivity(AbstractDashboardTableActivity activity);
+    void setActivity(AbstractDashboardProjectTableActivity activity);
 
     void clearRecords();
 
-    void putRecords(List<CaseShortView> list);
+    void putRecords(List<Project> list);
 
     void setName(String name);
 
@@ -29,5 +30,5 @@ public interface AbstractDashboardTableView extends IsWidget, Draggable {
 
     void setEnsureDebugId(String debugId);
 
-    void setChangeSelectionIfSelectedPredicate(Predicate<CaseShortView> changeSelectionIfSelectedPredicate);
+    void setChangeSelectionIfSelectedPredicate(Predicate<Project> changeSelectionIfSelectedPredicate);
 }

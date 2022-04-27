@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="DevMode" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
+    <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
+    <option name="MAIN_CLASS_NAME" value="com.google.gwt.dev.DevMode" />
+    <module name="portal4.app.portal" />
+    <option name="PROGRAM_PARAMETERS" value="-sourceLevel 1.8 -bindAddress 127.0.0.1 -war $PROJECT_DIR$/app/portal/target/portal4.app.portal-1.1-SNAPSHOT -logLevel WARN -style OBFUSCATED ru.protei.portal.app.portal.Portal" />
+    <option name="VM_PARAMETERS" value="-Xmx2048m -Dcatalina.home=$PROJECT_DIR$/debug -Djava.net.preferIPv4Stack=true" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -38,7 +38,7 @@ public class DutyLogControllerImpl implements DutyLogController {
     public DutyLog getDutyLog(Long id) throws RequestFailedException {
         log.info("getDutyLog(): id={}", id);
         AuthToken token = getAuthToken(sessionService, httpServletRequest);
-        Result<DutyLog> result =service.getDutyLog(token, id);
+        Result<DutyLog> result = service.getDutyLog(token, id);
         log.info("getDutyLog(): result={}", result.isOk() ? "ok" : result.getStatus());
         return checkResultAndGetData(result);
     }

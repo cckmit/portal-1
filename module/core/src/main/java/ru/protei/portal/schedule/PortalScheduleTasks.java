@@ -30,4 +30,10 @@ public interface PortalScheduleTasks {
     void notifyExpiringTechnicalSupportValidity();
     
     void updateFiredByDate();
+
+    void updatePositionByDate();
+
+    void processAutoCloseByDeadLine();
+
+    void notifyAboutDeadlineExpire();
 }

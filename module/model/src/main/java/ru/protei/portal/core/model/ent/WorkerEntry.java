@@ -5,6 +5,8 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 
+import static ru.protei.portal.core.model.ent.WorkerEntry.Columns.*;
+
 /**
  * Created by michael on 17.05.16.
  */
@@ -20,7 +22,7 @@ public class WorkerEntry extends AuditableObject {
     @JdbcColumn(name="personId")
     private Long personId;
 
-    @JdbcColumn(name="dep_id")
+    @JdbcColumn(name=POSITION_DEPARTMENT_ID)
     private Long departmentId;
 
     @JdbcJoinedColumn(localColumn = "dep_id", table = "company_dep", sqlTableAlias = "d", remoteColumn = "id", mappedColumn = "dep_name")
@@ -38,10 +40,10 @@ public class WorkerEntry extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "companyId", table = "company", remoteColumn = "id", mappedColumn = "cname")
     private String companyName;
 
-    @JdbcColumn(name="positionId")
+    @JdbcColumn(name=POSITION_ID)
     private Long positionId;
 
-    @JdbcJoinedColumn(localColumn = "positionId", table = "worker_position", remoteColumn = "id", mappedColumn = "pos_name")
+    @JdbcJoinedColumn(localColumn = POSITION_ID, table = "worker_position", remoteColumn = "id", mappedColumn = "pos_name")
     private String positionName;
 
     @JdbcColumn(name="hireDate")
@@ -59,11 +61,20 @@ public class WorkerEntry extends AuditableObject {
     @JdbcColumn(name = "is_contract_agreement")
     private boolean isContractAgreement;
 
-    @JdbcColumn(name = Columns.FIRED_FATE)
+    @JdbcColumn(name = Columns.FIRED_DATE)
     private Date firedDate;
 
     @JdbcColumn(name = "is_deleted")
     private Boolean isDeleted;
+
+    @JdbcColumn(name = Columns.NEW_POSITION_NAME)
+    private String newPositionName;
+
+    @JdbcColumn(name = Columns.NEW_POSITION_DEPARTMENT_ID)
+    private Long newPositionDepartmentId;
+
+    @JdbcColumn(name = Columns.NEW_POSITION_TRANSFER_DATE)
+    private Date newPositionTransferDate;
 
     @Override
     public String getAuditType() {
@@ -223,7 +234,36 @@ public class WorkerEntry extends AuditableObject {
         isDeleted = deleted;
     }
 
+    public String getNewPositionName() {
+        return newPositionName;
+    }
+
+    public void setNewPositionName(String newPositionName) {
+        this.newPositionName = newPositionName;
+    }
+
+    public Long getNewPositionDepartmentId() {
+        return newPositionDepartmentId;
+    }
+
+    public void setNewPositionDepartmentId(Long newPositionDepartmentId) {
+        this.newPositionDepartmentId = newPositionDepartmentId;
+    }
+
+    public Date getNewPositionTransferDate() {
+        return newPositionTransferDate;
+    }
+
+    public void setNewPositionTransferDate(Date newPositionTransferDate) {
+        this.newPositionTransferDate = newPositionTransferDate;
+    }
+
     public interface Columns {
-        String FIRED_FATE = "fired_date";
+        String FIRED_DATE = "fired_date";
+        String POSITION_ID = "positionId";
+        String POSITION_DEPARTMENT_ID = "dep_id";
+        String NEW_POSITION_NAME = "new_position_name";
+        String NEW_POSITION_DEPARTMENT_ID = "new_position_department_id";
+        String NEW_POSITION_TRANSFER_DATE = "new_position_transfer_date";
     }
 }

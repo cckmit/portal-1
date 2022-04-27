@@ -2,15 +2,18 @@ package ru.protei.portal.ui.contract.client.activity.edit;
 
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_ContractKind;
-import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
+import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.ContractSpecification;
 import ru.protei.portal.core.model.ent.Contractor;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.ContractInfo;
 import ru.protei.portal.core.model.struct.MoneyWithCurrencyWithVat;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.selector.contract.calculationtype.CalculationTypeModel;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Date;
@@ -31,13 +34,21 @@ public interface AbstractContractEditView extends IsWidget {
 
     void setKind(En_ContractKind kind);
 
-    HasValue<En_ContractState> state();
+    HasValue<CaseState> state();
+
+    HasValue<CalculationType> calculationType();
+
+    HasEnabled calculationTypeEnabled();
 
     HasValue<String> description();
 
     HasValue<PersonShortView> curator();
 
     HasValue<Date> dateSigning();
+
+    HasValue<Date> dateEndWarranty();
+
+    HasValue<Date> dateExecution();
 
     HasValue<Date> dateValidDate();
 
@@ -82,4 +93,10 @@ public interface AbstractContractEditView extends IsWidget {
     HasWidgets expenditureContractsContainer();
 
     HasVisibility expenditureContractsVisibility();
+
+    HasValue<String> fileLocation();
+
+    void setNotifiers(Set<Person> notifiers);
+
+    Set<Person> getNotifiers();
 }

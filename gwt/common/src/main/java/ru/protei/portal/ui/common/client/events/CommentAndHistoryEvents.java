@@ -35,6 +35,7 @@ public class CommentAndHistoryEvents {
         public Long initiatorCompanyId;
         public boolean isElapsedTimeEnabled = false;
         public boolean isModifyEnabled = false;
+        public boolean isEditAndDeleteEnabled = true;
         public boolean isPrivateVisible = false;
         public boolean isPrivateCase = false;
         public boolean isNewCommentEnabled = true;
@@ -70,5 +71,12 @@ public class CommentAndHistoryEvents {
             this.isJiraWorkflowWarningVisible = isJiraWorkflowWarningVisible;
         }
         public boolean isJiraWorkflowWarningVisible;
+    }
+
+    public static class ShowCaseInfoChanges {
+        public ShowCaseInfoChanges(Long historyId) {
+            this.historyId = historyId;
+        }
+        public Long historyId;
     }
 }

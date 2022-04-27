@@ -22,7 +22,11 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasEnabled secondNameEnabled();
 
+    HasEnabled innEnabled();
+
     HasEnabled birthDayEnabled();
+
+    HasVisibility birthDayVisibility();
 
     HasEnabled genderEnabled();
 
@@ -41,6 +45,8 @@ public interface AbstractEmployeeEditView extends IsWidget {
     HasValue<Boolean> contractAgreement();
 
     HasText secondName();
+
+    HasText inn();
 
     HasValue<Date> birthDay ();
 
@@ -88,11 +94,15 @@ public interface AbstractEmployeeEditView extends IsWidget {
 
     HasVisibility secondNameErrorLabelVisibility();
 
+    HasVisibility innErrorLabelVisibility();
+
     HasVisibility lastNameErrorLabelVisibility();
 
     String firstNameLabel();
 
     String secondNameLabel();
+
+    String innLabel();
 
     String lastNameLabel();
 

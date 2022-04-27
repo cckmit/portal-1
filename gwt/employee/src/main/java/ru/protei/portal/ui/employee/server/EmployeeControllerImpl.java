@@ -43,15 +43,9 @@ public class EmployeeControllerImpl implements EmployeeController {
     }
 
     @Override
-    public SearchResult<EmployeeShortView> getEmployeesWithChangedHiddenCompanyNames(EmployeeQuery query) throws RequestFailedException {
-        log.info("getEmployeesWithChangedHiddenCompanyNames(): query={}", query);
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(employeeService.employeeListWithChangedHiddenCompanyNames(token, query));
-    }
-
     public List< PersonShortView > getEmployeeViewList( EmployeeQuery query ) throws RequestFailedException {
 
-        log.info( "getEmployeeViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
+        log.info( "getEmployeeViewList(): searchPattern={} | isFired={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getFired(), query.getSortField(), query.getSortDir() );
 
         Result< List< PersonShortView > > result = employeeService.shortViewList( query );
@@ -62,13 +56,6 @@ public class EmployeeControllerImpl implements EmployeeController {
     }
 
     @Override
-    public EmployeeShortView getEmployee(Long employeeId) throws RequestFailedException {
-        log.info("getEmployee(): employeeId={}", employeeId);
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(employeeService.getEmployee(token, employeeId));
-    }
-
-    @Override
     public PersonShortView getDepartmentHead(Long departmentId) throws RequestFailedException {
         log.info("getDepartmentHead(): departmentId={}", departmentId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
@@ -76,10 +63,17 @@ public class EmployeeControllerImpl implements EmployeeController {
     }
 
     @Override
-    public EmployeeShortView getEmployeeWithChangedHiddenCompanyNames(Long employeeId) throws RequestFailedException {
-        log.info("getEmployeeShortViewWithChangedHiddenCompanyNames(): employeeId={}", employeeId);
+    public EmployeeShortView getEmployee(Long employeeId) throws RequestFailedException {
+        log.info("getEmployee(): employeeId={}", employeeId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeWithChangedHiddenCompanyNames(token, employeeId));
+        return ServiceUtils.checkResultAndGetData(employeeService.getEmployee(token, employeeId));
+    }
+
+    @Override
+    public EmployeeShortView getEmployeeWithPrivacyInfo(Long employeeId) throws RequestFailedException {
+        log.info("getEmployeeWithPrivacyInfo(): employeeId={}", employeeId);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeWithPrivacyInfo(token, employeeId));
     }
 
     @Override
@@ -129,6 +123,18 @@ public class EmployeeControllerImpl implements EmployeeController {
     public EmployeesBirthdays getEmployeesBirthdays(Date dateFrom, Date dateUntil) throws RequestFailedException {
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         return ServiceUtils.checkResultAndGetData(employeeService.getEmployeesBirthdays(token, dateFrom, dateUntil));
+    }
+
+    @Override
+    public String getEmployeeRestVacationDays(Long employeeId) throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(employeeService.getEmployeeRestVacationDays(token, employeeId));
+    }
+
+    @Override
+    public List<PersonShortView> getAccountingEmployee() throws RequestFailedException {
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(employeeService.getAccountingEmployee(token));
     }
 
     @Autowired

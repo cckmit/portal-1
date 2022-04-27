@@ -23,6 +23,10 @@ public interface AbstractContractPreviewView extends IsWidget {
 
     void setDateValid(String value);
 
+    void setDateExecution(String value);
+
+    void setDateEndWarranty(String value);
+
     void setDescription(String value);
 
     void setDirections(String value);
@@ -48,6 +52,10 @@ public interface AbstractContractPreviewView extends IsWidget {
     void setChildContracts(String value);
 
     void setProject(String value, String link);
+    
+    void setFileLocation(String value);
+
+    void setNotifies(String value);
 
     HasVisibility footerVisibility();
 

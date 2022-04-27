@@ -36,8 +36,7 @@ public class HttpClient1CWorkImpl implements HttpClient1CWork{
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
         headers.set("Authorization", "Basic " + Base64.getEncoder().encodeToString(
                         (portalConfig.data().enterprise1C().getWorkLogin() + ":" +
-                        portalConfig.data().enterprise1C().getWorkPassword())
-                                .getBytes()));
+                         portalConfig.data().enterprise1C().getWorkPassword()).getBytes()));
         headers.set("IBSession", "start");
     }
 
@@ -53,6 +52,12 @@ public class HttpClient1CWorkImpl implements HttpClient1CWork{
                 client.exchange(portalConfig.data().enterprise1C().getWorkProteiStUrl(),
                         HttpMethod.POST, new HttpEntity<>(query, headers), Response.class)));
 
+    }
+
+    @Override
+    public <T> Result<T> read(String url, Class<T> clazz) {
+        return execute((client, headers) -> client.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), clazz))
+                                                  .map(ResponseEntity::getBody);
     }
 
     static private Result<WorkPersonInfo1C> makeResult(Result<ResponseEntity<Response>> resultResponse) {

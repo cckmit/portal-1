@@ -65,6 +65,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         firstNameErrorLabel.setText(lang.promptFieldLengthExceed(firstNameLabel(), FIRST_NAME_SIZE));
         secondNameErrorLabel.setText(lang.promptFieldLengthExceed(secondNameLabel(), SECOND_NAME_SIZE));
         lastNameErrorLabel.setText(lang.promptFieldLengthExceed(lastNameLabel(), LAST_NAME_SIZE));
+        innErrorLabel.setText(lang.promptFieldLengthNotEqual(innLabel(), INN_SIZE));
 
         company.setSynchronizeWith1C(false);
 
@@ -98,8 +99,18 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
+    public HasEnabled innEnabled() {
+        return inn;
+    }
+
+    @Override
     public HasEnabled birthDayEnabled() {
         return birthDay;
+    }
+
+    @Override
+    public HasVisibility birthDayVisibility() {
+        return birthDayContainer;
     }
 
     @Override
@@ -145,6 +156,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public HasText secondName() {
         return secondName;
+    }
+
+    @Override
+    public HasText inn() {
+        return inn;
     }
 
     @Override
@@ -263,6 +279,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     }
 
     @Override
+    public HasVisibility innErrorLabelVisibility() {
+        return innErrorLabel;
+    }
+
+    @Override
     public HasVisibility lastNameErrorLabelVisibility() {
         return lastNameErrorLabel;
     }
@@ -280,6 +301,11 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @Override
     public String secondNameLabel() {
         return secondNameLabel.getInnerText();
+    }
+
+    @Override
+    public String innLabel() {
+        return innLabel.getInnerText();
     }
 
     @Override
@@ -404,7 +430,7 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
         }
     }
 
-    @UiHandler({"firstName", "secondName", "lastName"})
+    @UiHandler({"firstName", "secondName", "lastName", "inn"})
     public void onLimitedFieldsChanged(InputEvent event) {
         resetValidateTimer();
     }
@@ -454,6 +480,9 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     ValidableTextBox secondName;
 
     @UiField
+    ValidableTextBox inn;
+
+    @UiField
     Label firstNameErrorLabel;
 
     @UiField
@@ -461,6 +490,9 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
 
     @UiField
     Label secondNameErrorLabel;
+
+    @UiField
+    Label innErrorLabel;
 
     @UiField
     LabelElement firstNameLabel;
@@ -471,9 +503,15 @@ public class EmployeeEditView extends Composite implements AbstractEmployeeEditV
     @UiField
     LabelElement secondNameLabel;
 
+    @UiField
+    LabelElement innLabel;
+
     @com.google.inject.Inject
     @UiField(provided = true)
     SinglePicker birthDay;
+
+    @UiField
+    HTMLPanel birthDayContainer;
 
     @UiField
     ContactItemGroupWithValidation workPhones;

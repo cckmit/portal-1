@@ -45,6 +45,9 @@ public class EmployeeShortView implements Serializable {
     @JdbcColumn(name="ipaddress")
     private String ipAddress;
 
+    @JdbcColumn(name = "inn")
+    private String inn;
+
     @JdbcColumn(name="isfired")
     private boolean isFired;
 
@@ -59,6 +62,9 @@ public class EmployeeShortView implements Serializable {
 
     @JdbcOneToMany(table = "worker_entry", localColumn = "id", remoteColumn = "personId")
     private List<WorkerEntryShortView> workerEntries;
+
+    @JdbcEmbed
+    private Integer timezoneOffset;
 
     private List<String> logins;
 
@@ -104,12 +110,28 @@ public class EmployeeShortView implements Serializable {
         this.birthday = birthday;
     }
 
+    public Integer getTimezoneOffset() {
+        return timezoneOffset;
+    }
+
+    public void setTimezoneOffset(Integer timezoneOffset) {
+        this.timezoneOffset = timezoneOffset;
+    }
+
     public String getIpAddress() {
         return ipAddress;
     }
 
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    public String getInn() {
+        return inn;
+    }
+
+    public void setInn(String inn) {
+        this.inn = inn;
     }
 
     public ContactInfo getContactInfo() {

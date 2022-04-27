@@ -61,18 +61,27 @@
                                         <g:CheckBox ui:field="changeAccount" styleName="checkbox" text="{lang.employeeChangeAccount}"/>
                                     </g:HTMLPanel>
 
-                                    <div class="form-group col-md-4">
+                                    <g:HTMLPanel styleName="form-group col-md-4" ui:field="birthDayContainer">
                                         <label class="">
                                             <ui:text from="{lang.birthday}"/>
                                         </label>
                                         <single:SinglePicker ui:field="birthDay" type="DATE" formatValue="dd.MM.yyyy" mandatory="false"/>
-                                    </div>
+                                    </g:HTMLPanel>
 
                                     <div class="form-group col-md-2">
                                         <label class="">
                                             <ui:text from="{lang.gender}"/>
                                         </label>
                                         <dict:GenderButtonSelector ui:field="gender" validation="false"/>
+                                    </div>
+
+
+                                    <div class="form-group col-md-4">
+                                        <label ui:field="innLabel">
+                                            <ui:text from="{lang.employeeInn}"/>
+                                        </label>
+                                        <validablefield:ValidableTextBox ui:field="inn" styleName="form-control" notNull="false"/>
+                                        <g:Label ui:field="innErrorLabel" styleName="text-danger size-error" visible="false"/>
                                     </div>
                                 </div>
 

@@ -8,11 +8,10 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 @JdbcEntity(table = "company")
 public class Company extends AuditableObject implements EntityOptionSupport {
@@ -68,6 +67,9 @@ public class Company extends AuditableObject implements EntityOptionSupport {
 
     @JdbcColumn(name = "auto_open_issue")
     private Boolean autoOpenIssue;
+
+    @JdbcOneToMany(table = "common_manager", localColumn = "id", remoteColumn = CommonManager.Columns.COMPANY_ID)
+    private List<CommonManager> commonManagerList;
 
     public static Company fromEntityOption(EntityOption entityOption){
         if(entityOption == null)
@@ -245,11 +247,12 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     }
 
     public Collection<Long> getCompanyAndChildIds() {
-        ArrayList<Long> ids = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
         ids.add(getId());
-        if (getChildCompanies() != null) {
-            ids.addAll(getChildCompanies().stream().map(Company::getId).collect(Collectors.toList()));
-        }
+        ids.addAll(stream(getChildCompanies())
+                .filter(company -> !company.isArchived)
+                .map(Company::getId)
+                .collect(Collectors.toList()));
         return ids;
     }
 
@@ -259,6 +262,14 @@ public class Company extends AuditableObject implements EntityOptionSupport {
 
     public void setAutoOpenIssue(Boolean autoOpenIssue) {
         this.autoOpenIssue = autoOpenIssue;
+    }
+
+    public List<CommonManager> getCommonManagerList() {
+        return commonManagerList;
+    }
+
+    public void setCommonManagerList(List<CommonManager> commonManagerList) {
+        this.commonManagerList = commonManagerList;
     }
 
     @Override
@@ -289,10 +300,12 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", caseStates=" + caseStates +
                 ", isArchived=" + isArchived +
                 ", autoOpenIssue=" + autoOpenIssue +
+                ", commonManagerList=" + commonManagerList +
                 '}';
     }
 
     public interface Fields {
         String CONTACT_ITEMS = "contactItems";
+        String COMMON_MANAGER_LIST = "commonManagerList";
     }
 }

@@ -14,11 +14,8 @@ import ru.protei.portal.core.client.enterprise1c.mapper.FieldsMapper1C;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.lang.En_1CParamType;
 import ru.protei.portal.core.model.enterprise1c.annotation.UrlName1C;
-import ru.protei.portal.core.model.enterprise1c.dto.Contract1C;
-import ru.protei.portal.core.model.enterprise1c.dto.ContractAdditionalProperty1C;
-import ru.protei.portal.core.model.enterprise1c.dto.Country1C;
+import ru.protei.portal.core.model.enterprise1c.dto.*;
 import ru.protei.portal.core.model.enterprise1c.Response1C;
-import ru.protei.portal.core.model.enterprise1c.dto.Contractor1C;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.ContractorUtils;
@@ -29,7 +26,6 @@ import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -124,6 +120,19 @@ public class Api1CImpl implements Api1C{
         Country1C country = new Country1C();
         country.setDeletionMark(false);
         return getCountries(country, homeCompanyName);
+    }
+
+    @Override
+    public Result<List<CalculationType1C>> getAllCalculationTypes(String homeCompanyName) {
+        log.debug("getAllCalculationTypesVocabulary()");
+
+        if (homeCompanyName == null){
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CalculationType1C calcType1C = new CalculationType1C();
+        calcType1C.setDeletionMark(false);
+        return getCalculationTypes(calcType1C, homeCompanyName);
     }
 
     @Override
@@ -316,6 +325,34 @@ public class Api1CImpl implements Api1C{
     private String buildGetContractByKeyUrl(Contract1C contract, String homeCompanyName){
         String url = buildCommonUrl(contract.getClass(), homeCompanyName, contract.getRefKey());
         log.debug("buildGetContractByKeyUrl(): url={}", url);
+        return url;
+    }
+
+    public Result<List<CalculationType1C>> getCalculationTypes(CalculationType1C calculationType1C, String homeCompanyName) {
+        log.debug("getCalculationTypes(): calculationType1C={}, homeCompanyName={}", calculationType1C, homeCompanyName);
+
+        if (calculationType1C == null || homeCompanyName == null){
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        return client.read(buildGetCalculationTypeUrl(calculationType1C, homeCompanyName), Response1C.class)
+                .ifOk(value -> log.info("getCalculationTypes(): OK "))
+                .ifError(result -> log.warn("getCalculationTypes(): Can`t get calculationTypes={}", result))
+                .map(response -> jsonMapper.convertValue(response.getValue(), new TypeReference<List<CalculationType1C>>() {
+                }));
+    }
+
+    private String buildGetCalculationTypeUrl(CalculationType1C calculationType1C, String homeCompanyName) {
+        Class<?> clazz = CalculationType1C.class;
+        String url = buildCommonUrl(clazz, homeCompanyName);
+
+        List<String> fields = fieldsMapper.getFields(clazz);
+        fields.remove("DeletionMark");
+        url += "&" + URL_PARAM_SELECT + urlEncode(String.join(",", fields));
+        url += "&" + URL_PARAM_FILTER + urlEncode(fillFilter(clazz, calculationType1C));
+
+        log.debug("buildGetCalculationTypeUrl(): url={}", url);
+
         return url;
     }
 

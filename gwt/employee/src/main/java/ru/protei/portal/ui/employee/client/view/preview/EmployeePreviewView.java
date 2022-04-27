@@ -2,6 +2,7 @@ package ru.protei.portal.ui.employee.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -40,6 +41,11 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     @Override
     public void setLogins(String logins) {
         this.login.setInnerText(logins);
+    }
+
+    @Override
+    public void setRestVacationDays(String restVacationDays) {
+        this.restVacationDays.setInnerText(restVacationDays);
     }
 
     @Override
@@ -92,6 +98,7 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
         return absencesContainer;
     }
 
+    @Override
     public void showAbsencesPanel(boolean isShow) {
         if (isShow) {
             absencesPanel.removeClassName("hide");
@@ -99,10 +106,34 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
             absencesPanel.addClassName("hide");
         }
     }
+
     @Override
     public void showFullScreen(boolean isFullScreen) {
         backButtonPanel.setVisible(isFullScreen);
         rootWrapper.setStyleName("card card-transparent no-margin preview-wrapper card-with-fixable-footer", isFullScreen);
+    }
+
+    @Override
+    public Element getRestVacationDaysLoading() {
+        return restVacationDaysLoading;
+    }
+
+    @Override
+    public void showRestVacationDaysPanel(boolean isShow) {
+        if (isShow) {
+            restVacationDaysPanel.removeClassName("hide");
+        } else {
+            restVacationDaysPanel.addClassName("hide");
+        }
+    }
+
+    @Override
+    public void showLoginsPanel(boolean isShow) {
+        if (isShow) {
+            loginsPanel.removeClassName("hide");
+        } else {
+            loginsPanel.addClassName("hide");
+        }
     }
 
     @UiHandler("backButton")
@@ -144,6 +175,12 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     SpanElement login;
 
     @UiField
+    Element restVacationDaysLoading;
+
+    @UiField
+    SpanElement restVacationDays;
+
+    @UiField
     Image photo;
 
     @UiField
@@ -181,6 +218,12 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
 
     @UiField
     Button createAbsenceButton;
+
+    @UiField
+    DivElement restVacationDaysPanel;
+
+    @UiField
+    DivElement loginsPanel;
 
     AbstractEmployeePreviewActivity activity;
 

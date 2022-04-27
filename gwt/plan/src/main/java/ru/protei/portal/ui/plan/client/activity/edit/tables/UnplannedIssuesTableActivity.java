@@ -22,8 +22,9 @@ import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.PlanEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.CaseFilterControllerAsync;
+import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
+import ru.protei.portal.ui.common.client.service.PlanControllerAsync;
 import ru.protei.portal.ui.common.client.util.CaseStateUtils;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -31,11 +32,13 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedIssuesTableActivity, Activity {
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
+        plannedIssues = new ArrayList<>();
     }
 
     @Event
@@ -47,6 +50,36 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
         view.setIssueDefaultCursor(planId == null);
         scrollTo = event.scrollTo;
         initFilter();
+    }
+
+    @Event
+    public void onAddIssue(PlanEvents.AddIssueToUnplannedTable event) {
+        if (planId == null) {
+            plannedIssues.remove(event.issue);
+        }
+
+        if (StringUtils.isEmpty(view.issueNumber().getValue())) {
+            reloadTable();
+            return;
+        }
+
+        onIssueNumberChanged();
+    }
+
+    @Event
+    public void onRemoveIssue(PlanEvents.RemoveIssueFromUnplannedTable event) {
+        if (planId == null) {
+            plannedIssues.add(event.issue);
+        }
+
+        if (StringUtils.isEmpty(view.issueNumber().getValue())) {
+            view.removeIssue(event.issue);
+            return;
+        }
+
+        view.removeIssue(event.issue);
+        view.issueNumber().setValue("");
+        reloadTable();
     }
 
     @Override
@@ -108,9 +141,15 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
                     view.setTotalRecords(0);
                 })
                 .withSuccess(sr -> {
-                    view.setTotalRecords(sr.getTotalCount());
-                    view.putRecords(sr.getResults());
-                    restoreScroll();
+                    if (planId == null) {
+                        sr.getResults().removeAll(plannedIssues);
+                        view.setTotalRecords(sr.getTotalCount());
+                        view.putRecords(sr.getResults());
+                        restoreScroll();
+                        return;
+                    }
+                    
+                    loadPlannedIssues(sr, planId);
                 }));
     }
 
@@ -130,7 +169,7 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
         if (filterId != null) {
             filter = new FilterShortView(filterId, null);
         }
-        view.filter().setValue(filter, true);
+        view.filter().setValue(filter, false);
         view.updateFilterSelector();
         view.setLimitLabel(String.valueOf(TABLE_LIMIT));
         view.issueNumber().setValue("");
@@ -157,6 +196,23 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
         Window.scrollTo(0, scrollTo);
     }
 
+    private void loadPlannedIssues(SearchResult<CaseShortView> sr, Long planId) {
+        planService.getPlanWithIssues(planId, new FluentCallback<Plan>()
+                .withError(throwable -> {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                })
+                .withSuccess(plan -> {
+                    sr.getResults().removeAll(plan.getIssueList());
+                    view.setTotalRecords(sr.getResults().size());
+                    view.putRecords(sr.getResults());
+                    restoreScroll();
+                }));
+    }
+
+    public void reloadTable() {
+        onFilterChanged(view.filter().getValue());
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -171,10 +227,13 @@ public abstract class UnplannedIssuesTableActivity implements AbstractUnplannedI
     LocalStorageService localStorageService;
     @Inject
     PolicyService policyService;
+    @Inject
+    PlanControllerAsync planService;
 
     private Integer scrollTo = 0;
 
     private Long planId;
+    private List<CaseShortView> plannedIssues;
     private final static int TABLE_LIMIT = 100;
     private final static String TABLE_FILTER_ID_KEY = "plan_unplanned_issue_table_filter_id";
 }

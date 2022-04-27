@@ -107,7 +107,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         final boolean YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEnabled();
 
         if (YOUTRACK_INTEGRATION_ENABLED) {
-            String youTrackIssueId = createAdminYoutrackIssueIfNeeded( employeeRegistration );
+            String youTrackIssueId = createSupportYoutrackIssueIfNeeded( employeeRegistration );
             createPhoneYoutrackIssueIfNeeded(employeeRegistration, youTrackIssueId);
             createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
         }
@@ -215,7 +215,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         return caseObject;
     }
 
-    private String createAdminYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
+    private String createSupportYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
         Set<En_InternalResource> resourceList = employeeRegistration.getResourceList();
         if (isEmpty(resourceList)) {
             return null;
@@ -240,7 +240,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
         final String USER_SUPPORT_PROJECT_NAME = portalConfig.data().youtrack().getSupportProject();
         if (StringUtils.isEmpty(USER_SUPPORT_PROJECT_NAME)){
-            log.error("createAdminYoutrackIssueIfNeeded(): no Youtrack support project specified, YT issue will not be created!");
+            log.error("createSupportYoutrackIssueIfNeeded(): YT issue will not be created because no support project specified in configuration");
         }
 
         return youtrackService.createIssue( USER_SUPPORT_PROJECT_NAME, summary, description ).ifOk( issueId ->
@@ -255,10 +255,11 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         }
 
         String needPhone = contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE) ?
-                "\n Требуется установить новый телефон." : "";
-        String needConfigure = "\n Необходима " + (contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE) ?
-                "настройка" : "перенастройка"
-        ) + " офисной телефонии";
+                "\n Необходимо обеспечить сотрудника телефонным аппаратом" : "";
+
+        String needConfigure =  contains(resourceList, En_PhoneOfficeType.OFFICE) ?
+                "\n Необходима настройка аккаунта офисной телефонии" : "";
+
         String needCommunication =
                 contains(resourceList, En_PhoneOfficeType.INTERNATIONAL) ||
                 contains(resourceList, En_PhoneOfficeType.LONG_DISTANCE) ?
@@ -289,6 +290,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         String summary = "Настройка офисной телефонии для сотрудника " + employeeRegistration.getEmployeeFullName();
 
         final String PHONE_PROJECT_NAME = portalConfig.data().youtrack().getPhoneProject();
+        if (StringUtils.isEmpty(PHONE_PROJECT_NAME)) {
+            log.error("createPhoneYoutrackIssueIfNeeded(): YT issue will not be created because no phone project specified in configuration");
+        }
 
         youtrackService.createIssue( PHONE_PROJECT_NAME, summary, description ).ifOk( issueId ->
                 saveCaseLink( employeeRegistration.getId(), issueId )
@@ -321,6 +325,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         ).toString();
 
         final String EQUIPMENT_PROJECT_NAME = portalConfig.data().youtrack().getEquipmentProject();
+        if (StringUtils.isEmpty(EQUIPMENT_PROJECT_NAME)) {
+            log.error("createEquipmentYoutrackIssueIfNeeded(): YT issue will not be created because no equipment project specified in configuration");
+        }
 
         youtrackService.createIssue( EQUIPMENT_PROJECT_NAME, summary, description ).ifOk( issueId ->
                 saveCaseLink( employeeRegistration.getId(), issueId )
@@ -447,5 +454,4 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         }
         return "";
     }
-
 }

@@ -10,6 +10,9 @@ import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Date;
+
+import static ru.protei.portal.core.model.ent.WorkerEntry.Columns.*;
 
 /**
  * Created by turik on 17.08.16.
@@ -18,7 +21,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class WorkerRecord {
 
     private String companyCode;
-
     private Long id;
     private String firstName;
     private String lastName;
@@ -50,6 +52,12 @@ public class WorkerRecord {
     private int active;
 
     private String positionName;
+
+    private String inn;
+
+    private String newPositionName;
+    private String newPositionDepartmentId;
+    private Date newPositionTransferDate;
 
     public WorkerRecord() {}
 
@@ -314,6 +322,42 @@ public class WorkerRecord {
         this.positionName = positionName;
     }
 
+    @XmlElement(name = "inn")
+    public String getInn() {
+        return inn;
+    }
+
+    public void setInn(String inn) {
+        this.inn = inn;
+    }
+
+    public String getNewPositionName() {
+        return newPositionName;
+    }
+
+    @XmlElement(name = "new-position-name")
+    public void setNewPositionName(String newPositionName) {
+        this.newPositionName = newPositionName;
+    }
+
+    public String getNewPositionDepartmentId() {
+        return newPositionDepartmentId;
+    }
+
+    @XmlElement(name = "new-position-department-id")
+    public void setNewPositionDepartmentId(String newPositionDepartmentId) {
+        this.newPositionDepartmentId = newPositionDepartmentId;
+    }
+
+    public Date getNewPositionTransferDate() {
+        return newPositionTransferDate;
+    }
+
+    @XmlElement(name = "new-position-transfer-date")
+    public void setNewPositionTransferDate(Date newPositionTransferDate) {
+        this.newPositionTransferDate = newPositionTransferDate;
+    }
+
     public void copy (Person person) {
         setId (person.getId ());
         setFirstName (person.getFirstName ());
@@ -335,6 +379,7 @@ public class WorkerRecord {
         setFireDate(person.getFireDate() == null ? null : HelperService.DATE.format(person.getFireDate()));
         setFired(person.isFired());
         setDeleted (person.isDeleted ());
+        setInn(person.getInn());
     }
 
     public void copy (WorkerEntry workerEntry) {
@@ -378,6 +423,10 @@ public class WorkerRecord {
                 ", hireOrderNo='" + hireOrderNo + '\'' +
                 ", active=" + active +
                 ", positionName='" + positionName + '\'' +
+                ", inn='" + inn + '\'' +
+                ", newPositionName='" + newPositionName + '\'' +
+                ", newPositionDepartmentId='" + newPositionDepartmentId + '\'' +
+                ", newPositionTransferDate=" + newPositionTransferDate +
                 '}';
     }
 }

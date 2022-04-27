@@ -1,10 +1,9 @@
 package ru.protei.portal.ui.issue.client.activity.create;
 
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
@@ -16,16 +15,17 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.ui.common.client.activity.casetag.taglist.AbstractCaseTagListActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.En_IssueValidationResultLang;
+import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
-import ru.protei.portal.ui.common.client.util.AttachmentUtils;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
@@ -33,6 +33,8 @@ import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductWithChildrenModel;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -50,6 +52,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CrmConstants.SOME_LINKS_NOT_SAVED;
 import static ru.protei.portal.ui.common.client.common.UiConstants.ISSUE_CREATE_PREVIEW_DISPLAYED;
 import static ru.protei.portal.ui.common.client.util.AttachmentUtils.getRemoveErrorHandler;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 
 
 /**
@@ -172,7 +175,18 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
         lockSave();
         issueController.createIssue(createRequest, new FluentCallback<UiResult<Long>>()
-                .withError(throwable -> unlockSave())
+                .withError(throwable -> {
+                    if (throwable instanceof RequestFailedException && 
+                            ((RequestFailedException)throwable).status == En_ResultStatus.VALIDATION_ERROR) {
+                        RequestFailedException rf = (RequestFailedException)throwable;
+                        fireEvent(new NotifyEvents.Show( resultStatusLang.getMessage(rf.status) + ": " +
+                                validationResultLang.getMessage(rf.issueValidationResult), 
+                                NotifyEvents.NotifyType.ERROR));
+                    } else {
+                        defaultErrorHandler.accept(throwable);
+                    }
+                    unlockSave();
+                })
                 .withSuccess(createIssueResult -> {
                     unlockSave();
                     if (SOME_LINKS_NOT_SAVED.equals(createIssueResult.getMessage())) {
@@ -202,7 +216,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Override
     public void removeAttachment(Attachment attachment) {
-        attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new FluentCallback<Long>()
+        attachmentController.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, null, attachment.getId(), new FluentCallback<Long>()
                 .withError(getRemoveErrorHandler(this, lang))
                 .withSuccess(result -> {
                     view.attachmentsListContainer().remove(attachment);
@@ -213,7 +227,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     @Override
-    public void onCompanyChanged() {
+    public void onInitiatorCompanyChanged() {
         Company companyOption = issueMetaView.getCompany();
 
         fillImportanceSelector(companyOption.getId());
@@ -299,8 +313,14 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         boolean stateValid = isPauseDateValid(issueMetaView.state().getValue().getId(), issueMetaView.pauseDate().getValue() == null ? null : issueMetaView.pauseDate().getValue().getTime());
         issueMetaView.setPauseDateValid(stateValid);
 
+        issueMetaView.setAutoCloseVisible(!isCustomer() && issueMetaView.state().getValue().getId() == CrmConstants.State.TEST_CUST);
+
         updateProductMandatory(issueMetaView, isCompanyWithAutoOpenIssues(issueMetaView.getCompany()));
         updateManagerMandatory(issueMetaView);
+
+        if (issueMetaView.autoClose().getValue() && issueMetaView.state().getValue().getId() != CrmConstants.State.TEST_CUST) {
+            resetAutoCloseAndDeadline(issueMetaView);
+        }
     }
 
     @Override
@@ -344,6 +364,17 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     @Override
     public void onFavoriteStateChanged() {
         view.setFavoriteButtonActive(!view.isFavoriteButtonActive());
+    }
+
+    @Override
+    public void onAutoCloseChanged() {
+        if (issueMetaView.autoClose().getValue()) {
+            Date now = new Date();
+            CalendarUtil.addDaysToDate(now, configStorage.getConfigData().autoCloseDefaultDeadline);
+            issueMetaView.deadline().setValue(now);
+        } else {
+            issueMetaView.deadline().setValue(null);
+        }
     }
 
     @Override
@@ -499,6 +530,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         updateCompanyCaseStates(initiatorCompany.getId());
 
         setCustomerVisibility(issueMetaView, policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_CREATE));
+
+        issueMetaView.setAutoCloseVisible(!isCustomer() && caseObjectMeta.getStateId() == CrmConstants.State.TEST_CUST);
+        issueMetaView.autoClose().setValue(null);
+
         issueMetaView.deadline().setValue(caseObjectMeta.getDeadline() != null ? new Date(caseObjectMeta.getDeadline()) : null);
         issueMetaView.setDeadlineValid(isDeadlineValid(caseObjectMeta.getDeadline()));
         issueMetaView.workTrigger().setValue(caseObjectMeta.getWorkTrigger());
@@ -684,6 +719,7 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         } else {
             caseObject.setInitiatorCompany(policyService.getUserCompany());
         }
+        caseObject.setAutoClose(false);
         caseObject.setWorkTrigger(En_WorkTrigger.NONE);
 
         return caseObject;
@@ -746,6 +782,8 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
         createRequest.setTimeElapsed(issueMetaView.getTimeElapsed());
         createRequest.setTimeElapsedType(issueMetaView.timeElapsedType().getValue());
 
+        caseObject.setAutoClose(issueMetaView.autoClose().getValue());
+
         return caseObject;
     }
 
@@ -770,6 +808,11 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     private boolean validateView() {
         if (isCompanyWithAutoOpenIssues(currentCompany) && issueMetaView.product().getValue() == null) {
             fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        if (issueMetaView.autoClose().getValue() && issueMetaView.deadline().getValue() == null) {
+            fireEvent(new NotifyEvents.Show(lang.errDeadlineNotSelectedOnAutoClose(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
@@ -843,10 +886,6 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 .collect( Collectors.toList());
     }
 
-    private String transliteration(String input) {
-        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
-    }
-
     private void initiatorSelectorAllowAddNew(Long companyId) {
         issueMetaView.initiatorSelectorAllowAddNew(false);
 
@@ -887,6 +926,10 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
     }
 
     private boolean isDeadlineFieldValid(boolean isEmptyDeadlineField, Date date) {
+        if (issueMetaView.autoClose().getValue() && date == null) {
+            return false;
+        }
+
         if (date == null) {
             return isEmptyDeadlineField;
         }
@@ -977,6 +1020,17 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
                 importanceLevel.getTemporarySolutionTime(), importanceLevel.getFullSolutionTime());
     }
 
+    private boolean isCustomer() {
+        return !policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
+    }
+
+    public void resetAutoCloseAndDeadline(AbstractIssueMetaView metaView) {
+        metaView.autoClose().setValue(false);
+        metaView.deadline().setValue(null);
+        metaView.setDeadlineValid(true);
+
+    }
+
     @Inject
     Lang lang;
     @Inject
@@ -1023,6 +1077,15 @@ public abstract class IssueCreateActivity implements AbstractIssueCreateActivity
 
     @Inject
     ImportanceLevelControllerAsync importanceService;
+
+    @Inject
+    En_ResultStatusLang resultStatusLang;
+    @Inject
+    En_IssueValidationResultLang validationResultLang;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    ConfigStorage configStorage;
 
     @ContextAware
     CaseObjectCreateRequest createRequest;

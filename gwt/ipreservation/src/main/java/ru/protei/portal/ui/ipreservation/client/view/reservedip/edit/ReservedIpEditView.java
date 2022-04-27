@@ -4,7 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -74,11 +73,6 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
     @Override
     public HasEnabled saveEnabled() { return saveButton; }
 
-    @Override
-    public HasVisibility useRangeErrorLabelVisibility() {
-        return useRangeErrorLabel;
-    }
-
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -91,11 +85,6 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
         if (activity != null) {
             activity.onCancelClicked();
         }
-    }
-
-    @UiHandler("useRange")
-    public void onRangeChanged(ValueChangeEvent<DateInterval> event) {
-        activity.onRangeChanged();
     }
 
     private void ensureDebugIds() {
@@ -128,9 +117,6 @@ public class ReservedIpEditView extends Composite implements AbstractReservedIpE
     @Inject
     @UiField(provided = true)
     RangePicker useRange;
-
-    @UiField
-    Label useRangeErrorLabel;
 
     @Inject
     @UiField(provided = true)

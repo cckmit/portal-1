@@ -27,6 +27,8 @@ import ru.protei.portal.ui.common.client.widget.projectlist.list.ProjectList;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerFormSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableLongBox;
 
 import java.util.List;
 import java.util.Set;
@@ -88,6 +90,11 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     }
 
     @Override
+    public HasValidable idValidator() {
+        return id;
+    }
+
+    @Override
     public void setVisibleProducts(boolean value) {
         productsContainer.setVisible(value);
     }
@@ -100,6 +107,7 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     @Override
     public void clearProjectList() {
         project.clearItems();
+        searchInfo.addClassName(HIDE);
     }
 
     @Override
@@ -229,7 +237,7 @@ public class ProjectSearchView extends Composite implements AbstractProjectSearc
     @UiField
     Lang lang;
     @UiField
-    LongBox id;
+    ValidableLongBox id;
     @UiField
     DivElement searchForm;
 

@@ -11,8 +11,6 @@ import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
 import ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder;
-import ru.protei.winter.jdbc.JdbcHelper;
-import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.*;
 
@@ -103,6 +101,10 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
                 )
                 .and( "UNIT_STATE" ).equal( query.getState() == null ? null : query.getState().getId() )
                 .and( "UTYPE_ID" ).in( collectIds( query.getTypes() ) );
+
+        if (isNotEmpty( query.getIds() )) {
+            condition.and( DevUnit.Columns.ID ).in( query.getIds());
+        }
 
         if (isEmpty( query.getTypes() )) {
             condition.and( "UTYPE_ID" ).not().equal( En_DevUnitType.DIRECTION.getId() );

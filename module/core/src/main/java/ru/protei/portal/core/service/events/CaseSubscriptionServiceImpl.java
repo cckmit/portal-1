@@ -7,14 +7,12 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledDeliveryEvent;
 import ru.protei.portal.core.event.AssembledEmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -209,17 +207,21 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
             return;
         }
 
-        result.addAll(stream(personIdsByFavoriteIssueId)
-            .map(Person::new)
-            .map(person -> {
-                jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
-                return person;
-            })
-            .map(Person::getContactInfo)
-            .map(contactInfo -> contactInfo.findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC))
-            .filter(Objects::nonNull)
-            .map(email -> NotificationEntry.email(email.value(), CrmConstants.LocaleTags.RU))
-            .collect(Collectors.toList())
+        List<Person> personByFavoriteIssueId = personDAO.getListByKeys(personIdsByFavoriteIssueId);
+
+        if (CollectionUtils.isEmpty(personByFavoriteIssueId)) {
+            return;
+        }
+
+        jdbcManyRelationsHelper.fill(personByFavoriteIssueId, Person.Fields.CONTACT_ITEMS);
+
+        result.addAll(stream(personByFavoriteIssueId)
+                .filter(person -> !person.isFired())
+                .map(Person::getContactInfo)
+                .map(contactInfo -> contactInfo.findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC))
+                .filter(Objects::nonNull)
+                .map(email -> NotificationEntry.email(email.value(), CrmConstants.LocaleTags.RU))
+                .collect(Collectors.toList())
         );
     }
 

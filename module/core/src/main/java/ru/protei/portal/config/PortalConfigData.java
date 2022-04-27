@@ -44,6 +44,8 @@ public class PortalConfigData {
     private final MailCommentConfig mailCommentConfig;
     private final NRPEConfig nrpeConfig;
     private final AutoOpenConfig autoOpenConfig;
+    private final AutoCloseDeadlineConfig autoCloseDeadlineConfig;
+
 
     private final String loginSuffixConfig;
     private final boolean taskSchedulerEnabled;
@@ -72,6 +74,7 @@ public class PortalConfigData {
         mailCommentConfig = new MailCommentConfig(wrapper);
         nrpeConfig = new NRPEConfig(wrapper);
         autoOpenConfig = new AutoOpenConfig(wrapper);
+        autoCloseDeadlineConfig = new AutoCloseDeadlineConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
@@ -142,7 +145,7 @@ public class PortalConfigData {
         return jiraConfig;
     }
 
-    public EmployeeConfig getEmployee() {
+    public EmployeeConfig getEmployeeConfig() {
         return employeeConfig;
     }
 
@@ -166,6 +169,10 @@ public class PortalConfigData {
         return autoOpenConfig;
     }
 
+    public AutoCloseDeadlineConfig getDeadlineConfig() {
+        return autoCloseDeadlineConfig;
+    }
+
     public boolean isTaskSchedulerEnabled() {
         return taskSchedulerEnabled;
     }
@@ -183,6 +190,8 @@ public class PortalConfigData {
             systemUserId = properties.getProperty("system.user.id", Long.class, null);
             cardbatchCompanyPartnerId = properties.getProperty("cardbatch.company.partner.id", Long.class, null);
             contractCuratorsDepartmentsIds = properties.getProperty("contract.curators_departments_ids", String.class, "").split(",");
+            contractAccountingDepartmentIds = properties.getProperty("contract.accounting_department_ids", String.class, "");
+            contractAccountingEmployeeIds = properties.getProperty("contract.accounting_employee_ids", String.class, "");
         }
         public String getCrmUrlInternal() {
             return crmUrlInternal;
@@ -220,6 +229,14 @@ public class PortalConfigData {
             return contractCuratorsDepartmentsIds;
         }
 
+        public String getContractAccountingDepartmentIds() {
+            return contractAccountingDepartmentIds;
+        }
+
+        public String getContractAccountingEmployeeIds() {
+            return contractAccountingEmployeeIds;
+        }
+
         private final String crmUrlInternal;
         private final String crmUrlExternal;
         private final String crmUrlCurrent;
@@ -229,6 +246,8 @@ public class PortalConfigData {
         private final Long systemUserId;
         private final Long cardbatchCompanyPartnerId;
         private final String[] contractCuratorsDepartmentsIds;
+        private final String contractAccountingDepartmentIds;
+        private final String contractAccountingEmployeeIds;
     }
 
     public static class MailNotificationConfig extends CommonConfig {
@@ -752,6 +771,7 @@ public class PortalConfigData {
         private final String equipmentProject;
         private final String supportProject;
         private final String phoneProject;
+        private final String employeeFiredProject;
         private final Long youtrackUserId;
         private final String youtrackCustomFieldCompanyId;
 
@@ -763,6 +783,7 @@ public class PortalConfigData {
             equipmentProject = properties.getProperty("youtrack.employee_registration.equipment_project");
             supportProject = properties.getProperty("youtrack.employee_registration.support_project");
             phoneProject = properties.getProperty("youtrack.employee_registration.phone_project");
+            employeeFiredProject = properties.getProperty("youtrack.employee_fired.project");
             youtrackUserId = properties.getProperty("youtrack.user_id_for_synchronization", Long.class);
             youtrackCustomFieldCompanyId = properties.getProperty("youtrack.custom_field_company_id");
         }
@@ -791,6 +812,10 @@ public class PortalConfigData {
             return supportProject;
         }
 
+        public String getEmployeeFiredProject() {
+            return employeeFiredProject;
+        }
+
         public String getPhoneProject() {
             return phoneProject;
         }
@@ -817,6 +842,8 @@ public class PortalConfigData {
         private final String workPassword;
         private final String workProteiUrl;
         private final String workProteiStUrl;
+        private final String workRestVacationDaysProteiUrl;
+        private final String workRestVacationDaysProteiStUrl;
 
         public Enterprise1CConfig(PropertiesWrapper properties) {
             apiBaseProteiUrl = properties.getProperty("enterprise1c.api.base_protei_url");
@@ -831,6 +858,8 @@ public class PortalConfigData {
             workPassword = properties.getProperty("enterprise1c.api.work.password");
             workProteiUrl = properties.getProperty("enterprise1c.api.work.protei_url");
             workProteiStUrl = properties.getProperty("enterprise1c.api.work.protei_st_url");
+            workRestVacationDaysProteiUrl = properties.getProperty("enterprise1c.api.work.rest_vacation_days.protei_url");
+            workRestVacationDaysProteiStUrl = properties.getProperty("enterprise1c.api.work.rest_vacation_days.protei_st_url");
         }
 
         public String getApiBaseProteiUrl() {
@@ -878,6 +907,14 @@ public class PortalConfigData {
         public String getWorkProteiStUrl() {
             return workProteiStUrl;
         }
+
+        public String getWorkRestVacationDaysProteiUrl() {
+            return workRestVacationDaysProteiUrl;
+        }
+
+        public String getWorkRestVacationDaysProteiStUrl() {
+            return workRestVacationDaysProteiStUrl;
+        }
     }
 
     public static class JiraConfig {
@@ -913,13 +950,19 @@ public class PortalConfigData {
     public static class EmployeeConfig {
 
         private final String avatarPath;
+        private final List<Long> employeeBirthdayHideIds;
 
-        public EmployeeConfig(PropertiesWrapper propertiesWrapper) {
+        public EmployeeConfig(PropertiesWrapper propertiesWrapper) throws ConfigException {
             avatarPath = propertiesWrapper.getProperty( "employee.avatar.path", "/usr/protei/shared/avatars/" );
+            employeeBirthdayHideIds = splitString(propertiesWrapper.getProperty("employee.birthday_hide_ids", String.class, ""), ",");
         }
 
         public String getAvatarPath() {
             return avatarPath;
+        }
+
+        public List<Long> getEmployeeBirthdayHideIds() {
+            return employeeBirthdayHideIds;
         }
     }
 
@@ -1048,6 +1091,33 @@ public class PortalConfigData {
         public Boolean getEnableDelay() {
             return enableDelay;
         }
+    }
+
+    public static class AutoCloseDeadlineConfig {
+        final int defaultDeadline;
+
+        public AutoCloseDeadlineConfig(PropertiesWrapper properties ) {
+            this.defaultDeadline = properties.getProperty("issue.auto_close.default_deadline", Integer.class, 14);
+        }
+
+        public int getDefaultDeadline() {
+            return defaultDeadline;
+        }
+    }
+
+    private static List<Long> splitString(String str, String delimiter) throws ConfigException {
+
+        List<Long> result = new ArrayList<>();
+        for (String s : str.split( delimiter )){
+            if (s.isEmpty()) continue;
+            try {
+                result.add( Long.parseLong(s.trim()) );
+            } catch (Exception e) {
+                logger.error("Unable to parse string as long: " + s, e);
+                throw new ConfigException(e);
+            }
+        }
+        return result;
     }
 
     private final static Long DEFAULT_FILE_SIZE_MEGABYTES = 10L;

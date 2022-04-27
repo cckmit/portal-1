@@ -54,4 +54,24 @@ public class PortalTestApiController {
     public void notifyExpiringTechnicalSupportValidity () {
         portalScheduleTasks.notifyExpiringTechnicalSupportValidity();
     }
+
+    @GetMapping(value = "/employee/fire-by-date")
+    public void updateFiredByDate () {
+        portalScheduleTasks.updateFiredByDate();
+    }
+
+    @GetMapping(value = "/employee/update-position-by-date")
+    public void updatePositionByDate () {
+        portalScheduleTasks.updatePositionByDate();
+    }
+
+    @GetMapping(value = "/issue/auto-close-by-deadline")
+    public void processAutoClose() {
+        portalScheduleTasks.processAutoCloseByDeadLine();
+    }
+
+    @GetMapping(value = "/issue/deadline-expire/notification")
+    public void notifyAboutDeadline() {
+        portalScheduleTasks.notifyAboutDeadlineExpire();
+    }
 }

@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.List;
 import java.util.Set;
@@ -25,6 +26,8 @@ public interface AbstractProjectSearchView extends IsWidget {
     HasValue<Set<PersonShortView>> managers();
     HasValue<DateInterval> dateCreatedRange();
     HasValue<ProjectInfo> project();
+
+    HasValidable idValidator();
 
     void setVisibleProducts(boolean value);
     void setVisibleManagers(boolean value);

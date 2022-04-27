@@ -24,4 +24,5 @@ public interface WorkerEntryDAO extends PortalBaseDAO<WorkerEntry> {
     List< WorkerEntry > getWorkersByDepartment(Long depId);
     Long getDepIdForWorker(Long workerId);
     List<WorkerEntry> getForFireByDate(Date now);
+    List<WorkerEntry> getForUpdatePositionByDate(Date now);
 }

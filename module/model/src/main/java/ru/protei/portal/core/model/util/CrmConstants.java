@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.util;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,7 +20,7 @@ public class CrmConstants {
 
     public static final List<String> CONFIG_EXTENSIONS = Arrays.asList(".config", ".cfg", ".properties", ".xml", ".json");
 
-    public static final List<String> PROTEI_DOMAINS = Arrays.asList("@protei.ru", "@sigurd-it.ru", "@neo-s.com");
+    public static final List<String> PROTEI_DOMAINS = Arrays.asList("@protei.ru", "@protei-lab.ru", "@pit.protei.ru", "@tl.protei.ru", "@sigurd-it.ru", "@neo-s.com");
 
     public interface Session {
         String AUTH_TOKEN = "session-auth-token";
@@ -113,6 +112,7 @@ public class CrmConstants {
     public interface ContactConstants {
         int FIRST_NAME_SIZE = 80;
         int SECOND_NAME_SIZE = 80;
+        int INN_SIZE = 12;
         int LAST_NAME_SIZE = 80;
         int SHORT_NAME_SIZE = 128;
         int LOGIN_SIZE = 64;
@@ -160,6 +160,7 @@ public class CrmConstants {
         long MAIN_HOME_COMPANY_ID = 3084L;
         String MAIN_HOME_COMPANY_NAME = "Протей";
         String PROTEI_ST_HOME_COMPANY_NAME = "Протей СТ";
+        String PROTEI_LAB_COMPANY_NAME = "ПРОТЕЙ-ЛАБ";
         String HOME_COUNTRY_NAME = "Российская Федерация";
         String HOME_COUNTRY_SHORT_NAME = "Россия";
     }
@@ -226,14 +227,7 @@ public class CrmConstants {
         long PRELIMINARY = 39;
         long COMMERCIAL_NEGOTIATIONS = 51;
         long BUILD_EQUIPMENT_IN_QUEUE = 52;
-        long BUILD_EQUIPMENT = 53;
-        long AUTOMATIC_MOUNTING_IN_QUEUE = 54;
-        long AUTOMATIC_MOUNTING = 55;
-        long MANUAL_MOUNTING_IN_QUEUE = 58;
-        long MANUAL_MOUNTING = 59;
-        long STICKER_LABELING_IN_QUEUE = 60;
-        long STICKER_LABELING = 61;
-        long TRANSFERRED_FOR_TESTING = 62;
+        long AGREEMENT = 63;
     }
 
     public interface Style {

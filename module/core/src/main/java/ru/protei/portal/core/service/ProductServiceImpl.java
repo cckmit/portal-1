@@ -45,6 +45,9 @@ public class ProductServiceImpl implements ProductService {
     ProjectDAO projectDAO;
 
     @Autowired
+    CommonManagerDAO commonManagerDAO;
+
+    @Autowired
     PolicyService policyService;
 
     @Autowired
@@ -193,6 +196,12 @@ public class ProductServiceImpl implements ProductService {
         product.setParents(devUnitDAO.getParents(id));
         product.setChildren(devUnitDAO.getChildren(Collections.singleton(id)));
         product.setProductDirections(new HashSet<>(emptyIfNull(devUnitDAO.getProductDirections(id))));
+
+        CommonManager commonManager = commonManagerDAO.getByProductAndCompany(product.getId(), null);
+        if (commonManager != null) {
+            product.setCommonManagerId(commonManager.getManagerId());
+            product.setCommonManagerName(commonManager.getManagerName());
+        }
 
         return ok(product);
     }

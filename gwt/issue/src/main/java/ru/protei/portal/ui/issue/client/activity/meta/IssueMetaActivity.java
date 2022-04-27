@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.meta;
 
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -12,10 +13,12 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.lang.En_IssueValidationResultLang;
+import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
@@ -24,6 +27,8 @@ import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompany
 import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductWithChildrenModel;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -36,6 +41,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.util.CaseStateWorkflowUtil.recognizeWorkflow;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 
 /**
  *
@@ -133,6 +139,14 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
 
         meta.setStateId(caseState.getId());
+
+        metaView.setAutoCloseVisible(!isCustomer() && meta.getStateId() == CrmConstants.State.TEST_CUST && meta.getExtAppType() == null);
+
+        if (meta.getAutoClose() && CrmConstants.State.TEST_CUST != caseState.getId()) {
+            meta.setAutoClose(false);
+            meta.setDeadline(null);
+        }
+
         meta.setStateName(caseState.getState());
         meta.setStateColor(caseState.getColor());
         meta.setPauseDate((CrmConstants.State.PAUSED != meta.getStateId() || metaView.pauseDate().getValue() == null) ? null : metaView.pauseDate().getValue().getTime());
@@ -176,6 +190,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             fireEvent(new IssueEvents.IssueProductChanged(meta.getId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
             onParentIssueChanged(meta.getId());
+            fireEvent(new CommentAndHistoryEvents.Reload());
         });
     }
 
@@ -196,6 +211,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         onCaseMetaChanged( meta, () -> {
             fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CommentAndHistoryEvents.Reload());
         } );
     }
 
@@ -205,6 +221,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         Runnable onChanged = () -> {
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CommentAndHistoryEvents.Reload());
         };
 
         if (isCompanyWithAutoOpenIssues(currentCompany)) {
@@ -214,6 +231,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             onChanged = () -> {
                 fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
                 fireEvent(new IssueEvents.IssueMetaChanged(meta));
+                fireEvent(new CommentAndHistoryEvents.Reload());
             };
         }
 
@@ -286,7 +304,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     @Override
-    public void onCompanyChanged() {
+    public void onInitiatorCompanyChanged() {
         Company company = metaView.getCompany();
         if (company.getId().equals(meta.getInitiatorCompanyId())) {
             return;
@@ -360,6 +378,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         onCaseMetaChanged(meta, () -> {
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CommentAndHistoryEvents.Reload());
         });
     }
 
@@ -380,6 +399,24 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     @Override
+    public void onAutoCloseChanged() {
+        meta.setAutoClose(metaView.autoClose().getValue());
+        if (metaView.autoClose().getValue()) {
+            Date now = new Date();
+            CalendarUtil.addDaysToDate(now, configStorage.getConfigData().autoCloseDefaultDeadline);
+            meta.setDeadline(now.getTime());
+        } else {
+            meta.setDeadline(null);
+        }
+
+        onCaseMetaChanged(meta, () -> {
+            fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
+            fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CommentAndHistoryEvents.Reload());
+        });
+    }
+
+    @Override
     public void onDeadlineChanged() {
         if (isDeadlineEquals(metaView.deadline().getValue(), meta.getDeadline())) {
             metaView.setDeadlineValid(isDeadlineFieldValid(metaView.isDeadlineEmpty(), metaView.deadline().getValue()));
@@ -391,11 +428,12 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             return;
         }
 
-        meta.setDeadline(metaView.deadline().getValue() != null ? metaView.deadline().getValue().getTime() : null );
+        meta.setDeadline(metaView.deadline().getValue() != null ? metaView.deadline().getValue().getTime() : null);
         metaView.setDeadlineValid(true);
 
         onCaseMetaChanged(meta, () -> {
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CommentAndHistoryEvents.Reload());
         });
     }
 
@@ -404,6 +442,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         meta.setWorkTrigger(metaView.workTrigger().getValue());
         onCaseMetaChanged( meta, () -> {
             fireEvent(new IssueEvents.IssueMetaChanged(meta));
+            fireEvent(new CommentAndHistoryEvents.Reload());
         } );
     }
 
@@ -436,6 +475,17 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         }
 
         issueController.updateIssueMeta(caseMeta, new FluentCallback<CaseObjectMeta>()
+                .withError(throwable -> {
+                    if (throwable instanceof RequestFailedException &&
+                            ((RequestFailedException)throwable).status == En_ResultStatus.VALIDATION_ERROR) {
+                        RequestFailedException rf = (RequestFailedException)throwable;
+                        fireEvent(new NotifyEvents.Show( resultStatusLang.getMessage(rf.status) + ": " +
+                                validationResultLang.getMessage(rf.issueValidationResult),
+                                NotifyEvents.NotifyType.ERROR));
+                    } else {
+                        defaultErrorHandler.accept(throwable);
+                    }
+                })
                 .withSuccess(caseMetaUpdated -> {
                     meta.setStateId(caseMetaUpdated.getStateId());
                     meta.setStateName(caseMetaUpdated.getStateName());
@@ -532,6 +582,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.initiatorEnabled().setEnabled(!readOnly && isInitiatorChangeAllowed(meta.getInitiatorCompanyId()));
         metaView.platformEnabled().setEnabled(!readOnly);
 
+        metaView.setAutoCloseVisible(!isCustomer() && meta.getStateId() == CrmConstants.State.TEST_CUST && meta.getExtAppType() == null);
+
         metaView.timeElapsedHeaderVisibility().setVisible(true);
 
         if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
@@ -595,6 +647,8 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         metaView.setJiraInfoLink(LinkUtils.makeJiraInfoLink());
 
         metaView.slaContainerVisibility().setVisible(!isJiraIssue() && isSystemScope());
+
+        metaView.autoClose().setValue(meta.getAutoClose());
 
         metaView.deadline().setValue(meta.getDeadline() == null ? null : new Date(meta.getDeadline()));
         metaView.setDeadlineValid(isDeadlineValid(meta.getDeadline()));
@@ -785,10 +839,6 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
                 CrmConstants.State.CANCELED != caseStateId;
     }
 
-    private String transliteration(String input) {
-        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
-    }
-
     private boolean isJiraIssue() {
         return caseMetaJira != null;
     }
@@ -814,6 +864,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     }
 
     private boolean isDeadlineFieldValid(boolean isEmptyDeadlineField, Date date) {
+        if (meta.getAutoClose() && date == null) {
+            return false;
+        }
+
         if (date == null) {
             return isEmptyDeadlineField;
         }
@@ -864,7 +918,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
             }
 
             requestSla(meta.getPlatformId(), slaList -> fillSla(getSlaByImportanceLevel(slaList, metaView.importance().getValue())));
-            onCaseMetaChanged(meta, () -> fireEvent(new IssueEvents.ChangeIssue(meta.getId())));
+            onCaseMetaChanged(meta, () -> {
+                fireEvent(new IssueEvents.ChangeIssue(meta.getId()));
+                fireEvent(new CommentAndHistoryEvents.Reload());
+            });
         });
     }
 
@@ -937,6 +994,10 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
         return userCompany.getCategory() == En_CompanyCategory.SUBCONTRACTOR;
     }
 
+    private boolean isCustomer() {
+        return !policyService.hasSystemScopeForPrivilege(En_Privilege.ISSUE_VIEW);
+    }
+
     private void onParentIssueChanged(Long caseId) {
         caseLinkController.getCaseLinks(caseId, new FluentCallback<List<CaseLink>>()
                 .withSuccess(links ->
@@ -992,6 +1053,14 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
     CustomerCompanyModel customerCompanyModel;
     @Inject
     ImportanceLevelControllerAsync importanceService;
+    @Inject
+    En_ResultStatusLang resultStatusLang;
+    @Inject
+    En_IssueValidationResultLang validationResultLang;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    ConfigStorage configStorage;
 
     @ContextAware
     CaseObjectMeta meta;

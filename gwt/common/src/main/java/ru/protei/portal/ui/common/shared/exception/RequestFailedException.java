@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.shared.exception;
 
 
+import ru.protei.portal.core.model.dict.En_IssueValidationResult;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 
 /**
@@ -13,7 +14,13 @@ public class RequestFailedException extends Exception {
         this.status = status;
     }
 
+    public RequestFailedException(En_IssueValidationResult issueValidationResult) {
+        this(En_ResultStatus.VALIDATION_ERROR);
+        this.issueValidationResult = issueValidationResult;
+    }
+
     public En_ResultStatus status;
+    public En_IssueValidationResult issueValidationResult;
 
     public RequestFailedException() {}
 }

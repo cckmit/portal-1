@@ -11,15 +11,14 @@ import ru.protei.portal.core.model.event.CaseCommentSavedClientEvent;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.ValidationResult;
+import ru.protei.portal.ui.common.client.activity.attachment.AttachmentLinkProvider;
+import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.ConfigStorage;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
-import ru.protei.portal.ui.common.client.service.AttachmentControllerAsync;
-import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
-import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
+import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.uploader.impl.PasteInfo;
@@ -30,6 +29,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -65,6 +65,7 @@ public abstract class CommentAndHistoryListActivity
         this.textMarkup = event.textMarkup;
         this.isElapsedTimeEnabled = event.isElapsedTimeEnabled;
         this.isModifyEnabled = event.isModifyEnabled;
+        this.isEditAndDeleteEnabled = event.isEditAndDeleteEnabled;
         this.isPrivateVisible = event.isPrivateVisible;
         this.isPrivateCase = event.isPrivateCase;
         this.isNewCommentEnabled = event.isNewCommentEnabled;
@@ -72,7 +73,7 @@ public abstract class CommentAndHistoryListActivity
         fireEvent(new CaseCommentItemEvents.Init(
                 caseType, caseId, textMarkup,
                 isPrivateVisible, isElapsedTimeEnabled,
-                isModifyEnabled, view.commentsAndHistoriesContainer(),
+                isModifyEnabled, isEditAndDeleteEnabled, view.commentsAndHistoriesContainer(),
                 comment -> makeAllowEditValidationString(comment, profile),
                 comment -> makeAllowRemoveValidationString(comment, profile)
         ));
@@ -226,6 +227,7 @@ public abstract class CommentAndHistoryListActivity
         Runnable removeTempAttachmentAction = () -> {
             tempAttachments.remove(attachment);
             view.attachmentContainer().remove(attachment);
+            fireEvent(new CommentAndHistoryEvents.Reload());
         };
 
         if(comment != null && extractIds(comment.getCaseAttachments()).contains(attachment.getId())){
@@ -275,7 +277,7 @@ public abstract class CommentAndHistoryListActivity
     }
 
     private void removeAttachment(Long id, Runnable successAction) {
-        attachmentService.removeAttachmentEverywhere(caseType, id, new FluentCallback<Long>()
+        attachmentService.removeAttachmentEverywhere(caseType, caseId, id, new FluentCallback<Long>()
                 .withError(getRemoveErrorHandler(this, lang))
                 .withSuccess(result -> successAction.run())
         );
@@ -387,6 +389,7 @@ public abstract class CommentAndHistoryListActivity
                 .withSuccess(result -> {
                     unlockSave();
                     onCommentSent(isEdit, result);
+                    fireEvent(new CommentAndHistoryEvents.Reload());
                 })
         );
     }
@@ -555,8 +558,16 @@ public abstract class CommentAndHistoryListActivity
             caseCommentController.getCommentsAndHistories(caseType, caseId, new FluentCallback<CommentsAndHistories>()
                     .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
                     .withSuccess(commentsAndHistories -> {
-                        fillView(commentsAndHistories);
-                        displayItems(getCommentAndHistorySelectedTabs(storage));
+
+                        AttachmentLinkProvider.setLinkMap(Collections.emptyMap());
+                        CaseLinkProvider.setCaseLinkMap(Collections.emptyMap());
+                        attachmentService.getAttachmentsByCaseId(caseType, caseId, new FluentCallback<List<Attachment>>()
+                                .withSuccess(attachments -> {
+                                    caseLinkController.getCaseLinks( caseId, new FluentCallback<List<CaseLink>>()
+                                            .withSuccess( caseLinks -> {
+                                                showHistoryItems(commentsAndHistories, attachments, caseLinks);
+                                            }));
+                                }));
                     })
             );
 
@@ -570,6 +581,18 @@ public abstract class CommentAndHistoryListActivity
                     displayItems(singletonList(COMMENT));
                 })
         );
+    }
+
+    private void showHistoryItems(CommentsAndHistories commentsAndHistories, List<Attachment> attachments, List<CaseLink> caseLinks) {
+        Map<Long, String> attachmentIdToLink = stream(attachments)
+                .collect(Collectors.toMap(Attachment::getId, Attachment::getExtLink));
+        AttachmentLinkProvider.setLinkMap(attachmentIdToLink);
+
+        Map<Long, CaseLink> caseLinkMap = stream(caseLinks)
+                .collect(Collectors.toMap(CaseLink::getId, Function.identity()));
+        CaseLinkProvider.setCaseLinkMap(caseLinkMap);
+        fillView(commentsAndHistories);
+        displayItems(getCommentAndHistorySelectedTabs(storage));
     }
 
     private boolean isCommentWithHistoryCase(En_CaseType caseType) {
@@ -674,11 +697,14 @@ public abstract class CommentAndHistoryListActivity
     private LocalStorageService storage;
     @Inject
     AccountControllerAsync accountService;
-
+    @Inject
+    CaseLinkProvider caseLinkProvider;
     @Inject
     ConfigStorage configStorage;
     @Inject
     PolicyService policyService;
+    @Inject
+    CaseLinkControllerAsync caseLinkController;
 
     private CaseComment comment;
 
@@ -689,6 +715,7 @@ public abstract class CommentAndHistoryListActivity
     private boolean saving = false;
     private boolean isElapsedTimeEnabled = false;
     private boolean isModifyEnabled = true;
+    private boolean isEditAndDeleteEnabled = true;
     private Long caseId;
     private boolean isPrivateVisible = false;
     private boolean isPrivateCase = false;

@@ -29,7 +29,7 @@ public class CaseObject extends AuditableObject {
     @JdbcEnumerated( EnumType.ID )
     private En_CaseType type;
 
-    @JdbcColumn(name = "CASENO")
+    @JdbcColumn(name = CASENO)
     private Long caseNumber;
 
     @JdbcColumn(name = CREATED)
@@ -59,10 +59,10 @@ public class CaseObject extends AuditableObject {
     @JdbcJoinedColumn(localColumn = STATE, table = "case_state", remoteColumn = "id", mappedColumn = "INFO")
     private String stateInfo;
 
-    @JdbcColumn(name = "IMPORTANCE")
+    @JdbcColumn(name = IMPORTANCE)
     private Integer impLevel;
 
-    @JdbcJoinedColumn(localColumn = "IMPORTANCE", remoteColumn = "id", table = "importance_level", mappedColumn = "code")
+    @JdbcJoinedColumn(localColumn = IMPORTANCE, remoteColumn = "id", table = "importance_level", mappedColumn = "code")
     private String importanceCode;
 
     @JdbcColumn(name = CREATOR)
@@ -86,10 +86,10 @@ public class CaseObject extends AuditableObject {
     @JdbcJoinedObject( localColumn = INITIATOR_COMPANY, remoteColumn = "id", updateLocalColumn = false )
     private Company initiatorCompany;
 
-    @JdbcColumn(name = "product_id")
+    @JdbcColumn(name = PRODUCT_ID)
     private Long productId;
 
-    @JdbcJoinedObject(localColumn = "product_id", remoteColumn = "id", updateLocalColumn = false)
+    @JdbcJoinedObject(localColumn = PRODUCT_ID, remoteColumn = "id", updateLocalColumn = false)
     private DevUnit product;
 
     @JdbcColumn(name = MANAGER)
@@ -143,14 +143,17 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = PAUSE_DATE)
     private Long pauseDate;
 
-    @JdbcColumn(name = "manager_company_id")
+    @JdbcColumn(name = MANAGER_COMPANY_ID)
     private Long managerCompanyId;
 
-    @JdbcJoinedColumn(localColumn = "manager_company_id", remoteColumn = "id", table = "company", mappedColumn = "cname")
+    @JdbcJoinedColumn(localColumn = MANAGER_COMPANY_ID, remoteColumn = "id", table = "company", mappedColumn = "cname")
     private String managerCompanyName;
 
     @JdbcManyToMany(localLinkColumn = "case_object_id", remoteLinkColumn = "plan_id", linkTable = "plan_to_case_object")
     private List<Plan> plans;
+
+    @JdbcColumn(name = AUTO_CLOSE)
+    private boolean autoClose;
 
     @JdbcColumn(name = DEADLINE)
     private Long deadline;
@@ -591,6 +594,14 @@ public class CaseObject extends AuditableObject {
         isFavorite = favorite;
     }
 
+    public Boolean getAutoClose() {
+        return autoClose;
+    }
+
+    public void setAutoClose(Boolean autoClose) {
+        this.autoClose = autoClose;
+    }
+
     public Long getDeadline() {
         return deadline;
     }
@@ -623,18 +634,22 @@ public class CaseObject extends AuditableObject {
         String PAUSE_DATE = "pause_date";
         String DELETED = "deleted";
         String INFO = "INFO";
+        String CASENO = "CASENO";
         String CREATED = "CREATED";
         String MODIFIED = "MODIFIED";
         String CREATOR = "CREATOR";
         String STATE = "STATE";
         String CASE_NAME = "CASE_NAME";
         String MANAGER = "MANAGER";
+        String MANAGER_COMPANY_ID = "manager_company_id";
         String PLATFORM_ID = "platform_id";
+        String AUTO_CLOSE = "auto_close";
         String DEADLINE = "deadline";
         String WORK_TRIGGER = "work_trigger";
         String INITIATOR_COMPANY = "initiator_company";
         String INITIATOR = "initiator";
         String IMPORTANCE = "IMPORTANCE";
+        String PRODUCT_ID = "product_id";
     }
 
     public static final int NOT_DELETED = 0;
@@ -652,6 +667,8 @@ public class CaseObject extends AuditableObject {
                 ", info='" + info + '\'' +
                 ", stateId=" + stateId +
                 ", stateName='" + stateName + '\'' +
+                ", stateColor='" + stateColor + '\'' +
+                ", stateInfo='" + stateInfo + '\'' +
                 ", impLevel=" + impLevel +
                 ", importanceCode='" + importanceCode + '\'' +
                 ", creatorId=" + creatorId +
@@ -683,6 +700,7 @@ public class CaseObject extends AuditableObject {
                 ", managerCompanyId=" + managerCompanyId +
                 ", managerCompanyName='" + managerCompanyName + '\'' +
                 ", plans=" + plans +
+                ", autoClose=" + autoClose +
                 ", deadline=" + deadline +
                 ", workTrigger=" + workTrigger +
                 ", timeElapsedType=" + timeElapsedType +

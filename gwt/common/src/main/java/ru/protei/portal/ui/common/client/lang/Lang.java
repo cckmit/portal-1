@@ -432,6 +432,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String promptFieldLengthExceed(String fieldName, int fieldLength);
 
+    String promptFieldLengthNotEqual(String fieldName, int fieldLength);
+
     String promptFieldNeedContainAtSign();
 
     String contactGeneratePassword();
@@ -764,6 +766,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errProductNotSelected();
 
+    String errDeadlineNotSelectedOnAutoClose();
+
     String errFilterNameRequired();
 
     String errTooMuchCompanies();
@@ -828,7 +832,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String dashboard();
 
-    String dashboardAddTable();
+    String dashboardAddIssueTable();
+
+    String dashboardAddProjectTable();
 
     String dashboardEmpty();
 
@@ -837,6 +843,10 @@ public interface Lang extends Messages, ContactItemLang {
     String dashboardTableName();
 
     String dashboardTableFilter();
+
+    String dashboardTableIssueFilter();
+
+    String dashboardTableProjectFilter();
 
     String dashboardTableCreate();
 
@@ -992,6 +1002,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectCommentCreationDate();
 
+    String projectFilterIsNotDefined();
+
     String inputProjectName();
 
     String selectCustomerType();
@@ -1135,6 +1147,10 @@ public interface Lang extends Messages, ContactItemLang {
     String accountLocal();
 
     String accountLogin();
+
+    String restVacationDays();
+
+    String noData();
 
     String accountPerson();
 
@@ -1852,6 +1868,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeIPAddress();
 
+    String employeeInn();
+
     String employeeCompany();
 
     String employeeMainPosition();
@@ -2112,6 +2130,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractDescription();
 
+    String contractFileLocation();
+
+    String contractNotifiers();
+
     String contractContractor();
 
     String contractContractorDropped();
@@ -2165,6 +2187,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contractCurator();
 
     String contractState();
+
+    String contractCalculationType();
 
     String contractType();
 
@@ -2240,6 +2264,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contractValidationContractSpecificationClauseDuplication();
 
+    String contractCalculationTypeNotDefined();
+
     String contractOrganization();
 
     String contractParent();
@@ -2251,6 +2277,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contractDatesNotify();
 
     String contractProjectHint();
+
+    String contractCopySuccess();
 
     String period();
 
@@ -3096,6 +3124,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueSyncedWith();
 
+    String issueAutoClose();
+
+    String issueAutoCloseEnabled();
+
+    String issueAutoCloseDisabled();
+
     String issueDeadline();
 
     String issueWorkTrigger();
@@ -3225,8 +3259,6 @@ public interface Lang extends Messages, ContactItemLang {
     String valueNotSet();
 
     String errEmployeeNotFound();
-
-    String reservedIpExistedIpInRange();
 
     String issueReportHumanReadable();
 
@@ -4044,7 +4076,60 @@ public interface Lang extends Messages, ContactItemLang {
 
     String inputProjectNumber();
 
+    String contractDateExecution();
+
+    String contractDateEndWarranty();
+
+    String errorSetCorrectProjectId();
+
+    String issueValidationResultOk();
+
+    String issueValidationResultNull();
+
+    String issueValidationResultNameEmpty();
+
+    String issueValidationResultTypeEmpty();
+
+    String issueValidationResultCreatorEmpty();
+
+    String issueValidationResultImportanceEmpty();
+
+    String issueValidationResultManagerEmpty();
+
+    String issueValidationResultManagerOtherCompany();
+
+    String issueValidationResultManagerWithoutProduct();
+
+    String issueValidationResultInitiatorEmpty();
+
+    String issueValidationResultStatusInvalid();
+
+    String issueValidationResultImportanceOtherCompany();
+
+    String issueValidationResultInitiatorOtherCompany();
+
+    String issueValidationResultPlatformOtherCompany();
+
+    String issueValidationResultProductInvalid();
+
+    String issueValidationResultDeadlinePassed();
+
+    String issueInitiatorCompany();
+
+    String personEquipmentAssembly();
+
+    String personEquipmentAssemblyShort();
+
+    String caseDescriptionHistoryPreview();
+
+    String historyDetailsLink();
+
+    String linkRemoved();
+
+    String issueValidationResultAutoCloseDeadline();
+
     String reportYtDelivery();
 
     String send();
 }
+

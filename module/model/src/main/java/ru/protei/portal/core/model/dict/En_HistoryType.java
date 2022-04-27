@@ -17,6 +17,19 @@ public enum En_HistoryType implements HasId {
     CARD_STATE(11),
     CARD_MANAGER(12),
     CARD_BATCH_IMPORTANCE(13),
+    CASE_PAUSE_DATE(14),
+    CASE_PRODUCT(15),
+    CASE_DEADLINE(16),
+    CASE_WORK_TRIGGER(17),
+    CASE_MANAGER_COMPANY(18),
+    CASE_INITIATOR_COMPANY(19),
+    CASE_INITIATOR(20),
+    CASE_PLATFORM(21),
+    CASE_NAME(22),
+    CASE_INFO(23),
+    CASE_ATTACHMENT(24),
+    CASE_LINK(25),
+    CASE_AUTO_CLOSE(26),
     ;
 
     En_HistoryType(int id) {

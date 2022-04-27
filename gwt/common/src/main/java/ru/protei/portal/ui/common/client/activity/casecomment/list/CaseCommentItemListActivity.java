@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.activity.casecomment.list;
 
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -15,7 +14,6 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemListActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.activity.caselink.CaseLinkProvider;
@@ -41,6 +39,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.ui.common.client.util.AvatarUtils.getAvatarUrl;
+import static ru.protei.portal.ui.common.client.util.ClientTransliterationUtils.transliteration;
 
 public abstract class CaseCommentItemListActivity implements Activity, AbstractCaseCommentItemListActivity {
     @Inject
@@ -60,6 +59,7 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
         this.isPrivateVisible = event.isPrivateVisible;
         this.isElapsedTimeEnabled = event.isElapsedTimeEnabled;
         this.isModifyEnabled = event.isModifyEnabled;
+        this.isEditAndDeleteEnabled = event.isEditAndDeleteEnabled;
         this.caseId = event.caseId;
         this.commentsContainer = event.commentsContainer;
 
@@ -173,6 +173,7 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
                         commentsContainer.remove(itemView.asWidget());
                         itemViewToModel.remove(itemView);
                         updateTimeElapsedInIssue(itemViewToModel.values());
+                        fireEvent(new CommentAndHistoryEvents.Reload());
                     })
             );
         };
@@ -311,7 +312,7 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
 
         itemView.setTimeElapsedTypeChangeHandler(event -> updateTimeElapsedType(event.getValue(), value, itemView));
 
-        itemView.enabledEdit(isModifyEnabled && (makeAllowEditValidationString.apply(value) == null));
+        itemView.enabledEdit(isModifyEnabled && isEditAndDeleteEnabled && (makeAllowEditValidationString.apply(value) == null));
         itemView.enableReply(isModifyEnabled);
 
         return itemView;
@@ -361,10 +362,6 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
         textRenderController.render(text, textMarkup, true, new FluentCallback<String>()
                 .withError(throwable -> consumer.accept(text))
                 .withSuccess(consumer));
-    }
-
-    private String transliteration(String input) {
-        return TransliterationUtils.transliterate(input, LocaleInfo.getCurrentLocale().getLocaleName());
     }
 
     private List<Long> extractIds(Collection<CaseAttachment> list){
@@ -463,6 +460,7 @@ public abstract class CaseCommentItemListActivity implements Activity, AbstractC
     private boolean isPrivateVisible;
     private boolean isElapsedTimeEnabled;
     private boolean isModifyEnabled;
+    private boolean isEditAndDeleteEnabled;
     private Long caseId;
 
     private WorkTimeFormatter workTimeFormatter;

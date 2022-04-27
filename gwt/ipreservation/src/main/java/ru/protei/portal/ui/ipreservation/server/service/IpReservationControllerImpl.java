@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.ReservedIp;
@@ -22,7 +21,6 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -205,16 +203,11 @@ public class IpReservationControllerImpl implements IpReservationController {
     }
 
     @Override
-    public Boolean isReservedIpAddressExists(String address, Date reserveDate, Date releaseDate, En_DateIntervalType dateIntervalType ) throws RequestFailedException {
-        return isReservedIpAddressExists(address, reserveDate, releaseDate, dateIntervalType, null);
-    }
+    public Boolean isReservedIpAddressExists(String address) throws RequestFailedException {
 
-    @Override
-    public Boolean isReservedIpAddressExists(String address, Date reserveDate, Date releaseDate, En_DateIntervalType dateIntervalType, Long excludeId) throws RequestFailedException {
+        log.info("isReservedIpAddressExists(): address={}", address);
 
-        log.info("isReservedIpAddressExists(): address={} | reserveDate={} | reserveDate={} | dateIntervalType={} | excludeId={}", address, reserveDate, releaseDate, dateIntervalType, excludeId);
-
-        Result<Boolean> response = ipReservationService.isReservedIpAddressExists( address, reserveDate, releaseDate, dateIntervalType, excludeId );
+        Result<Boolean> response = ipReservationService.isReservedIpAddressExists( address );
 
         log.info( "isReservedIpAddressExists(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
 

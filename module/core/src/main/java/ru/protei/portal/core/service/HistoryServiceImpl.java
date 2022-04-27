@@ -7,9 +7,13 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.query.HistoryQuery;
+import ru.protei.portal.core.model.util.MarkupUtils;
+import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.template.htmldiff.HtmlDiff;
 
 import java.util.*;
 import java.util.function.Function;
@@ -42,13 +46,18 @@ public class HistoryServiceImpl implements HistoryService {
     CaseObjectDAO caseObjectDAO;
     @Autowired
     PolicyService policyService;
+    @Autowired
+    HTMLRenderer htmlRenderer;
+
+    private static final String DIFF_INSERT_STYLE = "color:#11731d;background:#dff7e2;text-decoration:none";
+    private static final String DIFF_DELETE_STYLE = "color:#bd1313;text-decoration:line-through";
 
     @Override
     @Transactional
     public Result<Long> createHistory(AuthToken token, Long caseObjectId, En_HistoryAction action,
                                       En_HistoryType type, Long oldId, String oldValue, Long newId, String newValue) {
 
-        if (token == null || caseObjectId == null || type == null || action == null || (oldId == null && newId == null) || (oldValue == null && newValue == null)){
+        if (token == null || caseObjectId == null || type == null || action == null || (oldValue == null && newValue == null)){
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -105,6 +114,25 @@ public class HistoryServiceImpl implements HistoryService {
         }
 
         return listHistories(token, new HistoryQuery(caseId));
+    }
+
+    @Override
+    public Result<String> getHistoryValueDiffByHistoryId(AuthToken token, Long historyId) {
+        if (historyId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        History history = historyDAO.get(historyId);
+        if (history == null) {
+            return error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        CaseObject caseObject = caseObjectDAO.get(history.getCaseObjectId());
+        if (caseObject == null) {
+            return error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        return ok(createHtmlDiff(history.getOldValue(), history.getNewValue(), MarkupUtils.recognizeTextMarkup(caseObject)));
     }
 
     @Override
@@ -238,5 +266,19 @@ public class HistoryServiceImpl implements HistoryService {
             return En_ResultStatus.PERMISSION_DENIED;
 
         return null;
+    }
+
+    private String createHtmlDiff(String oldValue, String newValue, En_TextMarkup textMarkup) {
+
+        String oldHtml = "";
+        String newHtml = "";
+        if (StringUtils.isNotEmpty(oldValue)){
+            oldHtml = htmlRenderer.plain2html(oldValue, textMarkup);
+        }
+        if (StringUtils.isNotEmpty(newValue)){
+            newHtml = htmlRenderer.plain2html(newValue, textMarkup);
+        }
+        HtmlDiff htmlDiff = new HtmlDiff(oldHtml, newHtml);
+        return htmlDiff.build(DIFF_INSERT_STYLE, DIFF_DELETE_STYLE);
     }
 }

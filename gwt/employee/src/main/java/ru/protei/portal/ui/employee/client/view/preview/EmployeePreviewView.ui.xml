@@ -40,9 +40,14 @@
                     <b><ui:text from="{lang.employeeIPAddress}:"/></b>
                     <span ui:field="ip"/>
                 </div>
-                <div class="small">
+                <div ui:field="loginsPanel" class="small hide">
                     <b><ui:text from="{lang.accountLogin}:"/></b>
                     <span ui:field="login"/>
+                </div>
+                <div ui:field="restVacationDaysPanel" class="small hide">
+                    <b><ui:text from="{lang.restVacationDays}:"/></b>
+                    <i class='fa fa-spinner fa-pulse' ui:field="restVacationDaysLoading" style="hide"/>
+                    <span ui:field="restVacationDays"/>
                 </div>
             </div>
 

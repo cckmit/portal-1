@@ -11,6 +11,7 @@ import java.util.Set;
 public class DutyLogQuery extends BaseQuery implements FilterQuery {
 
     private Set<Long> personIds;
+    private Long personId;
     private Set<En_DutyType> types;
     private DateRange dateRange;
 
@@ -29,6 +30,11 @@ public class DutyLogQuery extends BaseQuery implements FilterQuery {
         this.dateRange = dateRange;
     }
 
+    public DutyLogQuery(Long personId, En_SortField sortField, En_SortDir sortDir) {
+        super(null, sortField, sortDir);
+        this.personId = personId;
+    }
+
     public DateRange getDateRange() {
         return dateRange;
     }
@@ -45,6 +51,14 @@ public class DutyLogQuery extends BaseQuery implements FilterQuery {
         this.personIds = personIds;
     }
 
+    public Long getPersonId() {
+        return personId;
+    }
+
+    public void setPersonId(Long personId) {
+        this.personId = personId;
+    }
+
     public Set<En_DutyType> getTypes() {
         return types;
     }
@@ -57,6 +71,7 @@ public class DutyLogQuery extends BaseQuery implements FilterQuery {
     public String toString() {
         return "DutyLogQuery{" +
                 "personIds=" + personIds +
+                ", personId=" + personId +
                 ", types=" + types +
                 ", dateRange=" + dateRange +
                 '}';

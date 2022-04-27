@@ -22,7 +22,7 @@ public interface EmployeeControllerAsync {
      * Получение списка сотрудников
      * @return список контактов
      */
-    void getEmployees(EmployeeQuery query, AsyncCallback<SearchResult< EmployeeShortView >> async);
+    void getEmployees(EmployeeQuery query, AsyncCallback<SearchResult<EmployeeShortView>> async);
 
     /**
      * Получение списка сокращенного представления сотрудника
@@ -30,8 +30,6 @@ public interface EmployeeControllerAsync {
      * @param callback
      */
     void getEmployeeViewList(EmployeeQuery query, AsyncCallback<List<PersonShortView>> callback);
-
-    void getEmployee(Long employeeId, AsyncCallback<EmployeeShortView> async);
 
     /**
      * Получение руководителя подразделения
@@ -42,13 +40,17 @@ public interface EmployeeControllerAsync {
 
     void getWorkerEntryList(int offset, int limit, AsyncCallback<List<WorkerEntryShortView>> async);
 
-    void getEmployeeWithChangedHiddenCompanyNames(Long employeeId, AsyncCallback<EmployeeShortView> async);
+    void getEmployee(Long employeeId, AsyncCallback<EmployeeShortView> async);
 
-    void getEmployeesWithChangedHiddenCompanyNames(EmployeeQuery query, AsyncCallback<SearchResult<EmployeeShortView>> async);
+    void getEmployeeWithPrivacyInfo(Long employeeId, AsyncCallback<EmployeeShortView> async);
 
     void fireEmployee(Person person, AsyncCallback<Boolean> async);
 
     void saveEmployee(Person person, List<WorkerEntry> workerEntries, boolean isEditablePerson, boolean needToChangeAccount, AsyncCallback<Person> async);
 
     void getEmployeesBirthdays(Date dateFrom, Date dateUntil, AsyncCallback<EmployeesBirthdays> async);
+
+    void getEmployeeRestVacationDays(Long employeeId, AsyncCallback<String> async);
+
+    void getAccountingEmployee(AsyncCallback<List<PersonShortView>> async);
 }

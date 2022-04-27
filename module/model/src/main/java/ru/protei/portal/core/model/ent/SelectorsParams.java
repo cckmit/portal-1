@@ -25,6 +25,8 @@ public class SelectorsParams implements Serializable {
 
     private List<EntityOption> regions;
 
+    private List<CaseState> caseStates;
+
     public List<CaseTag> getCaseTags() {
         return caseTags;
     }
@@ -95,5 +97,13 @@ public class SelectorsParams implements Serializable {
 
     public void setRegions(List<EntityOption> regions) {
         this.regions = regions;
+    }
+
+    public List<CaseState> getCaseStates() {
+        return caseStates;
+    }
+
+    public void setCaseStates(List<CaseState> caseStates) {
+        this.caseStates = caseStates;
     }
 }
