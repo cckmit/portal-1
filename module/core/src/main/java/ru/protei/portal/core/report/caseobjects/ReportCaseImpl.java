@@ -64,7 +64,8 @@ public class ReportCaseImpl implements ReportCase {
         try (ReportWriter<CaseObjectReportRow> writer =
                     new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), report.isRestricted(), report.isWithDescription(),
                             report.isWithTags(), report.isWithLinkedIssues(), report.isHumanReadable(),
-                            Boolean.TRUE.equals(query.isCheckImportanceHistory()), report.isWithDeadlineAndWorkTrigger())) {
+                            Boolean.TRUE.equals(query.isCheckImportanceHistory()), report.isWithDeadlineAndWorkTrigger(),
+                            true)) {    // todo get from query
 
             int sheetNumber = writer.createSheet();
 
