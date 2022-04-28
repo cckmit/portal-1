@@ -571,7 +571,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         plan.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         workTriggers.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         overdueDeadlinesContainer.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        autoClose.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        autoCloseContainer.setVisible(!isCustomer && filterType.equals(En_CaseFilterType.CASE_OBJECTS));
         if (filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED) || filterType.equals(En_CaseFilterType.NIGHT_WORK)) {
             importanceContainer.addClassName(HIDE);
             stateContainer.addClassName(HIDE);
