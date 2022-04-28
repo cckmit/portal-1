@@ -65,7 +65,7 @@ public class ReportCaseImpl implements ReportCase {
                     new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), report.isRestricted(), report.isWithDescription(),
                             report.isWithTags(), report.isWithLinkedIssues(), report.isHumanReadable(),
                             Boolean.TRUE.equals(query.isCheckImportanceHistory()), report.isWithDeadlineAndWorkTrigger(),
-                            true)) {    // todo get from query
+                            true, true)) {    // todo get from query
 
             int sheetNumber = writer.createSheet();
 
@@ -125,14 +125,16 @@ public class ReportCaseImpl implements ReportCase {
     }
 
     private List<CaseObjectReportRow> makeCaseObjectReportWork(List<CaseComment> comments) {
-        Map<En_TimeElapsedType, Long> collect = stream(comments)
+        Map<En_TimeElapsedType, Map<Person, Long>> collect = stream(comments)
                 .filter(comment -> comment.getTimeElapsedType() != null && comment.getTimeElapsed() != null)
                 .collect(Collectors.groupingBy(
                         CaseComment::getTimeElapsedType,
-                        Collectors.reducing(0L, CaseComment::getTimeElapsed, Long::sum)
-                ));
+                            Collectors.groupingBy(CaseComment::getAuthor,
+                            Collectors.reducing(0L, CaseComment::getTimeElapsed, Long::sum)
+                        )));
         List<CaseObjectReportRow> list = new ArrayList<>();
-        collect.forEach((key, value) -> list.add(new CaseObjectReportWork(key, value)));
+        collect.forEach((type, innerMap) ->
+                innerMap.forEach((author, time) -> list.add(new CaseObjectReportWork(time, type, author.getDisplayName()))));
         return list;
     }
 

@@ -20,9 +20,10 @@ public class CaseObjectReportWork implements CaseObjectReportRow {
         this.employeeName = employeeName;
     }
 
-    public CaseObjectReportWork(En_TimeElapsedType timeElapsedType, Long timeElapsed) {
-        this.timeElapsedType = timeElapsedType;
+    public CaseObjectReportWork(Long timeElapsed, En_TimeElapsedType timeElapsedType, String employeeName) {
         this.timeElapsed = timeElapsed;
+        this.timeElapsedType = timeElapsedType;
+        this.employeeName = employeeName;
     }
 
     public Long getTimeElapsed() {
