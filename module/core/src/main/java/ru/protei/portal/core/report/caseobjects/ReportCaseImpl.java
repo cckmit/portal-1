@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_CaseObjectReportWorkType;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportRequest;
 import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportRow;
@@ -25,6 +27,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.dict.En_CaseObjectReportWorkType.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
@@ -65,7 +68,8 @@ public class ReportCaseImpl implements ReportCase {
                     new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), report.isRestricted(), report.isWithDescription(),
                             report.isWithTags(), report.isWithLinkedIssues(), report.isHumanReadable(),
                             Boolean.TRUE.equals(query.isCheckImportanceHistory()), report.isWithDeadlineAndWorkTrigger(),
-                            true, true)) {    // todo get from query
+                            report.getCaseObjectReportWorkTypes().contains(TYPE),
+                            report.getCaseObjectReportWorkTypes().contains(AUTHOR))) {
 
             int sheetNumber = writer.createSheet();
 
@@ -120,22 +124,38 @@ public class ReportCaseImpl implements ReportCase {
 
         List<CaseObjectReportRow> rows = new ArrayList<>();
         rows.add(caseObjectReportRequest);
-        rows.addAll(makeCaseObjectReportWork(caseComments));
+        if (CollectionUtils.isNotEmpty(report.getCaseObjectReportWorkTypes()) ) {
+            rows.addAll(makeCaseObjectReportWork(caseComments, report.getCaseObjectReportWorkTypes()));
+        }
         return rows;
     }
 
-    private List<CaseObjectReportRow> makeCaseObjectReportWork(List<CaseComment> comments) {
-        Map<En_TimeElapsedType, Map<Person, Long>> collect = stream(comments)
+    private List<CaseObjectReportRow> makeCaseObjectReportWork(List<CaseComment> comments,
+                                                               Set<En_CaseObjectReportWorkType> workTypes) {
+
+        Map<Optional<En_TimeElapsedType>, Map<Optional<Person>, Long>> collect = stream(comments)
                 .filter(comment -> comment.getTimeElapsedType() != null && comment.getTimeElapsed() != null)
-                .collect(Collectors.groupingBy(
-                        CaseComment::getTimeElapsedType,
-                            Collectors.groupingBy(CaseComment::getAuthor,
-                            Collectors.reducing(0L, CaseComment::getTimeElapsed, Long::sum)
-                        )));
+                .collect(Collectors.groupingBy(c -> makeTypeGrouping(c, workTypes),
+                            Collectors.groupingBy(c -> makeAuthorGrouping(c, workTypes),
+                                Collectors.reducing(0L, CaseComment::getTimeElapsed, Long::sum)
+                        ))
+                );
+
         List<CaseObjectReportRow> list = new ArrayList<>();
-        collect.forEach((type, innerMap) ->
-                innerMap.forEach((author, time) -> list.add(new CaseObjectReportWork(time, type, author.getDisplayName()))));
+        collect.forEach((optType, innerMap) ->
+                innerMap.forEach((optAuthor, time) -> list.add(new CaseObjectReportWork(
+                        time,
+                        optType.orElse(null),
+                        optAuthor.map(Person::getDisplayName).orElse(null))))
+        );
         return list;
     }
 
+    private Optional<En_TimeElapsedType> makeTypeGrouping(CaseComment c, Set<En_CaseObjectReportWorkType> workTypes) {
+        return workTypes.contains(TYPE) ? Optional.of(c.getTimeElapsedType()) : Optional.empty();
+    }
+
+    private Optional<Person> makeAuthorGrouping(CaseComment c, Set<En_CaseObjectReportWorkType> workTypes) {
+        return workTypes.contains(AUTHOR) ? Optional.of(c.getAuthor()) : Optional.empty();
+    }
 }

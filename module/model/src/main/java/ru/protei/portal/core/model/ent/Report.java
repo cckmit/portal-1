@@ -1,8 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_ReportScheduledType;
-import ru.protei.portal.core.model.dict.En_ReportStatus;
-import ru.protei.portal.core.model.dict.En_ReportType;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.dto.ReportContractQuery;
 import ru.protei.winter.jdbc.annotations.*;
@@ -10,6 +8,7 @@ import ru.protei.winter.jdbc.annotations.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @see ReportCaseQuery
@@ -77,6 +76,8 @@ public class Report implements Serializable {
 
     @JdbcColumn(name = "with_deadline_and_work_trigger")
     private boolean withDeadlineAndWorkTrigger;
+
+    private Set<En_CaseObjectReportWorkType> caseObjectReportWorkTypes;
 
     public Long getId() {
         return id;
@@ -238,6 +239,14 @@ public class Report implements Serializable {
         this.withDeadlineAndWorkTrigger = withDeadlineAndWorkTrigger;
     }
 
+    public Set<En_CaseObjectReportWorkType> getCaseObjectReportWorkTypes() {
+        return caseObjectReportWorkTypes;
+    }
+
+    public void setCaseObjectReportWorkTypes(Set<En_CaseObjectReportWorkType> caseObjectReportWorkTypes) {
+        this.caseObjectReportWorkTypes = caseObjectReportWorkTypes;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -272,6 +281,7 @@ public class Report implements Serializable {
                 ", isRemoved=" + isRemoved +
                 ", systemId='" + systemId + '\'' +
                 ", isHumanReadable=" + isHumanReadable +
+                ", caseObjectReportWorkTypes=" + caseObjectReportWorkTypes +
                 '}';
     }
 
