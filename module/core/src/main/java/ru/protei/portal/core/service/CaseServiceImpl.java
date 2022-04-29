@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseNameAndDescriptionEvent;
 import ru.protei.portal.core.event.CaseObjectCreateEvent;
@@ -32,7 +31,6 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.core.utils.JiraUtils;
-import ru.protei.portal.core.utils.LangUtil;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
@@ -650,7 +648,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (!oldCaseMeta.getAutoClose() && caseMeta.getAutoClose()) {
-            Result<CaseComment> result = createAndPersistAutoCloseMessage(caseMeta);
+            Result<CaseComment> result = createAutoCloseMessage(caseMeta);
 
             if (result.isError()) {
                 log.error("Auto close message for the issue {} not saved!", caseMeta.getId());
@@ -1111,16 +1109,14 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
-    private Result<CaseComment> createAndPersistAutoCloseMessage(CaseObjectMeta caseMeta) {
+    private Result<CaseComment> createAutoCloseMessage(CaseObjectMeta caseMeta) {
         CaseComment autoCloseComment = new CaseComment();
         autoCloseComment.setCreated(new Date());
         autoCloseComment.setAuthorId(portalConfig.data().getCommonConfig().getSystemUserId());
         autoCloseComment.setCaseId(caseMeta.getId());
-
         Person customer = caseMeta.getInitiator();
         String locale = customer != null ? personDAO.partialGet(customer.getId(), "locale").getLocale() : null;
         autoCloseComment.setText(getLangFor("issue_will_be_closed", locale));
-
         autoCloseComment.setPrivacyType( En_CaseCommentPrivacyType.PUBLIC );
         return caseCommentService.addCaseComment(createSystemUserToken(), CRM_SUPPORT, autoCloseComment);
     }

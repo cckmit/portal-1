@@ -63,9 +63,9 @@ public interface TemplateService {
 
     String getEmployeeRegistrationDevelopmentAgendaEmailNotificationBody( String employeeName ) throws IOException, TemplateException;
 
-    String getCaseObjectDeadlineExpireNotificationSubject(Long caseNumber, String locale) throws IOException, TemplateException;
+    PreparedTemplate getCaseObjectDeadlineExpireNotificationSubject(Long caseNumber);
 
-    String getCaseObjectDeadlineExpireNotificationBody(Long caseObjectId, Long caseNumber, String urlTemplate, String recipientName, String locale) throws IOException, TemplateException;
+    PreparedTemplate getCaseObjectDeadlineExpireNotificationBody(Long caseObjectId, Long caseNumber, String urlTemplate, Collection<String> recipients);
 
     String getEmployeeRegistrationEmployeeFeedbackEmailNotificationBody(String employeeName ) throws IOException, TemplateException;
 

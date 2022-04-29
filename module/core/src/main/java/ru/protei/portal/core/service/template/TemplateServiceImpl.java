@@ -211,26 +211,26 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public String getCaseObjectDeadlineExpireNotificationSubject(Long caseNumber, String locale) throws IOException, TemplateException {
+    public PreparedTemplate getCaseObjectDeadlineExpireNotificationSubject(Long caseNumber) {
         Map<String, Object> model = new HashMap<>();
         model.put("caseNumber", caseNumber);
-
-
-        return getText(model,
-                "issue.deadline.expire.subject.%s.ftl",
-                locale == null ? null : new Locale(locale));
+        PreparedTemplate template = new PreparedTemplate("notification/email/issue.deadline.expire.subject.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
     }
 
     @Override
-    public String getCaseObjectDeadlineExpireNotificationBody(Long caseObjectId, Long caseNumber, String urlTemplate, String recipientName, String locale) throws IOException, TemplateException {
+    public PreparedTemplate getCaseObjectDeadlineExpireNotificationBody(Long caseObjectId, Long caseNumber, String urlTemplate, Collection<String> recipients) {
         Map<String, Object> model = new HashMap<>();
+        model.put( "TranslitUtils", new TransliterationUtils() );
         model.put("caseNumber", caseNumber);
         model.put("linkToCaseObject", String.format(urlTemplate, caseObjectId));
-        model.put("userName", recipientName);
-
-        return getText(model,
-                "issue.deadline.expire.body.%s.ftl",
-                locale == null ? null : new Locale(locale));
+        model.put("recipients", recipients);
+        PreparedTemplate template = new PreparedTemplate("notification/email/issue.deadline.expire.body.%s.ftl");
+        template.setModel(model);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
     }
 
     @Override
