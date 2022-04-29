@@ -1116,8 +1116,11 @@ public class CaseServiceImpl implements CaseService {
         autoCloseComment.setCreated(new Date());
         autoCloseComment.setAuthorId(portalConfig.data().getCommonConfig().getSystemUserId());
         autoCloseComment.setCaseId(caseMeta.getId());
-        String locale = caseMeta.getInitiator().getLocale();
+
+        Person customer = caseMeta.getInitiator();
+        String locale = customer != null ? personDAO.partialGet(customer.getId(), "locale").getLocale() : null;
         autoCloseComment.setText(getLangFor("issue_will_be_closed", locale));
+
         autoCloseComment.setPrivacyType( En_CaseCommentPrivacyType.PUBLIC );
         return caseCommentService.addCaseComment(createSystemUserToken(), CRM_SUPPORT, autoCloseComment);
     }
