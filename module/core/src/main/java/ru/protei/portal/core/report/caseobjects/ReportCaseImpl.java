@@ -28,8 +28,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.dict.En_TimeElapsedGroup.*;
-import static ru.protei.portal.core.model.helper.CollectionUtils.size;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 public class ReportCaseImpl implements ReportCase {
 
@@ -51,6 +50,8 @@ public class ReportCaseImpl implements ReportCase {
     CaseLinkDAO caseLinkDAO;
     @Autowired
     PlanToCaseObjectDAO planToCaseObjectDAO;
+    @Autowired
+    CompanyDepartmentDAO companyDepartmentDAO;
 
     @Override
     public boolean writeReport(OutputStream buffer,
@@ -69,7 +70,9 @@ public class ReportCaseImpl implements ReportCase {
                             report.isWithTags(), report.isWithLinkedIssues(), report.isHumanReadable(),
                             Boolean.TRUE.equals(query.isCheckImportanceHistory()), report.isWithDeadlineAndWorkTrigger(),
                             report.getTimeElapsedGroups() != null && report.getTimeElapsedGroups().contains(TYPE),
-                            report.getTimeElapsedGroups() != null && report.getTimeElapsedGroups().contains(AUTHOR))) {
+                            report.getTimeElapsedGroups() != null && report.getTimeElapsedGroups().contains(DEPARTMENT),
+                            report.getTimeElapsedGroups() != null && report.getTimeElapsedGroups().contains(AUTHOR)
+                            )) {
 
             int sheetNumber = writer.createSheet();
 
@@ -89,7 +92,7 @@ public class ReportCaseImpl implements ReportCase {
             writer.collect( buffer );
             return true;
         } catch (Exception ex) {
-            log.warn( "writeReport : fail to process chunk [{} - {}] : reportId={} query: {} ",
+            log.error( "writeReport : fail to process chunk [{} - {}] : reportId={} query: {} ",
                                                 offset, limit, report.getId(), query, ex );
             return false;
         }
@@ -133,26 +136,41 @@ public class ReportCaseImpl implements ReportCase {
     private List<CaseObjectReportRow> makeTimeElapsedGroupRows(List<CaseComment> comments,
                                                                Set<En_TimeElapsedGroup> timeElapsedGroups) {
 
-        Map<Optional<En_TimeElapsedType>, Map<Optional<Person>, Long>> collect = stream(comments)
+        Map<Optional<En_TimeElapsedType>, Map<Optional<CompanyDepartment>, Map<Optional<Person>, Long>>> collect = stream(comments)
                 .filter(comment -> comment.getTimeElapsedType() != null && comment.getTimeElapsed() != null)
                 .collect(Collectors.groupingBy(comment -> makeTypeGrouping(comment, timeElapsedGroups),
-                            Collectors.groupingBy(comment -> makeAuthorGrouping(comment, timeElapsedGroups),
-                                Collectors.reducing(0L, CaseComment::getTimeElapsed, Long::sum)
-                        ))
+                        Collectors.groupingBy(comment -> makeDepartmentGrouping(comment, timeElapsedGroups),
+                                Collectors.groupingBy(comment -> makeAuthorGrouping(comment, timeElapsedGroups),
+                                        Collectors.reducing(0L, CaseComment::getTimeElapsed, Long::sum)
+                                )))
                 );
 
         List<CaseObjectReportRow> list = new ArrayList<>();
-        collect.forEach((optType, innerMap) ->
-                innerMap.forEach((optAuthor, time) -> list.add(new CaseObjectReportTimeElapsedGroupRow(
-                        time,
-                        optType.orElse(null),
-                        optAuthor.map(Person::getDisplayName).orElse(null))))
+        collect.forEach((optType, depMap) ->
+                depMap.forEach((optDep, personMap) ->
+                        personMap.forEach((optAuthor, time) ->  list.add(
+                                new CaseObjectReportTimeElapsedGroupRow(
+                                    time,
+                                    optType.orElse(null),
+                                    optDep.map(CompanyDepartment::getName).orElse(null),
+                                    optAuthor.map(Person::getDisplayName).orElse(null))
+                                )))
         );
         return list;
     }
 
     private Optional<En_TimeElapsedType> makeTypeGrouping(CaseComment c, Set<En_TimeElapsedGroup> timeElapsedGroups) {
         return timeElapsedGroups.contains(TYPE) ? Optional.of(c.getTimeElapsedType()) : Optional.empty();
+    }
+
+    private Optional<CompanyDepartment> makeDepartmentGrouping(CaseComment c, Set<En_TimeElapsedGroup> timeElapsedGroups) {
+        if (timeElapsedGroups.contains(DEPARTMENT)) {
+            CompanyDepartmentQuery query = new CompanyDepartmentQuery(c.getAuthorId());
+            List<CompanyDepartment> companyDepartments = companyDepartmentDAO.getListByQuery(query);
+            return Optional.of(isEmpty(companyDepartments)? new CompanyDepartment(0L, "no dep") : companyDepartments.get(0));
+        } else {
+            return Optional.empty();
+        }
     }
 
     private Optional<Person> makeAuthorGrouping(CaseComment c, Set<En_TimeElapsedGroup> timeElapsedGroups) {
