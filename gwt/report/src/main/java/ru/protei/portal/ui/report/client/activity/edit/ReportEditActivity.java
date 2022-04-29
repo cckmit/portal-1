@@ -156,6 +156,7 @@ public abstract class ReportEditActivity implements Activity,
         view.reportTypeEnable().setEnabled(true);
         view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
         view.additionalParams().setValue(null);
+        view.timeElapsedGroup().setValue(null);
     }
 
     private void presetCompanyAtFilter() {
@@ -244,6 +245,8 @@ public abstract class ReportEditActivity implements Activity,
                 break;
         }
         view.additionalParams().setValue(additionalParams);
+
+        view.timeElapsedGroup().setValue(report.getTimeElapsedGroups());
     }
 
     private void fillFilter(CaseQuery query) {
@@ -373,6 +376,7 @@ public abstract class ReportEditActivity implements Activity,
         report.setWithLinkedIssues(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.LINKED_ISSUES));
         report.setHumanReadable(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.HUMAN_READABLE));
         report.setWithDeadlineAndWorkTrigger(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.DEADLINE_AND_WORK_TRIGGER));
+        report.setTimeElapsedGroups(view.timeElapsedGroup().getValue());
         return report;
     }
 
@@ -433,6 +437,8 @@ public abstract class ReportEditActivity implements Activity,
                 view.scheduledTypeContainerVisibility().setVisible(false);
                 view.additionalParamsVisibility().setVisible(false);
                 view.additionalParams().setValue(null);
+                view.timeElapsedGroupVisibility().setVisible(false);
+                view.timeElapsedGroup().setValue(null);
                 break;
             }
             case CONTRACT: {
@@ -443,6 +449,8 @@ public abstract class ReportEditActivity implements Activity,
                 view.scheduledTypeContainerVisibility().setVisible(false);
                 view.additionalParamsVisibility().setVisible(false);
                 view.additionalParams().setValue(null);
+                view.timeElapsedGroupVisibility().setVisible(false);
+                view.timeElapsedGroup().setValue(null);
                 break;
             }
             case CASE_OBJECTS:
@@ -453,6 +461,8 @@ public abstract class ReportEditActivity implements Activity,
                 view.scheduledTypeContainerVisibility().setVisible(isScheduledEnabled(reportType));
                 view.additionalParamsVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
                 view.additionalParams().setValue(null);
+                view.timeElapsedGroupVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
+                view.timeElapsedGroup().setValue(null);
                 issueFilterWidget.updateFilterType(En_CaseFilterType.valueOf(reportType.name()));
                 validateDateRanges(reportType);
                 applyIssueFilterVisibilityByPrivileges();
@@ -469,6 +479,8 @@ public abstract class ReportEditActivity implements Activity,
                 view.scheduledTypeContainerVisibility().setVisible(false);
                 view.additionalParamsVisibility().setVisible(false);
                 view.additionalParams().setValue(null);
+                view.timeElapsedGroupVisibility().setVisible(false);
+                view.timeElapsedGroup().setValue(null);
         }
     }
 

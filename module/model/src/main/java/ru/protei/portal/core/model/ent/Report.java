@@ -77,7 +77,9 @@ public class Report implements Serializable {
     @JdbcColumn(name = "with_deadline_and_work_trigger")
     private boolean withDeadlineAndWorkTrigger;
 
-    private Set<En_CaseObjectReportWorkType> caseObjectReportWorkTypes;
+    @JdbcEnumerated(EnumType.STRING)
+    @JdbcColumnCollection(name = "time_elapsed_groups", separator = ",")
+    private Set<En_TimeElapsedGroup> timeElapsedGroups;
 
     public Long getId() {
         return id;
@@ -239,12 +241,12 @@ public class Report implements Serializable {
         this.withDeadlineAndWorkTrigger = withDeadlineAndWorkTrigger;
     }
 
-    public Set<En_CaseObjectReportWorkType> getCaseObjectReportWorkTypes() {
-        return caseObjectReportWorkTypes;
+    public Set<En_TimeElapsedGroup> getTimeElapsedGroups() {
+        return timeElapsedGroups;
     }
 
-    public void setCaseObjectReportWorkTypes(Set<En_CaseObjectReportWorkType> caseObjectReportWorkTypes) {
-        this.caseObjectReportWorkTypes = caseObjectReportWorkTypes;
+    public void setTimeElapsedGroups(Set<En_TimeElapsedGroup> timeElapsedGroups) {
+        this.timeElapsedGroups = timeElapsedGroups;
     }
 
     @Override
@@ -281,7 +283,7 @@ public class Report implements Serializable {
                 ", isRemoved=" + isRemoved +
                 ", systemId='" + systemId + '\'' +
                 ", isHumanReadable=" + isHumanReadable +
-                ", caseObjectReportWorkTypes=" + caseObjectReportWorkTypes +
+                ", timeElapsedGroups=" + timeElapsedGroups +
                 '}';
     }
 

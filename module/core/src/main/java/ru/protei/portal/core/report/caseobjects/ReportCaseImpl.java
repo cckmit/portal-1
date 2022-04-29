@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseObjectReportWorkType;
+import ru.protei.portal.core.model.dict.En_TimeElapsedGroup;
 import ru.protei.portal.core.model.dict.En_HistoryAction;
 import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
@@ -15,7 +15,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportRequest;
 import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportRow;
-import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportWork;
+import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportTimeElapsedGroupRow;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.TimeFormatter;
@@ -27,7 +27,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.dict.En_CaseObjectReportWorkType.*;
+import static ru.protei.portal.core.model.dict.En_TimeElapsedGroup.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
@@ -68,8 +68,8 @@ public class ReportCaseImpl implements ReportCase {
                     new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), report.isRestricted(), report.isWithDescription(),
                             report.isWithTags(), report.isWithLinkedIssues(), report.isHumanReadable(),
                             Boolean.TRUE.equals(query.isCheckImportanceHistory()), report.isWithDeadlineAndWorkTrigger(),
-                            report.getCaseObjectReportWorkTypes().contains(TYPE),
-                            report.getCaseObjectReportWorkTypes().contains(AUTHOR))) {
+                            report.getTimeElapsedGroups() != null && report.getTimeElapsedGroups().contains(TYPE),
+                            report.getTimeElapsedGroups() != null && report.getTimeElapsedGroups().contains(AUTHOR))) {
 
             int sheetNumber = writer.createSheet();
 
@@ -124,26 +124,26 @@ public class ReportCaseImpl implements ReportCase {
 
         List<CaseObjectReportRow> rows = new ArrayList<>();
         rows.add(caseObjectReportRequest);
-        if (CollectionUtils.isNotEmpty(report.getCaseObjectReportWorkTypes()) ) {
-            rows.addAll(makeCaseObjectReportWork(caseComments, report.getCaseObjectReportWorkTypes()));
+        if (CollectionUtils.isNotEmpty(report.getTimeElapsedGroups()) ) {
+            rows.addAll(makeTimeElapsedGroupRows(caseComments, report.getTimeElapsedGroups()));
         }
         return rows;
     }
 
-    private List<CaseObjectReportRow> makeCaseObjectReportWork(List<CaseComment> comments,
-                                                               Set<En_CaseObjectReportWorkType> workTypes) {
+    private List<CaseObjectReportRow> makeTimeElapsedGroupRows(List<CaseComment> comments,
+                                                               Set<En_TimeElapsedGroup> timeElapsedGroups) {
 
         Map<Optional<En_TimeElapsedType>, Map<Optional<Person>, Long>> collect = stream(comments)
                 .filter(comment -> comment.getTimeElapsedType() != null && comment.getTimeElapsed() != null)
-                .collect(Collectors.groupingBy(c -> makeTypeGrouping(c, workTypes),
-                            Collectors.groupingBy(c -> makeAuthorGrouping(c, workTypes),
+                .collect(Collectors.groupingBy(comment -> makeTypeGrouping(comment, timeElapsedGroups),
+                            Collectors.groupingBy(comment -> makeAuthorGrouping(comment, timeElapsedGroups),
                                 Collectors.reducing(0L, CaseComment::getTimeElapsed, Long::sum)
                         ))
                 );
 
         List<CaseObjectReportRow> list = new ArrayList<>();
         collect.forEach((optType, innerMap) ->
-                innerMap.forEach((optAuthor, time) -> list.add(new CaseObjectReportWork(
+                innerMap.forEach((optAuthor, time) -> list.add(new CaseObjectReportTimeElapsedGroupRow(
                         time,
                         optType.orElse(null),
                         optAuthor.map(Person::getDisplayName).orElse(null))))
@@ -151,11 +151,11 @@ public class ReportCaseImpl implements ReportCase {
         return list;
     }
 
-    private Optional<En_TimeElapsedType> makeTypeGrouping(CaseComment c, Set<En_CaseObjectReportWorkType> workTypes) {
-        return workTypes.contains(TYPE) ? Optional.of(c.getTimeElapsedType()) : Optional.empty();
+    private Optional<En_TimeElapsedType> makeTypeGrouping(CaseComment c, Set<En_TimeElapsedGroup> timeElapsedGroups) {
+        return timeElapsedGroups.contains(TYPE) ? Optional.of(c.getTimeElapsedType()) : Optional.empty();
     }
 
-    private Optional<Person> makeAuthorGrouping(CaseComment c, Set<En_CaseObjectReportWorkType> workTypes) {
-        return workTypes.contains(AUTHOR) ? Optional.of(c.getAuthor()) : Optional.empty();
+    private Optional<Person> makeAuthorGrouping(CaseComment c, Set<En_TimeElapsedGroup> timeElapsedGroups) {
+        return timeElapsedGroups.contains(AUTHOR) ? Optional.of(c.getAuthor()) : Optional.empty();
     }
 }

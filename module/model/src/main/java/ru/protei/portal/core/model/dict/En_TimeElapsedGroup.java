@@ -2,13 +2,13 @@ package ru.protei.portal.core.model.dict;
 
 import ru.protei.winter.core.utils.enums.HasId;
 
-public enum En_CaseObjectReportWorkType implements HasId {
+public enum En_TimeElapsedGroup implements HasId {
 
     TYPE(1),
     DEPARTMENT(2),
     AUTHOR(3);
 
-    En_CaseObjectReportWorkType(int id) {
+    En_TimeElapsedGroup(int id) {
         this.id = id;
     }
 
@@ -18,8 +18,8 @@ public enum En_CaseObjectReportWorkType implements HasId {
         return id;
     }
 
-    public static En_CaseObjectReportWorkType find (int id) {
-        for (En_CaseObjectReportWorkType value : En_CaseObjectReportWorkType.values())
+    public static En_TimeElapsedGroup find (int id) {
+        for (En_TimeElapsedGroup value : En_TimeElapsedGroup.values())
             if (value.id == id)
                 return value;
 

@@ -12,7 +12,7 @@ import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.struct.ListBuilder;
 import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportRequest;
 import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportRow;
-import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportWork;
+import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportTimeElapsedGroupRow;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.report.ReportWriter;
@@ -47,8 +47,8 @@ public class ExcelReportWriter implements
     private final boolean isHumanReadable;
     private final boolean withImportanceHistory;
     private final boolean withDeadlineAndWorkTrigger;
-    private final boolean withTimeElapsedType;
-    private final boolean withTimeElapsedAuthor;
+    private final boolean withTimeElapsedGroupType;
+    private final boolean withTimeElapsedGroupAuthor;
     private final String[] formats;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang,
@@ -60,8 +60,8 @@ public class ExcelReportWriter implements
                              boolean isHumanReadable,
                              boolean withImportanceHistory,
                              boolean withDeadlineAndWorkTrigger,
-                             boolean withTimeElapsedType,
-                             boolean withTimeElapsedAuthor
+                             boolean withTimeElapsedGroupType,
+                             boolean withTimeElapsedGroupAuthor
                              ) {
 
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
@@ -75,8 +75,8 @@ public class ExcelReportWriter implements
         this.isHumanReadable = isHumanReadable;
         this.withImportanceHistory = withImportanceHistory;
         this.withDeadlineAndWorkTrigger = withDeadlineAndWorkTrigger;
-        this.withTimeElapsedType = withTimeElapsedType;
-        this.withTimeElapsedAuthor = withTimeElapsedAuthor;
+        this.withTimeElapsedGroupType = withTimeElapsedGroupType;
+        this.withTimeElapsedGroupAuthor = withTimeElapsedGroupAuthor;
         this.formats = getFormats(
                 isNotRestricted,
                 withDescription,
@@ -85,8 +85,8 @@ public class ExcelReportWriter implements
                 isHumanReadable,
                 withImportanceHistory,
                 withDeadlineAndWorkTrigger,
-                withTimeElapsedType,
-                withTimeElapsedAuthor
+                withTimeElapsedGroupType,
+                withTimeElapsedGroupAuthor
         );
     }
 
@@ -125,8 +125,8 @@ public class ExcelReportWriter implements
                 isHumanReadable,
                 withImportanceHistory,
                 withDeadlineAndWorkTrigger,
-                withTimeElapsedType,
-                withTimeElapsedAuthor
+                withTimeElapsedGroupType,
+                withTimeElapsedGroupAuthor
         );
     }
 
@@ -140,8 +140,8 @@ public class ExcelReportWriter implements
                 isHumanReadable,
                 withImportanceHistory,
                 withDeadlineAndWorkTrigger,
-                withTimeElapsedType,
-                withTimeElapsedAuthor
+                withTimeElapsedGroupType,
+                withTimeElapsedGroupAuthor
         );
     }
 
@@ -237,8 +237,8 @@ public class ExcelReportWriter implements
 
             if (isNotRestricted) values.add(issue.getTimeElapsed() != null && issue.getTimeElapsed() > 0 ? toExcelTimeFormat(issue.getTimeElapsed()) : "");
             if (isNotRestricted) values.add(toExcelTimeFormat(timeElapsedInSelectedDuration));
-        } else if (row instanceof CaseObjectReportWork) {
-            CaseObjectReportWork work = (CaseObjectReportWork)row;
+        } else if (row instanceof CaseObjectReportTimeElapsedGroupRow) {
+            CaseObjectReportTimeElapsedGroupRow timeElapsedGroupRow = (CaseObjectReportTimeElapsedGroupRow)row;
             int count = 17;
             if (withTags) count++;
             if (withLinkedIssues) count++;
@@ -253,9 +253,9 @@ public class ExcelReportWriter implements
             for (int i = 0; i < count; i++) {
                 values.add("");
             }
-            values.add(toExcelTimeFormat(work.getTimeElapsed()));
-            if (withTimeElapsedType) values.add(enumLangUtil.timeElapsedTypeLang(work.getTimeElapsedType(), lang.getLanguageTag()));
-            if (withTimeElapsedAuthor) values.add(TransliterationUtils.transliterate(work.getEmployeeName(), lang.getLanguageTag()));
+            values.add(toExcelTimeFormat(timeElapsedGroupRow.getTimeElapsed()));
+            if (withTimeElapsedGroupType) values.add(enumLangUtil.timeElapsedTypeLang(timeElapsedGroupRow.getTimeElapsedType(), lang.getLanguageTag()));
+            if (withTimeElapsedGroupAuthor) values.add(TransliterationUtils.transliterate(timeElapsedGroupRow.getEmployeeName(), lang.getLanguageTag()));
         }
 
         return values.toArray();
@@ -331,7 +331,7 @@ public class ExcelReportWriter implements
 
     private String[] getFormats(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues,
                                 boolean isHumanReadable, boolean withImportanceHistory, boolean withDeadlineAndWorkTrigger,
-                                boolean withTimeElapsedType, boolean withTimeElapsedAuthor) {
+                                boolean withTimeElapsedGroupType, boolean withTimeElapsedGroupAuthor) {
         List<String> formatList = new ListBuilder<String>()
                 .add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, isNotRestricted).add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, withDescription)
                 .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
@@ -344,7 +344,7 @@ public class ExcelReportWriter implements
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.STANDARD, isNotRestricted && isHumanReadable)
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.STANDARD, isNotRestricted && isHumanReadable)
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted)
-                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, withTimeElapsedType).addIf(ExcelFormat.STANDARD, withTimeElapsedAuthor)
+                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, withTimeElapsedGroupType).addIf(ExcelFormat.STANDARD, withTimeElapsedGroupAuthor)
                 .build();
 
         return formatList.toArray(new String[]{});
@@ -352,7 +352,7 @@ public class ExcelReportWriter implements
 
     private int[] getColumnsWidth(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues,
                                   boolean isHumanReadable, boolean withImportanceHistory, boolean withDeadlineAndWorkTrigger,
-                                  boolean withTimeElapsedType, boolean withTimeElapsedAuthor) {
+                                  boolean withTimeElapsedGroupType, boolean withTimeElapsedGroupAuthor) {
         List<Integer> columnsWidthList = new ListBuilder<Integer>()
                 .add(3650).addIf(3430, isNotRestricted).add(8570).addIf(9000, withDescription)
                 .add(4590).add(4200).add(4200).add(4200)
@@ -365,7 +365,7 @@ public class ExcelReportWriter implements
                 .addIf(12000, isNotRestricted).addIf(12000, isNotRestricted && isHumanReadable)
                 .addIf(12000, isNotRestricted).addIf(12000, isNotRestricted && isHumanReadable)
                 .addIf(5800, isNotRestricted).addIf(12000, isNotRestricted)
-                .addIf(12000, withTimeElapsedType).addIf(12000, withTimeElapsedAuthor)
+                .addIf(5800, withTimeElapsedGroupType).addIf(12000, withTimeElapsedGroupAuthor)
                 .build();
 
         return toPrimitiveIntegerArray(columnsWidthList);
@@ -373,7 +373,7 @@ public class ExcelReportWriter implements
 
     private String[] getColumns(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues,
                                 boolean isHumanReadable, boolean withImportanceHistory, boolean withDeadlineAndWorkTrigger,
-                                boolean withTimeElapsedType, boolean withTimeElapsedAuthor) {
+                                boolean withTimeElapsedGroupType, boolean withTimeElapsedGroupAuthor) {
         List<String> columnsList = new ListBuilder<String>()
                 .add("ir_caseno").addIf("ir_private", isNotRestricted).add("ir_name").addIf("ir_description", withDescription)
                 .add("ir_company").add("ir_initiator").add("ir_manager").add("ir_manager_company")
@@ -386,7 +386,7 @@ public class ExcelReportWriter implements
                 .addIf("ir_time_solution_first", isNotRestricted).addIf("ir_time_solution_first_with_days", isNotRestricted && isHumanReadable)
                 .addIf("ir_time_solution_full", isNotRestricted).addIf("ir_time_solution_full_with_days", isNotRestricted && isHumanReadable)
                 .addIf("ir_time_elapsed", isNotRestricted).addIf("ir_time_elapsed_selected_range", isNotRestricted)
-                .addIf("ir_work_time_type", withTimeElapsedType).addIf("ir_work_time_employee", withTimeElapsedAuthor)
+                .addIf("ir_work_time_type", withTimeElapsedGroupType).addIf("ir_work_time_employee", withTimeElapsedGroupAuthor)
                 .build();
 
         return columnsList.toArray(new String[]{});

@@ -4127,5 +4127,13 @@ public interface Lang extends Messages, ContactItemLang {
     String linkRemoved();
 
     String issueValidationResultAutoCloseDeadline();
+
+    String timeElapsedGroup();
+
+    String timeElapsedGroupType();
+
+    String timeElapsedGroupDepartment();
+
+    String timeElapsedGroupAuthor();
 }
 
