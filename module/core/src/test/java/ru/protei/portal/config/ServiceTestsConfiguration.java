@@ -166,6 +166,11 @@ public class ServiceTestsConfiguration {
     public EmployeeService getEmployeeService () { return new EmployeeServiceImpl(); }
 
     @Bean
+    public SystemNotificationService getSystemNotificationService() {
+        return new SystemNotificationServiceImpl();
+    }
+
+    @Bean
     public LegacySystemDAO getLegacySystemDAO() {
         return new LegacySystemDAO();
     }

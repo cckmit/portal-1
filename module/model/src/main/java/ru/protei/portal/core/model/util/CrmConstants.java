@@ -262,4 +262,10 @@ public class CrmConstants {
     public interface CardBatch {
         List<Integer> CARD_BATCH_PRIORITY_IDS = Arrays.asList(1, 2, 3, 8);
     }
+
+    // Система оповещения (SN)
+    public interface SN {
+        Integer DEFAULT_SCHEME_REASON_ID = -1;
+        String NOTIFY_LIST_NAME = "Portal_";
+    }
 }

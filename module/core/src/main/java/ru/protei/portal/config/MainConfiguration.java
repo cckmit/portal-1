@@ -873,6 +873,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public SystemNotificationService getSystemNotificationService() {
+        return new SystemNotificationServiceImpl();
+    }
+
+    @Bean
     public CompanyService getCompanyService() {
         return new CompanyServiceImpl();
     }
