@@ -70,11 +70,15 @@ public final class JXLSHelper {
 
         public void write(int sheetNumber, List<T> objects) {
             for (T object : objects) {
-                Integer rowNumber = sheetRowIndexMap.get(sheetNumber);
-                Row row = sheetMap.get(sheetNumber).createRow(rowNumber++);
-                fillRow(row, writer.getColumnValues(object), this::getCellStyleForColumnIndex);
-                sheetRowIndexMap.put(sheetNumber, rowNumber);
+                write(sheetNumber, object);
             }
+        }
+
+        public void write(int sheetNumber, T object) {
+            Integer rowNumber = sheetRowIndexMap.get(sheetNumber);
+            Row row = sheetMap.get(sheetNumber).createRow(rowNumber++);
+            fillRow(row, writer.getColumnValues(object), this::getCellStyleForColumnIndex);
+            sheetRowIndexMap.put(sheetNumber, rowNumber);
         }
 
         public void collect(OutputStream outputStream) throws IOException {

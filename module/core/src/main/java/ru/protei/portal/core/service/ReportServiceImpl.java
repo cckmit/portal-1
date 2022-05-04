@@ -54,6 +54,7 @@ public class ReportServiceImpl implements ReportService {
         put(En_ReportType.CONTRACT, new Pair<>(En_Privilege.CONTRACT_REPORT, listOf(En_Scope.SYSTEM)));
         put(En_ReportType.NIGHT_WORK, new Pair<>(En_Privilege.ISSUE_REPORT, listOf(En_Scope.SYSTEM)));
         put(En_ReportType.YT_WORK, new Pair<>(En_Privilege.YT_REPORT, listOf(En_Scope.SYSTEM)));
+        put(En_ReportType.TRANSPORTATION_REQUEST, new Pair<>(En_Privilege.TRANSPORTATION_REQUEST_REPORT, listOf(En_Scope.SYSTEM)));
     }};
 
     @Autowired
@@ -408,6 +409,10 @@ public class ReportServiceImpl implements ReportService {
                 case YT_WORK: return ok(new ReportYoutrackWorkQuery(
                         report,
                         objectMapper.readValue(report.getQuery(), YoutrackWorkQuery.class)
+                ));
+                case TRANSPORTATION_REQUEST: return ok(new ReportTransportationRequestQuery(
+                        report,
+                        objectMapper.readValue(report.getQuery(), TransportationRequestQuery.class)
                 ));
             }
             throw new IllegalStateException("No switch branch matched for En_ReportType");

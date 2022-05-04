@@ -7,6 +7,8 @@ import java.util.function.Function;
 
 public class StringUtils {
 
+    public static final String EMPTY = "";
+
     /**
      * Checks if a String is empty ("") or null.
      */

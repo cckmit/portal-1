@@ -48,6 +48,7 @@ import ru.protei.portal.ui.common.client.activity.pathitem.list.AbstractPathItem
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.activity.projectsearch.AbstractProjectSearchView;
 import ru.protei.portal.ui.common.client.activity.projectsearch.ProjectSearchActivity;
+import ru.protei.portal.ui.common.client.activity.transportationrequestfilter.AbstractTransportationRequestFilterView;
 import ru.protei.portal.ui.common.client.activity.workerposition.edit.AbstractWorkerPositionEditView;
 import ru.protei.portal.ui.common.client.activity.workerposition.edit.WorkerPositionEditActivity;
 import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYoutrackWorkFilterActivity;
@@ -84,6 +85,7 @@ import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
 import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
 import ru.protei.portal.ui.common.client.view.projectsearch.ProjectSearchView;
+import ru.protei.portal.ui.common.client.view.transportationrequestfilter.TransportationRequestFilterView;
 import ru.protei.portal.ui.common.client.view.workerposition.edit.WorkerPositionEditView;
 import ru.protei.portal.ui.common.client.view.ytwork.YoutrackWorkFilterView;
 import ru.protei.portal.ui.common.client.view.ytwork.dialog.YoutrackWorkDictionaryView;
@@ -211,6 +213,8 @@ public class CommonClientModule extends AbstractGinModule {
         bind(AbstractYoutrackWorkDictionaryTableView.class).to(YoutrackDictionaryTableView.class);
 
         bind(AbstractYoutrackWorkDictionaryDialogView.class).to(YoutrackWorkDictionaryView.class);
+
+        bind(AbstractTransportationRequestFilterView.class).to(TransportationRequestFilterView.class);
     }
 }
 

@@ -49,6 +49,8 @@ import ru.protei.portal.core.report.nightwork.ReportNightWork;
 import ru.protei.portal.core.report.nightwork.ReportNightWorkImpl;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.report.projects.ReportProjectImpl;
+import ru.protei.portal.core.report.transportationrequest.ReportTransportationRequest;
+import ru.protei.portal.core.report.transportationrequest.ReportTransportationRequestImpl;
 import ru.protei.portal.core.report.ytwork.ReportYoutrackWork;
 import ru.protei.portal.core.report.ytwork.ReportYoutrackWorkImpl;
 import ru.protei.portal.core.service.*;
@@ -493,6 +495,11 @@ public class ServiceTestsConfiguration {
     @Bean
     public ReportYoutrackWork getReportYoutrackWork() {
         return new ReportYoutrackWorkImpl();
+    }
+
+    @Bean
+    public ReportTransportationRequest getReportTransportationRequest() {
+        return new ReportTransportationRequestImpl();
     }
 
     @Bean

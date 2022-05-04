@@ -44,7 +44,7 @@ public class YtIssue extends YtDto {
 
     @JsonIgnore
     public YtIssueCustomField getCustomerField() {
-        return getField(CustomFieldNames.cumstomer);
+        return getField(CustomFieldNames.customer);
     }
 
     @JsonIgnore
@@ -87,7 +87,27 @@ public class YtIssue extends YtDto {
         String stateEquipmentRus = "Статус заказа";
         String stateAcrmRus = "Статус заявки";
         String requestType = "Тип заявки";
-        String cumstomer = "Заказчик";
+        String customer = "Заказчик";
+
+        public interface Delivery {
+            String deliveryNumber = "Номер поставки";
+            String contractNumber = "Номер договора";
+            String fragility = "Хрупкость груза";
+            String deliveryDate = "Дата отправки";
+            String receiveDate = "Дата получения";
+            String returnDate = "Дата возврата";
+            String urgency = "Срочность доставки";
+            String entity = "Сущность отправки";
+            String company = "Компания";
+        }
+    }
+
+    // Секция атрибутов задачи проекта DLVRY
+    public interface DlvryDescriptionAttr {
+        String description = "Наименование";
+        String from = "Отправитель";
+        String to = "Получатель";
+        String toAddress = "Адрес получателя";
     }
 
     @Override

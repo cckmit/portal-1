@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 import static ru.protei.portal.api.struct.Result.error;
 
 public class ChunkIterator<T> implements Iterator<T> {
-    private final BiFunction<Integer, Integer, Result<List<T>>> getWorkItems;
+    private final BiFunction<Integer, Integer, Result<List<T>>> items;
     private final Supplier<Boolean> isCancel;
     private final int limit;
 
@@ -22,8 +22,8 @@ public class ChunkIterator<T> implements Iterator<T> {
     private T next;
     private En_ResultStatus status = En_ResultStatus.OK;
 
-    public ChunkIterator(BiFunction<Integer, Integer, Result<List<T>>> getWorkItems, Supplier<Boolean> isCancel, int limit) {
-        this.getWorkItems = getWorkItems;
+    public ChunkIterator(BiFunction<Integer, Integer, Result<List<T>>> items, Supplier<Boolean> isCancel, int limit) {
+        this.items = items;
         this.isCancel = isCancel;
         this.limit = limit;
     }
@@ -87,6 +87,7 @@ public class ChunkIterator<T> implements Iterator<T> {
         if (isCancel.get()) {
             return error(En_ResultStatus.CANCELED);
         }
-        return getWorkItems.apply(offset, limit);
+        return items.apply(offset, limit);
     }
+
 }

@@ -136,8 +136,6 @@ public enum En_Privilege {
 
     YT_REPORT (YT, REPORT),
 
-    SEND_REPORT (SEND, REPORT),
-
     CARD_VIEW(CARD, VIEW),
     CARD_CREATE(CARD, CREATE),
     CARD_EDIT(CARD, EDIT),
@@ -152,6 +150,8 @@ public enum En_Privilege {
     PCB_ORDER_CREATE(CARD, CREATE),
     PCB_ORDER_EDIT(CARD, EDIT),
     PCB_ORDER_REMOVE(CARD, REMOVE),
+
+    TRANSPORTATION_REQUEST_REPORT(TRANSPORTATION_REQUEST, REPORT),
 
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),

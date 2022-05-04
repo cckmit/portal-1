@@ -114,7 +114,7 @@ public class ReportYoutrackWorkTest extends BaseServiceTest {
         YtEnumBundleElement ytCustomer = new YtEnumBundleElement();
         ytCustomer.localizedName = customerCompany.getCname();
         YtSingleEnumIssueCustomField field = new YtSingleEnumIssueCustomField();
-        field.name = YtIssue.CustomFieldNames.cumstomer;
+        field.name = YtIssue.CustomFieldNames.customer;
         field.value = ytCustomer;
 
         YtIssue ytIssue = new YtIssue();

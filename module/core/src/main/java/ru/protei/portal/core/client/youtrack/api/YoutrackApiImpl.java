@@ -73,6 +73,14 @@ public class YoutrackApiImpl implements YoutrackApi {
     }
 
     @Override
+    public Result<YtIssue> getIssueWithFields(String issueId) {
+        return read(new YoutrackRequest<>(YtIssue.class)
+                .url(new YoutrackUrlProvider(getBaseUrl()).issue(issueId))
+                .fillSimpleFields()
+                .fillYtFields(YtUser.class, YtIssueCustomField.class));
+    }
+
+    @Override
     public Result<YtIssue> updateIssueAndReturnWithFieldsCommentsAttachments(String issueId, YtIssue issue) {
         return update(new YoutrackRequest<>(YtIssue.class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).issue(issueId))
@@ -102,6 +110,22 @@ public class YoutrackApiImpl implements YoutrackApi {
     public Result<List<YtIssue>> getIssueIdsByQuery(String query) {
         return read(new YoutrackRequest<>(YtIssue[].class)
                 .url(new YoutrackUrlProvider(getBaseUrl()).issues())
+                .query(query))
+                .map(Arrays::asList);
+    }
+
+    @Override
+    public Result<List<YtIssue>> getIssueWithFieldsByQuery(String query, int offset, int limit) {
+        log.debug("getIssueWithFieldsByQuery(): query ={},  offset={}, limit={}", query, offset, limit);
+
+        return read(new YoutrackRequest<>(YtIssue[].class)
+                .url(new YoutrackUrlProvider(getBaseUrl()).issues())
+                .params(new HashMap<String, String>() {{
+                    put("$skip", String.valueOf(offset));
+                    put("$top", String.valueOf(limit));
+                }})
+                .fillSimpleFields()
+                .fillYtFields(YtIssueCustomField.class)
                 .query(query))
                 .map(Arrays::asList);
     }
