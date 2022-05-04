@@ -1,11 +1,15 @@
-package ru.protei.portal.test.api;
+package ru.protei.portal.test.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.schedule.PortalScheduleTasks;
+import ru.protei.portal.test.api.model.WorkerRecordTestAPI;
+import ru.protei.portal.test.api.service.WorkerTestApiService;
 
 @RestController
 @RequestMapping(value = "/test-api", headers = "Accept=application/json")
@@ -14,6 +18,9 @@ public class PortalTestApiController {
 
     @Autowired
     PortalScheduleTasks portalScheduleTasks;
+    @Autowired
+    WorkerTestApiService workerTestApiService;
+
 
     @GetMapping(value = "/case-filter/notification")
     public void processPersonCaseFilterMailNotification () {
@@ -73,5 +80,17 @@ public class PortalTestApiController {
     @GetMapping(value = "/issue/deadline-expire/notification")
     public void notifyAboutDeadline() {
         portalScheduleTasks.notifyAboutDeadlineExpire();
+    }
+
+    @PostMapping(value = "/worker/add")
+    public ResponseEntity<String> addWorker(@RequestBody WorkerRecordTestAPI workerRecordTestAPI) {
+        Result<WorkerRecordTestAPI> result = workerTestApiService.addWorker(workerRecordTestAPI);
+        if (result.isError() && result.getStatus() == En_ResultStatus.VALIDATION_ERROR) {
+            return new ResponseEntity<>(result.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY );
+        }
+        if (result.isError()) {
+            return new ResponseEntity<>(result.getStatus().name(), HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
