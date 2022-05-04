@@ -53,6 +53,8 @@ public class ReportCaseImpl implements ReportCase {
     @Autowired
     CompanyDepartmentDAO companyDepartmentDAO;
 
+    static private final CompanyDepartment NO_DEP = new CompanyDepartment(0L, "no dep");
+
     @Override
     public boolean writeReport(OutputStream buffer,
                                Report report,
@@ -127,7 +129,7 @@ public class ReportCaseImpl implements ReportCase {
 
         List<CaseObjectReportRow> rows = new ArrayList<>();
         rows.add(caseObjectReportRequest);
-        if (CollectionUtils.isNotEmpty(report.getTimeElapsedGroups()) ) {
+        if (CollectionUtils.isNotEmpty(report.getTimeElapsedGroups())) {
             rows.addAll(makeTimeElapsedGroupRows(caseComments, report.getTimeElapsedGroups()));
         }
         return rows;
@@ -136,7 +138,7 @@ public class ReportCaseImpl implements ReportCase {
     private List<CaseObjectReportRow> makeTimeElapsedGroupRows(List<CaseComment> comments,
                                                                Set<En_TimeElapsedGroup> timeElapsedGroups) {
 
-        Map<Optional<En_TimeElapsedType>, Map<Optional<CompanyDepartment>, Map<Optional<Person>, Long>>> collect = stream(comments)
+        Map<Optional<En_TimeElapsedType>, Map<Optional<CompanyDepartment>, Map<Optional<Person>, Long>>> grouping = stream(comments)
                 .filter(comment -> comment.getTimeElapsedType() != null && comment.getTimeElapsed() != null)
                 .collect(Collectors.groupingBy(comment -> makeTypeGrouping(comment, timeElapsedGroups),
                         Collectors.groupingBy(comment -> makeDepartmentGrouping(comment, timeElapsedGroups),
@@ -145,10 +147,10 @@ public class ReportCaseImpl implements ReportCase {
                                 )))
                 );
 
-        List<CaseObjectReportRow> list = new ArrayList<>();
-        collect.forEach((optType, depMap) ->
+        List<CaseObjectReportRow> rows = new ArrayList<>();
+        grouping.forEach((optType, depMap) ->
                 depMap.forEach((optDep, personMap) ->
-                        personMap.forEach((optAuthor, time) ->  list.add(
+                        personMap.forEach((optAuthor, time) ->  rows.add(
                                 new CaseObjectReportTimeElapsedGroupRow(
                                     time,
                                     optType.orElse(null),
@@ -156,7 +158,7 @@ public class ReportCaseImpl implements ReportCase {
                                     optAuthor.map(Person::getDisplayName).orElse(null))
                                 )))
         );
-        return list;
+        return rows;
     }
 
     private Optional<En_TimeElapsedType> makeTypeGrouping(CaseComment c, Set<En_TimeElapsedGroup> timeElapsedGroups) {
@@ -167,7 +169,7 @@ public class ReportCaseImpl implements ReportCase {
         if (timeElapsedGroups.contains(DEPARTMENT)) {
             CompanyDepartmentQuery query = new CompanyDepartmentQuery(c.getAuthorId());
             List<CompanyDepartment> companyDepartments = companyDepartmentDAO.getListByQuery(query);
-            return Optional.of(isEmpty(companyDepartments)? new CompanyDepartment(0L, "no dep") : companyDepartments.get(0));
+            return Optional.of(isEmpty(companyDepartments)? NO_DEP : companyDepartments.get(0));
         } else {
             return Optional.empty();
         }

@@ -51,6 +51,7 @@ public class ExcelReportWriter implements
     private final boolean withTimeElapsedGroupDepartment;
     private final boolean withTimeElapsedGroupAuthor;
     private final String[] formats;
+    static private final int COLUMN_COUNT = 17;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang,
                              EnumLangUtil enumLangUtil,
@@ -156,14 +157,14 @@ public class ExcelReportWriter implements
         List<Object> values = new ArrayList<>();
 
         if (row instanceof CaseObjectReportRequest) {
-            // Последовательность и количество колонок важна
-            // для других типов строк
+            // Количество колонок важно
+            // для других типов строк COLUMN_COUNT = 17
             CaseObjectReportRequest object = (CaseObjectReportRequest)row;
 
             CaseObject issue = object.getCaseObject();
             List<History> histories = object.getHistories();
 
-            Date created = null,
+            Date    created = null,
                     opened = null,
                     workaround = null,
                     customerTest = null,
@@ -174,10 +175,8 @@ public class ExcelReportWriter implements
 
             for (History history : histories) {
                 if (history.getType() == En_HistoryType.CASE_IMPORTANCE) {
-                    if (Objects.equals(CrmConstants.ImportanceLevel.IMPORTANT, history.getNewId().intValue()))
-                        important = history.getDate();
-                    if (Objects.equals(CrmConstants.ImportanceLevel.CRITICAL, history.getNewId().intValue()))
-                        critical = history.getDate();
+                    if (Objects.equals(CrmConstants.ImportanceLevel.IMPORTANT, history.getNewId().intValue())) important = history.getDate();
+                    if (Objects.equals(CrmConstants.ImportanceLevel.CRITICAL, history.getNewId().intValue())) critical = history.getDate();
                 }
 
                 if (history.getType() == En_HistoryType.CASE_STATE) {
@@ -245,18 +244,18 @@ public class ExcelReportWriter implements
             if (isNotRestricted) values.add(toExcelTimeFormat(timeElapsedInSelectedDuration));
         } else if (row instanceof CaseObjectReportTimeElapsedGroupRow) {
             CaseObjectReportTimeElapsedGroupRow timeElapsedGroupRow = (CaseObjectReportTimeElapsedGroupRow)row;
-            int count = 17;
-            if (withTags) count++;
-            if (withLinkedIssues) count++;
-            if (isNotRestricted && withDeadlineAndWorkTrigger) count++;
-            if (isNotRestricted && withDeadlineAndWorkTrigger) count++;
-            if (withImportanceHistory) count++;
-            if (withImportanceHistory) count++;
-            if (isNotRestricted) count++;
-            if (isNotRestricted && isHumanReadable) count++;
-            if (isNotRestricted) count++;;
-            if (isNotRestricted && isHumanReadable) count++;;
-            for (int i = 0; i < count; i++) {
+            int columnCount = COLUMN_COUNT;
+            if (withTags) columnCount++;
+            if (withLinkedIssues) columnCount++;
+            if (isNotRestricted && withDeadlineAndWorkTrigger) columnCount++;
+            if (isNotRestricted && withDeadlineAndWorkTrigger) columnCount++;
+            if (withImportanceHistory) columnCount++;
+            if (withImportanceHistory) columnCount++;
+            if (isNotRestricted) columnCount++;
+            if (isNotRestricted && isHumanReadable) columnCount++;
+            if (isNotRestricted) columnCount++;;
+            if (isNotRestricted && isHumanReadable) columnCount++;;
+            for (int i = 0; i < columnCount; i++) {
                 values.add("");
             }
             values.add(toExcelTimeFormat(timeElapsedGroupRow.getTimeElapsed()));
