@@ -485,6 +485,7 @@ public class PortalConfigData {
     }
 
     public static class SnConfig {
+        private final boolean notificationEnabled;
         private final String login;
         private final String password;
         private final String fromNumber;
@@ -496,6 +497,7 @@ public class PortalConfigData {
 
 
         public SnConfig(PropertiesWrapper properties) throws ConfigException{
+            notificationEnabled = properties.getProperty("sn.enabled", Boolean.class, false);
             login = properties.getProperty("sn.login");
             password = properties.getProperty("sn.password");
             fromNumber = properties.getProperty("sn.from_number", "5488");
@@ -504,6 +506,10 @@ public class PortalConfigData {
             schemaMaxTries = properties.getProperty("sn.schema.max_tries", Integer.class, 3);
             schemaIntervalList = properties.getProperty("sn.schema.interval_list", "5,10").split(",");
             schemaTimeUnit = properties.getProperty( "sn.schema.time_unit", "seconds");
+        }
+
+        public boolean isNotificationEnabled() {
+            return notificationEnabled;
         }
 
         public String getLogin() {

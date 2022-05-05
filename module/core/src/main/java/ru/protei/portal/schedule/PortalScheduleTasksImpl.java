@@ -45,6 +45,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
          */
         bootstrapService.bootstrapApplication();
         documentService.documentBuildFullIndex();
+        snService.fillCommonManagerMapping();
 
         /**
          * Scheduled tasks
@@ -252,6 +253,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     WorkerEntryService workerEntryService;
     @Autowired
     AutoCloseCaseService autoCloseCaseService;
+    @Autowired
+    SystemNotificationService snService;
 
     private static AtomicBoolean isPortalStarted = new AtomicBoolean(false);
     private static AtomicInteger contextRefreshedEventCounter = new AtomicInteger(0);

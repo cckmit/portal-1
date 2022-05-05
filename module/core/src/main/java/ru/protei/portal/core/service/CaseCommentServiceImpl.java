@@ -8,7 +8,6 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.config.PortalConfigData;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.exception.RollbackTransactionException;
@@ -17,7 +16,10 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.*;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.query.CaseTagQuery;
+import ru.protei.portal.core.model.query.PersonQuery;
+import ru.protei.portal.core.model.query.UserLoginShortViewQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.struct.ReplaceLoginWithUsernameInfo;
 import ru.protei.portal.core.model.struct.receivedmail.ReceivedMail;
@@ -27,22 +29,10 @@ import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.policy.PolicyService;
-import ru.protei.sn.model.dto.AbonentInsertResult;
-import ru.protei.sn.model.dto.ExistsNotifyListReferences;
-import ru.protei.sn.model.jdbc.*;
-import ru.protei.sn.model.jdbc.attachment.AttachmentUnit;
-import ru.protei.sn.model.jdbc.attachment.impl.ContentAttachmentUnit;
 import ru.protei.winter.core.utils.beans.SearchResult;
-import ru.protei.winter.core.utils.scheduler.DaysOfWeek;
-import ru.protei.winter.core.utils.scheduler.ScheduleDays;
-import ru.protei.winter.core.utils.scheduler.SchedulerItem;
-import ru.protei.winter.core.utils.scheduler.Time;
-import ru.protei.winter.core.utils.schedulerutils.ScheduleData;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
-import ru.protei.winter.repo.model.dto.ContentInfo;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -53,7 +43,6 @@ import static ru.protei.portal.core.access.ProjectAccessUtil.canAccessProjectPri
 import static ru.protei.portal.core.model.dict.En_CaseType.*;
 import static ru.protei.portal.core.model.dict.En_Privilege.ISSUE_EDIT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.util.CrmConstants.SN.*;
 
 public class CaseCommentServiceImpl implements CaseCommentService {
     private static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут (в мсек)
@@ -138,9 +127,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     @Transactional
     public Result<CaseComment> addCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment) {
 
-        //TODO remove run notifyList Stub
-//        processNotifyList("test_common_manager_", new HashSet<>(Collections.singletonList("111222,333444,5566")));
-
         if (comment == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -203,157 +189,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 */
 
         return okResult;
-    }
-
-    //Пока не используется, продолжение разработки в задаче PORTAL-2186
-    private Result<Void> processNotifyList(String commonManagername, Set<String> abonents) {
-
-        log.debug("processNotifyList commonManagername = {}, abonents = {}", commonManagername, StringUtils.join(abonents,","));
-
-        Result<ru.protei.winter.audit.model.dto.AuthToken> authorizeResult = snService.authorize();
-
-        if (authorizeResult.isError()){
-            return error(En_ResultStatus.GET_DATA_ERROR);
-        }
-        ru.protei.winter.audit.model.dto.AuthToken authTokenSN = authorizeResult.getData();
-
-        Result<Long> createNotifyListResult = snService.createNotifyList(authTokenSN, createNotifyListName(commonManagername));
-
-        if (createNotifyListResult.isError()){
-            return error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
-        Result<NotifyList> getNotifyListResult = snService.getNotifyList(authTokenSN, createNotifyListResult.getData());
-
-        if (getNotifyListResult.isError()){
-            return error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
-        PortalConfigData.SnConfig snConfig = portalConfig.data().getSnConfig();
-
-        Result<List<ContentInfo>> getContentsInfoResult = snService.getContentsInfo(authTokenSN, Collections.singleton(snConfig.getPromptId()));
-
-        if (getContentsInfoResult.isError()){
-            return error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
-        List<ContentInfo> contentInfoList = getContentsInfoResult.getData();
-
-        if (isEmpty(contentInfoList) || contentInfoList.size() != 1){
-            log.warn("No attachment found for attachmentId = {}", snConfig.getPromptId());
-            return error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
-        ContentInfo contentInfo = contentInfoList.get(0);
-        String contentInfoName = contentInfo == null ? "" : contentInfo.getName();
-        log.debug("Found attachment with id = {} and name = {}", snConfig.getPromptId(), contentInfoName);
-
-        NotifyList newNotifyList = getNotifyListResult.getData();
-
-        Result<ExistsNotifyListReferences> updateNotifyListResult = updateNotifyList(authTokenSN, newNotifyList, contentInfoName, snConfig);
-
-        if (updateNotifyListResult.isError()){
-            return error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
-        Result<AbonentInsertResult> insertAbonentsResult = snService.insertAbonents(authTokenSN, abonents, newNotifyList.getId());
-
-        if (insertAbonentsResult.isError()){
-            return error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
-        //требуется устанавливать новые даты оповещения для каждого запуска списка
-        newNotifyList.getScheduleData().setStartStopDate(new Date(), new Date(System.currentTimeMillis() + snConfig.getScheduleInterval()));
-        Result<ExistsNotifyListReferences> updateNotifyListScheduleResult = snService.updateNotifyList(authTokenSN, newNotifyList);
-
-        if (updateNotifyListScheduleResult.isError()){
-            return error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
-        Result<Long> startNotifyListResult = snService.startNotifyList(authTokenSN, newNotifyList.getId(), false);
-
-        if (startNotifyListResult.isError()){
-            return error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
-        return ok();
-    }
-
-    private Result<ExistsNotifyListReferences> updateNotifyList(ru.protei.winter.audit.model.dto.AuthToken authTokenSN, NotifyList notifyList, String contentInfoName, PortalConfigData.SnConfig snConfig) {
-
-        Long promptId = snConfig.getPromptId();
-        ru.protei.sn.model.jdbc.attachment.Attachment attachment = new ru.protei.sn.model.jdbc.attachment.Attachment();
-        AttachmentUnit attachmentUnit = new ContentAttachmentUnit(promptId, contentInfoName);
-        List<AttachmentUnit> attachmentUnits = Collections.singletonList(attachmentUnit);
-        attachment.setAttachmentUnits(attachmentUnits);
-        notifyList.setAttachments(Collections.singletonList(attachment));
-
-        int schemaMaxTries = snConfig.getSchemaMaxTries();
-        List<Integer> schemaIntervalList = Arrays.stream(snConfig.getSchemaIntervalList()).map(Integer::parseInt).collect(Collectors.toList());
-        Map<Integer, SchemaIntervals> intervalMap = createIntervalsMap(schemaIntervalList);
-        TimeUnit timeUnit = createTimeUnit(snConfig.getSchemaTimeUnit());
-
-        Schema schema = new Schema();
-        schema.setMaxCount( schemaMaxTries );
-        schema.setIntervalsMap( intervalMap );
-        schema.setTimeUnit( timeUnit );
-        notifyList.setSchema(schema);
-
-        notifyList.setDistributionInfo(createDistributionInfo());
-        notifyList.setScheduleData(createScheduleData());
-        return snService.updateNotifyList(authTokenSN, notifyList);
-    }
-
-    //Оповещение будет круглосуточно, в любой день
-    private ScheduleData createScheduleData() {
-        ScheduleData scheduleData = new ScheduleData();
-        SchedulerItem schedulerItem = new SchedulerItem();
-        Time start = new Time(0, 0, 0);
-        Time end = new Time(23, 59, 59);
-        schedulerItem.addTimePeriod(start, end);
-        ScheduleDays scheduleDays = new DaysOfWeek(Arrays.asList(1,2,3,4,5,6,7));
-        schedulerItem.setScheduleDays(scheduleDays);
-        scheduleData.addSchedulerItem(schedulerItem);
-        return scheduleData;
-    }
-
-    //значения согласованы с командой SN, они обязательны, но ни на что не влияют при оповещении одного абонента
-    private DistributionInfo createDistributionInfo() {
-        DistributionInfo di = new DistributionInfo();
-        di.setMediaType(MediaType.VOICE);
-        di.setWeight(1);
-        di.setMaxRate(1);
-        di.setMaxCurrentTransactionCount(1);
-        return di;
-    }
-
-    private Map<Integer, SchemaIntervals> createIntervalsMap(List<Integer> schemaIntervalList) {
-        Map<Integer, SchemaIntervals> intervalMap = new HashMap<>();
-        SchemaIntervals intervals = new SchemaIntervals(schemaIntervalList, false);
-        intervalMap.put(DEFAULT_SCHEME_REASON_ID, intervals);
-
-        return intervalMap;
-    }
-
-    private TimeUnit createTimeUnit(String schemaTimeUnit) {
-
-        if (StringUtils.isEmpty(schemaTimeUnit)){
-            return TimeUnit.MINUTES;
-        }
-
-        switch ( schemaTimeUnit.toLowerCase() ) {
-            case "seconds":
-                return TimeUnit.SECONDS;
-            case "minutes":
-                return TimeUnit.MINUTES;
-            case "hours":
-                return TimeUnit.HOURS;
-        }
-        return TimeUnit.MINUTES;
-    }
-
-    private String createNotifyListName(String commonManagername) {
-        return NOTIFY_LIST_NAME + commonManagername + System.currentTimeMillis();
     }
 
     @Override

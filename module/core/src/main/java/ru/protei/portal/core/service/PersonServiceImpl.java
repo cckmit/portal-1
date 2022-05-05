@@ -4,13 +4,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dao.CommonManagerToNotifyListDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dao.PersonShortViewDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CommonManagerToNotifyList;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 /**
@@ -42,6 +46,8 @@ public class PersonServiceImpl implements PersonService {
     CompanyService companyService;
     @Autowired
     PersonShortViewDAO personShortViewDAO;
+    @Autowired
+    CommonManagerToNotifyListDAO commonManagerToNotifyListDAO;
 
     @Override
     public Result<Person> getPerson(AuthToken token, Long personId) {
@@ -109,6 +115,46 @@ public class PersonServiceImpl implements PersonService {
         Person person = personDAO.getCommonManagerByProductId(productId);
         jdbcManyRelationsHelper.fill(person, Person.Fields.CONTACT_ITEMS);
         return ok(person);
+    }
+
+    @Override
+    public Result<Long> getNotifyListIdByCommonManagerId(Long commonManagerId) {
+        log.info("getNotifyListIdByCommonManagerId(): commonManagerId = {}", commonManagerId);
+        if (commonManagerId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CommonManagerToNotifyList commonManagerToNotifyList = commonManagerToNotifyListDAO.get(commonManagerId);
+        return ok(commonManagerToNotifyList.getNotifyListId());
+    }
+
+    @Override
+    public Result<List<CommonManagerToNotifyList>> getNotifyListIdsByCommonManagerIds(List<Long> commonManagerIds) {
+        log.info("getNotifyListIdsByCommonManagerIds(): commonManagerIds = {}", StringUtils.join(commonManagerIds,","));
+        if (isEmpty(commonManagerIds)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        List<CommonManagerToNotifyList> listByKeys = commonManagerToNotifyListDAO.getByManagersIds(commonManagerIds);
+        return ok(listByKeys);
+    }
+
+    @Override
+    public Result<CommonManagerToNotifyList> updateCommonManagerToNotifyList(Long managerId, Long notifyListId) {
+        log.info("updateCommonManagerToNotifyList(): managerId = {}, notifyListId {}", managerId, notifyListId);
+        if (managerId == null || notifyListId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CommonManagerToNotifyList commonManagerToNotifyList = commonManagerToNotifyListDAO.getByManagerId(managerId);
+        if (commonManagerToNotifyList == null){
+            commonManagerToNotifyList = new CommonManagerToNotifyList(managerId, notifyListId);
+            commonManagerToNotifyListDAO.persist(commonManagerToNotifyList);
+        } else {
+            commonManagerToNotifyList.setNotifyListId(notifyListId);
+            commonManagerToNotifyListDAO.updateNotifyList(commonManagerToNotifyList);
+        }
+        return ok(commonManagerToNotifyList);
     }
 
     private Result<PersonQuery> fillQueryByScope(AuthToken token, PersonQuery personQuery) {
