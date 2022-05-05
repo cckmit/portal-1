@@ -586,11 +586,7 @@ public abstract class IssueMetaActivity implements AbstractIssueMetaActivity, Ac
 
         metaView.timeElapsedHeaderVisibility().setVisible(true);
 
-        if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
-            metaView.caseSubscriptionContainer().setVisible(true);
-        } else {
-            metaView.caseSubscriptionContainer().setVisible(false);
-        }
+        metaView.caseSubscriptionContainer().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)); //TODO change rule
 
         importanceService.getImportanceLevel(meta.getImpLevel(), new FluentCallback<ImportanceLevel>()
                 .withSuccess(importanceLevel -> {

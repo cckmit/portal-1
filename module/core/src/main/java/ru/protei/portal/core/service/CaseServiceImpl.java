@@ -648,7 +648,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (!oldCaseMeta.getAutoClose() && caseMeta.getAutoClose()) {
-            Result<CaseComment> result = createAndPersistAutoCloseMessage(caseMeta.getId());
+            Result<CaseComment> result = createAutoCloseMessage(caseMeta);
 
             if (result.isError()) {
                 log.error("Auto close message for the issue {} not saved!", caseMeta.getId());
@@ -1109,13 +1109,14 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
-    private Result<CaseComment> createAndPersistAutoCloseMessage(Long caseId) {
-        ResourceBundle langRu = ResourceBundle.getBundle("Lang", new Locale( "ru", "RU"));
+    private Result<CaseComment> createAutoCloseMessage(CaseObjectMeta caseMeta) {
         CaseComment autoCloseComment = new CaseComment();
-        autoCloseComment.setCreated( new Date() );
+        autoCloseComment.setCreated(new Date());
         autoCloseComment.setAuthorId(portalConfig.data().getCommonConfig().getSystemUserId());
-        autoCloseComment.setCaseId(caseId);
-        autoCloseComment.setText(langRu.getString("issue_will_be_closed"));
+        autoCloseComment.setCaseId(caseMeta.getId());
+        Person customer = caseMeta.getInitiator();
+        String locale = customer != null ? personDAO.partialGet(customer.getId(), "locale").getLocale() : null;
+        autoCloseComment.setText(getLangFor("issue_will_be_closed", locale));
         autoCloseComment.setPrivacyType( En_CaseCommentPrivacyType.PUBLIC );
         return caseCommentService.addCaseComment(createSystemUserToken(), CRM_SUPPORT, autoCloseComment);
     }
@@ -2067,5 +2068,13 @@ public class CaseServiceImpl implements CaseService {
         Set<UserRole> defaultRoles = userRoleDAO.getDefaultManagerRoles();
         token.setRoles(defaultRoles);
         return token;
+    }
+
+    private String getLangFor(String key, String locale) {
+        if (locale == null) {
+            locale = "ru";
+        }
+        ResourceBundle lang = ResourceBundle.getBundle("Lang", new Locale(locale));
+        return lang.getString( key );
     }
 }

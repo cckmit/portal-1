@@ -25,6 +25,9 @@ import java.net.UnknownHostException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
 
@@ -45,13 +48,11 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
 
     private static final Logger log = LoggerFactory.getLogger(AutoCloseCaseServiceImpl.class);
 
-    ResourceBundle langRu = ResourceBundle.getBundle("Lang", new Locale( "ru", "RU"));
-
     @Override
     public void processAutoCloseByDeadLine() {
         CaseQuery query = getCaseQuery();
         query.setOverdueDeadlines(true);
-        List<CaseObject> caseObjects = caseObjectDAO.getCases(getCaseQuery());
+        List<CaseObject> caseObjects = caseObjectDAO.getCases(query);
         AuthToken token = createSystemUserToken();
         for (CaseObject caseObject : CollectionUtils.emptyIfNull(caseObjects)) {
             caseObject.setStateId(CrmConstants.State.DONE);
@@ -65,7 +66,8 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
             }
 
             Long caseObjectId = caseObject.getId();
-            CaseComment comment = createCaseComment(caseObjectId, getLangFor("issue_was_closed"));
+            String locale = caseObject.getInitiator() == null ? null : caseObject.getInitiator().getLocale();
+            CaseComment comment = createCaseComment(caseObjectId, getLangFor("issue_was_closed", locale));
             Result<CaseComment> caseCommentResult = caseCommentService.addCaseComment(token, En_CaseType.CRM_SUPPORT, comment);
             if (caseCommentResult.isError()) {
                 log.warn("addCaseComment(): Can't add case comment about {} for caseId={}",  comment.getText(), caseObjectId);
@@ -77,21 +79,19 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
 
     @Override
     public void notifyAboutDeadlineExpire() {
-        CaseQuery query = getCaseQuery();
-        query.setViewPrivate(false);
-        List<CaseObject> caseObjects = caseObjectDAO.getCases(query);
+        List<CaseObject> caseObjects = caseObjectDAO.getCases(getCaseQuery());
         LocalDate today = LocalDate.now();
         for (CaseObject caseObject : CollectionUtils.emptyIfNull(caseObjects)) {
             LocalDate deadline = new Date(caseObject.getDeadline()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             if (deadline.isEqual(today.plusDays(1)) || deadline.isEqual(today.plusDays(5)) || deadline.isEqual(today.plusDays(10))) {
-                Person customer = caseObject.getInitiator();
                 Long caseObjectId = caseObject.getId();
                 Long caseNumber = caseObject.getCaseNumber();
-                jdbcManyRelationsHelper.fill(customer, Person.Fields.CONTACT_ITEMS);
+                boolean isPrivateCase = caseObject.isPrivateCase();
 
-                notifyCustomerAboutDeadlineExpire(customer, caseObjectId, caseNumber);
+                notifyCustomerAboutDeadlineExpire(getNotifiers(caseObject), caseObjectId, caseNumber, isPrivateCase);
 
-                CaseComment comment = createCaseComment(caseObjectId, getLangFor("send_reminder_about_deadline_expire"));
+                String locale = caseObject.getInitiator() == null ? null : caseObject.getInitiator().getLocale();
+                CaseComment comment = createCaseComment(caseObjectId, getLangFor("send_reminder_about_deadline_expire", locale));
                 Result<Long> result = caseCommentService.addCommentOnSentReminder(comment);
                 if (result.isError()) {
                     log.warn("addCommentOnSentReminder(): Can't add case comment about {} for caseId={}",  comment.getText(), caseObjectId);
@@ -108,8 +108,8 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
         return comment;
     }
 
-    private void notifyCustomerAboutDeadlineExpire(Person customer, Long caseObjectId, Long caseNumber) {
-        publisherService.publishEvent(new CaseObjectDeadlineExpireEvent(this, customer, caseObjectId, caseNumber));
+    private void notifyCustomerAboutDeadlineExpire(Set<Person> notifiers, Long caseObjectId, Long caseNumber, boolean isPrivateCase) {
+        publisherService.publishEvent(new CaseObjectDeadlineExpireEvent(this, notifiers, caseObjectId, caseNumber, isPrivateCase));
     }
 
     private CaseQuery getCaseQuery() {
@@ -136,7 +136,20 @@ public class AutoCloseCaseServiceImpl implements AutoCloseCaseService {
         return token;
     }
 
-    private String getLangFor(String key){
-        return langRu.getString( key );
+    private String getLangFor(String key, String locale) {
+        if (locale == null) {
+            locale = "ru";
+        }
+        ResourceBundle lang = ResourceBundle.getBundle("Lang", new Locale(locale));
+        return lang.getString( key );
+    }
+
+    private Set<Person> getNotifiers(CaseObject caseObject) {
+        Set<Person> notifiers = stream(new ArrayList<Person>() {{
+            add(caseObject.getCreator());
+            add(caseObject.getInitiator());
+        }}).filter(Objects::nonNull).collect(Collectors.toSet());
+        jdbcManyRelationsHelper.fill(notifiers, Person.Fields.CONTACT_ITEMS);
+        return notifiers;
     }
 }

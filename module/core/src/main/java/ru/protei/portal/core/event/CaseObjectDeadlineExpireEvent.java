@@ -3,20 +3,25 @@ package ru.protei.portal.core.event;
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.model.ent.Person;
 
+import java.util.Set;
+
 public class CaseObjectDeadlineExpireEvent extends ApplicationEvent {
-    private final Person customer;
+    private final Set<Person> notifiers;
     private final Long caseObjectId;
     private final Long caseNumber;
 
-    public CaseObjectDeadlineExpireEvent(Object source, Person customer, Long caseObjectId, Long caseNumber) {
+    private final boolean isPrivateCase;
+
+    public CaseObjectDeadlineExpireEvent(Object source, Set<Person> notifiers, Long caseObjectId, Long caseNumber, boolean isPrivateCase) {
         super(source);
-        this.customer = customer;
+        this.notifiers = notifiers;
         this.caseObjectId = caseObjectId;
         this.caseNumber = caseNumber;
+        this.isPrivateCase = isPrivateCase;
     }
 
-    public Person getCustomer() {
-        return customer;
+    public Set<Person> getNotifiers() {
+        return notifiers;
     }
 
     public Long getCaseObjectId() {
@@ -27,12 +32,17 @@ public class CaseObjectDeadlineExpireEvent extends ApplicationEvent {
         return caseNumber;
     }
 
+    public boolean isPrivateCase() {
+        return isPrivateCase;
+    }
+
     @Override
     public String toString() {
         return "CaseObjectDeadlineExpireEvent{" +
-                "customer=" + customer +
+                "notifiers=" + notifiers +
                 ", caseObjectId=" + caseObjectId +
                 ", caseNumber=" + caseNumber +
+                ", isPrivateCase=" + isPrivateCase +
                 '}';
     }
 }
