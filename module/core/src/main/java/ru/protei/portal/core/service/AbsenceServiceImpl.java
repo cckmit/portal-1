@@ -123,7 +123,7 @@ public class AbsenceServiceImpl implements AbsenceService {
             return error(En_ResultStatus.ABSENCE_HAS_INTERSECTIONS);
         }
 
-        if (!personAbsenceDAO.partialMerge(absence, "from_time", "till_time", "user_comment")) {
+        if (!personAbsenceDAO.partialMerge(absence, "from_time", "till_time", "user_comment", "schedule")) {
             return error(En_ResultStatus.NOT_UPDATED);
         }
 
@@ -262,15 +262,7 @@ public class AbsenceServiceImpl implements AbsenceService {
         List<PersonAbsence> absences = searchResult.getResults();
         if (absences == null) return Result.ok();
 
-        List<PersonAbsence> collectedAbsences = new ArrayList<>();
-        for (PersonAbsence absence : absences) {
-            if (!absence.isScheduledAbsence()) {
-                collectedAbsences.add(absence);
-            }
-
-            List<PersonAbsence> scheduledAbsence = AbsenceUtils.convertToDateAbsence(absence, apiQuery.getFrom(), apiQuery.getTo());
-            collectedAbsences.addAll(scheduledAbsence);
-        }
+        List<PersonAbsence> collectedAbsences = AbsenceUtils.generateAbsencesFromDateRange(absences, apiQuery.getFrom(), apiQuery.getTo());
 
         if (!searchBySeparateWorkers) {
             List<Long> personIds = collectedAbsences.stream()

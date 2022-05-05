@@ -1,7 +1,5 @@
 package ru.protei.portal.core.model.helper;
 
-import jdk.nashorn.internal.objects.annotations.Function;
-import org.apache.commons.lang3.time.DateUtils;
 import ru.protei.portal.core.model.dto.ScheduleItem;
 import ru.protei.portal.core.model.dto.Time;
 import ru.protei.portal.core.model.dto.TimeInterval;
@@ -9,7 +7,6 @@ import ru.protei.portal.core.model.ent.PersonAbsence;
 
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -68,6 +65,19 @@ public class AbsenceUtils {
         }
 
         return absences;
+    }
+
+    public static List<PersonAbsence> generateAbsencesFromDateRange(List<PersonAbsence> absences, Date from, Date to) {
+        List<PersonAbsence> collectedAbsences = new ArrayList<>();
+        for (PersonAbsence absence : absences) {
+            if (!absence.isScheduledAbsence()) {
+                collectedAbsences.add(absence);
+            }
+
+            List<PersonAbsence> scheduledAbsence = AbsenceUtils.convertToDateAbsence(absence, from, to);
+            collectedAbsences.addAll(scheduledAbsence);
+        }
+        return collectedAbsences;
     }
 
     private static PersonAbsence generatePersonAbsenceFromInterval(PersonAbsence scheduleAbsence, LocalDateTime localDate, TimeInterval interval) {
