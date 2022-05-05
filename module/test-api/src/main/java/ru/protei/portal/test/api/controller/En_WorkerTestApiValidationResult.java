@@ -1,8 +1,6 @@
-package ru.protei.portal.test.api;
+package ru.protei.portal.test.api.controller;
 
-public enum En_WorkerRecordTestApiValidationResult {
-
-    OK("Ok"),
+public enum En_WorkerTestApiValidationResult {
     EMPTY_COMPANY_ID("The company id is empty."),
     EMPTY_DEPARTMENT_ID("The department id is empty."),
     EMPTY_POSITION_ID("The position id is empty"),
@@ -12,7 +10,7 @@ public enum En_WorkerRecordTestApiValidationResult {
     EMPTY_BIRTHDAY("The birthday is empty."),
     EMPTY_PHONE("Phone is empty"),
     EMPTY_MAIL("Mail is empty"),
-    EMPTY_IP("The is is empty"),
+    EMPTY_IP("The ip is empty"),
     EMPTY_CONTRACT_AGREEMENT("Contract agreement is empty"),
     EMPTY_INN("Inn is empty"),
     EMPTY_LOCALE("Locale is empty"),
@@ -23,10 +21,13 @@ public enum En_WorkerRecordTestApiValidationResult {
     INVALID_FORMAT_IP("Invalid ip-address format"),
     INVALID_FORMAT_INN("Invalid inn format"),
     INVALID_FORMAT_LOCALE("Invalid locale format"),
-    NOT_EXIST_POSITION_ID("Position with this id does not exist"),
-    NOT_EXIST_DEPARTMENT_ID("Department with this id does not exist");
+    UNKNOWN_POSITION("Unknown position"),
+    UNKNOWN_DEPARTMENT("Unknown department"),
+    LOGIN_ALREADY_EXIST("Worker with this login already exist."),
+    EMAIL_ALREADY_EXIST("Worker with this email already exist.");
 
-    En_WorkerRecordTestApiValidationResult(String message) {
+
+    En_WorkerTestApiValidationResult(String message) {
         this.message = message;
     }
 

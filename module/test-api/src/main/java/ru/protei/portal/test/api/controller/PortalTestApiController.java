@@ -1,14 +1,20 @@
 package ru.protei.portal.test.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dao.CompanyDepartmentDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.UserLoginDAO;
+import ru.protei.portal.core.model.dao.WorkerPositionDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.portal.test.api.model.WorkerRecordTestAPI;
+import ru.protei.portal.test.api.model.WorkerTestApiEntityFactory;
 import ru.protei.portal.test.api.service.WorkerTestApiService;
 
 @RestController
@@ -20,7 +26,14 @@ public class PortalTestApiController {
     PortalScheduleTasks portalScheduleTasks;
     @Autowired
     WorkerTestApiService workerTestApiService;
-
+    @Autowired
+    CompanyDepartmentDAO companyDepartmentDAO;
+    @Autowired
+    WorkerPositionDAO workerPositionDao;
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    UserLoginDAO userLoginDAO;
 
     @GetMapping(value = "/case-filter/notification")
     public void processPersonCaseFilterMailNotification () {
@@ -83,14 +96,16 @@ public class PortalTestApiController {
     }
 
     @PostMapping(value = "/worker/add")
-    public ResponseEntity<String> addWorker(@RequestBody WorkerRecordTestAPI workerRecordTestAPI) {
-        Result<WorkerRecordTestAPI> result = workerTestApiService.addWorker(workerRecordTestAPI);
-        if (result.isError() && result.getStatus() == En_ResultStatus.VALIDATION_ERROR) {
-            return new ResponseEntity<>(result.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY );
+    public Result<En_ResultStatus> addWorker(@RequestBody WorkerRecordTestAPI workerRecordTestAPI) {
+        Result<En_ResultStatus>  validationResult = workerRecordTestAPI.validateWorkerRecord(workerRecordTestAPI);
+        if (validationResult.isError()) {
+            return validationResult;
         }
-        if (result.isError()) {
-            return new ResponseEntity<>(result.getStatus().name(), HttpStatus.CONFLICT);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+
+        Person person = WorkerTestApiEntityFactory.createPerson(workerRecordTestAPI);
+        WorkerEntry workerEntry = WorkerTestApiEntityFactory.createWorkerEntry(workerRecordTestAPI);
+        UserLogin userLogin = WorkerTestApiEntityFactory.createUserLogin(workerRecordTestAPI);
+
+        return workerTestApiService.addWorker(person, workerEntry, userLogin);
     }
 }

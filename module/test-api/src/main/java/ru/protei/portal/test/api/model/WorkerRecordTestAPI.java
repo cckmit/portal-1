@@ -3,11 +3,19 @@ package ru.protei.portal.test.api.model;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import ru.protei.portal.api.struct.Result;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.test.api.controller.En_WorkerTestApiValidationResult;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.core.model.util.CrmConstants.IpReservation.IP_ADDRESS;
 
 public class WorkerRecordTestAPI {
 
@@ -229,8 +237,87 @@ public class WorkerRecordTestAPI {
         int INN_LENGTH = 12;
     }
 
-    public interface Columns {
-        String ROLES = "roles";
-    }
+    public Result<En_ResultStatus> validateWorkerRecord(WorkerRecordTestAPI workerRecordTestAPI) {
+        if (HelperFunc.isEmpty(workerRecordTestAPI.getFirstName())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.EMPTY_FIRST_NAME.getMessage());
+        }
 
+        if (HelperFunc.isEmpty(workerRecordTestAPI.getLastName())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.EMPTY_LAST_NAME.getMessage());
+        }
+
+        if (HelperFunc.isEmpty(workerRecordTestAPI.getSex())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.EMPTY_GENDER.getMessage());
+        }
+
+        if (workerRecordTestAPI.getBirthday() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.EMPTY_BIRTHDAY.getMessage());
+        }
+
+        if (HelperFunc.isEmpty(workerRecordTestAPI.getPhone())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.EMPTY_PHONE.getMessage());
+        }
+
+        if (HelperFunc.isEmpty(workerRecordTestAPI.getMail())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.EMPTY_MAIL.getMessage());
+        }
+
+        if (workerRecordTestAPI.getContractAgreement() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.EMPTY_CONTRACT_AGREEMENT.getMessage());
+        }
+
+        if (workerRecordTestAPI.getCompanyId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.EMPTY_COMPANY_ID.getMessage());
+        }
+
+        if (workerRecordTestAPI.getDepartmentId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.EMPTY_DEPARTMENT_ID.getMessage());
+        }
+
+        if (workerRecordTestAPI.getPositionId() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.EMPTY_POSITION_ID.getMessage());
+        }
+
+        if (HelperFunc.isEmpty(workerRecordTestAPI.getIp())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.EMPTY_IP.getMessage());
+        }
+
+        if (!workerRecordTestAPI.getIp().trim().matches(IP_ADDRESS)) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.INVALID_FORMAT_IP.getMessage());
+        }
+
+        if (HelperFunc.isEmpty(workerRecordTestAPI.getInn())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.EMPTY_INN.getMessage());
+        }
+
+        if (workerRecordTestAPI.getInn().length() != WorkerRecordTestAPI.Constansts.INN_LENGTH) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.INVALID_FORMAT_INN.getMessage());
+        }
+
+        if (HelperFunc.isEmpty(workerRecordTestAPI.getLocale())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.EMPTY_LOCALE.getMessage());
+        }
+
+        if (!WorkerRecordTestAPI.Constansts.DEFAULT_LOCALE_LIST.contains(workerRecordTestAPI.getLocale())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.INVALID_FORMAT_LOCALE.getMessage());
+        }
+
+        if (workerRecordTestAPI.isFired() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.EMPTY_IS_FIRED.getMessage());
+        }
+
+        if (HelperFunc.isEmpty(workerRecordTestAPI.getLogin())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.EMPTY_LOGIN.getMessage());
+        }
+
+        if (HelperFunc.isEmpty(workerRecordTestAPI.getPassword())) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.EMPTY_PASSWORD.getMessage());
+        }
+
+        if (workerRecordTestAPI.getRoleIds() == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS, En_WorkerTestApiValidationResult.EMPTY_ROLE_IDS.getMessage());
+        }
+
+        return ok(En_ResultStatus.OK);
+    }
 }
