@@ -4128,6 +4128,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueValidationResultAutoCloseDeadline();
 
+    String projectHasContract();
+
     String transportationRequest();
 
     String reportTransportationRequest();

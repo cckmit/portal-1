@@ -42,7 +42,7 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
     @Override
     public int countByQuery(ContractQuery query) {
         SqlCondition where = createSqlCondition(query);
-        if (query.getDirectionId() != null) {
+        if (CollectionUtils.isNotEmpty(query.getDirectionIds())) {
             return getObjectsCount(where.condition, where.args, LEFT_OUTER_JOIN_PROJECT_TO_PRODUCT, true);
         }
         return getObjectsCount(where.condition, where.args);
@@ -90,7 +90,7 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                 .withSort(TypeConverters.createSort(query))
                 .withOffset(query.getOffset());
 
-        if (query.getDirectionId() != null) {
+        if (CollectionUtils.isNotEmpty(query.getDirectionIds())) {
             parameters.withDistinct(true);
             parameters.withJoins(LEFT_OUTER_JOIN_PROJECT_TO_PRODUCT);
         }
@@ -147,9 +147,10 @@ public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements Con
                 }
             }
 
-            if (query.getDirectionId() != null) {
-                condition.append(" and (ptp.product_id = ?)");
-                args.add(query.getDirectionId());
+            if (CollectionUtils.isNotEmpty(query.getDirectionIds())) {
+                condition.append(" and (ptp.product_id in ")
+                        .append(makeInArg(query.getDirectionIds(), false))
+                        .append(")");
             }
 
 

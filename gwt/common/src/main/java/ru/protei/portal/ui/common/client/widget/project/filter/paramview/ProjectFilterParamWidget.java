@@ -34,6 +34,7 @@ import ru.protei.portal.ui.common.client.widget.selector.project.state.ProjectSt
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.client.widget.typedrangepicker.TypedSelectorRangePicker;
 
@@ -100,6 +101,7 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
         query.setInitiatorCompanyIds(initiatorCompanies.getValue().stream().map(EntityOption::getId).collect(Collectors.toSet()));
         query.setProductIds(products.getValue().stream().map(ProductShortView::getId).collect(Collectors.toSet()));
         query.setCommentCreationRange(toDateRange(commentCreationRange.getValue()));
+        query.setHasContract(hasContract.getValue());
         return query;
     }
 
@@ -146,6 +148,8 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
 
         Set<ProductShortView> products = collectProducts(selectorsParams.getProductShortViews(), query.getProductIds());
         this.products.setValue(products);
+
+        hasContract.setValue(query.getHasContract());
 
         if (validate()) {
             onFilterChanged();
@@ -222,6 +226,11 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
 
     @UiHandler( "products" )
     public void onProductsSelected( ValueChangeEvent<Set<ProductShortView>> event ) {
+        onFilterChanged();
+    }
+
+    @UiHandler( "hasContract" )
+    public void onHasContractValueChanged( ValueChangeEvent<Boolean> event ) {
         onFilterChanged();
     }
 
@@ -345,6 +354,8 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
         sortField.setEnsureDebugId(DebugIds.PROJECT_FILTER.SORT_FIELD_SELECTOR);
         sortDir.ensureDebugId(DebugIds.PROJECT_FILTER.SORT_DIRECTION_BUTTON);
         onlyMineProjects.ensureDebugId(DebugIds.PROJECT_FILTER.ONLY_MINE_PROJECTS);
+
+        hasContract.ensureDebugId(DebugIds.PROJECT_FILTER.HAS_CONTRACT);
     }
 
     @Inject
@@ -397,6 +408,8 @@ public class ProjectFilterParamWidget extends Composite implements FilterParamVi
     HTMLPanel onlyMineProjectsContainer;
     @UiField
     CheckBox onlyMineProjects;
+    @UiField
+    CheckBox hasContract;
 
     @Inject
     PolicyService policyService;

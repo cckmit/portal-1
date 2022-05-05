@@ -644,6 +644,7 @@ public class DebugIds {
         String SORT_FIELD_SELECTOR = "project-filter-sort-field-selector";
         String SORT_DIRECTION_BUTTON = "project-filter-sort-direction-button";
         String ONLY_MINE_PROJECTS = "project-filter-only-mine-projects-checkbox";
+        String HAS_CONTRACT = "project-filter-has-contract-button";
     }
 
     public interface COMPANY_TABLE {
