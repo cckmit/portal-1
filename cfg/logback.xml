@@ -1,0 +1,87 @@
+<configuration>
+
+    <property name="ENCODE_PATTERN"
+              value="%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{32} - %msg%n" />
+
+    <property name="LOGS_ROOT"
+                value="${sys:catalina.home}/logs/portal2" />
+
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!--<filter class="ch.qos.logback.classic.filter.LevelFilter">-->
+            <!--<level>WARN</level>-->
+            <!--<onMatch>ACCEPT</onMatch>-->
+            <!--<onMismatch>DENY</onMismatch>-->
+        <!--</filter>-->
+        <encoder><pattern>${ENCODE_PATTERN}</pattern></encoder>
+    </appender>
+
+    <appender name="FILE_COMMON" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_ROOT}/trace.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS_ROOT}/archive/trace_%d.%i.log.gz</fileNamePattern>
+            <maxFileSize>5MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${ENCODE_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE_WARNING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <file>${LOGS_ROOT}/warning.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS_ROOT}/archive/warning_%d.log.gz</fileNamePattern>
+            <!-- keep 90 days -->
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${ENCODE_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <file>${LOGS_ROOT}/error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS_ROOT}/archive/error_%d.log.gz</fileNamePattern>
+            <!-- keep 90 days -->
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${ENCODE_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+
+    <logger name="config" level="OFF"/>
+    <logger name="jdbc" level="INFO"/>
+    <logger name="http" level="DEBUG"/>
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.eclipse.jetty" level="INFO"/>
+    <logger name="org.spring4gwt.server" level="INFO"/>
+    <logger name="ru.yandex.clickhouse.util" level="DEBUG"/>
+    <logger name="org.apache.http" level="INFO"/>
+<!--    <logger name="org.apache.http.headers" level="INFO"/>-->
+<!--    <logger name="org.apache.http.impl" level="INFO"/>-->
+
+
+    <root level="ALL">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE_COMMON"/>
+        <appender-ref ref="FILE_WARNING"/>
+        <appender-ref ref="FILE_ERROR"/>
+    </root>
+</configuration>
