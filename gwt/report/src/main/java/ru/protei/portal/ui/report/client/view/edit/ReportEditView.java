@@ -50,6 +50,16 @@ public class ReportEditView extends Composite implements AbstractReportEditView 
     }
 
     @Override
+    public HasValue<Boolean> withDataSummarize() {
+        return withDataSummarize;
+    }
+
+    @Override
+    public HasValue<Set<En_ReportAdditionalParamType>> additionalParams() {
+        return additionalParams;
+    }
+
+    @Override
     public HasValue<String> name() {
         return name;
     }
@@ -82,8 +92,8 @@ public class ReportEditView extends Composite implements AbstractReportEditView 
     }
 
     @Override
-    public HasValue<Set<En_ReportAdditionalParamType>> additionalParams() {
-        return additionalParams;
+    public HasVisibility withDataSummarizeVisibility() {
+        return withDataSummarizeContainer;
     }
 
     @UiHandler("reportType")
@@ -130,6 +140,10 @@ public class ReportEditView extends Composite implements AbstractReportEditView 
     ReportScheduledTypeButtonSelector scheduledType;
     @UiField
     HTMLPanel scheduledTypeContainer;
+    @UiField
+    HTMLPanel withDataSummarizeContainer;
+    @UiField
+    CheckBox withDataSummarize;
     @UiField
     HTMLPanel additionalParamsContainer;
     @UiField

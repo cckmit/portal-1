@@ -37,7 +37,6 @@ import ru.protei.portal.ui.common.client.widget.project.filter.ProjectFilterWidg
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CustomerCompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.SubcontractorCompanyModel;
-import ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -210,6 +209,8 @@ public abstract class ReportEditActivity implements Activity,
 
         view.reportScheduledType().setValue(report.getScheduledType());
         view.name().setValue(report.getName());
+
+        view.withDataSummarize().setValue(report.isWithDataSummarize());
 
         Set<En_ReportAdditionalParamType> additionalParams = new HashSet<>();
         if (report.isWithDescription()) {
@@ -388,6 +389,7 @@ public abstract class ReportEditActivity implements Activity,
 
     private Report makeReport(Report report) {
         report.setReportType(view.reportType().getValue());
+        report.setWithDataSummarize(view.withDataSummarize().getValue());
         report.setScheduledType(view.reportScheduledType().getValue());
         report.setName(view.name().getValue());
         report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
@@ -462,6 +464,8 @@ public abstract class ReportEditActivity implements Activity,
                 view.getFilterContainer().clear();
                 view.getFilterContainer().add(projectFilterWidget.asWidget());
                 view.scheduledTypeContainerVisibility().setVisible(false);
+                view.withDataSummarizeVisibility().setVisible(false);
+                view.withDataSummarize().setValue(false);
                 view.additionalParamsVisibility().setVisible(false);
                 view.additionalParams().setValue(null);
                 break;
@@ -472,6 +476,8 @@ public abstract class ReportEditActivity implements Activity,
                 view.getFilterContainer().clear();
                 view.getFilterContainer().add(contractFilterView.asWidget());
                 view.scheduledTypeContainerVisibility().setVisible(false);
+                view.withDataSummarizeVisibility().setVisible(false);
+                view.withDataSummarize().setValue(false);
                 view.additionalParamsVisibility().setVisible(false);
                 view.additionalParams().setValue(null);
                 break;
@@ -482,6 +488,8 @@ public abstract class ReportEditActivity implements Activity,
             case NIGHT_WORK: {
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
                 view.scheduledTypeContainerVisibility().setVisible(isScheduledEnabled(reportType));
+                view.withDataSummarizeVisibility().setVisible(reportType == En_ReportType.CASE_TIME_ELAPSED);
+                view.withDataSummarize().setValue(false);
                 view.additionalParamsVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
                 view.additionalParams().setValue(null);
                 issueFilterWidget.updateFilterType(En_CaseFilterType.valueOf(reportType.name()));
@@ -498,6 +506,8 @@ public abstract class ReportEditActivity implements Activity,
                 view.getFilterContainer().clear();
                 view.getFilterContainer().add(youtrackWorkFilterView.asWidget());
                 view.scheduledTypeContainerVisibility().setVisible(false);
+                view.withDataSummarizeVisibility().setVisible(false);
+                view.withDataSummarize().setValue(false);
                 view.additionalParamsVisibility().setVisible(false);
                 view.additionalParams().setValue(null);
                 break;
@@ -507,6 +517,8 @@ public abstract class ReportEditActivity implements Activity,
                 view.getFilterContainer().clear();
                 view.getFilterContainer().add(transportationRequestFilterView.asWidget());
                 view.scheduledTypeContainerVisibility().setVisible(false);
+                view.withDataSummarizeVisibility().setVisible(false);
+                view.withDataSummarize().setValue(false);
                 view.additionalParamsVisibility().setVisible(false);
                 view.additionalParams().setValue(null);
             }
