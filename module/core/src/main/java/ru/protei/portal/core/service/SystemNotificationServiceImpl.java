@@ -69,19 +69,19 @@ public class SystemNotificationServiceImpl implements SystemNotificationService 
 
     @Override
     public void fillCommonManagerMapping() {
-        log.info("buildMappingTable");
+        log.info("fillCommonManagerMapping");
 
         PortalConfigData.SnConfig snConfig = portalConfig.data().getSnConfig();
 
         if (!snConfig.isNotificationEnabled()){
-            log.warn("buildMappingTable failed: notification not allowed");
+            log.warn("fillCommonManagerMapping failed: notification not allowed");
             return;
         }
 
         List<CommonManagerToNotifyList> commonManagerToNotifyLists = commonManagerToNotifyListDAO.getAll();
 
         if (CollectionUtils.isEmpty(commonManagerToNotifyLists)){
-            log.warn("buildMappingTable: no common managers in the system");
+            log.warn("fillCommonManagerMapping: no common managers in the system");
             return;
         }
 
@@ -95,7 +95,7 @@ public class SystemNotificationServiceImpl implements SystemNotificationService 
 
         PortalConfigData.SnConfig snConfig = portalConfig.data().getSnConfig();
         if (!snConfig.isNotificationEnabled()){
-            log.warn("buildMappingTable failed: notification not allowed");
+            log.warn("startNotification failed: notification not allowed");
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
