@@ -350,8 +350,9 @@ public class ExcelReportWriter implements
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.STANDARD, isNotRestricted && isHumanReadable)
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.STANDARD, isNotRestricted && isHumanReadable)
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted)
-                .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, withTimeElapsedGroupType)
-                .addIf(ExcelFormat.STANDARD, withTimeElapsedGroupDepartment).addIf(ExcelFormat.STANDARD, withTimeElapsedGroupAuthor)
+                .addIf(ExcelFormat.STANDARD, withTimeElapsedGroupType)
+                .addIf(ExcelFormat.STANDARD, withTimeElapsedGroupDepartment)
+                .addIf(ExcelFormat.STANDARD, withTimeElapsedGroupAuthor)
                 .build();
 
         return formatList.toArray(new String[]{});
@@ -373,7 +374,8 @@ public class ExcelReportWriter implements
                 .addIf(12000, isNotRestricted).addIf(12000, isNotRestricted && isHumanReadable)
                 .addIf(5800, isNotRestricted).addIf(12000, isNotRestricted)
                 .addIf(5800, withTimeElapsedGroupType)
-                .addIf(12000, withTimeElapsedGroupDepartment).addIf(12000, withTimeElapsedGroupAuthor)
+                .addIf(12000, withTimeElapsedGroupDepartment)
+                .addIf(12000, withTimeElapsedGroupAuthor)
                 .build();
 
         return toPrimitiveIntegerArray(columnsWidthList);
@@ -395,7 +397,8 @@ public class ExcelReportWriter implements
                 .addIf("ir_time_solution_full", isNotRestricted).addIf("ir_time_solution_full_with_days", isNotRestricted && isHumanReadable)
                 .addIf("ir_time_elapsed", isNotRestricted).addIf("ir_time_elapsed_selected_range", isNotRestricted)
                 .addIf("ir_work_time_type", withTimeElapsedGroupType)
-                .addIf("ir_work_time_department", withTimeElapsedGroupDepartment).addIf("ir_work_time_employee", withTimeElapsedGroupAuthor)
+                .addIf("ir_work_time_department", withTimeElapsedGroupDepartment)
+                .addIf("ir_work_time_employee", withTimeElapsedGroupAuthor)
                 .build();
 
         return columnsList.toArray(new String[]{});
