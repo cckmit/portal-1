@@ -78,6 +78,9 @@ public class Report implements Serializable {
     @JdbcColumn(name = "with_deadline_and_work_trigger")
     private boolean withDeadlineAndWorkTrigger;
 
+    @JdbcColumn(name = "with_data_summarize")
+    private boolean withDataSummarize;
+
     public Long getId() {
         return id;
     }
@@ -236,6 +239,14 @@ public class Report implements Serializable {
 
     public void setWithDeadlineAndWorkTrigger(boolean withDeadlineAndWorkTrigger) {
         this.withDeadlineAndWorkTrigger = withDeadlineAndWorkTrigger;
+    }
+
+    public boolean isWithDataSummarize() {
+        return withDataSummarize;
+    }
+
+    public void setWithDataSummarize(boolean withDataSummarize) {
+        this.withDataSummarize = withDataSummarize;
     }
 
     @Override
