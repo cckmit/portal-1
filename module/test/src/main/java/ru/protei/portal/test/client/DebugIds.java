@@ -460,6 +460,9 @@ public class DebugIds {
         String ADDITIONAL_PARAMS_CLEAR_BUTTON = "issue-report-additional-params-clear-button";
         String ADDITIONAL_PARAMS_ITEM_CONTAINER = "issue-report-additional-params-item-container";
         String ADDITIONAL_PARAMS_LABEL = "issue-report-additional-params-label";
+        String TIME_ELAPSED_GROUP = "issue-report-time-elapsed-group";
+        String TIME_ELAPSED_GROUP_ITEM_CONTAINER = "issue-report-time-elapsed-group-item-container";
+        String TIME_ELAPSED_GROUP_LABEL = "issue-report-time-elapsed-group-label";
         String TIME_ELAPSED_TYPES = "issue-report-time-elapsed-types";
         String TIME_ELAPSED_TYPES_ADD_BUTTON = "issue-report-time-elapsed-types-add-button";
         String TIME_ELAPSED_TYPES_CLEAR_BUTTON = "issue-report-time-elapsed-types-clear-button";

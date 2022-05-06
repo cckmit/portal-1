@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.report.ReportWriter;
+import ru.protei.portal.core.utils.EnumLangUtil;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,7 +24,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 
 public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
 
@@ -60,7 +60,7 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
 
         log.info( "writeReport(): Start report {}", report );
         try (ReportWriter<CaseCommentTimeElapsedSum> writer =
-                     new ExcelReportWriter(localizedLang, makeTimeElapsedTypes(caseQuery.getTimeElapsedTypeIds()))) {
+                     new ExcelReportWriter(localizedLang, makeTimeElapsedTypes(caseQuery.getTimeElapsedTypeIds()), new EnumLangUtil(lang))) {
 
             while (true) {
                 if (isCancel.test(report.getId())) {

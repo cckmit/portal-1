@@ -4135,5 +4135,13 @@ public interface Lang extends Messages, ContactItemLang {
     String reportTransportationRequest();
 
     String transportationRequestPickupDate();
+
+    String timeElapsedGroup();
+
+    String timeElapsedGroupType();
+
+    String timeElapsedGroupDepartment();
+
+    String timeElapsedGroupAuthor();
 }
 

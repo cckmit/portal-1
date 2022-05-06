@@ -389,4 +389,38 @@ public class EnumLangUtil {
         }
         return deliveryAttribute.toString();
     }
+
+    public String timeElapsedTypeLang(En_TimeElapsedType value, String langCode) {
+        if (value == null) {
+            return "";
+        }
+        Lang.LocalizedLang localizedLang = this.lang.getFor(Locale.forLanguageTag(langCode));
+        switch (value) {
+            case NONE:
+                return localizedLang.get("ir_work_time_none");
+            case WATCH:
+                return localizedLang.get("ir_work_time_watch");
+            case NIGHT_WORK:
+                return localizedLang.get("ir_work_time_night_work");
+            case SOFT_INSTALL:
+                return localizedLang.get("ir_work_time_SoftInstall");
+            case SOFT_UPDATE:
+                return localizedLang.get("ir_work_time_SoftUpdate");
+            case SOFT_CONFIG:
+                return localizedLang.get("ir_work_time_SoftConfig");
+            case TESTING:
+                return localizedLang.get("ir_work_time_Testing");
+            case CONSULTATION:
+                return localizedLang.get("ir_work_time_Consultation");
+            case MEETING:
+                return localizedLang.get("ir_work_time_Meeting");
+            case DISCUSSION_OF_IMPROVEMENTS:
+                return localizedLang.get("ir_work_time_DiscussionOfImprovements");
+            case LOG_ANALYSIS:
+                return localizedLang.get("ir_work_time_LogAnalysis");
+            case SOLVE_PROBLEMS:
+                return localizedLang.get("ir_work_time_SolveProblems");
+        }
+        return "";
+    }
 }

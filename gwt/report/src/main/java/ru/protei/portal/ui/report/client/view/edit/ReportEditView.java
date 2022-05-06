@@ -11,8 +11,10 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ReportAdditionalParamType;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportType;
+import ru.protei.portal.core.model.dict.En_TimeElapsedGroup;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.report.additionalparams.ReportAdditionalParamsMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.report.timeelapsedgroup.TimeElapsedGroupMultiSelector;
 import ru.protei.portal.ui.report.client.activity.edit.AbstractReportCreateEditActivity;
 import ru.protei.portal.ui.report.client.activity.edit.AbstractReportEditView;
 import ru.protei.portal.ui.report.client.widget.reporttype.ReportScheduledTypeButtonSelector;
@@ -86,6 +88,16 @@ public class ReportEditView extends Composite implements AbstractReportEditView 
         return additionalParams;
     }
 
+    @Override
+    public HasVisibility timeElapsedGroupVisibility() {
+        return timeElapsedGroupContainer;
+    }
+
+    @Override
+    public HasValue<Set<En_TimeElapsedGroup>> timeElapsedGroup() {
+        return timeElapsedGroup;
+    }
+
     @UiHandler("reportType")
     public void onReportTypeChanged(ValueChangeEvent<En_ReportType> event) {
         if (activity != null) {
@@ -116,6 +128,9 @@ public class ReportEditView extends Composite implements AbstractReportEditView 
         additionalParams.setClearEnsureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS_CLEAR_BUTTON);
         additionalParams.setItemContainerEnsureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS_ITEM_CONTAINER);
         additionalParams.setLabelEnsureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS_LABEL);
+        timeElapsedGroup.ensureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_GROUP);
+        timeElapsedGroup.setItemContainerEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_GROUP_ITEM_CONTAINER);
+        timeElapsedGroup.setLabelEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_GROUP_LABEL);
         saveButton.ensureDebugId(DebugIds.ISSUE_REPORT.CREATE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.ISSUE_REPORT.CANCEL_BUTTON);
     }
@@ -141,6 +156,11 @@ public class ReportEditView extends Composite implements AbstractReportEditView 
     @Inject
     @UiField(provided = true)
     ReportAdditionalParamsMultiSelector additionalParams;
+    @UiField
+    HTMLPanel timeElapsedGroupContainer;
+    @Inject
+    @UiField(provided = true)
+    TimeElapsedGroupMultiSelector timeElapsedGroup;
 
     private AbstractReportCreateEditActivity activity;
 
