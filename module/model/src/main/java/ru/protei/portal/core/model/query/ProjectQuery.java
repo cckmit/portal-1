@@ -56,6 +56,8 @@ public class ProjectQuery extends BaseQuery implements HasFilterQueryIds {
 
     private Long idSearch;
 
+    private Boolean hasContract;
+
     public ProjectQuery() {
         sortField = En_SortField.case_name;
         sortDir = En_SortDir.ASC;
@@ -235,6 +237,14 @@ public class ProjectQuery extends BaseQuery implements HasFilterQueryIds {
         this.idSearch = idSearch;
     }
 
+    public Boolean getHasContract() {
+        return hasContract;
+    }
+
+    public void setHasContract(Boolean hasContract) {
+        this.hasContract = hasContract;
+    }
+
     @Override
     public List<Long> getAllCompanyIds() {
         List<Long> allCompanyIds = new ArrayList<>();
@@ -306,7 +316,8 @@ public class ProjectQuery extends BaseQuery implements HasFilterQueryIds {
                 pauseDateGreaterThan != null ||
                 deleted != null ||
                 CollectionUtils.isNotEmpty(technicalSupportExpiresInDays) ||
-                isActive;
+                isActive ||
+                hasContract != null;
     }
 
     @Override
@@ -331,6 +342,7 @@ public class ProjectQuery extends BaseQuery implements HasFilterQueryIds {
                 ", subcontractorIds=" + subcontractorIds +
                 ", technicalSupportExpiresInDays=" + technicalSupportExpiresInDays +
                 ", isActive=" + isActive +
+                ", hasContract=" + hasContract +
                 '}';
     }
 
@@ -357,7 +369,8 @@ public class ProjectQuery extends BaseQuery implements HasFilterQueryIds {
                 Objects.equals(deleted, that.deleted) &&
                 Objects.equals(subcontractorIds, that.subcontractorIds) &&
                 Objects.equals(technicalSupportExpiresInDays, that.technicalSupportExpiresInDays) &&
-                Objects.equals(isActive, that.isActive);
+                Objects.equals(isActive, that.isActive) &&
+                Objects.equals(hasContract, that.hasContract);
     }
 
     @Override
@@ -365,6 +378,6 @@ public class ProjectQuery extends BaseQuery implements HasFilterQueryIds {
         return Objects.hash(caseIds, stateIds, regionIds, headManagerIds, caseMemberIds, directionIds,
                 districtIds, memberId, productIds, customerType, createdFrom, createdTo,
                 initiatorCompanyIds, commentCreationRange, pauseDateGreaterThan, deleted,
-                subcontractorIds, technicalSupportExpiresInDays, isActive);
+                subcontractorIds, technicalSupportExpiresInDays, isActive, hasContract);
     }
 }

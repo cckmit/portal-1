@@ -4165,5 +4165,21 @@ public interface Lang extends Messages, ContactItemLang {
     String linkRemoved();
 
     String issueValidationResultAutoCloseDeadline();
+
+    String projectHasContract();
+
+    String transportationRequest();
+
+    String reportTransportationRequest();
+
+    String transportationRequestPickupDate();
+
+    String timeElapsedGroup();
+
+    String timeElapsedGroupType();
+
+    String timeElapsedGroupDepartment();
+
+    String timeElapsedGroupAuthor();
 }
 

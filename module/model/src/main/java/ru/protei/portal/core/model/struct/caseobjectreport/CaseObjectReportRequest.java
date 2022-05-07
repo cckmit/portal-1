@@ -1,10 +1,11 @@
-package ru.protei.portal.core.model.struct;
+package ru.protei.portal.core.model.struct.caseobjectreport;
 
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.struct.DateRange;
 
 import java.util.List;
 
-public class CaseObjectReportRequest {
+public class CaseObjectReportRequest implements CaseObjectReportRow {
 
     private CaseObject caseObject;
     private List<CaseComment> caseComments;

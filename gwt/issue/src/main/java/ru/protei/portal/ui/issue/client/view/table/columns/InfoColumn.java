@@ -45,8 +45,8 @@ public class InfoColumn extends ClickColumn<CaseShortView>{
 
         if (value.getAutoClose()) {
             Element hourGlass = DOM.createElement("i");
-            hourGlass.addClassName("fa fa-hourglass-end");
-            hourGlass.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.ISSUE.AUTO_CLOSE);
+            hourGlass.addClassName("fa fa-fw fa-hourglass-end");
+            hourGlass.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.ISSUE.AUTO_CLOSE);
             hourGlass.setTitle(lang.issueAutoClose());
             divElement.appendChild(hourGlass);
         }

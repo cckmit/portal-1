@@ -94,7 +94,7 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
 
     private List<Long> creatorIds;
 
-    private Boolean isCheckImportanceHistory;
+    private Boolean checkImportanceHistory;
 
     private Long planId;
 
@@ -363,11 +363,11 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
     }
 
     public void setCheckImportanceHistory( Boolean isCheckImportanceHistory ) {
-        this.isCheckImportanceHistory = isCheckImportanceHistory;
+        this.checkImportanceHistory = isCheckImportanceHistory;
     }
 
     public Boolean isCheckImportanceHistory() {
-        return isCheckImportanceHistory;
+        return checkImportanceHistory;
     }
 
     public List<Long> getManagerCompanyIds() {
@@ -480,6 +480,7 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
         this.isOnlyNotExternal = isOnlyNotExternal;
     }
 
+    @JsonIgnore
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
                 id != null ||
@@ -503,13 +504,14 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
                 CollectionUtils.isNotEmpty(caseTagsIds) ||
                 CollectionUtils.isNotEmpty(caseTagsNames) ||
                 local != null ||
-                isCheckImportanceHistory != null ||
+                checkImportanceHistory != null ||
                 planId != null ||
                 personIdToIsFavorite != null ||
                 CollectionUtils.isNotEmpty(timeElapsedTypeIds) ||
                 CollectionUtils.isNotEmpty(workTriggersIds);
     }
 
+    @JsonIgnore
     public boolean isAnySelectedParamPresent() {
         return isUnLimitSelectedParamsPresent() ||
                 CollectionUtils.isNotEmpty(stateIds) ||
@@ -517,6 +519,7 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
                 CollectionUtils.isNotEmpty(managerCompanyIds);
     }
 
+    @JsonIgnore
     public boolean isUnLimitSelectedParamsPresent() {
         return super.isParamsPresent() ||
                 CollectionUtils.isNotEmpty(caseNumbers) ||
@@ -575,7 +578,7 @@ public class CaseQuery extends BaseQuery implements HasFilterQueryIds {
                 ", customerSearch=" + customerSearch +
                 ", local=" + local +
                 ", creatorIds=" + creatorIds +
-                ", isCheckImportanceHistory=" + isCheckImportanceHistory +
+                ", checkImportanceHistory=" + checkImportanceHistory +
                 ", planId=" + planId +
                 ", timeElapsedTypeIds=" + timeElapsedTypeIds +
                 ", workTriggersIds=" + workTriggersIds +

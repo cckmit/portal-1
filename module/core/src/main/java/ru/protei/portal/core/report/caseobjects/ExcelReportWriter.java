@@ -8,10 +8,13 @@ import ru.protei.portal.core.model.dict.En_HistoryType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
 import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.struct.ListBuilder;
+import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportRequest;
+import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportRow;
+import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportTimeElapsedGroupRow;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.ExcelFormatUtils.ExcelFormat;
@@ -30,10 +33,10 @@ import static ru.protei.portal.core.utils.ExcelFormatUtils.toDaysHoursMinutes;
 import static ru.protei.portal.core.utils.ExcelFormatUtils.toExcelTimeFormat;
 
 public class ExcelReportWriter implements
-        ReportWriter<CaseObjectReportRequest>,
-        JXLSHelper.ReportBook.Writer<CaseObjectReportRequest> {
+        ReportWriter<CaseObjectReportRow>,
+        JXLSHelper.ReportBook.Writer<CaseObjectReportRow> {
 
-    private final JXLSHelper.ReportBook<CaseObjectReportRequest> book;
+    private final JXLSHelper.ReportBook<CaseObjectReportRow> book;
     private final Lang.LocalizedLang lang;
     private final EnumLangUtil enumLangUtil;
     private final boolean isNotRestricted;
@@ -44,7 +47,11 @@ public class ExcelReportWriter implements
     private final boolean isHumanReadable;
     private final boolean withImportanceHistory;
     private final boolean withDeadlineAndWorkTrigger;
+    private final boolean withTimeElapsedGroupType;
+    private final boolean withTimeElapsedGroupDepartment;
+    private final boolean withTimeElapsedGroupAuthor;
     private final String[] formats;
+    static private final int COLUMN_COUNT = 17;
 
     public ExcelReportWriter(Lang.LocalizedLang localizedLang,
                              EnumLangUtil enumLangUtil,
@@ -54,7 +61,11 @@ public class ExcelReportWriter implements
                              boolean withLinkedIssues,
                              boolean isHumanReadable,
                              boolean withImportanceHistory,
-                             boolean withDeadlineAndWorkTrigger) {
+                             boolean withDeadlineAndWorkTrigger,
+                             boolean withTimeElapsedGroupType,
+                             boolean withTimeElapsedGroupDepartment,
+                             boolean withTimeElapsedGroupAuthor
+                             ) {
 
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
@@ -67,6 +78,9 @@ public class ExcelReportWriter implements
         this.isHumanReadable = isHumanReadable;
         this.withImportanceHistory = withImportanceHistory;
         this.withDeadlineAndWorkTrigger = withDeadlineAndWorkTrigger;
+        this.withTimeElapsedGroupType = withTimeElapsedGroupType;
+        this.withTimeElapsedGroupDepartment = withTimeElapsedGroupDepartment;
+        this.withTimeElapsedGroupAuthor = withTimeElapsedGroupAuthor;
         this.formats = getFormats(
                 isNotRestricted,
                 withDescription,
@@ -74,7 +88,10 @@ public class ExcelReportWriter implements
                 withLinkedIssues,
                 isHumanReadable,
                 withImportanceHistory,
-                withDeadlineAndWorkTrigger
+                withDeadlineAndWorkTrigger,
+                withTimeElapsedGroupType,
+                withTimeElapsedGroupDepartment,
+                withTimeElapsedGroupAuthor
         );
     }
 
@@ -89,7 +106,7 @@ public class ExcelReportWriter implements
     }
 
     @Override
-    public void write(int sheetNumber, List<CaseObjectReportRequest> objects) {
+    public void write(int sheetNumber, List<CaseObjectReportRow> objects) {
         book.write(sheetNumber, objects);
     }
 
@@ -112,7 +129,10 @@ public class ExcelReportWriter implements
                 withLinkedIssues,
                 isHumanReadable,
                 withImportanceHistory,
-                withDeadlineAndWorkTrigger
+                withDeadlineAndWorkTrigger,
+                withTimeElapsedGroupType,
+                withTimeElapsedGroupDepartment,
+                withTimeElapsedGroupAuthor
         );
     }
 
@@ -125,95 +145,124 @@ public class ExcelReportWriter implements
                 withLinkedIssues,
                 isHumanReadable,
                 withImportanceHistory,
-                withDeadlineAndWorkTrigger
+                withDeadlineAndWorkTrigger,
+                withTimeElapsedGroupType,
+                withTimeElapsedGroupDepartment,
+                withTimeElapsedGroupAuthor
         );
     }
 
     @Override
-    public Object[] getColumnValues(CaseObjectReportRequest object) {
-
-        CaseObject issue = object.getCaseObject();
-        List<History> histories = object.getHistories();
-
-        Date    created = null,
-                opened = null,
-                workaround = null,
-                customerTest = null,
-                done = null,
-                verified = null,
-                critical = null,
-                important = null;
-
-        for (History history : histories) {
-            if (history.getType() == En_HistoryType.CASE_IMPORTANCE) {
-                if (Objects.equals(CrmConstants.ImportanceLevel.IMPORTANT, history.getNewId().intValue() )) important = history.getDate();
-                if (Objects.equals(CrmConstants.ImportanceLevel.CRITICAL, history.getNewId().intValue() )) critical = history.getDate();
-            }
-
-            if (history.getType() == En_HistoryType.CASE_STATE) {
-                Long stateId = history.getNewId();
-
-                if (Objects.equals(stateId, CrmConstants.State.CREATED)) created = history.getDate();
-                if (Objects.equals(stateId, CrmConstants.State.OPENED)) opened = history.getDate();
-                if (Objects.equals(stateId, CrmConstants.State.WORKAROUND)) workaround = history.getDate();
-                if (Objects.equals(stateId, CrmConstants.State.TEST_CUST)) customerTest = history.getDate();
-                if (Objects.equals(stateId, CrmConstants.State.DONE)) done = history.getDate();
-                if (Objects.equals(stateId, CrmConstants.State.VERIFIED)) verified = history.getDate();
-            }
-        }
-
-        if (created == null) {
-            created = issue.getCreated();
-        }
-
-        long timeElapsedInSelectedDuration = 0;
-
-        if (isNotRestricted) {
-            timeElapsedInSelectedDuration = object.getCaseComments()
-                    .stream()
-                    .filter(comment -> comment.getTimeElapsed() != null)
-                    .filter(comment -> isDateInAnyRange(comment.getCreated(), makeInterval(object.getCreatedRange()), makeInterval(object.getModifiedRange())))
-                    .mapToLong(CaseComment::getTimeElapsed)
-                    .sum();
-        }
-
-        Long solutionDurationFirst = isNotRestricted ? getDurationBetween(created, customerTest, workaround, done) : null;
-        Long solutionDurationFull = isNotRestricted ? getDurationBetween(created, done, verified) : null;
-
+    public Object[] getColumnValues(CaseObjectReportRow row) {
         List<Object> values = new ArrayList<>();
-        values.add("CRM-" + issue.getCaseNumber());
-        if (isNotRestricted) values.add(lang.get(issue.isPrivateCase() ? "yes" : "no"));
-        values.add(HelperFunc.isNotEmpty(issue.getName()) ? issue.getName() : "");
-        if (withDescription) values.add(StringUtils.emptyIfNull(issue.getInfo()));
-        values.add(issue.getInitiatorCompany() != null && HelperFunc.isNotEmpty(issue.getInitiatorCompany().getCname()) ? transliterate(issue.getInitiatorCompany().getCname(), locale) : "");
-        values.add(issue.getInitiator() != null && HelperFunc.isNotEmpty(issue.getInitiator().getDisplayShortName()) ? transliterate(issue.getInitiator().getDisplayShortName(), locale) : "");
-        values.add(issue.getManager() != null && HelperFunc.isNotEmpty(issue.getManager().getDisplayShortName()) ? transliterate(issue.getManager().getDisplayShortName(), locale) : "");
-        values.add(issue.getManagerCompanyName() != null ? transliterate(issue.getManagerCompanyName(), locale) : "");
-        values.add(issue.getProduct() != null && HelperFunc.isNotEmpty(issue.getProduct().getName()) ? issue.getProduct().getName() : "");
-        values.add(issue.getImportanceCode() != null ? issue.getImportanceCode() : "");
-        values.add(HelperFunc.isNotEmpty(issue.getStateName()) ? issue.getStateName() : "");
-        if (withTags) values.add(String.join(",", toList(emptyIfNull(object.getCaseTags()), CaseTag::getName)));
-        if (withLinkedIssues) values.add(getCaseNumbersAsString(object.getCaseLinks(), lang));
-        if (isNotRestricted && withDeadlineAndWorkTrigger) values.add(issue.getDeadline() != null ? new Date(issue.getDeadline()) : "");
-        if (isNotRestricted && withDeadlineAndWorkTrigger) values.add(issue.getWorkTrigger() != null ? enumLangUtil.workTriggerLang(issue.getWorkTrigger(), lang.getLanguageTag()) : "");
-        values.add(created != null ? created : "");
-        values.add(opened != null ? opened : "");
-        values.add(workaround != null ? workaround : "");
-        values.add(customerTest != null ? customerTest : "");
-        values.add(done != null ? done : "");
-        values.add(verified != null ? verified : "");
 
-        if (withImportanceHistory) values.add(important != null ? important : "");
-        if (withImportanceHistory) values.add(critical != null ? critical : "");
+        if (row instanceof CaseObjectReportRequest) {
+            // Количество колонок важно
+            // для других типов строк COLUMN_COUNT = 17
+            CaseObjectReportRequest object = (CaseObjectReportRequest)row;
 
-        if (isNotRestricted) values.add(solutionDurationFirst == null ? "" : toExcelTimeFormat(solutionDurationFirst));
-        if (isNotRestricted && isHumanReadable) values.add(solutionDurationFirst == null ? "" : toDaysHoursMinutes(solutionDurationFirst));
+            CaseObject issue = object.getCaseObject();
+            List<History> histories = object.getHistories();
 
-        if (isNotRestricted) values.add(solutionDurationFull == null ? "" : toExcelTimeFormat(solutionDurationFull));
-        if (isNotRestricted && isHumanReadable) values.add(solutionDurationFull == null ? "" : toDaysHoursMinutes(solutionDurationFull));
+            Date    created = null,
+                    opened = null,
+                    workaround = null,
+                    customerTest = null,
+                    done = null,
+                    verified = null,
+                    critical = null,
+                    important = null;
 
-        if (isNotRestricted) values.add(issue.getTimeElapsed() != null && issue.getTimeElapsed() > 0 ? toExcelTimeFormat(issue.getTimeElapsed()) : "");
-        if (isNotRestricted) values.add(toExcelTimeFormat(timeElapsedInSelectedDuration));
+            for (History history : histories) {
+                if (history.getType() == En_HistoryType.CASE_IMPORTANCE) {
+                    if (Objects.equals(CrmConstants.ImportanceLevel.IMPORTANT, history.getNewId().intValue())) important = history.getDate();
+                    if (Objects.equals(CrmConstants.ImportanceLevel.CRITICAL, history.getNewId().intValue())) critical = history.getDate();
+                }
+
+                if (history.getType() == En_HistoryType.CASE_STATE) {
+                    Long stateId = history.getNewId();
+
+                    if (Objects.equals(stateId, CrmConstants.State.CREATED)) created = history.getDate();
+                    if (Objects.equals(stateId, CrmConstants.State.OPENED)) opened = history.getDate();
+                    if (Objects.equals(stateId, CrmConstants.State.WORKAROUND)) workaround = history.getDate();
+                    if (Objects.equals(stateId, CrmConstants.State.TEST_CUST)) customerTest = history.getDate();
+                    if (Objects.equals(stateId, CrmConstants.State.DONE)) done = history.getDate();
+                    if (Objects.equals(stateId, CrmConstants.State.VERIFIED)) verified = history.getDate();
+                }
+            }
+
+            if (created == null) {
+                created = issue.getCreated();
+            }
+
+            long timeElapsedInSelectedDuration = 0;
+
+            if (isNotRestricted) {
+                timeElapsedInSelectedDuration = object.getCaseComments()
+                        .stream()
+                        .filter(comment -> comment.getTimeElapsed() != null)
+                        .filter(comment -> isDateInAnyRange(comment.getCreated(), makeInterval(object.getCreatedRange()), makeInterval(object.getModifiedRange())))
+                        .mapToLong(CaseComment::getTimeElapsed)
+                        .sum();
+            }
+
+            Long solutionDurationFirst = isNotRestricted ? getDurationBetween(created, customerTest, workaround, done) : null;
+            Long solutionDurationFull = isNotRestricted ? getDurationBetween(created, done, verified) : null;
+
+            values.add("CRM-" + issue.getCaseNumber());
+            if (isNotRestricted) values.add(lang.get(issue.isPrivateCase() ? "yes" : "no"));
+            values.add(HelperFunc.isNotEmpty(issue.getName()) ? issue.getName() : "");
+            if (withDescription) values.add(StringUtils.emptyIfNull(issue.getInfo()));
+            values.add(issue.getInitiatorCompany() != null && HelperFunc.isNotEmpty(issue.getInitiatorCompany().getCname()) ? transliterate(issue.getInitiatorCompany().getCname(), locale) : "");
+            values.add(issue.getInitiator() != null && HelperFunc.isNotEmpty(issue.getInitiator().getDisplayShortName()) ? transliterate(issue.getInitiator().getDisplayShortName(), locale) : "");
+            values.add(issue.getManager() != null && HelperFunc.isNotEmpty(issue.getManager().getDisplayShortName()) ? transliterate(issue.getManager().getDisplayShortName(), locale) : "");
+            values.add(issue.getManagerCompanyName() != null ? transliterate(issue.getManagerCompanyName(), locale) : "");
+            values.add(issue.getProduct() != null && HelperFunc.isNotEmpty(issue.getProduct().getName()) ? issue.getProduct().getName() : "");
+            values.add(issue.getImportanceCode() != null ? issue.getImportanceCode() : "");
+            values.add(HelperFunc.isNotEmpty(issue.getStateName()) ? issue.getStateName() : "");
+            if (withTags) values.add(String.join(",", toList(emptyIfNull(object.getCaseTags()), CaseTag::getName)));
+            if (withLinkedIssues) values.add(getCaseNumbersAsString(object.getCaseLinks(), lang));
+            if (isNotRestricted && withDeadlineAndWorkTrigger) values.add(issue.getDeadline() != null ? new Date(issue.getDeadline()) : "");
+            if (isNotRestricted && withDeadlineAndWorkTrigger) values.add(issue.getWorkTrigger() != null ? enumLangUtil.workTriggerLang(issue.getWorkTrigger(), lang.getLanguageTag()) : "");
+            values.add(created != null ? created : "");
+            values.add(opened != null ? opened : "");
+            values.add(workaround != null ? workaround : "");
+            values.add(customerTest != null ? customerTest : "");
+            values.add(done != null ? done : "");
+            values.add(verified != null ? verified : "");
+
+            if (withImportanceHistory) values.add(important != null ? important : "");
+            if (withImportanceHistory) values.add(critical != null ? critical : "");
+
+            if (isNotRestricted) values.add(solutionDurationFirst == null ? "" : toExcelTimeFormat(solutionDurationFirst));
+            if (isNotRestricted && isHumanReadable) values.add(solutionDurationFirst == null ? "" : toDaysHoursMinutes(solutionDurationFirst));
+
+            if (isNotRestricted) values.add(solutionDurationFull == null ? "" : toExcelTimeFormat(solutionDurationFull));
+            if (isNotRestricted && isHumanReadable) values.add(solutionDurationFull == null ? "" : toDaysHoursMinutes(solutionDurationFull));
+
+            if (isNotRestricted) values.add(issue.getTimeElapsed() != null && issue.getTimeElapsed() > 0 ? toExcelTimeFormat(issue.getTimeElapsed()) : "");
+            if (isNotRestricted) values.add(toExcelTimeFormat(timeElapsedInSelectedDuration));
+        } else if (row instanceof CaseObjectReportTimeElapsedGroupRow) {
+            CaseObjectReportTimeElapsedGroupRow timeElapsedGroupRow = (CaseObjectReportTimeElapsedGroupRow)row;
+            int columnCount = COLUMN_COUNT;
+            if (withTags) columnCount++;
+            if (withLinkedIssues) columnCount++;
+            if (isNotRestricted && withDeadlineAndWorkTrigger) columnCount++;
+            if (isNotRestricted && withDeadlineAndWorkTrigger) columnCount++;
+            if (withImportanceHistory) columnCount++;
+            if (withImportanceHistory) columnCount++;
+            if (isNotRestricted) columnCount++;
+            if (isNotRestricted && isHumanReadable) columnCount++;
+            if (isNotRestricted) columnCount++;;
+            if (isNotRestricted && isHumanReadable) columnCount++;;
+            for (int i = 0; i < columnCount; i++) {
+                values.add("");
+            }
+            values.add(toExcelTimeFormat(timeElapsedGroupRow.getTimeElapsed()));
+            if (withTimeElapsedGroupType) values.add(enumLangUtil.timeElapsedTypeLang(timeElapsedGroupRow.getTimeElapsedType(), lang.getLanguageTag()));
+            if (withTimeElapsedGroupDepartment) values.add(TransliterationUtils.transliterate(timeElapsedGroupRow.getEmployeeDepartment(), lang.getLanguageTag()));
+            if (withTimeElapsedGroupAuthor) values.add(TransliterationUtils.transliterate(timeElapsedGroupRow.getEmployeeName(), lang.getLanguageTag()));
+        }
 
         return values.toArray();
     }
@@ -286,7 +335,9 @@ public class ExcelReportWriter implements
                 .collect(Collectors.joining(","));
     }
 
-    private String[] getFormats(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable, boolean withImportanceHistory, boolean withDeadlineAndWorkTrigger) {
+    private String[] getFormats(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues,
+                                boolean isHumanReadable, boolean withImportanceHistory, boolean withDeadlineAndWorkTrigger,
+                                boolean withTimeElapsedGroupType, boolean withTimeElapsedGroupDepartment, boolean withTimeElapsedGroupAuthor) {
         List<String> formatList = new ListBuilder<String>()
                 .add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, isNotRestricted).add(ExcelFormat.STANDARD).addIf(ExcelFormat.STANDARD, withDescription)
                 .add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD).add(ExcelFormat.STANDARD)
@@ -299,12 +350,17 @@ public class ExcelReportWriter implements
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.STANDARD, isNotRestricted && isHumanReadable)
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.STANDARD, isNotRestricted && isHumanReadable)
                 .addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted).addIf(ExcelFormat.INFINITE_HOURS_MINUTES, isNotRestricted)
+                .addIf(ExcelFormat.STANDARD, withTimeElapsedGroupType)
+                .addIf(ExcelFormat.STANDARD, withTimeElapsedGroupDepartment)
+                .addIf(ExcelFormat.STANDARD, withTimeElapsedGroupAuthor)
                 .build();
 
         return formatList.toArray(new String[]{});
     }
 
-    private int[] getColumnsWidth(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable, boolean withImportanceHistory, boolean withDeadlineAndWorkTrigger) {
+    private int[] getColumnsWidth(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues,
+                                  boolean isHumanReadable, boolean withImportanceHistory, boolean withDeadlineAndWorkTrigger,
+                                  boolean withTimeElapsedGroupType, boolean withTimeElapsedGroupDepartment, boolean withTimeElapsedGroupAuthor) {
         List<Integer> columnsWidthList = new ListBuilder<Integer>()
                 .add(3650).addIf(3430, isNotRestricted).add(8570).addIf(9000, withDescription)
                 .add(4590).add(4200).add(4200).add(4200)
@@ -317,12 +373,17 @@ public class ExcelReportWriter implements
                 .addIf(12000, isNotRestricted).addIf(12000, isNotRestricted && isHumanReadable)
                 .addIf(12000, isNotRestricted).addIf(12000, isNotRestricted && isHumanReadable)
                 .addIf(5800, isNotRestricted).addIf(12000, isNotRestricted)
+                .addIf(5800, withTimeElapsedGroupType)
+                .addIf(12000, withTimeElapsedGroupDepartment)
+                .addIf(12000, withTimeElapsedGroupAuthor)
                 .build();
 
         return toPrimitiveIntegerArray(columnsWidthList);
     }
 
-    private String[] getColumns(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues, boolean isHumanReadable, boolean withImportanceHistory, boolean withDeadlineAndWorkTrigger) {
+    private String[] getColumns(boolean isNotRestricted, boolean withDescription, boolean withTags, boolean withLinkedIssues,
+                                boolean isHumanReadable, boolean withImportanceHistory, boolean withDeadlineAndWorkTrigger,
+                                boolean withTimeElapsedGroupType, boolean withTimeElapsedGroupDepartment, boolean withTimeElapsedGroupAuthor) {
         List<String> columnsList = new ListBuilder<String>()
                 .add("ir_caseno").addIf("ir_private", isNotRestricted).add("ir_name").addIf("ir_description", withDescription)
                 .add("ir_company").add("ir_initiator").add("ir_manager").add("ir_manager_company")
@@ -335,6 +396,9 @@ public class ExcelReportWriter implements
                 .addIf("ir_time_solution_first", isNotRestricted).addIf("ir_time_solution_first_with_days", isNotRestricted && isHumanReadable)
                 .addIf("ir_time_solution_full", isNotRestricted).addIf("ir_time_solution_full_with_days", isNotRestricted && isHumanReadable)
                 .addIf("ir_time_elapsed", isNotRestricted).addIf("ir_time_elapsed_selected_range", isNotRestricted)
+                .addIf("ir_work_time_type", withTimeElapsedGroupType)
+                .addIf("ir_work_time_department", withTimeElapsedGroupDepartment)
+                .addIf("ir_work_time_employee", withTimeElapsedGroupAuthor)
                 .build();
 
         return columnsList.toArray(new String[]{});

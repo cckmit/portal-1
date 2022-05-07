@@ -86,6 +86,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     AttachmentDAO attachmentDAO;
     @Autowired
     CaseTagDAO caseTagDAO;
+    @Autowired
+    CaseLinkDAO caseLinkDAO;
 
 /*
     @Autowired
@@ -225,6 +227,23 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                     attachment.setId(a.getAttachmentId());
                     attachmentDAO.partialMerge(attachment, "private_flag");
                 });
+            }
+        }
+
+        CaseObject caseObject = caseObjectDAO.get(comment.getCaseId());
+        Set<Long> allHomeCompanyIds = companyDAO.getAllHomeCompanies().stream()
+                .map(Company::getId).collect(Collectors.toSet());
+        Long authorCompanyId = (comment.getAuthor() != null && comment.getAuthor().getCompanyId() != null) ?
+                comment.getAuthor().getCompanyId() :
+                personDAO.get(comment.getAuthorId()).getCompanyId();
+        if (Objects.equals(caseObject.getAutoClose(), Boolean.TRUE) &&
+                !allHomeCompanyIds.contains(authorCompanyId)) {
+            caseObject.setDeadline(null);
+            caseObject.setAutoClose(false);
+            CaseObjectMeta caseObjectMeta = new CaseObjectMeta(caseObject);
+            Result<CaseObjectMeta> caseObjectMetaResult = caseService.updateCaseObjectMeta(token, caseObjectMeta);
+            if (caseObjectMetaResult.isError()) {
+                log.error("addCaseCommentWithoutEvent(): Can't reset autoclose, object meta={}", caseObjectMeta);
             }
         }
 
@@ -756,32 +775,48 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         commentsAndHistories.setComments(caseCommentListResult.getData());
         commentsAndHistories.setHistories(
-                filterHistories(historyListResult.getData(), token, caseType)
+                filterHistories(historyListResult.getData(), token, caseType, caseObjectId)
         );
 
         return ok(commentsAndHistories);
     }
 
-    private List<History> filterHistories(List<History> histories, AuthToken token, En_CaseType caseType) {
+    private List<History> filterHistories(List<History> histories, AuthToken token, En_CaseType caseType, long caseObjectId) {
         Set<UserRole> roles = token.getRoles();
         if (caseType != CRM_SUPPORT || policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
             return histories;
         }
 
+        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
+        caseLinkQuery.setCaseId(caseObjectId);
+        caseLinkQuery.setShowOnlyPublic(true);
+        List<Long> publicLinksIds = toList(caseLinkDAO.getListByQuery(caseLinkQuery), CaseLink::getId);
+
         CaseTagQuery tagQuery = new CaseTagQuery();
         tagQuery.setCompanyId(token.getCompanyId());
         List<Long> customerTagsIds = toList(caseTagDAO.getListByQuery(tagQuery), CaseTag::getId);
 
-        return stream(histories).filter(history -> customerHistoryPredicate(history, customerTagsIds))
+        return stream(histories).filter(history -> customerHistoryPredicate(history, customerTagsIds, publicLinksIds))
                 .collect(Collectors.toList());
     }
 
-    private boolean customerHistoryPredicate(History history, List<Long> customerTagsIds){
+    private boolean customerHistoryPredicate(History history, List<Long> customerTagsIds, List<Long> publicLinksIds){
         if (history.getType() == En_HistoryType.TAG) {
             return (history.getAction() == En_HistoryAction.ADD && customerTagsIds.contains(history.getNewId()))
                     || (history.getAction() == En_HistoryAction.REMOVE && customerTagsIds.contains(history.getOldId()));
         }
+        if (En_HistoryType.CASE_DEADLINE.equals(history.getType())
+                || En_HistoryType.CASE_WORK_TRIGGER.equals(history.getType())
+                || En_HistoryType.CASE_AUTO_CLOSE.equals(history.getType())
+                || En_HistoryType.CASE_PLATFORM.equals(history.getType())
+                || En_HistoryType.CASE_LINK.equals(history.getType()) && isPrivateLink(history, publicLinksIds)){
+            return false;
+        }
         return true;
+    }
+
+    private boolean isPrivateLink(History history, List<Long> publicLinksIds) {
+        return !publicLinksIds.contains(history.getOldId()) && !publicLinksIds.contains(history.getNewId());
     }
 
     private CaseComment createComment(CaseObject caseObject, Person person, String comment) {

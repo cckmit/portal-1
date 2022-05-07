@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.JXLSHelper;
+import ru.protei.portal.core.utils.LinkData;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -34,12 +35,14 @@ public class ExcelReportWriter implements
     private final Lang.LocalizedLang lang;
     private final EnumLangUtil enumLangUtil;
     private final DateFormat dateFormat;
+    private final String projectUrl;
 
-    public ExcelReportWriter(Lang.LocalizedLang localizedLang, EnumLangUtil enumLangUtil, DateFormat dateFormat) {
+    public ExcelReportWriter(Lang.LocalizedLang localizedLang, EnumLangUtil enumLangUtil, DateFormat dateFormat, String projectUrl) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.enumLangUtil = enumLangUtil;
         this.dateFormat = dateFormat;
+        this.projectUrl = projectUrl;
     }
 
     @Override
@@ -79,7 +82,8 @@ public class ExcelReportWriter implements
                 4000,
                 8000,
                 15000,
-                6000
+                6000,
+                8000
         };
     }
 
@@ -108,7 +112,8 @@ public class ExcelReportWriter implements
                 "cr_direction",
                 "cr_state",
                 "cr_expenditure_contracts",
-                "cr_curator"
+                "cr_curator",
+                "cr_project"
         };
     }
 
@@ -125,7 +130,18 @@ public class ExcelReportWriter implements
         values.add(makeState(contract));
         values.add(makeExpenditureContracts(contract));
         values.add(emptyIfNull(contract.getCuratorShortName()));
+        values.add(makeProject(contract));
         return values.toArray();
+    }
+
+    private LinkData makeProject(Contract contract) {
+        if (contract.getProjectId() == null) {
+            return null;
+        }
+
+        String projectName = "#" + contract.getProjectId() + " " + contract.getProjectName();
+        String projectLink = String.format( projectUrl, contract.getProjectId());
+        return new LinkData(projectLink, projectName);
     }
 
     private String makeContractNumber(Contract contract) {

@@ -9,6 +9,7 @@
              xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:product='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
              xmlns:range='urn:import:ru.protei.portal.ui.common.client.widget.typedrangepicker'
+             xmlns:threestate="urn:import:ru.protei.portal.ui.common.client.widget.threestate"
 >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -68,5 +69,12 @@
                 <g:CheckBox ui:field="onlyMineProjects" styleName="checkbox" text="{lang.projectOnlyMine}"/>
             </g:HTMLPanel>
         </div>
+
+        <div class="row">
+            <g:HTMLPanel styleName="form-group col-md-12">
+                <g:CheckBox ui:field="hasContract" styleName="checkbox" text="{lang.projectHasContract}"/>
+            </g:HTMLPanel>
+        </div>
+
     </g:HTMLPanel>
 </ui:UiBinder>

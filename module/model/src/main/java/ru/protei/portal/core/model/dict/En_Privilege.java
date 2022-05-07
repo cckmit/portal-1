@@ -101,6 +101,7 @@ public enum En_Privilege {
     RESERVED_IP_EDIT (RESERVED_IP, EDIT),
     RESERVED_IP_CREATE (RESERVED_IP, CREATE),
     RESERVED_IP_REMOVE (RESERVED_IP, REMOVE),
+
     SUBNET_VIEW (SUBNET, VIEW),
     SUBNET_EDIT (SUBNET, EDIT),
     SUBNET_CREATE (SUBNET, CREATE),
@@ -149,6 +150,8 @@ public enum En_Privilege {
     PCB_ORDER_CREATE(CARD, CREATE),
     PCB_ORDER_EDIT(CARD, EDIT),
     PCB_ORDER_REMOVE(CARD, REMOVE),
+
+    TRANSPORTATION_REQUEST_REPORT(TRANSPORTATION_REQUEST, REPORT),
 
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),

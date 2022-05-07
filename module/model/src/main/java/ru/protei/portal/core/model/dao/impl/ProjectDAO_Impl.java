@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.DateRange;
@@ -26,11 +27,11 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
-import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.condition;
 
 public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements ProjectDAO {
 
     public static final String LEFT_OUTER_JOIN_PROJECT_TO_PRODUCT = " left outer join project_to_product ptp on ptp.project_id = CO.id";
+    public static final String RIGHT_JOIN_PROJECT_TO_CONTRACT = " right join contract c on c.project_id = CO.id";
     public static final String LEFT_JOIN_CASE_COMMENT = " LEFT JOIN case_comment cc ON CO.id = cc.CASE_ID";
 
     @Override
@@ -77,7 +78,10 @@ public class ProjectDAO_Impl extends PortalBaseJdbcDAO<Project> implements Proje
         if (query.getCommentCreationRange() != null) {
             joins += LEFT_JOIN_CASE_COMMENT;
         }
-        if (!joins.equals("")) {
+        if (Objects.equals(query.getHasContract(), true)) {
+            joins += RIGHT_JOIN_PROJECT_TO_CONTRACT;
+        }
+        if (StringUtils.isNotEmpty(joins)) {
             parameters.withDistinct(true);
             parameters.withJoins(joins);
         }

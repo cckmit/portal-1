@@ -21,6 +21,7 @@ import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dto.ReportDto;
+import ru.protei.portal.core.model.dto.ReportTransportationRequestQuery;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -34,6 +35,7 @@ import ru.protei.portal.core.report.contract.ReportContract;
 import ru.protei.portal.core.report.dutylog.ReportDutyLog;
 import ru.protei.portal.core.report.nightwork.ReportNightWork;
 import ru.protei.portal.core.report.projects.ReportProject;
+import ru.protei.portal.core.report.transportationrequest.ReportTransportationRequest;
 import ru.protei.portal.core.report.ytwork.ReportYoutrackWork;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.utils.TimeFormatter;
@@ -85,6 +87,8 @@ public class ReportControlServiceImpl implements ReportControlService {
     ReportNightWork reportNightWork;
     @Autowired
     ReportYoutrackWork reportYoutrackWork;
+    @Autowired
+    ReportTransportationRequest reportTransportationRequest;
     @Autowired
     EventPublisherService publisherService;
     @Autowired
@@ -271,6 +275,14 @@ public class ReportControlServiceImpl implements ReportControlService {
                         getQuery(report, YoutrackWorkQuery.class),
                         this::isCancel
                 );
+            case TRANSPORTATION_REQUEST:
+                return reportTransportationRequest.writeReport(
+                        buffer,
+                        report,
+                        getQuery(report, TransportationRequestQuery.class),
+                        this::isCancel
+                );
+
         }
         return false;
     }
