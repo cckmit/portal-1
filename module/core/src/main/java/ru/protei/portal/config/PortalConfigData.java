@@ -499,7 +499,7 @@ public class PortalConfigData {
 
         public SnConfig(PropertiesWrapper properties) throws ConfigException{
             notificationEnabled = properties.getProperty("sn.enabled", Boolean.class, false);
-            commonManagersIds = properties.getProperty("sn.managers.id_list").split(",");
+            commonManagersIds = properties.getProperty("sn.managers.id_list", "").split(",");
             login = properties.getProperty("sn.login");
             password = properties.getProperty("sn.password");
             fromNumber = properties.getProperty("sn.from_number", "5488");

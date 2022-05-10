@@ -18,7 +18,10 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.TimeFormatter;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.mock.AuthServiceMock;
+import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
 import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.http.HttpConfigurationContext;
+import ru.protei.winter.http.client.factory.HttpClientFactory;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.io.IOException;
@@ -33,7 +36,8 @@ import static ru.protei.portal.core.model.util.CrmConstants.ImportanceLevel.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
         JdbcConfigurationContext.class,
-        DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
+        DatabaseConfiguration.class, IntegrationTestsConfiguration.class,
+        RemoteServiceFactory.class, HttpClientFactory.class, HttpConfigurationContext.class})
 @Transactional
 public class ReportCaseTest extends BaseServiceTest {
 

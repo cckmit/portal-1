@@ -17,6 +17,9 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.ModuleDAO;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.test.service.BaseServiceTest;
+import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
+import ru.protei.winter.http.HttpConfigurationContext;
+import ru.protei.winter.http.client.factory.HttpClientFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -32,7 +35,10 @@ import static org.mockito.Mockito.*;
         ServiceTestsConfiguration.class,
         DaoMockTestConfiguration.class,
         ServiceTestsConfiguration.class,
-        TestEventConfiguration.class
+        TestEventConfiguration.class,
+        RemoteServiceFactory.class,
+        HttpClientFactory.class,
+        HttpConfigurationContext.class
 })
 public class ModuleServiceImplTest extends BaseServiceTest {
 

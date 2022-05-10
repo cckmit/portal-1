@@ -91,8 +91,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     @Autowired
     CaseTagDAO caseTagDAO;
     @Autowired
-    SystemNotificationService snService;
-    @Autowired
     PortalConfig portalConfig;
 
 /*

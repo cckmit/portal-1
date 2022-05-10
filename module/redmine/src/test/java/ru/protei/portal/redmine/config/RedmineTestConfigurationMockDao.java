@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.CardBatchSqlBuilder;
 import ru.protei.portal.core.model.dao.impl.CardSqlBuilder;
+import ru.protei.portal.core.model.dao.impl.CommonManagerToNotifyListDAO_Impl;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static org.mockito.Mockito.mock;
@@ -279,6 +280,11 @@ public class RedmineTestConfigurationMockDao {
     @Bean
     public ProjectToProductDAO getProjectToProductDAO() {
         return mock( ProjectToProductDAO.class );
+    }
+
+    @Bean
+    public CommonManagerToNotifyListDAO getCommonManagerToNotifyListDAO() {
+        return mock(CommonManagerToNotifyListDAO.class);
     }
 
     @Bean
