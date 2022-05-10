@@ -84,6 +84,8 @@ import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrack
 import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrackSynchronizerImpl;
 import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.service.template.TemplateServiceImpl;
+import ru.protei.portal.core.sn.SystemNotificationService;
+import ru.protei.portal.core.sn.SystemNotificationServiceImpl;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.core.svn.document.DocumentSvnApiImpl;
 import ru.protei.portal.core.utils.SessionIdGen;
@@ -553,6 +555,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CommonManagerToNotifyListDAO getCommonManagerToNotifyListDAO() {
+        return new CommonManagerToNotifyListDAO_Impl();
+    }
+
+    @Bean
     public PlatformDAO getPlatformDAO() {
         return new PlatformDAO_Impl();
     }
@@ -872,6 +879,11 @@ public class MainConfiguration {
     @Bean
     public EmployeeService getEmployeeService() {
         return new EmployeeServiceImpl();
+    }
+
+    @Bean
+    public SystemNotificationService getSystemNotificationService() {
+        return new SystemNotificationServiceImpl();
     }
 
     @Bean

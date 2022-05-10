@@ -14,7 +14,10 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.report.nightwork.ReportNightWork;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
+import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
 import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.http.HttpConfigurationContext;
+import ru.protei.winter.http.client.factory.HttpClientFactory;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.io.ByteArrayOutputStream;
@@ -29,7 +32,8 @@ import static ru.protei.portal.core.model.util.CrmConstants.Time.MINUTE;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
         JdbcConfigurationContext.class,
-        DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
+        DatabaseConfiguration.class, IntegrationTestsConfiguration.class,
+        RemoteServiceFactory.class, HttpClientFactory.class, HttpConfigurationContext.class})
 @Transactional
 public class ReportCaseCommentNightWorkTest extends BaseServiceTest {
     @Test

@@ -196,6 +196,41 @@
         </dependency>
         <dependency>
             <groupId>ru.protei</groupId>
+            <artifactId>sn.services_remote</artifactId>
+            <version>4.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>ru.protei</groupId>
+                    <artifactId>winter.mail</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ru.protei</groupId>
+                    <artifactId>sn.argus</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ch.vorburger.mariaDB4j</groupId>
+                    <artifactId>mariaDB4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jxls</groupId>
+                    <artifactId>jxls-poi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-compress</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ru.protei</groupId>
+                    <artifactId>winter.ws</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ru.protei</groupId>
+                    <artifactId>winter.smpp</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>ru.protei</groupId>
             <artifactId>portal4.skin.classic</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>

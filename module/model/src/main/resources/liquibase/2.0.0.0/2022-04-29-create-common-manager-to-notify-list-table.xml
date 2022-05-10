@@ -1,0 +1,22 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create-common_manager_to_notify_list-table" author="butusov">
+        <createTable tableName="common_manager_to_notify_list">
+            <column name="manager_id" type="BIGINT">
+                <constraints referencedTableName="person"
+                             referencedColumnNames="id"
+                             foreignKeyName="common_manager_to_notify_list_manager_id_fk"
+                             nullable="false" unique="true"/>
+            </column>
+            <column name="notify_list_id" type="BIGINT">
+                <constraints nullable="true" unique="true"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+</databaseChangeLog>

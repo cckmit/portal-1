@@ -18,7 +18,10 @@ import ru.protei.portal.core.model.dto.CaseResolutionTimeReportDto;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime;
+import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
 import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.http.HttpConfigurationContext;
+import ru.protei.winter.http.client.factory.HttpClientFactory;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.*;
@@ -30,7 +33,9 @@ import static ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTi
 import static ru.protei.portal.core.model.util.CrmConstants.Time.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class,
+        DatabaseConfiguration.class, IntegrationTestsConfiguration.class,
+        RemoteServiceFactory.class, HttpClientFactory.class, HttpConfigurationContext.class})
 public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
     @Test

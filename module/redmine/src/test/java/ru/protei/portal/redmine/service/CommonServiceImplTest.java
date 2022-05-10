@@ -9,6 +9,10 @@ import ru.protei.portal.redmine.config.PortalConfigTestConfiguration;
 import ru.protei.portal.redmine.config.RedmineTestConfiguration;
 import ru.protei.portal.redmine.config.RedmineTestConfigurationMockDao;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
+import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.http.HttpConfigurationContext;
+import ru.protei.winter.http.client.factory.HttpClientFactory;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -16,7 +20,8 @@ import static org.junit.Assert.assertNotNull;
 @ContextConfiguration(classes = {
         PortalConfigTestConfiguration.class,
         RedmineTestConfiguration.class,
-        RedmineTestConfigurationMockDao.class
+        RedmineTestConfigurationMockDao.class,
+        RemoteServiceFactory.class, HttpClientFactory.class, HttpConfigurationContext.class, CoreConfigurationContext.class
 })
 public class CommonServiceImplTest {
 

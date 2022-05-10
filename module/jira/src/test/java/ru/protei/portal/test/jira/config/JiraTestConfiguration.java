@@ -668,6 +668,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public CommonManagerToNotifyListDAO getCommonManagerToNotifyListDAO() {
+        return new CommonManagerToNotifyListDAO_Impl();
+    }
+
+    @Bean
     public ContractDAO getContractDAO() {
         return new ContractDAO_Impl();
     }

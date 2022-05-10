@@ -21,6 +21,9 @@ import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.mock.AuthServiceMock;
+import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
+import ru.protei.winter.http.HttpConfigurationContext;
+import ru.protei.winter.http.client.factory.HttpClientFactory;
 
 import java.util.Collections;
 
@@ -31,7 +34,10 @@ import static org.mockito.Mockito.*;
         PortalConfigTestConfiguration.class,
         DaoMockTestConfiguration.class,
         ServiceTestsConfiguration.class,
-        TestEventConfiguration.class
+        TestEventConfiguration.class,
+        RemoteServiceFactory.class,
+        HttpClientFactory.class,
+        HttpConfigurationContext.class
 })
 public class CaseLinkServiceImplTest {
 

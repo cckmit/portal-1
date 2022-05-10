@@ -252,6 +252,11 @@ public class DaoMockTestConfiguration {
     }
 
     @Bean
+    public CommonManagerToNotifyListDAO getCommonManagerToNotifyListDAO() {
+        return mock(CommonManagerToNotifyListDAO.class);
+    }
+
+    @Bean
     public PlatformDAO getPlatformDAO() {
         return  mock(PlatformDAO.class);
     }
