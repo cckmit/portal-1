@@ -19,6 +19,7 @@ import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrackSynchronizer;
+import ru.protei.portal.core.sn.SystemNotificationService;
 
 import java.time.LocalDate;
 import java.util.Date;

@@ -190,12 +190,12 @@ public class BootstrapServiceImpl implements BootstrapService {
             return;
         }
 
-        List<Long> commonManagersIds = Arrays.stream(snConfig.getCommonManagersIds()).map(Long::parseLong).collect(Collectors.toList());
-
-        for (Long managerId : commonManagersIds){
-            CommonManagerToNotifyList commonManagerToNotifyList = new CommonManagerToNotifyList(managerId,null);
-            commonManagerToNotifyListDAO.persist(commonManagerToNotifyList);
-        }
+        Arrays.stream(snConfig.getCommonManagersIds())
+                .map(Long::parseLong)
+                .forEach(managerId -> {
+                    CommonManagerToNotifyList commonManagerToNotifyList = new CommonManagerToNotifyList(managerId, null);
+                    commonManagerToNotifyListDAO.persist(commonManagerToNotifyList);
+                });
     }
 
     private void setMissingProjectManagerId() {

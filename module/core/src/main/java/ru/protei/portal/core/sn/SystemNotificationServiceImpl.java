@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service;
+package ru.protei.portal.core.sn;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ContactItem;
+import ru.protei.portal.core.service.PersonService;
 import ru.protei.sn.model.dto.AbonentInsertResult;
 import ru.protei.sn.model.dto.ExistsNotifyListReferences;
 import ru.protei.sn.model.jdbc.*;
@@ -106,7 +107,7 @@ public class SystemNotificationServiceImpl implements SystemNotificationService 
         }
         ru.protei.winter.audit.model.dto.AuthToken authTokenSN = authorizeResult.getData();
 
-        Result<Long> notifyListIdResult = personService.getNotifyListIdByCommonManagerId(managerId);
+        Result<Long> notifyListIdResult = getNotifyListIdByCommonManagerId(managerId);
         if (notifyListIdResult.isError()){
             return error(En_ResultStatus.GET_DATA_ERROR);
         }
@@ -311,14 +312,41 @@ public class SystemNotificationServiceImpl implements SystemNotificationService 
         } else {
             checkNotifyListExists(notifyListId)
                     .ifError(o->createNotifyListForManagerWithCallback(managerId))
-                    .ifOk(okCheckNotifyListExistsConsumer);
+                    .ifOk(id -> log.debug("checkNotifyListExists notifyList with id = {} exists", id));
         }
     }
 
     private void createNotifyListForManagerWithCallback(Long managerId){
         createNotifyListForManager(managerId)
-                .ifError(errorCreateNotifyListConsumer)
-                .ifOk(newNotifyListId -> personService.updateCommonManagerToNotifyList(managerId, newNotifyListId));
+                .ifError(result -> log.error("createNotifyListForManager error = {}", result.getStatus()))
+                .ifOk(newNotifyListId -> updateCommonManagerToNotifyList(managerId, newNotifyListId));
+    }
+
+    private Result<Long> getNotifyListIdByCommonManagerId(Long commonManagerId) {
+        log.info("getNotifyListIdByCommonManagerId(): commonManagerId = {}", commonManagerId);
+        if (commonManagerId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CommonManagerToNotifyList commonManagerToNotifyList = commonManagerToNotifyListDAO.get(commonManagerId);
+        return ok(commonManagerToNotifyList.getNotifyListId());
+    }
+
+    private Result<CommonManagerToNotifyList> updateCommonManagerToNotifyList(Long managerId, Long notifyListId) {
+        log.info("updateCommonManagerToNotifyList(): managerId = {}, notifyListId {}", managerId, notifyListId);
+        if (managerId == null || notifyListId == null) {
+            return error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CommonManagerToNotifyList commonManagerToNotifyList = commonManagerToNotifyListDAO.getByManagerId(managerId);
+        if (commonManagerToNotifyList == null){
+            commonManagerToNotifyList = new CommonManagerToNotifyList(managerId, notifyListId);
+            commonManagerToNotifyListDAO.persist(commonManagerToNotifyList);
+        } else {
+            commonManagerToNotifyList.setNotifyListId(notifyListId);
+            commonManagerToNotifyListDAO.updateNotifyList(commonManagerToNotifyList);
+        }
+        return ok(commonManagerToNotifyList);
     }
 
     private Result<Long> checkNotifyListExists(Long notifyListId) {
@@ -508,18 +536,4 @@ public class SystemNotificationServiceImpl implements SystemNotificationService 
                 .map(ContactItem::value)
                 .collect(Collectors.toSet());
     }
-
-    Consumer<? super Long> okCheckNotifyListExistsConsumer = new Consumer<Long>() {
-        @Override
-        public void accept(Long notifyListId) {
-            log.debug("checkNotifyListExists notifyList with id = {} exists", notifyListId);
-        }
-    };
-
-    Consumer<Result<Long>> errorCreateNotifyListConsumer = new Consumer<Result<Long>>() {
-        @Override
-        public void accept(Result<Long> result) {
-            log.error("createNotifyListForManager error = {}", result.getStatus());
-        }
-    };
 }

@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service;
+package ru.protei.portal.core.sn;
 
 import ru.protei.portal.api.struct.Result;
 

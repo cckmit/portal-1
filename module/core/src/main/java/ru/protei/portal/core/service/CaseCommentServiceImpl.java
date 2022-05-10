@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.exception.RollbackTransactionException;
@@ -90,8 +89,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     AttachmentDAO attachmentDAO;
     @Autowired
     CaseTagDAO caseTagDAO;
-    @Autowired
-    PortalConfig portalConfig;
 
 /*
     @Autowired
