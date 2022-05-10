@@ -20,8 +20,7 @@ import static org.junit.Assert.assertNotNull;
 @ContextConfiguration(classes = {
         PortalConfigTestConfiguration.class,
         RedmineTestConfiguration.class,
-        RedmineTestConfigurationMockDao.class,
-        RemoteServiceFactory.class, HttpClientFactory.class, HttpConfigurationContext.class, CoreConfigurationContext.class
+        RedmineTestConfigurationMockDao.class
 })
 public class CommonServiceImplTest {
 
