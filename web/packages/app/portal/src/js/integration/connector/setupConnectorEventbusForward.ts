@@ -22,7 +22,7 @@ export function setupConnectorEventbusForward<T>(
         return
       }
       const message = targetSerialize({
-        type: "portal-eventbus-event",
+        type: "eventbus-event",
         payload: event,
       })
       target.send(message)

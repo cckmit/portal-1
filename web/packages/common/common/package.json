@@ -9,14 +9,22 @@
   ],
   "dependencies": {
     "@protei-libs/eventbus": "workspace:*",
+    "@protei-libs/exception": "workspace:*",
     "@protei-libs/logger": "workspace:*",
     "@protei-libs/module": "workspace:*",
+    "@protei-libs/react": "workspace:*",
     "@protei-libs/store": "workspace:*",
-    "@protei-portal/common-model": "workspace:*"
+    "@protei-libs/types": "workspace:*",
+    "@protei-portal/common-lang": "workspace:*",
+    "ajv": "8.8.2",
+    "date-fns": "2.28.0"
   },
   "peerDependencies": {
     "inversify": "*",
-    "mobx": "*"
+    "mobx": "*",
+    "mobx-react-lite": "*",
+    "react": "*",
+    "react-dom": "*"
   },
   "devDependencies": {
     "typescript": "4.5.4"

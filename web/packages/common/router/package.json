@@ -1,0 +1,21 @@
+{
+  "name": "@protei-portal/common-router",
+  "version": "1.0.0",
+  "private": true,
+  "main": "lib/index",
+  "types": "lib/index",
+  "files": [
+    "lib"
+  ],
+  "peerDependencies": {
+    "history": "*",
+    "mobx": "*",
+    "mobx-react-lite": "*",
+    "react": "*",
+    "react-router": "*",
+    "react-router-dom": "*"
+  },
+  "devDependencies": {
+    "typescript": "4.5.4"
+  }
+}

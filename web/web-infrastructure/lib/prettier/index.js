@@ -2,7 +2,7 @@
 // @ts-nocheck
 
 module.exports = {
-  "printWidth": 100,
+  "printWidth": 200,
   "tabWidth": 2,
   "useTabs": false,
   "semi": false,

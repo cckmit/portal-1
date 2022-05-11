@@ -3,4 +3,4 @@ export interface ConnectorMessage<T = unknown> {
   payload: T
 }
 
-export type ConnectorMessageTypes = "portal-eventbus-event" | "portal-mount"
+export type ConnectorMessageTypes = "eventbus-event" | "mount"

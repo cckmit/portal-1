@@ -9,7 +9,7 @@ import {
   EventBusEventAuthLogoutDoneType,
   PersonId,
   UserLoginId,
-} from "@protei-portal/common-model"
+} from "@protei-portal/common"
 import { AuthStore, AuthStore$type } from "../store"
 
 export const AuthService$type = Symbol("AuthService")

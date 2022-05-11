@@ -431,7 +431,7 @@ public interface Lang extends Messages, ContactItemLang {
     String goToContacts();
 
     String promptFieldLengthExceed(String fieldName, int fieldLength);
-    
+
     String promptFieldLengthNotEqual(String fieldName, int fieldLength);
 
     String promptFieldNeedContainAtSign();
@@ -1865,7 +1865,7 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeID();
 
     String employeeIPAddress();
-    
+
     String employeeInn();
 
     String employeeCompany();
@@ -3741,9 +3741,9 @@ public interface Lang extends Messages, ContactItemLang {
     String reportYoutrackWorkDictionaryConfirmRemove(String name);
 
     String reportYoutrackWorkDictionaryName();
-    
+
     String reportYoutrackWorkDictionaryType();
-    
+
     String reportYoutrackWorkDictionaryProjects();
 
     String newStoreAndDelivery();
@@ -4075,13 +4075,13 @@ public interface Lang extends Messages, ContactItemLang {
     String errorSetCorrectProjectId();
 
     String issueValidationResultOk();
-    
+
     String issueValidationResultNull();
-    
+
     String issueValidationResultNameEmpty();
-    
+
     String issueValidationResultTypeEmpty();
-    
+
     String issueValidationResultCreatorEmpty();
 
     String issueValidationResultImportanceEmpty();
@@ -4089,7 +4089,7 @@ public interface Lang extends Messages, ContactItemLang {
     String issueValidationResultManagerEmpty();
 
     String issueValidationResultManagerOtherCompany();
-    
+
     String issueValidationResultManagerWithoutProduct();
 
     String issueValidationResultInitiatorEmpty();
@@ -4097,9 +4097,9 @@ public interface Lang extends Messages, ContactItemLang {
     String issueValidationResultStatusInvalid();
 
     String issueValidationResultImportanceOtherCompany();
-    
+
     String issueValidationResultInitiatorOtherCompany();
-    
+
     String issueValidationResultPlatformOtherCompany();
 
     String issueValidationResultProductInvalid();
@@ -4111,5 +4111,7 @@ public interface Lang extends Messages, ContactItemLang {
     String personEquipmentAssembly();
 
     String personEquipmentAssemblyShort();
+
+    String deliverySpecifications();
 }
 

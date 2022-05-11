@@ -1,15 +1,18 @@
 #!/bin/sh
 set -e
-dir_root="./../.."
-dir_scripts="./web/scripts"
 cd "${0%/*}"
+. ./_variables.sh
 
-files="$(./git/list-changed-code-files.sh | grep '^web/packages/.*/src/.*' | grep '\.\(js\|ts\|jsx\|tsx\|html\|css\|scss\|sass\|json\)$' | xargs echo)"
-if [ "$files" ]; then
-  echo "> Fixing with prettier (only changed files)"
+FixOnlyChangedByPrettier () {
   cd "$dir_root"
-  npx yarn prettier --no-error-on-unmatched-pattern --write $files
+  files="$(${dir_scripts}/git/list-changed-code-files.sh | grep "$packages_regex" | grep -v "node_modules" | grep "$prettier_files_regex" | xargs echo)"
+  if [ "$files" ]; then
+    echo "> Fixing with prettier (only changed files)"
+    npx yarn prettier --no-error-on-unmatched-pattern --write $files
+  else
+    echo "> Fixing with prettier (only changed files: no changed files found)"
+  fi
   cd "$dir_scripts"
-else
-  echo "> Fixing with prettier (only changed files: no changed files found)"
-fi
+}
+
+FixOnlyChangedByPrettier

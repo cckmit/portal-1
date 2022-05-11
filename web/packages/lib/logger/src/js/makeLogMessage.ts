@@ -55,6 +55,8 @@ function stringify(
 ): string {
   if (msg === null) {
     return "<null>"
+  } else if (typeof msg === "function") {
+    return stringify(msg(), json, sensitiveKeys)
   } else if (typeof msg === "string") {
     return msg
   } else if (isException(msg)) {

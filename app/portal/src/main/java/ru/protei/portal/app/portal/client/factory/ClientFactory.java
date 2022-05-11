@@ -30,11 +30,13 @@ import ru.protei.portal.ui.roomreservation.client.factory.RoomReservationClientM
 import ru.protei.portal.ui.sitefolder.client.factory.SiteFolderClientModule;
 import ru.protei.portal.ui.plan.client.factory.PlanClientModule;
 import ru.protei.portal.ui.web.client.factory.TypescriptWebModule;
+import ru.protei.portal.ui.web.client.factory.TypescriptWebModuleDeliverySpecification;
 
 /**
  * Фабрика
  */
 @GinModules({
+        TypescriptWebModule.class,
         ClientModule.class, IssueClientModule.class, IssueAssignmentClientModule.class,
         PlanClientModule.class, CaseStateClientModule.class, ReportClientModule.class,
         EmployeeClientModule.class, EmployeeRegistrationClientModule.class,
@@ -44,7 +46,7 @@ import ru.protei.portal.ui.web.client.factory.TypescriptWebModule;
         IpReservationClientModule.class, RoomReservationClientModule.class, EducationClientModule.class,
         RoleClientModule.class, AccountClientModule.class,
         AbsenceClientModule.class, CommonClientModule.class, DeliveryClientModule.class,
-        TypescriptWebModule.class
+        TypescriptWebModuleDeliverySpecification.class
 })
 public interface ClientFactory
         extends FactoryInjector

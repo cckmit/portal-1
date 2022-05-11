@@ -1341,6 +1341,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.7.6":
+  version: 7.17.9
+  resolution: "@babel/runtime@npm:7.17.9"
+  dependencies:
+    regenerator-runtime: ^0.13.4
+  checksum: 4d56bdb82890f386d5a57c40ef985a0ed7f0a78f789377a2d0c3e8826819e0f7f16ba0fe906d9b2241c5f7ca56630ef0653f5bb99f03771f7b87ff8af4bf5fe3
+  languageName: node
+  linkType: hard
+
 "@babel/runtime@npm:^7.8.4":
   version: 7.17.2
   resolution: "@babel/runtime@npm:7.17.2"
@@ -1568,15 +1577,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@protei-libs/fp@workspace:web/packages/lib/fp":
-  version: 0.0.0-use.local
-  resolution: "@protei-libs/fp@workspace:web/packages/lib/fp"
-  dependencies:
-    "@protei-libs/exception": "workspace:*"
-    typescript: 4.5.4
-  languageName: unknown
-  linkType: soft
-
 "@protei-libs/http@workspace:web/packages/lib/http":
   version: 0.0.0-use.local
   resolution: "@protei-libs/http@workspace:web/packages/lib/http"
@@ -1603,8 +1603,9 @@ __metadata:
     "@protei-libs/react": "workspace:*"
     "@protei-libs/scheduler": "workspace:*"
     "@protei-libs/types": "workspace:*"
-    react: 17.0.2
     typescript: 4.5.4
+  peerDependencies:
+    react: "*"
   dependenciesMeta:
     "@protei-libs/eventbus":
       optional: true
@@ -1614,8 +1615,6 @@ __metadata:
       optional: true
     "@protei-libs/types":
       optional: true
-    react:
-      optional: true
   languageName: unknown
   linkType: soft
 
@@ -1624,10 +1623,9 @@ __metadata:
   resolution: "@protei-libs/react@workspace:web/packages/lib/react"
   dependencies:
     "@protei-libs/types": "workspace:*"
-    "@types/react": 17.0.38
     typescript: 4.5.4
   peerDependencies:
-    react: 17.0.2
+    react: "*"
   languageName: unknown
   linkType: soft
 
@@ -1652,7 +1650,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@protei-libs/store@workspace:web/packages/lib/store"
   dependencies:
-    typescript: ^4.5.4
+    typescript: 4.5.4
   peerDependencies:
     mobx: "*"
   languageName: unknown
@@ -1683,9 +1681,7 @@ __metadata:
     "@protei-libs/store": "workspace:*"
     "@protei-portal/common": "workspace:*"
     "@protei-portal/common-logger": "workspace:*"
-    "@protei-portal/common-model": "workspace:*"
-    "@protei-portal/unit-test1": "workspace:*"
-    "@protei-portal/unit-test2": "workspace:*"
+    "@protei-portal/unit-delivery": "workspace:*"
     "@types/node": 17.0.8
     "@types/react": 17.0.38
     "@types/react-dom": 17.0.11
@@ -1702,6 +1698,7 @@ __metadata:
     del-cli: 4.0.1
     eslint: 8.6.0
     eslint-webpack-plugin: 3.1.1
+    history: 5.3.0
     html-loader: 3.1.0
     html-webpack-plugin: 5.5.0
     inversify: 6.0.1
@@ -1711,6 +1708,8 @@ __metadata:
     postcss: 8.4.5
     react: 17.0.2
     react-dom: 17.0.2
+    react-router: 6.3.0
+    react-router-dom: 6.3.0
     reflect-metadata: 0.1.13
     sass: 1.47.0
     sass-loader: 12.4.0
@@ -1728,6 +1727,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@protei-portal/common-lang@workspace:*, @protei-portal/common-lang@workspace:web/packages/common/lang":
+  version: 0.0.0-use.local
+  resolution: "@protei-portal/common-lang@workspace:web/packages/common/lang"
+  dependencies:
+    "@protei-libs/store": "workspace:*"
+    typescript: 4.5.4
+  peerDependencies:
+    inversify: "*"
+    mobx: "*"
+  languageName: unknown
+  linkType: soft
+
 "@protei-portal/common-logger@workspace:*, @protei-portal/common-logger@workspace:web/packages/common/logger":
   version: 0.0.0-use.local
   resolution: "@protei-portal/common-logger@workspace:web/packages/common/logger"
@@ -1742,12 +1753,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@protei-portal/common-model@workspace:*, @protei-portal/common-model@workspace:web/packages/common/model":
+"@protei-portal/common-router@workspace:*, @protei-portal/common-router@workspace:web/packages/common/router":
   version: 0.0.0-use.local
-  resolution: "@protei-portal/common-model@workspace:web/packages/common/model"
+  resolution: "@protei-portal/common-router@workspace:web/packages/common/router"
   dependencies:
-    "@protei-libs/eventbus": "workspace:*"
     typescript: 4.5.4
+  peerDependencies:
+    history: "*"
+    mobx: "*"
+    mobx-react-lite: "*"
+    react: "*"
+    react-router: "*"
+    react-router-dom: "*"
   languageName: unknown
   linkType: soft
 
@@ -1756,14 +1773,22 @@ __metadata:
   resolution: "@protei-portal/common@workspace:web/packages/common/common"
   dependencies:
     "@protei-libs/eventbus": "workspace:*"
+    "@protei-libs/exception": "workspace:*"
     "@protei-libs/logger": "workspace:*"
     "@protei-libs/module": "workspace:*"
+    "@protei-libs/react": "workspace:*"
     "@protei-libs/store": "workspace:*"
-    "@protei-portal/common-model": "workspace:*"
+    "@protei-libs/types": "workspace:*"
+    "@protei-portal/common-lang": "workspace:*"
+    ajv: 8.8.2
+    date-fns: 2.28.0
     typescript: 4.5.4
   peerDependencies:
     inversify: "*"
     mobx: "*"
+    mobx-react-lite: "*"
+    react: "*"
+    react-dom: "*"
   languageName: unknown
   linkType: soft
 
@@ -1784,16 +1809,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@protei-portal/unit-test1@workspace:*, @protei-portal/unit-test1@workspace:web/packages/unit/test1":
+"@protei-portal/unit-delivery@workspace:*, @protei-portal/unit-delivery@workspace:web/packages/unit/delivery":
   version: 0.0.0-use.local
-  resolution: "@protei-portal/unit-test1@workspace:web/packages/unit/test1"
+  resolution: "@protei-portal/unit-delivery@workspace:web/packages/unit/delivery"
   dependencies:
     "@protei-libs/eventbus": "workspace:*"
     "@protei-libs/logger": "workspace:*"
     "@protei-libs/module": "workspace:*"
+    "@protei-libs/react": "workspace:*"
     "@protei-libs/store": "workspace:*"
     "@protei-portal/common": "workspace:*"
-    "@protei-portal/common-model": "workspace:*"
+    "@protei-portal/common-lang": "workspace:*"
+    "@protei-portal/common-router": "workspace:*"
     typescript: 4.5.4
   peerDependencies:
     inversify: "*"
@@ -1801,26 +1828,7 @@ __metadata:
     mobx-react-lite: "*"
     react: "*"
     react-dom: "*"
-  languageName: unknown
-  linkType: soft
-
-"@protei-portal/unit-test2@workspace:*, @protei-portal/unit-test2@workspace:web/packages/unit/test2":
-  version: 0.0.0-use.local
-  resolution: "@protei-portal/unit-test2@workspace:web/packages/unit/test2"
-  dependencies:
-    "@protei-libs/eventbus": "workspace:*"
-    "@protei-libs/logger": "workspace:*"
-    "@protei-libs/module": "workspace:*"
-    "@protei-libs/store": "workspace:*"
-    "@protei-portal/common": "workspace:*"
-    "@protei-portal/common-model": "workspace:*"
-    typescript: 4.5.4
-  peerDependencies:
-    inversify: "*"
-    mobx: "*"
-    mobx-react-lite: "*"
-    react: "*"
-    react-dom: "*"
+    react-router-dom: "*"
   languageName: unknown
   linkType: soft
 
@@ -2633,6 +2641,18 @@ __metadata:
   peerDependencies:
     ajv: ^8.8.2
   checksum: c35193940b853119242c6757787f09ecf89a2c19bcd36d03ed1a615e710d19d450cb448bfda407b939aba54b002368c8bff30529cc50a0536a8e10bcce300421
+  languageName: node
+  linkType: hard
+
+"ajv@npm:8.8.2":
+  version: 8.8.2
+  resolution: "ajv@npm:8.8.2"
+  dependencies:
+    fast-deep-equal: ^3.1.1
+    json-schema-traverse: ^1.0.0
+    require-from-string: ^2.0.2
+    uri-js: ^4.2.2
+  checksum: 90849ef03c4f4f7051d15f655120137b89e3205537d683beebd39d95f40c0ca00ea8476cd999602d2f433863e7e4bf1b81d1869d1e07f4dcf56d71b6430a605c
   languageName: node
   linkType: hard
 
@@ -3508,6 +3528,13 @@ __metadata:
   version: 3.0.10
   resolution: "csstype@npm:3.0.10"
   checksum: 20a8fa324f2b33ddf94aa7507d1b6ab3daa6f3cc308888dc50126585d7952f2471de69b2dbe0635d1fdc31223fef8e070842691877e725caf456e2378685a631
+  languageName: node
+  linkType: hard
+
+"date-fns@npm:2.28.0":
+  version: 2.28.0
+  resolution: "date-fns@npm:2.28.0"
+  checksum: a0516b2e4f99b8bffc6cc5193349f185f195398385bdcaf07f17c2c4a24473c99d933eb0018be4142a86a6d46cb0b06be6440ad874f15e795acbedd6fd727a1f
   languageName: node
   linkType: hard
 
@@ -4816,6 +4843,15 @@ __metadata:
   bin:
     he: bin/he
   checksum: 3d4d6babccccd79c5c5a3f929a68af33360d6445587d628087f39a965079d84f18ce9c3d3f917ee1e3978916fc833bb8b29377c3b403f919426f91bc6965e7a7
+  languageName: node
+  linkType: hard
+
+"history@npm:5.3.0, history@npm:^5.2.0":
+  version: 5.3.0
+  resolution: "history@npm:5.3.0"
+  dependencies:
+    "@babel/runtime": ^7.7.6
+  checksum: d73c35df49d19ac172f9547d30a21a26793e83f16a78386d99583b5bf1429cc980799fcf1827eb215d31816a6600684fba9686ce78104e23bd89ec239e7c726f
   languageName: node
   linkType: hard
 
@@ -6873,6 +6909,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-router-dom@npm:6.3.0":
+  version: 6.3.0
+  resolution: "react-router-dom@npm:6.3.0"
+  dependencies:
+    history: ^5.2.0
+    react-router: 6.3.0
+  peerDependencies:
+    react: ">=16.8"
+    react-dom: ">=16.8"
+  checksum: 77603a654f8a8dc7f65535a2e5917a65f8d9ffcb06546d28dd297e52adcc4b8a84377e0115f48dca330b080af2da3e78f29d590c89307094d36927d2b1751ec3
+  languageName: node
+  linkType: hard
+
+"react-router@npm:6.3.0":
+  version: 6.3.0
+  resolution: "react-router@npm:6.3.0"
+  dependencies:
+    history: ^5.2.0
+  peerDependencies:
+    react: ">=16.8"
+  checksum: 7be673f5e72104be01e6ab274516bdb932efd93305243170690f6560e3bd1035dd1df3d3c9ce1e0f452638a2529f43a1e77dcf0934fc8031c4783da657be13ca
+  languageName: node
+  linkType: hard
+
 "react@npm:17.0.2":
   version: 17.0.2
   resolution: "react@npm:17.0.2"
@@ -8070,16 +8130,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.5.4":
-  version: 4.6.2
-  resolution: "typescript@npm:4.6.2"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 8a44ed7e6f6c4cb1ebe8cf236ecda2fb119d84dcf0fbd77e707b2dfea1bbcfc4e366493a143513ce7f57203c75da9d4e20af6fe46de89749366351046be7577c
-  languageName: node
-  linkType: hard
-
 "typescript@patch:typescript@4.5.4#~builtin<compat/typescript>":
   version: 4.5.4
   resolution: "typescript@patch:typescript@npm%3A4.5.4#~builtin<compat/typescript>::version=4.5.4&hash=bda367"
@@ -8087,16 +8137,6 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: eda87927f9cfb94aca9b5e47842daf37347ad3073133e17f556fbb6c18f3493c5b551eedab0f4b26774235ddb7acbe0087250d5285f72ce6819a0891dd5a74ed
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@^4.5.4#~builtin<compat/typescript>":
-  version: 4.6.2
-  resolution: "typescript@patch:typescript@npm%3A4.6.2#~builtin<compat/typescript>::version=4.6.2&hash=bda367"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 40b493a71747fb89fa70df104e2c4a5e284b43750af5bea024090a5261cefa387f7a9372411b13030f7bf5555cee4275443d08805642ae5c74ef76740854a4c7
   languageName: node
   linkType: hard
 

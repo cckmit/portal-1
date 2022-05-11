@@ -15,7 +15,7 @@ public class IntegrationMountImpl implements IntegrationMount {
 
     private native ConnectorMessage makeMountMessage(Element container, String unit, EventTarget emitter)/*-{
         return {
-            type: "portal-mount",
+            type: "mount",
             payload: {
                 container: container,
                 unit: unit,
@@ -25,11 +25,11 @@ public class IntegrationMountImpl implements IntegrationMount {
     }-*/;
 
     private native void send(ConnectorMessage message)/*-{
-        if (!$wnd.ProteiPortalGwtBridge) {
+        if (!$wnd.Protei_PORTAL_Bridge) {
             return
         }
-        if (typeof $wnd.ProteiPortalGwtBridge.messageIn === "function") {
-            $wnd.ProteiPortalGwtBridge.messageIn(message)
+        if (typeof $wnd.Protei_PORTAL_Bridge.messageIn === "function") {
+            $wnd.Protei_PORTAL_Bridge.messageIn(message)
         }
     }-*/;
 }

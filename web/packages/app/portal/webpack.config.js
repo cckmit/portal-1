@@ -8,11 +8,14 @@ module.exports = (env, options) => {
   const path = require("path")
   const dir = __dirname
   const dirRoot = path.resolve(dir, "..", "..", "..")
+  const versionPath = path.resolve(dirRoot, "version.json")
+  const version = require(versionPath)
 
   console.log("")
   console.log("---------------------------")
   console.log("Webpack build")
   console.log(`This is ${PROD ? "PRODUCTION" : "DEVELOPMENT"} build`)
+  console.log(`App version is v${version.version}`)
   console.log("----------------------------")
   console.log("")
   process.on("unhandledRejection", err => {

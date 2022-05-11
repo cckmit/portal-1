@@ -15,10 +15,12 @@ module.exports = (env, options) => {
   const dir = __dirname
   const dirRoot = path.resolve(dir, "..", "..", "..")
   const dirDist = path.resolve(dirRoot, "src", "main", "resources", "ru", "protei", "portal", "ui", "web", "public")
+  const versionPath = path.resolve(dirRoot, "version.json")
+  const version = require(versionPath).version
   const tsconfig = require(path.resolve(dirRoot, "..", "tsconfig.json"))
   const modules = Object.values(tsconfig.compilerOptions.paths).flat()
 
-  const resolveModules = (path, ...relative) => {
+  const resolveModules = (...relative) => {
     return modules.map(module => path.resolve(dirRoot, "..", module, "..", ...relative))
   }
 
@@ -42,7 +44,7 @@ module.exports = (env, options) => {
       }),
       new CopyPlugin({
         patterns: [
-          ...resolveModules(path, "public").map(pattern => ({
+          ...resolveModules("public").map(pattern => ({
             from: pattern,
             noErrorOnMissing: true,
           })),
@@ -52,6 +54,9 @@ module.exports = (env, options) => {
         /date-fns[\/\\]/,
         new RegExp(`[/\\\\\](${localesToKeep.join('|')})[/\\\\\]index\.js$`)
       ),
+      new webpack.DefinePlugin({
+        __app_version__: JSON.stringify(version),
+      }),
       new ESLintPlugin({
         extensions: [ "tsx", "ts", "js" ],
         failOnError: true,
@@ -62,7 +67,7 @@ module.exports = (env, options) => {
       rules: [
         {
           test: /\.(ts|js)x?$/,
-          include: resolveModules(path, "src"),
+          include: resolveModules("src"),
           exclude: /node_modules/,
           use: [
             {
@@ -77,25 +82,25 @@ module.exports = (env, options) => {
         },
         {
           test: /.*/,
-          include: resolveModules(path, "src", "asset"),
+          include: resolveModules("src", "asset"),
           exclude: /.*debugids\.json$/,
           type: "asset/resource",
           rules: [ {
             oneOf: [
               {
-                include: resolveModules(path, "src", "asset", "img"),
+                include: resolveModules("src", "asset", "img"),
                 generator: {
                   filename: "image/[name].[contenthash][ext][query]",
                 },
               },
               {
-                include: resolveModules(path, "src", "asset", "font"),
+                include: resolveModules("src", "asset", "font"),
                 generator: {
                   filename: "font/[name].[contenthash][ext][query]",
                 },
               },
               {
-                include: resolveModules(path, "src", "asset", "audio"),
+                include: resolveModules("src", "asset", "audio"),
                 generator: {
                   filename: "audio/[name].[contenthash][ext][query]",
                 },

@@ -29,7 +29,6 @@
       "@protei-libs/animation": [ "./web/packages/lib/animation/src/" ],
       "@protei-libs/eventbus": [ "./web/packages/lib/eventbus/src/" ],
       "@protei-libs/exception": [ "./web/packages/lib/exception/src/" ],
-      "@protei-libs/fp": [ "./web/packages/lib/fp/src/" ],
       "@protei-libs/http": [ "./web/packages/lib/http/src/" ],
       "@protei-libs/logger": [ "./web/packages/lib/logger/src/" ],
       "@protei-libs/module": [ "./web/packages/lib/module/src/" ],
@@ -40,11 +39,11 @@
       "@protei-libs/types": [ "./web/packages/lib/types/src/" ],
 
       "@protei-portal/common": [ "./web/packages/common/common/src/" ],
+      "@protei-portal/common-lang": [ "./web/packages/common/lang/src/" ],
       "@protei-portal/common-logger": [ "./web/packages/common/logger/src/" ],
-      "@protei-portal/common-model": [ "./web/packages/common/model/src/" ],
+      "@protei-portal/common-router": [ "./web/packages/common/router/src/" ],
 
-      "@protei-portal/unit-test1": [ "./web/packages/unit/test1/src/" ],
-      "@protei-portal/unit-test2": [ "./web/packages/unit/test2/src/" ],
+      "@protei-portal/unit-delivery": [ "./web/packages/unit/delivery/src/" ],
 
       "@protei-portal/app-portal": [ "./web/packages/app/portal/src/" ]
     }
@@ -55,6 +54,7 @@
   "exclude": [
     "**/target/**/*",
     "**/build/**/*",
-    "**/node_modules/**/*"
+    "**/node_modules/**/*",
+    "node_modules"
   ]
 }

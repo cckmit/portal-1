@@ -1,5 +1,5 @@
 import { makeObservableStore } from "@protei-libs/store"
-import { PersonId, UserLoginId } from "@protei-portal/common-model"
+import { PersonId, UserLoginId } from "@protei-portal/common"
 
 export const AuthStore$type = Symbol("AuthStore")
 
