@@ -809,6 +809,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                 || En_HistoryType.CASE_WORK_TRIGGER.equals(history.getType())
                 || En_HistoryType.CASE_AUTO_CLOSE.equals(history.getType())
                 || En_HistoryType.CASE_PLATFORM.equals(history.getType())
+                || En_HistoryType.PLAN.equals(history.getType())
                 || En_HistoryType.CASE_LINK.equals(history.getType()) && isPrivateLink(history, publicLinksIds)){
             return false;
         }
