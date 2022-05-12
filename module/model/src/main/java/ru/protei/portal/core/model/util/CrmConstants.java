@@ -263,4 +263,9 @@ public class CrmConstants {
     public interface CardBatch {
         List<Integer> CARD_BATCH_PRIORITY_IDS = Arrays.asList(1, 2, 3, 8);
     }
+
+    public interface CaseTimeReport {
+        int SUMMARIZED_DATA_SHEET_NUMBER = 0;
+        String SUMMARIZED_DATA_SHEET_NAME = "Сводные данные";
+    }
 }
