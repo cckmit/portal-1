@@ -454,6 +454,7 @@ public class DebugIds {
     public interface ISSUE_REPORT {
         String NAME_INPUT = "issue-report-name-input";
         String REPORT_TYPE = "issue-report-type";
+        String WITH_DATA_SUMMARIZE = "issue-report-data-summarize-checkbox";
         String REPORT_SCHEDULED_TYPE = "issue-report-scheduled-type";
         String ADDITIONAL_PARAMS = "issue-report-additional-params";
         String ADDITIONAL_PARAMS_ADD_BUTTON = "issue-report-additional-params-add-button";

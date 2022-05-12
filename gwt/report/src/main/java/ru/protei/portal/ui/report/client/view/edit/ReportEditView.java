@@ -52,6 +52,16 @@ public class ReportEditView extends Composite implements AbstractReportEditView 
     }
 
     @Override
+    public HasValue<Boolean> withDataSummarize() {
+        return withDataSummarize;
+    }
+
+    @Override
+    public HasValue<Set<En_ReportAdditionalParamType>> additionalParams() {
+        return additionalParams;
+    }
+
+    @Override
     public HasValue<String> name() {
         return name;
     }
@@ -84,8 +94,8 @@ public class ReportEditView extends Composite implements AbstractReportEditView 
     }
 
     @Override
-    public HasValue<Set<En_ReportAdditionalParamType>> additionalParams() {
-        return additionalParams;
+    public HasVisibility withDataSummarizeVisibility() {
+        return withDataSummarizeContainer;
     }
 
     @Override
@@ -122,6 +132,7 @@ public class ReportEditView extends Composite implements AbstractReportEditView 
     private void ensureDebugIds() {
         name.ensureDebugId(DebugIds.ISSUE_REPORT.NAME_INPUT);
         reportType.ensureDebugId(DebugIds.ISSUE_REPORT.REPORT_TYPE);
+        withDataSummarize.ensureDebugId(DebugIds.ISSUE_REPORT.WITH_DATA_SUMMARIZE);
         scheduledType.ensureDebugId(DebugIds.ISSUE_REPORT.REPORT_SCHEDULED_TYPE);
         additionalParams.ensureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS);
         additionalParams.setAddEnsureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS_ADD_BUTTON);
@@ -145,6 +156,10 @@ public class ReportEditView extends Composite implements AbstractReportEditView 
     ReportScheduledTypeButtonSelector scheduledType;
     @UiField
     HTMLPanel scheduledTypeContainer;
+    @UiField
+    HTMLPanel withDataSummarizeContainer;
+    @UiField
+    CheckBox withDataSummarize;
     @UiField
     HTMLPanel additionalParamsContainer;
     @UiField

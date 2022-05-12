@@ -4143,5 +4143,7 @@ public interface Lang extends Messages, ContactItemLang {
     String timeElapsedGroupDepartment();
 
     String timeElapsedGroupAuthor();
+
+    String issueReportDataSummarize();
 }
 

@@ -81,6 +81,9 @@ public class Report implements Serializable {
     @JdbcColumnCollection(name = "time_elapsed_groups", separator = ",")
     private Set<En_TimeElapsedGroup> timeElapsedGroups;
 
+    @JdbcColumn(name = "with_data_summarize")
+    private boolean withDataSummarize;
+
     public Long getId() {
         return id;
     }
@@ -247,6 +250,14 @@ public class Report implements Serializable {
 
     public void setTimeElapsedGroups(Set<En_TimeElapsedGroup> timeElapsedGroups) {
         this.timeElapsedGroups = timeElapsedGroups;
+    }
+
+    public boolean isWithDataSummarize() {
+        return withDataSummarize;
+    }
+
+    public void setWithDataSummarize(boolean withDataSummarize) {
+        this.withDataSummarize = withDataSummarize;
     }
 
     @Override

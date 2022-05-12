@@ -28,6 +28,13 @@
                             </g:HTMLPanel>
                         </div>
                         <div class="row">
+                            <div class="form-group col-md-4">
+                                <g:HTMLPanel ui:field="withDataSummarizeContainer" styleName="local-search-options-container">
+                                    <g:CheckBox ui:field="withDataSummarize" styleName="checkbox" text="{lang.issueReportDataSummarize}"/>
+                                </g:HTMLPanel>
+                            </div>
+                        </div>
+                        <div class="row">
                             <g:HTMLPanel ui:field="additionalParamsContainer" styleName="form-group col-md-4">
                                 <additionalparams:ReportAdditionalParamsMultiSelector ui:field="additionalParams" header="{lang.issueReportAdditionalParams}"/>
                             </g:HTMLPanel>

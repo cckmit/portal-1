@@ -19,6 +19,8 @@ public interface AbstractReportEditView extends IsWidget {
 
     HasValue<En_ReportScheduledType> reportScheduledType();
 
+    HasValue<Boolean> withDataSummarize();
+
     HasValue<String> name();
 
     void fillReportTypes(List<En_ReportType> options);
@@ -36,4 +38,6 @@ public interface AbstractReportEditView extends IsWidget {
     HasVisibility timeElapsedGroupVisibility();
 
     HasValue<Set<En_TimeElapsedGroup>> timeElapsedGroup();
+
+    HasVisibility withDataSummarizeVisibility();
 }

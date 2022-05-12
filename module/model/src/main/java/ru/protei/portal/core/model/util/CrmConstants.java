@@ -269,4 +269,8 @@ public class CrmConstants {
         Integer DEFAULT_SCHEME_REASON_ID = -1;
         String NOTIFY_LIST_NAME = "Portal_";
     }
+
+    public interface CaseTimeReport {
+        int SUMMARIZED_DATA_SHEET_NUMBER = 0;
+    }
 }
