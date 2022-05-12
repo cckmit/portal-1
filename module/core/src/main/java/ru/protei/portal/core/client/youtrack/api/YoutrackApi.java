@@ -17,6 +17,8 @@ public interface YoutrackApi {
 
     Result<YtIssue> getIssueWithFieldsCommentsAttachments(String issueId);
 
+    Result<YtIssue> getIssueWithFields(String issueId);
+
     Result<YtIssue> updateIssueAndReturnWithFieldsCommentsAttachments(String issueId, YtIssue issue);
 
     Result<YtIssue> removeIssueFieldAndReturnWithFieldsCommentsAttachments(String issueId, YtIssue issue, YtFieldDescriptor...fieldNamesToRemove);
@@ -24,6 +26,8 @@ public interface YoutrackApi {
     Result<List<YtProject>> getProjectIdByName(String projectName);
 
     Result<List<YtIssue>> getIssueIdsByQuery(String query);
+
+    Result<List<YtIssue>> getIssueWithFieldsByQuery(String query, int offset, int limit);
 
     Result<List<IssueWorkItem>> getWorkItems(Date from, Date to, int offset, int limit);
 

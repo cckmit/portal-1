@@ -11,8 +11,10 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ReportAdditionalParamType;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportType;
+import ru.protei.portal.core.model.dict.En_TimeElapsedGroup;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.widget.selector.report.additionalparams.ReportAdditionalParamsMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.report.timeelapsedgroup.TimeElapsedGroupMultiSelector;
 import ru.protei.portal.ui.report.client.activity.edit.AbstractReportCreateEditActivity;
 import ru.protei.portal.ui.report.client.activity.edit.AbstractReportEditView;
 import ru.protei.portal.ui.report.client.widget.reporttype.ReportScheduledTypeButtonSelector;
@@ -50,6 +52,16 @@ public class ReportEditView extends Composite implements AbstractReportEditView 
     }
 
     @Override
+    public HasValue<Boolean> withDataSummarize() {
+        return withDataSummarize;
+    }
+
+    @Override
+    public HasValue<Set<En_ReportAdditionalParamType>> additionalParams() {
+        return additionalParams;
+    }
+
+    @Override
     public HasValue<String> name() {
         return name;
     }
@@ -82,8 +94,18 @@ public class ReportEditView extends Composite implements AbstractReportEditView 
     }
 
     @Override
-    public HasValue<Set<En_ReportAdditionalParamType>> additionalParams() {
-        return additionalParams;
+    public HasVisibility withDataSummarizeVisibility() {
+        return withDataSummarizeContainer;
+    }
+
+    @Override
+    public HasVisibility timeElapsedGroupVisibility() {
+        return timeElapsedGroupContainer;
+    }
+
+    @Override
+    public HasValue<Set<En_TimeElapsedGroup>> timeElapsedGroup() {
+        return timeElapsedGroup;
     }
 
     @UiHandler("reportType")
@@ -110,12 +132,16 @@ public class ReportEditView extends Composite implements AbstractReportEditView 
     private void ensureDebugIds() {
         name.ensureDebugId(DebugIds.ISSUE_REPORT.NAME_INPUT);
         reportType.ensureDebugId(DebugIds.ISSUE_REPORT.REPORT_TYPE);
+        withDataSummarize.ensureDebugId(DebugIds.ISSUE_REPORT.WITH_DATA_SUMMARIZE);
         scheduledType.ensureDebugId(DebugIds.ISSUE_REPORT.REPORT_SCHEDULED_TYPE);
         additionalParams.ensureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS);
         additionalParams.setAddEnsureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS_ADD_BUTTON);
         additionalParams.setClearEnsureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS_CLEAR_BUTTON);
         additionalParams.setItemContainerEnsureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS_ITEM_CONTAINER);
         additionalParams.setLabelEnsureDebugId(DebugIds.ISSUE_REPORT.ADDITIONAL_PARAMS_LABEL);
+        timeElapsedGroup.ensureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_GROUP);
+        timeElapsedGroup.setItemContainerEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_GROUP_ITEM_CONTAINER);
+        timeElapsedGroup.setLabelEnsureDebugId(DebugIds.ISSUE_REPORT.TIME_ELAPSED_GROUP_LABEL);
         saveButton.ensureDebugId(DebugIds.ISSUE_REPORT.CREATE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.ISSUE_REPORT.CANCEL_BUTTON);
     }
@@ -131,6 +157,10 @@ public class ReportEditView extends Composite implements AbstractReportEditView 
     @UiField
     HTMLPanel scheduledTypeContainer;
     @UiField
+    HTMLPanel withDataSummarizeContainer;
+    @UiField
+    CheckBox withDataSummarize;
+    @UiField
     HTMLPanel additionalParamsContainer;
     @UiField
     HTMLPanel filterContainer;
@@ -141,6 +171,11 @@ public class ReportEditView extends Composite implements AbstractReportEditView 
     @Inject
     @UiField(provided = true)
     ReportAdditionalParamsMultiSelector additionalParams;
+    @UiField
+    HTMLPanel timeElapsedGroupContainer;
+    @Inject
+    @UiField(provided = true)
+    TimeElapsedGroupMultiSelector timeElapsedGroup;
 
     private AbstractReportCreateEditActivity activity;
 

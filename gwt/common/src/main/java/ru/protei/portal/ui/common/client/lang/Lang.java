@@ -766,6 +766,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errProductNotSelected();
 
+    String errDeadlineNotSelectedOnAutoClose();
+
     String errFilterNameRequired();
 
     String errTooMuchCompanies();
@@ -3122,6 +3124,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueSyncedWith();
 
+    String issueAutoClose();
+
+    String issueAutoCloseEnabled();
+
+    String issueAutoCloseDisabled();
+
     String issueDeadline();
 
     String issueWorkTrigger();
@@ -4111,6 +4119,32 @@ public interface Lang extends Messages, ContactItemLang {
     String personEquipmentAssembly();
 
     String personEquipmentAssemblyShort();
+
+    String caseDescriptionHistoryPreview();
+
+    String historyDetailsLink();
+
+    String linkRemoved();
+
+    String issueValidationResultAutoCloseDeadline();
+
+    String projectHasContract();
+
+    String transportationRequest();
+
+    String reportTransportationRequest();
+
+    String transportationRequestPickupDate();
+
+    String timeElapsedGroup();
+
+    String timeElapsedGroupType();
+
+    String timeElapsedGroupDepartment();
+
+    String timeElapsedGroupAuthor();
+
+    String issueReportDataSummarize();
 
     String deliverySpecifications();
 }

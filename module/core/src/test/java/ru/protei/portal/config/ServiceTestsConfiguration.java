@@ -49,10 +49,14 @@ import ru.protei.portal.core.report.nightwork.ReportNightWork;
 import ru.protei.portal.core.report.nightwork.ReportNightWorkImpl;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.report.projects.ReportProjectImpl;
+import ru.protei.portal.core.report.transportationrequest.ReportTransportationRequest;
+import ru.protei.portal.core.report.transportationrequest.ReportTransportationRequestImpl;
 import ru.protei.portal.core.report.ytwork.ReportYoutrackWork;
 import ru.protei.portal.core.report.ytwork.ReportYoutrackWorkImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
+import ru.protei.portal.core.service.autoclosecase.AutoCloseCaseService;
+import ru.protei.portal.core.service.autoclosecase.AutoCloseCaseServiceImpl;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceTaskHandlerImpl;
@@ -68,6 +72,8 @@ import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrack
 import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrackSynchronizerImpl;
 import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.service.template.TemplateServiceImpl;
+import ru.protei.portal.core.sn.SystemNotificationService;
+import ru.protei.portal.core.sn.SystemNotificationServiceImpl;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.core.svn.document.DocumentSvnApiImpl;
 import ru.protei.portal.core.utils.SessionIdGen;
@@ -162,6 +168,11 @@ public class ServiceTestsConfiguration {
 
     @Bean
     public EmployeeService getEmployeeService () { return new EmployeeServiceImpl(); }
+
+    @Bean
+    public SystemNotificationService getSystemNotificationService() {
+        return new SystemNotificationServiceImpl();
+    }
 
     @Bean
     public LegacySystemDAO getLegacySystemDAO() {
@@ -419,6 +430,11 @@ public class ServiceTestsConfiguration {
     }
 
     @Bean
+    public AutoCloseCaseService getAutoCloseCaseService() {
+        return new AutoCloseCaseServiceImpl();
+    }
+
+    @Bean
     public EmployeeRegistrationYoutrackSynchronizer getEmployeeRegistrationYoutrackSynchronizer() {
         return new EmployeeRegistrationYoutrackSynchronizerImpl();
     }
@@ -486,6 +502,11 @@ public class ServiceTestsConfiguration {
     @Bean
     public ReportYoutrackWork getReportYoutrackWork() {
         return new ReportYoutrackWorkImpl();
+    }
+
+    @Bean
+    public ReportTransportationRequest getReportTransportationRequest() {
+        return new ReportTransportationRequestImpl();
     }
 
     @Bean

@@ -33,9 +33,10 @@ public class ReportContractImpl implements ReportContract {
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
 
         int count = contractDAO.countByQuery(query);
+        String projectUrlTemplate = config.data().getMailNotificationConfig().getCrmUrlInternal() + config.data().getMailNotificationConfig().getCrmProjectUrl();
         if (count < 1) {
             log.info("writeReport : reportId={} has no corresponding contracts", report.getId());
-            ReportWriter<Contract> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), dateFormat);
+            ReportWriter<Contract> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), dateFormat, projectUrlTemplate);
             writer.createSheet();
             writer.collect(buffer);
             return true;
@@ -43,7 +44,7 @@ public class ReportContractImpl implements ReportContract {
 
         log.info("writeReport : reportId={} has {} contracts to process", report.getId(), count);
 
-        try (ReportWriter<Contract> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), dateFormat)) {
+        try (ReportWriter<Contract> writer = new ExcelReportWriter(localizedLang, new EnumLangUtil(lang), dateFormat, projectUrlTemplate)) {
             int sheetNumber = writer.createSheet();
             if (writeReport(writer, sheetNumber, report.getId(), query, count, isCancel)) {
                 writer.collect(buffer);

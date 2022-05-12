@@ -29,7 +29,10 @@ import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 import ru.protei.portal.core.report.ytwork.ReportYoutrackWork;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
+import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
 import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.http.HttpConfigurationContext;
+import ru.protei.winter.http.client.factory.HttpClientFactory;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.io.ByteArrayOutputStream;
@@ -44,7 +47,8 @@ import static ru.protei.portal.core.model.util.CrmConstants.Time.MINUTE;
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
         JdbcConfigurationContext.class,
         DatabaseConfiguration.class, IntegrationTestsConfiguration.class,
-        ReportYoutrackWorkTest.ReportYoutrackWorkTestConfiguration.class})
+        ReportYoutrackWorkTest.ReportYoutrackWorkTestConfiguration.class,
+        RemoteServiceFactory.class, HttpClientFactory.class, HttpConfigurationContext.class})
 @Transactional
 public class ReportYoutrackWorkTest extends BaseServiceTest {
 
@@ -114,7 +118,7 @@ public class ReportYoutrackWorkTest extends BaseServiceTest {
         YtEnumBundleElement ytCustomer = new YtEnumBundleElement();
         ytCustomer.localizedName = customerCompany.getCname();
         YtSingleEnumIssueCustomField field = new YtSingleEnumIssueCustomField();
-        field.name = YtIssue.CustomFieldNames.cumstomer;
+        field.name = YtIssue.CustomFieldNames.customer;
         field.value = ytCustomer;
 
         YtIssue ytIssue = new YtIssue();

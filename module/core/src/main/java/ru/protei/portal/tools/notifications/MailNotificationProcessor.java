@@ -16,6 +16,7 @@ import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dict.EducationEntryType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.*;
@@ -181,6 +182,58 @@ public class MailNotificationProcessor {
         }
     }
 
+    @EventListener
+    public void onCaseObjectDeadlineExpireEvent(CaseObjectDeadlineExpireEvent event) {
+        log.info("onCaseObjectDeadlineExpireEvent(): {}", event);
+
+        Long caseObjectId = event.getCaseObjectId();
+        Long caseNumber = event.getCaseNumber();
+        boolean isPrivateCase = event.isPrivateCase();
+
+        List<NotificationEntry> notifiers = stream(event.getNotifiers())
+                .map(this::fetchNotificationEntryFromPerson)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+
+        Map<Boolean, List<NotificationEntry>> partitionNotifiers = notifiers.stream().collect(partitioningBy(this::isProteiRecipient));
+        final boolean IS_PRIVATE_RECIPIENT = true;
+
+        List<NotificationEntry> privateRecipients = partitionNotifiers.get(IS_PRIVATE_RECIPIENT);
+        List<NotificationEntry> publicRecipients = partitionNotifiers.get(!IS_PRIVATE_RECIPIENT);
+
+        if (isPrivateCase) {
+            Set<String> recipients = stream(privateRecipients).map(NotificationEntry::getAddress).collect(Collectors.toSet());
+            performCaseObjectDeadlineExpireNotification(privateRecipients, IS_PRIVATE_RECIPIENT, caseObjectId, caseNumber, recipients);
+        } else {
+            Set<String> recipients = stream(notifiers).map(NotificationEntry::getAddress).collect(Collectors.toSet());
+            performCaseObjectDeadlineExpireNotification(privateRecipients, IS_PRIVATE_RECIPIENT, caseObjectId, caseNumber, recipients);
+            performCaseObjectDeadlineExpireNotification(publicRecipients, !IS_PRIVATE_RECIPIENT, caseObjectId, caseNumber, recipients);
+        }
+    }
+
+    private void performCaseObjectDeadlineExpireNotification(Collection<NotificationEntry> notifiers, final boolean isProteiRecipients, Long caseObjectId, Long caseNumber, Set<String> recipients) {
+
+        log.info("performCaseObjectDeadlineExpireNotification() : isProteiRecipients={}, notifiers={}", isProteiRecipients, join(notifiers, NotificationEntry::getAddress, ","));
+
+        if (CollectionUtils.isEmpty(notifiers)) {
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getCaseObjectDeadlineExpireNotificationSubject(caseNumber);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for deadline expire event, caseId={}", caseObjectId);
+            return;
+        }
+
+        PreparedTemplate bodyTemplate = templateService.getCaseObjectDeadlineExpireNotificationBody(caseObjectId, caseNumber, getCrmCaseUrl(isProteiRecipients), recipients);
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for for deadline expire event, caseId={}", caseObjectId);
+            return;
+        }
+
+        sendMailToRecipients(notifiers, bodyTemplate, subjectTemplate, isProteiRecipients, getFromCrmAddress());
+    }
 
     private DiffCollectionResult<CaseLink> selectPublicLinks( DiffCollectionResult<CaseLink> mergeLinks ) {
         DiffCollectionResult result = new DiffCollectionResult();

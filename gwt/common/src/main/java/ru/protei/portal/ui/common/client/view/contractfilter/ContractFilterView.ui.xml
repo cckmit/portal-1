@@ -62,9 +62,9 @@
                                                       reverseOrder="true"
                                                       addStyleNames="form-group col-md-4 resize-md-12"/>
 
-                <productdirection:ProductDirectionButtonSelector ui:field="direction"
+                <productdirection:ProductDirectionMultiSelector ui:field="directions"
                                                                  header="{lang.productDirection}"
-                                                                 hasNullValue="true" defaultValue="{lang.selectorAny}"
+                                                                 hasNullValue="true"
                                                                  addStyleNames="form-group col-md-4 resize-md-12"/>
 
                 <person:EmployeeMultiSelector ui:field="managers"

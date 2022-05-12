@@ -160,6 +160,7 @@ public class CrmConstants {
         long MAIN_HOME_COMPANY_ID = 3084L;
         String MAIN_HOME_COMPANY_NAME = "Протей";
         String PROTEI_ST_HOME_COMPANY_NAME = "Протей СТ";
+        String PROTEI_LAB_COMPANY_NAME = "ПРОТЕЙ-ЛАБ";
         String HOME_COUNTRY_NAME = "Российская Федерация";
         String HOME_COUNTRY_SHORT_NAME = "Россия";
     }
@@ -261,5 +262,15 @@ public class CrmConstants {
 
     public interface CardBatch {
         List<Integer> CARD_BATCH_PRIORITY_IDS = Arrays.asList(1, 2, 3, 8);
+    }
+
+    // Система оповещения (SN)
+    public interface SN {
+        Integer DEFAULT_SCHEME_REASON_ID = -1;
+        String NOTIFY_LIST_NAME = "Portal_";
+    }
+
+    public interface CaseTimeReport {
+        int SUMMARIZED_DATA_SHEET_NUMBER = 0;
     }
 }

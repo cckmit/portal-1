@@ -80,7 +80,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     public Result<String> createFireWorkerIssue(String summary, String description) {
         log.info("createFireWorkerIssue(): summary={}, description={}", summary, description);
 
-        Result<String> projectResult = getProjectIdByName(config.data().youtrack().getSupportProject());
+        Result<String> projectResult = getProjectIdByName(config.data().youtrack().getEmployeeFiredProject());
 
         YtIssue issue = makeNewBasicIssue(projectResult.getData(), summary, description);
         YtIssueCustomField requestType = makeRequestTypeCustomField();

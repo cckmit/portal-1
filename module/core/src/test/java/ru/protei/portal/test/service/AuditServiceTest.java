@@ -19,7 +19,10 @@ import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.AuditQuery;
 import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.service.AuditService;
+import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
 import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.http.HttpConfigurationContext;
+import ru.protei.winter.http.client.factory.HttpClientFactory;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.Date;
@@ -29,7 +32,9 @@ import java.util.List;
  * Created by butusov on 07.08.17.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class,
+        DatabaseConfiguration.class, IntegrationTestsConfiguration.class, RemoteServiceFactory.class,
+        HttpClientFactory.class, HttpConfigurationContext.class})
 public class AuditServiceTest {
 
     @Test

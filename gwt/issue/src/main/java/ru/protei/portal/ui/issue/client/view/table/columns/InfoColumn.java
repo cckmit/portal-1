@@ -43,6 +43,14 @@ public class InfoColumn extends ClickColumn<CaseShortView>{
             divElement.appendChild( lock );
         }
 
+        if (value.getAutoClose()) {
+            Element hourGlass = DOM.createElement("i");
+            hourGlass.addClassName("fa fa-fw fa-hourglass-end");
+            hourGlass.setAttribute(DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.ISSUE.AUTO_CLOSE);
+            hourGlass.setTitle(lang.issueAutoClose());
+            divElement.appendChild(hourGlass);
+        }
+
         Element productElement = DOM.createLabel();
         productElement.setInnerText( value == null ? "" : value.getProductName() == null ? "" : value.getProductName() );
         productElement.setAttribute( DEBUG_ID_ATTRIBUTE, DebugIds.TABLE.ISSUE.PRODUCT );

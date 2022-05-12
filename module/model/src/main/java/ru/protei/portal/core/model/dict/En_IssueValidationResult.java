@@ -77,4 +77,9 @@ public enum En_IssueValidationResult {
      * Deadline has passed
      */
     DEADLINE_PASSED,
+
+    /**
+     * Deadline has passed
+     */
+    AUTO_CLOSE_DEADLINE_INVALID,
 }

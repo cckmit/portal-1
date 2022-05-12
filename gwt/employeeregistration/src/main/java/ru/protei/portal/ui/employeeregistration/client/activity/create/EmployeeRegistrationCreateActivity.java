@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -112,13 +111,25 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
 
     @Override
     public void onCompanySelected() {
-        if (isSelectProteiOrProteiST(view.company().getValue())) {
+        String companyName = view.company().getValue().getDisplayText();
+        if (isProtei(companyName) || isProteiST(companyName)) {
             setPhoneEquipmentEnabled(true);
+            view.setPhoneOptionEnabled(En_PhoneOfficeType.OFFICE, false);
+            view.setEquipmentOptionEnabled(En_EmployeeEquipment.TELEPHONE, true);
+            Set<En_PhoneOfficeType> value = view.phoneOfficeTypeList().getValue();
+            value.add(En_PhoneOfficeType.OFFICE);
+            view.phoneOfficeTypeList().setValue(value);
+        } else if (isProteiLab(companyName)) {
+            setPhoneEquipmentEnabled(true);
+            view.setPhoneOptionEnabled(En_PhoneOfficeType.OFFICE, false);
+            view.setEquipmentOptionEnabled(En_EmployeeEquipment.TELEPHONE, false);
             Set<En_PhoneOfficeType> value = view.phoneOfficeTypeList().getValue();
             value.add(En_PhoneOfficeType.OFFICE);
             view.phoneOfficeTypeList().setValue(value);
         } else {
             setPhoneEquipmentEnabled(false);
+            view.setPhoneOptionEnabled(En_PhoneOfficeType.OFFICE, false);
+            view.setEquipmentOptionEnabled(En_EmployeeEquipment.TELEPHONE, false);
             Set<En_EmployeeEquipment> value = view.equipmentList().getValue();
             value.remove(En_EmployeeEquipment.TELEPHONE);
             view.equipmentList().setValue(value);
@@ -236,7 +247,10 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         view.department().setValue(null);
         view.equipmentList().setValue(new HashSet<>());
         view.phoneOfficeTypeList().setValue(new HashSet<>());
-        setPhoneEquipmentEnabled(false);
+        view.setPhoneOptionEnabled(En_PhoneOfficeType.INTERNATIONAL, false);
+        view.setPhoneOptionEnabled(En_PhoneOfficeType.LONG_DISTANCE, false);
+        view.setPhoneOptionEnabled(En_PhoneOfficeType.OFFICE, false);
+        view.setEquipmentOptionEnabled(En_EmployeeEquipment.TELEPHONE, false);
         HashSet<En_InternalResource> resources = new HashSet<>();
         resources.add(En_InternalResource.EMAIL);
         view.resourcesList().setValue(resources);
@@ -262,10 +276,8 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
     }
 
     private void setPhoneEquipmentEnabled(boolean isEnabled) {
-        view.setEquipmentOptionEnabled(En_EmployeeEquipment.TELEPHONE, isEnabled);
         view.setPhoneOptionEnabled(En_PhoneOfficeType.INTERNATIONAL, isEnabled);
         view.setPhoneOptionEnabled(En_PhoneOfficeType.LONG_DISTANCE, isEnabled);
-        view.setPhoneOptionEnabled(En_PhoneOfficeType.OFFICE, isEnabled);
     }
 
     public String createAdditionalSoft(String additionalSoft, Boolean needIDE) {
@@ -278,9 +290,19 @@ public abstract class EmployeeRegistrationCreateActivity implements Activity, Ab
         return ADDITIONAL_SOFT_IDE + ", " + additionalSoft;
     }
 
-    private boolean isSelectProteiOrProteiST(EntityOption value) {
-        if (value == null) return false;
-        return MAIN_HOME_COMPANY_NAME.equals(value.getDisplayText()) || PROTEI_ST_HOME_COMPANY_NAME.equals(value.getDisplayText());
+    private boolean isProtei (String companyName) {
+        if (companyName == null) return false;
+        return MAIN_HOME_COMPANY_NAME.equals(companyName);
+    }
+
+    private boolean isProteiST (String companyName) {
+        if (companyName == null) return false;
+        return PROTEI_ST_HOME_COMPANY_NAME.equals(companyName);
+    }
+
+    private boolean isProteiLab (String companyName) {
+        if (companyName == null) return false;
+        return PROTEI_LAB_COMPANY_NAME.equals(companyName);
     }
 
     @Inject

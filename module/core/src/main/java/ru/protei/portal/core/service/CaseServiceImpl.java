@@ -22,7 +22,10 @@ import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.struct.JiraExtAppData;
-import ru.protei.portal.core.model.util.*;
+import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
+import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.util.DiffResult;
 import ru.protei.portal.core.model.view.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
@@ -33,6 +36,8 @@ import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -172,6 +177,12 @@ public class CaseServiceImpl implements CaseService {
     @Autowired
     private ImportanceLevelDAO importanceLevelDAO;
 
+    @Autowired
+    UserRoleDAO userRoleDAO;
+
+    @Autowired
+    PortalConfig config;
+
     @Override
     public Result<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query) {
 
@@ -269,13 +280,12 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
-        //описание обращения в истории будет сделано в отдельной YT задаче
-//        if (StringUtils.isNotEmpty(caseObject.getInfo())) {
-//            Result<Long> resultManager = addInfoHistory(token, caseObject.getId(), "Issue info changed");
-//            if (resultManager.isError()) {
-//                log.error("Case info history for the issue {} not saved!", caseObject.getId());
-//            }
-//        }
+        if (StringUtils.isNotEmpty(caseObject.getInfo())) {
+            Result<Long> resultManager = addInfoHistory(token, caseObject.getId(), caseObject.getInfo());
+            if (resultManager.isError()) {
+                log.error("Case info history for the issue {} not saved!", caseObject.getId());
+            }
+        }
 
         if (caseObject.getManager() != null && caseObject.getManager().getId() != null) {
             Result<Long> resultManager = addManagerHistory(token, caseObject.getId(), caseObject.getManager().getId(), makeManagerName(caseObject));
@@ -456,10 +466,9 @@ public class CaseServiceImpl implements CaseService {
                 updateNameHistory(token, changeRequest.getId(), oldCaseObject.getName(), changeRequest.getName());
             }
 
-            //описание обращения в истории будет сделано в отдельной YT задаче
-//            if (!Objects.equals(oldCaseObject.getInfo(), changeRequest.getInfo())) {
-//                updateInfoHistory(token, changeRequest.getId(), "Issue info changed", "Issue info changed");
-//            }
+            if (!Objects.equals(oldCaseObject.getInfo(), changeRequest.getInfo())) {
+                updateInfoHistory(token, changeRequest.getId(), oldCaseObject.getInfo(), changeRequest.getInfo());
+            }
 
             if(isNotEmpty(changeRequest.getAttachments())){
                 caseObject.setAttachmentExists(true);
@@ -617,6 +626,10 @@ public class CaseServiceImpl implements CaseService {
             updatePlatformHistory(token, caseMeta, oldCaseMeta);
         }
 
+        if (!Objects.equals(oldCaseMeta.getAutoClose(), caseMeta.getAutoClose())) {
+            updateAutoCloseHistory(token, caseMeta, oldCaseMeta);
+        }
+
         if (!Objects.equals(oldCaseMeta.getDeadline(), caseMeta.getDeadline())) {
             updateDeadlineHistory(token, caseMeta, oldCaseMeta);
         }
@@ -631,6 +644,14 @@ public class CaseServiceImpl implements CaseService {
             if (openedParentsResult.isError()) {
                 log.error("Failed to open parent issue | message = '{}'", openedParentsResult.getMessage());
                 throw new RollbackTransactionException(openedParentsResult.getStatus());
+            }
+        }
+
+        if (!oldCaseMeta.getAutoClose() && caseMeta.getAutoClose()) {
+            Result<CaseComment> result = createAutoCloseMessage(caseMeta);
+
+            if (result.isError()) {
+                log.error("Auto close message for the issue {} not saved!", caseMeta.getId());
             }
         }
 
@@ -1088,6 +1109,18 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
+    private Result<CaseComment> createAutoCloseMessage(CaseObjectMeta caseMeta) {
+        CaseComment autoCloseComment = new CaseComment();
+        autoCloseComment.setCreated(new Date());
+        autoCloseComment.setAuthorId(portalConfig.data().getCommonConfig().getSystemUserId());
+        autoCloseComment.setCaseId(caseMeta.getId());
+        Person customer = caseMeta.getInitiator();
+        String locale = customer != null ? personDAO.partialGet(customer.getId(), "locale").getLocale() : null;
+        autoCloseComment.setText(getLangFor("issue_will_be_closed", locale));
+        autoCloseComment.setPrivacyType( En_CaseCommentPrivacyType.PUBLIC );
+        return caseCommentService.addCaseComment(createSystemUserToken(), CRM_SUPPORT, autoCloseComment);
+    }
+
     private CaseQuery applyFilterByScope(AuthToken token, CaseQuery caseQuery) {
         Set<UserRole> roles = token.getRoles();
         if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
@@ -1129,6 +1162,7 @@ public class CaseServiceImpl implements CaseService {
                 || !Objects.equals(co1.getManagerCompanyId(), co2.getManagerCompanyId())
                 || !Objects.equals(co1.getManagerId(), co2.getManagerId())
                 || !Objects.equals(co1.getPlatformId(), co2.getPlatformId())
+                || !Objects.equals(co1.getAutoClose(), co2.getAutoClose())
                 || !Objects.equals(co1.getDeadline(), co2.getDeadline())
                 || !Objects.equals(co1.getWorkTrigger(), co2.getWorkTrigger());
     }
@@ -1331,6 +1365,12 @@ public class CaseServiceImpl implements CaseService {
             log.warn("Deadline has passed. caseId={}", caseMeta.getId());
             return En_IssueValidationResult.DEADLINE_PASSED;
         }
+
+        if (Objects.equals(caseMeta.getAutoClose(), Boolean.TRUE) && !isDeadLineValidOnAutoClose(caseMeta.getDeadline())) {
+            log.warn("A valid deadline must be specified on auto close. caseId={}", caseMeta.getId());
+            return En_IssueValidationResult.AUTO_CLOSE_DEADLINE_INVALID;
+        }
+
         return En_IssueValidationResult.OK;
     }
 
@@ -1459,6 +1499,10 @@ public class CaseServiceImpl implements CaseService {
         return date == null || date > System.currentTimeMillis();
     }
 
+    private boolean isDeadLineValidOnAutoClose(Long date) {
+        return date != null && date > System.currentTimeMillis();
+    }
+
     private List<CaseLink> fillLinkedEntryInfo(List<CaseLink> caseLinks ) {
         for (CaseLink link : emptyIfNull( caseLinks )) {
             if (link.getRemoteId() == null) continue;
@@ -1584,15 +1628,14 @@ public class CaseServiceImpl implements CaseService {
         }
     }
 
-    //описание обращения в истории будет сделано в отдельной YT задаче
-    private void updateInfoHistory(AuthToken token, Long caseId, String oldCaseName, String newCaseName) {
+    private void updateInfoHistory(AuthToken token, Long caseId, String oldCaseInfo, String newCaseInfo) {
         Result<Long> resultName = ok();
-        if (StringUtils.isEmpty(oldCaseName) && StringUtils.isNotEmpty(newCaseName)) {
-            resultName = addInfoHistory(token, caseId, newCaseName);
-        } else if (StringUtils.isNotEmpty(oldCaseName) && StringUtils.isNotEmpty(newCaseName)) {
-            resultName = changeInfoHistory(token, caseId, oldCaseName, newCaseName);
-        } else if (StringUtils.isNotEmpty(oldCaseName) && StringUtils.isEmpty(newCaseName)) {
-            resultName = removeInfoHistory(token, caseId, oldCaseName);
+        if (StringUtils.isEmpty(oldCaseInfo) && StringUtils.isNotEmpty(newCaseInfo)) {
+            resultName = addInfoHistory(token, caseId, newCaseInfo);
+        } else if (StringUtils.isNotEmpty(oldCaseInfo) && StringUtils.isNotEmpty(newCaseInfo)) {
+            resultName = changeInfoHistory(token, caseId, oldCaseInfo, newCaseInfo);
+        } else if (StringUtils.isNotEmpty(oldCaseInfo) && StringUtils.isEmpty(newCaseInfo)) {
+            resultName = removeInfoHistory(token, caseId, oldCaseInfo);
         }
 
         if (resultName.isError()) {
@@ -1670,6 +1713,23 @@ public class CaseServiceImpl implements CaseService {
 
         if (resultWorkTrigger.isError()) {
             log.error("Work trigger history for the issue {} isn't saved!", caseMeta.getId());
+        }
+    }
+
+    private void updateAutoCloseHistory(AuthToken token, CaseObjectMeta caseMeta, CaseObjectMeta oldCaseMeta) {
+        Result<Long> resultAutoClose = ok();
+        if (oldCaseMeta.getAutoClose() == null && caseMeta.getAutoClose() != null) {
+            resultAutoClose = addAutoCloseHistory(token, caseMeta.getId(), String.valueOf(caseMeta.getAutoClose()));
+        } else if (oldCaseMeta.getAutoClose() != null && caseMeta.getAutoClose() != null) {
+            resultAutoClose = changeAutoCloseHistory(token, caseMeta.getId(),
+                    String.valueOf(oldCaseMeta.getAutoClose()), String.valueOf(caseMeta.getAutoClose()));
+        } else if (oldCaseMeta.getAutoClose() != null && caseMeta.getAutoClose() == null) {
+            resultAutoClose = removeAutoCloseHistory(token, caseMeta.getId(),
+                    String.valueOf(oldCaseMeta.getAutoClose()));
+        }
+
+        if (resultAutoClose.isError()) {
+            log.error("Auto close history for the issue {} isn't saved!", caseMeta.getId());
         }
     }
 
@@ -1796,6 +1856,18 @@ public class CaseServiceImpl implements CaseService {
 
     private Result<Long> removeWorkTriggerHistory(AuthToken authToken, Long caseId, Long oldWorkTriggerId, String oldWorkTriggerName) {
         return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_WORK_TRIGGER, oldWorkTriggerId, oldWorkTriggerName, null, null);
+    }
+
+    private Result<Long> addAutoCloseHistory(AuthToken authToken, Long caseId, String autoClose) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.ADD, En_HistoryType.CASE_AUTO_CLOSE,null, null, null, autoClose);
+    }
+
+    private Result<Long> changeAutoCloseHistory(AuthToken authToken, Long caseId, String oldAutoClose, String newAutoClose) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.CHANGE, En_HistoryType.CASE_AUTO_CLOSE, null, oldAutoClose, null, newAutoClose);
+    }
+
+    private Result<Long> removeAutoCloseHistory(AuthToken authToken, Long caseId, String oldAutoClose) {
+        return historyService.createHistory(authToken, caseId, En_HistoryAction.REMOVE, En_HistoryType.CASE_AUTO_CLOSE, null, oldAutoClose, null, null);
     }
 
     private Result<Long> addDeadlineHistory(AuthToken authToken, Long caseId, String deadline) {
@@ -1982,5 +2054,27 @@ public class CaseServiceImpl implements CaseService {
             return platformDAO.get(caseObject.getPlatformId()).getName();
         }
         return caseObject.getPlatformName();
+    }
+
+    private AuthToken createSystemUserToken() {
+        AuthToken token = new AuthToken("0");
+        try {
+            token.setIp( Inet4Address.getLocalHost().getHostAddress());
+        } catch (UnknownHostException e) {
+            token.setIp("0.0.0.0");
+        }
+        Long systemUserId = config.data().getCommonConfig().getSystemUserId();
+        token.setPersonId(systemUserId);
+        Set<UserRole> defaultRoles = userRoleDAO.getDefaultManagerRoles();
+        token.setRoles(defaultRoles);
+        return token;
+    }
+
+    private String getLangFor(String key, String locale) {
+        if (locale == null) {
+            locale = "ru";
+        }
+        ResourceBundle lang = ResourceBundle.getBundle("Lang", new Locale(locale));
+        return lang.getString( key );
     }
 }

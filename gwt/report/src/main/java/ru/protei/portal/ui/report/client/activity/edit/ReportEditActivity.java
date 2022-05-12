@@ -21,6 +21,8 @@ import ru.protei.portal.ui.common.client.activity.contractfilter.AbstractContrac
 import ru.protei.portal.ui.common.client.activity.filter.AbstractIssueFilterModel;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.activity.transportationrequestfilter.AbstractTransportationRequestFilterActivity;
+import ru.protei.portal.ui.common.client.activity.transportationrequestfilter.AbstractTransportationRequestFilterView;
 import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYoutrackWorkFilterActivity;
 import ru.protei.portal.ui.common.client.activity.ytwork.AbstractYoutrackWorkFilterView;
 import ru.protei.portal.ui.common.client.events.*;
@@ -46,13 +48,15 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
+import static ru.protei.portal.core.model.helper.CollectionUtils.collectIds;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.fromDateRange;
 import static ru.protei.portal.ui.common.client.widget.typedrangepicker.DateIntervalWithType.toDateRange;
 import static ru.protei.portal.ui.report.client.util.AccessUtil.availableReportTypes;
 import static ru.protei.portal.ui.report.client.util.AccessUtil.canEdit;
 
 public abstract class ReportEditActivity implements Activity,
-        AbstractReportCreateEditActivity, AbstractIssueFilterModel, AbstractContractFilterActivity {
+        AbstractReportCreateEditActivity, AbstractIssueFilterModel, AbstractContractFilterActivity,
+        AbstractTransportationRequestFilterActivity {
 
     @PostConstruct
     public void onInit() {
@@ -69,6 +73,9 @@ public abstract class ReportEditActivity implements Activity,
         youtrackWorkFilterView.setActivity(youtrackWorkFilterActivity);
         youtrackWorkFilterView.clearFooterStyle();
 
+        transportationRequestFilterView.setActivity(this);
+        transportationRequestFilterView.clearFooterStyle();
+
         view.fillReportScheduledTypes(asList(En_ReportScheduledType.values()));
     }
 
@@ -83,6 +90,8 @@ public abstract class ReportEditActivity implements Activity,
         projectFilterWidget.resetFilter();
         contractFilterView.resetFilter();
         youtrackWorkFilterView.resetFilter(false);
+        transportationRequestFilterView.resetFilter();
+
         updateCompanyModels(event.profile);
     }
 
@@ -156,6 +165,7 @@ public abstract class ReportEditActivity implements Activity,
         view.reportTypeEnable().setEnabled(true);
         view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
         view.additionalParams().setValue(null);
+        view.timeElapsedGroup().setValue(null);
     }
 
     private void presetCompanyAtFilter() {
@@ -201,6 +211,8 @@ public abstract class ReportEditActivity implements Activity,
         view.reportScheduledType().setValue(report.getScheduledType());
         view.name().setValue(report.getName());
 
+        view.withDataSummarize().setValue(report.isWithDataSummarize());
+
         Set<En_ReportAdditionalParamType> additionalParams = new HashSet<>();
         if (report.isWithDescription()) {
             additionalParams.add(En_ReportAdditionalParamType.DESCRIPTION);
@@ -242,8 +254,12 @@ public abstract class ReportEditActivity implements Activity,
             case YT_WORK:
                 fillFilter((YoutrackWorkQuery)query);
                 break;
+            case TRANSPORTATION_REQUEST:
+                fillFilter((TransportationRequestQuery)query);
         }
         view.additionalParams().setValue(additionalParams);
+
+        view.timeElapsedGroup().setValue(report.getTimeElapsedGroups());
     }
 
     private void fillFilter(CaseQuery query) {
@@ -300,7 +316,8 @@ public abstract class ReportEditActivity implements Activity,
             contractFilterView.states().setValue(null);
         }
 
-        contractFilterView.direction().setValue(query.getDirectionId() == null ? null : new ProductDirectionInfo(query.getDirectionId(), ""));
+        contractFilterView.directions().setValue(
+                stream(query.getDirectionIds()).map(ProductDirectionInfo::new).collect(Collectors.toSet()));
         contractFilterView.kind().setValue(query.getKind());
         contractFilterView.dateSigningRange().setValue(fromDateRange(query.getDateSigningRange()));
         contractFilterView.dateValidRange().setValue(fromDateRange(query.getDateValidRange()));
@@ -321,9 +338,8 @@ public abstract class ReportEditActivity implements Activity,
                 contractFilterView.organizations().setValue(organisations);
                 Set<PersonShortView> managers = collectPersons(selectorsParams.getPersonShortViews(), query.getManagerIds());
                 contractFilterView.managers().setValue(managers);
-                if (query.getDirectionId() != null) {
-                    contractFilterView.direction().setValue(selectorsParams.getProductDirectionInfos().get(0));
-                }
+                Set<ProductDirectionInfo> directions = collectDirections(selectorsParams.getProductDirectionInfos(), query.getDirectionIds());
+                contractFilterView.directions().setValue(directions);
 
                 List<CaseTag> caseTags = selectorsParams.getCaseTags();
                 if (caseTags != null) {
@@ -340,6 +356,10 @@ public abstract class ReportEditActivity implements Activity,
 
     private void fillFilter(YoutrackWorkQuery query) {
         youtrackWorkFilterView.date().setValue(fromDateRange(query.getDateRange()));
+    }
+
+    private void fillFilter(TransportationRequestQuery query) {
+        transportationRequestFilterView.pickupDate().setValue(fromDateRange(query.getPickupDate()));
     }
 
     private Set<EntityOption> collectCompanies(Collection<EntityOption> companies, Collection<Long> companyIds) {
@@ -363,8 +383,16 @@ public abstract class ReportEditActivity implements Activity,
                 .collect(Collectors.toSet());
     }
 
+    private Set<ProductDirectionInfo> collectDirections(Collection<ProductDirectionInfo> directionInfos, Collection<Long> ids) {
+        return stream(directionInfos)
+                .filter(info ->
+                        stream(ids).anyMatch(id -> id.equals(info.getId())))
+                .collect(Collectors.toSet());
+    }
+
     private Report makeReport(Report report) {
         report.setReportType(view.reportType().getValue());
+        report.setWithDataSummarize(view.withDataSummarize().getValue());
         report.setScheduledType(view.reportScheduledType().getValue());
         report.setName(view.name().getValue());
         report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
@@ -373,6 +401,7 @@ public abstract class ReportEditActivity implements Activity,
         report.setWithLinkedIssues(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.LINKED_ISSUES));
         report.setHumanReadable(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.HUMAN_READABLE));
         report.setWithDeadlineAndWorkTrigger(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.DEADLINE_AND_WORK_TRIGGER));
+        report.setTimeElapsedGroups(view.timeElapsedGroup().getValue());
         return report;
     }
 
@@ -402,12 +431,20 @@ public abstract class ReportEditActivity implements Activity,
                 ContractQuery query = getContractQuery();
                 return new ReportContractQuery(report, query);
             }
-            case YT_WORK:
+            case YT_WORK: {
                 YoutrackWorkQuery query = getYoutracktWorkQuery();
                 if (!validateYoutrackWorkQuery(query)) {
                     return null;
                 }
                 return new ReportYoutrackWorkQuery(report, query);
+            }
+            case TRANSPORTATION_REQUEST: {
+                TransportationRequestQuery query = getTransportationRequestQuery();
+                if (!validateTransportationQuery(query)) {
+                    return null;
+                }
+                return new ReportTransportationRequestQuery(report, query);
+            }
         }
         throw new IllegalStateException("No switch branch matched for En_ReportType");
     }
@@ -431,8 +468,12 @@ public abstract class ReportEditActivity implements Activity,
                 view.getFilterContainer().clear();
                 view.getFilterContainer().add(projectFilterWidget.asWidget());
                 view.scheduledTypeContainerVisibility().setVisible(false);
+                view.withDataSummarizeVisibility().setVisible(false);
+                view.withDataSummarize().setValue(false);
                 view.additionalParamsVisibility().setVisible(false);
                 view.additionalParams().setValue(null);
+                view.timeElapsedGroupVisibility().setVisible(false);
+                view.timeElapsedGroup().setValue(null);
                 break;
             }
             case CONTRACT: {
@@ -441,8 +482,12 @@ public abstract class ReportEditActivity implements Activity,
                 view.getFilterContainer().clear();
                 view.getFilterContainer().add(contractFilterView.asWidget());
                 view.scheduledTypeContainerVisibility().setVisible(false);
+                view.withDataSummarizeVisibility().setVisible(false);
+                view.withDataSummarize().setValue(false);
                 view.additionalParamsVisibility().setVisible(false);
                 view.additionalParams().setValue(null);
+                view.timeElapsedGroupVisibility().setVisible(false);
+                view.timeElapsedGroup().setValue(null);
                 break;
             }
             case CASE_OBJECTS:
@@ -451,8 +496,12 @@ public abstract class ReportEditActivity implements Activity,
             case NIGHT_WORK: {
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
                 view.scheduledTypeContainerVisibility().setVisible(isScheduledEnabled(reportType));
+                view.withDataSummarizeVisibility().setVisible(reportType == En_ReportType.CASE_TIME_ELAPSED);
+                view.withDataSummarize().setValue(false);
                 view.additionalParamsVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
                 view.additionalParams().setValue(null);
+                view.timeElapsedGroupVisibility().setVisible(reportType == En_ReportType.CASE_OBJECTS);
+                view.timeElapsedGroup().setValue(null);
                 issueFilterWidget.updateFilterType(En_CaseFilterType.valueOf(reportType.name()));
                 validateDateRanges(reportType);
                 applyIssueFilterVisibilityByPrivileges();
@@ -460,15 +509,31 @@ public abstract class ReportEditActivity implements Activity,
                 view.getFilterContainer().add(issueFilterWidget.asWidget());
                 break;
             }
-            case YT_WORK:
+            case YT_WORK: {
                 youtrackWorkFilterView.resetFilter(true);
                 view.reportScheduledType().setValue(En_ReportScheduledType.NONE);
                 validateDateRanges(reportType);
                 view.getFilterContainer().clear();
                 view.getFilterContainer().add(youtrackWorkFilterView.asWidget());
                 view.scheduledTypeContainerVisibility().setVisible(false);
+                view.withDataSummarizeVisibility().setVisible(false);
+                view.withDataSummarize().setValue(false);
                 view.additionalParamsVisibility().setVisible(false);
                 view.additionalParams().setValue(null);
+                view.timeElapsedGroupVisibility().setVisible(false);
+                view.timeElapsedGroup().setValue(null);
+                break;
+            }
+            case TRANSPORTATION_REQUEST: {
+                transportationRequestFilterView.resetFilter();
+                view.getFilterContainer().clear();
+                view.getFilterContainer().add(transportationRequestFilterView.asWidget());
+                view.scheduledTypeContainerVisibility().setVisible(false);
+                view.withDataSummarizeVisibility().setVisible(false);
+                view.withDataSummarize().setValue(false);
+                view.additionalParamsVisibility().setVisible(false);
+                view.additionalParams().setValue(null);
+            }
         }
     }
 
@@ -721,6 +786,16 @@ public abstract class ReportEditActivity implements Activity,
         }
     }
 
+    private boolean validateTransportationQuery(TransportationRequestQuery query) {
+        return query != null && query.isParamsPresent();
+    }
+
+    private TransportationRequestQuery getTransportationRequestQuery() {
+        TransportationRequestQuery query = new TransportationRequestQuery();
+        query.setPickupDate(toDateRange(transportationRequestFilterView.pickupDate().getValue()));
+        return query;
+    }
+
     private CaseQuery getIssueQuery() {
         CaseQuery query = issueFilterWidget.getFilterFieldsByFilterType();
         query.setCheckImportanceHistory(contains(view.additionalParams().getValue(), En_ReportAdditionalParamType.IMPORTANCE_HISTORY));
@@ -742,9 +817,8 @@ public abstract class ReportEditActivity implements Activity,
         query.setManagerIds(collectIds(contractFilterView.managers().getValue()));
         query.setTypes(nullIfEmpty(listOfOrNull(contractFilterView.types().getValue())));
         query.setCaseTagsIds(nullIfEmpty(toList(contractFilterView.tags().getValue(), caseTag -> caseTag == null ? CrmConstants.CaseTag.NOT_SPECIFIED : caseTag.getId())));
+        query.setDirectionIds(collectIds(contractFilterView.directions().getValue()));
         query.setStateIds(nullIfEmpty(toList(contractFilterView.states().getValue(), CaseState::getId)));
-        ProductDirectionInfo value = contractFilterView.direction().getValue();
-        query.setDirectionId(value == null ? null : value.id);
         query.setKind(contractFilterView.kind().getValue());
         query.setDateSigningRange(toDateRange(contractFilterView.dateSigningRange().getValue()));
         query.setDateValidRange(toDateRange(contractFilterView.dateValidRange().getValue()));
@@ -793,6 +867,8 @@ public abstract class ReportEditActivity implements Activity,
     AbstractContractFilterView contractFilterView;
     @Inject
     AbstractYoutrackWorkFilterView youtrackWorkFilterView;
+    @Inject
+    AbstractTransportationRequestFilterView transportationRequestFilterView;
     @Inject
     AbstractYoutrackWorkFilterActivity youtrackWorkFilterActivity;
 

@@ -17,6 +17,10 @@ public class CompanyDepartmentQuery extends BaseQuery {
         this.personId = personId;
     }
 
+    public CompanyDepartmentQuery(Long personId) {
+        this.personId = personId;
+    }
+
     public CompanyDepartmentQuery(Set<Long> departmentsIds) {
         this.departmentsIds = departmentsIds;
     }

@@ -12,8 +12,6 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 
 public class ContractQuery extends BaseQuery {
 
-    private Long directionId;
-
     private DateRange dateSigningRange;
 
     private DateRange dateValidRange;
@@ -44,12 +42,14 @@ public class ContractQuery extends BaseQuery {
 
     private Long projectId;
 
-    public Long getDirectionId() {
-        return directionId;
+    public List<Long> directionIds;
+
+    public List<Long> getDirectionIds() {
+        return directionIds;
     }
 
-    public void setDirectionId(Long directionId) {
-        this.directionId = directionId;
+    public void setDirectionIds(List<Long> directionIds) {
+        this.directionIds = directionIds;
     }
 
     public DateRange getDateSigningRange() {
@@ -175,7 +175,6 @@ public class ContractQuery extends BaseQuery {
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
-                directionId != null ||
                 dateSigningRange != null ||
                 dateValidRange != null ||
                 kind != null ||
@@ -187,6 +186,7 @@ public class ContractQuery extends BaseQuery {
                 isNotEmpty(caseTagsIds) ||
                 isNotEmpty(managerIds) ||
                 isNotEmpty(contractorIds) ||
+                isNotEmpty(directionIds) ||
                 isNotEmpty(curatorIds) ||
                 isNotEmpty(organizationIds) ||
                 isNotEmpty(parentContractIds) ||
@@ -196,7 +196,7 @@ public class ContractQuery extends BaseQuery {
     @Override
     public String toString() {
         return "ContractQuery{" +
-                "directionId=" + directionId +
+                "directionIds=" + directionIds +
                 ", dateSigningRange=" + dateSigningRange +
                 ", dateValidRange=" + dateValidRange +
                 ", kind=" + kind +

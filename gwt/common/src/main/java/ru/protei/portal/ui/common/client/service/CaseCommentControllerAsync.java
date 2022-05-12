@@ -21,4 +21,6 @@ public interface CaseCommentControllerAsync {
     void getCaseComment( Long commentId, AsyncCallback<CaseComment> async );
 
     void getCommentsAndHistories(En_CaseType caseType, Long caseId, AsyncCallback<CommentsAndHistories> async);
+
+    void getHistoryValueDiffByHistoryId(Long historyId, AsyncCallback<String> async);
 }

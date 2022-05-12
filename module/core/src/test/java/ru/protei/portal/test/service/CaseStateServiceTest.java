@@ -16,7 +16,10 @@ import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.dict.En_CaseStateUsageInCompanies;
 import ru.protei.portal.core.service.CaseStateService;
+import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
 import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.http.HttpConfigurationContext;
+import ru.protei.winter.http.client.factory.HttpClientFactory;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -27,7 +30,9 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class,
+        DatabaseConfiguration.class, IntegrationTestsConfiguration.class, RemoteServiceFactory.class,
+        HttpClientFactory.class, HttpConfigurationContext.class})
 public class CaseStateServiceTest {
 
     public static final AuthToken TEST_AUTH_TOKEN = null;

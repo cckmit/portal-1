@@ -8,17 +8,24 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.CaseObjectMeta;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.struct.CaseObjectReportRequest;
 import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportRequest;
+import ru.protei.portal.core.model.struct.caseobjectreport.CaseObjectReportRow;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.TimeFormatter;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.mock.AuthServiceMock;
+import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
 import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.http.HttpConfigurationContext;
+import ru.protei.winter.http.client.factory.HttpClientFactory;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.io.IOException;
@@ -33,7 +40,8 @@ import static ru.protei.portal.core.model.util.CrmConstants.ImportanceLevel.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
         JdbcConfigurationContext.class,
-        DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
+        DatabaseConfiguration.class, IntegrationTestsConfiguration.class,
+        RemoteServiceFactory.class, HttpClientFactory.class, HttpConfigurationContext.class})
 @Transactional
 public class ReportCaseTest extends BaseServiceTest {
 
@@ -67,10 +75,10 @@ public class ReportCaseTest extends BaseServiceTest {
         CaseQuery caseQuery = makeCaseQuery(Collections.emptyList());
         caseQuery.setCheckImportanceHistory(false);
 
-        List<CaseObjectReportRequest> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery, new Report() );
+        List<CaseObjectReportRow> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery, new Report() );
 
         assertTrue(  "Expected not empty report data", !isEmpty(caseObjectComments)  );
-        List<CaseObject> reportCases = toList( caseObjectComments, CaseObjectReportRequest::getCaseObject );
+        List<CaseObject> reportCases = toList( caseObjectComments, row -> ((CaseObjectReportRequest)row).getCaseObject() );
         for (CaseObject aCase : cases) {
             assertTrue(  "Missing case: " + aCase, find(  reportCases, caseObject -> Objects.equals( caseObject.getId(), aCase.getId() ) ).isPresent() );
         }
@@ -83,10 +91,10 @@ public class ReportCaseTest extends BaseServiceTest {
         CaseQuery caseQuery = makeCaseQuery(listOf(IMPORTANT, CRITICAL));
         caseQuery.setCheckImportanceHistory(true);
 
-        List<CaseObjectReportRequest> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery, new Report() );
+        List<CaseObjectReportRow> caseObjectComments = ((ReportCaseImpl) reportCase).processChunk( caseQuery, new Report() );
 
         assertTrue(  "Expected not empty report data", !isEmpty(caseObjectComments)  );
-        List<CaseObject> reportCases = toList( caseObjectComments, CaseObjectReportRequest::getCaseObject );
+        List<CaseObject> reportCases = toList( caseObjectComments, row -> ((CaseObjectReportRequest)row).getCaseObject() );
         for (CaseObject aCase : cases) {
             assertTrue(  "Missing case: " + aCase, find(  reportCases, caseObject -> Objects.equals( caseObject.getId(), aCase.getId() ) ).isPresent() );
         }

@@ -59,12 +59,16 @@ import ru.protei.portal.core.report.nightwork.ReportNightWork;
 import ru.protei.portal.core.report.nightwork.ReportNightWorkImpl;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.core.report.projects.ReportProjectImpl;
+import ru.protei.portal.core.report.transportationrequest.ReportTransportationRequest;
+import ru.protei.portal.core.report.transportationrequest.ReportTransportationRequestImpl;
 import ru.protei.portal.core.report.ytwork.ReportYoutrackWork;
 import ru.protei.portal.core.report.ytwork.ReportYoutrackWorkImpl;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.service.auth.AuthServiceImpl;
 import ru.protei.portal.core.service.auth.LDAPAuthProvider;
+import ru.protei.portal.core.service.autoclosecase.AutoCloseCaseService;
+import ru.protei.portal.core.service.autoclosecase.AutoCloseCaseServiceImpl;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceImpl;
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceTaskHandlerImpl;
@@ -80,6 +84,8 @@ import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrack
 import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrackSynchronizerImpl;
 import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.core.service.template.TemplateServiceImpl;
+import ru.protei.portal.core.sn.SystemNotificationService;
+import ru.protei.portal.core.sn.SystemNotificationServiceImpl;
 import ru.protei.portal.core.svn.document.DocumentSvnApi;
 import ru.protei.portal.core.svn.document.DocumentSvnApiImpl;
 import ru.protei.portal.core.utils.SessionIdGen;
@@ -549,6 +555,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CommonManagerToNotifyListDAO getCommonManagerToNotifyListDAO() {
+        return new CommonManagerToNotifyListDAO_Impl();
+    }
+
+    @Bean
     public PlatformDAO getPlatformDAO() {
         return new PlatformDAO_Impl();
     }
@@ -871,6 +882,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public SystemNotificationService getSystemNotificationService() {
+        return new SystemNotificationServiceImpl();
+    }
+
+    @Bean
     public CompanyService getCompanyService() {
         return new CompanyServiceImpl();
     }
@@ -1181,6 +1197,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public AutoCloseCaseService getAutoCloseCaseService() {
+        return new AutoCloseCaseServiceImpl();
+    }
+
+    @Bean
     public EmployeeRegistrationYoutrackSynchronizer getEmployeeRegistrationYoutrackSynchronizer() {
         return new EmployeeRegistrationYoutrackSynchronizerImpl();
     }
@@ -1259,6 +1280,11 @@ public class MainConfiguration {
     @Bean
     public ReportYoutrackWork getReportYoutrackWork() {
         return new ReportYoutrackWorkImpl();
+    }
+
+    @Bean
+    public ReportTransportationRequest getReportTransportationRequest() {
+        return new ReportTransportationRequestImpl();
     }
 
     @Bean

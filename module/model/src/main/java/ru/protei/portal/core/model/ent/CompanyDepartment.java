@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by michael on 24.05.16.
@@ -60,6 +61,11 @@ public class CompanyDepartment extends AuditableObject {
     private String externalId;
 
     public CompanyDepartment() {
+    }
+
+    public CompanyDepartment(Long id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public Long getId() {
@@ -173,5 +179,18 @@ public class CompanyDepartment extends AuditableObject {
 
     public static EntityOption toOption(CompanyDepartment department) {
         return new EntityOption(department.getName(), department.getId());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CompanyDepartment that = (CompanyDepartment) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

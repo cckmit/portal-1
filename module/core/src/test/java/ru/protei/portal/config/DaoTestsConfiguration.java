@@ -295,6 +295,11 @@ public class DaoTestsConfiguration {
     }
 
     @Bean
+    public CommonManagerToNotifyListDAO getCommonManagerToNotifyListDAO() {
+        return new CommonManagerToNotifyListDAO_Impl();
+    }
+
+    @Bean
     public PlatformDAO getPlatformDAO() {
         return new PlatformDAO_Impl();
     }

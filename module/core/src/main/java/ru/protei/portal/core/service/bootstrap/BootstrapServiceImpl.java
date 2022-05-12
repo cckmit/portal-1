@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
+import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.config.PortalConfigData;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
 import ru.protei.portal.core.model.dao.*;
@@ -157,6 +159,15 @@ public class BootstrapServiceImpl implements BootstrapService {
         /**
          *  end Спринт */
 
+        /**
+         * begin Спринт 92 */
+        if (!bootstrapAppDAO.isActionExists("fillCommonManagerToNotifyList")) {
+            this.fillCommonManagerToNotifyList();
+            bootstrapAppDAO.createAction("fillCommonManagerToNotifyList");
+        }
+        /**
+         *  end Спринт */
+
         log.info( "bootstrapApplication(): BootstrapService complete."  );
     }
 
@@ -168,6 +179,22 @@ public class BootstrapServiceImpl implements BootstrapService {
                     commonManager.setProductId(pair.getA());
                     commonManager.setManagerId(pair.getB());
                     commonManagerDAO.persist(commonManager);
+                });
+    }
+
+    private void fillCommonManagerToNotifyList(){
+        PortalConfigData.SnConfig snConfig = portalConfig.data().getSnConfig();
+
+        if (!snConfig.isNotificationEnabled()){
+            log.warn("fillCommonManagerToNotifyList failed: notification not allowed");
+            return;
+        }
+
+        Arrays.stream(snConfig.getCommonManagersIds())
+                .map(Long::parseLong)
+                .forEach(managerId -> {
+                    CommonManagerToNotifyList commonManagerToNotifyList = new CommonManagerToNotifyList(managerId, null);
+                    commonManagerToNotifyListDAO.persist(commonManagerToNotifyList);
                 });
     }
 
@@ -639,4 +666,8 @@ public class BootstrapServiceImpl implements BootstrapService {
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     JdbcTemplate jdbcTemplate;
+    @Autowired
+    PortalConfig portalConfig;
+    @Autowired
+    CommonManagerToNotifyListDAO commonManagerToNotifyListDAO;
 }

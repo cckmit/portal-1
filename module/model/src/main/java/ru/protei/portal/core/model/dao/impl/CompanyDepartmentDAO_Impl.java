@@ -57,6 +57,7 @@ public class CompanyDepartmentDAO_Impl extends PortalBaseJdbcDAO<CompanyDepartme
                 .collect(Collectors.toList());
     }
 
+    @Override
     public List<CompanyDepartment> getListByQuery(CompanyDepartmentQuery query) {
         JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
         return getList(parameters);

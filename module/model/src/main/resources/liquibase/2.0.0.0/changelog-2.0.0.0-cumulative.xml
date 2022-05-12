@@ -125,6 +125,11 @@
   <include file="2022-03-01-add-contract-states-to-case_state_matrix-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-03-01-update-contract-states-in-case_object-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-03-02-add-member-role.xml" relativeToChangelogFile="true"/>
+  <include file="2022-03-09-add-auto_close-to-case_object-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-03-22-add-calculation_type-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-03-24-create-common_manager-table.xml" relativeToChangelogFile="true"/>
+  <include file="2022-03-30-modify-data-type-history-table.xml" relativeToChangelogFile="true"/>
+  <include file="2022-04-29-add-time-elapsed-groups-column-to-report-table.xml" relativeToChangelogFile="true"/>
+  <include file="2022-04-29-create-common-manager-to-notify-list-table.xml" relativeToChangelogFile="true"/>
+  <include file="2022-05-06-add-with_data_summarize-to-report-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

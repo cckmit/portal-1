@@ -21,14 +21,19 @@ import ru.protei.portal.core.service.PlanService;
 import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.mock.AuthServiceMock;
+import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
 import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.http.HttpConfigurationContext;
+import ru.protei.winter.http.client.factory.HttpClientFactory;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class,
+        DatabaseConfiguration.class, IntegrationTestsConfiguration.class, RemoteServiceFactory.class,
+        HttpClientFactory.class, HttpConfigurationContext.class})
 public class HistoryServiceTest extends BaseServiceTest {
 
     private AuthServiceMock authService;

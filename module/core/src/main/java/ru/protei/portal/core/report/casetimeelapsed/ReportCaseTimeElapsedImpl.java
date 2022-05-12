@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.report.ReportWriter;
+import ru.protei.portal.core.utils.EnumLangUtil;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,7 +24,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
+import static ru.protei.portal.core.model.util.CrmConstants.CaseTimeReport.SUMMARIZED_DATA_SHEET_NUMBER;
 
 public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
 
@@ -57,10 +58,15 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
         final Processor processor = new Processor();
         final int step = config.data().reportConfig().getChunkSize();
         int offset = 0;
+        boolean isWithDataSummarize = report.isWithDataSummarize();
 
         log.info( "writeReport(): Start report {}", report );
         try (ReportWriter<CaseCommentTimeElapsedSum> writer =
-                     new ExcelReportWriter(localizedLang, makeTimeElapsedTypes(caseQuery.getTimeElapsedTypeIds()))) {
+                     new ExcelReportWriter(localizedLang, makeTimeElapsedTypes(caseQuery.getTimeElapsedTypeIds()), new EnumLangUtil(lang))) {
+
+            if (isWithDataSummarize) {
+                writer.setSheetName(writer.createSheet(), localizedLang.get("ir_data_summarize_sheet_name"));
+            }
 
             while (true) {
                 if (isCancel.test(report.getId())) {
@@ -71,7 +77,7 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
                 caseQuery.setLimit( step );
                 List<CaseCommentTimeElapsedSum> comments = caseCommentTimeElapsedSumDAO.getListByQuery( caseQuery );
                 boolean isThisTheEnd = comments.size() < step;
-                processor.writeChunk(writer, comments, isThisTheEnd);
+                processor.writeChunk(writer, comments, isThisTheEnd, isWithDataSummarize);
                 offset += step;
                 if (isThisTheEnd) {
                     if(offset==step && isEmpty(comments)){
@@ -110,19 +116,19 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
         private Integer sheetNumberForData = null;
         private long summaryForSheetNumber = 0L;
 
-        public void writeChunk(ReportWriter<CaseCommentTimeElapsedSum> writer, List<CaseCommentTimeElapsedSum> comments, boolean isEndOfChain) {
+        public void writeChunk(ReportWriter<CaseCommentTimeElapsedSum> writer, List<CaseCommentTimeElapsedSum> comments, boolean isEndOfChain, boolean isWithDataSummarize) {
             for (CaseCommentTimeElapsedSum comment : comments) {
                 Long authorId = comment.getAuthorId();
                 Integer sheetNumberForAuthor = author2sheet.get(authorId);
                 if (sheetNumberForAuthor == null) {
-                    writeDataIfNeeded(writer);
+                    writeDataIfNeeded(writer, isWithDataSummarize);
                     sheetNumberForAuthor = writer.createSheet();
                     writer.setSheetName(sheetNumberForAuthor, comment.getAuthorDisplayName());
                     author2sheet.put(authorId, sheetNumberForAuthor);
                 }
                 if (sheetNumberForData != null && !Objects.equals(sheetNumberForData, sheetNumberForAuthor)) {
                     addSummaryIfNeeded();
-                    writeDataIfNeeded(writer);
+                    writeDataIfNeeded(writer, isWithDataSummarize);
                 }
                 sheetNumberForData = sheetNumberForAuthor;
                 data.add(comment);
@@ -131,12 +137,17 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
             if (isEndOfChain) {
                 addSummaryIfNeeded();
             }
-            writeDataIfNeeded(writer);
+            writeDataIfNeeded(writer, isWithDataSummarize);
         }
 
-        private void writeDataIfNeeded(ReportWriter<CaseCommentTimeElapsedSum> writer) {
+        private void writeDataIfNeeded(ReportWriter<CaseCommentTimeElapsedSum> writer, boolean isWithDataSummarize) {
             if (sheetNumberForData != null && data.size() > 0) {
                 writer.write(sheetNumberForData, data);
+
+                if (isWithDataSummarize) {
+                    writer.write(SUMMARIZED_DATA_SHEET_NUMBER, data);
+                }
+
                 data.clear();
             }
         }
