@@ -266,6 +266,5 @@ public class CrmConstants {
 
     public interface CaseTimeReport {
         int SUMMARIZED_DATA_SHEET_NUMBER = 0;
-        String SUMMARIZED_DATA_SHEET_NAME = "Сводные данные";
     }
 }

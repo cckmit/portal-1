@@ -4137,5 +4137,7 @@ public interface Lang extends Messages, ContactItemLang {
     String transportationRequestPickupDate();
 
     String issueReportDataSummarize();
+
+    String issueReportDataSummarizeSheetName();
 }
 

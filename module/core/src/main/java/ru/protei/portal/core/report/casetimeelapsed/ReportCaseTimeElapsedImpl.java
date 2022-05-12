@@ -23,7 +23,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.util.CrmConstants.CaseTimeReport.*;
+import static ru.protei.portal.core.model.util.CrmConstants.CaseTimeReport.SUMMARIZED_DATA_SHEET_NUMBER;
 
 public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
 
@@ -57,13 +57,14 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
         final Processor processor = new Processor();
         final int step = config.data().reportConfig().getChunkSize();
         int offset = 0;
+        boolean isWithDataSummarize = report.isWithDataSummarize();
 
         log.info( "writeReport(): Start report {}", report );
         try (ReportWriter<CaseCommentTimeElapsedSum> writer =
                      new ExcelReportWriter(localizedLang, makeTimeElapsedTypes(caseQuery.getTimeElapsedTypeIds()))) {
 
-            if (report.isWithDataSummarize()) {
-                writer.setSheetName(writer.createSheet(), SUMMARIZED_DATA_SHEET_NAME);
+            if (isWithDataSummarize) {
+                writer.setSheetName(writer.createSheet(), localizedLang.get("ir_data_summarize_sheet_name"));
             }
 
             while (true) {
@@ -75,7 +76,6 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
                 caseQuery.setLimit( step );
                 List<CaseCommentTimeElapsedSum> comments = caseCommentTimeElapsedSumDAO.getListByQuery( caseQuery );
                 boolean isThisTheEnd = comments.size() < step;
-                boolean isWithDataSummarize = report.isWithDataSummarize();
                 processor.writeChunk(writer, comments, isThisTheEnd, isWithDataSummarize);
                 offset += step;
                 if (isThisTheEnd) {
