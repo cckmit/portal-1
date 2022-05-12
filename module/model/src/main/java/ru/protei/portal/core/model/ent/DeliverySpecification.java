@@ -43,17 +43,15 @@ public class DeliverySpecification {
     private String name;
 
     /**
+     * Вложенная спецификация
+     */
+    @JdbcOneToMany(localColumn = "id", remoteColumn = "specification_id")
+    private List<DeliveryNestedSpecification> specifications;
+    /**
      *  Используемые детали
      */
-    @JdbcOneToMany(table = "detail_to_specification", localColumn = "id",
-            remoteColumn = "specification_id" )
-    private List<DeliveryDetailToSpecification> specifications;
-
-    /**
-     * Вложенныая спецификацая
-     */
-    @JdbcJoinedObject(localColumn = "id", remoteColumn = "specification_id")
-    private DeliveryNestedSpecification nestedSpecification;
+    @JdbcOneToMany(localColumn = "id", remoteColumn = "specification_id")
+    private List<DeliveryDetailToSpecification> details;
 
     public Long getId() {
         return id;
@@ -103,20 +101,16 @@ public class DeliverySpecification {
         this.name = name;
     }
 
-    public DeliveryNestedSpecification getNestedSpecification() {
-        return nestedSpecification;
-    }
-
-    public void setNestedSpecification(DeliveryNestedSpecification nestedSpecification) {
-        this.nestedSpecification = nestedSpecification;
-    }
-
-    public List<DeliveryDetailToSpecification> getSpecifications() {
-        return specifications;
-    }
-
-    public void setSpecifications(List<DeliveryDetailToSpecification> specifications) {
+    public void setSpecifications(List<DeliveryNestedSpecification> specifications) {
         this.specifications = specifications;
+    }
+
+    public List<DeliveryDetailToSpecification> getDetails() {
+        return details;
+    }
+
+    public void setDetails(List<DeliveryDetailToSpecification> details) {
+        this.details = details;
     }
 
     @Override
@@ -145,8 +139,8 @@ public class DeliverySpecification {
                 ", created=" + created +
                 ", modified=" + modified +
                 ", name='" + name + '\'' +
+                ", details=" + details +
                 ", specifications=" + specifications +
-                ", nestedSpecification=" + nestedSpecification +
                 '}';
     }
 
