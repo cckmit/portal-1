@@ -10,6 +10,7 @@
   "dependencies": {
     "@protei-libs/eventbus": "workspace:*",
     "@protei-libs/exception": "workspace:*",
+    "@protei-libs/http": "workspace:*",
     "@protei-libs/logger": "workspace:*",
     "@protei-libs/module": "workspace:*",
     "@protei-libs/react": "workspace:*",

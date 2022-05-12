@@ -1577,7 +1577,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@protei-libs/http@workspace:web/packages/lib/http":
+"@protei-libs/http@workspace:*, @protei-libs/http@workspace:web/packages/lib/http":
   version: 0.0.0-use.local
   resolution: "@protei-libs/http@workspace:web/packages/lib/http"
   dependencies:
@@ -1774,6 +1774,7 @@ __metadata:
   dependencies:
     "@protei-libs/eventbus": "workspace:*"
     "@protei-libs/exception": "workspace:*"
+    "@protei-libs/http": "workspace:*"
     "@protei-libs/logger": "workspace:*"
     "@protei-libs/module": "workspace:*"
     "@protei-libs/react": "workspace:*"

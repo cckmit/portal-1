@@ -1,0 +1,225 @@
+openapi: 3.0.3
+info:
+  title: Portal API
+  description: Portal API
+  version: 1.0.0
+
+servers:
+  - url: http://192.168.110.12/portal
+    description: Test server
+
+paths:
+  /api/v1/delivery/specification:
+    post:
+      summary: Create a specification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/requestSpecificationCreate'
+      responses:
+        200:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseSpecificationCreate'
+    get:
+      summary: Get a specification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/requestSpecificationGet'
+      responses:
+        200:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseSpecificationGet'
+
+components:
+  schemas:
+    requestJson:
+      type: object
+      properties:
+        requestId:
+          type: string
+          description: Идентификатор запроса
+        data:
+          description: Тело запроса
+      required:
+        - requestId
+
+    responseJson:
+      type: object
+      properties:
+        requestId:
+          type: string
+          description: Идентификатор запроса
+        status:
+          type: string
+          description: En_ResultStatus
+        data:
+          description: Тело ответа
+        message:
+          type: string
+          description: Текст описания ошибки
+      required:
+        - requestId
+        - status
+
+    requestSpecificationCreate:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/requestJson'
+      properties:
+        data:
+          $ref: '#/components/schemas/CreateDeliverySpecification'
+
+    responseSpecificationCreate:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/responseJson'
+
+    requestSpecificationGet:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/requestJson'
+      properties:
+        data:
+          properties:
+            specificationId:
+              type: number
+          required:
+            - specificationId
+
+    responseSpecificationGet:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/responseJson'
+
+    CreateDeliverySpecification:
+      type: object
+      properties:
+        name:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateDeliveryDetailAtSpecification"
+        specifications:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateDeliverySpecificationAtSpecification"
+      required:
+        - name
+        - details
+        - specifications
+
+    CreateDeliveryDetailAtSpecification:
+      type: object
+      properties:
+        detail:
+          allOf:
+            - $ref: "#/components/schemas/CreateDeliveryDetail"
+          description: Или detail или detailId
+        detailId:
+          type: number
+          description: Или detail или detailId
+        note:
+          type: string
+        partReference:
+          type: string
+        modifications:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateDeliveryDetailAtSpecificationModification"
+      required:
+        - modifications
+
+    CreateDeliveryDetailAtSpecificationModification:
+      type: object
+      properties:
+        number:
+          type: number
+        count:
+          type: number
+      required:
+        - number
+        - count
+
+    CreateDeliverySpecificationAtSpecification:
+      type: object
+      properties:
+        specification:
+          allOf:
+            - $ref: "#/components/schemas/CreateDeliverySpecification"
+          description: Или specification или specificationId
+        specificationId:
+          type: number
+          description: Или specification или specificationId
+        category:
+          type: string
+        modifications:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateDeliverySpecificationAtSpecificationModification"
+      required:
+        - category
+        - modifications
+
+    CreateDeliverySpecificationAtSpecificationModification:
+      type: object
+      properties:
+        number:
+          type: number
+        count:
+          type: number
+      required:
+        - number
+        - count
+
+    CreateDeliveryDetail:
+      type: object
+      properties:
+        article:
+          type: string
+          nullable: true
+        name:
+          type: string
+        responsibleId:
+          type: number
+        supplierId:
+          type: number
+        configuration:
+          type: string
+          nullable: true
+        color:
+          type: string
+          nullable: true
+        reserve:
+          type: number
+          nullable: true
+        category:
+          type: number
+        simplified:
+          type: boolean
+        attn:
+          type: boolean
+          nullable: true
+        componentType:
+          type: string
+          nullable: true
+        value:
+          type: string
+          nullable: true
+      required:
+        - name
+        - responsibleId
+        - supplierId
+        - category
+        - simplified
