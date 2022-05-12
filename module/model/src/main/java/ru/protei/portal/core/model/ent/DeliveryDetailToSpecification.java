@@ -11,7 +11,7 @@ public class DeliveryDetailToSpecification {
     /**
      * Идентификатор
      */
-    @JdbcId(name = "id", idInsertMode = IdInsertMode.EXPLICIT)
+    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
     /**

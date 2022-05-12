@@ -736,6 +736,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public DeliverySpecificationSqlBuilder deliverySpecificationSqlBuilder() {
+        return new DeliverySpecificationSqlBuilder();
+    }
+
+    @Bean
     public YoutrackHttpClient getYoutrackHttpClient() {
         return new YoutrackHttpClientImpl();
     }

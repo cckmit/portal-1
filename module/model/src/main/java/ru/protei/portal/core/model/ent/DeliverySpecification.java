@@ -12,7 +12,7 @@ public class DeliverySpecification {
     /**
      * Идентификатор
      */
-    @JdbcId(name = Columns.ID, idInsertMode = IdInsertMode.EXPLICIT)
+    @JdbcId(name = Columns.ID, idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
     /**
@@ -21,7 +21,7 @@ public class DeliverySpecification {
     @JdbcColumn(name = Columns.CREATOR_ID)
     private Long creatorId;
 
-    @JdbcJoinedObject(localColumn = Columns.CREATOR_ID)
+    @JdbcJoinedObject(localColumn = Columns.CREATOR_ID, remoteColumn = "id")
     private PersonShortView creator;
 
     /**
@@ -47,6 +47,7 @@ public class DeliverySpecification {
      */
     @JdbcOneToMany(localColumn = "id", remoteColumn = "specification_id")
     private List<DeliveryNestedSpecification> specifications;
+
     /**
      *  Используемые детали
      */
@@ -101,6 +102,10 @@ public class DeliverySpecification {
         this.name = name;
     }
 
+    public List<DeliveryNestedSpecification> getSpecifications() {
+        return specifications;
+    }
+
     public void setSpecifications(List<DeliveryNestedSpecification> specifications) {
         this.specifications = specifications;
     }
@@ -139,8 +144,8 @@ public class DeliverySpecification {
                 ", created=" + created +
                 ", modified=" + modified +
                 ", name='" + name + '\'' +
-                ", details=" + details +
                 ", specifications=" + specifications +
+                ", details=" + details +
                 '}';
     }
 

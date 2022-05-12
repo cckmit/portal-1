@@ -688,6 +688,11 @@ public class JiraTestConfiguration {
     }
 
     @Bean
+    public DeliverySpecificationSqlBuilder deliverySpecificationSqlBuilder() {
+        return new DeliverySpecificationSqlBuilder();
+    }
+
+    @Bean
     public CardTypeDAO getCardTypeDAO() {
         return new CardTypeDAO_Impl();
     }

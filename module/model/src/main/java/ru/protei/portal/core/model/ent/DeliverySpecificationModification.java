@@ -8,7 +8,7 @@ public class DeliverySpecificationModification {
     /**
      * Идентификатор
      */
-    @JdbcId(name = "id", idInsertMode = IdInsertMode.EXPLICIT)
+    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
     /**

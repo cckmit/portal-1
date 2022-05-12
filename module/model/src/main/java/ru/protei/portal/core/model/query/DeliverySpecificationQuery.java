@@ -1,14 +1,8 @@
 package ru.protei.portal.core.model.query;
 
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
-
 public class DeliverySpecificationQuery extends BaseQuery {
 
-    public DeliverySpecificationQuery() {
-        sortField = En_SortField.prod_name;
-        sortDir = En_SortDir.ASC;
-    }
+    public DeliverySpecificationQuery() {}
 
     @Override
     public String toString() {

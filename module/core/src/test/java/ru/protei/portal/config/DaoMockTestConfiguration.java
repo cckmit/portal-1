@@ -7,6 +7,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.CardBatchSqlBuilder;
 import ru.protei.portal.core.model.dao.impl.CardSqlBuilder;
+import ru.protei.portal.core.model.dao.impl.DeliverySpecificationSqlBuilder;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import static org.mockito.Mockito.mock;
@@ -495,6 +496,11 @@ public class DaoMockTestConfiguration {
     @Bean
     public CardSqlBuilder cardSqlBuilder() {
         return mock(CardSqlBuilder.class);
+    }
+
+    @Bean
+    public DeliverySpecificationSqlBuilder deliverySpecificationSqlBuilder() {
+        return mock(DeliverySpecificationSqlBuilder.class);
     }
 
     @Bean
