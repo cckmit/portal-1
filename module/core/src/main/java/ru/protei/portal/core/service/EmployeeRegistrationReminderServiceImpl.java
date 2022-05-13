@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service;
 
-import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -235,7 +235,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
         return stream(company.getContactInfo().getItems(En_ContactItemType.EMAIL))
                 .filter(ContactItem::isSubscribedToTheEndOfProbation)
                 .map(ContactItem::value)
-                .filter(Strings::isNotEmpty)
+                .filter(StringUtils::isNotEmpty)
                 .collect(Collectors.toList());
     }
 

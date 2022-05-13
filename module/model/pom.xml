@@ -78,9 +78,29 @@
 
 
     <dependencies>
-
         <!-- Logging -->
         <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${project.logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${project.logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-access</artifactId>
+            <version>${project.logback.version}</version>
+        </dependency>
+
+<!--   <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${project.log4j.version}</version>
+       </dependency>
+       <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>${project.log4j.version}</version>
@@ -104,7 +124,7 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${project.slf4j.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>ru.protei</groupId>
             <artifactId>sql.tools</artifactId>
