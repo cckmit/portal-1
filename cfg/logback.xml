@@ -1,6 +1,6 @@
-<configuration>
+<included>
 
-    <property name="basePath" value="/home/porubov/git/Portal/debug/logs/portal"/>
+    <property name="basePath" value="${catalina.home}/logs/portal"/>
     <property name="archivePath" value="${basePath}/archive"/>
     <property name="extension" value=".log"/>
     <property name="errorsFileName" value="errors"/>
@@ -170,4 +170,4 @@
     <!-- Excludes -->
     <logger name="org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor" level="OFF"/>
 
-</configuration>
+</included>
