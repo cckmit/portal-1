@@ -12,7 +12,7 @@ export interface DeliveryDetailAtSpecification {
   id: DeliveryDetailAtSpecificationId
   specificationId: DeliverySpecificationId
   detailId: DeliveryDetailId
-  modified: Date | undefined // Дата изменения поля
+  dateModified: Date | undefined // Дата изменения поля
   note: string | undefined // Примечание
   partReference: string | undefined
   modifications: Array<DeliveryDetailAtSpecificationModification>
@@ -24,7 +24,7 @@ export const DeliveryDetailAtSpecificationSchema = makeJsonSchema<DeliveryDetail
     id: { type: "number" },
     specificationId: { type: "number" },
     detailId: { type: "number" },
-    modified: { type: "object", format: "date-time", required: [], nullable: true },
+    dateModified: { type: "object", format: "date-time", required: [], nullable: true },
     note: { type: "string", nullable: true },
     partReference: { type: "string", nullable: true },
     modifications: { type: "array", items: DeliveryDetailAtSpecificationModificationSchema },

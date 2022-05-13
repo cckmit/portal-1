@@ -25,3 +25,6 @@ export const isNotUndefined = <I>(i: I | undefined): i is I => i !== undefined
 export const isNotNull = <I>(i: I | null | undefined): i is I => i !== null && i !== undefined
 
 export const isNotNaN = <I extends number>(i: I | null | undefined): i is I => i !== null && i !== undefined && !isNaN(i)
+
+export const distinct = <T>(value: T, index: number, array: Array<T>): boolean =>
+  array.indexOf(value) === index

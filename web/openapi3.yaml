@@ -130,6 +130,8 @@ components:
         detailId:
           type: number
           description: Или detail или detailId
+        dateModified:
+          type: string
         note:
           type: string
         partReference:

@@ -1,9 +1,21 @@
+import { useCallback } from "react"
 import { observer } from "mobx-react-lite"
 import { Input, InputFile } from "@protei-portal/common"
 import { useLang } from "@protei-portal/common-lang"
+import { useIoCBinding } from "../../../../ioc"
+import { SpecificationsImportService, SpecificationsImportService$type } from "../../../../service"
 
 export const ImportContentComponent = observer(function ImportContentComponent() {
   const lang = useLang()
+  const specificationsImportService = useIoCBinding<SpecificationsImportService>(SpecificationsImportService$type)
+
+  const onFiles = useCallback((files: Array<File>) => {
+    const file = files[0]
+    if (file === undefined) {
+      return
+    }
+    specificationsImportService.importFileXLSX(file)
+  }, [ specificationsImportService ])
 
   return (
     <div className="card-body no-padding">
@@ -20,11 +32,12 @@ export const ImportContentComponent = observer(function ImportContentComponent()
               <div className="form-group col-12 col-md-6">
                 <label>Файл спецификации</label>
                 <div>
-                  {/*<InputFile>
+                  <InputFile onFiles={onFiles}
+                             accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
                     <i className="far fa-file-excel"/>
                     &nbsp;
-                    <span className="bold">Выбрать EXCEL файл</span>
-                  </InputFile>*/}
+                    <span className="bold">Выбрать XLSX файл</span>
+                  </InputFile>
                 </div>
               </div>
             </div>
