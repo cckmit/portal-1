@@ -398,7 +398,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("contractNumber", contract.getNumber());
         templateModel.put("contractDateType", contractDate.getType());
         templateModel.put("contractDateDate", contractDate.getDate());
-        templateModel.put("contractDateComment", escapeTextAndReplaceLineBreaks(contractDate.getComment()));
+        templateModel.put("contractDateComment", HtmlUtils.htmlEscape(replaceLineBreaks(contractDate.getComment())));
         templateModel.put("contractDateCommentExists", StringUtils.isNotBlank(contractDate.getComment()));
         templateModel.put("linkToContract", String.format(urlTemplate, contract.getId()));
         templateModel.put("recipients", recipients);
@@ -449,7 +449,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("contractDateSigning", contract.getDateSigning());
         templateModel.put("contractOrganization", contract.getOrganizationName());
         templateModel.put("contractContractor", contract.getContractor() != null? contract.getContractor().getName() : null);
-        templateModel.put("contractDescription", escapeTextAndReplaceLineBreaks(contract.getDescription()));
+        templateModel.put("contractDescription", HtmlUtils.htmlEscape(replaceLineBreaks(contract.getDescription())));
         templateModel.put("contractDeliveryNumber", contract.getDeliveryNumber());
         templateModel.put("contractFileLocation", contract.getFileLocation());
         templateModel.put("linkToContract", String.format(urlTemplate, contract.getId()));
@@ -1296,15 +1296,6 @@ public class TemplateServiceImpl implements TemplateService {
         }
 
         return comment;
-    }
-
-    private String escapeTextAndReplaceLineBreaks(String text) {
-        if (text == null) {
-            return null;
-        }
-        text = HTMLHelper.htmlEscape( text );
-        text = replaceLineBreaks( text );
-        return text;
     }
 
     private String replaceLineBreaks(String text) {

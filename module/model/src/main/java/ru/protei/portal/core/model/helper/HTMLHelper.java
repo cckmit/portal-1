@@ -20,22 +20,4 @@ public class HTMLHelper {
     public static String wrapDiv(String content) {
         return wrap("div", content);
     }
-
-    public static String htmlEscape(String s) {
-        return replaceHtmlEscapeChars(s);
-    }
-
-    static private String replaceHtmlEscapeChars(String s){
-        for (Map.Entry<String, String> entry: htmlEscapeChars.entrySet()) {
-            if (s.contains(entry.getKey())) s = s.replaceAll(entry.getKey(), entry.getValue());
-        }
-        return s;
-    }
-    static private Map<String, String> htmlEscapeChars = new HashMap<>();
-    static {
-        htmlEscapeChars.put("&", "&amp;");
-        htmlEscapeChars.put("<", "&lt;");
-        htmlEscapeChars.put("\"", "&quot;");
-        htmlEscapeChars.put("'", "&#39;");
-    }
 }
