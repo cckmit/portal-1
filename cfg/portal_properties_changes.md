@@ -22,7 +22,7 @@ sn.login=
 sn.password=
 
 ## Номер отправителя для звонка дежурному, default: 5488
-sn.from_number=
+sn.from_number=5488
 
 ## Идентификатор голосовой подсказки, default: null
 sn.prompt_id=
