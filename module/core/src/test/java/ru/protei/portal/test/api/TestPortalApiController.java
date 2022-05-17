@@ -24,9 +24,9 @@ import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
 import ru.protei.portal.core.controller.api.PortalApiController;
 import ru.protei.portal.core.model.api.ApiAbsence;
+import ru.protei.portal.core.model.api.ApiDocument;
 import ru.protei.portal.core.model.api.ApiProject;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.api.ApiDocument;
 import ru.protei.portal.core.model.dto.CaseTagInfo;
 import ru.protei.portal.core.model.dto.DevUnitInfo;
 import ru.protei.portal.core.model.dto.Project;
@@ -46,10 +46,7 @@ import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.embeddeddb.EmbeddedDB;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.portal.test.service.BaseServiceTest;
-import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
 import ru.protei.winter.core.CoreConfigurationContext;
-import ru.protei.winter.http.HttpConfigurationContext;
-import ru.protei.winter.http.client.factory.HttpClientFactory;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.annotation.PostConstruct;
@@ -73,8 +70,7 @@ import static ru.protei.portal.core.model.util.CrmConstants.State.UNKNOWN;
 @RunWith(SpringJUnit4ClassRunner.class)
 @EnableTransactionManagement
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class,
-        DatabaseConfiguration.class, IntegrationTestsConfiguration.class, PortalApiController.class,
-        RemoteServiceFactory.class, HttpClientFactory.class, HttpConfigurationContext.class})
+        DatabaseConfiguration.class, IntegrationTestsConfiguration.class, PortalApiController.class})
 @WebAppConfiguration
 public class TestPortalApiController extends BaseServiceTest {
     @Autowired

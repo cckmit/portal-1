@@ -14,7 +14,10 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dict.En_CustomerType;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.YoutrackWorkQuery;
@@ -29,10 +32,7 @@ import ru.protei.portal.core.model.youtrack.dto.project.YtProject;
 import ru.protei.portal.core.model.youtrack.dto.user.YtUser;
 import ru.protei.portal.core.report.ytwork.ReportYoutrackWork;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
-import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
 import ru.protei.winter.core.CoreConfigurationContext;
-import ru.protei.winter.http.HttpConfigurationContext;
-import ru.protei.winter.http.client.factory.HttpClientFactory;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.io.ByteArrayOutputStream;
@@ -47,8 +47,7 @@ import static ru.protei.portal.core.model.util.CrmConstants.Time.MINUTE;
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
         JdbcConfigurationContext.class,
         DatabaseConfiguration.class, IntegrationTestsConfiguration.class,
-        ReportYoutrackWorkTest.ReportYoutrackWorkTestConfiguration.class,
-        RemoteServiceFactory.class, HttpClientFactory.class, HttpConfigurationContext.class})
+        ReportYoutrackWorkTest.ReportYoutrackWorkTestConfiguration.class})
 @Transactional
 public class ReportYoutrackWorkTest extends BaseServiceTest {
 

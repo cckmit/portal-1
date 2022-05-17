@@ -15,9 +15,6 @@ import ru.protei.portal.config.ServiceTestsConfiguration;
 import ru.protei.portal.config.TestEventConfiguration;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.service.SmokeyService;
-import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
-import ru.protei.winter.http.HttpConfigurationContext;
-import ru.protei.winter.http.client.factory.HttpClientFactory;
 
 /**
  * Created by Mike on 06.11.2016.
@@ -28,8 +25,7 @@ import ru.protei.winter.http.client.factory.HttpClientFactory;
         ServiceTestsConfiguration.class,
         DaoMockTestConfiguration.class,
         ServiceInterceptorTest.ContextConfiguration.class,
-        TestEventConfiguration.class,
-        RemoteServiceFactory.class, HttpClientFactory.class, HttpConfigurationContext.class
+        TestEventConfiguration.class
 })
 public class ServiceInterceptorTest {
 

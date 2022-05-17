@@ -16,10 +16,7 @@ import ru.protei.portal.core.model.query.DutyLogQuery;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.report.dutylog.ReportDutyLog;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
-import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
 import ru.protei.winter.core.CoreConfigurationContext;
-import ru.protei.winter.http.HttpConfigurationContext;
-import ru.protei.winter.http.client.factory.HttpClientFactory;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.io.ByteArrayOutputStream;
@@ -29,8 +26,8 @@ import java.util.Date;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
         JdbcConfigurationContext.class,
-        DatabaseConfiguration.class, IntegrationTestsConfiguration.class,
-        RemoteServiceFactory.class, HttpClientFactory.class, HttpConfigurationContext.class})
+        DatabaseConfiguration.class, IntegrationTestsConfiguration.class
+})
 @Transactional
 public class ReportDutyLogTest extends BaseServiceTest {
 
