@@ -1,6 +1,7 @@
 import { SpecificationXLSXColumnType } from "./SpecificationXLSXColumnType"
 
 export interface SpecificationXLSXRowDetail {
+  addressRow: string
   [SpecificationXLSXColumnType.article]: {
     value: string | undefined
   }

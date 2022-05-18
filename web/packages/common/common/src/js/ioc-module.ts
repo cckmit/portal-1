@@ -4,12 +4,18 @@ import { CommonModule, commonModule, CommonModule$type } from "../jsmodule"
 import { authStore, AuthStore, AuthStore$type } from "./store"
 import { AuthService, AuthService$type, AuthServiceImpl } from "./service"
 import {
+  CompanyTransport,
+  CompanyTransport$type,
+  CompanyTransportImpl,
   DeliverySpecificationTransport,
   DeliverySpecificationTransport$type,
   DeliverySpecificationTransportImpl,
   HttpTransport,
   HttpTransport$type,
   HttpTransportImpl,
+  PersonTransport,
+  PersonTransport$type,
+  PersonTransportImpl,
   PortalApiRequestIdProvider,
   PortalApiRequestIdProvider$type,
   PortalApiRequestIdProviderImpl,
@@ -30,4 +36,6 @@ export const iocCommon = new ContainerModule((bind) => {
   bind<PortalApiTransport>(PortalApiTransport$type).to(PortalApiTransportImpl).inSingletonScope()
   bind<PortalApiRequestIdProvider>(PortalApiRequestIdProvider$type).to(PortalApiRequestIdProviderImpl).inSingletonScope()
   bind<DeliverySpecificationTransport>(DeliverySpecificationTransport$type).to(DeliverySpecificationTransportImpl).inSingletonScope()
+  bind<PersonTransport>(PersonTransport$type).to(PersonTransportImpl).inSingletonScope()
+  bind<CompanyTransport>(CompanyTransport$type).to(CompanyTransportImpl).inSingletonScope()
 })
