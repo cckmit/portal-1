@@ -178,7 +178,7 @@ public class PersonAbsence extends AuditableObject implements Serializable {
     }
 
     public boolean isScheduledAbsence() {
-        return CollectionUtils.isEmpty(scheduleItems);
+        return CollectionUtils.isNotEmpty(scheduleItems);
     }
 
     @Override

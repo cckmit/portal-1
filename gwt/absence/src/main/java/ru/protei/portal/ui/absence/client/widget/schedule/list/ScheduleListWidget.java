@@ -4,27 +4,21 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dto.Time;
-import ru.protei.portal.core.model.dto.TimeInterval;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.dto.ScheduleItem;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.ScheduleValidator;
-import ru.protei.portal.ui.absence.client.util.ScheduleFormatter;
+import ru.protei.portal.ui.absence.client.util.ScheduleFormatterClient;
 import ru.protei.portal.ui.absence.client.widget.schedule.item.ScheduleItemWidget;
-import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ScheduleListWidget
         extends Composite
@@ -73,8 +67,8 @@ public class ScheduleListWidget
 
     private void fillItem(ScheduleItem value) {
         ScheduleItemWidget itemWidget = new ScheduleItemWidget();
-        itemWidget.setDays(ScheduleFormatter.getDays(value));
-        itemWidget.setTimes(ScheduleFormatter.getTimeRanges(value));
+        itemWidget.setDays(ScheduleFormatterClient.getDays(value));
+        itemWidget.setTimes(ScheduleFormatterClient.getTimeRanges(value));
         itemWidget.addRemoveHandler(handler -> {
             scheduleContainer.remove(itemWidget);
             values.remove(value);

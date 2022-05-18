@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.absence.client.util;
 
 import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dto.ScheduleItem;
 import ru.protei.portal.core.model.dto.Time;
@@ -11,13 +12,11 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ScheduleFormatter {
+public class ScheduleFormatterClient {
     public static String getSchedule(List<ScheduleItem> values) {
-        StringBuilder valueBuilder = new StringBuilder();
-        values.forEach(value -> {
-            valueBuilder.append(lang.absenceScheduleItemDescription(getDays(value), getTimeRanges(value)));
-        });
-        return valueBuilder.toString();
+        return values.stream()
+                .map(value -> lang.absenceScheduleItemDescription(getDays(value), getTimeRanges(value)))
+                .collect(Collectors.joining(", "));
     }
 
     public static String getDays(ScheduleItem value) {
@@ -30,7 +29,7 @@ public class ScheduleFormatter {
     public static String getTimeRanges(ScheduleItem value) {
         return CollectionUtils.emptyIfNull(value.getTimes())
                 .stream()
-                .map(ScheduleFormatter::formatTimePeriod)
+                .map(ScheduleFormatterClient::formatTimePeriod)
                 .collect(Collectors.joining(", "));
     }
 
@@ -44,11 +43,12 @@ public class ScheduleFormatter {
 
     private static String formatTime(Time value) {
         if (value == null) return "";
-        return value.getHour() + ":" + value.getMinute();
+        return timeFormat.format(value.getHour()) + ":" + timeFormat.format(value.getMinute());
     }
 
     @Inject
     static Lang lang;
 
+    private static final NumberFormat timeFormat = NumberFormat.getFormat("00");
     private static final String[] weekdays = LocaleInfo.getCurrentLocale().getDateTimeFormatInfo().weekdaysShortStandalone();
 }

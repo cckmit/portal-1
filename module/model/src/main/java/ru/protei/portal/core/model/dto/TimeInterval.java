@@ -3,7 +3,6 @@ package ru.protei.portal.core.model.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
-import java.time.LocalTime;
 import java.util.Date;
 import java.util.Objects;
 

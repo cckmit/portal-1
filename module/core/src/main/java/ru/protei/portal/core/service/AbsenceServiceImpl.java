@@ -102,7 +102,6 @@ public class AbsenceServiceImpl implements AbsenceService {
                         initiator,
                         null,
                         newState,
-                        null,
                         getAbsenceNotifiers(newState)));
     }
 
@@ -138,7 +137,6 @@ public class AbsenceServiceImpl implements AbsenceService {
                         initiator,
                         oldState,
                         newState,
-                        null,
                         getAbsenceNotifiers(newState)));
     }
 
@@ -168,7 +166,6 @@ public class AbsenceServiceImpl implements AbsenceService {
                 initiator,
                 null,
                 storedAbsence,
-                null,
                 getAbsenceNotifiers(storedAbsence)));
     }
 
@@ -206,7 +203,6 @@ public class AbsenceServiceImpl implements AbsenceService {
                         initiator,
                         oldState,
                         newState,
-                        null,
                         getAbsenceNotifiers(newState)));
     }
 

@@ -11,11 +11,11 @@
              xmlns:list="urn:import:ru.protei.portal.ui.absence.client.widget.schedule.list">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="m-t-20">
+    <g:HTMLPanel styleName="m-t-20 m-b-20">
         <loading:IndeterminateCircleLoading ui:field="loading" visible="false"
-                                            styleName="p-l-20 p-r-20"/>
+                                            styleName="m-l-10 m-r-10"/>
         <g:HTMLPanel ui:field="content" visible="false">
-            <div class="p-l-20 p-r-20 row">
+            <div class="m-l-10 m-r-10">
                 <div class="form-group col-md-12">
                     <label ui:field="absenceReasonLabel"><ui:text from="{lang.absenceReason}"/></label>
                     <absencereason:AbsenceReasonButtonSelector ui:field="reason" defaultValue="{lang.selectAbsenceReason}" validation="true"/>
@@ -35,7 +35,7 @@
                 </div>
             </div>
 
-            <g:HTMLPanel ui:field="scheduleContainer" styleName="padding-20">
+            <g:HTMLPanel ui:field="scheduleContainer" styleName="m-l-20 m-r-20">
                 <h5 class="bold">
                     <ui:text from="{lang.absenceSchedules}"/>
                     <g:Button ui:field="createSchedule" styleName="btn btn-complete pull-right" text="{lang.buttonAdd}"/>
@@ -46,7 +46,7 @@
 
             <create:ScheduleCreateWidget ui:field="scheduleCreateWidget" visible="false"/>
 
-            <div class="padding-20 row">
+            <div class="m-l-10 m-r-10 m-t-20">
                 <div class="col-md-12">
                     <label ui:field="absenceCommentLabel"><ui:text from="{lang.absenceComment}"/></label>
                     <autoresizetextarea:AutoResizeTextArea ui:field="comment"

@@ -2,10 +2,10 @@ package ru.protei.portal.core.service.template;
 
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.*;
-import net.sf.cglib.core.Local;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.HtmlUtils;
+import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.En_ExpiringProjectTSVPeriod;
@@ -27,6 +27,7 @@ import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.LangUtil;
 import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
+import ru.protei.portal.util.ScheduleFormatter;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -824,13 +825,16 @@ public class TemplateServiceImpl implements TemplateService {
 
     @Override
     public PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action,
-                                                       Collection<String> recipients, EnumLangUtil enumLangUtil) {
+                                                       Collection<String> recipients, Lang lang) {
+        EnumLangUtil enumLangUtil = new EnumLangUtil(lang);
+        ScheduleFormatter scheduleFormatter = new ScheduleFormatter(lang);
+
         PersonAbsence oldState = event.getOldState();
         PersonAbsence newState = event.getNewState();
-        List<PersonAbsence> multiAddAbsenceList = event.getMultiAddAbsenceList();
 
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("EnumLangUtil", enumLangUtil);
+        templateModel.put("ScheduleFormatter", scheduleFormatter);
         templateModel.put("is_created", action == EventAction.CREATED);
         templateModel.put("is_updated", action == EventAction.UPDATED);
         templateModel.put("is_removed", action == EventAction.REMOVED);
@@ -845,7 +849,10 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldTillTime", oldState == null ? null : dateTimeFormat.format(oldState.getTillTime()));
         templateModel.put("tillTime", dateTimeFormat.format(newState.getTillTime()));
 
-        templateModel.put("multiAddAbsenceList", multiAddAbsenceList);
+        templateModel.put("scheduleChanged", event.isScheduleChanged());
+        templateModel.put("scheduleDefined", newState.isScheduledAbsence());
+        templateModel.put("scheduleOld", oldState == null ? null : oldState.getScheduleItems());
+        templateModel.put("schedule", newState.getScheduleItems());
 
         templateModel.put("reason", newState.getReason());
 

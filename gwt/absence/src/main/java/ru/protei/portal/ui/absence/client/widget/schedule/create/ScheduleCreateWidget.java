@@ -8,13 +8,11 @@ import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dto.Time;
 import ru.protei.portal.core.model.dto.TimeInterval;
-import ru.protei.portal.core.model.struct.Interval;
 import ru.protei.portal.core.model.util.ScheduleValidator;
 import ru.protei.portal.ui.absence.client.widget.timerange.TimeRange;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.util.DateUtils;
 import ru.protei.portal.ui.common.client.widget.togglebtn.item.ToggleButton;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.LocaleInfo;
@@ -47,24 +45,14 @@ public class ScheduleCreateWidget
 
     @UiHandler("addTimeRangeButton")
     public void onAddTimeRangeButton(ClickEvent event) {
-        TimeRange timeRangeWidget = timeRangeProvider.get();
-        timeRangeWidget.addValueChangeHandler(value -> {
-            En_ResultStatus status = ScheduleValidator.isValidIntervals(getTimeRanges());
-            if (status == En_ResultStatus.OK) {
-                hideError();
-                return;
-            }
-            showError(statusLang.getMessage(status));
-        });
-        timeRangeWidget.setValue(new TimeInterval(new Time(0, 0), new Time(23, 59)));
-        timeRangeContainer.add(timeRangeWidget);
-        timeRangeItems.add(timeRangeWidget);
+        addDefaultTimeRange();
     }
 
     public void resetView() {
         resetDays();
         timeRangeContainer.clear();
         timeRangeItems.clear();
+        addDefaultTimeRange();
         hideError();
     }
 
@@ -111,6 +99,21 @@ public class ScheduleCreateWidget
     @UiHandler("resetButton")
     public void onResetButtonClicked(ClickEvent event) {
         resetView();
+    }
+
+    private void addDefaultTimeRange() {
+        TimeRange timeRangeWidget = timeRangeProvider.get();
+        timeRangeWidget.addValueChangeHandler(value -> {
+            En_ResultStatus status = ScheduleValidator.isValidIntervals(getTimeRanges());
+            if (status == En_ResultStatus.OK) {
+                hideError();
+                return;
+            }
+            showError(statusLang.getMessage(status));
+        });
+        timeRangeWidget.setValue(new TimeInterval(new Time(0, 0), new Time(23, 59)));
+        timeRangeContainer.add(timeRangeWidget);
+        timeRangeItems.add(timeRangeWidget);
     }
 
     private ScheduleItem getValue() {

@@ -8,13 +8,12 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
-import ru.protei.portal.core.model.dto.ScheduleItem;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.absence.client.activity.table.AbstractAbsenceTableActivity;
 import ru.protei.portal.ui.absence.client.activity.table.AbstractAbsenceTableView;
 import ru.protei.portal.ui.absence.client.util.AccessUtil;
-import ru.protei.portal.ui.absence.client.util.ScheduleFormatter;
+import ru.protei.portal.ui.absence.client.util.ScheduleFormatterClient;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -24,7 +23,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class AbsenceTableView extends Composite implements AbstractAbsenceTableView {
 
@@ -121,7 +119,7 @@ public class AbsenceTableView extends Composite implements AbstractAbsenceTableV
                 valueBuilder.append(" ")
                         .append(lang.absenceOnSchedule())
                         .append(": ")
-                        .append(ScheduleFormatter.getSchedule(value.getScheduleItems()));
+                        .append(ScheduleFormatterClient.getSchedule(value.getScheduleItems()));
             }
             cell.setInnerHTML(valueBuilder.toString());
         }
