@@ -1,8 +1,5 @@
 package ru.protei.portal.core.model.helper;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class HTMLHelper {
 
     public static final char CLOSE_START_TAG = '>';
@@ -10,7 +7,7 @@ public class HTMLHelper {
     public static final String OPEN_END_TAG = "</";
     public static final char CLOSE_END_TAG = '>';
 
-    public static String wrap(String tag, String content) {
+    static String wrap(String tag, String content) {
         return new StringBuilder()
                 .append(OPEN_START_TAG).append(tag).append(CLOSE_START_TAG)
                 .append(content)
