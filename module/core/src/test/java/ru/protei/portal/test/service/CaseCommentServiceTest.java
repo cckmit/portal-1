@@ -36,7 +36,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class,
+        DatabaseConfiguration.class, IntegrationTestsConfiguration.class
+})
 public class CaseCommentServiceTest extends BaseServiceTest {
 
     private AuthServiceMock authService;

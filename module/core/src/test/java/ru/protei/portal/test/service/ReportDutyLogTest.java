@@ -26,7 +26,8 @@ import java.util.Date;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
         JdbcConfigurationContext.class,
-        DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
+        DatabaseConfiguration.class, IntegrationTestsConfiguration.class
+})
 @Transactional
 public class ReportDutyLogTest extends BaseServiceTest {
 

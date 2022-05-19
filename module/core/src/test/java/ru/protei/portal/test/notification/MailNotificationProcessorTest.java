@@ -27,7 +27,6 @@ import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.portal.tools.notifications.NotificationConfiguration;
 
 import javax.mail.internet.MimeMessage;
-
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -48,9 +47,8 @@ import static ru.protei.portal.core.model.util.CrmConstants.Time.SEC;
         DaoMockTestConfiguration.class,
         ServiceTestsConfiguration.class,
         TestEventConfiguration.class,
-        NotificationConfiguration.class, TestNotificationConfiguration.class
-        , MailNotificationProcessorTest.LocalConfiguration.class
-
+        NotificationConfiguration.class, TestNotificationConfiguration.class,
+        MailNotificationProcessorTest.LocalConfiguration.class
 })
 public class MailNotificationProcessorTest extends BaseServiceTest {
 

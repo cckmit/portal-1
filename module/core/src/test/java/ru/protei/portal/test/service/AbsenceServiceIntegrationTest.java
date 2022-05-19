@@ -15,7 +15,9 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 import java.util.Date;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
+@ContextConfiguration(classes = {JdbcConfigurationContext.class, DatabaseConfiguration.class,
+        IntegrationTestsConfiguration.class
+})
 public class AbsenceServiceIntegrationTest extends BaseServiceTest {
 
     @Test

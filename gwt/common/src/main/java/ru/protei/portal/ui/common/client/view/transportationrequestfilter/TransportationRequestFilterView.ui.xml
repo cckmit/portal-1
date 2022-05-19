@@ -1,0 +1,19 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:typedrangepicker="urn:import:ru.protei.portal.ui.common.client.widget.typedrangepicker"
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="card-body no-margin filter-content">
+        <div class="row">
+            <typedrangepicker:TypedSelectorRangePicker ui:field="pickupDate" formatValue="dd.MM.yyyy"
+                                                       rangeMandatory="true" typeMandatory="true"
+                                                       header="{lang.transportationRequestPickupDate}"
+                                                       addStyleNames="form-group col-md-6"/>
+        </div>
+        <div ui:field="footer" class="card-footer text-right">
+            <g:Button ui:field="resetBtn" styleName="btn btn-default" text="{lang.buttonReset}"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

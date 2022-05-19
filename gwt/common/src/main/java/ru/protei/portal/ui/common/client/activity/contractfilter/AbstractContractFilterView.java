@@ -47,7 +47,7 @@ public interface AbstractContractFilterView extends IsWidget {
 
     HasValue<Set<CaseState>> states();
 
-    HasValue<ProductDirectionInfo> direction();
+    HasValue<Set<ProductDirectionInfo>> directions();
 
     TakesValue<En_ContractKind> kind();
 

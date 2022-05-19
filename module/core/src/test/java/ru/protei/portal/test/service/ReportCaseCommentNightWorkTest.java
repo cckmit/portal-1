@@ -29,7 +29,8 @@ import static ru.protei.portal.core.model.util.CrmConstants.Time.MINUTE;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
         JdbcConfigurationContext.class,
-        DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
+        DatabaseConfiguration.class, IntegrationTestsConfiguration.class
+})
 @Transactional
 public class ReportCaseCommentNightWorkTest extends BaseServiceTest {
     @Test

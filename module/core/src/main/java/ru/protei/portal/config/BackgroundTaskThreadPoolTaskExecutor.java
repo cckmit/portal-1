@@ -3,8 +3,6 @@ package ru.protei.portal.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.ContextClosedEvent;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -21,12 +19,13 @@ class BackgroundTaskThreadPoolTaskExecutor extends ThreadPoolTaskExecutor {
      * @param maxDbConnectionPoolSize - взять из winter.properties
      */
     public BackgroundTaskThreadPoolTaskExecutor( int maxDbConnectionPoolSize ) {
-        this.corePollSize = 1 + maxDbConnectionPoolSize/10; //занимать только часть соединений к базе, не меннее одного;
+        int corePollSize = 1 + maxDbConnectionPoolSize/10; //занимать только часть соединений к базе, не меннее одного;
 
         setCorePoolSize(corePollSize);// основное количество обрабатывающих потоков (Должен быть меньше максимально пула соединений к базе данных, например =1/8)
         int maxPoolSize = 2 * corePollSize;
         setMaxPoolSize( maxPoolSize ); //при превышении очереди добавить потоки, но не более MaxPoolSize (Должен быть больше CorePoolSize, например =2*CorePoolSize)
-        setQueueCapacity( 2 * maxPoolSize + corePollSize); // при превышении очереди и превышении MaxPoolSize задача отбрасывается или определяется политикой RejectedExecutionHandler!
+        this.queueCapacity =  2 * maxPoolSize + corePollSize;
+        setQueueCapacity(queueCapacity); // при превышении очереди и превышении MaxPoolSize задача отбрасывается или определяется политикой RejectedExecutionHandler!
         setKeepAliveSeconds(2); //удалять поток если больше CorePoolSize и не переиспользован в течении этого времени (не сразу удалять поток, а погодя )
         setAllowCoreThreadTimeOut(false); //удалять в том числе потоки из CorePoolSize согласно setKeepAliveSeconds  (экономит память снижая производительность, актуально при большом(десятки-сотни) числе потоков)
         setRejectedExecutionHandler( new ThreadPoolExecutor.CallerRunsPolicy() ); //при переполнении очереди и превышении MaxPoolSize выполнять задачу на вызывающем потоке
@@ -46,8 +45,8 @@ class BackgroundTaskThreadPoolTaskExecutor extends ThreadPoolTaskExecutor {
         int queueSize = threadPoolExecutor.getQueue().size();
         int activeCount = getActiveCount();
         log.debug( "background-tasks-thread-pool: activeThreads={} queueSize={}", activeCount, queueSize );
-        if(activeCount > corePollSize ){
-            log.warn( "background-tasks-thread-pool(): Queue is overflowed! Try to increase QueueCapacity. activeThreads={} queueSize={}", activeCount, queueSize );
+        if(queueSize >= queueCapacity - 1 ){
+            log.warn( "background-tasks-thread-pool(): Queue is overflowed! Try to increase QueueCapacity. activeThreads={} queueSize={} queueCapacity={}", activeCount, queueSize, queueCapacity );
         }
         return threadPoolExecutor;
     }
@@ -58,7 +57,7 @@ class BackgroundTaskThreadPoolTaskExecutor extends ThreadPoolTaskExecutor {
 //        shutdown();
     }
 
-    private int corePollSize;
+    private int queueCapacity;
 
     private static final Logger log = LoggerFactory.getLogger( BackgroundTaskThreadPoolTaskExecutor.class );
 }

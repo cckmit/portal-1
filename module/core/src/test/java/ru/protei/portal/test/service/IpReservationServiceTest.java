@@ -20,7 +20,9 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 import java.util.Date;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class,
+        DatabaseConfiguration.class, IntegrationTestsConfiguration.class
+})
 public class IpReservationServiceTest extends BaseServiceTest {
 
     @Test

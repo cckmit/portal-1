@@ -20,7 +20,9 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
+@ContextConfiguration(classes = {JdbcConfigurationContext.class, DatabaseConfiguration.class,
+        IntegrationTestsConfiguration.class
+})
 public class WorkerEntryServiceTest extends BaseServiceTest {
 
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");

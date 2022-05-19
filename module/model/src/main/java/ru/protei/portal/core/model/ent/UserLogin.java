@@ -255,4 +255,8 @@ public class UserLogin extends AuditableObject {
                 ", ipMaskAllow=" + ipMaskAllow +
                 '}';
     }
+
+    public interface Fields {
+        String ROLES = "roles";
+    }
 }

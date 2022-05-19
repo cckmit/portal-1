@@ -19,6 +19,7 @@ import ru.protei.portal.core.service.autoopencase.AutoOpenCaseService;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.core.service.syncronization.EmployeeRegistrationYoutrackSynchronizer;
+import ru.protei.portal.core.sn.SystemNotificationService;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -45,6 +46,7 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
          */
         bootstrapService.bootstrapApplication();
         documentService.documentBuildFullIndex();
+        snService.fillCommonManagerMapping();
 
         /**
          * Scheduled tasks
@@ -252,6 +254,8 @@ public class PortalScheduleTasksImpl implements PortalScheduleTasks {
     WorkerEntryService workerEntryService;
     @Autowired
     AutoCloseCaseService autoCloseCaseService;
+    @Autowired
+    SystemNotificationService snService;
 
     private static AtomicBoolean isPortalStarted = new AtomicBoolean(false);
     private static AtomicInteger contextRefreshedEventCounter = new AtomicInteger(0);

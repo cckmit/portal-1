@@ -61,12 +61,12 @@ public class AutoOpenCaseServiceTaskHandlerImpl implements AutoOpenCaseTaskHandl
 
         CommonManager commonManager = commonManagerDAO.getByProductAndCompany(caseMeta.getProductId(), caseMeta.getInitiatorCompany().getId());
         if (commonManager == null) {
-            log.error("No set common manager for company id = {}, product id = {}, case id = {}", caseMeta.getProduct(), caseMeta.getInitiatorCompanyId(), caseId);
+            log.error("No set common manager for case id = {},  company id = {}, product id = {},", caseId, caseMeta.getInitiatorCompanyId(), caseMeta.getProduct().getId());
             commonManager = commonManagerDAO.getByProductAndCompany(null, caseMeta.getInitiatorCompany().getId());
         }
         
         if (commonManager == null) {
-            log.error("No set common manager for company id = {}, case id = {}", caseMeta.getInitiatorCompanyId(), caseId);
+            log.error("No set common manager for case id = {} company id = {}, ", caseId, caseMeta.getInitiatorCompanyId());
             commonManager = commonManagerDAO.getByProductAndCompany(caseMeta.getProductId(), null);
         }
 
@@ -92,7 +92,7 @@ public class AutoOpenCaseServiceTaskHandlerImpl implements AutoOpenCaseTaskHandl
             token.setIp("0.0.0.0");
         }
         token.setUserLoginId(0L);
-        token.setPersonId(commonManager.getId());
+        token.setPersonId(commonManager.getManagerId());
         token.setPersonDisplayShortName(commonManager.getManagerName());
         token.setCompanyId(commonManager.getCompanyId());
         token.setCompanyAndChildIds(null);

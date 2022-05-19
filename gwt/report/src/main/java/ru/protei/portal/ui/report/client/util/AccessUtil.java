@@ -24,6 +24,7 @@ public class AccessUtil {
         put(En_ReportType.CONTRACT, new Pair<>(En_Privilege.CONTRACT_REPORT, listOf(En_Scope.SYSTEM)));
         put(En_ReportType.NIGHT_WORK, new Pair<>(En_Privilege.ISSUE_REPORT, listOf(En_Scope.SYSTEM)));
         put(En_ReportType.YT_WORK, new Pair<>(En_Privilege.YT_REPORT, listOf(En_Scope.SYSTEM)));
+        put(En_ReportType.TRANSPORTATION_REQUEST, new Pair<>(En_Privilege.TRANSPORTATION_REQUEST_REPORT, listOf(En_Scope.SYSTEM)));
     }};
 
     public static boolean canView(PolicyService policyService) {

@@ -246,6 +246,34 @@ crm.ip_reservation.recipients=sysadmin@protei.ru
 ## default: ""
 crm.birthdays.recipients=bbs@protei.ru
 
+#### SN Настройки системы оповещения для звонка дежурному инженеру тех. поддержки
+
+## Активация оповещения, default: false
+sn.enabled=true
+
+## Список идентификаторов общих менеджеров через запятую
+sn.managers.id_list=
+
+## Логин, пароль для авторизации в SN
+sn.login=
+sn.password=
+
+## Номер отправителя для звонка дежурному, default: 5488
+#sn.from_number=7788
+
+## Идентификатор голосовой подсказки, default: null
+#sn.prompt_id=1500000000
+
+## Интервал в мс на протяжении которого действует расписание дозвона от времени старта списка, default: 3600000
+#sn.schedule.interval=1800000
+
+## Максимальное количество попыток дозвона схемы доставки, default: 3
+#sn.schema.max_tries=4
+
+## Список временных интервалов схемы доставки, default: 5,10
+## Указывается в виде 4,6,8 - сделать 4 попытки дозвона с интервалами в 4, 6 и 8 секунд между ними
+#sn.schema.interval_list=4,6,8
+
 #### Cloud Настройки облачного хранилища
 
 ## обязательный
@@ -423,6 +451,9 @@ youtrack.employee_registration.support_project=userSupport
 
 ## название YouTrack проекта для создания задач по открытию доступа к телефонной связи
 youtrack.employee_registration.phone_project=Office_Tel
+
+## название YouTrack проекта для создания задач при увольнении сотрудника
+youtrack.employee_fired.project=ACRM
 
 ## required, id какой-либо записи из таблицы person в БД. Этот id будет указан в качестве создателя генерируемых комментариев, аттачментов и изменений статусов
 youtrack.user_id_for_synchronization=710

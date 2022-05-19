@@ -130,4 +130,7 @@
   <include file="2022-03-24-create-common_manager-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-03-30-modify-data-type-history-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-04-18-create-delivery-specification-tables.xml" relativeToChangelogFile="true"/>
+  <include file="2022-04-29-add-time-elapsed-groups-column-to-report-table.xml" relativeToChangelogFile="true"/>
+  <include file="2022-04-29-create-common-manager-to-notify-list-table.xml" relativeToChangelogFile="true"/>
+  <include file="2022-05-06-add-with_data_summarize-to-report-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

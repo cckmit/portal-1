@@ -17,9 +17,7 @@ import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.ent.ServerGroup;
 import ru.protei.portal.core.service.SiteFolderService;
-import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
-import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 

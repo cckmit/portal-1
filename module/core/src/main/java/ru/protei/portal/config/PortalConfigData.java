@@ -45,6 +45,7 @@ public class PortalConfigData {
     private final NRPEConfig nrpeConfig;
     private final AutoOpenConfig autoOpenConfig;
     private final AutoCloseDeadlineConfig autoCloseDeadlineConfig;
+    private final SnConfig snConfig;
 
 
     private final String loginSuffixConfig;
@@ -75,6 +76,7 @@ public class PortalConfigData {
         nrpeConfig = new NRPEConfig(wrapper);
         autoOpenConfig = new AutoOpenConfig(wrapper);
         autoCloseDeadlineConfig = new AutoCloseDeadlineConfig(wrapper);
+        snConfig = new SnConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
@@ -171,6 +173,10 @@ public class PortalConfigData {
 
     public AutoCloseDeadlineConfig getDeadlineConfig() {
         return autoCloseDeadlineConfig;
+    }
+
+    public SnConfig getSnConfig() {
+        return snConfig;
     }
 
     public boolean isTaskSchedulerEnabled() {
@@ -478,6 +484,73 @@ public class PortalConfigData {
         }
     }
 
+    public static class SnConfig {
+        private final boolean notificationEnabled;
+        private final String[] commonManagersIds;
+        private final String login;
+        private final String password;
+        private final String fromNumber;
+        private final Long promptId;
+        private final int scheduleInterval;
+        private final int schemaMaxTries;
+        private final String[] schemaIntervalList;
+        private final String schemaTimeUnit;
+
+
+        public SnConfig(PropertiesWrapper properties) throws ConfigException{
+            notificationEnabled = properties.getProperty("sn.enabled", Boolean.class, false);
+            commonManagersIds = properties.getProperty("sn.managers.id_list", "").split(",");
+            login = properties.getProperty("sn.login");
+            password = properties.getProperty("sn.password");
+            fromNumber = properties.getProperty("sn.from_number", "5488");
+            promptId = properties.getProperty("sn.prompt_id", Long.class, null);
+            scheduleInterval = properties.getProperty("sn.schedule.interval", Integer.class, 3600000);
+            schemaMaxTries = properties.getProperty("sn.schema.max_tries", Integer.class, 3);
+            schemaIntervalList = properties.getProperty("sn.schema.interval_list", "5,10").split(",");
+            schemaTimeUnit = properties.getProperty( "sn.schema.time_unit", "seconds");
+        }
+
+        public String[] getCommonManagersIds() {
+            return commonManagersIds;
+        }
+
+        public boolean isNotificationEnabled() {
+            return notificationEnabled;
+        }
+
+        public String getLogin() {
+            return login;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public String getFromNumber() {
+            return fromNumber;
+        }
+
+        public Long getPromptId() {
+            return promptId;
+        }
+
+        public int getScheduleInterval() {
+            return scheduleInterval;
+        }
+
+        public int getSchemaMaxTries() {
+            return schemaMaxTries;
+        }
+
+        public String[] getSchemaIntervalList() {
+            return schemaIntervalList;
+        }
+
+        public String getSchemaTimeUnit() {
+            return schemaTimeUnit;
+        }
+    }
+
     public static class EventAssemblyConfig {
         private final long waitingPeriod;
 
@@ -771,6 +844,7 @@ public class PortalConfigData {
         private final String equipmentProject;
         private final String supportProject;
         private final String phoneProject;
+        private final String employeeFiredProject;
         private final Long youtrackUserId;
         private final String youtrackCustomFieldCompanyId;
 
@@ -782,6 +856,7 @@ public class PortalConfigData {
             equipmentProject = properties.getProperty("youtrack.employee_registration.equipment_project");
             supportProject = properties.getProperty("youtrack.employee_registration.support_project");
             phoneProject = properties.getProperty("youtrack.employee_registration.phone_project");
+            employeeFiredProject = properties.getProperty("youtrack.employee_fired.project");
             youtrackUserId = properties.getProperty("youtrack.user_id_for_synchronization", Long.class);
             youtrackCustomFieldCompanyId = properties.getProperty("youtrack.custom_field_company_id");
         }
@@ -808,6 +883,10 @@ public class PortalConfigData {
 
         public String getSupportProject() {
             return supportProject;
+        }
+
+        public String getEmployeeFiredProject() {
+            return employeeFiredProject;
         }
 
         public String getPhoneProject() {

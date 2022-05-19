@@ -8,7 +8,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dict.En_CustomerType;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
@@ -32,7 +35,8 @@ import static ru.protei.portal.core.model.util.CrmConstants.State.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
         JdbcConfigurationContext.class, DatabaseConfiguration.class,
-        IntegrationTestsConfiguration.class})
+        IntegrationTestsConfiguration.class
+})
 @Transactional
 public class ReportProjectTest extends BaseServiceTest {
 

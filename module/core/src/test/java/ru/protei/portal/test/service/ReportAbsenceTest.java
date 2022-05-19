@@ -21,13 +21,13 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
         JdbcConfigurationContext.class,
-        DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
+        DatabaseConfiguration.class, IntegrationTestsConfiguration.class
+})
 @Transactional
 public class ReportAbsenceTest extends BaseServiceTest {
 

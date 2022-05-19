@@ -14,7 +14,10 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.youtrack.api.YoutrackApi;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dict.En_CustomerType;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.YoutrackWorkQuery;
@@ -114,7 +117,7 @@ public class ReportYoutrackWorkTest extends BaseServiceTest {
         YtEnumBundleElement ytCustomer = new YtEnumBundleElement();
         ytCustomer.localizedName = customerCompany.getCname();
         YtSingleEnumIssueCustomField field = new YtSingleEnumIssueCustomField();
-        field.name = YtIssue.CustomFieldNames.cumstomer;
+        field.name = YtIssue.CustomFieldNames.customer;
         field.value = ytCustomer;
 
         YtIssue ytIssue = new YtIssue();

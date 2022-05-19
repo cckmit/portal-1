@@ -28,7 +28,9 @@ import javax.annotation.PostConstruct;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, IntegrationTestsConfiguration.class})
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class,
+        DatabaseConfiguration.class, IntegrationTestsConfiguration.class
+})
 public class HistoryServiceTest extends BaseServiceTest {
 
     private AuthServiceMock authService;

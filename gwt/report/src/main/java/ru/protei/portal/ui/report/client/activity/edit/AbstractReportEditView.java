@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_ReportAdditionalParamType;
 import ru.protei.portal.core.model.dict.En_ReportScheduledType;
 import ru.protei.portal.core.model.dict.En_ReportType;
+import ru.protei.portal.core.model.dict.En_TimeElapsedGroup;
 
 import java.util.List;
 import java.util.Set;
@@ -18,6 +19,8 @@ public interface AbstractReportEditView extends IsWidget {
 
     HasValue<En_ReportScheduledType> reportScheduledType();
 
+    HasValue<Boolean> withDataSummarize();
+
     HasValue<String> name();
 
     void fillReportTypes(List<En_ReportType> options);
@@ -31,4 +34,10 @@ public interface AbstractReportEditView extends IsWidget {
     HasVisibility additionalParamsVisibility();
 
     HasValue<Set<En_ReportAdditionalParamType>> additionalParams();
+
+    HasVisibility timeElapsedGroupVisibility();
+
+    HasValue<Set<En_TimeElapsedGroup>> timeElapsedGroup();
+
+    HasVisibility withDataSummarizeVisibility();
 }
