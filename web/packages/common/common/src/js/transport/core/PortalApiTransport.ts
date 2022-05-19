@@ -113,5 +113,5 @@ export class PortalApiTransportImpl implements PortalApiTransport {
   private readonly authStore: AuthStore
   private readonly requestIdProvider: PortalApiRequestIdProvider
   private readonly transport: HttpTransport
-  private readonly BASE_URL = "/api/v1"
+  private readonly BASE_URL = "Portal/springApi/jsonApi"
 }
