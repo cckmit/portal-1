@@ -179,30 +179,18 @@ public class ExcelReportWriter implements
                 .add("ir_caseno").add("ir_private").add("ir_name")
                 .add("ir_company").add("ir_product").add("ir_performer").add("ir_manager")
                 .add("ir_importance").add("ir_state").add("ir_date_created")
-                .addIf(enumLangUtil.timeElapsedTypeLang(En_TimeElapsedType.NONE, lang.getLanguageTag()),
-                        timeElapsedTypes.contains(En_TimeElapsedType.NONE))
-                .addIf(enumLangUtil.timeElapsedTypeLang(En_TimeElapsedType.WATCH, lang.getLanguageTag()),
-                        timeElapsedTypes.contains(En_TimeElapsedType.WATCH))
-                .addIf(enumLangUtil.timeElapsedTypeLang(En_TimeElapsedType.NIGHT_WORK, lang.getLanguageTag()),
-                        timeElapsedTypes.contains(En_TimeElapsedType.NIGHT_WORK))
-                .addIf(enumLangUtil.timeElapsedTypeLang(En_TimeElapsedType.SOFT_INSTALL, lang.getLanguageTag()),
-                        timeElapsedTypes.contains(En_TimeElapsedType.SOFT_INSTALL))
-                .addIf(enumLangUtil.timeElapsedTypeLang(En_TimeElapsedType.SOFT_UPDATE, lang.getLanguageTag()),
-                        timeElapsedTypes.contains(En_TimeElapsedType.SOFT_UPDATE))
-                .addIf(enumLangUtil.timeElapsedTypeLang(En_TimeElapsedType.SOFT_CONFIG, lang.getLanguageTag()),
-                        timeElapsedTypes.contains(En_TimeElapsedType.SOFT_CONFIG))
-                .addIf(enumLangUtil.timeElapsedTypeLang(En_TimeElapsedType.TESTING, lang.getLanguageTag()),
-                        timeElapsedTypes.contains(En_TimeElapsedType.TESTING))
-                .addIf(enumLangUtil.timeElapsedTypeLang(En_TimeElapsedType.CONSULTATION, lang.getLanguageTag()),
-                        timeElapsedTypes.contains(En_TimeElapsedType.CONSULTATION))
-                .addIf(enumLangUtil.timeElapsedTypeLang(En_TimeElapsedType.MEETING, lang.getLanguageTag()),
-                        timeElapsedTypes.contains(En_TimeElapsedType.MEETING))
-                .addIf(enumLangUtil.timeElapsedTypeLang(En_TimeElapsedType.DISCUSSION_OF_IMPROVEMENTS, lang.getLanguageTag()),
-                        timeElapsedTypes.contains(En_TimeElapsedType.DISCUSSION_OF_IMPROVEMENTS))
-                .addIf(enumLangUtil.timeElapsedTypeLang(En_TimeElapsedType.LOG_ANALYSIS, lang.getLanguageTag()),
-                        timeElapsedTypes.contains(En_TimeElapsedType.LOG_ANALYSIS))
-                .addIf(enumLangUtil.timeElapsedTypeLang(En_TimeElapsedType.SOLVE_PROBLEMS, lang.getLanguageTag()),
-                        timeElapsedTypes.contains(En_TimeElapsedType.SOLVE_PROBLEMS))
+                .addIf("ir_work_time_none", timeElapsedTypes.contains(En_TimeElapsedType.NONE))
+                .addIf("ir_work_time_watch", timeElapsedTypes.contains(En_TimeElapsedType.WATCH))
+                .addIf("ir_work_time_night_work", timeElapsedTypes.contains(En_TimeElapsedType.NIGHT_WORK))
+                .addIf("ir_work_time_SoftInstall", timeElapsedTypes.contains(En_TimeElapsedType.SOFT_INSTALL))
+                .addIf("ir_work_time_SoftUpdate", timeElapsedTypes.contains(En_TimeElapsedType.SOFT_UPDATE))
+                .addIf("ir_work_time_SoftConfig", timeElapsedTypes.contains(En_TimeElapsedType.SOFT_CONFIG))
+                .addIf("ir_work_time_Testing", timeElapsedTypes.contains(En_TimeElapsedType.TESTING))
+                .addIf("ir_work_time_Consultation", timeElapsedTypes.contains(En_TimeElapsedType.CONSULTATION))
+                .addIf("ir_work_time_Meeting", timeElapsedTypes.contains(En_TimeElapsedType.MEETING))
+                .addIf("ir_work_time_DiscussionOfImprovements", timeElapsedTypes.contains(En_TimeElapsedType.DISCUSSION_OF_IMPROVEMENTS))
+                .addIf("ir_work_time_LogAnalysis", timeElapsedTypes.contains(En_TimeElapsedType.LOG_ANALYSIS))
+                .addIf("ir_work_time_SolveProblems", timeElapsedTypes.contains(En_TimeElapsedType.SOLVE_PROBLEMS))
                 .add("ir_work_time_all").build();
 
         return columnNames.toArray(new String[]{});
