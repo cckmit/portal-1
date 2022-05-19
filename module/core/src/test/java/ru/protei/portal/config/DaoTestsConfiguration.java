@@ -67,6 +67,11 @@ public class DaoTestsConfiguration {
         return new PcbOrderSqlBuilder();
     }
 
+    @Bean
+    public DeliverySpecificationSqlBuilder deliverySpecificationSqlBuilder() {
+        return new DeliverySpecificationSqlBuilder();
+    }
+
     /* DAO converters */
 
     @Bean

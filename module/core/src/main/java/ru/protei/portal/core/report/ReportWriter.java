@@ -1,7 +1,5 @@
 package ru.protei.portal.core.report;
 
-import ru.protei.portal.core.model.youtrack.dto.issue.YtIssue;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;

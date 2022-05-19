@@ -705,6 +705,36 @@ public class MainConfiguration {
     }
 
     @Bean
+    public DeliverySpecificationDAO getDeliverySpecificationDAO() {
+        return new DeliverySpecificationDAO_Impl();
+    }
+
+    @Bean
+    public DeliveryNestedSpecificationDAO getDeliveryNestedSpecificationDAO() {
+        return new DeliveryNestedSpecificationDAO_Impl();
+    }
+
+    @Bean
+    public DeliverySpecificationModificationDAO getDeliverySpecificationModificationDAO() {
+        return new DeliverySpecificationModificationDAO_Impl();
+    }
+
+    @Bean
+    public DeliveryDetailDAO getDeliveryDetailDAO() {
+        return new DeliveryDetailDAO_Impl();
+    }
+
+    @Bean
+    public DeliveryDetailToSpecificationDAO getDeliveryDetailToSpecificationDAO() {
+        return new DeliveryDetailToSpecificationDAO_Impl();
+    }
+
+    @Bean
+    public DeliveryDetailModificationDAO getDeliveryDetailModificationDAO() {
+        return new DeliveryDetailModificationDAO_Impl();
+    }
+
+    @Bean
     public CardSqlBuilder cardSqlBuilder() {
         return new CardSqlBuilder();
     }
@@ -712,6 +742,11 @@ public class MainConfiguration {
     @Bean
     public CardBatchSqlBuilder cardBatchSqlBuilder() {
         return new CardBatchSqlBuilder();
+    }
+
+    @Bean
+    public DeliverySpecificationSqlBuilder deliverySpecificationSqlBuilder() {
+        return new DeliverySpecificationSqlBuilder();
     }
 
     @Bean
@@ -1355,6 +1390,11 @@ public class MainConfiguration {
     public CaseElapsedTimeApiService getCaseElapsedTimeApiService() {
         return new CaseElapsedTimeApiServiceImpl();
     }
+
+    @Bean
+    public DeliverySpecificationService getDeliverySpecificationService() {
+        return new DeliverySpecificationServiceImpl();
+    }    
 
     /* ASPECT/INTERCEPTORS */
 

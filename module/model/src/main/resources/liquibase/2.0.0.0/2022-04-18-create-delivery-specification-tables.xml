@@ -1,0 +1,207 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create-specification-table" author="porubov">
+        <createTable tableName="specification">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="creator_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(512)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-specification-foreign-key" author="porubov">
+        <addForeignKeyConstraint baseTableName="specification"
+                                 baseColumnNames="creator_id"
+                                 constraintName="specification_creator_id_to_person_fk"
+                                 referencedTableName="person"
+                                 referencedColumnNames="id"
+                                 onUpdate="NO ACTION" onDelete="NO ACTION"/>
+    </changeSet>
+
+    <changeSet id="create-specification_to_specification-table" author="porubov">
+        <createTable tableName="specification_to_specification">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="specification_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="child_specification_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="category" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-specification_to_specification-foreign-key" author="porubov">
+        <addForeignKeyConstraint baseTableName="specification_to_specification"
+                                 baseColumnNames="specification_id"
+                                 constraintName="specification_to_spec_spec_id_to_specification_fk"
+                                 referencedTableName="specification"
+                                 referencedColumnNames="id"
+                                 onUpdate="NO ACTION" onDelete="NO ACTION"/>
+        <addForeignKeyConstraint baseTableName="specification_to_specification"
+                                 baseColumnNames="child_specification_id"
+                                 constraintName="specification_to_spec_child_spec_id_to_specification_fk"
+                                 referencedTableName="specification"
+                                 referencedColumnNames="id"
+                                 onUpdate="NO ACTION" onDelete="NO ACTION"/>
+    </changeSet>
+
+    <changeSet id="create-specification_modification-table" author="porubov">
+        <createTable tableName="specification_modification">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="specification_to_specification_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="number" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="count" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-specification_modification-foreign-key" author="porubov">
+        <addForeignKeyConstraint baseTableName="specification_modification"
+                                 baseColumnNames="specification_to_specification_id"
+                                 constraintName="specification_modification_spec_to_spec_id_fk"
+                                 referencedTableName="specification_to_specification"
+                                 referencedColumnNames="id"
+                                 onUpdate="NO ACTION" onDelete="NO ACTION"/>
+        <addUniqueConstraint constraintName="uq_spec_modification_specification_to_spec_id_number"
+                             tableName="specification_modification" columnNames="specification_to_specification_id, number"/>
+    </changeSet>
+
+    <changeSet id="create-detail-table" author="porubov">
+        <createTable tableName="detail">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="article" type="VARCHAR(16)"/>
+            <column name="name" type="VARCHAR(512)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="responsible_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="supplier_id" type="BIGINT"/>
+            <column name="configuration" type="VARCHAR(1024)"/>
+            <column name="color" type="VARCHAR(9)"/>
+            <column name="reserve" type="INT"/>
+            <column name="category" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="simplified" type="TINYINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="attn" type="TINYINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="component_type" type="VARCHAR(1024)"/>
+            <column name="value" type="VARCHAR(1024)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-detail-foreign-key" author="porubov">
+        <addForeignKeyConstraint baseTableName="detail"
+                                 baseColumnNames="responsible_id"
+                                 constraintName="detail_responsible_id_to_person_fk"
+                                 referencedTableName="person"
+                                 referencedColumnNames="id"
+                                 onUpdate="NO ACTION" onDelete="NO ACTION"/>
+        <addForeignKeyConstraint baseTableName="detail"
+                                 baseColumnNames="supplier_id"
+                                 constraintName="detail_supplier_id_to_person_fk"
+                                 referencedTableName="company"
+                                 referencedColumnNames="id"
+                                 onUpdate="NO ACTION" onDelete="NO ACTION"/>
+    </changeSet>
+
+    <changeSet id="create-detail_to_specification-table" author="porubov">
+        <createTable tableName="detail_to_specification">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="specification_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="detail_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="note" type="MEDIUMTEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="part_reference" type="MEDIUMTEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-detail_to_specification-foreign-key" author="porubov">
+        <addForeignKeyConstraint baseTableName="detail_to_specification"
+                                 baseColumnNames="specification_id"
+                                 constraintName="detail_to_specification_specification_id_to_specification_fk"
+                                 referencedTableName="specification"
+                                 referencedColumnNames="id"
+                                 onUpdate="NO ACTION" onDelete="NO ACTION"/>
+        <addForeignKeyConstraint baseTableName="detail_to_specification"
+                                 baseColumnNames="detail_id"
+                                 constraintName="detail_to_specification_detail_id_to_detail_fk"
+                                 referencedTableName="detail"
+                                 referencedColumnNames="id"
+                                 onUpdate="NO ACTION" onDelete="NO ACTION"/>
+    </changeSet>
+
+    <changeSet id="create-detail_modification-table" author="porubov">
+        <createTable tableName="detail_modification">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="detail_to_specification_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="number" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="count" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-detail_modification-foreign-key" author="porubov">
+        <addForeignKeyConstraint baseTableName="detail_modification"
+                                 baseColumnNames="detail_to_specification_id"
+                                 constraintName="detail_modification_detail_to_specification_id_fk"
+                                 referencedTableName="detail_to_specification"
+                                 referencedColumnNames="id"
+                                 onUpdate="NO ACTION" onDelete="NO ACTION"/>
+        <addUniqueConstraint constraintName="uq_detail_modification_detail_to_specification_id_number"
+                             tableName="detail_modification" columnNames="detail_to_specification_id, number"/>
+    </changeSet>
+
+</databaseChangeLog>
