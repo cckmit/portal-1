@@ -17,13 +17,8 @@ import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.ent.ServerGroup;
 import ru.protei.portal.core.service.SiteFolderService;
-import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
-import ru.protei.portal.mock.AuthServiceMock;
-import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
 import ru.protei.winter.core.CoreConfigurationContext;
-import ru.protei.winter.http.HttpConfigurationContext;
-import ru.protei.winter.http.client.factory.HttpClientFactory;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -31,8 +26,7 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
         CoreConfigurationContext.class,
         JdbcConfigurationContext.class,
         DatabaseConfiguration.class,
-        IntegrationTestsConfiguration.class,
-        RemoteServiceFactory.class, HttpClientFactory.class, HttpConfigurationContext.class
+        IntegrationTestsConfiguration.class
 })
 public class SiteFolderServiceImplTest extends BaseServiceTest {
     @Autowired

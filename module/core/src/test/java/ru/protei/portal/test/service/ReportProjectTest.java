@@ -8,7 +8,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dict.En_CustomerType;
+import ru.protei.portal.core.model.dict.En_DateIntervalType;
+import ru.protei.portal.core.model.dict.En_PersonRoleType;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
@@ -19,10 +22,7 @@ import ru.protei.portal.core.model.struct.ReportProjectWithComments;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.report.projects.ReportProject;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
-import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
 import ru.protei.winter.core.CoreConfigurationContext;
-import ru.protei.winter.http.HttpConfigurationContext;
-import ru.protei.winter.http.client.factory.HttpClientFactory;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.io.ByteArrayOutputStream;
@@ -35,8 +35,8 @@ import static ru.protei.portal.core.model.util.CrmConstants.State.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
         JdbcConfigurationContext.class, DatabaseConfiguration.class,
-        IntegrationTestsConfiguration.class,
-        RemoteServiceFactory.class, HttpClientFactory.class, HttpConfigurationContext.class})
+        IntegrationTestsConfiguration.class
+})
 @Transactional
 public class ReportProjectTest extends BaseServiceTest {
 

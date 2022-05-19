@@ -16,22 +16,18 @@ import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.struct.DateRange;
 import ru.protei.portal.core.report.absence.ReportAbsence;
 import ru.protei.portal.embeddeddb.DatabaseConfiguration;
-import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
 import ru.protei.winter.core.CoreConfigurationContext;
-import ru.protei.winter.http.HttpConfigurationContext;
-import ru.protei.winter.http.client.factory.HttpClientFactory;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class,
         JdbcConfigurationContext.class,
-        DatabaseConfiguration.class, IntegrationTestsConfiguration.class,
-        RemoteServiceFactory.class, HttpClientFactory.class, HttpConfigurationContext.class})
+        DatabaseConfiguration.class, IntegrationTestsConfiguration.class
+})
 @Transactional
 public class ReportAbsenceTest extends BaseServiceTest {
 

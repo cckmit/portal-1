@@ -16,9 +16,6 @@ import ru.protei.portal.core.model.dao.PersonNotifierDAO;
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 import ru.protei.portal.core.service.AbsenceService;
-import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
-import ru.protei.winter.http.HttpConfigurationContext;
-import ru.protei.winter.http.client.factory.HttpClientFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,10 +30,7 @@ import static org.mockito.Mockito.*;
         PortalConfigTestConfiguration.class,
         ServiceTestsConfiguration.class,
         DaoMockTestConfiguration.class,
-        TestEventConfiguration.class,
-        RemoteServiceFactory.class,
-        HttpClientFactory.class,
-        HttpConfigurationContext.class
+        TestEventConfiguration.class
 })
 public class AbsenceServiceUnitTest extends BaseServiceTest {
 

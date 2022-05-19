@@ -21,9 +21,6 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.events.EventPublisherService;
 import ru.protei.portal.test.service.BaseServiceTest;
-import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
-import ru.protei.winter.http.HttpConfigurationContext;
-import ru.protei.winter.http.client.factory.HttpClientFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,10 +38,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.listOf;
         PortalConfigTestConfiguration.class,
         DaoMockTestConfiguration.class,
         ServiceTestsConfiguration.class,
-        TestEventConfiguration.class,
-        RemoteServiceFactory.class,
-        HttpClientFactory.class,
-        HttpConfigurationContext.class
+        TestEventConfiguration.class
 })
 public class TestCaseEvents extends BaseServiceTest {
 

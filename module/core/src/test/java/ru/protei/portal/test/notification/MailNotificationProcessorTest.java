@@ -25,12 +25,8 @@ import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.events.EventAssemblerService;
 import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.portal.tools.notifications.NotificationConfiguration;
-import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
-import ru.protei.winter.http.HttpConfigurationContext;
-import ru.protei.winter.http.client.factory.HttpClientFactory;
 
 import javax.mail.internet.MimeMessage;
-
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -52,9 +48,7 @@ import static ru.protei.portal.core.model.util.CrmConstants.Time.SEC;
         ServiceTestsConfiguration.class,
         TestEventConfiguration.class,
         NotificationConfiguration.class, TestNotificationConfiguration.class,
-        MailNotificationProcessorTest.LocalConfiguration.class,
-        RemoteServiceFactory.class, HttpClientFactory.class, HttpConfigurationContext.class
-
+        MailNotificationProcessorTest.LocalConfiguration.class
 })
 public class MailNotificationProcessorTest extends BaseServiceTest {
 

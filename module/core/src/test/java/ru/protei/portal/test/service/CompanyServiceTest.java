@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
@@ -19,11 +18,9 @@ import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.CompanyService;
-import ru.protei.sn.remote_services.configuration.RemoteServiceFactory;
+import ru.protei.portal.embeddeddb.DatabaseConfiguration;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.core.utils.beans.SearchResult;
-import ru.protei.winter.http.HttpConfigurationContext;
-import ru.protei.winter.http.client.factory.HttpClientFactory;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.Date;
@@ -34,8 +31,8 @@ import java.util.Date;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         CoreConfigurationContext.class, JdbcConfigurationContext.class,
-        DatabaseConfiguration.class, IntegrationTestsConfiguration.class, RemoteServiceFactory.class,
-        HttpClientFactory.class, HttpConfigurationContext.class})
+        DatabaseConfiguration.class, IntegrationTestsConfiguration.class
+})
 public class CompanyServiceTest extends BaseServiceTest {
 
     @Test
