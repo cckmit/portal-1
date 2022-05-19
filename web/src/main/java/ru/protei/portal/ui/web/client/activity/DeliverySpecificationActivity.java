@@ -25,7 +25,7 @@ public abstract class DeliverySpecificationActivity implements Activity {
         typescriptUnitActivity.showUnit(TsWebUnit.delivery);
         fireEvent(new ActionBarEvents.Clear());
         if (policyService.hasPrivilegeFor(En_Privilege.DELIVERY_CREATE)) {
-            fireEvent(new ActionBarEvents.Add(lang.buttonCreate(), null, UiConstants.ActionBarIdentity.DELIVERY_SPECIFICATION_IMPORT));
+            fireEvent(new ActionBarEvents.Add(lang.buttonImport(), null, UiConstants.ActionBarIdentity.DELIVERY_SPECIFICATION_IMPORT));
         }
     }
 

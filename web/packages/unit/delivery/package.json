@@ -21,6 +21,7 @@
   },
   "peerDependencies": {
     "inversify": "*",
+    "lodash": "*",
     "mobx": "*",
     "mobx-react-lite": "*",
     "react": "*",

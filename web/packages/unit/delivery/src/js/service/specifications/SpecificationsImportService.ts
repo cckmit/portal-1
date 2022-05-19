@@ -1,3 +1,4 @@
+import _ from "lodash"
 import { inject, injectable } from "inversify"
 import { makeLogger } from "@protei-libs/logger"
 import { runInTransaction } from "@protei-libs/store"
@@ -20,28 +21,30 @@ import {
   progressProcessing,
   progressReady,
 } from "@protei-portal/common"
-import { SpecificationsCreateStore, SpecificationsCreateStore$type } from "../../store"
+import {
+  SpecificationsCreateStore,
+  SpecificationsCreateStore$type,
+  SpecificationsImportStore,
+  SpecificationsImportStore$type,
+} from "../../store"
 import { SpecificationsParserXLSX, SpecificationsParserXLSXImpl } from "./parser/SpecificationsParserXLSX"
 import { SpecificationXLSXColumnType, SpecificationXLSXRowDetail, SpecificationXLSXRowSpecification } from "../../model"
 
 export const SpecificationsImportService$type = Symbol("SpecificationsImportService")
 
 export interface SpecificationsImportService {
-  setName(name: string): void
-
+  reset(): void
   importFileXLSX(file: File): Promise<void>
 }
 
 @injectable()
 export class SpecificationsImportServiceImpl implements SpecificationsImportService {
 
-  setName(name: string): void {
-    this.log.info("Set name as '{}'", name)
+  reset(): void {
+    this.log.info("Reset")
     runInTransaction(() => {
-      if (!this.specificationsCreateStore.specification) {
-        this.specificationsCreateStore.specification = this.makeEmptySpecification()
-      }
-      this.specificationsCreateStore.specification.name = name
+      this.specificationsImportStore.errors = []
+      this.specificationsImportStore.progress = progressReady()
     })
   }
 
@@ -49,13 +52,8 @@ export class SpecificationsImportServiceImpl implements SpecificationsImportServ
     try {
       this.log.info("Import xlsx file")
       runInTransaction(() => {
-        if (!this.specificationsCreateStore.specification) {
-          this.specificationsCreateStore.specification = this.makeEmptySpecification()
-        }
-        this.specificationsCreateStore.specification.specifications = []
-        this.specificationsCreateStore.specification.details = []
-        this.specificationsCreateStore.errors = []
-        this.specificationsCreateStore.progress = progressProcessing()
+        this.specificationsImportStore.errors = []
+        this.specificationsImportStore.progress = progressProcessing()
       })
       const detailRows: Array<SpecificationXLSXRowDetail> = []
       const specificationRows: Array<SpecificationXLSXRowSpecification> = []
@@ -68,7 +66,6 @@ export class SpecificationsImportServiceImpl implements SpecificationsImportServ
         (row) => specificationRows.push(row),
         onError,
       )
-      this.log.info("Import xlsx file | details={}, specifications={}, errors={}", detailRows.length, specificationRows.length, errors.length)
       const personNames = this.collectPersons(detailRows, specificationRows)
       const companyNames = this.collectCompanies(detailRows, specificationRows)
       const [ persons, companies ] = await Promise.all([
@@ -77,19 +74,21 @@ export class SpecificationsImportServiceImpl implements SpecificationsImportServ
       ])
       const specifications = this.makeSpecifications(specificationRows, persons, companies, onError)
       const details = this.makeDetails(detailRows, persons, companies, onError)
+      this.log.info("Import xlsx file | details={}, specifications={}, errors={}", details.length, specifications.length, errors.length)
       runInTransaction(() => {
-        if (this.specificationsCreateStore.specification) {
-          this.specificationsCreateStore.specification.specifications.push(...specifications)
-          this.specificationsCreateStore.specification.details.push(...details)
-          this.specificationsCreateStore.errors.push(...errors)
-          this.specificationsCreateStore.progress = progressReady()
+        if (!this.specificationsCreateStore.specification) {
+          this.specificationsCreateStore.specification = this.makeEmptySpecification()
         }
+        this.specificationsCreateStore.specification.specifications.push(...specifications)
+        this.specificationsCreateStore.specification.details.push(...details)
+        this.specificationsImportStore.errors.push(...errors)
+        this.specificationsImportStore.progress = progressReady()
       })
     } catch (e) {
       const exception = detectException(e)
       this.log.error("Failed to import xlsx file", exception)
       runInTransaction(() => {
-        this.specificationsCreateStore.progress = progressError(exception)
+        this.specificationsImportStore.progress = progressError(exception)
       })
       throw exception
     }
@@ -120,31 +119,41 @@ export class SpecificationsImportServiceImpl implements SpecificationsImportServ
   }
 
   private async fetchPersonIds(names: Array<string>): Promise<Array<{ name: string, id: number | undefined }>> {
-    return Promise.all(names.map(name => {
-      const query: EmployeeQuery = {
-        searchString: name,
-      }
-      return this.personTransport.getPersonShortViewListByQuery(query)
-        .then(persons => persons[0])
-        .then(person => ({
-          name: name,
-          id: person?.id,
-        }))
-    }))
+    return Promise.all(_.chunk(names, 10)
+      .map(chunk => Promise.all(chunk
+        .map(name => {
+          const query: EmployeeQuery = {
+            searchString: name,
+          }
+          return this.personTransport.getPersonShortViewListByQuery(query)
+            .then(persons => persons[0])
+            .then(person => ({
+              name: name,
+              id: person?.id,
+            }))
+        }),
+      )),
+    )
+      .then(chunks => chunks.flat())
   }
 
   private async fetchCompanyIds(names: Array<string>): Promise<Array<{ name: string, id: number | undefined }>> {
-    return Promise.all(names.map(name => {
-      const query: CompanyQuery = {
-        searchString: name,
-      }
-      return this.companyTransport.getCompanyOptionListByQuery(query)
-        .then(companies => companies[0])
-        .then(company => ({
-          name: name,
-          id: company?.id,
-        }))
-    }))
+    return Promise.all(_.chunk(names, 10)
+      .map(chunk => Promise.all(chunk
+        .map(name => {
+          const query: CompanyQuery = {
+            searchString: name,
+          }
+          return this.companyTransport.getCompanyOptionListByQuery(query)
+            .then(companies => companies[0])
+            .then(company => ({
+              name: name,
+              id: company?.id,
+            }))
+        }),
+      )),
+    )
+      .then(chunks => chunks.flat())
   }
 
   private makeSpecifications(
@@ -203,12 +212,12 @@ export class SpecificationsImportServiceImpl implements SpecificationsImportServ
             count: modification.count,
           }))
         if (responsibleId === undefined) {
-          const message = `${row.addressRow} - колонка '${SpecificationXLSXColumnType.responsible}' содержит имя, которое не удалось найти в системе`
+          const message = `${row.addressRow} - колонка '${SpecificationXLSXColumnType.responsible}' содержит имя, которое не удалось найти в системе: '${responsible}'`
           onError(message)
           return undefined
         }
         if (supplierId === undefined) {
-          const message = `${row.addressRow} - колонка '${SpecificationXLSXColumnType.supplier}' содержит название, которое не удалось найти в системе`
+          const message = `${row.addressRow} - колонка '${SpecificationXLSXColumnType.supplier}' содержит название, которое не удалось найти в системе: '${supplier}'`
           onError(message)
           return undefined
         }
@@ -239,15 +248,18 @@ export class SpecificationsImportServiceImpl implements SpecificationsImportServ
 
   constructor(
     @inject(SpecificationsCreateStore$type) specificationsCreateStore: SpecificationsCreateStore,
+    @inject(SpecificationsImportStore$type) specificationsImportStore: SpecificationsImportStore,
     @inject(PersonTransport$type) personTransport: PersonTransport,
     @inject(CompanyTransport$type) companyTransport: CompanyTransport,
   ) {
     this.specificationsCreateStore = specificationsCreateStore
+    this.specificationsImportStore = specificationsImportStore
     this.personTransport = personTransport
     this.companyTransport = companyTransport
   }
 
   private readonly specificationsCreateStore: SpecificationsCreateStore
+  private readonly specificationsImportStore: SpecificationsImportStore
   private readonly personTransport: PersonTransport
   private readonly companyTransport: CompanyTransport
   private readonly log = makeLogger("portal.delivery.spec.import")

@@ -10,4 +10,11 @@ export interface Lang {
   buttonImport(): string
   buttonAdd(): string
   buttonRemove(): string
+  deliverySpecificationsName(): string
+  deliverySpecificationsImportFile(): string
+  deliverySpecificationsImportFileSelect(): string
+  deliverySpecificationsImportTitle(): string
+  deliverySpecificationsImportLengthDetails(): string
+  deliverySpecificationsImportLengthSpecifications(): string
+  deliverySpecificationsImportLengthErrors(): string
 }

@@ -7,7 +7,7 @@ export interface PersonShortView {
   companyId: CompanyId
   displayName: string
   displayShortName: string
-  isFired: boolean
+  fired: boolean
   name?: string
 }
 
@@ -18,7 +18,7 @@ export const PersonShortViewSchema = makeJsonSchema<PersonShortView>({
     companyId: { type: "number" },
     displayName: { type: "string" },
     displayShortName: { type: "string" },
-    isFired: { type: "boolean" },
+    fired: { type: "boolean" },
     name: { type: "string", nullable: true },
   },
   required: [
@@ -26,7 +26,7 @@ export const PersonShortViewSchema = makeJsonSchema<PersonShortView>({
     "companyId",
     "displayName",
     "displayShortName",
-    "isFired",
+    "fired",
   ],
 })
 

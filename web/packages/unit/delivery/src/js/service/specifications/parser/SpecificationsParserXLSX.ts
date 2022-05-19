@@ -54,7 +54,9 @@ export class SpecificationsParserXLSXImpl implements SpecificationsParserXLSX {
   private async readWorkbook(file: File): Promise<WorkBook> {
     try {
       const arrayBuffer = await file.arrayBuffer()
-      const workbook = read(arrayBuffer)
+      const workbook = read(arrayBuffer, {
+        cellDates: true,
+      })
       if (!workbook) {
         const message = "Failed to get workbook of xlsx file"
         throw newException(ExceptionName.IMPORT_XLSX_PARSE, {message})
@@ -280,10 +282,17 @@ export class SpecificationsParserXLSXImpl implements SpecificationsParserXLSX {
     }
     const type = cell.value.t
     const value = cell.value.v
+    if (type === "n" && typeof value === "number") {
+      return value.toFixed()
+    }
     if (type === "s" && typeof value === "string") {
       return value
     }
-    return undefined
+    if (type === "z") {
+      return undefined
+    }
+    const message = `${cell.name} - строка в неверном формате: '${value}'`
+    throw newException(ExceptionName.IMPORT_XLSX_PARSE, { message })
   }
 
   private readCellNumber(cell: Cell | undefined): number | undefined {
@@ -296,9 +305,19 @@ export class SpecificationsParserXLSXImpl implements SpecificationsParserXLSX {
       return value
     }
     if (type === "s" && typeof value === "string") {
-      return this.parseInt(value)
+      const number = Number.parseInt(value)
+      if (isFinite(number)) {
+        return number
+      } else {
+        const message = `${cell.name} - число в неверном формате: '${value}'`
+        throw newException(ExceptionName.IMPORT_XLSX_PARSE, { message })
+      }
     }
-    return undefined
+    if (type === "z") {
+      return undefined
+    }
+    const message = `${cell.name} - число в неверном формате: '${value}'`
+    throw newException(ExceptionName.IMPORT_XLSX_PARSE, { message })
   }
 
   private readCellBoolean(cell: Cell | undefined): boolean | undefined {
@@ -320,7 +339,8 @@ export class SpecificationsParserXLSXImpl implements SpecificationsParserXLSX {
     if (type === "z") {
       return false
     }
-    return undefined
+    const message = `${cell.name} - флаг в неверном формате: '${value}'`
+    throw newException(ExceptionName.IMPORT_XLSX_PARSE, { message })
   }
 
   private readCellDate(cell: Cell | undefined): Date | undefined {
@@ -339,9 +359,16 @@ export class SpecificationsParserXLSXImpl implements SpecificationsParserXLSX {
       const [ day, month, year ] = [ this.parseInt(sDay), this.parseInt(sMonth), this.parseInt(sYear) ]
       if (day !== undefined && month !== undefined && year !== undefined) {
         return new Date(year, month - 1, day)
+      } else {
+        const message = `${cell.name} - дата в неверном формате: '${walue}'`
+        throw newException(ExceptionName.IMPORT_XLSX_PARSE, { message })
       }
     }
-    return undefined
+    if (type === "z") {
+      return undefined
+    }
+    const message = `${cell.name} - дата в неверном формате: '${value}'`
+    throw newException(ExceptionName.IMPORT_XLSX_PARSE, { message })
   }
 
   private isRowSpecificationAtSpecification(columns: Array<Column>, row: Row): boolean {

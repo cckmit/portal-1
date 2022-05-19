@@ -12,6 +12,13 @@ export class LangRu implements Lang {
   buttonImport = () => "Импорт"
   buttonAdd = () => "Добавить"
   buttonRemove = () => "Удалить"
+  deliverySpecificationsName = () => "Наименование спецификации"
+  deliverySpecificationsImportFile = () => "Файл спецификации"
+  deliverySpecificationsImportFileSelect = () => "Выбрать XLSX файл"
+  deliverySpecificationsImportTitle = () => "Импорт спецификации"
+  deliverySpecificationsImportLengthDetails = () => "Количество деталей"
+  deliverySpecificationsImportLengthSpecifications = () => "Количество спецификаций"
+  deliverySpecificationsImportLengthErrors = () => "Количество ошибок"
 }
 
 export const langRu = new LangRu()

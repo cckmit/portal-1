@@ -10,7 +10,7 @@ export interface PortalApiRequestIdProvider {
 export class PortalApiRequestIdProviderImpl implements PortalApiRequestIdProvider {
 
   next(): string {
-    const id = this.requestId++
+    const id = ++this.requestId
     return id.toFixed()
   }
 

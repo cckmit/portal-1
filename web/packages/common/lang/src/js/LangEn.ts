@@ -12,6 +12,13 @@ export class LangEn implements Lang {
   buttonImport = () => "Import"
   buttonAdd = () => "Add"
   buttonRemove = () => "Remove"
+  deliverySpecificationsName = () => "Specification name"
+  deliverySpecificationsImportFile = () => "Specification file"
+  deliverySpecificationsImportFileSelect = () => "Choose XLSX file"
+  deliverySpecificationsImportTitle = () => "Specification import"
+  deliverySpecificationsImportLengthDetails = () => "Details"
+  deliverySpecificationsImportLengthSpecifications = () => "Specifications"
+  deliverySpecificationsImportLengthErrors = () => "Errors"
 }
 
 export const langEn = new LangEn()

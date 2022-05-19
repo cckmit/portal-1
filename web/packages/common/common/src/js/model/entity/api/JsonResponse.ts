@@ -9,16 +9,17 @@ export interface JsonResponse<T = unknown> {
   message: string | undefined
 }
 
+// @ts-ignore
 export const JsonResponseSchema = makeJsonSchema<JsonResponse<{}>>({
   type: "object",
   properties: {
     requestId: { type: "string" },
     status: { type: "string" },
-    data: {
-      type: "object",
-      required: [],
-      nullable: true,
-    },
+    // data: {
+    //   type: "object",
+    //   required: [],
+    //   nullable: true,
+    // },
     message: { type: "string", nullable: true },
   },
   required: [
