@@ -18,7 +18,12 @@ public class AbsenceUtils {
         if (absence == null || !absence.isScheduledAbsence()) return false;
 
         Date now = new Date();
-        return compareOnlyDate(absence.getFromTime(), now) <= 0 && compareOnlyDate(absence.getTillTime(), now) >= 0;
+        if (compareOnlyDate(absence.getTillTime(), now) < 0) {
+            return false;
+        }
+
+        return absence.getScheduleItems().stream()
+                .anyMatch(item -> item.getDaysOfWeek().contains(now.getDay()));
     }
 
     public static List<PersonAbsence> convertToDateAbsence(PersonAbsence scheduleAbsence, Date from, Date to) {
