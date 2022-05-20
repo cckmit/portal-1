@@ -7,14 +7,14 @@ cd "${0%/*}"
 Build () {
   echo "> Build"
 
-  echo "> List versions"
-  ./versions.sh
-
   if ! IsNodeVersion 16 ; then
     echo ">! Required node 16 to build this app"
     echo "> Build failed"
     exit 1
   fi
+
+  echo "> List versions"
+  ./versions.sh
 
   echo "> Install project"
   cd "$dir_root"

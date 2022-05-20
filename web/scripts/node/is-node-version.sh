@@ -2,10 +2,14 @@
 set -e
 
 IsNodeVersion () {
-    expected=$1
-    actual=$(./node/node-version-major.sh)
-    if [ "$expected" = "$actual" ]; then
-        return 0
+    if which node > /dev/null ; then
+        expected=$1
+        actual=$(./node/node-version-major.sh)
+        if [ "$expected" = "$actual" ]; then
+            return 0
+        else
+            return 1
+        fi
     else
         return 1
     fi
