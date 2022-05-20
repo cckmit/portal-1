@@ -34,7 +34,6 @@ module.exports = {
     },
   },
   "extends": [
-    "prettier",
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",

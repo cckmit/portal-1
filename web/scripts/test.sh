@@ -8,7 +8,9 @@ TestAll () {
   files="$(find . -type f | awk '!arr[$1]++' | grep "$packages_regex" | grep -v "node_modules" | grep "$jest_files_regex" | xargs echo)"
   if [ "$files" ]; then
     echo "> Test with jest (whole project)"
-    npx yarn jest $files --coverage=false
+    cd "$dir_web"
+    npx yarn jest $files --coverage=false --config ./jest.config.js
+    cd "$dir_root"
   else
     echo "> Test with jest (whole project): no changed files found"
   fi
@@ -20,7 +22,9 @@ TestAllCiGitlab () {
   files="$(find . -type f | awk '!arr[$1]++' | grep "$packages_regex" | grep -v "node_modules" | grep "$jest_files_regex" | xargs echo)"
   if [ "$files" ]; then
     echo "> Test with jest (whole project)"
-    npx yarn jest $files --coverage=true
+    cd "$dir_web"
+    npx yarn jest $files --coverage=true --config ./jest.config.js
+    cd "$dir_root"
   else
     echo "> Test with jest (whole project): no changed files found"
   fi
@@ -32,7 +36,9 @@ TestOnlyChanged () {
   files="$(${dir_scripts}/git/list-changed-code-files.sh | grep "$packages_regex" | grep -v "node_modules" | grep "$jest_files_regex" | xargs echo)"
   if [ "$files" ]; then
     echo "> Test with jest (only changed test files)"
-    npx yarn jest $files --coverage=false
+    cd "$dir_web"
+    npx yarn jest $files --coverage=false --config ./jest.config.js
+    cd "$dir_root"
   else
     echo "> Test with jest (only changed test files): no changed test files found"
   fi
@@ -44,7 +50,9 @@ TestOnlyStaged () {
   files="$(${dir_scripts}/git/list-staged-code-files.sh | grep "$packages_regex" | grep -v "node_modules" | grep "$jest_files_regex" | xargs echo)"
   if [ "$files" ]; then
     echo "> Test with jest (only staged test files)"
-    npx yarn jest $files --coverage=false
+    cd "$dir_web"
+    npx yarn jest $files --coverage=false --config ./jest.config.js
+    cd "$dir_root"
   else
     echo "> Test with jest (only staged test files): no staged test files found"
   fi
