@@ -20,13 +20,19 @@ public class WorkerTestApiEntityFactory  {
         person.setFirstName(workerRecordTestAPI.getFirstName());
         person.setLastName(workerRecordTestAPI.getLastName());
         person.setDisplayName(workerRecordTestAPI.getLastName() + " " + workerRecordTestAPI.getFirstName());
-        person.setGender(En_Gender.parse(workerRecordTestAPI.getSex()));
+        person.setInn(workerRecordTestAPI.getInn());
+        person.setLocale(workerRecordTestAPI.getLocale());
         person.setBirthday(workerRecordTestAPI.getBirthday());
         person.setCreated(new Date());
         person.setIpAddress(workerRecordTestAPI.getIp());
         person.setCreator(WorkerRecordTestAPI.Constansts.PERSON_CREATOR);
+
+        String gender = workerRecordTestAPI.getSex().substring(0, 1);
+        person.setGender(En_Gender.parse(gender));
+
         ContactItem contactItem = new ContactItem(workerRecordTestAPI.getMail(), En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
         person.getContactItems().add(contactItem);
+
         return person;
     }
 
