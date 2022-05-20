@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "packageManager": "yarn@3.2.0",
+  "scripts": {
+    "postinstall": "husky install"
+  },
   "workspaces": [
     "web/packages/app/*",
     "web/packages/lib/*",
@@ -19,6 +22,7 @@
     "eslint-plugin-import": "2.25.4",
     "eslint-plugin-react": "7.28.0",
     "eslint-plugin-react-hooks": "4.3.0",
+    "husky": "7.0.4",
     "prettier": "2.5.1",
     "typescript": "4.5.4"
   }
