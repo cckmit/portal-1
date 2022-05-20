@@ -2,12 +2,19 @@
 set -e
 cd "${0%/*}"
 . ./_variables.sh
+. ./node/is-node-version.sh
 
 Build () {
   echo "> Build"
 
   echo "> List versions"
   ./versions.sh
+
+  if ! IsNodeVersion 16 ; then
+    echo ">! Required node 16 to build this app"
+    echo "> Build failed"
+    exit 1
+  fi
 
   echo "> Install project"
   cd "$dir_root"
