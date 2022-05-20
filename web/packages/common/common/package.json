@@ -17,6 +17,7 @@
     "@protei-libs/store": "workspace:*",
     "@protei-libs/types": "workspace:*",
     "@protei-portal/common-lang": "workspace:*",
+    "@protei-portal/common-logger": "workspace:*",
     "ajv": "8.8.2",
     "date-fns": "2.28.0"
   },

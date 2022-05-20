@@ -32,29 +32,19 @@
     <build>
         <outputDirectory>${webappDirectory}/WEB-INF/classes</outputDirectory>
         <sourceDirectory>src/main/java</sourceDirectory>
-        <resources>
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>*.ui.xml</include>
-                    <include>**/*.ui.xml</include>
-
-                    <include>*.java</include>
-                    <include>**/*.java</include>
-                </includes>
-            </resource>
-
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*.js</include>
-                    <include>**/*.js.map</include>
-                    <include>**/*.gwt.xml</include>
-                </includes>
-            </resource>
-        </resources>
-
         <plugins>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>src/main/resources/ru/protei/portal/ui/web/public</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -71,7 +61,42 @@
                     </execution>
                 </executions>
             </plugin>
-
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${webappDirectory}/WEB-INF/classes</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/java</directory>
+                                    <includes>
+                                        <include>*.ui.xml</include>
+                                        <include>**/*.ui.xml</include>
+                                        <include>*.java</include>
+                                        <include>**/*.java</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <includes>
+                                        <include>**/*.js</include>
+                                        <include>**/*.js.map</include>
+                                        <include>**/*.css</include>
+                                        <include>**/*.css.map</include>
+                                        <include>**/*.gwt.xml</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

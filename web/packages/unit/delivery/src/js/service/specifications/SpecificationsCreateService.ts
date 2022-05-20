@@ -24,7 +24,7 @@ export interface SpecificationsCreateService {
 export class SpecificationsCreateServiceImpl implements SpecificationsCreateService {
 
   reset(opt?: { keepName?: boolean }): void {
-    this.log.info("Reset")
+    this.log.info("Reset | keepName={}", opt?.keepName)
     runInTransaction(() => {
       if (!this.specificationsCreateStore.specification) {
         return
@@ -38,7 +38,7 @@ export class SpecificationsCreateServiceImpl implements SpecificationsCreateServ
   }
 
   setName(name: string): void {
-    this.log.info("Set name as '{}'", name)
+    this.log.debug("Set name as '{}'", name)
     runInTransaction(() => {
       if (!this.specificationsCreateStore.specification) {
         this.specificationsCreateStore.specification = this.makeEmptySpecification()
