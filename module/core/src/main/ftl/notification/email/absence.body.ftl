@@ -12,6 +12,7 @@
 <@set name="_absenceDateRange" value="${absenceDateRange}"/>
 <@set name="_absenceReason" value="${absenceReason}"/>
 <@set name="_absenceComment" value="${absenceComment}"/>
+<@set name="_absenceScheduled" value="${absenceScheduled}"/>
 
 <#noparse>
     <#macro changeTo old, new>
@@ -43,21 +44,21 @@
                     <tr>
                         <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">${_absenceDateRange}</td>
                         <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                            <#if multiAddAbsenceList??>
-                                <#list multiAddAbsenceList as absence>
-                                    ${absence.getFromTime()?string("dd.MM.yyyy HH:mm")} - ${absence.getTillTime()?string("dd.MM.yyyy HH:mm")} <br>
-                                </#list>
+                            <#if fromTimeChanged>
+                                <@changeTo old="${(oldFromTime)!'?'}" new="${(fromTime)!'?'}"/>
                             <#else>
-                                <#if fromTimeChanged>
-                                    <@changeTo old="${(oldFromTime)!'?'}" new="${(fromTime)!'?'}"/>
-                                <#else>
-                                    ${(fromTime)!'?'}
-                                </#if> -
-                                <#if tillTimeChanged>
-                                    <@changeTo old="${(oldTillTime)!'?'}" new="${(tillTime)!'?'}"/>
-                                <#else>
-                                    ${(tillTime)!'?'}
-                                </#if>
+                                ${(fromTime)!'?'}
+                            </#if> -
+                            <#if tillTimeChanged>
+                                <@changeTo old="${(oldTillTime)!'?'}" new="${(tillTime)!'?'}"/>
+                            <#else>
+                                ${(tillTime)!'?'}
+                            </#if>
+                            <#if scheduleDefined> ${_absenceScheduled} </#if>
+                            <#if scheduleChanged>
+                                <@changeTo old="${(ScheduleFormatter.getSchedule(scheduleOld, lang))!'?'}" new="${(ScheduleFormatter.getSchedule(schedule, lang))!'?'}"/>
+                            <#else>
+                                ${(ScheduleFormatter.getSchedule(schedule, lang))!'?'}
                             </#if>
                         </td>
                     </tr>

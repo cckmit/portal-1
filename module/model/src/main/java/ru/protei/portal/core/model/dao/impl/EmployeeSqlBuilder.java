@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
 import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
-import static ru.protei.portal.core.utils.DateUtils.resetSeconds;
+import static ru.protei.portal.core.model.util.DateUtils.resetSeconds;
 
 public class EmployeeSqlBuilder {
 

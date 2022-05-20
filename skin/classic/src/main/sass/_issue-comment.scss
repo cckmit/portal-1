@@ -398,7 +398,7 @@ blockquote {
     background-color: transparent;
 
     &.btn-down:after, &.btn-up-hovering:after {
-      font-family: "Font Awesome 5 Free";
+      font-family: "Font Awesome 6 Pro";
       content: "\f06e";
       font-size: 1.3em;
       color: $success_color;
@@ -406,7 +406,7 @@ blockquote {
     }
 
     &.btn-up:after, &.btn-down-hovering:after {
-      font-family: "Font Awesome 5 Free";
+      font-family: "Font Awesome 6 Pro";
       content: "\f070";
       font-size: 1.3em;
       color: $master_color;

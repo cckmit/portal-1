@@ -1143,7 +1143,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        PreparedTemplate bodyTemplate = templateService.getAbsenceNotificationBody(event, action, recipients, new EnumLangUtil(lang));
+        PreparedTemplate bodyTemplate = templateService.getAbsenceNotificationBody(event, action, recipients, lang);
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template for absence notification with id={} and action={}",
                     absence.getId(), action);

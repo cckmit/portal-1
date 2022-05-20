@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.widget.switcher;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -17,7 +18,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
 
 /**
- * Вид элемента — свитчера
+ * Вид элемента – свитчера
  */
 public class Switcher
         extends Composite
@@ -30,12 +31,7 @@ public class Switcher
 
     @Override
     public void setValue( Boolean value, boolean fireEvents ) {
-        if ( value ) {
-            display.addStyleName( "checked" );
-        }
-        else {
-            display.removeStyleName( "checked" );
-        }
+        check.setChecked(value);
 
         if ( fireEvents ) {
             ValueChangeEvent.fire( this, value );
@@ -47,25 +43,23 @@ public class Switcher
         setValue( value, false );
     }
 
+    public void setHeader( String value ) {
+        label.setInnerText(value);
+    }
+
     @Override
     public Boolean getValue() {
-        return display.getStyleName().contains( "checked" );
+        return check.isChecked();
     }
 
     @Override
     public void setEnabled( boolean value ) {
-        editable = value;
-        if ( value ) {
-            display.removeStyleName( "disabled" );
-        }
-        else {
-            display.addStyleName( "disabled" );
-        }
+        check.setDisabled(!value);
     }
 
     @Override
     public boolean isEnabled() {
-        return editable;
+        return !check.isDisabled();
     }
 
     @Override
@@ -78,7 +72,7 @@ public class Switcher
         super.onAttach();
 
         reg = addDomHandler( event -> {
-            if ( editable ) {
+            if ( isEnabled() ) {
                 boolean oldValue = getValue();
                 boolean newValue = !oldValue;
                 setValue( newValue );
@@ -99,13 +93,13 @@ public class Switcher
     }
 
     @UiField
-    HTMLPanel display;
+    InputElement check;
+    @UiField
+    LabelElement label;
 
     HandlerRegistration reg;
 
-    boolean editable = true;
-
-    interface SwitcherViewUiBinder extends UiBinder<HTMLPanel, Switcher > {}
+    interface SwitcherViewUiBinder extends UiBinder<HTMLPanel, Switcher> {}
     private static SwitcherViewUiBinder ourUiBinder = GWT.create( SwitcherViewUiBinder.class );
 
 }

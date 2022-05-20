@@ -1,0 +1,17 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single">
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="absence-with-separator row form-group">
+        <div class=" col-6">
+            <label><ui:text from="{lang.absenceTimeRangeBegin}"/></label>
+            <single:SinglePicker type="TIME" ui:field="from" styleName="" formatValue="HH:mm"/>
+        </div>
+        <div class="col-6">
+            <label><ui:text from="{lang.absenceTimeRangeEnd}"/></label>
+            <single:SinglePicker type="TIME" ui:field="to" styleName="" formatValue="HH:mm"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

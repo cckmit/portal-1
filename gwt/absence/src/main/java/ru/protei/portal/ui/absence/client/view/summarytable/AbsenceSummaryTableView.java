@@ -1,22 +1,31 @@
 package ru.protei.portal.ui.absence.client.view.summarytable;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.protei.portal.core.model.dto.ScheduleItem;
+import ru.protei.portal.core.model.dto.TimeInterval;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.helper.AbsenceUtils;
+import ru.protei.portal.core.model.struct.DateRange;
+import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.DateUtils;
 import ru.protei.portal.ui.absence.client.activity.summarytable.AbstractAbsenceSummaryTableActivity;
 import ru.protei.portal.ui.absence.client.activity.summarytable.AbstractAbsenceSummaryTableView;
 import ru.protei.portal.ui.absence.client.util.AccessUtil;
+import ru.protei.portal.ui.absence.client.util.ScheduleFormatterClient;
 import ru.protei.portal.ui.absence.client.widget.filter.AbsenceFilterWidget;
 import ru.protei.portal.ui.absence.client.widget.filter.AbsenceFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.columns.*;
-import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_AbsenceReasonLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
@@ -110,35 +119,76 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
         removeClickColumn.setDisplayPredicate(value -> AccessUtil.isAllowedRemove(policyService, value));
 
         DynamicColumn<PersonAbsence> reason = new DynamicColumn<>(lang.absenceReason(), "reason",
-                value -> "<div class=\"absence-reason\"><i class=\"" + reasonLang.getIcon(value.getReason()) + "\"></i></div>" +
-                        "<span class=\"absence-label\">" + reasonLang.getName(value.getReason()) +"</span>");
+                value -> reasonLang.getName(value.getReason()));
 
         DynamicColumn<PersonAbsence> person = new DynamicColumn<>(lang.absenceEmployee(), "person",
                 value -> value.getPerson().getName());
 
-        DynamicColumn<PersonAbsence> fromTime = new DynamicColumn<>(lang.absenceFromTime(), "from-time",
-                value -> DateFormatter.formatDateTime(value.getFromTime()));
+        DynamicColumn<PersonAbsence> range = new DynamicColumn<>(lang.absenceRange(), "range",
+                value -> {
+                    StringBuilder valueBuilder = new StringBuilder("<div class='m-b-5'><b>" +
+                            prettyDateRangeFormat(value.getFromTime(), value.getTillTime()) +
+                            "</b>");
 
-        DynamicColumn<PersonAbsence> tillTime = new DynamicColumn<>(lang.absenceTillTime(), "till-time",
-                value -> DateFormatter.formatDateTime(value.getTillTime()));
+                    if (value.isScheduledAbsence()) {
+                        boolean isActive = AbsenceUtils.checkScheduledAbsenceActiveTodayWithoutTimeCheck(value);
+                        valueBuilder.append(isActive ? wrapBadge(lang.absenceScheduleActive(), CrmConstants.Style.SUCCESS + " m-l-10") : wrapBadge(lang.absenceScheduleInactive(), CrmConstants.Style.DANGER + " m-l-10 "))
+                                .append("</div>");
+                        for (ScheduleItem scheduleItem : value.getScheduleItems()) {
+                            valueBuilder.append("<div class='m-t-5'><span class='m-r-10'>")
+                                    .append(ScheduleFormatterClient.getDays(scheduleItem))
+                                    .append("</span>");
+                            for (TimeInterval timeInterval : scheduleItem.getTimes()) {
+                                valueBuilder.append(wrapBadge(ScheduleFormatterClient.formatTimePeriod(timeInterval)));
+                            }
+                            valueBuilder.append("</div>");
+                        }
+                    } else {
+                        valueBuilder.append("</div>").append(wrapBadge(timeFormat.format(value.getFromTime()) + " – " + timeFormat.format(value.getTillTime())));
+                    }
+
+                    return valueBuilder.toString();
+                });
 
         DynamicColumn<PersonAbsence> comment = new DynamicColumn<>(lang.absenceComment(), "comment",
-                value -> value.getUserComment());
+                PersonAbsence::getUserComment);
 
         columns.add(reason);
         columns.add(person);
-        columns.add(fromTime);
-        columns.add(tillTime);
+        columns.add(range);
         columns.add(comment);
 
         table.addColumn(reason.header, reason.values);
         table.addColumn(person.header, person.values);
-        table.addColumn(fromTime.header, fromTime.values);
-        table.addColumn(tillTime.header, tillTime.values);
+        table.addColumn(range.header, range.values);
+
         table.addColumn(comment.header, comment.values);
         table.addColumn(completeClickColumn.header, completeClickColumn.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
         table.addColumn(removeClickColumn.header, removeClickColumn.values);
+    }
+
+    private String prettyDateRangeFormat(Date from, Date to) {
+        if (DateUtils.isSameDay(from, to)) {
+            return dateMonthYearFormat.format(from);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        if (DateUtils.isSameYear(from, to)) {
+            sb.append(DateUtils.isSameMonth(from, to) ? from.getDate() : dateMonthFormat.format(from));
+        }
+        sb.append(" – ")
+                .append(dateMonthYearFormat.format(to));
+        return sb.toString();
+    }
+
+    private String wrapBadge(String text, String style) {
+        return "<span class='badge badge-" + style + "'>"
+                + text + "</span>";
+    }
+
+    private String wrapBadge(String text) {
+        return wrapBadge(text, CrmConstants.Style.DEFAULT);
     }
 
     @UiField
@@ -166,6 +216,11 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
     RemoveClickColumn<PersonAbsence> removeClickColumn;
     ClickColumnProvider<PersonAbsence> columnProvider = new ClickColumnProvider<>();
     List<ClickColumn<PersonAbsence>> columns = new ArrayList<>();
+
+    private DateRange selectedDateRange = null;
+    private DateTimeFormat dateMonthFormat = DateTimeFormat.getFormat(LocaleInfo.getCurrentLocale().getDateTimeFormatInfo().formatMonthFullDay());
+    private DateTimeFormat dateMonthYearFormat = DateTimeFormat.getFormat(LocaleInfo.getCurrentLocale().getDateTimeFormatInfo().formatYearMonthFullDay());
+    private DateTimeFormat timeFormat = DateTimeFormat.getFormat(LocaleInfo.getCurrentLocale().getDateTimeFormatInfo().timeFormatShort());
 
     private static AbsenceFullTableViewUiBinder ourUiBinder = GWT.create(AbsenceFullTableViewUiBinder.class);
     interface AbsenceFullTableViewUiBinder extends UiBinder<HTMLPanel, AbsenceSummaryTableView> {}

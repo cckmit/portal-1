@@ -3014,6 +3014,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String absenceValidationDateRange();
 
+    String absenceValidationSchedule();
+
     String absenceValidationDateRanges();
 
     String absenceValidationDateRangesIntersection();
@@ -3576,6 +3578,26 @@ public interface Lang extends Messages, ContactItemLang {
 
     String uitsPrefix();
 
+    String absenceEnableSchedule();
+
+    String absenceSchedules();
+
+    String absenceNoScheduleData();
+
+    String absenceCreateSchedule();
+
+    String absenceSelectDay();
+
+    String absenceWeekdays();
+
+    String absenceEveryDay();
+
+    String absenceTimeRangeBegin();
+
+    String absenceTimeRangeEnd();
+
+    String absenceTimeRange(String from, String to);
+
     String deliveryKind();
 
     String deliveryHwManager();
@@ -3645,6 +3667,16 @@ public interface Lang extends Messages, ContactItemLang {
     String errKitSerialNumberNotMatchDeliveryNumber();
 
     String documentation();
+
+    String errorAbsenceHasTimeRangeOverlap();
+
+    String errorAbsenceIncorrectTimeRange();
+
+    String errorAbsenceNeedFeelDays();
+
+    String errorAbsenceNeedFeelTimeRanges();
+
+    String errorAbsenceNeedFeelSchedule();
 
     String deliveryKit();
 
@@ -3749,9 +3781,9 @@ public interface Lang extends Messages, ContactItemLang {
     String reportYoutrackWorkDictionaryConfirmRemove(String name);
 
     String reportYoutrackWorkDictionaryName();
-    
+
     String reportYoutrackWorkDictionaryType();
-    
+
     String reportYoutrackWorkDictionaryProjects();
 
     String newStoreAndDelivery();
@@ -4120,6 +4152,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String personEquipmentAssemblyShort();
 
+    String absenceRange();
+
+    String absenceOnSchedule();
+
+    String absenceScheduleItemDescription(String days, String times);
+
     String caseDescriptionHistoryPreview();
 
     String historyDetailsLink();
@@ -4143,6 +4181,10 @@ public interface Lang extends Messages, ContactItemLang {
     String timeElapsedGroupDepartment();
 
     String timeElapsedGroupAuthor();
+
+    String absenceScheduleActive();
+
+    String absenceScheduleInactive();
 
     String issueReportDataSummarize();
 }

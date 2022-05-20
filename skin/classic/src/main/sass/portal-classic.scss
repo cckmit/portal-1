@@ -141,7 +141,7 @@ p {
 }
 
 .checkbox input[type=checkbox]:checked+label::after {
-  font-family: "Font Awesome 5 Free", serif;
+  font-family: "Font Awesome 6 Pro", serif;
   font-weight: 900;
 }
 
@@ -178,7 +178,7 @@ blockquote::before {
 }
 
 div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
-  font-family: "Font Awesome 5 Free";
+  font-family: "Font Awesome 6 Pro";
   font-weight: 900;
 }
 
@@ -187,7 +187,7 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
 }
 
 .bootstrap-tagsinput .tag [data-role=remove]:after {
-  font-family: "Font Awesome 5 Free", serif;
+  font-family: "Font Awesome 6 Pro", serif;
   content: "\f00d";
 }
 
@@ -287,6 +287,53 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
   margin-bottom: 10px;
 }
 
+.absence-no-data-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  position: static;
+  height: 96px;
+  left: 0px;
+  top: 416px;
+  flex: none;
+  order: 6;
+  flex-grow: 0;
+  margin: 0px 0px;
+  color: rgba(40, 40, 40, 0.5);
+}
+
+.absence-day-btn {
+  background-color: $bg_master_light;
+
+  &.active{
+    background-color: $info_color;
+    border-color: $info_color;
+    color: white;
+  }
+  &:hover{
+    background: #dadada;
+    border-color: transparent;
+  }
+}
+
+.absence-with-separator {
+  position: relative;
+  &:after{
+    content: "–";
+    position: absolute;
+    left: 49.5%;
+    top: 49%;
+  }
+}
+
+.absence-schedule-item {
+  padding: 9px 19px 9px 15px;
+  border-radius: 3px;
+  font-size: 13px;
+  background-color: $bg_light_grey;
+}
+
 .kit-info {
   .form-group.form-group-default {
     height: 100%;
@@ -325,7 +372,7 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
       padding-left: 3px;
 
       &:hover {
-        background-color: $bg_light_gray;
+        background-color: $bg_light_grey;
       }
     }
 
@@ -388,7 +435,7 @@ div.cs-skin-slide>span:after, div.cs-skin-slide.cs-active>span:after {
           }
 
           &:hover {
-            background-color: $bg_light_gray;
+            background-color: $bg_light_grey;
           }
 
           a {

@@ -78,7 +78,7 @@ public abstract class AbsenceSummaryTableActivity implements AbstractAbsenceSumm
             return;
         }
 
-        fireEvent(new AbsenceEvents.Create());
+        fireEvent(new AbsenceEvents.Edit());
     }
 
     @Event
@@ -129,6 +129,7 @@ public abstract class AbsenceSummaryTableActivity implements AbstractAbsenceSumm
         query = getQuery();
         query.setOffset(offset);
         query.setLimit(limit);
+
         absenceController.getAbsences(query, new FluentCallback<SearchResult<PersonAbsence>>()
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
