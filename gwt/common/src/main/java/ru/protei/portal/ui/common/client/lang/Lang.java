@@ -4181,5 +4181,9 @@ public interface Lang extends Messages, ContactItemLang {
     String timeElapsedGroupDepartment();
 
     String timeElapsedGroupAuthor();
+
+    String absenceScheduleActive();
+
+    String absenceScheduleInactive();
 }
 

@@ -4933,11 +4933,11 @@ table {
     tbody {
       tr {
         td {
-          height: 40px;
+          height: 70px;
 
-          div {
-            height: 40px;
-            max-height: 40px;
+          > div {
+            height: 70px;
+            max-height: 70px;
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -4947,33 +4947,14 @@ table {
     }
     .reason {
       width: 20%;
-
-      > div {
-        display: inline-flex;
-        align-items: center;
-
-        .absence-reason {
-          position: static;
-          height: 35px;
-          width: 35px;
-          min-width: 35px;
-          min-height: 35px;
-          > i {
-            font-size: 1.33333em !important;
-          }
-        }
-        .absence-label {
-          padding: 10px;
-        }
-      }
     }
 
     .person {
       width: 25%;
     }
 
-    .from-time, .till-time {
-      width: 15%;
+    .range {
+      width: 25%;
       > div {
         white-space: nowrap;
       }
@@ -4981,7 +4962,7 @@ table {
     }
 
     .comment {
-      width: 25%;
+      width: 30%;
     }
   }
 }

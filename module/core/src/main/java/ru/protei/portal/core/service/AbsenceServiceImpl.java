@@ -18,7 +18,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.AbsenceApiQuery;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.struct.DateRange;
-import ru.protei.portal.core.utils.DateUtils;
+import ru.protei.portal.core.model.util.DateUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 

@@ -24,7 +24,7 @@ public class AbsenceUtilsTest {
         Date scheduleFrom = new Date(YEAR, MONTH, 1, 0, 0, 0);
         Date scheduleTo = new Date(YEAR, MONTH, 10, 23, 59, 59);
 
-        PersonAbsence scheduleAbsence = generateAbsenceWithSchedule(intervals, Arrays.asList(Calendar.MONDAY, Calendar.WEDNESDAY, Calendar.FRIDAY), scheduleFrom, scheduleTo);
+        PersonAbsence scheduleAbsence = generateAbsenceWithSchedule(intervals, Arrays.asList(2, 4, 6), scheduleFrom, scheduleTo);
         Date from = new Date(YEAR, MONTH, 5, 0, 0, 0);
         Date to = new Date(YEAR, MONTH, 15, 15, 0, 0);
         List<PersonAbsence> resultAbsences = AbsenceUtils.convertToDateAbsence(scheduleAbsence, from, to);

@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.dto.ScheduleItem;
 import ru.protei.portal.core.model.dto.Time;
 import ru.protei.portal.core.model.dto.TimeInterval;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.List;
@@ -33,16 +35,23 @@ public class ScheduleFormatterClient {
                 .collect(Collectors.joining(", "));
     }
 
-    private static String formatTimePeriod(TimeInterval interval) {
+    public static String formatTimePeriod(TimeInterval interval) {
         if (interval == null || interval.isEmpty()) {
-            return "";
+            return StringUtils.EMPTY;
         }
 
         return lang.absenceTimeRange(formatTime(interval.getFrom()), formatTime(interval.getTo()));
     }
 
+    public static String formatTimePeriodShort(TimeInterval interval) {
+        if (interval == null || interval.isEmpty()) {
+            return StringUtils.EMPTY;
+        }
+
+        return lang.absenceTimeRange(formatTime(interval.getFrom()), formatTime(interval.getTo()));
+    }
     private static String formatTime(Time value) {
-        if (value == null) return "";
+        if (value == null) return StringUtils.EMPTY;
         return timeFormat.format(value.getHour()) + ":" + timeFormat.format(value.getMinute());
     }
 

@@ -234,6 +234,9 @@ public class CrmConstants {
         String ADDED = "added";
         String UPDATED = "updated";
         String HIDE = "hide";
+        String DEFAULT = "default";
+        String SUCCESS = "success";
+        String DANGER = "danger";
     }
 
     public interface Platform {

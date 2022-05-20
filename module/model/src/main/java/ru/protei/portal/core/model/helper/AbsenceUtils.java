@@ -5,33 +5,39 @@ import ru.protei.portal.core.model.dto.Time;
 import ru.protei.portal.core.model.dto.TimeInterval;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static ru.protei.portal.core.model.util.DateUtils.*;
+
 
 public class AbsenceUtils {
+
+    public static boolean checkScheduledAbsenceActiveTodayWithoutTimeCheck (PersonAbsence absence) {
+        if (absence == null || !absence.isScheduledAbsence()) return false;
+
+        Date now = new Date();
+        return compareOnlyDate(absence.getFromTime(), now) <= 0 && compareOnlyDate(absence.getTillTime(), now) >= 0;
+    }
 
     public static List<PersonAbsence> convertToDateAbsence(PersonAbsence scheduleAbsence, Date from, Date to) {
         if (from == null || to == null || scheduleAbsence == null || CollectionUtils.isEmpty(scheduleAbsence.getScheduleItems()))
             return Collections.emptyList();
-        LocalDateTime startDate = convertToLocalDateViaInstant(from.before(scheduleAbsence.getFromTime()) ? scheduleAbsence.getFromTime() : from);
-        LocalDateTime endDate = convertToLocalDateViaInstant(to.after(scheduleAbsence.getTillTime()) ? scheduleAbsence.getTillTime() : to);
+
+        Date startDate = from.before(scheduleAbsence.getFromTime()) ? scheduleAbsence.getFromTime() : from;
+        Date endDate = to.after(scheduleAbsence.getTillTime()) ? scheduleAbsence.getTillTime() : to;
 
         Map<Integer, List<TimeInterval>> dayOfWeekToTime = getDayOfWeekToTimeMap( scheduleAbsence.getScheduleItems() );
 
-        List<LocalDateTime> datesBetween = Stream.iterate(startDate, d -> d.plusDays(1))
-                .limit(ChronoUnit.DAYS.between(startDate, endDate) + 1)
-                .filter(date -> dayOfWeekToTime.containsKey(date.getDayOfWeek().getValue()))
+        List<Date> datesBetween = Stream.iterate(startDate, d -> addDay(d))
+                .limit(daysBetween(startDate, endDate) + 1)
+                .filter(date -> dayOfWeekToTime.containsKey(date.getDay()))
                 .collect(Collectors.toList());
 
         List<PersonAbsence> absences = new ArrayList<>();
-        for (LocalDateTime currentDate : datesBetween) {
-            List<TimeInterval> intervals = dayOfWeekToTime.get(currentDate.getDayOfWeek().getValue());
+        for (Date currentDate : datesBetween) {
+            List<TimeInterval> intervals = dayOfWeekToTime.get(currentDate.getDay());
             if (CollectionUtils.isEmpty(intervals)) {
                 break;
             }
@@ -39,8 +45,8 @@ public class AbsenceUtils {
             for (TimeInterval interval : intervals) {
                 TimeInterval current = interval;
                 // check start interval time
-                if (currentDate.toLocalDate().equals(startDate.toLocalDate())){
-                    Time beginTime = new Time(startDate.getHour(), startDate.getMinute());
+                if (isSameDay(currentDate, startDate)){
+                    Time beginTime = new Time(startDate.getHours(), startDate.getMinutes());
                     if (current.getTo().before(beginTime)) {
                         break;
                     }
@@ -50,8 +56,8 @@ public class AbsenceUtils {
                 }
 
                 // check end interval time
-                if (currentDate.toLocalDate().equals(endDate.toLocalDate())) {
-                    Time endTime = new Time(endDate.getHour(), endDate.getMinute());
+                if (isSameDay(currentDate,endDate)) {
+                    Time endTime = new Time(endDate.getHours(), endDate.getMinutes());
                     if (current.getFrom().after(endTime)) {
                         break;
                     }
@@ -80,28 +86,18 @@ public class AbsenceUtils {
         return collectedAbsences;
     }
 
-    private static PersonAbsence generatePersonAbsenceFromInterval(PersonAbsence scheduleAbsence, LocalDateTime localDate, TimeInterval interval) {
-        Date from = Date.from(localDate.atZone(ZoneId.systemDefault()).toInstant());
-        from.setHours(interval.getFrom().getHour());
-        from.setMinutes(interval.getFrom().getMinute());
+    private static PersonAbsence generatePersonAbsenceFromInterval(PersonAbsence scheduleAbsence, Date date, TimeInterval interval) {
+        Date from = new Date(date.getYear(), date.getMonth(), date.getDate(), interval.getFrom().getHour(), interval.getFrom().getMinute(), 0);
         if (from.before(scheduleAbsence.getFromTime())) {
             from = scheduleAbsence.getTillTime();
         }
 
-        Date to = Date.from(localDate.atZone(ZoneId.systemDefault()).toInstant());
-        to.setHours(interval.getTo().getHour());
-        to.setMinutes(interval.getTo().getMinute());
+        Date to = new Date(date.getYear(), date.getMonth(), date.getDate(), interval.getTo().getHour(), interval.getTo().getMinute(), 0);
         if (to.after(scheduleAbsence.getTillTime())) {
             to = scheduleAbsence.getTillTime();
         }
 
         return new PersonAbsence(null, scheduleAbsence.getPersonId(), scheduleAbsence.getReason(), from, to);
-    }
-
-    private static LocalDateTime convertToLocalDateViaInstant(Date dateToConvert) {
-        return dateToConvert.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
     }
 
     private static Map<Integer, List<TimeInterval>> getDayOfWeekToTimeMap(List<ScheduleItem> items) {
@@ -119,4 +115,5 @@ public class AbsenceUtils {
 
         return dayOfWeekToTime;
     }
+
 }

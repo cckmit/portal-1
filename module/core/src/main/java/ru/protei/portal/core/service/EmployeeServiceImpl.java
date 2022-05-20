@@ -24,7 +24,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.core.service.events.EventPublisherService;
-import ru.protei.portal.core.utils.DateUtils;
+import ru.protei.portal.core.model.util.DateUtils;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
