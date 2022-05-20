@@ -1,9 +1,16 @@
 import { inject, injectable } from "inversify"
 import { makeLogger } from "@protei-libs/logger"
 import { runInTransaction } from "@protei-libs/store"
-import { CreateDeliverySpecification } from "@protei-portal/common"
+import {
+  CreateDeliverySpecification,
+  DeliverySpecificationTransport,
+  DeliverySpecificationTransport$type,
+  detectException,
+  progressError,
+  progressProcessing,
+  progressReady,
+} from "@protei-portal/common"
 import { SpecificationsCreateStore, SpecificationsCreateStore$type } from "../../store"
-import { toJS } from "mobx"
 
 export const SpecificationsCreateService$type = Symbol("SpecificationsCreateService")
 
@@ -42,9 +49,29 @@ export class SpecificationsCreateServiceImpl implements SpecificationsCreateServ
 
   async create(): Promise<void> {
     this.log.info("Create")
-    console.log("SSS", toJS(this.specificationsCreateStore.specification?.name))
-    console.log("SSS", toJS(this.specificationsCreateStore.specification?.details))
-    console.log("SSS", toJS(this.specificationsCreateStore.specification?.specifications))
+    const specification = this.specificationsCreateStore.specification
+    if (specification === undefined) {
+      this.log.warn("Unable to create specification, no specification defined")
+      return
+    }
+    try {
+      runInTransaction(() => {
+        this.specificationsCreateStore.progress = progressProcessing()
+      })
+      const created = await this.deliverySpecificationTransport.create(specification)
+      this.log.info("Create | done | specificationId={}", created.id)
+      runInTransaction(() => {
+        this.reset()
+        this.specificationsCreateStore.progress = progressReady()
+      })
+    } catch (e) {
+      const exception = detectException(e)
+      this.log.error("Failed to create specification", exception)
+      runInTransaction(() => {
+        this.specificationsCreateStore.progress = progressError(exception)
+      })
+      throw exception
+    }
   }
 
   private makeEmptySpecification(): CreateDeliverySpecification {
@@ -57,10 +84,13 @@ export class SpecificationsCreateServiceImpl implements SpecificationsCreateServ
 
   constructor(
     @inject(SpecificationsCreateStore$type) specificationsCreateStore: SpecificationsCreateStore,
+    @inject(DeliverySpecificationTransport$type) deliverySpecificationTransport: DeliverySpecificationTransport,
   ) {
     this.specificationsCreateStore = specificationsCreateStore
+    this.deliverySpecificationTransport = deliverySpecificationTransport
   }
 
   private readonly specificationsCreateStore: SpecificationsCreateStore
+  private readonly deliverySpecificationTransport: DeliverySpecificationTransport
   private readonly log = makeLogger("portal.delivery.spec.create")
 }
