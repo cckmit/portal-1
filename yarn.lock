@@ -1842,24 +1842,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@protei-web/web-infrastructure@workspace:web/web-infrastructure":
-  version: 0.0.0-use.local
-  resolution: "@protei-web/web-infrastructure@workspace:web/web-infrastructure"
-  dependencies:
-    "@types/prettier": 2.4.4
-  peerDependencies:
-    "@typescript-eslint/eslint-plugin": "*"
-    "@typescript-eslint/parser": "*"
-    eslint: "*"
-    eslint-config-prettier: "*"
-    eslint-import-resolver-typescript: "*"
-    eslint-plugin-import: "*"
-    eslint-plugin-react: "*"
-    eslint-plugin-react-hooks: "*"
-    prettier: "*"
-  languageName: unknown
-  linkType: soft
-
 "@tootallnate/once@npm:1":
   version: 1.1.2
   resolution: "@tootallnate/once@npm:1.1.2"
@@ -2086,13 +2068,6 @@ __metadata:
   version: 2.4.1
   resolution: "@types/normalize-package-data@npm:2.4.1"
   checksum: e87bccbf11f95035c89a132b52b79ce69a1e3652fe55962363063c9c0dae0fe2477ebc585e03a9652adc6f381d24ba5589cc5e51849df4ced3d3e004a7d40ed5
-  languageName: node
-  linkType: hard
-
-"@types/prettier@npm:2.4.4":
-  version: 2.4.4
-  resolution: "@types/prettier@npm:2.4.4"
-  checksum: 2c2cc57efd49c7d8907415a72f96c84a6dd8696dd3bf8aa4ca3a667427bebf71cbfbc912673624bdfc935d272d1c008c639cf155f6449315990a4dc110f0d216
   languageName: node
   linkType: hard
 

@@ -4,7 +4,6 @@
   "private": true,
   "packageManager": "yarn@3.2.0",
   "workspaces": [
-    "web/web-infrastructure",
     "web/packages/app/*",
     "web/packages/lib/*",
     "web/packages/common/*",
