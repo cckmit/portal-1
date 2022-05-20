@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
-import static ru.protei.portal.core.utils.DateUtils.resetSeconds;
+import static ru.protei.portal.core.model.util.DateUtils.resetSeconds;
 
 /**
  * Created by michael on 05.07.16.

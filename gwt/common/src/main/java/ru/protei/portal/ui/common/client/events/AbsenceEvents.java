@@ -18,7 +18,6 @@ public class AbsenceEvents {
     }
 
     public static class Show {
-
         public HasWidgets parent;
         public Long employeeId;
 
@@ -29,18 +28,14 @@ public class AbsenceEvents {
     }
 
     public static class Edit {
-
         public Long id;
+        public EmployeeShortView employee;
 
         public Edit() { this.id = null; }
         public Edit (Long id) {
             this.id = id;
         }
-    }
-
-    public static class Create {
-        public EmployeeShortView employee;
-        public Create withEmployee(EmployeeShortView employee) {
+        public Edit withEmployee(EmployeeShortView employee) {
             this.employee = employee;
             return this;
         }

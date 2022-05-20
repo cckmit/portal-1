@@ -7,18 +7,18 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.AbsenceNotificationEvent;
 import ru.protei.portal.core.event.EventAction;
-import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.api.ApiAbsence;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_DateIntervalType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.AbsenceUtils;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.AbsenceApiQuery;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.struct.DateRange;
-import ru.protei.portal.core.utils.DateUtils;
+import ru.protei.portal.core.model.util.DateUtils;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -74,7 +74,6 @@ public class AbsenceServiceImpl implements AbsenceService {
     }
 
     private Result<Long> createAbsence(AuthToken token, PersonAbsence absence) {
-
         if (!validateFields(absence)) {
             return error( En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -103,51 +102,6 @@ public class AbsenceServiceImpl implements AbsenceService {
                         initiator,
                         null,
                         newState,
-                        null,
-                        getAbsenceNotifiers(newState)));
-    }
-
-    @Override
-    @Transactional
-    public Result<List<Long>> createAbsences(AuthToken token, List<PersonAbsence> absences) {
-
-        for (PersonAbsence absence : absences) {
-            if (!validateFields(absence)) {
-                return error( En_ResultStatus.INCORRECT_PARAMS);
-            }
-
-            if (hasAbsenceIntersections(absence.getPersonId(), absence.getFromTime(), absence.getTillTime(), absence.getId())) {
-                return error(En_ResultStatus.ABSENCE_HAS_INTERSECTIONS);
-            }
-        }
-
-        List<Long> ids = stream(absences).map(absence -> {
-            absence.setCreated(new Date());
-            absence.setCreatorId(token.getPersonId());
-
-            Long absenceId = personAbsenceDAO.persist(absence);
-
-            if (absenceId == null) {
-                throw new RollbackTransactionException(En_ResultStatus.NOT_CREATED);
-            }
-
-            return absenceId;
-        }).collect(Collectors.toList());
-
-
-        Person initiator = personDAO.get(token.getPersonId());
-        jdbcManyRelationsHelper.fill(initiator, Person.Fields.CONTACT_ITEMS);
-        List<PersonAbsence> multiAddAbsenceList = personAbsenceDAO.getListByKeys(ids);
-        PersonAbsence newState = CollectionUtils.getFirst(multiAddAbsenceList);
-
-        return ok(ids)
-                .publishEvent(new AbsenceNotificationEvent(
-                        this,
-                        EventAction.CREATED,
-                        initiator,
-                        null,
-                        newState,
-                        multiAddAbsenceList,
                         getAbsenceNotifiers(newState)));
     }
 
@@ -168,7 +122,7 @@ public class AbsenceServiceImpl implements AbsenceService {
             return error(En_ResultStatus.ABSENCE_HAS_INTERSECTIONS);
         }
 
-        if (!personAbsenceDAO.partialMerge(absence, "from_time", "till_time", "user_comment")) {
+        if (!personAbsenceDAO.partialMerge(absence, "from_time", "till_time", "user_comment", "schedule")) {
             return error(En_ResultStatus.NOT_UPDATED);
         }
 
@@ -183,7 +137,6 @@ public class AbsenceServiceImpl implements AbsenceService {
                         initiator,
                         oldState,
                         newState,
-                        null,
                         getAbsenceNotifiers(newState)));
     }
 
@@ -213,7 +166,6 @@ public class AbsenceServiceImpl implements AbsenceService {
                 initiator,
                 null,
                 storedAbsence,
-                null,
                 getAbsenceNotifiers(storedAbsence)));
     }
 
@@ -251,7 +203,6 @@ public class AbsenceServiceImpl implements AbsenceService {
                         initiator,
                         oldState,
                         newState,
-                        null,
                         getAbsenceNotifiers(newState)));
     }
 
@@ -304,12 +255,13 @@ public class AbsenceServiceImpl implements AbsenceService {
         }
 
         SearchResult<PersonAbsence> searchResult = personAbsenceDAO.getSearchResultByQuery(query);
-
         List<PersonAbsence> absences = searchResult.getResults();
         if (absences == null) return Result.ok();
 
+        List<PersonAbsence> collectedAbsences = AbsenceUtils.generateAbsencesFromDateRange(absences, apiQuery.getFrom(), apiQuery.getTo());
+
         if (!searchBySeparateWorkers) {
-            List<Long> personIds = absences.stream()
+            List<Long> personIds = collectedAbsences.stream()
                     .map(PersonAbsence::getPersonId)
                     .collect(Collectors.toList());
 
@@ -323,7 +275,7 @@ public class AbsenceServiceImpl implements AbsenceService {
                             WorkerEntry::getPersonId, Collectors.mapping(WorkerEntry::getExternalId, Collectors.toSet())));
 
         List<ApiAbsence> apiAbsences = new ArrayList<>();
-        for (PersonAbsence absence : absences) {
+        for (PersonAbsence absence : collectedAbsences) {
             Set<String> personExtIds = personIdToExtIdMap.get(absence.getPersonId());
             if (CollectionUtils.isNotEmpty(personExtIds)) {
                 for (String extId : personExtIds) {

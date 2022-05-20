@@ -13,7 +13,7 @@
     <stylesheet src="css/portal-classic.css"/>
 
     <stylesheet src="css/pages-icons.css"/>
-    <stylesheet src="css/font-awesome.min.css"/>
+    <stylesheet src="css/fontawesome.min.css"/>
     <stylesheet src="css/linearicons.css"/>
 
     <source path='client'/>

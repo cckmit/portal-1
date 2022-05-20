@@ -102,6 +102,10 @@ public class En_ResultStatusLang {
             case KIT_SERIAL_NUMBER_NOT_MATCH_DELIVERY_NUMBER: return lang.errKitSerialNumberNotMatchDeliveryNumber();
             case DELIVERY_FORBIDDEN_CHANGE_STATUS: return lang.errDeliveryForbiddenChangeStatus();
             case DELIVERY_FORBIDDEN_CHANGE_PROJECT: return lang.errDeliveryForbiddenChangeProject();
+            case SCHEDULE_HAS_OVERLAP: return lang.errorAbsenceHasTimeRangeOverlap();
+            case SCHEDULE_INCORRECT_TIME_RANGE: return lang.errorAbsenceIncorrectTimeRange();
+            case SCHEDULE_NEED_FEEL_DAYS: return lang.errorAbsenceNeedFeelDays();
+            case SCHEDULE_NEED_FEEL_TIME_RANGES: return lang.errorAbsenceNeedFeelTimeRanges();
             case CARD_BATCH_HAS_CARD: return lang.errCardBatchForbiddenRemove();
             default: return lang.errUnknownResult();
         }

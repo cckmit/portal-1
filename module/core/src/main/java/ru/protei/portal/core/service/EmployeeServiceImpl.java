@@ -12,7 +12,9 @@ import ru.protei.portal.core.exception.RollbackTransactionException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.AbsenceUtils;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.DateRangeUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
 import ru.protei.portal.core.model.struct.*;
@@ -22,7 +24,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.core.service.events.EventPublisherService;
-import ru.protei.portal.core.utils.DateUtils;
+import ru.protei.portal.core.model.util.DateUtils;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -147,11 +149,14 @@ public class EmployeeServiceImpl implements EmployeeService {
             AbsenceQuery absenceQuery = makeAbsenceQuery(employeeIds);
             List<PersonAbsence> personAbsences = personAbsenceDAO.listByQuery(absenceQuery);
 
+            Interval interval = DateRangeUtils.makeToday();
+            List<PersonAbsence> collectedPersonAbsences = AbsenceUtils.generateAbsencesFromDateRange(personAbsences, interval.from, interval.to);
+
             results.forEach(employee -> {
                 employee.setWorkerEntries(workerEntries.stream()
                         .filter(workerEntry -> workerEntry.getPersonId().equals(employee.getId()))
                         .collect(Collectors.toList()));
-                employee.setCurrentAbsence(personAbsences.stream()
+                employee.setCurrentAbsence(collectedPersonAbsences.stream()
                         .filter(absence -> absence.getPersonId().equals(employee.getId()))
                         .findFirst().orElse(null));
                 employee.setTimezoneOffset(employee.getBirthday() == null ? null : employee.getBirthday().getTimezoneOffset());

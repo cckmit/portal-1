@@ -3,21 +3,27 @@ package ru.protei.portal.core.report.absence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.helper.AbsenceUtils;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.AbsenceQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.EnumLangUtil;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.BiFunction;
 
+import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 
 public class ReportAbsenceImpl implements ReportAbsence {
@@ -63,6 +69,7 @@ public class ReportAbsenceImpl implements ReportAbsence {
     public List<PersonAbsence> processChunk(AbsenceQuery query) {
         List<PersonAbsence> absences = personAbsenceDAO.listByQuery(query);
         if (CollectionUtils.isEmpty(absences)) return new ArrayList<>();
-        else return absences;
+
+        else return AbsenceUtils.generateAbsencesFromDateRange(absences, query.getDateRange().getFrom(), query.getDateRange().getTo());
     }
 }

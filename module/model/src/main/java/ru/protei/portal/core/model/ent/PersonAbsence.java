@@ -1,12 +1,15 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_AbsenceReason;
+import ru.protei.portal.core.model.dto.ScheduleItem;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -46,6 +49,9 @@ public class PersonAbsence extends AuditableObject implements Serializable {
     @JdbcColumn(name = "created_from_1c")
     private boolean createdFrom1C;
 
+    @JdbcColumn(name = "schedule", converterType = ConverterType.JSON)
+    private List<ScheduleItem> scheduleItems;
+
     public static final String AUDIT_TYPE = "PersonAbsence";
 
     public PersonAbsence() {}
@@ -74,6 +80,7 @@ public class PersonAbsence extends AuditableObject implements Serializable {
         this.tillTime = absence.getTillTime();
         this.userComment = absence.getUserComment();
         this.createdFrom1C = absence.isCreatedFrom1C();
+        this.scheduleItems = absence.getScheduleItems();
     }
 
     public Long getId() {
@@ -160,6 +167,18 @@ public class PersonAbsence extends AuditableObject implements Serializable {
 
     public void setCreatedFrom1C(boolean createdFrom1C) {
         this.createdFrom1C = createdFrom1C;
+    }
+
+    public List<ScheduleItem> getScheduleItems() {
+        return scheduleItems;
+    }
+
+    public void setScheduleItems(List<ScheduleItem> scheduleItems) {
+        this.scheduleItems = scheduleItems;
+    }
+
+    public boolean isScheduledAbsence() {
+        return CollectionUtils.isNotEmpty(scheduleItems);
     }
 
     @Override

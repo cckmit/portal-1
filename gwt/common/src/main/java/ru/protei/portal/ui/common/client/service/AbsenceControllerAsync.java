@@ -28,12 +28,6 @@ public interface AbsenceControllerAsync {
     void saveAbsence(PersonAbsence absence, AsyncCallback<Long> callback);
 
     /**
-     * Сохранение список записей об отсутствии
-     */
-    void saveAbsences(List<PersonAbsence> absence, AsyncCallback<List<Long>> callback);
-
-
-    /**
      * Удаление записи об отсутствии
      */
     void removeAbsence(PersonAbsence absence, AsyncCallback<Long> callback);

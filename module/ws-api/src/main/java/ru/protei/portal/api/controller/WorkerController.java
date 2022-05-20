@@ -25,7 +25,7 @@ import ru.protei.portal.core.model.struct.*;
 import ru.protei.portal.core.service.WorkerEntryService;
 import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.service.auth.AuthService;
-import ru.protei.portal.core.utils.DateUtils;
+import ru.protei.portal.core.model.util.DateUtils;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;

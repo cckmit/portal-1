@@ -2,10 +2,9 @@ package ru.protei.portal.core.service.template;
 
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.*;
-import net.sf.cglib.core.Local;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.util.HtmlUtils;
+import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.En_ExpiringProjectTSVPeriod;
@@ -14,11 +13,13 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Interval;
-import ru.protei.portal.core.model.util.*;
+import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.util.DiffCollectionResult;
+import ru.protei.portal.core.model.util.MarkupUtils;
+import ru.protei.portal.core.model.util.TransliterationUtils;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -27,6 +28,8 @@ import ru.protei.portal.core.utils.EnumLangUtil;
 import ru.protei.portal.core.utils.LangUtil;
 import ru.protei.portal.core.utils.LinkData;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
+import ru.protei.portal.util.ScheduleFormatter;
+import ru.protei.portal.tools.HtmlUtils;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -39,7 +42,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
@@ -398,7 +402,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("contractNumber", contract.getNumber());
         templateModel.put("contractDateType", contractDate.getType());
         templateModel.put("contractDateDate", contractDate.getDate());
-        templateModel.put("contractDateComment", escapeTextAndReplaceLineBreaks(contractDate.getComment()));
+        templateModel.put("contractDateComment", HtmlUtils.htmlEscapeCharacters(replaceLineBreaks(contractDate.getComment())));
         templateModel.put("contractDateCommentExists", StringUtils.isNotBlank(contractDate.getComment()));
         templateModel.put("linkToContract", String.format(urlTemplate, contract.getId()));
         templateModel.put("recipients", recipients);
@@ -449,7 +453,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("contractDateSigning", contract.getDateSigning());
         templateModel.put("contractOrganization", contract.getOrganizationName());
         templateModel.put("contractContractor", contract.getContractor() != null? contract.getContractor().getName() : null);
-        templateModel.put("contractDescription", escapeTextAndReplaceLineBreaks(contract.getDescription()));
+        templateModel.put("contractDescription", HtmlUtils.htmlEscapeCharacters(replaceLineBreaks(contract.getDescription())));
         templateModel.put("contractDeliveryNumber", contract.getDeliveryNumber());
         templateModel.put("contractFileLocation", contract.getFileLocation());
         templateModel.put("linkToContract", String.format(urlTemplate, contract.getId()));
@@ -824,13 +828,16 @@ public class TemplateServiceImpl implements TemplateService {
 
     @Override
     public PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action,
-                                                       Collection<String> recipients, EnumLangUtil enumLangUtil) {
+                                                       Collection<String> recipients, Lang lang) {
+        EnumLangUtil enumLangUtil = new EnumLangUtil(lang);
+        ScheduleFormatter scheduleFormatter = new ScheduleFormatter(lang);
+
         PersonAbsence oldState = event.getOldState();
         PersonAbsence newState = event.getNewState();
-        List<PersonAbsence> multiAddAbsenceList = event.getMultiAddAbsenceList();
 
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("EnumLangUtil", enumLangUtil);
+        templateModel.put("ScheduleFormatter", scheduleFormatter);
         templateModel.put("is_created", action == EventAction.CREATED);
         templateModel.put("is_updated", action == EventAction.UPDATED);
         templateModel.put("is_removed", action == EventAction.REMOVED);
@@ -845,7 +852,10 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("oldTillTime", oldState == null ? null : dateTimeFormat.format(oldState.getTillTime()));
         templateModel.put("tillTime", dateTimeFormat.format(newState.getTillTime()));
 
-        templateModel.put("multiAddAbsenceList", multiAddAbsenceList);
+        templateModel.put("scheduleChanged", event.isScheduleChanged());
+        templateModel.put("scheduleDefined", newState.isScheduledAbsence());
+        templateModel.put("scheduleOld", oldState == null ? null : oldState.getScheduleItems());
+        templateModel.put("schedule", newState.getScheduleItems());
 
         templateModel.put("reason", newState.getReason());
 
@@ -1296,15 +1306,6 @@ public class TemplateServiceImpl implements TemplateService {
         }
 
         return comment;
-    }
-
-    private String escapeTextAndReplaceLineBreaks(String text) {
-        if (text == null) {
-            return null;
-        }
-        text = HTMLHelper.htmlEscape( text );
-        text = replaceLineBreaks( text );
-        return text;
     }
 
     private String replaceLineBreaks(String text) {

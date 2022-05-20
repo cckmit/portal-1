@@ -1,0 +1,15 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel>
+        <g:HTMLPanel visible="false" styleName="absence-no-data-container" ui:field="noScheduleDataPlaceholder">
+            <span><ui:text from="{lang.absenceNoScheduleData}"/></span>
+        </g:HTMLPanel>
+        <g:HTMLPanel ui:field="scheduleContainer"/>
+        <g:Label ui:field="errorMessage" styleName="text-danger"/>
+    </g:HTMLPanel>
+
+</ui:UiBinder>

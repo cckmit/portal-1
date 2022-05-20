@@ -73,6 +73,14 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${project.maven-surefire-plugin}</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -326,6 +334,12 @@
             <groupId>de.novanic.gwteventservice</groupId>
             <artifactId>gwteventservice</artifactId>
             <version>${gwteventserviceVersion}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.gwt</groupId>
+                    <artifactId>gwt-servlet</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>

@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service.template;
 
 import freemarker.template.TemplateException;
+import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ReportDto;
@@ -108,7 +109,7 @@ public interface TemplateService {
 
     PreparedTemplate getAbsenceNotificationSubject(Person initiator, PersonAbsence absence);
 
-    PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action, Collection<String> recipients, EnumLangUtil enumLangUtil);
+    PreparedTemplate getAbsenceNotificationBody(AbsenceNotificationEvent event, EventAction action, Collection<String> recipients, Lang lang);
 
     PreparedTemplate getAbsenceReportSubject(String title);
 

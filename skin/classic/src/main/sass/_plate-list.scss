@@ -59,7 +59,7 @@ ul.plate-list {
         position: relative;
 
         &:after {
-          font: normal normal normal 14px/1 Font Awesome 5 Free;
+          font: normal normal normal 14px/1 Font Awesome 6 Pro;
           content: "\f187";
           position: absolute;
           font-size: 4em;
@@ -87,7 +87,7 @@ ul.plate-list {
     }
 
     &.partner .header-block:after {
-      font-family: "Font Awesome 5 Free", serif;
+      font-family: "Font Awesome 6 Pro", serif;
       content: "\f2b5";
     }
 

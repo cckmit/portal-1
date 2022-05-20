@@ -52,6 +52,7 @@ public class DateFormatter {
         return date == null ? "" : yearFormat.format(date);
     }
 
+
     private static DateTimeFormat yearFormat = DateTimeFormat.getFormat("yyyy");
     private static DateTimeFormat format = DateTimeFormat.getFormat( "dd.MM.yyyy" );
     private static DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat( "dd.MM.yyyy HH:mm" );
