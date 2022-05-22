@@ -58,7 +58,6 @@
                 <module>gwt/issue</module>
                 <module>gwt/issueassignment</module>
                 <module>gwt/report</module>
-                <module>gwt/region</module>
                 <module>gwt/project</module>
                 <module>gwt/equipment</module>
                 <module>gwt/account</module>

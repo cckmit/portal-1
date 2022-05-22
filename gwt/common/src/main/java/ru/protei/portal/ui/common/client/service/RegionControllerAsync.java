@@ -4,25 +4,18 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
-import ru.protei.portal.core.model.dto.RegionInfo;
-import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Асинхронный сервис управления продуктами
  */
 public interface RegionControllerAsync {
-    void getRegionList(ProjectQuery query, AsyncCallback< List< RegionInfo > > async);
-
-    void getDistrictList(AsyncCallback<List<DistrictInfo>> callback);
 
     void getProjects(ProjectQuery query, AsyncCallback<SearchResult<Project>> callback);
 

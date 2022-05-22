@@ -10,7 +10,6 @@
     <inherits name="ru.protei.portal.ui.issueassignment.IssueAssignment"/>
     <inherits name="ru.protei.portal.ui.report.Report"/>
     <inherits name="ru.protei.portal.ui.equipment.Equipment"/>
-    <inherits name="ru.protei.portal.ui.region.Region" />
     <inherits name="ru.protei.portal.ui.project.Project" />
     <inherits name="ru.protei.portal.ui.account.Account" />
     <inherits name="ru.protei.portal.ui.role.Role" />
