@@ -4187,5 +4187,6 @@ public interface Lang extends Messages, ContactItemLang {
     String absenceScheduleInactive();
 
     String issueReportDataSummarize();
+
 }
 

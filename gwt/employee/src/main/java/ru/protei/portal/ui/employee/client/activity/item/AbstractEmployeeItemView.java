@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employee.client.activity.item;
 
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.PersonAbsence;
 
@@ -10,7 +11,9 @@ public interface AbstractEmployeeItemView extends IsWidget {
 
     void setActivity( AbstractEmployeeItemActivity activity );
 
-    void setName( String name, String link );
+    void setId(Long id);
+
+    void setName( String name );
 
     void setBirthday( String value );
 
@@ -20,9 +23,7 @@ public interface AbstractEmployeeItemView extends IsWidget {
 
     void setPhoto ( String photo );
 
-    void setDepartmentParent( String value );
-
-    void setDepartment( String value );
+    void setGroupOrDepartment(String value);
 
     void setPosition( String value );
 
@@ -32,7 +33,7 @@ public interface AbstractEmployeeItemView extends IsWidget {
 
     void setFireDate ( String value );
 
-    void setEditIcon( String link );
+    HasVisibility editVisibility();
 
     void setCurrentAbsence(PersonAbsence absence);
 }

@@ -4,15 +4,21 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.ui.common.client.common.ClickHTMLPanel;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_AbsenceReasonLang;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
+
+import static ru.protei.portal.core.model.util.CrmConstants.Style.HIDE;
 
 /**
  * Представление сотрудника
@@ -29,66 +35,58 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     }
 
     @Override
-    public void setName( String name, String link ) {
-        this.name.setText( name );
-        this.name.setTitle( name );
-        this.name.setHref( link );
+    public void setId(Long id) {
+        this.id = id;
+    }
+    @Override
+    public void setName( String name ) {
+        this.name.setInnerText(name);
     }
 
     @Override
     public void setBirthday( String value ) {
-        birthdayContainer.setVisible( value != null && !value.isEmpty() );
         birthday.setInnerText( value == null ? "" : value );
     }
 
     @Override
     public void setPhone( String value ) {
-        phoneContainer.setVisible( value != null && !value.isEmpty() );
         phone.setInnerText( value == null ? "" : value );
     }
 
     @Override
     public void setEmail( String value ) {
-        emailContainer.setVisible(!value.isEmpty());
         emails.setInnerHTML(value);
     }
 
     @Override
-    public void setDepartmentParent(String value) {
-        departmentParentContainer.setVisible( value != null && !value.isEmpty() );
-        departmentParent.setInnerText( value == null ? "" : value );
-    }
-
-    @Override
-    public void setDepartment( String value ) {
-        departmentContainer.setVisible( value != null && !value.isEmpty() );
+    public void setGroupOrDepartment(String value) {
         department.setInnerText( value == null ? "" : value );
     }
 
     @Override
     public void setPosition( String value ) {
-        positionContainer.setVisible( value != null && !value.isEmpty() );
         position.setInnerText( value == null ? "" : value );
     }
 
     @Override
     public void setCompany( String value ) {
-        companyContainer.setVisible( value != null && !value.isEmpty() );
         company.setInnerText( value == null ? "" : value );
     }
 
     @Override
     public void setIP(String value) {
-        ipContainer.setVisible( value != null && !value.isEmpty() );
         ip.setInnerText( value == null ? "" : value );
     }
 
     @Override
     public void setFireDate(String value) {
         employeeContainer.addClassName("fired");
-        name.setHTML("<i class='fa fa-ban text-danger'></i> " + this.name.getHTML());
-        fireDateContainer.setVisible(true);
-        fireDate.setInnerText( value == null ? "" : value );
+        firedDate.setInnerText(value);
+
+        // show fired icon placed on absence icon position
+        absenceReason.removeClassName(HIDE);
+        absenceIcon.addClassName("text-danger fa-light fa-ban");
+        name.addClassName("text-danger");
     }
 
     @Override
@@ -97,20 +95,17 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     }
 
     @Override
-    public void setEditIcon (String link) {
-        editIcon.setHref(link);
-        editIcon.setVisible(link != null && !link.isEmpty());
+    public HasVisibility editVisibility() {
+        return editAnchor;
     }
 
+    @Override
     public void setCurrentAbsence(PersonAbsence absence) {
         if (absence == null) {
-            removeStyleName("absent");
-            absenceReason.addClassName("hide");
-            absenceReason.setTitle("");
-            absenceIcon.setClassName("");
+            absenceReason.addClassName(HIDE);
+            absenceReason.setTitle(StringUtils.EMPTY);
         } else {
-            addStyleName("absent");
-            absenceReason.removeClassName("hide");
+            absenceReason.removeClassName(HIDE);
             absenceReason.setTitle(reasonLang.getName(absence.getReason()) +
                     "\n" +
                     DateFormatter.formatDateTime(absence.getFromTime()) +
@@ -120,81 +115,53 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         }
     }
 
+    @UiHandler("rootContainer")
+    public void onItemSelected(ClickEvent event) {
+        activity.onEmployeePreviewClicked(id);
+    }
+
+    @UiHandler("editAnchor")
+    public void onItemEditSelected(ClickEvent event) {
+        event.preventDefault();
+        activity.onEmployeeEditClicked(id);
+    }
     @UiField
-    Anchor name;
+    Anchor editAnchor;
 
     @UiField
-    Anchor editIcon;
-
-    @UiField
-    HTMLPanel birthdayContainer;
-
-    @UiField
-    HTMLPanel fireDateContainer;
-
-    @UiField
-    HTMLPanel phoneContainer;
-
-    @UiField
-    HTMLPanel emailContainer;
-
-    @UiField
-    HTMLPanel departmentParentContainer;
-
-    @UiField
-    HTMLPanel departmentContainer;
-
-    @UiField
-    HTMLPanel positionContainer;
-
-    @UiField
-    HTMLPanel companyContainer;
-
-    @UiField
-    HTMLPanel ipContainer;
-
+    DivElement name;
     @UiField
     SpanElement birthday;
-
-    @UiField
-    SpanElement fireDate;
-
     @UiField
     SpanElement phone;
-
     @UiField
     Image photo;
-
     @UiField
-    SpanElement department;
-
+    DivElement department;
     @UiField
-    SpanElement departmentParent;
-
+    Element position;
     @UiField
-    SpanElement position;
-
-    @UiField
-    SpanElement company;
-
+    DivElement company;
     @UiField
     SpanElement ip;
-
     @UiField
     DivElement employeeContainer;
-
     @UiField
     SpanElement emails;
-
     @UiField
     Element absenceIcon;
     @UiField
     DivElement absenceReason;
+    @UiField
+    DivElement firedDate;
+    @UiField
+    ClickHTMLPanel rootContainer;
 
     @Inject
     En_AbsenceReasonLang reasonLang;
 
-    AbstractEmployeeItemActivity activity;
+    private Long id;
+    private AbstractEmployeeItemActivity activity;
 
     private static EmployeeItemViewUiBinder ourUiBinder = GWT.create( EmployeeItemViewUiBinder.class );
     interface EmployeeItemViewUiBinder extends UiBinder< HTMLPanel, EmployeeItemView > {}
