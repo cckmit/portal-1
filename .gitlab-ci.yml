@@ -27,6 +27,8 @@ sync-docs:
 validate-ts:
   stage: validate
   image: node:16-alpine
+  tags:
+    - department-7-runner
   before_script:
     - sh ./webts/scripts/install.sh
   script:
@@ -41,6 +43,8 @@ validate-ts:
 test-ts:
   stage: test
   image: node:16-alpine
+  tags:
+    - department-7-runner
   before_script:
     - sh ./webts/scripts/install.sh
   script:
