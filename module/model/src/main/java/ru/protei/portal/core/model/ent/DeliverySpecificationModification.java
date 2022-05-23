@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.winter.jdbc.annotations.*;
 
 @JdbcEntity(table = "specification_modification")
@@ -9,24 +10,28 @@ public class DeliverySpecificationModification {
      * Идентификатор
      */
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    @JsonProperty("id")
     private Long id;
 
     /**
      * Идентификатор спецификации
      */
     @JdbcColumn(name = "specification_to_specification_id")
+    @JsonProperty("specificationToSpecificationId")
     private Long specificationToSpecificationId;
 
     /**
      * Номер исполнения
      */
     @JdbcColumn(name = "number")
+    @JsonProperty("number")
     private Integer number;
 
     /**
      *  Номер исполнения
      */
     @JdbcColumn(name = "count")
+    @JsonProperty("count")
     private Integer count;
 
     public Long getId() {
