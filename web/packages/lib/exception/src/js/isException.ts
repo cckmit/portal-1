@@ -5,6 +5,7 @@ export const isException = (entity: any | undefined | null): entity is Exception
   entity != undefined &&
   typeof entity === "object" &&
   "_tag" in entity &&
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   entity._tag === "Exception"
 
 export const isExceptionNamed = (entity: any | undefined | null, name: string): boolean =>

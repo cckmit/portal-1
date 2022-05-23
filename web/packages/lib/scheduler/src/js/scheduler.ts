@@ -17,7 +17,7 @@ export function scheduleMacroTask(fn: NoneToVoidFunction): AnyToVoidFunction {
   }
 }
 
-let microtasks: NoneToVoidFunction[] | undefined
+let microtasks: Array<NoneToVoidFunction> | undefined
 export function scheduleMicroTaskPrimary(fn: NoneToVoidFunction): AnyToVoidFunction {
   return scheduleMicroTask(fn, true)
 }
@@ -42,7 +42,7 @@ export function scheduleMicroTask(
   }
 }
 
-let rafs: NoneToVoidFunction[] | undefined
+let rafs: Array<NoneToVoidFunction> | undefined
 export function scheduleRafPrimary(fn: NoneToVoidFunction): AnyToVoidFunction {
   return scheduleRaf(fn, true)
 }

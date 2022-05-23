@@ -15,6 +15,7 @@ export function throttle<F extends AnyToVoidFunction>(
     if (!interval) {
       if (shouldRunFirst) {
         isPending = false
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         fn(...(args as any))
       }
       interval = self.setInterval(() => {
@@ -24,6 +25,7 @@ export function throttle<F extends AnyToVoidFunction>(
           return
         }
         isPending = false
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         fn(...(args as any))
       }, ms)
     }

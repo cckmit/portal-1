@@ -44,6 +44,7 @@ function parse(parsers: Array<JsonPlugin["parse"]>, text: string, reviver?: (key
     if (typeof reviver === "function") {
       return reviver(key, value)
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return value
   })
 }
@@ -56,6 +57,7 @@ function stringify(stringifies: Array<JsonPlugin["stringify"]>, value: unknown, 
     if (typeof replacer === "function") {
       return replacer(key, value)
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return value
   }, space)
 }

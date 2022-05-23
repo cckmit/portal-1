@@ -30,9 +30,11 @@ export const ImportContentResultComponent = observer(function ImportContentResul
     specificationsImportService.reset()
   }, [ specificationsCreateService, specificationsImportService, navigate ])
 
-  const onCreate = useCallback(async () => {
-    await specificationsCreateService.create()
-    navigate(-1)
+  const onCreate = useCallback(() => {
+    void (async () => {
+      await specificationsCreateService.create()
+      navigate(-1)
+    })()
   }, [ specificationsCreateService, navigate ])
 
 

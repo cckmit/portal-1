@@ -31,13 +31,15 @@ export const ImportContentComponent = observer(function ImportContentComponent()
   }, [ specificationsCreateService ])
 
   const onFiles = useCallback((files: Array<File>) => {
-    const file = files[0]
-    if (file === undefined) {
-      return
-    }
-    specificationsCreateService.reset({ keepName: true })
-    specificationsImportService.reset()
-    specificationsImportService.importFileXLSX(file)
+    void (async () => {
+      const file = files[0]
+      if (file === undefined) {
+        return
+      }
+      specificationsCreateService.reset({ keepName: true })
+      specificationsImportService.reset()
+      await specificationsImportService.importFileXLSX(file)
+    })()
   }, [ specificationsCreateService, specificationsImportService ])
 
   return (

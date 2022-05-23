@@ -6,7 +6,7 @@ import { createHashHistory, HashHistory, Update } from "history"
 import { addSlashToHistoryLocation } from "../util/addSlashToHistoryLocation"
 
 // @see HashRouter implementation
-export function HashFactoryRouter({ basename, children, window }: HashRouterProps) {
+export function HashFactoryRouter({ basename, children, window }: HashRouterProps): JSX.Element {
   const historyRef = useRef<HashHistory>()
   if (historyRef.current == null) {
     historyRef.current = createHashHistory({ window })

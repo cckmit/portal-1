@@ -21,4 +21,4 @@ export const IS_DISPLAY_MEDIA_SUPPORTED = "mediaDevices" in navigator && "getDis
 export const IS_MEDIA_OUTPUT_SUPPORTED = self.document && "setSinkId" in HTMLMediaElement.prototype
 export const IS_CANVAS_FILTER_SUPPORTED = self.document && "filter" in (document.createElement("canvas").getContext("2d") || {})
 export const IS_CLIPBOARD_SUPPORTED = navigator.clipboard
-export const IS_CLIPBOARD_ITEM_SUPPORTED = navigator.clipboard && self.ClipboardItem
+export const IS_CLIPBOARD_ITEM_SUPPORTED = navigator.clipboard && typeof self.ClipboardItem !== "undefined"

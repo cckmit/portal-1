@@ -49,7 +49,7 @@ export class EventBusImpl<T> implements EventBus<T> {
     const broadcastListeners = this.broadcastListeners
     const listeners = topicListeners.concat(broadcastListeners)
     for (const listener of listeners) {
-      listener(payload)
+      void listener(payload)
     }
   }
 }

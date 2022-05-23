@@ -18,6 +18,7 @@ function toString(
   nameMapper?: NameMapper,
 ): string {
   if (!(error instanceof Error) && !isException(error)) {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     return `Not instance of error: ${error}`
   }
   const name = nameMapper?.(error.name) || error.name

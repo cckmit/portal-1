@@ -48,7 +48,7 @@ export class EventBusModuleImpl implements EventBusModule {
   ): Unsubscribe {
     const listenerScheduler = (event: EventBusEvent<unknown>) => {
       scheduler(() => {
-        listener(event as T)
+        void listener(event as T)
       })
     }
     return eventbus.subscribe(config.topic, listenerScheduler)

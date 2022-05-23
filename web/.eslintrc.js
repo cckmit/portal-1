@@ -100,6 +100,8 @@ module.exports = {
         "requireLast": false
       },
     } ],
+    "@typescript-eslint/restrict-template-expressions": "off",
+    "@typescript-eslint/require-await": "off",
   },
   "globals": {
     "window": true,

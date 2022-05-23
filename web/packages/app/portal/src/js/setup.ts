@@ -9,7 +9,7 @@ export function setup(): void {
   log.info("Setup - start")
   const eventbus = setupEventbus()
   setupIntegrationPortalGwt(eventbus)
-  commonModule.loader.load()
+  void commonModule.loader.load()
   commonModule.addExternalEventbus(eventbus)
   unitDeliveryModule.addExternalEventbus(eventbus)
   log.info("Setup - done")

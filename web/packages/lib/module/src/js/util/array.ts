@@ -4,7 +4,7 @@ export function arrayClear<T>(array: Array<T>): void {
 
 export function arrayFilterInPlace<T>(
   array: Array<T>,
-  predicate: (value: T, index: number, array: T[]) => boolean,
+  predicate: (value: T, index: number, array: Array<T>) => boolean,
 ): Array<T> {
   let i = 0,
     j = 0

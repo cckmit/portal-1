@@ -45,9 +45,9 @@ class HttpImpl implements Http {
     }
   }
 
-  private toHeaders(headers: HttpHeaders | undefined): string[][] {
+  private toHeaders(headers: HttpHeaders | undefined): Array<Array<string>> {
     const input = headers || {}
-    const real: string[][] = []
+    const real: Array<Array<string>> = []
     for (const [key, value] of Object.entries(input)) {
       if (value === undefined) {
         continue

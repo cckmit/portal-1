@@ -133,7 +133,8 @@ export class SpecificationsParserXLSXImpl implements SpecificationsParserXLSX {
     for (let i = firstLetter; i <= lastLetter; i++) {
       const columnLetter = String.fromCharCode(i)
       const cellName = columnLetter + rowNumberString
-      const cell = sheet.value[cellName]
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const cell: CellObject = sheet.value[cellName]
       if (cell == undefined) {
         continue
       }

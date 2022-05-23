@@ -8,6 +8,7 @@ export function dateFormat(date: Date | undefined, format: string, locale?: stri
     return undefined
   }
   return fnsFormat(date, format, {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     locale: locale && require(`date-fns/locale/${adjustLocale(locale)}/index.js`) || undefined,
     weekStartsOn: 1,
   })
@@ -21,6 +22,7 @@ export function dateFormatDistanceToNow(date: Date | undefined, locale?: string)
     return undefined
   }
   return formatDistanceToNow(date, {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     locale: locale && require(`date-fns/locale/${adjustLocale(locale)}/index.js`) || undefined,
   })
 }

@@ -55,7 +55,10 @@ function stringify(
 ): string {
   if (msg === null) {
     return "<null>"
+  } else if (typeof msg === "undefined") {
+    return "<undefined>"
   } else if (typeof msg === "function") {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return stringify(msg(), json, sensitiveKeys)
   } else if (typeof msg === "string") {
     return msg
@@ -69,8 +72,6 @@ function stringify(
     return msg.toUTCString()
   } else if (typeof msg === "object") {
     return json(msg, sensitiveInfoReplacer(sensitiveKeys))
-  } else if (typeof msg === "undefined") {
-    return "<undefined>"
   } else {
     // unreachable, but everything could happen
     return json(msg, sensitiveInfoReplacer(sensitiveKeys))

@@ -1,5 +1,4 @@
-import { Exception } from "@protei-libs/exception"
-import { makeException } from "./makeException"
+import { Exception, makeException } from "@protei-libs/exception"
 import { isExceptionApiError } from "../../model"
 
 export function detectException(error: Error | unknown): Exception {

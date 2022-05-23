@@ -77,7 +77,7 @@ export class PortalApiTransportImpl implements PortalApiTransport {
     } catch (e) {
       const exception = detectException(e)
       const message = `Failed to parse json response of '${esRequest.method} ${esRequest.url}' request`
-      throw newException(ExceptionName.API_PARSE, { message, cause: exception }, this.exchange)
+      throw newException(ExceptionName.API_PARSE, { message, cause: exception }, this.exchange.bind(this))
     }
   }
 
@@ -97,7 +97,7 @@ export class PortalApiTransportImpl implements PortalApiTransport {
   }
 
   private throwApiErrorException(response: HttpResponse, res: JsonResponse): never {
-    throw newExceptionApiError(res, this.exchange)
+    throw newExceptionApiError(res, this.exchange.bind(this))
   }
 
   constructor(

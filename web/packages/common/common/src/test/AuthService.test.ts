@@ -1,7 +1,7 @@
 import { AuthService, AuthServiceImpl, AuthStore } from "@protei-portal/common"
 import { makeStubEventBusModule } from "./stub/makeStubEventBusModule"
 
-test("AuthService.loginDone", async () => {
+test("AuthService.loginDone", () => {
   const eventBusModule = makeStubEventBusModule()
   const authStore: AuthStore = {
     authorized: false,

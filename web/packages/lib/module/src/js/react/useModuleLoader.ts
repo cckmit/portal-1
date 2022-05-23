@@ -14,7 +14,7 @@ export function useModuleLoader<MODULE_TYPE>(opts: {
     if (noLoad || module) {
       return
     }
-    moduleLoader.load().then(forceUpdate)
+    void moduleLoader.load().then(forceUpdate)
   }, [noLoad, module, moduleLoader, forceUpdate])
 
   return module

@@ -13,10 +13,12 @@ export function debounce<F extends AnyToVoidFunction>(
       self.clearTimeout(waitingTimeout)
       waitingTimeout = undefined
     } else if (shouldRunFirst) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       fn(...(args as any))
     }
     waitingTimeout = self.setTimeout(() => {
       if (shouldRunLast) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         fn(...(args as any))
       }
       waitingTimeout = undefined

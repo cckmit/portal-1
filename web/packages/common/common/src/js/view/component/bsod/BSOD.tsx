@@ -47,7 +47,7 @@ export const BSOD = memo(function BSOD(props: Props) {
                       onClick={() => (window.location.reload())}/>
               <Button className="btn btn-default"
                       value="Скачать файл логов"
-                      onClick={() => debugService.downloadLogHistory()}/>
+                      onClick={() => void debugService.downloadLogHistory()}/>
             </div>
           </div>
         </div>

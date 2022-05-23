@@ -26,7 +26,7 @@ export abstract class ModuleWithEventBusAbstractImpl<MODULE_TYPE>
     if (!this.shouldLoadModuleByEvent(event)) {
       return
     }
-    this.loader.load().then(() => {
+    void this.loader.load().then(() => {
       this.eventBusModule.fireEventOnlyInternal(event)
     })
   }
