@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentTimeElapsedSumDAO;
-import ru.protei.portal.core.model.dao.CaseShortViewDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -23,7 +22,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.toSet;
 
 public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
 
@@ -33,8 +31,6 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
     Lang lang;
     @Autowired
     PortalConfig config;
-    @Autowired
-    CaseShortViewDAO caseShortViewDAO;
     @Autowired
     CaseCommentTimeElapsedSumDAO caseCommentTimeElapsedSumDAO;
     @Autowired

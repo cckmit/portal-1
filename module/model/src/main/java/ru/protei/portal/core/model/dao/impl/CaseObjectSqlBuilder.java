@@ -49,13 +49,9 @@ public class CaseObjectSqlBuilder {
             }
 
             if (isFilterByTagNames(query)) {
-                if (query.getPlanId() == null) {
-                    condition.append(" and case_tag.name in" + makeInArg(query.getCaseTagsNames(), true));
-                } else {
-                    condition.append(" and case_object.id in (")
-                            .append("select case_id from case_object_tag join case_tag on case_tag.id = case_object_tag.tag_id where case_tag.name in ")
-                            .append(makeInArg(query.getCaseTagsNames(), true)).append(")");
-                }
+                condition.append(" and case_object.id in (")
+                        .append("select case_id from case_object_tag join case_tag on case_tag.id = case_object_tag.tag_id where case_tag.name in ")
+                        .append(makeInArg(query.getCaseTagsNames(), true)).append(")");
             }
 
             if ( !query.isAllowViewPrivate() ) {
@@ -138,33 +134,21 @@ public class CaseObjectSqlBuilder {
                 condition.append(" and case_object.state in " + makeInArg(query.getStateIds(), false));
             }
 
-            if ( isNotEmpty(query.getImportanceIds()) ) {
-                String importantces = makeInArg( query.getImportanceIds(), false );
+            if (isNotEmpty(query.getImportanceIds())) {
+                String importantces = makeInArg(query.getImportanceIds(), false);
                 if (query.isCheckImportanceHistory() == null || !query.isCheckImportanceHistory()) {
-                    condition.append( " and importance in " ).append( importantces );
+                    condition.append(" and importance in ").append(importantces);
                 } else {
-                    if (query.getPlanId() == null) {
-                        condition.append( " and (importance in " ).append( importantces )
-                                .append(" or (history.new_id in " ).append( importantces )
-                                    .append(" and history.value_type = ").append(En_HistoryType.CASE_IMPORTANCE.getId())
-                                    .append(" and history.action_type in ")
-                                    .append(makeInArg(Arrays.asList(En_HistoryAction.ADD.getId(), En_HistoryAction.CHANGE.getId()), false))
-                                    .append(")")
-                                .append( ")" );
-                    } else {
-                        condition.append( " and (importance in " ).append( importantces )
-                                .append(" or case_object.id in (").append("select case_object_id from history " +
+                    condition.append(" and (importance in ").append(importantces)
+                            .append(" or case_object.id in (").append("select case_object_id from history " +
                                     "where new_id in ").append(makeInArg(query.getImportanceIds(), false))
-                                    .append(" and value_type = ").append(En_HistoryType.CASE_IMPORTANCE.getId())
-                                    .append(" and action_type in ").append(makeInArg(Arrays.asList(En_HistoryAction.ADD.getId(), En_HistoryAction.CHANGE.getId()), false))
-                                    .append(")")
-                                .append( ")" );;
-                    }
+                            .append(" and value_type = ").append(En_HistoryType.CASE_IMPORTANCE.getId())
+                            .append(" and action_type in ").append(makeInArg(Arrays.asList(En_HistoryAction.ADD.getId(), En_HistoryAction.CHANGE.getId()), false))
+                            .append("))");
                 }
             }
 
             Interval created = makeInterval(query.getCreatedRange());
-
             if ( created != null ) {
                 if (created.from != null) {
                     condition.append( " and case_object.created >= ?" );
@@ -177,23 +161,32 @@ public class CaseObjectSqlBuilder {
             }
 
             Interval modified = makeInterval(query.getModifiedRange());
-
-            if ( modified != null ) {
+            if (modified != null) {
                 if (modified.from != null) {
-                    condition.append( " and (case_object.modified >= ?" );
-                    condition.append( " or case_comment.created >= ?" );
-                    condition.append( " or history.date >= ?)" );
-                    args.add( modified.from );
-                    args.add( modified.from );
-                    args.add( modified.from );
-                }
-                if (modified.to != null) {
-                    condition.append( " and (case_object.modified < ?" );
-                    condition.append( " or case_comment.created < ?" );
-                    condition.append( " or history.date < ?)" );
-                    args.add( modified.to );
-                    args.add( modified.to );
-                    args.add( modified.to );
+                    condition.append( " and (case_object.id in (" )
+                            .append("select CASE_ID from case_comment where case_comment.created >= ?");
+                    args.add(modified.from);
+                    if (modified.to != null) {
+                        condition.append(" and case_comment.created < ?");
+                        args.add(modified.to);
+                    }
+                    condition.append(") or case_object.id in (")
+                            .append("select case_object_id from history where date >= ?");
+                    args.add(modified.from);
+                    if (modified.to != null) {
+                        condition.append(" and date < ?");
+                        args.add(modified.to);
+                    }
+                    condition.append("))");
+
+                } else if (modified.to != null) {
+                    condition.append(" and (case_object.id in (")
+                            .append("select CASE_ID from case_comment where case_comment.created < ?)");
+                    condition.append(" or case_object.id in (")
+                            .append("select case_object_id from history where date < ?)");
+                    condition.append( ")");
+                    args.add(modified.to);
+                    args.add(modified.to);
                 }
             }
 
@@ -204,16 +197,11 @@ public class CaseObjectSqlBuilder {
                         .or( "case_object.info" ).like( query.getSearchString() )
                         .or( "case_object.info" ).like( query.getAlternativeSearchString() );
                 if (isSearchAtComments( query )) {
-                    if (query.getPlanId() == null) {
-                        searchCondition
-                                .or( "case_comment.comment_text" ).like( query.getSearchString() )
-                                .or( "case_comment.comment_text" ).like( query.getAlternativeSearchString() );
-                    } else {
-                        searchCondition
-                                .or("case_object.id").in(SqlQueryBuilder.query().select("CASE_ID").from("case_comment")
+                    searchCondition
+                            .or("case_object.id").in(SqlQueryBuilder.query().select("CASE_ID")
+                                    .from("case_comment")
                                     .where("case_comment.comment_text").like(query.getSearchString())
-                                        .or("case_comment.comment_text").like(query.getAlternativeSearchString()).asQuery());
-                    }
+                                    .or("case_comment.comment_text").like(query.getAlternativeSearchString()).asQuery());
                 }
                 condition.append( " and (" )
                         .append( searchCondition.getSqlCondition() )
@@ -255,24 +243,6 @@ public class CaseObjectSqlBuilder {
                         .append(" (SELECT case_object_id FROM person_favorite_issues WHERE person_id = ?)");
 
                 args.add(query.getPersonIdToIsFavorite().getA());
-            }
-
-            if (CollectionUtils.isNotEmpty(query.getTimeElapsedTypeIds())) {
-                List<String> orConditions = new ArrayList<>();
-
-                condition.append(" and (");
-
-                if (query.getTimeElapsedTypeIds().contains(En_TimeElapsedType.NONE.getId())) {
-                    orConditions.add("case_comment.time_elapsed_type IS NULL and case_comment.time_elapsed IS NOT NULL");
-                }
-
-                if (isNotEmpty(query.getTimeElapsedTypeIds())) {
-                    orConditions.add("case_comment.time_elapsed_type IN " + HelperFunc.makeInArg(query.getTimeElapsedTypeIds(), false));
-                }
-
-                condition
-                        .append(String.join(" or ", orConditions))
-                        .append(")");
             }
 
             if (CollectionUtils.isNotEmpty(query.getWorkTriggersIds())) {
