@@ -54,7 +54,7 @@ public class WorkerTestApiEntityFactory  {
         userLogin.setAuthType(En_AuthType.LOCAL);
         userLogin.setInfo(workerRecordTestAPI.getFirstName() + " " + workerRecordTestAPI.getLastName());
         userLogin.setCreated(new Date());
-        userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
+        userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
         Set<UserRole> userRoles = workerRecordTestAPI.getRoleIds().stream().map(UserRole::new).collect(Collectors.toSet());
         userLogin.setRoles(userRoles);
         return userLogin;
