@@ -8,7 +8,7 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.app.portal.client.factory.ClientFactory;
-import ru.protei.portal.ui.web.client.TypescriptWebEntryPoint;
+import ru.protei.portal.ui.webts.client.TypescriptWebEntryPoint;
 
 import java.util.logging.Logger;
 

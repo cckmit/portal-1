@@ -26,30 +26,30 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@protei-libs/animation": [ "./web/packages/lib/animation/src/" ],
-      "@protei-libs/eventbus": [ "./web/packages/lib/eventbus/src/" ],
-      "@protei-libs/exception": [ "./web/packages/lib/exception/src/" ],
-      "@protei-libs/http": [ "./web/packages/lib/http/src/" ],
-      "@protei-libs/logger": [ "./web/packages/lib/logger/src/" ],
-      "@protei-libs/module": [ "./web/packages/lib/module/src/" ],
-      "@protei-libs/react": [ "./web/packages/lib/react/src/" ],
-      "@protei-libs/scheduler": [ "./web/packages/lib/scheduler/src/" ],
-      "@protei-libs/storage": [ "./web/packages/lib/storage/src/" ],
-      "@protei-libs/store": [ "./web/packages/lib/store/src/" ],
-      "@protei-libs/types": [ "./web/packages/lib/types/src/" ],
+      "@protei-libs/animation": [ "./webts/packages/lib/animation/src/" ],
+      "@protei-libs/eventbus": [ "./webts/packages/lib/eventbus/src/" ],
+      "@protei-libs/exception": [ "./webts/packages/lib/exception/src/" ],
+      "@protei-libs/http": [ "./webts/packages/lib/http/src/" ],
+      "@protei-libs/logger": [ "./webts/packages/lib/logger/src/" ],
+      "@protei-libs/module": [ "./webts/packages/lib/module/src/" ],
+      "@protei-libs/react": [ "./webts/packages/lib/react/src/" ],
+      "@protei-libs/scheduler": [ "./webts/packages/lib/scheduler/src/" ],
+      "@protei-libs/storage": [ "./webts/packages/lib/storage/src/" ],
+      "@protei-libs/store": [ "./webts/packages/lib/store/src/" ],
+      "@protei-libs/types": [ "./webts/packages/lib/types/src/" ],
 
-      "@protei-portal/common": [ "./web/packages/common/common/src/" ],
-      "@protei-portal/common-lang": [ "./web/packages/common/lang/src/" ],
-      "@protei-portal/common-logger": [ "./web/packages/common/logger/src/" ],
-      "@protei-portal/common-router": [ "./web/packages/common/router/src/" ],
+      "@protei-portal/common": [ "./webts/packages/common/common/src/" ],
+      "@protei-portal/common-lang": [ "./webts/packages/common/lang/src/" ],
+      "@protei-portal/common-logger": [ "./webts/packages/common/logger/src/" ],
+      "@protei-portal/common-router": [ "./webts/packages/common/router/src/" ],
 
-      "@protei-portal/unit-delivery": [ "./web/packages/unit/delivery/src/" ],
+      "@protei-portal/unit-delivery": [ "./webts/packages/unit/delivery/src/" ],
 
-      "@protei-portal/app-portal": [ "./web/packages/app/portal/src/" ]
+      "@protei-portal/app-portal": [ "./webts/packages/app/portal/src/" ]
     }
   },
   "include": [
-    "web/packages/**/*"
+    "webts/packages/**/*"
   ],
   "exclude": [
     "**/target/**/*",

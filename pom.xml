@@ -51,7 +51,7 @@
 
                 <module>skin/classic</module>
 
-                <module>web</module>
+                <module>webts</module>
 
                 <module>gwt/common</module>
                 <module>gwt/company</module>

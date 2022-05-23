@@ -7,11 +7,11 @@
     "postinstall": "husky install"
   },
   "workspaces": [
-    "web/packages/app/*",
-    "web/packages/lib/*",
-    "web/packages/common/*",
-    "web/packages/component/*",
-    "web/packages/unit/*"
+    "webts/packages/app/*",
+    "webts/packages/lib/*",
+    "webts/packages/common/*",
+    "webts/packages/component/*",
+    "webts/packages/unit/*"
   ],
   "devDependencies": {
     "@babel/core": "7.17.2",
@@ -27,6 +27,7 @@
     "@types/jest": "27.4.1",
     "@types/node": "17.0.23",
     "@types/react": "17.0.38",
+    "@types/react-dom": "17.0.11",
     "@typescript-eslint/eslint-plugin": "5.15.0",
     "@typescript-eslint/parser": "5.15.0",
     "babel-jest": "27.5.1",
@@ -48,5 +49,11 @@
     "ts-node": "10.5.0",
     "typescript": "4.5.4",
     "webpack": "5.66.0"
+  },
+  "resolutions": {
+    "@types/jest": "27.4.1",
+    "@types/node": "17.0.23",
+    "@types/react": "17.0.38",
+    "@types/react-dom": "17.0.11"
   }
 }

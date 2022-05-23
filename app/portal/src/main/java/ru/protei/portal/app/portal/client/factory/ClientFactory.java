@@ -29,8 +29,8 @@ import ru.protei.portal.ui.role.client.factory.RoleClientModule;
 import ru.protei.portal.ui.roomreservation.client.factory.RoomReservationClientModule;
 import ru.protei.portal.ui.sitefolder.client.factory.SiteFolderClientModule;
 import ru.protei.portal.ui.plan.client.factory.PlanClientModule;
-import ru.protei.portal.ui.web.client.factory.TypescriptWebModule;
-import ru.protei.portal.ui.web.client.factory.TypescriptWebModuleDeliverySpecification;
+import ru.protei.portal.ui.webts.client.factory.TypescriptWebModule;
+import ru.protei.portal.ui.webts.client.factory.TypescriptWebModuleDeliverySpecification;
 
 /**
  * Фабрика

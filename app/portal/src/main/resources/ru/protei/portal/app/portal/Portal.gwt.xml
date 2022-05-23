@@ -3,7 +3,7 @@
     <inherits name="ru.protei.portal.skin.classic.Classic"/>
 
     <inherits name="ru.protei.portal.ui.common.Common"/>
-    <inherits name="ru.protei.portal.ui.web.Web"/>
+    <inherits name="ru.protei.portal.ui.webts.WebTS"/>
     <inherits name="ru.protei.portal.ui.company.Company"/>
     <inherits name="ru.protei.portal.ui.product.Product"/>
     <inherits name="ru.protei.portal.ui.contact.Contact"/>

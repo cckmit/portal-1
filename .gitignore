@@ -9,7 +9,7 @@ module/core/index/
 
 
 # Typescript web ignore :: start
-web/src/main/resources/ru/protei/portal/ui/web/public
+webts/src/main/resources/ru/protei/portal/ui/webts/public
 build
 node_modules
 .yarn/*

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='WebTS'>
+    <inherits name="ru.protei.portal.ui.common.Common"/>
+    <source path='client'/>
+    <entry-point class="ru.protei.portal.ui.webts.client.TypescriptWebEntryPoint" />
+</module>

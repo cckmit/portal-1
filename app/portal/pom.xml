@@ -29,7 +29,7 @@
         <!-- Project dependency-->
         <dependency>
             <groupId>ru.protei</groupId>
-            <artifactId>portal4.ui.web</artifactId>
+            <artifactId>portal4.ui.webts</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
