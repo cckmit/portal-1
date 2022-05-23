@@ -2,5 +2,5 @@
 set -e
 
 {
-  find files .;
-} | awk '!arr[$1]++' | grep ''
+  find . -type f;
+} | awk '!arr[$1]++'

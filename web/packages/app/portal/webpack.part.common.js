@@ -10,7 +10,6 @@ module.exports = (env, options) => {
   const webpack = require("webpack")
   const { CleanWebpackPlugin } = require("clean-webpack-plugin")
   const CopyPlugin = require("copy-webpack-plugin")
-  const ESLintPlugin = require("eslint-webpack-plugin")
   const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin")
   const dir = __dirname
   const dirRoot = path.resolve(dir, "..", "..", "..")
@@ -56,11 +55,6 @@ module.exports = (env, options) => {
       ),
       new webpack.DefinePlugin({
         __app_version__: JSON.stringify(version),
-      }),
-      new ESLintPlugin({
-        extensions: [ "tsx", "ts", "js" ],
-        failOnError: true,
-        failOnWarning: false,
       }),
     ].filter(Boolean),
     module: {

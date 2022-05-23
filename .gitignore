@@ -10,6 +10,7 @@ module/core/index/
 
 # Typescript web ignore :: start
 web/src/main/resources/ru/protei/portal/ui/web/public
+build
 node_modules
 .yarn/*
 !.yarn/patches

@@ -1,5 +1,6 @@
 #!/bin/sh
 export dir_web="./web"
+export dir_root_from_web="./.."
 export dir_root="./../.."
 export dir_scripts="${dir_web}/scripts"
 export dir_packages="${dir_web}/packages"
