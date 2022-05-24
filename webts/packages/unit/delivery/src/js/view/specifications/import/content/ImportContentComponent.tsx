@@ -17,9 +17,12 @@ export const ImportContentComponent = observer(function ImportContentComponent()
   const lang = useLang()
   const specification = specificationsCreateStore.specification
   const name = specification?.name ?? ""
+  const createProgress = specificationsCreateStore.progress
   const importProgress = specificationsImportStore.progress
   const specificationsCreateService = useIoCBinding<SpecificationsCreateService>(SpecificationsCreateService$type)
   const specificationsImportService = useIoCBinding<SpecificationsImportService>(SpecificationsImportService$type)
+  const isFormDisabled = isProgressProcessing(createProgress)
+  const isImportDisabled = isFormDisabled || isProgressProcessing(importProgress)
 
   useEffect(() => {
     specificationsCreateService.reset()
@@ -51,7 +54,8 @@ export const ImportContentComponent = observer(function ImportContentComponent()
               <div className="form-group col-12 col-md-6">
                 <label>{lang.deliverySpecificationsName()}</label>
                 <Input value={name}
-                       onChangeFunction={setName}/>
+                       onChangeFunction={setName}
+                       state={isFormDisabled ? "disabled" : undefined}/>
               </div>
             </div>
             <div className="row">
@@ -59,7 +63,8 @@ export const ImportContentComponent = observer(function ImportContentComponent()
                 <label>{lang.deliverySpecificationsImportFile()}</label>
                 <div>
                   <InputFile onFiles={onFiles}
-                             accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                             accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                             state={isImportDisabled ? "disabled" : undefined}>
                     <i className="far fa-file-excel"/>
                     &nbsp;
                     <span className="bold">{lang.deliverySpecificationsImportFileSelect()}</span>

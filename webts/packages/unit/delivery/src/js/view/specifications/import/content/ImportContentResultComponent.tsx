@@ -1,7 +1,7 @@
 import { useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { observer } from "mobx-react-lite"
-import { Button } from "@protei-portal/common"
+import { Button, ExceptionDescriber, isProgressError, isProgressProcessing } from "@protei-portal/common"
 import { useLang } from "@protei-portal/common-lang"
 import { useIoCBinding } from "../../../../ioc"
 import { specificationsCreateStore, specificationsImportStore } from "../../../../store"
@@ -20,9 +20,12 @@ export const ImportContentResultComponent = observer(function ImportContentResul
   const details = specification?.details ?? []
   const specifications = specification?.specifications ?? []
   const errors = specificationsImportStore.errors
+  const createProgress = specificationsCreateStore.progress
+  const importProgress = specificationsImportStore.progress
   const specificationsCreateService = useIoCBinding<SpecificationsCreateService>(SpecificationsCreateService$type)
   const specificationsImportService = useIoCBinding<SpecificationsImportService>(SpecificationsImportService$type)
-  const canImport = !!name && (details.length > 0 || specifications.length > 0) && !specificationsImportService.hasImportErrors()
+  const isFormDisabled = isProgressProcessing(createProgress) || isProgressProcessing(importProgress)
+  const isImportEnabled = !isFormDisabled && !!name && (details.length > 0 || specifications.length > 0) && !specificationsImportService.hasImportErrors()
 
   const onClose = useCallback(() => {
     navigate(-1)
@@ -95,11 +98,32 @@ export const ImportContentResultComponent = observer(function ImportContentResul
               </div>
             </div>
           )}
+          {isProgressError(createProgress) && (
+            <ExceptionDescriber {...createProgress.exception} render={(header, description) => (
+              <div className="row mt-3">
+                <div className="col-12">
+                  <div className="alert alert-danger mb-0" style={{ width: "fit-content" }}>
+                    <strong>{header}</strong>
+                    {description && (
+                      <div>{description}</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}/>
+          )}
         </div>
         <div className="card-footer no-border bg-transparent pt-0">
-          <Button className="btn btn-complete" value={lang.buttonCreate()} onClick={onCreate} disabled={!canImport} />
+          <Button className="btn btn-complete" onClick={onCreate} disabled={!isImportEnabled}>
+            {isProgressProcessing(createProgress) && (
+              <i className="fa-solid fa-circle-notch fa-spin"/>
+            )}
+            {!isProgressProcessing(createProgress) && (<>
+              {lang.buttonCreate()}
+            </>)}
+          </Button>
           &nbsp;
-          <Button className="btn btn-default" value={lang.buttonCancel()} onClick={onClose} />
+          <Button className="btn btn-default" value={lang.buttonCancel()} onClick={onClose} disabled={isFormDisabled}/>
         </div>
       </div>
     </div>
