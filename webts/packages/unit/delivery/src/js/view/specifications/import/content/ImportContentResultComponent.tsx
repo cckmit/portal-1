@@ -88,7 +88,7 @@ export const ImportContentResultComponent = observer(function ImportContentResul
           )}
           {errors.length > 0 && (
             <div className="row mt-3">
-              <div className="col-lg-2 col-md-3 col-12">
+              <div className="col-12">
                 <div className="alert alert-danger mb-0" style={{ width: "fit-content" }}>
                   {lang.deliverySpecificationsImportAlertHasErrors()}
                 </div>

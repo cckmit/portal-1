@@ -156,51 +156,36 @@ export class SpecificationsParserXLSXImpl implements SpecificationsParserXLSX {
   private readRowDetail(columns: Array<Column>, row: Row): SpecificationXLSXRowDetail | undefined {
     return {
       addressRow: row.addressRow,
-      [SpecificationXLSXColumnType.article]: {
-        value: this.readCellContent(columns, row, SpecificationXLSXColumnType.article, this.readCellString.bind(this)),
-      },
-      [SpecificationXLSXColumnType.name]: {
-        value: this.readCellContent(columns, row, SpecificationXLSXColumnType.name, this.readCellString.bind(this), true),
-      },
-      [SpecificationXLSXColumnType.responsible]: {
-        value: this.readCellContent(columns, row, SpecificationXLSXColumnType.responsible, this.readCellString.bind(this), true),
-      },
-      [SpecificationXLSXColumnType.supplier]: {
-        value: this.readCellContent(columns, row, SpecificationXLSXColumnType.supplier, this.readCellString.bind(this), true),
-      },
-      [SpecificationXLSXColumnType.configuration]: {
-        value: this.readCellContent(columns, row, SpecificationXLSXColumnType.configuration, this.readCellString.bind(this)),
-      },
-      [SpecificationXLSXColumnType.color]: {
-        value: this.readCellContent(columns, row, SpecificationXLSXColumnType.color, this.readCellString.bind(this)),
-      },
-      [SpecificationXLSXColumnType.reserve]: {
-        value: this.readCellContent(columns, row, SpecificationXLSXColumnType.reserve, this.readCellNumber.bind(this)),
-      },
-      [SpecificationXLSXColumnType.category]: {
-        value: this.readCellContent(columns, row, SpecificationXLSXColumnType.category, this.readCellNumber.bind(this), true),
-      },
-      [SpecificationXLSXColumnType.simplified]: {
-        value: this.readCellContent(columns, row, SpecificationXLSXColumnType.simplified, this.readCellBoolean.bind(this)) ?? false,
-      },
-      [SpecificationXLSXColumnType.attn]: {
-        value: this.readCellContent(columns, row, SpecificationXLSXColumnType.attn, this.readCellBoolean.bind(this)),
-      },
-      [SpecificationXLSXColumnType.componentType]: {
-        value: this.readCellContent(columns, row, SpecificationXLSXColumnType.componentType, this.readCellString.bind(this)),
-      },
-      [SpecificationXLSXColumnType.value]: {
-        value: this.readCellContent(columns, row, SpecificationXLSXColumnType.value, this.readCellString.bind(this)),
-      },
-      [SpecificationXLSXColumnType.dateModified]: {
-        value: this.readCellContent(columns, row, SpecificationXLSXColumnType.dateModified, this.readCellDate.bind(this)),
-      },
-      [SpecificationXLSXColumnType.note]: {
-        value: this.readCellContent(columns, row, SpecificationXLSXColumnType.note, this.readCellString.bind(this)),
-      },
-      [SpecificationXLSXColumnType.partReference]: {
-        value: this.readCellContent(columns, row, SpecificationXLSXColumnType.partReference, this.readCellString.bind(this)),
-      },
+      [SpecificationXLSXColumnType.article]:
+        this.readCellContent(columns, row, SpecificationXLSXColumnType.article, this.readCellString.bind(this)),
+      [SpecificationXLSXColumnType.name]:
+        this.readCellContent(columns, row, SpecificationXLSXColumnType.name, this.readCellString.bind(this), true),
+      [SpecificationXLSXColumnType.responsible]:
+        this.readCellContent(columns, row, SpecificationXLSXColumnType.responsible, this.readCellString.bind(this), true),
+      [SpecificationXLSXColumnType.supplier]:
+        this.readCellContent(columns, row, SpecificationXLSXColumnType.supplier, this.readCellString.bind(this), true),
+      [SpecificationXLSXColumnType.configuration]:
+        this.readCellContent(columns, row, SpecificationXLSXColumnType.configuration, this.readCellString.bind(this)),
+      [SpecificationXLSXColumnType.color]:
+        this.readCellContent(columns, row, SpecificationXLSXColumnType.color, this.readCellString.bind(this)),
+      [SpecificationXLSXColumnType.reserve]:
+        this.readCellContent(columns, row, SpecificationXLSXColumnType.reserve, this.readCellNumber.bind(this)),
+      [SpecificationXLSXColumnType.category]:
+        this.readCellContent(columns, row, SpecificationXLSXColumnType.category, this.readCellNumber.bind(this), true),
+      [SpecificationXLSXColumnType.simplified]:
+        this.readCellContent(columns, row, SpecificationXLSXColumnType.simplified, this.readCellBoolean.bind(this)),
+      [SpecificationXLSXColumnType.attn]:
+        this.readCellContent(columns, row, SpecificationXLSXColumnType.attn, this.readCellBoolean.bind(this)),
+      [SpecificationXLSXColumnType.componentType]:
+        this.readCellContent(columns, row, SpecificationXLSXColumnType.componentType, this.readCellString.bind(this)),
+      [SpecificationXLSXColumnType.value]:
+        this.readCellContent(columns, row, SpecificationXLSXColumnType.value, this.readCellString.bind(this)),
+      [SpecificationXLSXColumnType.dateModified]:
+        this.readCellContent(columns, row, SpecificationXLSXColumnType.dateModified, this.readCellDate.bind(this)),
+      [SpecificationXLSXColumnType.note]:
+        this.readCellContent(columns, row, SpecificationXLSXColumnType.note, this.readCellString.bind(this)),
+      [SpecificationXLSXColumnType.partReference]:
+        this.readCellContent(columns, row, SpecificationXLSXColumnType.partReference, this.readCellString.bind(this)),
       [SpecificationXLSXColumnType.modificationN]:
         this.readCellContentModifications(columns, row, SpecificationXLSXColumnType.modificationN),
     }
@@ -209,12 +194,10 @@ export class SpecificationsParserXLSXImpl implements SpecificationsParserXLSX {
   private readRowSpecification(columns: Array<Column>, row: Row): SpecificationXLSXRowSpecification | undefined {
     return {
       addressRow: row.addressRow,
-      [SpecificationXLSXColumnType.specificationId]: {
-        value: this.readCellContent(columns, row, SpecificationXLSXColumnType.specificationId, this.readCellNumber.bind(this), true),
-      },
-      [SpecificationXLSXColumnType.category]: {
-        value: this.readCellContent(columns, row, SpecificationXLSXColumnType.category, this.readCellNumber.bind(this), true),
-      },
+      [SpecificationXLSXColumnType.specificationId]:
+        this.readCellContent(columns, row, SpecificationXLSXColumnType.specificationId, this.readCellNumber.bind(this), true),
+      [SpecificationXLSXColumnType.category]:
+        this.readCellContent(columns, row, SpecificationXLSXColumnType.category, this.readCellNumber.bind(this), true),
       [SpecificationXLSXColumnType.modificationN]:
         this.readCellContentModifications(columns, row, SpecificationXLSXColumnType.modificationN),
     }
@@ -226,21 +209,30 @@ export class SpecificationsParserXLSXImpl implements SpecificationsParserXLSX {
     type: SpecificationXLSXColumnType,
     reader: (cell: Cell | undefined) => T | undefined,
     required: true,
-  ): T
+  ): {
+    addressCol: string
+    value: T
+  }
   private readCellContent<T>(
     columns: Array<Column>,
     row: Row,
     type: SpecificationXLSXColumnType,
     reader: (cell: Cell | undefined) => T | undefined,
     required?: false,
-  ): T | undefined
+  ): undefined | {
+    addressCol: string
+    value: T
+  }
   private readCellContent<T>(
     columns: Array<Column>,
     row: Row,
     type: SpecificationXLSXColumnType,
     reader: (cell: Cell | undefined) => T | undefined,
     required?: boolean,
-  ): T | undefined {
+  ): undefined | {
+    addressCol: string
+    value: T
+  } {
     const cell = this.getCellForType(columns, row, type)
     if (!cell) {
       if (required) {
@@ -257,14 +249,21 @@ export class SpecificationsParserXLSXImpl implements SpecificationsParserXLSX {
       }
       return undefined
     }
-    return value
+    return {
+      addressCol: cell.address.column,
+      value: value,
+    }
   }
 
   private readCellContentModifications(
     columns: Array<Column>,
     row: Row,
     type: SpecificationXLSXColumnType,
-  ): Array<{ number: number, count: number }> {
+  ): Array<{
+    addressCol: string
+    number: number
+    count: number
+  }> {
     return this.getColumnsForType(columns, type)
       .map(col => {
         const number = col.modificationNumber
@@ -272,7 +271,11 @@ export class SpecificationsParserXLSXImpl implements SpecificationsParserXLSX {
         if (number === undefined || count === undefined) {
           return undefined
         }
-        return { number, count }
+        return {
+          addressCol: col.addressColumn,
+          number,
+          count,
+        }
       })
       .filter(isNotUndefined)
   }

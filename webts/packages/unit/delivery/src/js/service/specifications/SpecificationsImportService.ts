@@ -195,35 +195,35 @@ export class SpecificationsImportServiceImpl implements SpecificationsImportServ
   ): Array<CreateDeliveryDetailAtSpecification> {
     return detailRows
       .map<CreateDeliveryDetailAtSpecification | undefined>(row => {
-        const article = row[SpecificationXLSXColumnType.article].value
+        const article = row[SpecificationXLSXColumnType.article]?.value
         const name = row[SpecificationXLSXColumnType.name].value
         const responsible = row[SpecificationXLSXColumnType.responsible].value
         const responsibleId = persons.find(person => person.name === responsible)?.id
         const supplier = row[SpecificationXLSXColumnType.supplier].value
         const supplierId = companies.find(company => company.name === supplier)?.id
-        const configuration = row[SpecificationXLSXColumnType.configuration].value
-        const color = row[SpecificationXLSXColumnType.color].value
-        const reserve = row[SpecificationXLSXColumnType.reserve].value
+        const configuration = row[SpecificationXLSXColumnType.configuration]?.value
+        const color = row[SpecificationXLSXColumnType.color]?.value
+        const reserve = row[SpecificationXLSXColumnType.reserve]?.value
         const category = row[SpecificationXLSXColumnType.category].value
-        const simplified = row[SpecificationXLSXColumnType.simplified].value
-        const attn = row[SpecificationXLSXColumnType.attn].value
-        const componentType = row[SpecificationXLSXColumnType.componentType].value
-        const value = row[SpecificationXLSXColumnType.value].value
-        const dateModified = row[SpecificationXLSXColumnType.dateModified].value
-        const note = row[SpecificationXLSXColumnType.note].value
-        const partReference = row[SpecificationXLSXColumnType.partReference].value
+        const simplified = row[SpecificationXLSXColumnType.simplified]?.value ?? false
+        const attn = row[SpecificationXLSXColumnType.attn]?.value
+        const componentType = row[SpecificationXLSXColumnType.componentType]?.value
+        const value = row[SpecificationXLSXColumnType.value]?.value
+        const dateModified = row[SpecificationXLSXColumnType.dateModified]?.value
+        const note = row[SpecificationXLSXColumnType.note]?.value
+        const partReference = row[SpecificationXLSXColumnType.partReference]?.value
         const modifications = row[SpecificationXLSXColumnType.modificationN]
           .map<CreateDeliveryDetailAtSpecificationModification>(modification => ({
             number: modification.number,
             count: modification.count,
           }))
         if (responsibleId === undefined) {
-          const message = `${row.addressRow} - колонка '${SpecificationXLSXColumnType.responsible}' содержит имя, которое не удалось найти в системе: '${responsible}'`
+          const message = `${row[SpecificationXLSXColumnType.responsible].addressCol}${row.addressRow} - колонка содержит имя, которое не удалось найти в системе: '${responsible}'`
           onError(message)
           return undefined
         }
         if (supplierId === undefined) {
-          const message = `${row.addressRow} - колонка '${SpecificationXLSXColumnType.supplier}' содержит название, которое не удалось найти в системе: '${supplier}'`
+          const message = `${row[SpecificationXLSXColumnType.supplier].addressCol}${row.addressRow} - колонка содержит название, которое не удалось найти в системе: '${supplier}'`
           onError(message)
           return undefined
         }

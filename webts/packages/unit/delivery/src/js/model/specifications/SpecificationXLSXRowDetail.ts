@@ -2,52 +2,68 @@ import { SpecificationXLSXColumnType } from "./SpecificationXLSXColumnType"
 
 export interface SpecificationXLSXRowDetail {
   addressRow: string
-  [SpecificationXLSXColumnType.article]: {
-    value: string | undefined
+  [SpecificationXLSXColumnType.article]: undefined | {
+    addressCol: string
+    value: string
   }
   [SpecificationXLSXColumnType.name]: {
+    addressCol: string
     value: string
   }
   [SpecificationXLSXColumnType.responsible]: {
+    addressCol: string
     value: string
   }
   [SpecificationXLSXColumnType.supplier]: {
+    addressCol: string
     value: string
   }
-  [SpecificationXLSXColumnType.configuration]: {
-    value: string | undefined
+  [SpecificationXLSXColumnType.configuration]: undefined | {
+    addressCol: string
+    value: string
   }
-  [SpecificationXLSXColumnType.color]: {
-    value: string | undefined
+  [SpecificationXLSXColumnType.color]: undefined | {
+    addressCol: string
+    value: string
   }
-  [SpecificationXLSXColumnType.reserve]: {
-    value: number | undefined
-  }
-  [SpecificationXLSXColumnType.category]: {
+  [SpecificationXLSXColumnType.reserve]: undefined | {
+    addressCol: string
     value: number
   }
-  [SpecificationXLSXColumnType.simplified]: {
+  [SpecificationXLSXColumnType.category]: {
+    addressCol: string
+    value: number
+  }
+  [SpecificationXLSXColumnType.simplified]: undefined | {
+    addressCol: string
     value: boolean
   }
-  [SpecificationXLSXColumnType.attn]: {
-    value: boolean | undefined
+  [SpecificationXLSXColumnType.attn]: undefined | {
+    addressCol: string
+    value: boolean
   }
-  [SpecificationXLSXColumnType.componentType]: {
-    value: string | undefined
+  [SpecificationXLSXColumnType.componentType]: undefined | {
+    addressCol: string
+    value: string
   }
-  [SpecificationXLSXColumnType.value]: {
-    value: string | undefined
+  [SpecificationXLSXColumnType.value]: undefined | {
+    addressCol: string
+    value: string
   }
-  [SpecificationXLSXColumnType.dateModified]: {
-    value: Date | undefined
+  [SpecificationXLSXColumnType.dateModified]: undefined | {
+    addressCol: string
+    value: Date
   }
-  [SpecificationXLSXColumnType.note]: {
-    value: string | undefined
+  [SpecificationXLSXColumnType.note]: undefined | {
+    addressCol: string
+    value: string
   }
-  [SpecificationXLSXColumnType.partReference]: {
-    value: string | undefined
+  [SpecificationXLSXColumnType.partReference]: undefined | {
+    addressCol: string
+    value: string
   }
   [SpecificationXLSXColumnType.modificationN]: Array<{
+    addressCol: string
     number: number
     count: number
   }>
