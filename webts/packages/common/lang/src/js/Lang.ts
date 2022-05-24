@@ -10,6 +10,10 @@ export interface Lang {
   buttonImport(): string
   buttonAdd(): string
   buttonRemove(): string
+  bsodTitle1(): string
+  bsodTitle2(): string
+  bsodActionReload(): string
+  bsodActionDownloadLogs(): string
   exceptionAny(): string
   exceptionNative(): string
   exceptionReact(): string

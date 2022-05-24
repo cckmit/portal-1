@@ -1,5 +1,6 @@
 import { memo } from "react"
 import { Exception } from "@protei-libs/exception"
+import { useLang } from "@protei-portal/common-lang"
 import { ExceptionDescriber } from "../error/ExceptionDescriber"
 import { useIoCBinding } from "../../../ioc"
 import { DebugService, DebugService$type } from "../../../service"
@@ -11,6 +12,7 @@ type Props = {
 
 export const BSOD = memo(function BSOD(props: Props) {
   const { exception } = props
+  const lang = useLang()
   const debugService = useIoCBinding<DebugService>(DebugService$type)
 
   return (<>
@@ -19,13 +21,13 @@ export const BSOD = memo(function BSOD(props: Props) {
         <div className="card-body">
           <div className="row">
             <div className="col-12">
-              <i className="far fa-frown-open fa-7x"/>
+              <i className="fa-regular fa-face-frown-open fa-7x mb-2"/>
             </div>
           </div>
           <div className="row">
             <div className="col-12">
-              <h4 className="mb-0">Данное приложение столкнулось с непредвиденной ошибкой и нуждается в перезагрузке</h4>
-              <h5 className="mt-0">Ниже указано краткое описание ошибки</h5>
+              <h4 className="mb-0">{lang.bsodTitle1()}</h4>
+              <h5 className="mt-0">{lang.bsodTitle2()}</h5>
             </div>
           </div>
           <div className="row">
@@ -43,10 +45,10 @@ export const BSOD = memo(function BSOD(props: Props) {
           <div className="row">
             <div className="col-12">
               <Button className="btn btn-complete mr-2"
-                      value="Перезагрузить приложение"
+                      value={lang.bsodActionReload()}
                       onClick={() => (window.location.reload())}/>
               <Button className="btn btn-default"
-                      value="Скачать файл логов"
+                      value={lang.bsodActionDownloadLogs()}
                       onClick={() => void debugService.downloadLogHistory()}/>
             </div>
           </div>
