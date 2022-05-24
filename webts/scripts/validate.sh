@@ -53,13 +53,14 @@ die () {
 }
 
 echo "> Validate"
-if ! IsGit ; then echo ">! Required git to validate this app"; die; fi
 if ! IsNodeVersion 16 ; then echo ">! Required node 16 to validate this app"; die; fi
 cd "$dir_root"
 if [ "$1" = "staged" ]; then
+  if ! IsGit ; then echo ">! Required git to validate this app"; die; fi
   ${dir_scripts}/git/list-staged-code-files.sh | RunEslint "only staged files" || die
   ${dir_scripts}/git/list-staged-code-files.sh | RunTypescriptCompiler "only staged files" || die
 elif [ "$1" = "changed" ]; then
+  if ! IsGit ; then echo ">! Required git to validate this app"; die; fi
   ${dir_scripts}/git/list-changed-code-files.sh | RunEslint "only changed files" || die
   ${dir_scripts}/git/list-changed-code-files.sh | RunTypescriptCompiler "only changed files" || die
 elif [ "$1" = "ci" ]; then

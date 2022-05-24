@@ -27,12 +27,13 @@ die () {
 }
 
 echo "> Test"
-if ! IsGit ; then echo ">! Required git to test this app"; die; fi
 if ! IsNodeVersion 16 ; then echo ">! Required node 16 to test this app"; die; fi
 cd "$dir_root"
 if [ "$1" = "staged" ]; then
+  if ! IsGit ; then echo ">! Required git to test this app"; die; fi
   ${dir_scripts}/git/list-staged-code-files.sh | RunJest "only staged test files" || die
 elif [ "$1" = "changed" ]; then
+  if ! IsGit ; then echo ">! Required git to test this app"; die; fi
   ${dir_scripts}/git/list-changed-code-files.sh | RunJest "only changed test files" || die
 elif [ "$1" = "ci" ]; then
   ${dir_scripts}/git/list-code-files.sh | RunJest "whole project" true || die
