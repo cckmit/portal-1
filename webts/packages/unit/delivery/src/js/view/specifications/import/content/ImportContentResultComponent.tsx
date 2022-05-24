@@ -1,7 +1,7 @@
 import { useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { observer } from "mobx-react-lite"
-import { Button, ExceptionDescriber, isProgressError, isProgressProcessing } from "@protei-portal/common"
+import { Button, ExceptionView, isProgressError, isProgressProcessing } from "@protei-portal/common"
 import { useLang } from "@protei-portal/common-lang"
 import { useIoCBinding } from "../../../../ioc"
 import { specificationsCreateStore, specificationsImportStore } from "../../../../store"
@@ -99,18 +99,11 @@ export const ImportContentResultComponent = observer(function ImportContentResul
             </div>
           )}
           {isProgressError(createProgress) && (
-            <ExceptionDescriber {...createProgress.exception} render={(header, description) => (
-              <div className="row mt-3">
-                <div className="col-12">
-                  <div className="alert alert-danger mb-0" style={{ width: "fit-content" }}>
-                    <strong>{header}</strong>
-                    {description && (
-                      <div>{description}</div>
-                    )}
-                  </div>
-                </div>
+            <div className="row mt-3">
+              <div className="col-12">
+                <ExceptionView exception={createProgress.exception}/>
               </div>
-            )}/>
+            </div>
           )}
         </div>
         <div className="card-footer no-border bg-transparent pt-0">

@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite"
 import { useLang } from "@protei-portal/common-lang"
 import {
-  ExceptionDescriber,
+  ExceptionView,
   IndeterminateBarLoading,
   isProgressError,
   isProgressProcessing,
@@ -34,14 +34,11 @@ export const ImportContentStateComponent = observer(function ImportContentStateC
             </div>
           )}
           {isProgressError(progress) && (
-            <ExceptionDescriber {...progress.exception} render={(header, description) => (
-              <div className="alert alert-danger mb-0">
-                <strong>{header}</strong>
-                {description && (
-                  <div>{description}</div>
-                )}
+            <div className="row mt-3">
+              <div className="col-12">
+                <ExceptionView exception={progress.exception}/>
               </div>
-            )}/>
+            </div>
           )}
         </div>
       </div>
