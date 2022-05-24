@@ -18,12 +18,14 @@ import ru.protei.portal.ui.common.client.events.AccountEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.lang.En_PrivilegeEntityLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Collections;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
@@ -146,10 +148,18 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
     }
 
     private Selector.SelectorFilter<UserRole> makerRolesFilter(String searchPattern) {
-        String upperCaseSearchPattern = searchPattern.toUpperCase();
+        String searchString = searchPattern.toUpperCase();
         return userRole -> userRole != null &&
-                (userRole.getCode().toUpperCase().contains(upperCaseSearchPattern)
-              || userRole.getInfo().toUpperCase().contains(upperCaseSearchPattern));
+                (userRole.getCode().toUpperCase().contains(searchString)
+              || userRole.getInfo().toUpperCase().contains(searchString)
+              || userRolePrivilegesContains(userRole.getPrivileges(), searchString)
+        );
+    }
+
+    private boolean userRolePrivilegesContains(Set<En_Privilege> privileges, String searchString) {
+        return privileges.stream().anyMatch(
+               privilege -> entityLang.getName(privilege.getEntity()).toUpperCase().contains(searchString)
+        );
     }
 
     private void resetValidationStatus(){
@@ -235,6 +245,9 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
 
     @Inject
     Lang lang;
+
+    @Inject
+    En_PrivilegeEntityLang entityLang;
 
     @Inject
     AccountControllerAsync accountService;
