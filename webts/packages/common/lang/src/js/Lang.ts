@@ -10,6 +10,18 @@ export interface Lang {
   buttonImport(): string
   buttonAdd(): string
   buttonRemove(): string
+  exceptionAny(): string
+  exceptionNative(): string
+  exceptionReact(): string
+  exceptionUnavailable(): string
+  exceptionIllegalState(): string
+  exceptionIllegalArgument(): string
+  exceptionApi(): string
+  exceptionApiOffline(): string
+  exceptionApiTimeout(): string
+  exceptionApiParse(): string
+  exceptionApiError(): string
+  exceptionImportXlsxParse(): string
   deliverySpecificationsName(): string
   deliverySpecificationsImportFile(): string
   deliverySpecificationsImportFileSelect(): string

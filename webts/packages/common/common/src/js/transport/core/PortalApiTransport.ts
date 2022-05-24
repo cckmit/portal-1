@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify"
-import { newException } from "@protei-libs/exception"
+import { isExceptionNamed, newException } from "@protei-libs/exception"
 import { HttpHeaders, HttpMethod, HttpRequest, HttpResponse } from "@protei-libs/http"
 import {
   En_ResultStatus,
@@ -76,8 +76,11 @@ export class PortalApiTransportImpl implements PortalApiTransport {
       }
     } catch (e) {
       const exception = detectException(e)
-      const message = `Failed to parse json response of '${esRequest.method} ${esRequest.url}' request`
-      throw newException(ExceptionName.API_PARSE, { message, cause: exception }, this.exchange.bind(this))
+      if (isExceptionNamed(exception, ExceptionName.NATIVE)) {
+        const message = `Failed to parse json response of '${esRequest.method} ${esRequest.url}' request`
+        throw newException(ExceptionName.API_PARSE, {message, cause: exception}, this.exchange.bind(this))
+      }
+      throw exception
     }
   }
 
