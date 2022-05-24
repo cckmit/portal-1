@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify"
+import { makeLogger } from "@protei-libs/logger"
 import { isExceptionNamed, newException } from "@protei-libs/exception"
 import { HttpHeaders, HttpMethod, HttpRequest, HttpResponse } from "@protei-libs/http"
 import {
@@ -61,9 +62,13 @@ export class PortalApiTransportImpl implements PortalApiTransport {
       headers: this.makeHeaders(request),
       body: body,
     }
+    this.log.info("[HTTP] request '{}': {}", esRequest.method, esRequest.url)
+    this.log.debug("[HTTP] request '{}': {} (headers:{}) (body:{})", esRequest.method, esRequest.url, esRequest.headers, esRequest.body)
     const response = await this.transport.exchange(esRequest)
     try {
       const body = await response.body.text()
+      this.log.info("[HTTP] response '{}': {} {}", esRequest.method, esRequest.url, response.status)
+      this.log.debug("[HTTP] response '{}': {} {} (headers:{}) (body:{})", esRequest.method, esRequest.url, response.status, response.headers, body)
       const dto = json.parse(body)
       const res = validateApiResponse(dto, JsonResponseValidator)
       if (res.status !== En_ResultStatus.OK) {
@@ -78,8 +83,11 @@ export class PortalApiTransportImpl implements PortalApiTransport {
       const exception = detectException(e)
       if (isExceptionNamed(exception, ExceptionName.NATIVE)) {
         const message = `Failed to parse json response of '${esRequest.method} ${esRequest.url}' request`
-        throw newException(ExceptionName.API_PARSE, {message, cause: exception}, this.exchange.bind(this))
+        const ex = newException(ExceptionName.API_PARSE, {message, cause: exception}, this.exchange.bind(this))
+        this.log.error("[HTTP] request '{}': {} | failed", esRequest.method, esRequest.url, ex)
+        throw ex
       }
+      this.log.error("[HTTP] request '{}': {} | failed", esRequest.method, esRequest.url, exception)
       throw exception
     }
   }
@@ -117,4 +125,5 @@ export class PortalApiTransportImpl implements PortalApiTransport {
   private readonly requestIdProvider: PortalApiRequestIdProvider
   private readonly transport: HttpTransport
   private readonly BASE_URL = "Portal/springApi/jsonApi"
+  private readonly log = makeLogger("portal.api.http")
 }
