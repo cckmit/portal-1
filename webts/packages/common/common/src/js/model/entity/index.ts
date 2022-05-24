@@ -2,6 +2,7 @@ export * from "./api"
 export * from "./company"
 export * from "./delivery"
 export * from "./file"
+export * from "./notification"
 export * from "./person"
 export * from "./query"
 
