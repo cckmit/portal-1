@@ -18,12 +18,14 @@ import ru.protei.portal.ui.common.client.events.AccountEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ErrorPageEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.lang.En_PrivilegeEntityLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Collections;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
@@ -149,7 +151,15 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
         String upperCaseSearchPattern = searchPattern.toUpperCase();
         return userRole -> userRole != null &&
                 (userRole.getCode().toUpperCase().contains(upperCaseSearchPattern)
-              || userRole.getInfo().toUpperCase().contains(upperCaseSearchPattern));
+              || userRole.getInfo().toUpperCase().contains(upperCaseSearchPattern)
+              || userRolePrivilegesContains(userRole.getPrivileges(), upperCaseSearchPattern)
+        );
+    }
+
+    private boolean userRolePrivilegesContains(Set<En_Privilege> privileges, String privilegeString) {
+        return privileges.stream().anyMatch(
+                en_privilege -> entityLang.getName(en_privilege.getEntity()).toUpperCase().contains(privilegeString)
+        );
     }
 
     private void resetValidationStatus(){
@@ -235,6 +245,9 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
 
     @Inject
     Lang lang;
+
+    @Inject
+    En_PrivilegeEntityLang entityLang;
 
     @Inject
     AccountControllerAsync accountService;
