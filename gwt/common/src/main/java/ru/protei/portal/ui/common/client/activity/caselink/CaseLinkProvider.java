@@ -54,7 +54,16 @@ public class CaseLinkProvider {
         if (caseLink == null){
             return null;
         }
-        return getLink(caseLink.getType(), caseLink.getRemoteId());
+
+        if (caseLink.getCaseInfo() == null) {
+            return null;
+        }
+
+        if (caseLink.getCaseInfo().getCaseNumber() == null) {
+            return null;
+        }
+
+        return getLink(caseLink.getType(), caseLink.getCaseInfo().getCaseNumber().toString());
     }
 
     public static En_BundleType getBundleType(Long caseLinkId) {
