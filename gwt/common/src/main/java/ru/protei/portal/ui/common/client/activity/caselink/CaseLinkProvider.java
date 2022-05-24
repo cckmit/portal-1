@@ -55,15 +55,17 @@ public class CaseLinkProvider {
             return null;
         }
 
-        if (caseLink.getCaseInfo() == null) {
+        CaseInfo caseInfo = caseLink.getCaseInfo();
+        if (caseInfo == null) {
             return null;
         }
 
-        if (caseLink.getCaseInfo().getCaseNumber() == null) {
+        Long caseNumber = caseInfo.getCaseNumber();
+        if (caseNumber == null) {
             return null;
         }
 
-        return getLink(caseLink.getType(), caseLink.getCaseInfo().getCaseNumber().toString());
+        return getLink(caseLink.getType(), caseNumber.toString());
     }
 
     public static En_BundleType getBundleType(Long caseLinkId) {
