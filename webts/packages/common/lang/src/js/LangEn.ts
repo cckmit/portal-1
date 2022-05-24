@@ -20,6 +20,7 @@ export class LangEn implements Lang {
   deliverySpecificationsImportLengthDetails = () => "Details"
   deliverySpecificationsImportLengthSpecifications = () => "Specifications"
   deliverySpecificationsImportLengthErrors = () => "Errors"
+  deliverySpecificationsImportAlertHasErrors = () => "Specification file contains errors"
 }
 
 export const langEn = new LangEn()

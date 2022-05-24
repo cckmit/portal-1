@@ -14,7 +14,7 @@ import {
   detectException,
   distinct,
   EmployeeQuery,
-  isNotUndefined,
+  isNotUndefined, isProgressError,
   PersonTransport,
   PersonTransport$type,
   progressError,
@@ -34,6 +34,7 @@ export const SpecificationsImportService$type = Symbol("SpecificationsImportServ
 
 export interface SpecificationsImportService {
   reset(): void
+  hasImportErrors(): boolean
   importFileXLSX(file: File): Promise<void>
 }
 
@@ -46,6 +47,11 @@ export class SpecificationsImportServiceImpl implements SpecificationsImportServ
       this.specificationsImportStore.errors = []
       this.specificationsImportStore.progress = progressReady()
     })
+  }
+
+  hasImportErrors(): boolean {
+    return this.specificationsImportStore.errors.length > 0
+      || isProgressError(this.specificationsImportStore.progress)
   }
 
   async importFileXLSX(file: File): Promise<void> {

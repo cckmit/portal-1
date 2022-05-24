@@ -22,7 +22,7 @@ export const ImportContentResultComponent = observer(function ImportContentResul
   const errors = specificationsImportStore.errors
   const specificationsCreateService = useIoCBinding<SpecificationsCreateService>(SpecificationsCreateService$type)
   const specificationsImportService = useIoCBinding<SpecificationsImportService>(SpecificationsImportService$type)
-  const canImport = !!name && (details.length > 0 || specifications.length > 0)
+  const canImport = !!name && (details.length > 0 || specifications.length > 0) && !specificationsImportService.hasImportErrors()
 
   const onClose = useCallback(() => {
     navigate(-1)
@@ -32,10 +32,13 @@ export const ImportContentResultComponent = observer(function ImportContentResul
 
   const onCreate = useCallback(() => {
     void (async () => {
+      if (specificationsImportService.hasImportErrors()) {
+        return
+      }
       await specificationsCreateService.create()
       navigate(-1)
     })()
-  }, [ specificationsCreateService, navigate ])
+  }, [ specificationsImportService, specificationsCreateService, navigate ])
 
 
   if (details.length == 0 && specifications.length == 0 && errors.length == 0) {
@@ -81,6 +84,15 @@ export const ImportContentResultComponent = observer(function ImportContentResul
                   <span className="text-danger bold">{error}</span>
                 </div>
               ))}
+            </div>
+          )}
+          {errors.length > 0 && (
+            <div className="row mt-3">
+              <div className="col-lg-2 col-md-3 col-12">
+                <div className="alert alert-danger mb-0" style={{ width: "fit-content" }}>
+                  {lang.deliverySpecificationsImportAlertHasErrors()}
+                </div>
+              </div>
             </div>
           )}
         </div>

@@ -20,6 +20,7 @@ export class LangRu implements Lang {
   deliverySpecificationsImportLengthDetails = () => "Количество деталей"
   deliverySpecificationsImportLengthSpecifications = () => "Количество спецификаций"
   deliverySpecificationsImportLengthErrors = () => "Количество ошибок"
+  deliverySpecificationsImportAlertHasErrors = () => "Файл спецификации содержит ошибки"
 }
 
 export const langRu = new LangRu()

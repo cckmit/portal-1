@@ -17,4 +17,5 @@ export interface Lang {
   deliverySpecificationsImportLengthDetails(): string
   deliverySpecificationsImportLengthSpecifications(): string
   deliverySpecificationsImportLengthErrors(): string
+  deliverySpecificationsImportAlertHasErrors(): string
 }
