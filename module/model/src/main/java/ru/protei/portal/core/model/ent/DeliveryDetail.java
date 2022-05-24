@@ -1,11 +1,20 @@
 package ru.protei.portal.core.model.ent;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_DeliverySpecificationCategory;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonAutoDetect(
+        fieldVisibility = JsonAutoDetect.Visibility.NONE,
+        getterVisibility = JsonAutoDetect.Visibility.NONE,
+        setterVisibility = JsonAutoDetect.Visibility.NONE
+)
 @JdbcEntity(table = "detail")
 public class DeliveryDetail {
 
@@ -13,54 +22,64 @@ public class DeliveryDetail {
      * Идентификатор
      */
     @JdbcId(name = Columns.ID, idInsertMode = IdInsertMode.EXPLICIT)
+    @JsonProperty("id")
     private Long id;
 
     /**
      * Артикул детали
      */
     @JdbcColumn(name = "article")
+    @JsonProperty("article")
     private String article;
 
     /**
      * Наименование
      */
     @JdbcColumn(name = "name")
+    @JsonProperty("name")
     private String name;
 
     /**
      * Ответственный
      */
     @JdbcColumn(name = Columns.RESPONSIBLE_ID)
+    @JsonProperty("responsibleId")
     private Long responsibleId;
 
     @JdbcJoinedObject(localColumn = Columns.RESPONSIBLE_ID)
+    @JsonProperty("responsible")
     private PersonShortView responsible;
 
     /**
      * Поставщик
      */
     @JdbcColumn(name = Columns.SUPPLIER_ID)
+    @JsonProperty("supplierId")
     private Long supplierId;
 
     @JdbcJoinedObject(localColumn = Columns.SUPPLIER_ID)
+    @JsonProperty("supplier")
     private Company supplier;
 
     /**
      * Конфигурация
      */
     @JdbcColumn(name = "configuration")
+    @JsonProperty("configuration")
     private String configuration;
 
     /**
      * Цвет
      */
     @JdbcColumn(name = "color")
+    @JsonProperty("color")
     private String color;
 
     /**
      * Технологический запас
      */
     @JdbcColumn(name = "reserve")
+    @JsonProperty("reserve")
     private Integer reserve;
 
     /**
@@ -68,30 +87,35 @@ public class DeliveryDetail {
      */
     @JdbcColumn(name = "category")
     @JdbcEnumerated(value = EnumType.ID)
+    @JsonProperty("category")
     private En_DeliverySpecificationCategory category;
 
     /**
      * Метка попадания в упрощенную спецификацию
      */
     @JdbcColumn(name = "simplified")
+    @JsonProperty("simplified")
     private Integer simplified;
 
     /**
      * Признак
      */
     @JdbcColumn(name = "attn")
+    @JsonProperty("attn")
     private Integer attn;
 
     /**
      * Тип компонента
      */
     @JdbcColumn(name = "component_type")
+    @JsonProperty("componentType")
     private String componentType;
 
     /**
      * Значение
      */
     @JdbcColumn(name = "value")
+    @JsonProperty("value")
     private String value;
 
     /**
@@ -99,6 +123,7 @@ public class DeliveryDetail {
      */
     @JdbcOneToMany(table = "detail_to_specification", localColumn = "id",
             remoteColumn = "detail_id" )
+    @JsonProperty("specifications")
     private List<DeliveryDetailToSpecification> specifications;
 
     public Long getId() {
@@ -274,3 +299,4 @@ public class DeliveryDetail {
         String SUPPLIER_ID = "supplier_id";
     }
 }
+

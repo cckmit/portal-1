@@ -1,11 +1,20 @@
 package ru.protei.portal.core.model.ent;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonAutoDetect(
+        fieldVisibility = JsonAutoDetect.Visibility.NONE,
+        getterVisibility = JsonAutoDetect.Visibility.NONE,
+        setterVisibility = JsonAutoDetect.Visibility.NONE
+)
 @JdbcEntity(table = "specification")
 public class DeliverySpecification {
 
@@ -13,45 +22,53 @@ public class DeliverySpecification {
      * Идентификатор
      */
     @JdbcId(name = Columns.ID, idInsertMode = IdInsertMode.AUTO)
+    @JsonProperty("id")
     private Long id;
 
     /**
      * Создатель
      */
     @JdbcColumn(name = Columns.CREATOR_ID)
+    @JsonProperty("creatorId")
     private Long creatorId;
 
     @JdbcJoinedObject(localColumn = Columns.CREATOR_ID, remoteColumn = "id")
+    @JsonProperty("creator")
     private PersonShortView creator;
 
     /**
      * Дата создания
      */
     @JdbcColumn(name = "created")
+    @JsonProperty("dateCreated")
     private Date created;
 
     /**
      * Дата изменения
      */
     @JdbcColumn(name = "modified")
+    @JsonProperty("dateModified")
     private Date modified;
 
     /**
      * Наименование
      */
     @JdbcColumn(name = "name")
+    @JsonProperty("name")
     private String name;
 
     /**
      * Вложенная спецификация
      */
     @JdbcOneToMany(localColumn = "id", remoteColumn = "specification_id")
+    @JsonProperty("specifications")
     private List<DeliveryNestedSpecification> specifications;
 
     /**
      *  Используемые детали
      */
     @JdbcOneToMany(localColumn = "id", remoteColumn = "specification_id")
+    @JsonProperty("details")
     private List<DeliveryDetailToSpecification> details;
 
     public Long getId() {

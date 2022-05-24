@@ -1,10 +1,19 @@
 package ru.protei.portal.core.model.ent;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_DeliverySpecificationCategory;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonAutoDetect(
+        fieldVisibility = JsonAutoDetect.Visibility.NONE,
+        getterVisibility = JsonAutoDetect.Visibility.NONE,
+        setterVisibility = JsonAutoDetect.Visibility.NONE
+)
 @JdbcEntity(table = "specification_to_specification")
 public class DeliveryNestedSpecification {
 
@@ -12,18 +21,21 @@ public class DeliveryNestedSpecification {
      * Идентификатор
      */
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    @JsonProperty("id")
     private Long id;
 
     /**
      *  Идентификатор спецификации
      */
     @JdbcColumn(name = "specification_id")
+    @JsonProperty("specificationId")
     private Long specificationId;
 
     /**
      *  Идентификатор вложенной спецификации
      */
     @JdbcColumn(name = "child_specification_id")
+    @JsonProperty("childSpecificationId")
     private Long childSpecificationId;
 
     /**
@@ -31,6 +43,7 @@ public class DeliveryNestedSpecification {
      */
     @JdbcColumn(name = "category")
     @JdbcEnumerated(value = EnumType.ID)
+    @JsonProperty("category")
     private En_DeliverySpecificationCategory category;
 
     /**
@@ -38,6 +51,7 @@ public class DeliveryNestedSpecification {
      */
     @JdbcOneToMany(table = "specification_modification", localColumn = "id",
             remoteColumn = "specification_to_specification_id" )
+    @JsonProperty("modifications")
     private List<DeliverySpecificationModification> modifications;
 
     public Long getId() {

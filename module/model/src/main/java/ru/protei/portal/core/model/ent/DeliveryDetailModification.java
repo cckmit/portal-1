@@ -1,10 +1,19 @@
 package ru.protei.portal.core.model.ent;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.winter.jdbc.annotations.IdInsertMode;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonAutoDetect(
+        fieldVisibility = JsonAutoDetect.Visibility.NONE,
+        getterVisibility = JsonAutoDetect.Visibility.NONE,
+        setterVisibility = JsonAutoDetect.Visibility.NONE
+)
 @JdbcEntity(table = "detail_modification")
 public class DeliveryDetailModification {
 
@@ -12,24 +21,28 @@ public class DeliveryDetailModification {
      * Идентификатор
      */
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    @JsonProperty("id")
     private Long id;
 
     /**
      *  Идентификатор детали в спецификации
      */
     @JdbcColumn(name = "detail_to_specification_id")
+    @JsonProperty("detailToSpecificationId")
     private Long detailToSpecificationId;
 
     /**
      *  Номер исполнения
      */
     @JdbcColumn(name = "number")
+    @JsonProperty("number")
     private Integer number;
 
     /**
      *  Номер исполнения
      */
     @JdbcColumn(name = "count")
+    @JsonProperty("count")
     private Integer count;
 
     public Long getId() {
