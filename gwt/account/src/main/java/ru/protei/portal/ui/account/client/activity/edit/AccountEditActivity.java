@@ -148,17 +148,17 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
     }
 
     private Selector.SelectorFilter<UserRole> makerRolesFilter(String searchPattern) {
-        String upperCaseSearchPattern = searchPattern.toUpperCase();
+        String searchString = searchPattern.toUpperCase();
         return userRole -> userRole != null &&
-                (userRole.getCode().toUpperCase().contains(upperCaseSearchPattern)
-              || userRole.getInfo().toUpperCase().contains(upperCaseSearchPattern)
-              || userRolePrivilegesContains(userRole.getPrivileges(), upperCaseSearchPattern)
+                (userRole.getCode().toUpperCase().contains(searchString)
+              || userRole.getInfo().toUpperCase().contains(searchString)
+              || userRolePrivilegesContains(userRole.getPrivileges(), searchString)
         );
     }
 
-    private boolean userRolePrivilegesContains(Set<En_Privilege> privileges, String privilegeString) {
+    private boolean userRolePrivilegesContains(Set<En_Privilege> privileges, String searchString) {
         return privileges.stream().anyMatch(
-                en_privilege -> entityLang.getName(en_privilege.getEntity()).toUpperCase().contains(privilegeString)
+               privilege -> entityLang.getName(privilege.getEntity()).toUpperCase().contains(searchString)
         );
     }
 
