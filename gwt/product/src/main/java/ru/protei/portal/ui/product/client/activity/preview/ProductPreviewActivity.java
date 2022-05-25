@@ -77,6 +77,7 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
     private void fillView(DevUnit product) {
         this.productId = product.getId();
         view.setName(product.getName() + (isEmpty(product.getAliases()) ? "" : " (" + joining(product.getAliases(), ", ") + ")"));
+        view.setNameHref(LinkUtils.makePreviewLink(DevUnit.class, productId));
         view.setTypeImage(product.getType() == null ? null : product.getType().getImgSrc());
         view.setDirection(product.getProductDirections() == null ? "" : joining(product.getProductDirections(), ", ", DevUnit::getName));
         view.setInternalDocLink(StringUtils.emptyIfNull(product.getInternalDocLink()));

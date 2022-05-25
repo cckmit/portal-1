@@ -12,6 +12,8 @@ public interface AbstractPlatformPreviewView extends IsWidget {
 
     void setName(String value);
 
+    void setNameHref(String link);
+
     void setCompany(String value);
 
     void setManager(String value);

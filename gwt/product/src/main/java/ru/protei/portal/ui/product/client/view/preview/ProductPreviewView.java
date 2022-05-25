@@ -39,6 +39,11 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     }
 
     @Override
+    public void setNameHref(String link) {
+        this.productName.setHref(link);
+    }
+
+    @Override
     public void setTypeImage(String image) {
         typeImage.setSrc(image);
     }

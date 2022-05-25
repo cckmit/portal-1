@@ -23,6 +23,7 @@ import ru.protei.portal.ui.common.client.lang.En_DocumentExecutionTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.client.widget.document.uploader.UploadHandler;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -112,6 +113,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         boolean hasAccessToDoc = hasAccessToDoc(document);
         boolean hasAccessToDocModification = hasAccessToDocModification(document);
         view.setDocumentNumber(document.getName() + " (#" + document.getId() + ")");
+        view.setDocumentNumberHref(LinkUtils.makePreviewLink(Document.class, document.getId()));
         view.setVersion(lang.documentVersion() + " " + emptyIfNull(document.getVersion()));
         view.setCreatedBy(lang.createBy("", DateFormatter.formatDateTime(document.getCreated())));
         view.setType(document.getType().getName());

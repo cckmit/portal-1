@@ -35,6 +35,11 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     }
 
     @Override
+    public void setHeaderHref(String link) {
+        this.header.setHref(link);
+    }
+
+    @Override
     public void setNameBySldWrks( String value ) {
         this.nameBySldWrks.setInnerText( value );
     }

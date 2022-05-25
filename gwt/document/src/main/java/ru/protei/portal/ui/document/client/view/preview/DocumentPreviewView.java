@@ -37,6 +37,11 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     }
 
     @Override
+    public void setDocumentNumberHref(String link) {
+        this.documentNumber.setHref(link);
+    }
+
+    @Override
     public void setVersion(String text) {
         this.version.setInnerText(text);
     }

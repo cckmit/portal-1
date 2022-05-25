@@ -46,6 +46,11 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     }
 
     @Override
+    public void setNameHref(String link) {
+        this.name.setHref(link);
+    }
+
+    @Override
     public void setCompany(String value) {
         company.setInnerText(value);
     }
