@@ -232,7 +232,7 @@ public class WorkerRecordTestAPI {
 
     public interface Constansts {
         int ACTIVE_FLAG = 1;
-        String PERSON_CREATOR = "Тестировщики";
+        String PERSON_CREATOR = "test-api";
         List<String> DEFAULT_LOCALE_LIST = Arrays.asList("ru", "en");
         int INN_LENGTH = 12;
     }

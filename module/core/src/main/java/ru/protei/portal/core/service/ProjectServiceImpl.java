@@ -15,7 +15,6 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
 import ru.protei.portal.core.model.dto.ProjectTSVReportInfo;
-import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.DateRangeUtils;
@@ -194,12 +193,6 @@ public class ProjectServiceImpl implements ProjectService {
         Long systemUserId = config.data().getCommonConfig().getSystemUserId();
 
         updateCaseObjectPart(createFakeToken(systemUserId == null ? project.getCreatorId() : systemUserId), project);
-    }
-
-    @Override
-    public Result< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
-        List< Location > regions = locationDAO.listByQuery( makeLocationQuery(query, true ));
-        return ok(regions.stream().map(Location::toRegionInfo).collect(toList()));
     }
 
     @Override

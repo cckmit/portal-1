@@ -26,6 +26,7 @@ import ru.protei.portal.ui.absence.client.widget.filter.AbsenceFilterWidget;
 import ru.protei.portal.ui.absence.client.widget.filter.AbsenceFilterWidgetModel;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.columns.*;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_AbsenceReasonLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
@@ -144,7 +145,7 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
                             valueBuilder.append("</div>");
                         }
                     } else {
-                        valueBuilder.append("</div>").append(wrapBadge(timeFormat.format(value.getFromTime()) + " – " + timeFormat.format(value.getTillTime())));
+                        valueBuilder.append("</div>").append(wrapBadge(DateFormatter.formatTimeOnly(value.getFromTime()) + " – " + DateFormatter.formatTimeOnly(value.getTillTime())));
                     }
 
                     return valueBuilder.toString();
@@ -170,15 +171,15 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
 
     private String prettyDateRangeFormat(Date from, Date to) {
         if (DateUtils.isSameDay(from, to)) {
-            return dateMonthYearFormat.format(from);
+            return DateFormatter.formatYearMonthFullDay(from);
         }
 
         StringBuilder sb = new StringBuilder();
         if (DateUtils.isSameYear(from, to)) {
-            sb.append(DateUtils.isSameMonth(from, to) ? from.getDate() : dateMonthFormat.format(from));
+            sb.append(DateUtils.isSameMonth(from, to) ? from.getDate() : DateFormatter.formatMonthFullDay(from));
         }
         sb.append(" – ")
-                .append(dateMonthYearFormat.format(to));
+                .append(DateFormatter.formatYearMonthFullDay(to));
         return sb.toString();
     }
 
@@ -216,11 +217,6 @@ public class AbsenceSummaryTableView extends Composite implements AbstractAbsenc
     RemoveClickColumn<PersonAbsence> removeClickColumn;
     ClickColumnProvider<PersonAbsence> columnProvider = new ClickColumnProvider<>();
     List<ClickColumn<PersonAbsence>> columns = new ArrayList<>();
-
-    private DateRange selectedDateRange = null;
-    private DateTimeFormat dateMonthFormat = DateTimeFormat.getFormat(LocaleInfo.getCurrentLocale().getDateTimeFormatInfo().formatMonthFullDay());
-    private DateTimeFormat dateMonthYearFormat = DateTimeFormat.getFormat(LocaleInfo.getCurrentLocale().getDateTimeFormatInfo().formatYearMonthFullDay());
-    private DateTimeFormat timeFormat = DateTimeFormat.getFormat(LocaleInfo.getCurrentLocale().getDateTimeFormatInfo().timeFormatShort());
 
     private static AbsenceFullTableViewUiBinder ourUiBinder = GWT.create(AbsenceFullTableViewUiBinder.class);
     interface AbsenceFullTableViewUiBinder extends UiBinder<HTMLPanel, AbsenceSummaryTableView> {}

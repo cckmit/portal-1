@@ -95,14 +95,14 @@ public class DeliveryDetail {
      */
     @JdbcColumn(name = "simplified")
     @JsonProperty("simplified")
-    private Integer simplified;
+    private Boolean simplified;
 
     /**
      * Признак
      */
     @JdbcColumn(name = "attn")
     @JsonProperty("attn")
-    private Integer attn;
+    private Boolean attn;
 
     /**
      * Тип компонента
@@ -214,19 +214,19 @@ public class DeliveryDetail {
         this.category = category;
     }
 
-    public Integer getSimplified() {
+    public Boolean getSimplified() {
         return simplified;
     }
 
-    public void setSimplified(Integer simplified) {
+    public void setSimplified(Boolean simplified) {
         this.simplified = simplified;
     }
 
-    public Integer getAttn() {
+    public Boolean getAttn() {
         return attn;
     }
 
-    public void setAttn(Integer attn) {
+    public void setAttn(Boolean attn) {
         this.attn = attn;
     }
 

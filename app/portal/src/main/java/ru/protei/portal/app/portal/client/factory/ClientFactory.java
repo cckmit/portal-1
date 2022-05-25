@@ -24,7 +24,6 @@ import ru.protei.portal.ui.issueassignment.client.factory.IssueAssignmentClientM
 import ru.protei.portal.ui.report.client.factory.ReportClientModule;
 import ru.protei.portal.ui.product.client.factory.ProductClientModule;
 import ru.protei.portal.ui.project.client.factory.ProjectClientModule;
-import ru.protei.portal.ui.region.client.factory.RegionClientModule;
 import ru.protei.portal.ui.role.client.factory.RoleClientModule;
 import ru.protei.portal.ui.roomreservation.client.factory.RoomReservationClientModule;
 import ru.protei.portal.ui.sitefolder.client.factory.SiteFolderClientModule;
@@ -41,7 +40,7 @@ import ru.protei.portal.ui.webts.client.factory.TypescriptWebModuleDeliverySpeci
         PlanClientModule.class, CaseStateClientModule.class, ReportClientModule.class,
         EmployeeClientModule.class, EmployeeRegistrationClientModule.class,
         CompanyClientModule.class, ContactClientModule.class, ProductClientModule.class,
-        ProjectClientModule.class, RegionClientModule.class, SiteFolderClientModule.class,
+        ProjectClientModule.class, SiteFolderClientModule.class,
         DutyLogClientModule.class, DocumentClientModule.class, DocumentTypeClientModule.class, EquipmentClientModule.class, ContractClientModule.class,
         IpReservationClientModule.class, RoomReservationClientModule.class, EducationClientModule.class,
         RoleClientModule.class, AccountClientModule.class,

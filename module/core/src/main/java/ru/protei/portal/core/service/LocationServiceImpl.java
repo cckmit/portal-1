@@ -7,9 +7,7 @@ import ru.protei.portal.core.model.dict.En_LocationType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Location;
-import ru.protei.portal.core.model.query.DistrictQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
-import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.List;
@@ -20,24 +18,8 @@ import static ru.protei.portal.api.struct.Result.error;
  * Реализация сервиса управления местоположениями
  */
 public class LocationServiceImpl implements LocationService {
-
     @Autowired
     LocationDAO locationDAO;
-
-    @Override
-    public Result<List<DistrictInfo>> districtList( AuthToken token, DistrictQuery query) {
-
-        List<Location> list = locationDAO.listByQuery(query);
-
-        if (list == null)
-            return error(En_ResultStatus.GET_DATA_ERROR);
-
-        return Result.ok(
-                list.stream()
-                .map( ( item ) -> item.toDistrictInfo() )
-                .collect( Collectors.toList() )
-        );
-    }
 
     @Override
     public Result< List< EntityOption > > regionShortList( AuthToken token ) {

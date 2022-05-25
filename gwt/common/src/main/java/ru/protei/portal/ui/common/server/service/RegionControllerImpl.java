@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.region.server.service;
+package ru.protei.portal.ui.common.server.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,11 +7,8 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
-import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.query.DistrictQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
-import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.util.UiResult;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -32,32 +29,6 @@ import java.util.List;
  */
 @Service( "RegionController" )
 public class RegionControllerImpl implements RegionController {
-
-    @Override
-    public List< RegionInfo > getRegionList( ProjectQuery query ) throws RequestFailedException {
-        log.info( "getRegionList(): search={} | showDeprecated={} | sortField={} | order={}",
-                query.getSearchString(), query.getStateIds(), query.getSortField(), query.getSortDir() );
-
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-
-        Result< List< RegionInfo > > response = projectService.listRegions( token, query );
-        if ( response.isError() )
-            throw new RequestFailedException( response.getStatus() );
-
-        return response.getData();
-    }
-
-    @Override
-    public List< DistrictInfo > getDistrictList() throws RequestFailedException {
-
-        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        Result< List< DistrictInfo > > result = locationService.districtList( token, new DistrictQuery() );
-
-        if ( result.isError() )
-            throw new RequestFailedException( result.getStatus() );
-
-        return result.getData();
-    }
 
     @Override
     public List< EntityOption > getRegionList() throws RequestFailedException {

@@ -41,7 +41,7 @@ import static ru.protei.portal.api.struct.Result.error;
 @RestController
 public class AvatarController {
 
-    private static final String NOPHOTO_PATH = "./images/nophoto.png";
+    private static final String NOPHOTO_PATH = "./images/nophoto.jpeg";
 
     private static final Logger logger = getLogger( AvatarController.class );
 

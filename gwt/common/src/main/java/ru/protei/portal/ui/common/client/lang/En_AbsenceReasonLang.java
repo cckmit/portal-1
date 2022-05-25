@@ -44,18 +44,27 @@ public class En_AbsenceReasonLang {
             return "";
 
         switch (reason){
-            case PERSONAL_AFFAIR: return "linearicons-user";
+            case PERSONAL_AFFAIR: return "text-danger fa-solid fa-person-walking";
+
             case BUSINESS_TRIP:
-            case LOCAL_BUSINESS_TRIP: return "linearicons-briefcase";
-            case STUDY: return "linearicons-library2";
+            case LOCAL_BUSINESS_TRIP: return "text-complete fa-solid fa-briefcase";
+
+            case STUDY: return "hint-text fa-solid fa-graduation-cap";
+
             case DISEASE:
-            case SICK_LEAVE: return "linearicons-first-aid";
-            case NIGHT_WORK:
-            case DUTY: return "linearicons-moon";
-            case LEAVE_WITHOUT_PAY:
-            case LEAVE: return "linearicons-sun";
-            case REMOTE_WORK: return "linearicons-home";
-            case GUEST_PASS: return "linearicons-profile";
+            case SICK_LEAVE: return "text-danger fa-solid fa-house-medical";
+
+            case NIGHT_WORK: return "hint-text fa-solid fa-moon";
+            case DUTY: return "hint-text fa-solid fa-phone-office";
+
+            case LEAVE_WITHOUT_PAY: return "text-warning fa-solid fa-brightness-low";
+
+            case LEAVE: return "text-warning fa-solid fa-sun-bright";
+
+            case REMOTE_WORK: return "text-success fa-solid fa-house-user";
+
+            case GUEST_PASS: return "text-success fa-solid fa-address-card";
+
             default:
                 return "";
         }
