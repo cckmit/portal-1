@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.dict;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import ru.protei.winter.core.utils.enums.HasId;
 
 public enum En_DeliverySpecificationCategory implements HasId {
@@ -44,10 +46,12 @@ public enum En_DeliverySpecificationCategory implements HasId {
     }
 
     @Override
+    @JsonValue
     public int getId() {
         return id;
     }
 
+    @JsonCreator
     public static En_DeliverySpecificationCategory find(int id) {
         for (En_DeliverySpecificationCategory as : En_DeliverySpecificationCategory.values())
             if (as.id == id)
