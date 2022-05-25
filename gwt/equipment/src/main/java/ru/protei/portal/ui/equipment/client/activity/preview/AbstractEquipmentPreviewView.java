@@ -13,7 +13,9 @@ public interface AbstractEquipmentPreviewView extends IsWidget {
 
     void setHeader( String value );
 
-    void setNameBySldWrks( String value );
+    void setHeaderHref(String value);
+
+    void setNameBySldWrks(String value );
 
     void setComment( String value );
 

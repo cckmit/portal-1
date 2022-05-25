@@ -11,6 +11,8 @@ public interface AbstractDocumentPreviewView extends IsWidget {
 
     void setDocumentNumber(String documentNumber);
 
+    void setDocumentNumberHref(String link);
+
     void setVersion(String text);
 
     void setCreatedBy(String created);

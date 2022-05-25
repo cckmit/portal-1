@@ -29,6 +29,10 @@ public class LinkUtils {
                 return href.substring(0, href.indexOf("#") + 1) + "company:id=" + id;
             case ("ContactItemView"):
                 return href.substring(0, href.indexOf("#") + 1) + "contact_preview:id=" + id;
+            case ("Equipment"):
+                return href.substring(0, href.indexOf("#") + 1) + "equipment_preview:id=" + id;
+            case ("Document"):
+                return href.substring(0, href.indexOf("#") + 1) + "doc_preview::id=" + id;
             case ("CaseLink"):
                 return makeCaseLinkUrl(id);
             case ("CaseAttachment"):
