@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.CardBatchSqlBuilder;
 import ru.protei.portal.core.model.dao.impl.CardSqlBuilder;
+import ru.protei.portal.core.model.dao.impl.DeliverySpecificationSqlBuilder;
 import ru.protei.portal.core.model.dao.impl.CommonManagerToNotifyListDAO_Impl;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -437,6 +438,11 @@ public class RedmineTestConfigurationMockDao {
     @Bean
     public CardSqlBuilder cardSqlBuilder() {
         return mock(CardSqlBuilder.class);
+    }
+
+    @Bean
+    public DeliverySpecificationSqlBuilder deliverySpecificationSqlBuilder() {
+        return mock(DeliverySpecificationSqlBuilder.class);
     }
 
     @Bean
