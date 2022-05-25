@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -19,6 +20,8 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
+import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 /**
@@ -76,7 +79,8 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
     private void fillView( Person value ) {
         view.firedMsgVisibility().setVisible(value.isFired());
         view.deletedMsgVisibility().setVisible(value.isDeleted());
-        view.setDisplayName( value.getDisplayName() );
+        view.setDisplayName( value.getDisplayName());
+        view.setDisplayNameHref( LinkUtils.makePreviewLink(ContactItemView.class, value.getId()) );
         view.setCompany( value.getCompany().getCname() );
         String positionDisplay = StringUtils.isEmpty(value.getPosition()) ? "" : ", " + value.getPosition();
         if (!StringUtils.isEmpty( value.getDepartment() )) {

@@ -29,7 +29,14 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     }
 
     @Override
-    public void setDisplayName(String value) { this.displayName.setHTML( value ); }
+    public void setDisplayName(String value) {
+        this.displayName.setHTML( value );
+    }
+
+    @Override
+    public void setDisplayNameHref(String link) {
+        this.displayName.setHref(link);
+    }
 
     @Override
     public void setBirthday(String value) { this.birthday.setInnerText( value ); }

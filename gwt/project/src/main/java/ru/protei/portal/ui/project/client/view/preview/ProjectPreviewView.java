@@ -47,6 +47,10 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void setName(String value) { this.name.setInnerText( value ); }
 
     @Override
+    public void setHeaderHref(String link) {
+        this.header.setHref(link);
+    }
+    @Override
     public void setCreatedBy(String value ) { this.createdBy.setInnerHTML( value ); }
 
     @Override
