@@ -1,8 +1,8 @@
-import { CreateDeliveryDetailAtSpecification } from "./CreateDeliveryDetailAtSpecification"
-import { CreateDeliverySpecificationAtSpecification } from "./CreateDeliverySpecificationAtSpecification"
+import { CreateDeliveryDetailToSpecification } from "./CreateDeliveryDetailToSpecification"
+import { CreateDeliverySpecificationToSpecification } from "./CreateDeliverySpecificationToSpecification"
 
 export interface CreateDeliverySpecification {
   name: string
-  details: Array<CreateDeliveryDetailAtSpecification>
-  specifications: Array<CreateDeliverySpecificationAtSpecification>
+  details: Array<CreateDeliveryDetailToSpecification>
+  specifications: Array<CreateDeliverySpecificationToSpecification>
 }

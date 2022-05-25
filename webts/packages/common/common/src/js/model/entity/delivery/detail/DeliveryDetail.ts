@@ -7,17 +7,17 @@ export type DeliveryDetailId = number
 
 export interface DeliveryDetail {
   id: DeliveryDetailId
-  article: string | undefined // Артикул
-  name: string // Наименование
-  responsibleId: PersonId // Ответственный
-  supplierId: CompanyId // Поставщик
-  configuration: string | undefined // Конфигурация
-  color: string | undefined // Цвет
-  reserve: number | undefined // Технологический запас, %
-  category: DeliverySpecificationCategory // Раздел для работы
-  simplified: boolean // Метка попадания в упрощенную спецификацию
-  attn: boolean | undefined // Признак
-  componentType: string | undefined // Тип компоненты
+  article: string | undefined
+  name: string
+  responsibleId: PersonId
+  supplierId: CompanyId
+  configuration: string | undefined
+  color: string | undefined
+  reserve: number | undefined
+  category: DeliverySpecificationCategory
+  simplified: boolean
+  attn: boolean
+  componentType: string | undefined
   value: string | undefined
 }
 
@@ -34,7 +34,7 @@ export const DeliveryDetailSchema = makeJsonSchema<DeliveryDetail>({
     reserve: { type: "number", nullable: true },
     category: { type: "number", enum: Object.values(DeliverySpecificationCategory) as Array<number> },
     simplified: { type: "boolean" },
-    attn: { type: "boolean", nullable: true },
+    attn: { type: "boolean" },
     componentType: { type: "string", nullable: true },
     value: { type: "string", nullable: true },
   },
@@ -45,6 +45,7 @@ export const DeliveryDetailSchema = makeJsonSchema<DeliveryDetail>({
     "supplierId",
     "category",
     "simplified",
+    "attn",
   ],
 })
 

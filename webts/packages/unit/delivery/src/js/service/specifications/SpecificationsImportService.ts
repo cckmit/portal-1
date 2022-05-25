@@ -6,11 +6,11 @@ import {
   CompanyQuery,
   CompanyTransport,
   CompanyTransport$type,
-  CreateDeliveryDetailAtSpecification,
-  CreateDeliveryDetailAtSpecificationModification,
+  CreateDeliveryDetailToSpecification,
+  CreateDeliveryDetailToSpecificationModification,
   CreateDeliverySpecification,
-  CreateDeliverySpecificationAtSpecification,
-  CreateDeliverySpecificationAtSpecificationModification,
+  CreateDeliverySpecificationToSpecification,
+  CreateDeliverySpecificationToSpecificationModification,
   detectException,
   distinct,
   EmployeeQuery,
@@ -167,13 +167,13 @@ export class SpecificationsImportServiceImpl implements SpecificationsImportServ
     persons: Array<{ name: string, id: number | undefined }>,
     companies: Array<{ name: string, id: number | undefined }>,
     onError: (message: string) => void,
-  ): Array<CreateDeliverySpecificationAtSpecification> {
+  ): Array<CreateDeliverySpecificationToSpecification> {
     return specificationRows
-      .map<CreateDeliverySpecificationAtSpecification | undefined>(row => {
+      .map<CreateDeliverySpecificationToSpecification | undefined>(row => {
         const specificationId = row[SpecificationXLSXColumnType.specificationId].value
         const category = row[SpecificationXLSXColumnType.category].value
         const modifications = row[SpecificationXLSXColumnType.modificationN]
-          .map<CreateDeliverySpecificationAtSpecificationModification>(modification => ({
+          .map<CreateDeliverySpecificationToSpecificationModification>(modification => ({
             number: modification.number,
             count: modification.count,
           }))
@@ -192,9 +192,9 @@ export class SpecificationsImportServiceImpl implements SpecificationsImportServ
     persons: Array<{ name: string, id: number | undefined }>,
     companies: Array<{ name: string, id: number | undefined }>,
     onError: (message: string) => void,
-  ): Array<CreateDeliveryDetailAtSpecification> {
+  ): Array<CreateDeliveryDetailToSpecification> {
     return detailRows
-      .map<CreateDeliveryDetailAtSpecification | undefined>(row => {
+      .map<CreateDeliveryDetailToSpecification | undefined>(row => {
         const article = row[SpecificationXLSXColumnType.article]?.value
         const name = row[SpecificationXLSXColumnType.name].value
         const responsible = row[SpecificationXLSXColumnType.responsible].value
@@ -206,14 +206,14 @@ export class SpecificationsImportServiceImpl implements SpecificationsImportServ
         const reserve = row[SpecificationXLSXColumnType.reserve]?.value
         const category = row[SpecificationXLSXColumnType.category].value
         const simplified = row[SpecificationXLSXColumnType.simplified]?.value ?? false
-        const attn = row[SpecificationXLSXColumnType.attn]?.value
+        const attn = row[SpecificationXLSXColumnType.attn]?.value ?? false
         const componentType = row[SpecificationXLSXColumnType.componentType]?.value
         const value = row[SpecificationXLSXColumnType.value]?.value
         const dateModified = row[SpecificationXLSXColumnType.dateModified]?.value
         const note = row[SpecificationXLSXColumnType.note]?.value
         const partReference = row[SpecificationXLSXColumnType.partReference]?.value
         const modifications = row[SpecificationXLSXColumnType.modificationN]
-          .map<CreateDeliveryDetailAtSpecificationModification>(modification => ({
+          .map<CreateDeliveryDetailToSpecificationModification>(modification => ({
             number: modification.number,
             count: modification.count,
           }))
