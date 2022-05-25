@@ -10,10 +10,11 @@ module.exports = (env, options) => {
   const webpack = require("webpack")
   const { CleanWebpackPlugin } = require("clean-webpack-plugin")
   const CopyPlugin = require("copy-webpack-plugin")
+  const BuildHashPlugin = require("./webpack/BuildHashWebpackPlugin")
   const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin")
   const dir = __dirname
   const dirRoot = path.resolve(dir, "..", "..", "..")
-  const dirDist = path.resolve(dirRoot, "src", "main", "resources", "ru", "protei", "portal", "ui", "webts", "public")
+  const dirDist = path.resolve(dirRoot, "src", "main", "resources", "ru", "protei", "portal", "ui", "webts", "public", "webts")
   const versionPath = path.resolve(dirRoot, "version.json")
   const version = require(versionPath).version
   const tsconfig = require(path.resolve(dirRoot, "..", "tsconfig.json"))
@@ -31,9 +32,9 @@ module.exports = (env, options) => {
     output: {
       path: dirDist,
       pathinfo: !PROD,
-      publicPath: "Portal/",
+      publicPath: "Portal/webts/",
       filename: "[name].bundle.js",
-      chunkFilename: "[name].bundle.js",
+      chunkFilename: "[name].[contenthash].bundle.js",
     },
     plugins: [
       new webpack.ProgressPlugin(),
@@ -53,6 +54,12 @@ module.exports = (env, options) => {
         /date-fns[\/\\]/,
         new RegExp(`[/\\\\\](${localesToKeep.join('|')})[/\\\\\]index\.js$`)
       ),
+      new BuildHashPlugin({
+        filename: "build-hash.txt",
+      }),
+      new webpack.DefinePlugin({
+        __webpack_hash_file__: JSON.stringify("build-hash.txt"),
+      }),
       new webpack.DefinePlugin({
         __app_version__: JSON.stringify(version),
       }),

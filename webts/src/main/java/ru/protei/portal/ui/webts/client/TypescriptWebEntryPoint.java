@@ -18,10 +18,10 @@ public class TypescriptWebEntryPoint implements EntryPoint {
     @Override
     public void onModuleLoad() {
         String[] injects = {
-                "runtime.bundle.js",
-                "vendors.bundle.js",
-                "protei-lib.bundle.js",
-                "index.bundle.js"
+                "webts/runtime.bundle.js",
+                "webts/vendors.bundle.js",
+                "webts/protei-lib.bundle.js",
+                "webts/index.bundle.js"
         };
         injectChain(injects);
     }

@@ -39,7 +39,7 @@
                 <configuration>
                     <filesets>
                         <fileset>
-                            <directory>src/main/resources/ru/protei/portal/ui/webts/public</directory>
+                            <directory>src/main/resources/ru/protei/portal/ui/webts/public/webts</directory>
                             <followSymlinks>false</followSymlinks>
                         </fileset>
                     </filesets>
@@ -85,11 +85,14 @@
                                 <resource>
                                     <directory>src/main/resources</directory>
                                     <includes>
-                                        <include>**/*.js</include>
-                                        <include>**/*.js.map</include>
-                                        <include>**/*.css</include>
-                                        <include>**/*.css.map</include>
+                                        <include>*.gwt.xml</include>
                                         <include>**/*.gwt.xml</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>src/main/resources/ru/protei/portal/ui/webts/public/webts</directory>
+                                    <includes>
+                                        <include>*</include>
                                     </includes>
                                 </resource>
                             </resources>

@@ -1,7 +1,8 @@
 /* eslint-disable import/no-default-export */
 
-declare const __webpack_hash__: string
 declare const __webpack_chunkname__: string
+declare const __webpack_hash__: string
+declare const __webpack_hash_file__: string
 declare const __app_version__: string
 
 declare module "*.ico" {
