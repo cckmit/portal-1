@@ -133,4 +133,5 @@
   <include file="2022-04-29-add-time-elapsed-groups-column-to-report-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-04-29-create-common-manager-to-notify-list-table.xml" relativeToChangelogFile="true"/>
   <include file="2022-05-06-add-with_data_summarize-to-report-table.xml" relativeToChangelogFile="true"/>
+  <include file="2022-05-25-dropnotnullconstraint-in-delivery-specification-tables.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
