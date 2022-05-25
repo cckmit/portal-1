@@ -14,4 +14,6 @@ public interface AbstractTransportationRequestFilterView extends IsWidget {
     void clearFooterStyle();
 
     HasValue<DateIntervalWithType> pickupDate();
+
+    void setDateValid(boolean isTypeValid, boolean isRangeValid);
 }

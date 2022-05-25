@@ -757,6 +757,14 @@ public abstract class ReportEditActivity implements Activity,
         return typeValid && rangeValid;
     }
 
+    private boolean validateTransportationRange(DateRange dateRange, boolean isMandatory) {
+        boolean typeValid = validateTypeRange(dateRange, isMandatory);
+        boolean rangeValid = typeValid ? validateDateRange(dateRange) : true;
+
+        setValidTransportationRange(typeValid, rangeValid);
+        return typeValid && rangeValid;
+    }
+
     private void validateCreatedRange(boolean isTypeValid, boolean isRangeValid) {
         issueFilterWidget.getIssueFilterParams().setCreatedRangeValid(isTypeValid, isRangeValid);
     }
@@ -773,6 +781,10 @@ public abstract class ReportEditActivity implements Activity,
         youtrackWorkFilterView.setDateValid(isTypeValid, isRangeValid);
     }
 
+    private void setValidTransportationRange(boolean isTypeValid, boolean isRangeValid) {
+        transportationRequestFilterView.setDateValid(isTypeValid, isRangeValid);
+    }
+
     private void applyIssueFilterVisibilityByPrivileges() {
         AbstractIssueFilterParamView issueFilterParams = issueFilterWidget.getIssueFilterParams();
         if (issueFilterParams.productsVisibility().isVisible()) {
@@ -787,7 +799,22 @@ public abstract class ReportEditActivity implements Activity,
     }
 
     private boolean validateTransportationQuery(TransportationRequestQuery query) {
-        return query != null && query.isParamsPresent();
+        if (query == null) {
+            return false;
+        }
+
+        if (!query.isParamsPresent()) {
+            fireEvent(new NotifyEvents.Show(lang.reportCaseObjectIsAnySelectedParamNotPresentError(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        boolean dateRangeValid = validateTransportationRange(query.getPickupDate(), true);
+        if (!dateRangeValid) {
+            fireEvent(new NotifyEvents.Show(lang.reportNotValidPeriod(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        return true;
     }
 
     private TransportationRequestQuery getTransportationRequestQuery() {
