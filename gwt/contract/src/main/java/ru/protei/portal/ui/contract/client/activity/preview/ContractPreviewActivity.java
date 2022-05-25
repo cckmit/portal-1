@@ -28,6 +28,7 @@ import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
+import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.contract.client.widget.contractspecification.previewitem.ContractSpecificationPreviewItem;
 
@@ -112,6 +113,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
 
     private void fillView( Contract value ) {
         view.setHeader(sanitizeHtml(typeLang.getName(value.getContractType()) + " № " + value.getNumber()));
+        view.setHeaderHref(LinkUtils.makePreviewLink(Contract.class, value.getId()) );
         view.setState(value.getStateId() != null
                 ? "./images/contract_" + value.getStateName().toLowerCase() + ".png"
                 : null);

@@ -17,6 +17,8 @@ public interface AbstractContractPreviewView extends IsWidget {
 
     void setHeader(String value);
 
+    void setHeaderHref(String link);
+
     void setState(String value);
 
     void setDateSigning(String value);

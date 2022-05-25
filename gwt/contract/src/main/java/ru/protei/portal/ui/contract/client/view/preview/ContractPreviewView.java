@@ -47,6 +47,11 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     }
 
     @Override
+    public void setHeaderHref(String link) {
+        this.header.setHref(link);
+    }
+
+    @Override
     public void setState(String value) {
         this.state.setSrc(value);
     }
