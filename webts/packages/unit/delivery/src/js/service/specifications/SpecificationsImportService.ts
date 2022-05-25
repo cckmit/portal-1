@@ -178,8 +178,7 @@ export class SpecificationsImportServiceImpl implements SpecificationsImportServ
             count: modification.count,
           }))
         return {
-          specification: undefined,
-          specificationId: specificationId,
+          childSpecificationId: specificationId,
           category: category,
           modifications: modifications,
         }
