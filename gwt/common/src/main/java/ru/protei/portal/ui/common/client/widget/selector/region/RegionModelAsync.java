@@ -6,7 +6,6 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.RegionEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.selector.LoadingHandler;
 import ru.protei.portal.ui.common.client.selector.model.BaseSelectorModel;
@@ -23,11 +22,6 @@ public abstract class RegionModelAsync extends BaseSelectorModel<EntityOption>
 
     @Event
     public void onInit(AuthEvents.Success event) {
-        clean();
-    }
-
-    @Event
-    public void onRegionListChanged(RegionEvents.ChangeModel event) {
         clean();
     }
 

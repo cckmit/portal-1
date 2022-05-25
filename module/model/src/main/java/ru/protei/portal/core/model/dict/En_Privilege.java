@@ -18,9 +18,13 @@ public enum En_Privilege {
 
     ISSUE_ASSIGNMENT_VIEW (ISSUE_ASSIGNMENT, VIEW),
 
+    @Deprecated
     REGION_VIEW (REGION, VIEW),
+    @Deprecated
     REGION_EDIT (REGION, EDIT),
+    @Deprecated
     REGION_REPORT (REGION, REPORT),
+    @Deprecated
     REGION_EXPORT (REGION, EXPORT),
 
     PROJECT_VIEW (PROJECT, VIEW),

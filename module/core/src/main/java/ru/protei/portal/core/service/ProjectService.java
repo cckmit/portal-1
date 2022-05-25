@@ -11,9 +11,7 @@ import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.dto.ProjectInfo;
-import ru.protei.portal.core.model.dto.RegionInfo;
 import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.SelectorsParams;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
@@ -30,13 +28,6 @@ import static ru.protei.portal.config.MainConfiguration.BACKGROUND_TASKS;
  * Сервис управления проектами
  */
 public interface ProjectService {
-
-    /**
-     * Возвращает проектную информацию по регионам
-     * @param query    параметры запроса
-     */
-    @Privileged(En_Privilege.REGION_VIEW)
-    Result<List<RegionInfo>> listRegions(AuthToken token, ProjectQuery query);
 
     @Privileged(En_Privilege.PROJECT_VIEW)
     Result<SearchResult<Project>> projects(AuthToken token, ProjectQuery query);

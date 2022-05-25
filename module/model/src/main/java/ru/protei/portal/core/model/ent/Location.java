@@ -1,8 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_LocationType;
-import ru.protei.portal.core.model.dto.RegionInfo;
-import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -83,22 +81,6 @@ public class Location implements Serializable {
 
     public En_LocationType getType () {
         return locationType;
-    }
-
-    public DistrictInfo toDistrictInfo() {
-        return new DistrictInfo(this.id, this.name, this.code);
-    }
-
-    public RegionInfo toRegionInfo() {
-        RegionInfo info = new RegionInfo();
-        info.id = id;
-        info.name = name;
-        try {
-            info.number = Integer.parseInt( code );
-        }
-        catch ( NumberFormatException e ) {}
-        catch (NullPointerException e) {}
-        return info;
     }
 
     public EntityOption toEntityOption() {

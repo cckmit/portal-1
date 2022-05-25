@@ -44,26 +44,26 @@ public class En_AbsenceReasonLang {
             return "";
 
         switch (reason){
-            case PERSONAL_AFFAIR: return "text-danger fa-light fa-person-walking";
+            case PERSONAL_AFFAIR: return "text-danger fa-solid fa-person-walking";
 
             case BUSINESS_TRIP:
-            case LOCAL_BUSINESS_TRIP: return "text-complete fa-light fa-briefcase";
+            case LOCAL_BUSINESS_TRIP: return "text-complete fa-solid fa-briefcase";
 
-            case STUDY: return "hint-text fa-light fa-graduation-cap";
+            case STUDY: return "hint-text fa-solid fa-graduation-cap";
 
             case DISEASE:
-            case SICK_LEAVE: return "text-danger fa-light fa-house-medical";
+            case SICK_LEAVE: return "text-danger fa-solid fa-house-medical";
 
-            case NIGHT_WORK: return "hint-text fa-light fa-moon";
-            case DUTY: return "hint-text fa-light fa-phone-office";
+            case NIGHT_WORK: return "hint-text fa-solid fa-moon";
+            case DUTY: return "hint-text fa-solid fa-phone-office";
 
-            case LEAVE_WITHOUT_PAY: return "text-warning fa-light fa-brightness-low";
+            case LEAVE_WITHOUT_PAY: return "text-warning fa-solid fa-brightness-low";
 
-            case LEAVE: return "text-warning fa-light fa-sun-bright";
+            case LEAVE: return "text-warning fa-solid fa-sun-bright";
 
-            case REMOTE_WORK: return "text-success fa-light fa-house-user";
+            case REMOTE_WORK: return "text-success fa-solid fa-house-user";
 
-            case GUEST_PASS: return "text-success fa-light fa-address-card";
+            case GUEST_PASS: return "text-success fa-solid fa-address-card";
 
             default:
                 return "";

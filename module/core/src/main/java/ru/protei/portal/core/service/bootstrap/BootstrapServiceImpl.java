@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.Arrays.asList;
 import static java.util.Comparator.comparingLong;
 import static java.util.Locale.forLanguageTag;
 import static java.util.stream.Collectors.toList;
@@ -164,6 +165,15 @@ public class BootstrapServiceImpl implements BootstrapService {
         if (!bootstrapAppDAO.isActionExists("fillCommonManagerToNotifyList")) {
             this.fillCommonManagerToNotifyList();
             bootstrapAppDAO.createAction("fillCommonManagerToNotifyList");
+        }
+        /**
+         *  end Спринт */
+
+        /**
+          * begin Спринт  */
+        if (!bootstrapAppDAO.isActionExists("removeRegionPrivileges")) {
+            this.removeRegionPrivileges();
+            bootstrapAppDAO.createAction("removeRegionPrivileges");
         }
         /**
          *  end Спринт */
@@ -512,6 +522,34 @@ public class BootstrapServiceImpl implements BootstrapService {
         List<ContactItem> contactItems = contactItemDAO.getListByCondition("access_type is null");
         contactItems.forEach(item -> item.modify(En_ContactDataAccess.PUBLIC));
         contactItemDAO.saveOrUpdateBatch(contactItems);
+    }
+
+    private void removeRegionPrivileges() {
+        List<En_Privilege> obsoletePrivileges = Arrays.asList(REGION_VIEW, REGION_EDIT, REGION_REPORT, REGION_EXPORT);
+        removeObsoletePrivileges(obsoletePrivileges);
+    }
+
+    private void removeObsoletePrivileges(List<En_Privilege> obsoletePrivileges) {
+        log.info( "Start remove obsolete privileges from user role = {}", obsoletePrivileges );
+        List< UserRole > all = userRoleDAO.getAll();
+
+        if ( all == null ) {
+            log.info( "Not found roles. Aborting" );
+            return;
+        }
+
+        List< UserRole > rolesHasObsoletePrivileges = all.stream()
+                .filter( role -> role.getPrivileges() != null && !Collections.disjoint( role.getPrivileges(), obsoletePrivileges ) )
+                .peek( role -> role.getPrivileges().removeAll( obsoletePrivileges ) )
+                .collect( toList() );
+
+        if ( rolesHasObsoletePrivileges.isEmpty() ) {
+            log.info( "Not found roles with obsolete privileges" );
+            return;
+        }
+
+        userRoleDAO.mergeBatch( rolesHasObsoletePrivileges );
+        log.info( "Correction roles with obsolete privileges success" );
     }
 
     private void youtrackWorkDictionaries() {
