@@ -26,7 +26,7 @@ public class EmployeeListView extends Composite implements AbstractEmployeeListV
 
     @Override
     public HasWidgets getChildContainer() {
-        return childContainer;
+        return employeeContainer;
     }
 
     @Override
@@ -59,6 +59,8 @@ public class EmployeeListView extends Composite implements AbstractEmployeeListV
 
     @UiField
     HTMLPanel pagerContainer;
+    @UiField
+    HTMLPanel employeeContainer;
 
     AbstractEmployeeListActivity activity;
 

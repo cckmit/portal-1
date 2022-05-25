@@ -1,63 +1,53 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:common="urn:import:ru.protei.portal.ui.common.client.common">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel tag="li" styleName="employee">
-        <div class="header-block no-hover" ui:field="employeeContainer">
+    <common:ClickHTMLPanel ui:field="rootContainer" styleName="employee-container col m-b-20" >
+        <div class="employee card card-default full-height" ui:field="employeeContainer">
+            <div class="card-body p-b-0">
+                <div class="row">
+                    <div class="col-3">
+                        <g:Image styleName="employee-photo" ui:field="photo"/>
+                        <div ui:field="absenceReason" class="absence-reason hide">
+                            <i ui:field="absenceIcon"/>
+                        </div>
+                    </div>
+                    <div class="col-9">
+                        <g:Anchor ui:field="editAnchor" styleName="fa-light fa-pencil fa-lg p-t-5 pull-right" href="#" visible="false"/>
+                        <div class="bold" ui:field="name"/>
+                        <div class="text-black" ui:field="firedDate"/>
+                        <div class="text-black" ui:field="position"/>
 
-            <h2 class="name border-line">
-                <g:Anchor  ui:field="editIcon" styleName="fas fa-edit p-r-5" href="#" visible="false"/>
-                <g:Anchor ui:field="name" href="#"/>
-            </h2>
 
-            <div class="employee-item-container">
-                <div class="photo">
-                    <g:Image ui:field="photo" styleName="employee-list-image"/>
+                        <div class="m-t-10 normal-text" ui:field="company"/>
+                        <div class="normal-text" ui:field="department"/>
+
+                        <div class="row m-t-10">
+                            <div class="col-7">
+                                <div>
+                                    <i class="far fa-envelope m-r-5"/>
+                                    <span class="small-text" ui:field="emails"/>
+                                </div>
+                                <div>
+                                    <i class="far fa-phone m-r-5"/>
+                                    <span class="text-black small-text" ui:field="phone"/>
+                                </div>
+                            </div>
+                            <div class="col-5">
+                                <div>
+                                    <b class="m-r-5">IP</b>
+                                    <span class="text-black small-text" ui:field="ip"/>
+                                </div>
+                                <div>
+                                    <i class="far fa-birthday-cake m-r-5"/>
+                                    <span class="text-black small-text" ui:field="birthday"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <g:HTMLPanel ui:field="birthdayContainer" styleName="contacts birthday">
-                    <i class="fa fa-birthday-cake"/>
-                    <span ui:field="birthday"/>
-                </g:HTMLPanel>
-                <g:HTMLPanel ui:field="phoneContainer" styleName="contacts phone">
-                    <i class="fa fa-phone"/>
-                    <span ui:field="phone"/>
-                </g:HTMLPanel>
-                <g:HTMLPanel ui:field="ipContainer" styleName="contacts ip" visible="false">
-                    <b>IP</b>
-                    <span ui:field="ip"></span>
-                </g:HTMLPanel>
-                <g:HTMLPanel ui:field="emailContainer" styleName="contacts email">
-                    <i class="fa fa-envelope"/>
-                    <span ui:field="emails"/>
-                </g:HTMLPanel>
-                <g:HTMLPanel ui:field="companyContainer" styleName="contacts position" visible="false">
-                    <i class="fa fa-building"></i>
-                    <span ui:field="company"/>
-                </g:HTMLPanel>
-                <g:HTMLPanel ui:field="departmentParentContainer" styleName="contacts department" visible="false">
-                    <i class="fa fa-sitemap"/>
-                    <span ui:field="departmentParent"/>
-                </g:HTMLPanel>
-                <g:HTMLPanel ui:field="departmentContainer" styleName="contacts department" visible="false">
-                    <i class="fa fa-th-large"/>
-                    <span ui:field="department"/>
-                </g:HTMLPanel>
-                <g:HTMLPanel ui:field="positionContainer" styleName="contacts position" visible="false">
-                    <i class="fa fa-street-view"></i>
-                    <span ui:field="position"/>
-                </g:HTMLPanel>
-                <g:HTMLPanel ui:field="fireDateContainer" styleName="contacts position" visible="false">
-                    <i class="fa fa-info-circle"></i>
-                    <b>
-                        <span><ui:text from="{lang.employeeFired}"/></span>
-                        <span ui:field="fireDate"/>
-                    </b>
-                </g:HTMLPanel>
-            </div>
-            <div ui:field="absenceReason" class="absence-reason hide">
-                <i ui:field="absenceIcon"/>
             </div>
         </div>
-    </g:HTMLPanel>
+    </common:ClickHTMLPanel>
 </ui:UiBinder>

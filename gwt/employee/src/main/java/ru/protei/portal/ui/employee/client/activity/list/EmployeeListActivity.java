@@ -20,6 +20,7 @@ import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
@@ -120,7 +121,20 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         requestEmployees( page );
     }
 
-    private void requestEmployees( int page ) {
+
+    @Override
+    public void onEmployeeEditClicked(Long id) {
+        if (id == null || !policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_EDIT)) return;
+        fireEvent(new EmployeeEvents.Edit(id));
+    }
+
+    @Override
+    public void onEmployeePreviewClicked(Long id) {
+        if (id == null || !policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_VIEW)) return;
+        fireEvent(new EmployeeEvents.ShowFullScreen(id));
+    }
+
+    private void requestEmployees(int page ) {
 
         view.getChildContainer().clear();
         view.showLoader( true );
@@ -150,10 +164,9 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         AbstractEmployeeItemView itemView = factory.get();
         itemView.setActivity( this );
 
-        itemView.setName( employee.getDisplayName(), LinkUtils.makePreviewLink(EmployeeShortView.class, employee.getId()) );
-        if (policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_EDIT)) {
-            itemView.setEditIcon(LinkUtils.makeEditLink(EmployeeShortView.class, employee.getId()));
-        }
+        itemView.setId(employee.getId());
+        itemView.setName( employee.getDisplayName() );
+        itemView.editVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_EDIT));
 
         showBirthday(employee, itemView);
 
@@ -165,21 +178,22 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         WorkerEntryShortView mainEntry = entryFacade.getMainEntry();
         if ( mainEntry != null ) {
             if ( mainEntry.getDepartmentParentName() != null ) {
-                itemView.setDepartmentParent( mainEntry.getDepartmentParentName() );
-                itemView.setDepartment( mainEntry.getDepartmentName() );
+                itemView.setGroupOrDepartment( mainEntry.getDepartmentName() );
+                itemView.setCompany( mainEntry.getCompanyName() );
             } else {
-                itemView.setDepartmentParent( mainEntry.getDepartmentName() );
+
             }
 
+            itemView.setGroupOrDepartment( mainEntry.getDepartmentName() );
+            itemView.setCompany( mainEntry.getCompanyName() + (mainEntry.getDepartmentParentName() != null ?  ", " + mainEntry.getDepartmentParentName() : ""));
             itemView.setPosition( mainEntry.getPositionName() );
-            itemView.setCompany( mainEntry.getCompanyName() );
         }
         itemView.setPhoto(AvatarUtils.getPhotoUrl(employee.getId()));
         itemView.setIP(employee.getIpAddress());
         if(employee.isFired()) {
-            itemView.setFireDate(DateFormatter.formatDateOnly(employee.getFireDate()));
+            itemView.setFireDate(lang.employeeFired() + " " + DateFormatter.formatYearMonthFullDay(employee.getFireDate()));
         }
-        if(policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW)) {
+        if(policyService.hasPrivilegeFor(En_Privilege.ABSENCE_VIEW) && !employee.isFired()) {
             itemView.setCurrentAbsence(employee.getCurrentAbsence());
         }
         return itemView;
@@ -200,7 +214,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         itemView.setBirthday(value);
     }
 
-    Consumer< EmployeeShortView > fillViewer = new Consumer< EmployeeShortView >() {
+    private Consumer< EmployeeShortView > fillViewer = new Consumer< EmployeeShortView >() {
         @Override
         public void accept( EmployeeShortView employee ) {
             AbstractEmployeeItemView itemView = makeView( employee );
@@ -222,9 +236,13 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     @Inject
     ConfigStorage configStorage;
 
+    @Inject
+    Lang lang;
+
     private long marker;
     private AppEvents.InitDetails init;
     private EmployeeQuery query;
     private Map< EmployeeShortView, AbstractEmployeeItemView > modelToItemView = new HashMap<>();
     private static final Logger log = Logger.getLogger(EmployeeListActivity.class.getName());
+
 }
