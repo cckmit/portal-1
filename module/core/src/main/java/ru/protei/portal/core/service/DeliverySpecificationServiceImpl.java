@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.query.DeliverySpecificationQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.util.Date;
 import java.util.List;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -31,6 +32,8 @@ public class DeliverySpecificationServiceImpl implements DeliverySpecificationSe
     DeliveryDetailToSpecificationDAO deliveryDetailToSpecificationDAO;
     @Autowired
     DeliveryDetailModificationDAO deliveryDetailModificationDAO;
+    @Autowired
+    DeliveryDetailDAO deliveryDetailDAO;
 
     @Override
     public Result<SearchResult<DeliverySpecification>> getDeliverySpecifications(AuthToken token, DeliverySpecificationQuery query) {
@@ -70,7 +73,7 @@ public class DeliverySpecificationServiceImpl implements DeliverySpecificationSe
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        return ok(createDeliverySpecification(deliverySpecification));
+        return ok(createDeliverySpecification(token.getPersonId(), deliverySpecification));
     }
 
     @Override
@@ -80,12 +83,19 @@ public class DeliverySpecificationServiceImpl implements DeliverySpecificationSe
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        deliverySpecifications.forEach(this::createDeliverySpecification);
+        deliverySpecifications.forEach(deliverySpecification -> createDeliverySpecification(token.getPersonId(), deliverySpecification));
 
         return ok(true);
     }
 
-    public DeliverySpecification createDeliverySpecification(DeliverySpecification deliverySpecification) {
+    public DeliverySpecification createDeliverySpecification(Long creatorId, DeliverySpecification deliverySpecification) {
+
+        deliverySpecification.setCreatorId(creatorId);
+
+        Date now = new Date();
+        deliverySpecification.setCreated(now);
+        deliverySpecification.setModified(now);
+
         deliverySpecificationDAO.persist(deliverySpecification);
 
         if (isNotEmpty(deliverySpecification.getSpecifications())) {
@@ -105,7 +115,14 @@ public class DeliverySpecificationServiceImpl implements DeliverySpecificationSe
 
         if (isNotEmpty(deliverySpecification.getDetails())) {
             deliverySpecification.getDetails()
-                    .forEach(detail -> detail.setSpecificationId(deliverySpecification.getId()));
+                    .forEach(detailSpecification -> {
+                        detailSpecification.setSpecificationId(deliverySpecification.getId());
+                        detailSpecification.setModified(now);
+                        if (detailSpecification.getDetailId() == null && detailSpecification.getDetail() != null) {
+                            deliveryDetailDAO.persist(detailSpecification.getDetail());
+                            detailSpecification.setDetailId(detailSpecification.getDetail().getId());
+                        }
+                    });
             deliveryDetailToSpecificationDAO.persistBatch(deliverySpecification.getDetails());
             deliverySpecification.getDetails()
                     .forEach(detail -> {

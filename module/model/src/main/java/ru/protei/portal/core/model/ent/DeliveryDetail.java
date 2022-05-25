@@ -21,7 +21,7 @@ public class DeliveryDetail {
     /**
      * Идентификатор
      */
-    @JdbcId(name = Columns.ID, idInsertMode = IdInsertMode.EXPLICIT)
+    @JdbcId(name = Columns.ID, idInsertMode = IdInsertMode.AUTO)
     @JsonProperty("id")
     private Long id;
 
@@ -46,7 +46,7 @@ public class DeliveryDetail {
     @JsonProperty("responsibleId")
     private Long responsibleId;
 
-    @JdbcJoinedObject(localColumn = Columns.RESPONSIBLE_ID)
+    @JdbcJoinedObject(localColumn = Columns.RESPONSIBLE_ID, remoteColumn = "id", table = "person")
     @JsonProperty("responsible")
     private PersonShortView responsible;
 
@@ -57,7 +57,7 @@ public class DeliveryDetail {
     @JsonProperty("supplierId")
     private Long supplierId;
 
-    @JdbcJoinedObject(localColumn = Columns.SUPPLIER_ID)
+    @JdbcJoinedObject(localColumn = Columns.SUPPLIER_ID, remoteColumn = "id", table = "company")
     @JsonProperty("supplier")
     private Company supplier;
 

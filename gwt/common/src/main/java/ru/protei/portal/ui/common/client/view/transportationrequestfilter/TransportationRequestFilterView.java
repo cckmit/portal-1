@@ -46,6 +46,11 @@ public class TransportationRequestFilterView extends Composite
         return pickupDate;
     }
 
+    @Override
+    public void setDateValid(boolean isTypeValid, boolean isRangeValid) {
+        pickupDate.setValid(isTypeValid, isRangeValid);
+    }
+
     @UiHandler("resetBtn")
     public void onResetClicked(ClickEvent event) {
         if (activity != null) {
