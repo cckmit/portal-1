@@ -55,6 +55,7 @@ public class UiConstants {
         String STORE_AND_DELIVERY = "fas fa-warehouse";
         String CARD_SEARCH = "fas fa-search";
         String DELIVERY = "fas fa-truck";
+        String DELIVERY_SPECIFICATION = "fas fa-server";
         String CARD = "fas fa-microchip";
         String PCB_ORDER = "fas fa-server";
         String CARD_BATCH = "fas fa-layer-group";
@@ -139,6 +140,7 @@ public class UiConstants {
         String CARD_GROUP_MODIFY = "card_group_modify";
         String CARD_BATCH_CREATE = "card_batch_create";
         String PCB_ORDER_CREATE = "pcb_order";
+        String DELIVERY_SPECIFICATION_IMPORT = "delivery_specification_import";
     }
 
     public interface Styles {

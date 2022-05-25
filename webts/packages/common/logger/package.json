@@ -1,0 +1,20 @@
+{
+  "name": "@protei-portal/common-logger",
+  "version": "1.0.0",
+  "private": true,
+  "main": "lib/index",
+  "types": "lib/index",
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "@protei-libs/exception": "workspace:^1.0.0",
+    "@protei-libs/logger": "workspace:^1.0.0"
+  },
+  "optionalDependencies": {
+    "mobx": "*"
+  },
+  "devDependencies": {
+    "typescript": "4.5.4"
+  }
+}

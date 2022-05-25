@@ -1,0 +1,36 @@
+{
+  "name": "@protei-portal/common",
+  "version": "1.0.0",
+  "private": true,
+  "main": "lib/index",
+  "types": "lib/index",
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "@protei-libs/eventbus": "workspace:*",
+    "@protei-libs/exception": "workspace:*",
+    "@protei-libs/http": "workspace:*",
+    "@protei-libs/logger": "workspace:*",
+    "@protei-libs/module": "workspace:*",
+    "@protei-libs/react": "workspace:*",
+    "@protei-libs/store": "workspace:*",
+    "@protei-libs/types": "workspace:*",
+    "@protei-portal/common-lang": "workspace:*",
+    "@protei-portal/common-logger": "workspace:*",
+    "ajv": "8.8.2",
+    "ajv-formats": "2.1.1",
+    "date-fns": "2.28.0"
+  },
+  "peerDependencies": {
+    "inversify": "*",
+    "lodash": "*",
+    "mobx": "*",
+    "mobx-react-lite": "*",
+    "react": "*",
+    "react-dom": "*"
+  },
+  "devDependencies": {
+    "typescript": "4.5.4"
+  }
+}

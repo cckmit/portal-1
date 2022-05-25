@@ -4188,5 +4188,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueReportDataSummarize();
 
+    String deliverySpecifications();
 }
 

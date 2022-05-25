@@ -1,0 +1,22 @@
+{
+  "name": "@protei-libs/module",
+  "version": "1.0.0",
+  "private": true,
+  "main": "lib/index",
+  "types": "lib/index",
+  "files": [
+    "lib"
+  ],
+  "peerDependencies": {
+    "react": "*"
+  },
+  "optionalDependencies": {
+    "@protei-libs/eventbus": "workspace:*",
+    "@protei-libs/react": "workspace:*",
+    "@protei-libs/scheduler": "workspace:*",
+    "@protei-libs/types": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "4.5.4"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@protei-libs/http",
+  "version": "1.0.0",
+  "private": true,
+  "main": "lib/index",
+  "types": "lib/index",
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "whatwg-fetch": "3.6.2"
+  },
+  "devDependencies": {
+    "typescript": "4.5.4"
+  }
+}

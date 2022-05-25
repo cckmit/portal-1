@@ -1,0 +1,35 @@
+{
+  "name": "@protei-portal/unit-delivery",
+  "version": "1.0.0",
+  "private": true,
+  "main": "lib/index",
+  "types": "lib/index",
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "@protei-libs/eventbus": "workspace:*",
+    "@protei-libs/exception": "workspace:*",
+    "@protei-libs/logger": "workspace:*",
+    "@protei-libs/module": "workspace:*",
+    "@protei-libs/react": "workspace:*",
+    "@protei-libs/scheduler": "workspace:*",
+    "@protei-libs/store": "workspace:*",
+    "@protei-portal/common": "workspace:*",
+    "@protei-portal/common-lang": "workspace:*",
+    "@protei-portal/common-router": "workspace:*"
+  },
+  "peerDependencies": {
+    "inversify": "*",
+    "lodash": "*",
+    "mobx": "*",
+    "mobx-react-lite": "*",
+    "react": "*",
+    "react-dom": "*",
+    "react-router-dom": "*",
+    "xlsx": "*"
+  },
+  "devDependencies": {
+    "typescript": "4.5.4"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@protei-libs/scheduler",
+  "version": "1.0.0",
+  "private": true,
+  "main": "lib/index",
+  "types": "lib/index",
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "@protei-libs/types": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "4.5.4"
+  }
+}
