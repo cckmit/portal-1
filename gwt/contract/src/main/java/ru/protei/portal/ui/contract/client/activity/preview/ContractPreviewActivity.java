@@ -113,7 +113,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
 
     private void fillView( Contract value ) {
         view.setHeader(sanitizeHtml(typeLang.getName(value.getContractType()) + " № " + value.getNumber()));
-        view.setHeaderHref(LinkUtils.makePreviewLink(Contract.class, value.getId()) );
+        view.setHeaderHref(LinkUtils.makePreviewLink(Contract.class, value.getId()));
         view.setState(value.getStateId() != null
                 ? "./images/contract_" + value.getStateName().toLowerCase() + ".png"
                 : null);

@@ -79,7 +79,7 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
     private void fillView( Person value ) {
         view.firedMsgVisibility().setVisible(value.isFired());
         view.deletedMsgVisibility().setVisible(value.isDeleted());
-        view.setDisplayName( value.getDisplayName());
+        view.setDisplayName( value.getDisplayName() );
         view.setDisplayNameHref( LinkUtils.makePreviewLink(ContactItemView.class, value.getId()) );
         view.setCompany( value.getCompany().getCname() );
         String positionDisplay = StringUtils.isEmpty(value.getPosition()) ? "" : ", " + value.getPosition();

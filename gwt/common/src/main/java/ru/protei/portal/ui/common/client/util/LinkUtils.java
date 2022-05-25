@@ -12,27 +12,29 @@ public class LinkUtils {
 
         if (id == null) return "";
 
+        String hrefSubstring = href.substring(0, href.indexOf("#") + 1);
+
         switch (clazz.getSimpleName()) {
             case ("Contract"):
-                return href.substring(0, href.indexOf("#") + 1) + "contract_preview:id=" + id;
+                return hrefSubstring + "contract_preview:id=" + id;
             case ("Project"):
-                return href.substring(0, href.indexOf("#") + 1) + "project_preview:id=" + id;
+                return hrefSubstring + "project_preview:id=" + id;
             case ("Platform"):
-                return href.substring(0, href.indexOf("#") + 1) + "sfplatform_preview:id=" + id;
+                return hrefSubstring + "sfplatform_preview:id=" + id;
             case ("DevUnit"):
-                return href.substring(0, href.indexOf("#") + 1) + "product_preview:id=" + id;
+                return hrefSubstring + "product_preview:id=" + id;
             case ("EmployeeShortView"):
-                return href.substring(0, href.indexOf("#") + 1) + "employee_preview:id=" + id;
+                return hrefSubstring + "employee_preview:id=" + id;
             case ("Plan"):
-                return href.substring(0, href.indexOf("#") + 1) + "plan_preview:id=" + id;
+                return hrefSubstring + "plan_preview:id=" + id;
             case ("Company"):
-                return href.substring(0, href.indexOf("#") + 1) + "company:id=" + id;
+                return hrefSubstring + "company:id=" + id;
             case ("ContactItemView"):
-                return href.substring(0, href.indexOf("#") + 1) + "contact_preview:id=" + id;
+                return hrefSubstring + "contact_preview:id=" + id;
             case ("Equipment"):
-                return href.substring(0, href.indexOf("#") + 1) + "equipment_preview:id=" + id;
+                return hrefSubstring + "equipment_preview:id=" + id;
             case ("Document"):
-                return href.substring(0, href.indexOf("#") + 1) + "doc_preview::id=" + id;
+                return hrefSubstring + "doc_preview::id=" + id;
             case ("CaseLink"):
                 return makeCaseLinkUrl(id);
             case ("CaseAttachment"):
