@@ -26,6 +26,7 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
 
     @Inject
     public DialogDetailsView( DialogAnimation animation ) {
+        super(true);
         this.dialogAnimation = animation;
         add( ourUiBinder.createAndBindUi( this ) );
         setGlassEnabled( true );
