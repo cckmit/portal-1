@@ -27,6 +27,8 @@ public interface AbstractProductPreviewView extends IsWidget {
 
     void setChildren(Map<String, String> nameToLink);
 
+    void setNameHref(String link);
+
     void setTypeImage(String image);
 
     void showFullScreen(boolean isFullScreen);

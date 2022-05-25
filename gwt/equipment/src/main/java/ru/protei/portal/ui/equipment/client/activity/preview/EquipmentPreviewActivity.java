@@ -13,6 +13,7 @@ import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
+import ru.protei.portal.ui.common.client.util.LinkUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -84,6 +85,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         this.equipment = value;
 
         view.setHeader( value.getName() + " (#" + value.getId() + ")");
+        view.setHeaderHref( LinkUtils.makePreviewLink(Equipment.class, value.getId()));
         view.setCreatedBy(lang.createBy(value.getAuthorShortName(), DateFormatter.formatDateTime(value.getCreated())));
 
         view.setNameBySldWrks( value.getNameSldWrks() );

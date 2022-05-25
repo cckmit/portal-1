@@ -16,6 +16,8 @@ public interface AbstractEmployeePreviewView extends IsWidget {
 
     void setName(String name);
 
+    void setNameHref(String link);
+
     void setBirthday(String birthday);
 
     void setPhones(String phones);

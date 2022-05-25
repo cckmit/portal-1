@@ -19,6 +19,8 @@ public interface AbstractProjectPreviewView extends IsWidget {
 
     void setName(String value);
 
+    void setHeaderHref(String link);
+
     void setCreatedBy(String value );
 
     void setHeader(String name );

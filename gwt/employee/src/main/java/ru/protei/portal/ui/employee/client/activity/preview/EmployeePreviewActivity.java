@@ -137,6 +137,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
         view.setPhotoUrl(AvatarUtils.getPhotoUrl(employee.getId()));
         view.setName(employee.getDisplayName());
+        view.setNameHref(LinkUtils.makePreviewLink(EmployeeShortView.class, employee.getId()));
 
         showBirthday(employee);
 

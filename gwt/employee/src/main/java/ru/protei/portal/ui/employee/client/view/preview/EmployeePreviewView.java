@@ -59,6 +59,11 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     }
 
     @Override
+    public void setNameHref(String link) {
+        this.employeeName.setHref(link);
+    }
+
+    @Override
     public void setBirthday(String birthday) {
         this.birthday.setInnerText(birthday);
     }

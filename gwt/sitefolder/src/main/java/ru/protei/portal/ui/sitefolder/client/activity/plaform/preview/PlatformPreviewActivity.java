@@ -136,6 +136,7 @@ public abstract class PlatformPreviewActivity implements AbstractPlatformPreview
             return;
         }
         view.setName(platform.getName() == null ? "" : platform.getName());
+        view.setNameHref(LinkUtils.makePreviewLink(Platform.class, platform.getId()));
         view.setParameters(platform.getParams() == null ? "" : platform.getParams());
 
         textRenderController.render(platform.getComment(), En_TextMarkup.MARKDOWN, new FluentCallback<String>()

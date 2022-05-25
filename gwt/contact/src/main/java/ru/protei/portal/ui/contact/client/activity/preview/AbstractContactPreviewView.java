@@ -11,9 +11,11 @@ public interface AbstractContactPreviewView extends IsWidget {
 
     void setActivity( AbstractContactPreviewActivity activity );
 
-    void setDisplayName ( String value );
+    void setDisplayName ( String value);
 
-    void setBirthday( String value );
+    void setDisplayNameHref(String link);
+
+    void setBirthday(String value );
     void setLogins( String value );
     void setInfo( String value );
 
