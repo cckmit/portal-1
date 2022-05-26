@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -27,7 +28,9 @@ public abstract class TablePage implements Activity {
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
         if (event.profile.hasPrivilegeFor(En_Privilege.ROOM_RESERVATION_VIEW)) {
-            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.ROOM_RESERVATION_TABLE, TAB, DebugIds.SIDEBAR_MENU.ROOM_RESERVATION_TABLE).withParent(CATEGORY));
+            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.ROOM_RESERVATION_TABLE, TAB,
+                                         CrmConstants.PAGE_LINK.ROOM_RESERVATION_TABLE,
+                                         DebugIds.SIDEBAR_MENU.ROOM_RESERVATION_TABLE).withParent(CATEGORY));
             fireEvent(new AppEvents.InitPage(show));
         }
     }

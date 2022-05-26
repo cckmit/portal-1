@@ -5,6 +5,8 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
@@ -26,7 +28,8 @@ public abstract class DeliverySpecificationPage implements Activity {
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
         if (hasAccess()) {
-            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.DELIVERY_SPECIFICATION, TAB).withParent(CATEGORY));
+            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.DELIVERY_SPECIFICATION, TAB,
+                                         CrmConstants.PAGE_LINK.DELIVERY_SPECIFICATION, "").withParent(CATEGORY));
             fireEvent(new AppEvents.InitPage(show));
         }
     }
@@ -46,7 +49,7 @@ public abstract class DeliverySpecificationPage implements Activity {
     }
 
     private void fireSelectTab() {
-//        fireEvent(new ActionBarEvents.Clear());
+        fireEvent(new ActionBarEvents.Clear());
         if (hasAccess()) {
             fireEvent(new MenuEvents.Select(TAB, CATEGORY));
         }

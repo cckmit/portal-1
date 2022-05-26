@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -23,7 +24,9 @@ public abstract class PlanPage implements Activity{
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.PLAN_VIEW ) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.PLAN, ТAB, DebugIds.SIDEBAR_MENU.PLAN ) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.PLAN, ТAB,
+                                           CrmConstants.PAGE_LINK.PLANS,
+                                           DebugIds.SIDEBAR_MENU.PLAN ) );
             fireEvent( new AppEvents.InitPage(showPlans) );
         }
     }

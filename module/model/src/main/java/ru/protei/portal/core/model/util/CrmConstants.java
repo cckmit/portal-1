@@ -276,4 +276,40 @@ public class CrmConstants {
     public interface CaseTimeReport {
         int SUMMARIZED_DATA_SHEET_NUMBER = 0;
     }
+
+    public interface PAGE_LINK {
+        String DASHBOARD = "#dashboard";
+        String ISSUE = "#issues";
+        String ISSUE_ASSIGNMENT = "#issue_assignment";
+        String PLANS = "#plans";
+        String CASE_STATE = "#casestates";
+        String REPORTS = "#reports";
+        String EMPLOYEE_LIST = "#employees:view=list";
+        String EMPLOYEE_TABLE = "#employees:view=table";
+        String TOP_BRASS = "#topbrass";
+        String ABSENCE = "#absences";
+        String EMPLOYEE_BIRTHDAY = "#birthdays";
+        String EMPLOYEE_REGISTRATION = "#employee_registrations";
+        String COMPANY = "#companies";
+        String CONTACT = "#contacts";
+        String PRODUCT = "#products";
+        String PROJECT = "#projects";
+        String SITE_FOLDER = "#sfplatforms";
+        String DUTY_LOG = "#duty_logs";
+        String DOCUMENT = "#docs";
+        String DOCUMENT_TYPE = "#doctypes";
+        String EQUIPMENT = "#equipments";
+        String CONTRACT = "#contracts";
+        String RESERVED_IP = "#reserved_ips";
+        String SUBNET = "#subnets";
+        String ROOM_RESERVATION_CALENDAR = "#room_reservation";
+        String ROOM_RESERVATION_TABLE = "#room_reservation_table";
+        String EDUCATION = "#education";
+        String ROLE = "#roles";
+        String ACCOUNT = "#accounts";
+        String DELIVERY = "#deliveries";
+        String CARD = "#cards";
+        String CARD_BATCH = "#card_batches";
+        String DELIVERY_SPECIFICATION = "#delivery_specifications";
+    }
 }

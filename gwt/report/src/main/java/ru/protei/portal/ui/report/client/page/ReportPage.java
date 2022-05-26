@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -27,7 +28,9 @@ public abstract class ReportPage implements Activity {
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
         if (canView(policyService)) {
-            fireEvent(new MenuEvents.Add(ТAB, UiConstants.TabIcons.REPORTS, ТAB, DebugIds.SIDEBAR_MENU.REPORTS));
+            fireEvent(new MenuEvents.Add(ТAB, UiConstants.TabIcons.REPORTS, ТAB,
+                                         CrmConstants.PAGE_LINK.REPORTS,
+                                         DebugIds.SIDEBAR_MENU.REPORTS));
             fireEvent(new AppEvents.InitPage(show));
         }
     }
