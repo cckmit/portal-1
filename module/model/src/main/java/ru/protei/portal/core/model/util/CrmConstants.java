@@ -310,6 +310,7 @@ public class CrmConstants {
         String DELIVERY = "#deliveries";
         String CARD = "#cards";
         String CARD_BATCH = "#card_batches";
+        String PCB_ORDER = "#pcb_orders";
         String DELIVERY_SPECIFICATION = "#delivery_specifications";
     }
 }
