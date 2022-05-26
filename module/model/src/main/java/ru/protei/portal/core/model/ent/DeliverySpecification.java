@@ -3,9 +3,11 @@ package ru.protei.portal.core.model.ent;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +18,7 @@ import java.util.List;
         setterVisibility = JsonAutoDetect.Visibility.NONE
 )
 @JdbcEntity(table = "specification")
+@ApiModel(value="Delivery Specification")
 public class DeliverySpecification {
 
     /**
@@ -55,6 +58,7 @@ public class DeliverySpecification {
      */
     @JdbcColumn(name = "name")
     @JsonProperty("name")
+    @NotNull
     private String name;
 
     /**

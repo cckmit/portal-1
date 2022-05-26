@@ -1,5 +1,7 @@
 package ru.protei.portal.core.controller.api.json;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +33,8 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 
 @RestController
-@RequestMapping(value = "/jsonApi/deliverySpecification", headers = "Accept=application/json")
+@RequestMapping(value = "/jsonApi/deliverySpecification", headers = "Accept=application/json",
+        produces = "application/json", consumes = "application/json")
 @EnableWebMvc
 public class DeliverySpecificationApiController {
     private static final Logger log = LoggerFactory.getLogger(DeliverySpecificationApiController.class);
@@ -46,20 +49,25 @@ public class DeliverySpecificationApiController {
     }
 
     @PostMapping(value = "/getDeliverySpecifications")
+    @ApiOperation(value = "Get delivery specifications by query",
+            notes = "Get search result with delivery specifications filtered by query")
     public JsonResponse<SearchResult<DeliverySpecification>> getDeliverySpecifications(
-            @RequestBody JsonRequest<DeliverySpecificationQuery> q,
+            @ApiParam(value = "Delivery specification query", required = true)
+            @RequestBody JsonRequest<DeliverySpecificationQuery> query,
             HttpServletRequest request) {
 
-        log.info("API | getDeliverySpecifications(): Query={}", q);
+        log.info("API | getDeliverySpecifications(): Query={}", query);
 
-        return new JsonResponse<>(q.getRequestId(),
+        return new JsonResponse<>(query.getRequestId(),
                 getFakeAuthToken(request)
-                        .flatMap(authToken -> service.getDeliverySpecifications(authToken, q.getData()))
+                        .flatMap(authToken -> service.getDeliverySpecifications(authToken, query.getData()))
         );
     }
 
     @PostMapping(value = "/getDeliverySpecification")
+    @ApiOperation(value = "Get delivery specification by ID")
     public JsonResponse<DeliverySpecification> getDeliverySpecification(
+            @ApiParam(value = "Delivery specification ID", required = true)
             @RequestBody JsonRequest<Long> id,
             HttpServletRequest request) {
 
@@ -72,7 +80,9 @@ public class DeliverySpecificationApiController {
     }
 
     @PostMapping(value = "/createDeliverySpecification")
+    @ApiOperation(value = "Create delivery specification")
     public JsonResponse<DeliverySpecification> createDeliverySpecification(
+            @ApiParam(value = "Delivery Specification", required = true)
             @RequestBody JsonRequest<DeliverySpecification> deliverySpecification,
             HttpServletRequest request) {
 
@@ -85,7 +95,9 @@ public class DeliverySpecificationApiController {
     }
 
     @PostMapping(value = "/createDeliverySpecifications")
+    @ApiOperation(value = "Create list of delivery specification")
     public JsonResponse<Boolean> createDeliverySpecifications(
+            @ApiParam(value = "List of delivery specification", required = true)
             @RequestBody JsonRequest<List<DeliverySpecification>> deliverySpecificationList,
             HttpServletRequest request) {
 

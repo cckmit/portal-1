@@ -3,10 +3,13 @@ package ru.protei.portal.core.model.ent;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
 import ru.protei.winter.jdbc.annotations.IdInsertMode;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
+
+import javax.validation.constraints.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(
@@ -15,6 +18,7 @@ import ru.protei.winter.jdbc.annotations.JdbcId;
         setterVisibility = JsonAutoDetect.Visibility.NONE
 )
 @JdbcEntity(table = "detail_modification")
+@ApiModel(value="Delivery Detail Modification")
 public class DeliveryDetailModification {
 
     /**
@@ -36,6 +40,7 @@ public class DeliveryDetailModification {
      */
     @JdbcColumn(name = "number")
     @JsonProperty("number")
+    @NotNull
     private Integer number;
 
     /**
@@ -43,6 +48,7 @@ public class DeliveryDetailModification {
      */
     @JdbcColumn(name = "count")
     @JsonProperty("count")
+    @NotNull
     private Integer count;
 
     public Long getId() {

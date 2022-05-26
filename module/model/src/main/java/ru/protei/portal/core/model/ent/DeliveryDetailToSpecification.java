@@ -3,8 +3,10 @@ package ru.protei.portal.core.model.ent;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
 import ru.protei.winter.jdbc.annotations.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +17,7 @@ import java.util.List;
         setterVisibility = JsonAutoDetect.Visibility.NONE
 )
 @JdbcEntity(table = "detail_to_specification")
+@ApiModel(value="Delivery Detail To Specification")
 public class DeliveryDetailToSpecification {
 
     /**
@@ -36,6 +39,7 @@ public class DeliveryDetailToSpecification {
      */
     @JdbcColumn(name = "detail_id")
     @JsonProperty("detailId")
+    @NotNull
     private Long detailId;
 
     /**

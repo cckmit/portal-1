@@ -1,9 +1,13 @@
 package ru.protei.portal.core.model.ent;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
 import ru.protei.winter.jdbc.annotations.*;
 
+import javax.validation.constraints.NotNull;
+
 @JdbcEntity(table = "specification_modification")
+@ApiModel(value="Delivery Specification Modification")
 public class DeliverySpecificationModification {
 
     /**
@@ -25,6 +29,7 @@ public class DeliverySpecificationModification {
      */
     @JdbcColumn(name = "number")
     @JsonProperty("number")
+    @NotNull
     private Integer number;
 
     /**
@@ -32,6 +37,7 @@ public class DeliverySpecificationModification {
      */
     @JdbcColumn(name = "count")
     @JsonProperty("count")
+    @NotNull
     private Integer count;
 
     public Long getId() {
