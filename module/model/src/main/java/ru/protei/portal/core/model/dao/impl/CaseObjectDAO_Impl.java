@@ -172,11 +172,6 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         return caseObjectSqlBuilder.caseCommonQuery(query);
     }
 
-    public static boolean isSearchAtComments(CaseQuery query) {
-        return query.isSearchStringAtComments()
-                && length(trim( query.getSearchString() )) >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS;
-    }
-
     private JdbcQueryParameters buildJdbcQueryParameters(CaseQuery query) {
 
         JdbcQueryParameters parameters = new JdbcQueryParameters();
@@ -194,17 +189,5 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
             parameters.withJoins(LEFT_JOIN_PLAN_ORDER);
         }
         return parameters;
-    }
-
-    private boolean isNeedJoinComments(CaseQuery caseQuery) {
-        if (isSearchAtComments(caseQuery)) {
-            return true;
-        }
-
-        if (CollectionUtils.isNotEmpty(caseQuery.getTimeElapsedTypeIds())) {
-            return true;
-        }
-
-        return false;
     }
 }
