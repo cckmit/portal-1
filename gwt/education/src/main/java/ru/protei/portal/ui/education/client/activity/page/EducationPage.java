@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -27,7 +28,9 @@ public abstract class EducationPage implements Activity {
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
         if (hasAccess(policyService)) {
-            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.EDUCATION, TAB, DebugIds.SIDEBAR_MENU.EDUCATION));
+            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.EDUCATION, TAB,
+                                         CrmConstants.PAGE_LINK.EDUCATION,
+                                         DebugIds.SIDEBAR_MENU.EDUCATION));
             fireEvent(new AppEvents.InitPage(show));
         }
     }

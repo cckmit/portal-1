@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -29,7 +30,9 @@ public abstract class SiteFolderPage implements Activity {
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
         if (event.profile.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
-            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.SITE_FOLDER, TAB, DebugIds.SIDEBAR_MENU.SITE_FOLDER));
+            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.SITE_FOLDER, TAB,
+                                         CrmConstants.PAGE_LINK.SITE_FOLDER,
+                                         DebugIds.SIDEBAR_MENU.SITE_FOLDER));
             fireEvent(new AppEvents.InitPage(new SiteFolderPlatformEvents.Show(false)));
         }
     }
