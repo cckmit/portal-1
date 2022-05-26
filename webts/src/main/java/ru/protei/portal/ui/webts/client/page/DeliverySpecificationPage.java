@@ -29,7 +29,8 @@ public abstract class DeliverySpecificationPage implements Activity {
     public void onAuthSuccess(AuthEvents.Success event) {
         if (hasAccess()) {
             fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.DELIVERY_SPECIFICATION, TAB,
-                                         CrmConstants.PAGE_LINK.DELIVERY_SPECIFICATION, "").withParent(CATEGORY));
+                                         CrmConstants.PAGE_LINK.DELIVERY_SPECIFICATION,
+                                         DebugIds.SIDEBAR_MENU.DELIVERY_SPECIFICATION).withParent(CATEGORY));
             fireEvent(new AppEvents.InitPage(show));
         }
     }
