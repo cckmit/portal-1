@@ -112,6 +112,7 @@ public class DebugIds {
         String DELIVERY = "sidebar-menu-store-delivery-new-delivery";
         String CARD = "sidebar-menu-new-store-delivery-delivery";
         String CARD_BATCH = "sidebar-menu-new-store-delivery-card-batch";
+        String DELIVERY_SPECIFICATION = "sidebar-menu-new-store-delivery-specification";
         String PCB_ORDER = "sidebar-menu-new-store-delivery-pcb-order";
         String STORE = "sidebar-menu-store-delivery-store";
         String FLOOR_PLAN = "sidebar-menu-floor-plan";

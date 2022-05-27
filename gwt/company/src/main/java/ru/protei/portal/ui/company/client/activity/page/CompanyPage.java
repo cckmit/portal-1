@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -30,7 +31,9 @@ public abstract class CompanyPage
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.COMPANY_VIEW ) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.COMPANY, ТAB, DebugIds.SIDEBAR_MENU.COMPANY ) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.COMPANY, ТAB,
+                                           CrmConstants.PAGE_LINK.COMPANY,
+                                           DebugIds.SIDEBAR_MENU.COMPANY ) );
             fireEvent( new AppEvents.InitPage( new CompanyEvents.Show( false ) ) );
         }
     }
