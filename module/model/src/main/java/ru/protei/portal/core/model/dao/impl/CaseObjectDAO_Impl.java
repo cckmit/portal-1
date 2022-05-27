@@ -19,8 +19,6 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.*;
 
-import static java.lang.Boolean.TRUE;
-import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isFilterByTagNames;
 import static ru.protei.portal.core.model.dict.En_CaseType.CRM_SUPPORT;
 import static ru.protei.portal.core.model.ent.CaseObject.Columns.EXT_APP;
 import static ru.protei.portal.core.model.helper.StringUtils.length;
@@ -31,11 +29,6 @@ import static ru.protei.portal.core.model.util.sqlcondition.SqlQueryBuilder.quer
  * Created by michael on 19.05.16.
  */
 public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements CaseObjectDAO {
-
-    public static final String LEFT_JOIN_CASE_COMMENT = " LEFT JOIN case_comment ON case_object.id = case_comment.CASE_ID";
-    public static final String LEFT_JOIN_CASE_TAG =
-            " LEFT JOIN case_object_tag on case_object.ID = case_object_tag.case_id join case_tag on case_tag.id = case_object_tag.tag_id";
-    public static final String LEFT_JOIN_HISTORY = " LEFT JOIN history ON case_object.id = history.case_object_id";
     public static final String LEFT_JOIN_PLAN_ORDER =
             " LEFT JOIN plan_to_case_object plan ON case_object.id = plan.case_object_id";
 
@@ -179,11 +172,6 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         return caseObjectSqlBuilder.caseCommonQuery(query);
     }
 
-    public static boolean isSearchAtComments(CaseQuery query) {
-        return query.isSearchStringAtComments()
-                && length(trim( query.getSearchString() )) >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS;
-    }
-
     private JdbcQueryParameters buildJdbcQueryParameters(CaseQuery query) {
 
         JdbcQueryParameters parameters = new JdbcQueryParameters();
@@ -198,36 +186,8 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         parameters.withSort(TypeConverters.createSort( query ));
 
         if (query.getPlanId() != null) {
-            parameters.withDistinct(false);
             parameters.withJoins(LEFT_JOIN_PLAN_ORDER);
-        } else {
-            String joins = "";
-            if (isNeedJoinComments(query)) {
-                joins += LEFT_JOIN_CASE_COMMENT;
-            }
-            if (isFilterByTagNames(query)) {
-                joins += LEFT_JOIN_CASE_TAG;
-            }
-            if (TRUE.equals(query.isCheckImportanceHistory())) {
-                joins += LEFT_JOIN_HISTORY;
-            }
-            if (!joins.equals("")) {
-                parameters.withDistinct(true);
-                parameters.withJoins(joins);
-            }
         }
         return parameters;
-    }
-
-    private boolean isNeedJoinComments(CaseQuery caseQuery) {
-        if (isSearchAtComments(caseQuery)) {
-            return true;
-        }
-
-        if (CollectionUtils.isNotEmpty(caseQuery.getTimeElapsedTypeIds())) {
-            return true;
-        }
-
-        return false;
     }
 }
