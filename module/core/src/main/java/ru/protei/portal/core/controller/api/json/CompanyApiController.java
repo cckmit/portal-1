@@ -1,5 +1,7 @@
 package ru.protei.portal.core.controller.api.json;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,8 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 
 @RestController
-@RequestMapping(value = "/jsonApi/company", headers = "Accept=application/json")
+@RequestMapping(value = "/jsonApi/company", headers = "Accept=application/json",
+        produces = "application/json", consumes = "application/json")
 @EnableWebMvc
 public class CompanyApiController {
     private static final Logger log = LoggerFactory.getLogger(CompanyApiController.class);
@@ -40,15 +43,18 @@ public class CompanyApiController {
     }
 
     @PostMapping(value = "/getCompanyOptionListByQuery")
+    @ApiOperation(value = "Get company option by query",
+            notes = "Get list of company option filtered by query")
     public JsonResponse<List<EntityOption>> getCompanyOptionListByQuery(
-            @RequestBody JsonRequest<CompanyQuery> q,
+            @ApiParam(value = "Company query", required = true)
+            @RequestBody JsonRequest<CompanyQuery> query,
             HttpServletRequest request) {
 
-        log.info("API | getCompanyOptionListByQuery(): Query={}", q);
+        log.info("API | getCompanyOptionListByQuery(): Query={}", query);
 
-        return new JsonResponse<>(q.getRequestId(),
+        return new JsonResponse<>(query.getRequestId(),
                 getAuthToken(request)
-                        .flatMap(authToken -> service.companyOptionList(authToken, q.getData()))
+                        .flatMap(authToken -> service.companyOptionList(authToken, query.getData()))
         );
     }
 
