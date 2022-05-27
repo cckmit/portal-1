@@ -1,5 +1,7 @@
 package ru.protei.portal.core.controller.api.json;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,8 @@ import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
 
 @RestController
-@RequestMapping(value = "/jsonApi/person", headers = "Accept=application/json")
+@RequestMapping(value = "/jsonApi/person", headers = "Accept=application/json",
+        produces = "application/json", consumes = "application/json")
 @EnableWebMvc
 public class PersonApiController {
     private static final Logger log = LoggerFactory.getLogger(PersonApiController.class);
@@ -40,15 +43,18 @@ public class PersonApiController {
     }
 
     @PostMapping(value = "/getPersonShortViewListByQuery")
+    @ApiOperation(value = "Get person short view by query",
+            notes = "Get list of person short view filtered by employee query")
     public JsonResponse<List<PersonShortView>> getPersonShortViewListByQuery(
-            @RequestBody JsonRequest<EmployeeQuery> q,
+            @ApiParam(value = "Employee query", required = true)
+            @RequestBody JsonRequest<EmployeeQuery> query,
             HttpServletRequest request) {
 
-        log.info("API | getPersonShortViewListByQuery(): Query={}", q);
+        log.info("API | getPersonShortViewListByQuery(): Query={}", query);
 
-        return new JsonResponse<>(q.getRequestId(),
+        return new JsonResponse<>(query.getRequestId(),
                 getAuthToken(request)
-                        .flatMap(authToken -> service.shortViewList(q.getData()))
+                        .flatMap(authToken -> service.shortViewList(query.getData()))
         );
     }
 

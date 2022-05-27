@@ -1,8 +1,15 @@
 package ru.protei.portal.config;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -12,10 +19,12 @@ import springfox.documentation.swagger.web.*;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
+@Import({springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration.class})
 @EnableSwagger2
-public class SwaggerConfig {
+public class SwaggerConfig extends WebMvcConfigurerAdapter {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
@@ -59,4 +68,26 @@ public class SwaggerConfig {
                 .validatorUrl(null)
                 .build();
     }
+
+    @Override
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        ObjectMapper objectMapper = null;
+        for (HttpMessageConverter<?> converter : converters) {
+            if (converter instanceof MappingJackson2HttpMessageConverter) {
+                MappingJackson2HttpMessageConverter jacksonConverter =
+                        ((MappingJackson2HttpMessageConverter) converter);
+
+                if (objectMapper == null) {
+                    objectMapper = jacksonConverter.getObjectMapper();
+                } else {
+                    jacksonConverter.setObjectMapper(objectMapper);
+                }
+
+                objectMapper.addMixIn(AuditableObject.class, AuditNoJsonTypeInfo.class);
+            }
+        }
+    }
+
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
+    private abstract class AuditNoJsonTypeInfo {}
 }

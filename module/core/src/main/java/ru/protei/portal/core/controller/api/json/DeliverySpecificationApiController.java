@@ -50,7 +50,7 @@ public class DeliverySpecificationApiController {
 
     @PostMapping(value = "/getDeliverySpecifications")
     @ApiOperation(value = "Get delivery specifications by query",
-            notes = "Get search result with delivery specifications filtered by query")
+            notes = "Get search result of delivery specifications filtered by query")
     public JsonResponse<SearchResult<DeliverySpecification>> getDeliverySpecifications(
             @ApiParam(value = "Delivery specification query", required = true)
             @RequestBody JsonRequest<DeliverySpecificationQuery> query,
