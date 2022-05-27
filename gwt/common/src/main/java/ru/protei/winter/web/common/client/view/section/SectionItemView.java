@@ -132,11 +132,9 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
 
     @UiHandler("anchor")
     public void onAnchorClicked( ClickEvent event ) {
-        if ( anchor.getHref().endsWith("#") ) {
-            event.preventDefault();
-            closeExternalSections(root.getElement().getParentElement());
-            onSectionClicked();
-        }
+        event.preventDefault();
+        closeExternalSections(root.getElement().getParentElement());
+        onSectionClicked();
     }
 
     private void onSectionClicked() {
