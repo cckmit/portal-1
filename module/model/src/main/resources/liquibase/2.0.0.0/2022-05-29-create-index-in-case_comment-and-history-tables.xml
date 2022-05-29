@@ -1,0 +1,21 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-index-case_comment_created_case_id-on-case_comment-table" author="turik">
+        <createIndex tableName="case_comment" indexName="idx_case_comment_created_case_id">
+            <column name="created"/>
+            <column name="case_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="add-index-history_date_case_object_id-on-history-table" author="turik">
+        <createIndex tableName="history" indexName="idx_history_date_case_object_id">
+            <column name="date"/>
+            <column name="case_object_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
