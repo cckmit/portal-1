@@ -2776,6 +2776,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String roomReservationReasonValue4();
 
+    String roomReservationReasonValue5();
+
     String roomReservationShowTodayButton();
 
     String roomReservationHourStartButton();

@@ -20,10 +20,10 @@ public class En_RoomReservationReasonLang {
             case PRESENTATION: return lang.roomReservationReasonValue2();
             case EDUCATION: return lang.roomReservationReasonValue3();
             case OTHER: return lang.roomReservationReasonValue4();
+            case INTERVIEW: return lang.roomReservationReasonValue5();
             default: return "?";
         }
     }
 
     private Lang lang;
-
 }

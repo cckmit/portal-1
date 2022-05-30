@@ -14,7 +14,14 @@ public class RoomReservationReasonButtonSelector extends ButtonSelector<En_RoomR
     @Inject
     public void init() {
         setDisplayOptionCreator(o -> new DisplayOption(o == null ? defaultValue : lang.getName(o)));
-        fillOptions(Arrays.asList(En_RoomReservationReason.values()));
+        fillOptions(Arrays.asList(
+                En_RoomReservationReason.NEGOTIATION,
+                En_RoomReservationReason.MEETING,
+                En_RoomReservationReason.PRESENTATION,
+                En_RoomReservationReason.EDUCATION,
+                En_RoomReservationReason.INTERVIEW,
+                En_RoomReservationReason.OTHER
+        ));
     }
 
     public void fillOptions(List<En_RoomReservationReason> items) {
