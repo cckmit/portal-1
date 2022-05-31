@@ -15,12 +15,12 @@ public class En_RoomReservationReasonLang {
             return "?";
         }
         switch (reason) {
-            case NEGOTIATION: return lang.roomReservationReasonValue0();
-            case MEETING: return lang.roomReservationReasonValue1();
-            case PRESENTATION: return lang.roomReservationReasonValue2();
-            case EDUCATION: return lang.roomReservationReasonValue3();
-            case OTHER: return lang.roomReservationReasonValue4();
-            case INTERVIEW: return lang.roomReservationReasonValue5();
+            case NEGOTIATION: return lang.roomReservationReasonNegotiation();
+            case MEETING: return lang.roomReservationReasonMeeting();
+            case PRESENTATION: return lang.roomReservationReasonPresentation();
+            case EDUCATION: return lang.roomReservationReasonEducation();
+            case INTERVIEW: return lang.roomReservationReasonInterview();
+            case OTHER: return lang.roomReservationReasonOther();
             default: return "?";
         }
     }

@@ -2766,17 +2766,18 @@ public interface Lang extends Messages, ContactItemLang {
 
     String roomReservation();
 
-    String roomReservationReasonValue0();
+    String roomReservationReasonNegotiation();
 
-    String roomReservationReasonValue1();
+    String roomReservationReasonMeeting();
 
-    String roomReservationReasonValue2();
+    String roomReservationReasonPresentation();
 
-    String roomReservationReasonValue3();
+    String roomReservationReasonEducation();
 
-    String roomReservationReasonValue4();
 
-    String roomReservationReasonValue5();
+    String roomReservationReasonInterview();
+
+    String roomReservationReasonOther();
 
     String roomReservationShowTodayButton();
 
