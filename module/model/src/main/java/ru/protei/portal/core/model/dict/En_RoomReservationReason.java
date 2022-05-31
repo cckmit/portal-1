@@ -8,6 +8,7 @@ public enum En_RoomReservationReason implements HasId {
     PRESENTATION(2),
     EDUCATION(3),
     OTHER(4),
+    INTERVIEW(5)
     ;
 
     En_RoomReservationReason(int id) {
