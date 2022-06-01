@@ -116,12 +116,13 @@ public class DeliverySpecificationServiceImpl implements DeliverySpecificationSe
     public Long saveOrUpdateDetail(DeliveryDetail detail) {
         DeliveryDetail byName = deliveryDetailDAO.getByName(detail.getName());
         if (byName != null) {
-            return byName.getId();
+            detail.setId(byName.getId());
+            deliveryDetailDAO.merge(detail);
         } else {
             detail.setId(null);
             deliveryDetailDAO.persist(detail);
-            return detail.getId();
         }
+        return detail.getId();
     }
 
     public DeliverySpecification createDeliverySpecification(Long creatorId, DeliverySpecification deliverySpecification) {
