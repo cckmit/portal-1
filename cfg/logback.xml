@@ -8,7 +8,6 @@
     <property name="appTraceFileName" value="portal.app.trace"/>
     <property name="migrateFileName" value="portal.migrate"/>
     <property name="jiraFileName" value="portal.jira"/>
-    <property name="hpsmFileName" value="portal.hpsm.service"/>
     <property name="redmineFileName" value="portal.redmine.service"/>
     <property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%c{1}] [%t] - %m%n"/>
     <property name="maxFileSize" value="32MB"/>
@@ -67,15 +66,6 @@
         </rollingPolicy>
     </appender>
 
-    <appender name="HPSM" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${basePath}/${hpsmFileName}${extension}</file>
-        <encoder><pattern>${pattern}</pattern></encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${archivePath}/${hpsmFileName}.%d{yyyyMMdd}.%i${extension}.gz</fileNamePattern>
-            <maxFileSize>${maxFileSize}</maxFileSize>
-        </rollingPolicy>
-    </appender>
-
     <appender name="JIRA" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${basePath}/${jiraFileName}${extension}</file>
         <encoder><pattern>${pattern}</pattern></encoder>
@@ -120,10 +110,6 @@
     <!--Модули интеграции -->
     <logger name="ru.protei.portal.jira" level="DEBUG" additivity="false">
         <appender-ref ref="JIRA"/>
-        <appender-ref ref="ERRORS"/>
-    </logger>
-    <logger name="ru.protei.portal.hpsm" level="DEBUG" additivity="false">
-        <appender-ref ref="HPSM"/>
         <appender-ref ref="ERRORS"/>
     </logger>
     <logger name="ru.protei.portal.redmine" level="DEBUG" additivity="false">
