@@ -5,14 +5,15 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.DeliverySpecification;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.DeliverySpecificationQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static ru.protei.portal.api.struct.Result.error;
 import static ru.protei.portal.api.struct.Result.ok;
@@ -88,6 +89,42 @@ public class DeliverySpecificationServiceImpl implements DeliverySpecificationSe
         return ok(true);
     }
 
+    @Override
+    @Transactional
+    public Result<Boolean> importDeliverySpecifications(AuthToken token, DeliverySpecificationCreateRequest deliverySpecificationCreateRequest) {
+        Map<Long, Long> frontIdToDbId = new HashMap<>();
+        deliverySpecificationCreateRequest.getDetails().forEach(detail ->
+                frontIdToDbId.put(detail.getId(), saveOrUpdateDetail(detail))
+        );
+        deliverySpecificationCreateRequest.getSpecifications().forEach(deliverySpecification -> {
+                    List<DeliveryDetailToSpecification> details = deliverySpecification.getDetails();
+                    if (isNotEmpty(details)) {
+                        details.forEach(detailSpecification -> {
+                            Long detailId = detailSpecification.getDetailId();
+                            if (detailId != null && detailId < 0) {
+                                detailSpecification.setDetailId(frontIdToDbId.get(detailId));
+                            }
+                        });
+                    }
+                    createDeliverySpecification(token.getPersonId(), deliverySpecification);
+                }
+        );
+
+        return ok(true);
+    }
+
+    public Long saveOrUpdateDetail(DeliveryDetail detail) {
+        DeliveryDetail byName = deliveryDetailDAO.getByName(detail.getName());
+        if (byName != null) {
+            detail.setId(byName.getId());
+            deliveryDetailDAO.merge(detail);
+        } else {
+            detail.setId(null);
+            deliveryDetailDAO.persist(detail);
+        }
+        return detail.getId();
+    }
+
     public DeliverySpecification createDeliverySpecification(Long creatorId, DeliverySpecification deliverySpecification) {
 
         deliverySpecification.setCreatorId(creatorId);
@@ -118,10 +155,6 @@ public class DeliverySpecificationServiceImpl implements DeliverySpecificationSe
                     .forEach(detailSpecification -> {
                         detailSpecification.setSpecificationId(deliverySpecification.getId());
                         detailSpecification.setModified(now);
-                        if (detailSpecification.getDetailId() == null && detailSpecification.getDetail() != null) {
-                            deliveryDetailDAO.persist(detailSpecification.getDetail());
-                            detailSpecification.setDetailId(detailSpecification.getDetail().getId());
-                        }
                     });
             deliveryDetailToSpecificationDAO.persistBatch(deliverySpecification.getDetails());
             deliverySpecification.getDetails()

@@ -16,6 +16,7 @@ import ru.protei.portal.core.controller.api.json.utils.JsonResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DeliverySpecification;
+import ru.protei.portal.core.model.ent.DeliverySpecificationCreateRequest;
 import ru.protei.portal.core.model.query.DeliverySpecificationQuery;
 import ru.protei.portal.core.service.DeliverySpecificationService;
 import ru.protei.portal.core.service.session.SessionService;
@@ -101,6 +102,21 @@ public class DeliverySpecificationApiController {
         return new JsonResponse<>(deliverySpecificationList.getRequestId(),
                 getAuthToken(request)
                         .flatMap(authToken -> service.createDeliverySpecifications(authToken, deliverySpecificationList.getData()))
+        );
+    }
+
+    @PostMapping(value = "/importDeliverySpecifications")
+    @ApiOperation(value = "Import list of delivery specification")
+    public JsonResponse<Boolean> importDeliverySpecifications(
+            @ApiParam(value = "Delivery Specification Create Request", required = true)
+            @RequestBody JsonRequest<DeliverySpecificationCreateRequest> createRequest,
+            HttpServletRequest request) {
+
+        log.info("API | importDeliverySpecifications(): createRequest={}", createRequest);
+
+        return new JsonResponse<>(createRequest.getRequestId(),
+                getAuthToken(request)
+                        .flatMap(authToken -> service.importDeliverySpecifications(authToken, createRequest.getData()))
         );
     }
 
