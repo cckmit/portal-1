@@ -1,0 +1,159 @@
+<included>
+
+    <property name="basePath" value="${catalina.home}/logs/portal"/>
+    <property name="archivePath" value="${basePath}/archive"/>
+    <property name="extension" value=".log"/>
+    <property name="errorsFileName" value="errors"/>
+    <property name="appFileName" value="portal.app"/>
+    <property name="appTraceFileName" value="portal.app.trace"/>
+    <property name="migrateFileName" value="portal.migrate"/>
+    <property name="jiraFileName" value="portal.jira"/>
+    <property name="redmineFileName" value="portal.redmine.service"/>
+    <property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%c{1}] [%t] - %m%n"/>
+    <property name="maxFileSize" value="32MB"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder><pattern>${pattern}</pattern></encoder>
+    </appender>
+
+    <!-- Лог ошибок из всех модулей приложения -->
+    <appender name="ERRORS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${basePath}/${errorsFileName}${extension}</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder><pattern>${pattern}</pattern></encoder>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${archivePath}/${errorsFileName}.%d{yyyyMMdd}.${extension}.gz</fileNamePattern>
+        </triggeringPolicy>
+    </appender>
+
+    <!-- Основной лог приложения -->
+    <appender name="APP" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${basePath}/${appFileName}${extension}</file>
+        <encoder><pattern>${pattern}</pattern></encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${archivePath}/${appFileName}.%d{yyyyMMdd}.%i${extension}.gz</fileNamePattern>
+            <maxIndex>20</maxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${archivePath}/${appFileName}.%d{yyyyMMdd}.%i${extension}.gz</fileNamePattern>
+            <maxFileSize>${maxFileSize}</maxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <!-- Логгирование данных ( toString() ). Большие объёмы. -->
+    <!-- Сжимать раз в сутки при низкой нагрузке. Хранить не более 20 дней-->
+    <appender name="TRACE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${basePath}/${appTraceFileName}${extension}</file>
+        <encoder><pattern>${pattern}</pattern></encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${archivePath}/${appTraceFileName}.%d{yyyyMMdd}.%i${extension}.gz</fileNamePattern>
+            <maxIndex>1</maxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${archivePath}/${appTraceFileName}.%d{yyyyMMdd}.${extension}.gz</fileNamePattern>
+            <maxHistory>20</maxHistory>
+        </triggeringPolicy>
+    </appender>
+
+    <appender name="MIGRATE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${basePath}/${migrateFileName}${extension}</file>
+        <encoder><pattern>${pattern}</pattern></encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${archivePath}/${migrateFileName}.%d{yyyyMMdd}.%i${extension}.gz</fileNamePattern>
+            <maxFileSize>${maxFileSize}</maxFileSize>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="JIRA" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${basePath}/${jiraFileName}${extension}</file>
+        <encoder><pattern>${pattern}</pattern></encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${archivePath}/${jiraFileName}.%d{yyyyMMdd}.%i${extension}.gz</fileNamePattern>
+            <maxFileSize>${maxFileSize}</maxFileSize>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="REDMINE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${basePath}/${redmineFileName}${extension}</file>
+        <encoder><pattern>${pattern}</pattern></encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${archivePath}/${redmineFileName}.%d{yyyyMMdd}.%i${extension}.gz</fileNamePattern>
+            <maxFileSize>${maxFileSize}</maxFileSize>
+        </rollingPolicy>
+    </appender>
+
+    <root level="DEBUG">
+        <!-- Сбор ошибок со всех appendable источников-->
+        <appender-ref ref="ERRORS" />
+        <!-- Для отладки в IDE вывод в консоль. ( Отладка )-->
+        <!--<appender-ref ref="CONSOLE" />-->
+    </root>
+
+    <logger name="ru.protei.portal" level="DEBUG">
+        <appender-ref ref="APP" />
+    </logger>
+
+    <!-- Сервис слой -->
+    <logger name="service" level="TRACE">
+        <!-- Основной лог -->
+        <appender-ref ref="APP" level="INFO" />
+    </logger>
+
+    <!-- SQL запросы -->
+    <!-- SQL -->
+    <logger name="org.springframework.jdbc.core.JdbcTemplate" level="DEBUG">
+        <appender-ref ref="APP"/>
+    </logger>
+
+    <!--Модули интеграции -->
+    <logger name="ru.protei.portal.jira" level="DEBUG" additivity="false">
+        <appender-ref ref="JIRA"/>
+        <appender-ref ref="ERRORS"/>
+    </logger>
+    <logger name="ru.protei.portal.redmine" level="DEBUG" additivity="false">
+        <appender-ref ref="REDMINE"/>
+        <appender-ref ref="ERRORS"/>
+    </logger>
+
+    <logger name="ru.protei.portal.tools.migrate" level="DEBUG" additivity="false">
+        <appender-ref ref="MIGRATE"/>
+        <appender-ref ref="ERRORS"/>
+    </logger>
+
+    <!-- Инициализация контекстов и бинов Spring -->
+    <logger name="DefaultListableBeanFactory" level="INFO">
+        <appender-ref ref="APP"/>
+    </logger>
+
+    <!-- Winter reloadable config -->
+    <logger name="config" level="ERROR">
+        <appender-ref ref="APP"/>
+    </logger>
+    <logger name="ru.protei.winter" level="DEBUG">
+        <appender-ref ref="APP"/>
+    </logger>
+    <logger name="liquibase" level="WARN">
+        <appender-ref ref="APP"/>
+    </logger>
+    <logger name="LiquibaseSchemaResolver" level="WARN">
+        <appender-ref ref="APP"/>
+    </logger>
+    <logger name="org.springframework.web" level="DEBUG">
+        <appender-ref ref="APP"/>
+    </logger>
+    <logger name="com.atlassian.renderer" level="DEBUG">
+        <appender-ref ref="JIRA"/>
+    </logger>
+    <logger name="org.reflections" level="WARN">
+        <appender-ref ref="APP"/>
+    </logger>
+    <logger name="ru.protei.portal.core.renderer.impl" level="DEBUG">
+        <appender-ref ref="JIRA"/>
+    </logger>
+
+    <!-- Excludes -->
+    <logger name="org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor" level="OFF"/>
+
+</included>

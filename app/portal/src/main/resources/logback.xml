@@ -1,0 +1,3 @@
+<configuration>
+    <include file="${catalina.home}/cfg/logback.xml"/>
+</configuration>

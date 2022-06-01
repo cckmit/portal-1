@@ -1,7 +1,6 @@
 package ru.protei.portal.tools.notifications;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dict.EducationEntryType;
 import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dto.ReportCaseQuery;
 import ru.protei.portal.core.model.dto.ReportDto;
 import ru.protei.portal.core.model.ent.*;
@@ -32,7 +30,10 @@ import ru.protei.portal.core.model.util.DiffCollectionResult;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.service.*;
+import ru.protei.portal.core.service.CaseCommentService;
+import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.EmployeeService;
+import ru.protei.portal.core.service.ReportService;
 import ru.protei.portal.core.service.events.CaseSubscriptionService;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TemplateService;
@@ -52,8 +53,8 @@ import java.util.stream.LongStream;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.partitioningBy;
-import static ru.protei.portal.config.PortalConfigData.*;
-import static ru.protei.portal.core.event.ReservedIpReleaseRemainingEvent.*;
+import static ru.protei.portal.config.PortalConfigData.MailNotificationConfig;
+import static ru.protei.portal.core.event.ReservedIpReleaseRemainingEvent.Recipient;
 import static ru.protei.portal.core.model.dict.En_CaseLink.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.DateRangeUtils.makeInterval;
@@ -1475,7 +1476,7 @@ public class MailNotificationProcessor {
         }
 
         return Arrays.stream(recipients)
-                .filter(Strings::isNotEmpty)
+                .filter(StringUtils::isNotEmpty)
                 .collect(Collectors.toSet());
     }
 
@@ -1490,7 +1491,7 @@ public class MailNotificationProcessor {
         }
 
         return Arrays.stream(recipients)
-                .filter(Strings::isNotEmpty)
+                .filter(StringUtils::isNotEmpty)
                 .collect(Collectors.toSet());
     }
 
@@ -1500,14 +1501,14 @@ public class MailNotificationProcessor {
         if (isNotEmpty(headsOfDepartments)) {
             CollectionUtils.stream(headsOfDepartments)
                     .map(person -> new PlainContactInfoFacade(person.getContactInfo()).getEmail())
-                    .filter(Strings::isNotEmpty)
+                    .filter(StringUtils::isNotEmpty)
                     .forEach(recipients::add);
         }
 
         if (isNotEmpty(participants)) {
             CollectionUtils.stream(participants)
                     .map(person -> new PlainContactInfoFacade(person.getContactInfo()).getEmail())
-                    .filter(Strings::isNotEmpty)
+                    .filter(StringUtils::isNotEmpty)
                     .forEach(recipients::add);
         }
         return recipients;
