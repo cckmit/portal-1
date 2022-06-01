@@ -13,15 +13,21 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.controller.api.json.utils.JsonRequest;
 import ru.protei.portal.core.controller.api.json.utils.JsonResponse;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DeliverySpecification;
+import ru.protei.portal.core.model.ent.DeliverySpecificationCreateRequest;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.DeliverySpecificationQuery;
 import ru.protei.portal.core.service.DeliverySpecificationService;
 import ru.protei.portal.core.service.session.SessionService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -104,6 +110,21 @@ public class DeliverySpecificationApiController {
         );
     }
 
+    @PostMapping(value = "/importDeliverySpecifications")
+    @ApiOperation(value = "Import list of delivery specification")
+    public JsonResponse<Boolean> importDeliverySpecifications(
+            @ApiParam(value = "Delivery Specification Create Request", required = true)
+            @RequestBody JsonRequest<DeliverySpecificationCreateRequest> createRequest,
+            HttpServletRequest request) {
+
+        log.info("API | importDeliverySpecifications(): createRequest={}", createRequest);
+
+        return new JsonResponse<>(createRequest.getRequestId(),
+                getFakeAuthToken(request)
+                        .flatMap(authToken -> service.importDeliverySpecifications(authToken, createRequest.getData()))
+        );
+    }
+
     private Result<AuthToken> getAuthToken(HttpServletRequest request) {
         AuthToken authToken = sessionService.getAuthToken(request);
         if (authToken == null) {
@@ -111,4 +132,45 @@ public class DeliverySpecificationApiController {
         }
         return ok(authToken);
     }
+
+    private Result<AuthToken> getFakeAuthToken(HttpServletRequest request) {
+        AuthToken token = new AuthToken("test-session-id");
+        token.setIp("127.0.0.1");
+        token.setUserLoginId(15550L);
+        token.setPersonId(7777L);
+        token.setPersonDisplayShortName("DeliverySpecificationApiController");
+        token.setCompanyId(1L);
+        token.setCompanyAndChildIds(null);
+        token.setRoles(makeRoles());
+        return ok(token);
+    }
+
+    private HashSet<UserRole> makeRoles() {
+        UserRole role = new UserRole();
+        role.setPrivileges(new HashSet<>(Arrays.asList(PRIVILEGES)));
+        role.setScope(En_Scope.SYSTEM);
+        return new HashSet<>(Arrays.asList(role));
+    }
+
+    private static final En_Privilege[] PRIVILEGES = new En_Privilege[] {
+            En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_CREATE,
+            En_Privilege.PRODUCT_VIEW, En_Privilege.PRODUCT_EDIT, En_Privilege.PRODUCT_CREATE,
+            En_Privilege.COMPANY_VIEW, En_Privilege.COMPANY_EDIT, En_Privilege.COMPANY_CREATE,
+            En_Privilege.CONTACT_VIEW, En_Privilege.CONTACT_EDIT, En_Privilege.CONTACT_CREATE,
+            En_Privilege.EMPLOYEE_VIEW, En_Privilege.PROJECT_CREATE,
+            En_Privilege.SUBNET_VIEW, En_Privilege.SUBNET_CREATE,
+            En_Privilege.SUBNET_EDIT, En_Privilege.SUBNET_REMOVE,
+            En_Privilege.RESERVED_IP_VIEW, En_Privilege.RESERVED_IP_CREATE,
+            En_Privilege.RESERVED_IP_EDIT, En_Privilege.RESERVED_IP_REMOVE,
+            En_Privilege.PLAN_CREATE, En_Privilege.PLAN_EDIT, En_Privilege.PLAN_REMOVE, En_Privilege.PLAN_VIEW,
+            En_Privilege.PROJECT_CREATE, En_Privilege.PROJECT_EDIT, En_Privilege.PROJECT_REMOVE, En_Privilege.PROJECT_VIEW,
+            En_Privilege.SITE_FOLDER_CREATE, En_Privilege.SITE_FOLDER_REMOVE, En_Privilege.SITE_FOLDER_EDIT,
+            En_Privilege.ABSENCE_CREATE,
+            En_Privilege.DOCUMENT_CREATE, En_Privilege.DOCUMENT_REMOVE,
+            En_Privilege.DELIVERY_CREATE,
+            En_Privilege.CASE_STATES_VIEW,
+            En_Privilege.CONTRACT_VIEW,
+            En_Privilege.DELIVERY_VIEW,
+            En_Privilege.DELIVERY_SPECIFICATION_VIEW, En_Privilege.DELIVERY_SPECIFICATION_CREATE
+    };
 }

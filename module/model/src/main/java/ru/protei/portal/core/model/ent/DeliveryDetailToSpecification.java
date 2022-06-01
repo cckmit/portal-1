@@ -43,13 +43,6 @@ public class DeliveryDetailToSpecification {
     private Long detailId;
 
     /**
-     * Идентификатор детали
-     */
-    // !!! прилетает с фронта, дополнительная логика при сохранении из ексельки
-    @JsonProperty("detail")
-    private DeliveryDetail detail;
-
-    /**
      * Дата изменения
      */
     @JdbcColumn(name = "modified")
@@ -100,14 +93,6 @@ public class DeliveryDetailToSpecification {
 
     public void setDetailId(Long detailId) {
         this.detailId = detailId;
-    }
-
-    public DeliveryDetail getDetail() {
-        return detail;
-    }
-
-    public void setDetail(DeliveryDetail detail) {
-        this.detail = detail;
     }
 
     public Date getModified() {

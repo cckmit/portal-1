@@ -38,7 +38,7 @@ public class DeliveryDetail {
     /**
      * Наименование
      */
-    @JdbcColumn(name = "name")
+    @JdbcColumn(name = Columns.NAME)
     @JsonProperty("name")
     @NotNull
     private String name;
@@ -303,6 +303,7 @@ public class DeliveryDetail {
 
     public interface Columns {
         String ID = "id";
+        String NAME = "name";
         String RESPONSIBLE_ID = "responsible_id";
         String SUPPLIER_ID = "supplier_id";
     }
