@@ -15,10 +15,10 @@
     "@protei-libs/react": "workspace:*",
     "@protei-libs/scheduler": "workspace:*",
     "@protei-libs/store": "workspace:*",
+    "@protei-libs/types": "workspace:*",
     "@protei-portal/common": "workspace:*",
     "@protei-portal/common-lang": "workspace:*",
-    "@protei-portal/common-router": "workspace:*",
-    "@protei-libs/types": "workspace:*"
+    "@protei-portal/common-router": "workspace:*"
   },
   "peerDependencies": {
     "inversify": "*",
