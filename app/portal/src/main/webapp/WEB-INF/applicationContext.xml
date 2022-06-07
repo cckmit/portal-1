@@ -30,7 +30,4 @@
        <context:component-scan base-package="ru.protei.portal.app" />
 
        <mvc:annotation-driven />
-        <mvc:resources mapping="/webjars/**" location="/webjars/">
-            <mvc:resource-chain resource-cache="true"/>
-        </mvc:resources>
 </beans>

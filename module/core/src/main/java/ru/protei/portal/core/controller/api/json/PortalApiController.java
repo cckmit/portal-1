@@ -1,4 +1,4 @@
-package ru.protei.portal.core.controller.api;
+package ru.protei.portal.core.controller.api.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -22,7 +22,6 @@ import ru.protei.portal.core.model.dto.Project;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.*;
-import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.CaseNameAndDescriptionChangeRequest;
 import ru.protei.portal.core.model.struct.CaseObjectMetaJira;
 import ru.protei.portal.core.model.struct.DateRange;
@@ -57,7 +56,8 @@ import static ru.protei.portal.util.AuthUtils.authenticate;
  * Севрис для  API
  */
 @RestController
-@RequestMapping(value = "/api", headers = "Accept=application/json")
+@RequestMapping(value = "/api", headers = "Accept=application/json",
+        produces = "application/json", consumes = "application/json")
 @EnableWebMvc
 public class PortalApiController {
 
@@ -142,67 +142,35 @@ public class PortalApiController {
     }
 
     @PostMapping(value = "/cases/create")
-    public Result<CaseObject> createCase(@RequestBody AuditableObject auditableObject,
+    public Result<CaseObject> createCase(@RequestBody CaseObject caseObject,
                                             HttpServletRequest request,
                                             HttpServletResponse response) {
 
-        log.info("API | createCase(): auditableObject={}", auditableObject);
+        log.info("API | createCase(): caseObject={}", caseObject);
 
-        if (!(auditableObject instanceof CaseObject)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS, "Incorrect AuditType");
-        }
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken -> caseService.createCaseObject(authToken, new CaseObjectCreateRequest(caseObject)))
+                .ifError(result -> log.warn("createCase(): Can't create caseObject={}. {}", caseObject, result))
+                .ifOk(object -> log.info("createCase(): OK"));
 
-        try {
-            Result<AuthToken> authTokenAPIResult = authenticate(request, response, authService, sidGen, log);
-
-            if (authTokenAPIResult.isError()) {
-                return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
-            }
-
-            AuthToken authToken = authTokenAPIResult.getData();
-
-            CaseObjectCreateRequest caseObjectCreateRequest = new CaseObjectCreateRequest((CaseObject) auditableObject);
-
-            Result<CaseObject> caseObjectCoreResponse = caseService.createCaseObject(
-                    authToken,
-                    caseObjectCreateRequest
-            );
-
-            return caseObjectCoreResponse.orElseGet( result ->
-                    error( result.getStatus(),  "Service Error" ));
-
-        } catch (IllegalArgumentException ex) {
-            log.error(ex.getMessage());
-            return error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
-            return error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
-        }
     }
 
     @PostMapping(value = "/cases/update")
-    public Result<CaseObject> updateCase(@RequestBody AuditableObject auditableObject,
+    public Result<CaseObject> updateCase(@RequestBody CaseObject caseObject,
                                             HttpServletRequest request,
                                             HttpServletResponse response) {
 
-        log.info("API | updateCase(): auditableObject={}", auditableObject);
+        log.info("API | updateCase(): caseObject={}", caseObject);
 
-        if (!(auditableObject instanceof CaseObject)) {
-            return error(En_ResultStatus.INCORRECT_PARAMS, "Incorrect AuditType");
+        Result<AuthToken> authTokenAPIResult = authenticate(request, response, authService, sidGen, log);
+
+        if (authTokenAPIResult.isError()) {
+            return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
         }
 
-        try {
-            Result<AuthToken> authTokenAPIResult = authenticate(request, response, authService, sidGen, log);
+        AuthToken authToken = authTokenAPIResult.getData();
 
-            if (authTokenAPIResult.isError()) {
-                return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
-            }
-
-            AuthToken authToken = authTokenAPIResult.getData();
-
-            CaseObject caseObject = (CaseObject) auditableObject;
-
-            return caseService.updateCaseNameAndDescription(authToken, new CaseNameAndDescriptionChangeRequest(caseObject.getId(), caseObject.getName(), caseObject.getInfo()), En_CaseType.CRM_SUPPORT)
+        return caseService.updateCaseNameAndDescription(authToken, new CaseNameAndDescriptionChangeRequest(caseObject.getId(), caseObject.getName(), caseObject.getInfo()), En_CaseType.CRM_SUPPORT)
                 .flatMap(o -> caseService.updateCaseObjectMeta(authToken, new CaseObjectMeta(caseObject)))
                 .flatMap(o -> caseService.updateCaseObjectMetaNotifiers(authToken, En_CaseType.CRM_SUPPORT, new CaseObjectMetaNotifiers(caseObject)))
                 .flatMap(o -> {
@@ -212,15 +180,8 @@ public class PortalApiController {
                     return ok();
                 })
                 .map(ignore -> caseObject)
-                .orElseGet(result -> error(result.getStatus(), "Service Error"));
-
-        } catch (IllegalArgumentException  ex) {
-            log.error(ex.getMessage());
-            return error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
-            return error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
-        }
+                .ifError(result -> log.warn("updateCase(): Can't update caseObject={}. {}", caseObject, result))
+                .ifOk(object -> log.info("updateCase(): OK"));
     }
 
     @PostMapping(value = "/products/{id:[0-9]+}")
