@@ -22,7 +22,7 @@ import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.IntegrationTestsConfiguration;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoObjectMapperProvider;
-import ru.protei.portal.core.controller.api.PortalApiController;
+import ru.protei.portal.core.controller.api.json.PortalApiController;
 import ru.protei.portal.core.model.api.ApiAbsence;
 import ru.protei.portal.core.model.api.ApiDocument;
 import ru.protei.portal.core.model.api.ApiProject;

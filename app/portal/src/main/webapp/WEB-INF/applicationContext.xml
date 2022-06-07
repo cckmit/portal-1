@@ -20,7 +20,6 @@
        <context:component-scan base-package="ru.protei.portal.config" />
        <context:component-scan base-package="ru.protei.portal.tools.notifications" />
        <context:component-scan base-package="ru.protei.portal.tools.audit" />
-<!--       <context:component-scan base-package="ru.protei.portal.hpsm.config" />-->
        <context:component-scan base-package="ru.protei.portal.redmine.config" />
        <context:component-scan base-package="ru.protei.portal.jira.config" />
 
@@ -30,7 +29,4 @@
        <context:component-scan base-package="ru.protei.portal.app" />
 
        <mvc:annotation-driven />
-        <mvc:resources mapping="/webjars/**" location="/webjars/">
-            <mvc:resource-chain resource-cache="true"/>
-        </mvc:resources>
 </beans>

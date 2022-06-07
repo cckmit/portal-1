@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.AuditableObject;
@@ -24,7 +25,7 @@ import java.util.List;
 @Configuration
 @Import({springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration.class})
 @EnableSwagger2
-public class SwaggerConfig extends WebMvcConfigurerAdapter {
+public class WebPortalConfig extends WebMvcConfigurerAdapter {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
@@ -36,7 +37,7 @@ public class SwaggerConfig extends WebMvcConfigurerAdapter {
                 .pathMapping("")
                 .consumes(CollectionUtils.setOf("application/json"))
                 .produces(CollectionUtils.setOf("application/json"))
-                .host("https://portal.protei.ru/")
+                .host("https://portal.protei.ru")
                 .useDefaultResponseMessages(false)
                 .apiInfo(apiInfo());
     }
@@ -86,6 +87,16 @@ public class SwaggerConfig extends WebMvcConfigurerAdapter {
                 objectMapper.addMixIn(AuditableObject.class, AuditNoJsonTypeInfo.class);
             }
         }
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("swagger-ui.html")
+                .addResourceLocations("classpath:/META-INF/resources/");
+
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/")
+                .resourceChain(true);
     }
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
