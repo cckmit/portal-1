@@ -50,7 +50,7 @@ public abstract class DeliverySpecificationPage implements Activity {
     }
 
     private void fireSelectTab() {
-        fireEvent(new ActionBarEvents.Clear());
+//        fireEvent(new ActionBarEvents.Clear());
         if (hasAccess()) {
             fireEvent(new MenuEvents.Select(TAB, CATEGORY));
         }

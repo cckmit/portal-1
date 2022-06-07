@@ -1,10 +1,19 @@
 import { observer } from "mobx-react-lite"
-import { ImportContentComponent } from "./content/ImportContentComponent"
+import { ImportPartFormComponent } from "./ImportPartFormComponent"
+import { ImportPartParseResultComponent } from "./ImportPartParseResultComponent"
+import { ImportPartProgressComponent } from "./ImportPartProgressComponent"
+import { ImportPartActionsComponent } from "./ImportPartActionsComponent"
 
 export const ImportComponent = observer(function ImportComponent() {
+
   return (
     <div className="card card-transparent no-margin">
-      <ImportContentComponent/>
+      <div className="card-body no-padding container-child-striped-gray-white">
+        <ImportPartFormComponent/>
+        <ImportPartParseResultComponent/>
+        <ImportPartProgressComponent/>
+        <ImportPartActionsComponent/>
+      </div>
     </div>
   )
 })

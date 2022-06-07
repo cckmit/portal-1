@@ -246,3 +246,16 @@ body.sidebar-visible .page-sidebar .menu-items .icon-thumbnail {
     margin: 0;
   }
 }
+
+.container-child-striped-gray-white {
+
+  > .container:nth-child(odd),
+  > .container-fluid:nth-child(odd) {
+    background-color: #FAFAFA;
+  }
+
+  > .container:nth-child(even),
+  > .container-fluid:nth-child(even) {
+    background-color: #FFFFFF;
+  }
+}
