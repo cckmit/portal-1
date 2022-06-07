@@ -58,6 +58,7 @@ public class ScheduleCreateWidget
 
     @UiHandler("selectEverydayButton")
     public void onSelectEverydayButtonClicked(ClickEvent event) {
+        event.preventDefault();
         for (Map.Entry<Integer, ToggleButton> buttonEntry : dayToBtnMap.entrySet()) {
             buttonEntry.getValue().setValue(true);
         }
@@ -65,6 +66,7 @@ public class ScheduleCreateWidget
 
     @UiHandler("selectWeekdaysButton")
     public void onSelectWeekdaysButtonClicked(ClickEvent event) {
+        event.preventDefault();
         int weekendStart = LocaleInfo.getCurrentLocale().getDateTimeFormatInfo().weekendStart();
         int weekendEnd = LocaleInfo.getCurrentLocale().getDateTimeFormatInfo().weekendEnd();
 

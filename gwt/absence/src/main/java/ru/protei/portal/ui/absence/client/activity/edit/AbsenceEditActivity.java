@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import static com.google.gwt.user.datepicker.client.CalendarUtil.copyDate;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
 
 public abstract class AbsenceEditActivity
         implements Activity, AbstractAbsenceEditActivity, AbstractDialogDetailsActivity {
@@ -55,6 +56,7 @@ public abstract class AbsenceEditActivity
 
     @Override
     public void onReasonChanged() {
+        view.enableSchedule().setValue(false);
         view.enableScheduleEnabled().setEnabled(isEnabledSchedule());
         onEnableScheduleChanged();
 
@@ -84,6 +86,7 @@ public abstract class AbsenceEditActivity
         Boolean isEnabled = view.enableSchedule().getValue();
         view.scheduleVisibility().setVisible(isEnabled);
         view.scheduleCreateVisibility().setVisible(false);
+        view.scheduleItems().setValue(null);
     }
 
     @Override
@@ -152,7 +155,7 @@ public abstract class AbsenceEditActivity
         view.comment().setValue(value.getUserComment());
         view.dateRange().setValue(new DateInterval(copyDate(value.getFromTime()), copyDate(value.getTillTime())));
 
-        boolean isScheduleDefined = value.getScheduleItems() != null;
+        boolean isScheduleDefined = isNotEmpty(value.getScheduleItems());
         view.enableSchedule().setValue(isScheduleDefined, true);
         view.enableScheduleEnabled().setEnabled(isEnabledSchedule());
         view.scheduleItems().setValue(value.getScheduleItems());
