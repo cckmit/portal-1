@@ -56,8 +56,7 @@ import static ru.protei.portal.util.AuthUtils.authenticate;
  * Севрис для  API
  */
 @RestController
-@RequestMapping(value = "/api", headers = "Accept=application/json",
-        produces = "application/json", consumes = "application/json")
+@RequestMapping(value = "/api", headers = "Accept=application/json")
 @EnableWebMvc
 public class PortalApiController {
 
