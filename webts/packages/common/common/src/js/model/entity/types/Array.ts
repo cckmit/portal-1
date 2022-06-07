@@ -1,4 +1,4 @@
-import { JsonSchema, JsonSchemaValidate, makeJsonSchema, makeJsonSchemaValidate } from "../../infrastructure"
+import { JsonSchema, JsonSchemaValidate, makeJsonSchema, makeJsonSchemaValidate } from "../../../infrastructure"
 
 export function ArrayValidator<T>(schema: JsonSchema<T>): JsonSchemaValidate<Array<T>> {
   const ArraySchema = makeJsonSchema<Array<T>>({

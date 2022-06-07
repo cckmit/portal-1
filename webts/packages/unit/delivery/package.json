@@ -17,7 +17,8 @@
     "@protei-libs/store": "workspace:*",
     "@protei-portal/common": "workspace:*",
     "@protei-portal/common-lang": "workspace:*",
-    "@protei-portal/common-router": "workspace:*"
+    "@protei-portal/common-router": "workspace:*",
+    "@protei-libs/types": "workspace:*"
   },
   "peerDependencies": {
     "inversify": "*",

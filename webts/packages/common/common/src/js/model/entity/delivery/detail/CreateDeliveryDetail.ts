@@ -1,3 +1,5 @@
-import { DeliveryDetail } from "./DeliveryDetail"
+import { DeliveryDetail, DeliveryDetailId } from "./DeliveryDetail"
 
-export type CreateDeliveryDetail = Omit<DeliveryDetail, "id">
+export type CreateDeliveryDetail = {
+  id?: DeliveryDetailId
+} & Omit<DeliveryDetail, "id">

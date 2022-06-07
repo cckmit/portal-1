@@ -6,7 +6,7 @@ export * from "./notification"
 export * from "./person"
 export * from "./query"
 
-export * from "./Array"
+export * from "./types"
 export * from "./En_ResultStatus"
 export * from "./EntityOption"
 export * from "./Progress"

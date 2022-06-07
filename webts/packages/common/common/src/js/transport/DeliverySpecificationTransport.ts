@@ -1,24 +1,38 @@
 import { inject, injectable } from "inversify"
 import { PortalApiRequest, PortalApiTransport, PortalApiTransport$type } from "./core/PortalApiTransport"
-import { CreateDeliverySpecification, DeliverySpecification, DeliverySpecificationValidator } from "../model"
+import { BooleanValidator, CreateDeliveryDetail, CreateDeliverySpecification } from "../model"
 import { validateApiResponse } from "../infrastructure"
 
 export const DeliverySpecificationTransport$type = Symbol("DeliverySpecificationTransport")
 
 export interface DeliverySpecificationTransport {
-  create(request: CreateDeliverySpecification): Promise<DeliverySpecification>
+  import(specifications: Array<CreateDeliverySpecification>, details: Array<CreateDeliveryDetail>): Promise<boolean>
+  create(specifications: Array<CreateDeliverySpecification>): Promise<boolean>
 }
 
 @injectable()
 export class DeliverySpecificationTransportImpl implements DeliverySpecificationTransport {
-  async create(request: CreateDeliverySpecification): Promise<DeliverySpecification> {
+  async import(specifications: Array<CreateDeliverySpecification>, details: Array<CreateDeliveryDetail>): Promise<boolean> {
+    const req: PortalApiRequest = {
+      method: "POST",
+      url: "/deliverySpecification/importDeliverySpecifications",
+      body: {
+        specifications: specifications,
+        details: details,
+      },
+    }
+    const res = await this.transport.exchange(req)
+    return validateApiResponse(res.body, BooleanValidator)
+  }
+
+  async create(specifications: Array<CreateDeliverySpecification>): Promise<boolean> {
     const req: PortalApiRequest = {
       method: "POST",
       url: "/deliverySpecification/createDeliverySpecification",
-      body: request,
+      body: specifications,
     }
     const res = await this.transport.exchange(req)
-    return validateApiResponse(res.body, DeliverySpecificationValidator)
+    return validateApiResponse(res.body, BooleanValidator)
   }
 
   constructor(
