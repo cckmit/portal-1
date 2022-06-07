@@ -162,23 +162,17 @@ public class PortalApiController {
 
         log.info("API | updateCase(): caseObject={}", caseObject);
 
-        Result<AuthToken> authTokenAPIResult = authenticate(request, response, authService, sidGen, log);
-
-        if (authTokenAPIResult.isError()) {
-            return error(authTokenAPIResult.getStatus(), authTokenAPIResult.getMessage());
-        }
-
-        AuthToken authToken = authTokenAPIResult.getData();
-
-        return caseService.updateCaseNameAndDescription(authToken, new CaseNameAndDescriptionChangeRequest(caseObject.getId(), caseObject.getName(), caseObject.getInfo()), En_CaseType.CRM_SUPPORT)
-                .flatMap(o -> caseService.updateCaseObjectMeta(authToken, new CaseObjectMeta(caseObject)))
-                .flatMap(o -> caseService.updateCaseObjectMetaNotifiers(authToken, En_CaseType.CRM_SUPPORT, new CaseObjectMetaNotifiers(caseObject)))
-                .flatMap(o -> {
-                    if (En_ExtAppType.JIRA.getCode().equals(caseObject.getExtAppType())) {
-                        return caseService.updateCaseObjectMetaJira(authToken, new CaseObjectMetaJira(caseObject));
-                    }
-                    return ok();
-                })
+        return authenticate(request, response, authService, sidGen, log)
+                .flatMap(authToken ->
+                        caseService.updateCaseNameAndDescription(authToken, new CaseNameAndDescriptionChangeRequest(caseObject.getId(), caseObject.getName(), caseObject.getInfo()), En_CaseType.CRM_SUPPORT)
+                        .flatMap(o -> caseService.updateCaseObjectMeta(authToken, new CaseObjectMeta(caseObject)))
+                        .flatMap(o -> caseService.updateCaseObjectMetaNotifiers(authToken, En_CaseType.CRM_SUPPORT, new CaseObjectMetaNotifiers(caseObject)))
+                        .flatMap(o -> {
+                            if (En_ExtAppType.JIRA.getCode().equals(caseObject.getExtAppType())) {
+                                return caseService.updateCaseObjectMetaJira(authToken, new CaseObjectMetaJira(caseObject));
+                            }
+                            return ok();
+                        }))
                 .map(ignore -> caseObject)
                 .ifError(result -> log.warn("updateCase(): Can't update caseObject={}. {}", caseObject, result))
                 .ifOk(object -> log.info("updateCase(): OK"));
