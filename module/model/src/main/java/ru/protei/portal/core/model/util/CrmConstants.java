@@ -313,4 +313,8 @@ public class CrmConstants {
         String PCB_ORDER = "#pcb_orders";
         String DELIVERY_SPECIFICATION = "#delivery_specifications";
     }
+
+    public interface Contract {
+        String ICONS_URL = "./images/contract_";
+    }
 }

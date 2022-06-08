@@ -310,6 +310,10 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         return stateName;
     }
 
+    public String getIconStateName() {
+        return stateName != null ? stateName.toLowerCase().replaceAll("\\s", "_") : null;
+    }
+
     public void setStateName(String stateName) {
         this.stateName = stateName;
     }

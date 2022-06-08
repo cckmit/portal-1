@@ -28,7 +28,6 @@ import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.client.util.LinkUtils;
-import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.contract.client.widget.contractspecification.previewitem.ContractSpecificationPreviewItem;
 
@@ -41,6 +40,7 @@ import java.util.stream.Collectors;
 import static ru.protei.portal.core.model.helper.CollectionUtils.joining;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
+import static ru.protei.portal.core.model.util.CrmConstants.Contract.ICONS_URL;
 import static ru.protei.portal.core.model.util.CrmConstants.State.CANCELED;
 import static ru.protei.portal.ui.common.shared.util.HtmlUtils.sanitizeHtml;
 
@@ -115,7 +115,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setHeader(sanitizeHtml(typeLang.getName(value.getContractType()) + " № " + value.getNumber()));
         view.setHeaderHref(LinkUtils.makePreviewLink(Contract.class, value.getId()));
         view.setState(value.getStateId() != null
-                ? "./images/contract_" + value.getStateName().toLowerCase() + ".png"
+                ? ICONS_URL + value.getIconStateName() + ".png"
                 : null);
         view.setDateSigning(formatDate(value.getDateSigning()));
         view.setDateValid(formatDate(value.getDateValid()));
