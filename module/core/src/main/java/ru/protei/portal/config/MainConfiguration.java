@@ -109,6 +109,7 @@ import ru.protei.winter.jdbc.config.JdbcConfigData;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.concurrent.Executor;
 
 @Configuration
