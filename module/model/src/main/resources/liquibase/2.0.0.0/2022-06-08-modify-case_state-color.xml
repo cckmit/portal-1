@@ -1,0 +1,43 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="modify-case_state-color" author="ponomareva">
+        <update tableName="case_state">
+            <column name="color" value="#4e37b6"/>
+            <where>ID = 27</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#0d935b"/>
+            <where>ID = 32</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#0072EC"/>
+            <where>ID = 23</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#19AD79"/>
+            <where>ID = 24</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#475b6b"/>
+            <where>ID = 25</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#004fbf"/>
+            <where>ID = 29</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#b91e1e"/>
+            <where>ID = 22</where>
+        </update>
+        <update tableName="case_state">
+            <column name="color" value="#daab2d"/>
+            <where>ID = 28</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>
+

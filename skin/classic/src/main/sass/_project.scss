@@ -1,0 +1,109 @@
+.status-group > div.btn {
+  padding: 5px 8px;
+  border-color: #ffffff;
+}
+
+.project-state  {
+  font-family: "Font Awesome 6 Pro", serif;
+  font-style: normal;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
+  min-width: 18px;
+
+  &.unknown {
+    &:before {
+      content: "\3f";
+    }
+  }
+
+  &.times {
+    &:before {
+      content: "\f00d";
+    }
+  }
+
+  &.marketing {
+    &:before {
+      content: "\f675";
+    }
+  }
+
+  &.testing {
+    &:before {
+      content: "\f0ae";
+    }
+  }
+
+
+  &.talk {
+    &:before {
+      content: "\f158";
+    }
+  }
+
+  &.projecting {
+    &:before {
+      content: "\f542";
+    }
+  }
+
+  &.development {
+    &:before {
+      content: "\f121"
+    }
+  }
+
+  &.deployment {
+    &:before {
+      content: "\f019";
+    }
+  }
+
+  &.support {
+    &:before {
+      content: "\f590"
+    }
+  }
+
+  &.support-finished {
+    &:before {
+      content: "\f00c"
+    }
+  }
+
+  &.canceled {
+    &:before {
+      content: "\f05e";
+    }
+  }
+
+  &.paused {
+    &:before {
+      content: "\f04c";
+    }
+  }
+
+  &.center {
+    display: block;
+    margin: 0 auto;
+  }
+
+  &.selector {
+    position: relative;
+    float: left;
+    margin: 0 10px 0 0;
+  }
+
+}
+
+.projects {
+  table > thead > tr > th.managers {
+    min-width: 100px;
+  }
+
+  table > tbody > tr > td.region {
+    background-color: #f9f9f9;
+  }
+}

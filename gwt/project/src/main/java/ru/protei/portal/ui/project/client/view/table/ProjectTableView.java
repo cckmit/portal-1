@@ -136,7 +136,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
                     String style = "'style='color: " + value.getStateColor();
                     String title = "'title='" + projectStateLang.getStateName(new CaseState(value.getStateName()));
 
-                    return "<i class='" + iconState + " fa-2x" + title + style + "'></i>";
+                    return "<i class='" + iconState + " fa-lg" + title + style + "'></i>";
                 });
 
         columns.add(statusColumn);

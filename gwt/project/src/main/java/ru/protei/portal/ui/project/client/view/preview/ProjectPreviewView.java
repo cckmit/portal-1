@@ -56,7 +56,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Override
     public void setState( String value ) {
         CaseState state = new CaseState( value );
-        this.iconState.setClassName(projectStateLang.getStateIcon( state )+ " fa-lg");
+        this.iconState.setClassName(projectStateLang.getStateIcon( state )+ " fa-lg m-r-5");
         this.state.setInnerText( projectStateLang.getStateName( state ) );
     }
 
