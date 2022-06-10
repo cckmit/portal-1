@@ -36,13 +36,13 @@ public class BookController {
     }
 
     @PostMapping(value = "/create")
-    public Book createBook(@RequestBody Book book) {
+    public Long createBook(@RequestBody Book book) {
        return bookService.createBook(book);
     }
 
     @PostMapping(value = "/delete/{id}")
     public Long deleteBook(@PathVariable Long id, HttpServletResponse resp) throws IOException {
-       long isDelete = bookService.deleteBook(id);
+        long isDelete = bookService.deleteBook(id);
         if (isDelete == BookServiceImp.NOT_FOUND_BY_ID) {
            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
         }

@@ -31,7 +31,7 @@ public class Book {
 
     @JdbcColumn(name = "creator")
     @JsonProperty("creator")
-    private String creator;
+    private String author;
 
     @JdbcColumn(name = "created")
     @JsonProperty("created")
@@ -71,12 +71,12 @@ public class Book {
         this.bookName = bookName;
     }
 
-    public String getCreator() {
-        return creator;
+    public String getAuthor() {
+        return author;
     }
 
-    public void setCreator(String creator) {
-        this.creator = creator;
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public Date getCreated() {
@@ -111,12 +111,12 @@ public class Book {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
-        return id == book.id && Objects.equals(bookName, book.bookName) && Objects.equals(creator, book.creator) && Objects.equals(created, book.created) && Objects.equals(noJsonData, book.noJsonData) && Objects.equals(nullData, book.nullData);
+        return id == book.id && Objects.equals(bookName, book.bookName) && Objects.equals(author, book.author) && Objects.equals(created, book.created) && Objects.equals(noJsonData, book.noJsonData) && Objects.equals(nullData, book.nullData);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, bookName, creator, created, noJsonData, nullData);
+        return Objects.hash(id, bookName, author, created, noJsonData, nullData);
     }
 
     @Override
@@ -124,7 +124,7 @@ public class Book {
         return "Book{" +
                 "id=" + id +
                 ", bookName='" + bookName + '\'' +
-                ", creator='" + creator + '\'' +
+                ", author='" + author + '\'' +
                 ", created=" + created +
                 ", noJsonData='" + noJsonData + '\'' +
                 ", nullData='" + nullData + '\'' +

@@ -12,7 +12,7 @@ public interface BookService {
 
     Book getByBookId(Long bookId);
 
-    Book createBook(Book book);
+    Long createBook(Book book);
 
     Long deleteBook(Long id);
 
