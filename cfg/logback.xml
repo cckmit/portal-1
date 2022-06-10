@@ -152,7 +152,10 @@
     <logger name="ru.protei.portal.core.renderer.impl" level="DEBUG">
         <appender-ref ref="JIRA"/>
     </logger>
-
+    <logger name="ru.protei.portal.core.service.edu.BookServiceInterceptor" level="DEBUG">
+        <appender-ref ref="REDMINE"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
     <!-- Excludes -->
     <logger name="org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor" level="OFF"/>
 

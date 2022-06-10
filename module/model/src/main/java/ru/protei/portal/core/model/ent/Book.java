@@ -18,12 +18,13 @@ import java.util.Objects;
 @JdbcEntity(table = "book")
 public class Book {
 
-    private static int count = 0;
+    private static long count = 0;
     @JdbcId(name = "id", idInsertMode = IdInsertMode.EXPLICIT)
     @JsonProperty("id")
     private long id;
 
     @JdbcColumn(name = "book_name")
+    @JsonProperty("book_name")
     @JsonAlias({"book_name", "bookName" })
     private String bookName;
 
@@ -42,11 +43,12 @@ public class Book {
     private String noJsonData;
 
     @JdbcColumn(name = "nullData")
-    @JsonAlias({"null_Data", "nullData"})
+    @JsonProperty("null_data")
+    @JsonAlias({"null_data", "nullData"})
     private String nullData;
 
     public Book() {
-        ++count;
+        incrementCount();
     }
 
     public long getId() {
@@ -57,7 +59,7 @@ public class Book {
         this.id = id;
     }
 
-    public static int getCount() {
+    public static long getCount() {
         return count;
     }
 
@@ -101,6 +103,9 @@ public class Book {
         this.nullData = nullData;
     }
 
+    protected static void incrementCount(){
+        ++count;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

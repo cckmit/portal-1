@@ -8,8 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import static ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging.SERVICE_FACADE_LOGGER_NAME;
-
 @Component
 @Aspect
 public class BookServiceInterceptor {
@@ -19,14 +17,15 @@ public class BookServiceInterceptor {
     private void serviceMethods() {
     }
 
-    @Around(value = "ru.protei.portal.core.service.edu.BookServiceInterceptor.serviceMethods()")
+    @Around(value = "serviceMethods()")
     public Object checkTimes(ProceedingJoinPoint pjp) throws Throwable {
         long before = System.currentTimeMillis();
         Object obj = pjp.proceed();
         long after = System.currentTimeMillis();
-        logger.debug(after - before + " ms");
+        long executionTime = after - before;
+        logger.debug("BookServiceInterceptor method: {}, time (ms) : {}", pjp.getSignature().toShortString(),executionTime);
         return obj;
     }
 
-    private static Logger logger = LoggerFactory.getLogger(SERVICE_FACADE_LOGGER_NAME);
+    private static final Logger logger = LoggerFactory.getLogger(BookServiceInterceptor.class);
 }

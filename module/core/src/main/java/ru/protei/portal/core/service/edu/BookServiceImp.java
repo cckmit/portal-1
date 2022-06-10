@@ -9,7 +9,7 @@ import java.util.List;
 
 public class BookServiceImp implements BookService {
     public static final long NOT_FOUND_BY_ID = -1;
-    private List<Book> books;
+    private final List<Book> books;
 
     {
         books = new ArrayList<>();
@@ -27,7 +27,6 @@ public class BookServiceImp implements BookService {
         books.add(book2);
     }
 
-
     public List<Book> getAll() {
         return books;
     }
@@ -41,7 +40,6 @@ public class BookServiceImp implements BookService {
         book.setId(0);
         long id = Book.getCount();
         book.setId(id);
-        //валидатор если есть обязательные поля.
         books.add(book);
         return book;
     }
@@ -58,11 +56,7 @@ public class BookServiceImp implements BookService {
 
     private Book findById(Long id) {
         if (id != null) {
-            for (Book b : books) {
-                if (b.getId() == id) {
-                    return b;
-                }
-            }
+            return books.stream().filter(b -> b.getId() == id).findFirst().orElse(null);
         }
         return null;
     }

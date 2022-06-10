@@ -32,6 +32,7 @@ import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
+import ru.protei.portal.core.service.edu.BookService;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
@@ -75,6 +76,7 @@ import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceTaskHandler
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseTaskHandler;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.service.bootstrap.BootstrapServiceImpl;
+import ru.protei.portal.core.service.edu.BookServiceImp;
 import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.nrpe.NRPEService;
 import ru.protei.portal.core.service.nrpe.NRPEServiceImpl;
@@ -109,7 +111,6 @@ import ru.protei.winter.jdbc.config.JdbcConfigData;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.concurrent.Executor;
 
 @Configuration
@@ -1412,6 +1413,11 @@ public class MainConfiguration {
     @Bean
     public NRPEProcessor getNRPERequest() {
         return new NRPEProcessor(new NRPEExecutorTerminal());
+    }
+
+    @Bean
+    public BookService getBookService(){
+        return new BookServiceImp();
     }
 
     public static final String BACKGROUND_TASKS = "backgroundTasks";
