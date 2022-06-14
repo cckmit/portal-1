@@ -24,39 +24,40 @@ public class BookServiceImp implements BookService {
 
     @Override
     public Result<Book> getByBookId(AuthToken token, Long id) {
-        if (id != null) {
-            Book book = bookDAO.getByBookId(id);
-            if (book != null) {
-                return Result.ok(book);
-            }
+        if (id == null) {
+            return Result.error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        return Result.error(En_ResultStatus.INCORRECT_PARAMS);
+        Book book = bookDAO.get(id);
+        if (book == null) {
+            return Result.error(En_ResultStatus.NOT_FOUND);
+        }
+        return Result.ok(book);
     }
 
     @Override
     public Result<Long> createBook(AuthToken token, Book book) {
-        if (book != null) {
-            return Result.ok(bookDAO.createBook(book));
+        if (book == null) {
+            return Result.error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        return Result.error(En_ResultStatus.INCORRECT_PARAMS);
+        return Result.ok(bookDAO.persist(book));
     }
 
     @Override
     public Result<Long> deleteBook(AuthToken token, Long id) {
-        if (id != null) {
-            Long bookId = bookDAO.deleteBook(id);
-            if (bookId != null) {
-                return Result.ok(bookId);
-            }
+        if (id == null) {
+            return Result.error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        return Result.error(En_ResultStatus.INCORRECT_PARAMS);
+        if (bookDAO.removeByKey(id)) {
+            return Result.ok(id);
+        }
+        return Result.error(En_ResultStatus.NOT_FOUND);
     }
 
     @Override
     public Result<Map<String, Integer>> getCountByAuthor(AuthToken authToken) {
-        List<Pair<String , Integer>> pairs = bookDAO.getCountBookByAuthor();
-        Map<String , Integer> map = new HashMap<>();
-        for (Pair<String, Integer> pair : pairs){
+        List<Pair<String, Integer>> pairs = bookDAO.getCountBookByAuthor();
+        Map<String, Integer> map = new HashMap<>();
+        for (Pair<String, Integer> pair : pairs) {
             map.put(pair.getA(), pair.getB());
         }
         return Result.ok(map);
