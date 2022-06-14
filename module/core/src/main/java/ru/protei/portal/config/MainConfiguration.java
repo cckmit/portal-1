@@ -32,7 +32,7 @@ import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapper;
 import ru.protei.portal.core.client.youtrack.mapper.YtDtoFieldsMapperImpl;
-import ru.protei.portal.core.service.edu.BookService;
+import ru.protei.portal.core.service.BookService;
 import ru.protei.portal.core.index.document.DocumentStorageIndex;
 import ru.protei.portal.core.index.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.model.converter.MoneyJdbcConverter;
@@ -76,7 +76,7 @@ import ru.protei.portal.core.service.autoopencase.AutoOpenCaseServiceTaskHandler
 import ru.protei.portal.core.service.autoopencase.AutoOpenCaseTaskHandler;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.service.bootstrap.BootstrapServiceImpl;
-import ru.protei.portal.core.service.edu.BookServiceImp;
+import ru.protei.portal.core.service.BookServiceImp;
 import ru.protei.portal.core.service.events.*;
 import ru.protei.portal.core.service.nrpe.NRPEService;
 import ru.protei.portal.core.service.nrpe.NRPEServiceImpl;
@@ -900,6 +900,10 @@ public class MainConfiguration {
     public RFIDDeviceDAO getRFIDDeviceDAO() {
         return new RFIDDeviceDAO_Impl();
     }
+    @Bean
+    public BookDAO getBookDAO(){
+        return new BookDAO_Imp();
+    }
 
     /* SERVICES */
 
@@ -1419,6 +1423,8 @@ public class MainConfiguration {
     public BookService getBookService(){
         return new BookServiceImp();
     }
+
+
 
     public static final String BACKGROUND_TASKS = "backgroundTasks";
     public static final String REPORT_TASKS = "reportTasks";

@@ -15,7 +15,6 @@ import java.util.Objects;
 @JdbcEntity(table = "book")
 public class Book {
 
- //   private static long count = 0;
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     @JsonProperty("id")
     private Long id;
