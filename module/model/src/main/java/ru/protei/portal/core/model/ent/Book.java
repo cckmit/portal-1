@@ -1,10 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import com.fasterxml.jackson.annotation.*;
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 import java.util.Objects;
@@ -18,18 +15,22 @@ import java.util.Objects;
 @JdbcEntity(table = "book")
 public class Book {
 
-    private static long count = 0;
-    @JdbcId(name = "id", idInsertMode = IdInsertMode.EXPLICIT)
+ //   private static long count = 0;
+    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     @JsonProperty("id")
-    private long id;
+    private Long id;
 
     @JdbcColumn(name = "book_name")
     @JsonProperty("book_name")
     @JsonAlias({"book_name", "bookName" })
     private String bookName;
 
+    @JdbcColumn(name = Columns.CREATOR_ID)
+    @JsonProperty("creator_id")
+    private Long creatorId;
 
-    @JdbcColumn(name = "creator")
+    @JdbcJoinedColumn(localColumn =  Columns.CREATOR_ID, remoteColumn = "id",
+            mappedColumn = "displayname", table = "person", sqlTableAlias = "p")
     @JsonProperty("creator")
     private String author;
 
@@ -38,29 +39,29 @@ public class Book {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     private Date created;
 
-    @JdbcColumn(name = "noJsonData")
+    @JdbcColumn(name = "no_json_data")
     @JsonIgnore
     private String noJsonData;
 
-    @JdbcColumn(name = "nullData")
+    @JdbcColumn(name = "null_data")
     @JsonProperty("null_data")
     @JsonAlias({"null_data", "nullData"})
     private String nullData;
 
-    public Book() {
-        incrementCount();
-    }
-
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public static long getCount() {
-        return count;
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
     }
 
     public String getBookName() {
@@ -71,7 +72,7 @@ public class Book {
         this.bookName = bookName;
     }
 
-    public String getAuthor() {
+    public String  getAuthor() {
         return author;
     }
 
@@ -103,31 +104,20 @@ public class Book {
         this.nullData = nullData;
     }
 
-    protected static void incrementCount(){
-        ++count;
-    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
-        return id == book.id && Objects.equals(bookName, book.bookName) && Objects.equals(author, book.author) && Objects.equals(created, book.created) && Objects.equals(noJsonData, book.noJsonData) && Objects.equals(nullData, book.nullData);
+        return Objects.equals(id, book.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, bookName, author, created, noJsonData, nullData);
+        return Objects.hash(id);
     }
 
-    @Override
-    public String toString() {
-        return "Book{" +
-                "id=" + id +
-                ", bookName='" + bookName + '\'' +
-                ", author='" + author + '\'' +
-                ", created=" + created +
-                ", noJsonData='" + noJsonData + '\'' +
-                ", nullData='" + nullData + '\'' +
-                '}';
+    public interface Columns {
+        String CREATOR_ID = "creator_id";
     }
 }
